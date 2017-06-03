@@ -51,3 +51,5 @@ A single dataset can lead to multiple context. For example, a multi-class datase
 
 Pipeline defines all steps required by an algorithm to obtain predictions. Pipelines are typically a chain of sklearn compatible transformers and end with an sklearn compatible estimator.
 See [Pipelines](http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html) for more info.
+
+![archi](architecture.png)
