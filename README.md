@@ -22,7 +22,7 @@ to have access to the datasets, please checkout the corresponding branch.
 https://help.github.com/articles/checking-out-pull-requests-locally/
 
 
-# datasets
+# supported datasets
 
 Currently, there is 9 motor Imagery dataset supported. 5 of them will be automatically downloaded through MNE.
 The other 4 need to be downloaded manually :
@@ -31,6 +31,8 @@ The other 4 need to be downloaded manually :
 - *OpenvibeMI* : can be downloaded [here](http://openvibe.inria.fr/datasets-downloads/)
 - *gigadb_mi* : can be downloaded [here](ftp://climb.genomics.cn/pub/10.5524/100001_101000/100295/mat_data/)
 - *bbci_eeg_fnirs* : can be downloaded [here](http://doc.ml.tu-berlin.de/hBCI/)
+
+### Submit a new dataset
 
 you can submit new dataset by filling this [form](https://docs.google.com/forms/d/e/1FAIpQLScxbpqK4omKsUs4tA2XpfeHJATo_SbYvT0hpxoeKDb5k_TZvQ/viewform). Please check first that the algorithm is not in the [list](https://docs.google.com/spreadsheets/d/1fQNFXGu1J1yJ9jFCer9EQQatjCPJWg7O-uCGF0Z4PiM/edit).  
 
