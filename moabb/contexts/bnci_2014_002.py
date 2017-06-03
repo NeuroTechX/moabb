@@ -47,7 +47,7 @@ class BNCI2014002MI(BaseContext):
 
     def score(self, clf, X, y, groups, n_jobs=1):
         """get the score"""
-        cv = cv = LeaveOneGroupOut()
+        cv = LeaveOneGroupOut()
         auc = cross_val_score(clf, X, y, groups=groups, cv=cv,
                               scoring='roc_auc', n_jobs=n_jobs)
         return auc.mean()

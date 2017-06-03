@@ -47,10 +47,10 @@ class BNCI2014001MIMultiClass(BaseContext):
 
     def score(self, clf, X, y, groups, n_jobs=1):
         """get the score"""
-        cv = cv = LeaveOneGroupOut()
-        auc = cross_val_score(clf, X, y, groups=groups, cv=cv,
+        cv = LeaveOneGroupOut()
+        acc = cross_val_score(clf, X, y, groups=groups, cv=cv,
                               scoring='accuracy', n_jobs=n_jobs)
-        return auc.mean()
+        return acc.mean()
 
 
 class BNCI2014001MIHands(BNCI2014001MIMultiClass):
@@ -69,7 +69,7 @@ class BNCI2014001MIHands(BNCI2014001MIMultiClass):
 
     def score(self, clf, X, y, groups, n_jobs=1):
         """get the score"""
-        cv = cv = LeaveOneGroupOut()
+        cv = LeaveOneGroupOut()
         auc = cross_val_score(clf, X, y, groups=groups, cv=cv,
                               scoring='roc_auc', n_jobs=n_jobs)
         return auc.mean()

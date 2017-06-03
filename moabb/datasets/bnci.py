@@ -39,3 +39,21 @@ class BNCI2014002(MNEBNCI):
         self.subject_list = range(1, 15)
         self.name = 'BNCI 2014-002 Motor Imagery'
         self.code = '002-2014'
+
+
+class BNCI2014004(MNEBNCI):
+    """BNCI 2014-004 Motor Imagery dataset"""
+
+    def __init__(self):
+        self.subject_list = range(1, 10)
+        self.name = 'BNCI 2014-004 Motor Imagery'
+        self.code = '004-2014'
+
+
+class BNCI2015001(MNEBNCI):
+    """BNCI 2015-001 Motor Imagery dataset"""
+
+    def __init__(self):
+        self.subject_list = range(1, 13)
+        self.name = 'BNCI 2015-001 Motor Imagery'
+        self.code = '001-2015'
