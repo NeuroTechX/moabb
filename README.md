@@ -53,3 +53,10 @@ Pipeline defines all steps required by an algorithm to obtain predictions. Pipel
 See [Pipelines](http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html) for more info.
 
 ![archi](architecture.png)
+
+# How to contribute
+
+1. Look for open issues or open one.
+2. Discuss the problem and or propose a solution.
+3. Fork this repository and implement the solution.
+4. Create a pull request, iterate until it is merged.
