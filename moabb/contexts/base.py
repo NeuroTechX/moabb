@@ -92,12 +92,8 @@ class WithinSubjectContext(BaseContext):
                 for pipeline in self.pipelines:
                     clf = self.pipelines[pipeline]
                     t_start = time()
-                    try:
-                        score = self.score(clf, X=X, y=y, groups=groups)
-                    except:
-                        e = sys.exc_info()[0]
-                        print(e)
-                        score = np.nan
+                    score = self.score(clf, X=X, y=y, groups=groups)
+
                     duration = time() - t_start
                     row = [score, dataset_name, subject, pipeline, duration]
                     results[pipeline].loc[len(results[pipeline])] = row

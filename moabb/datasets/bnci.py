@@ -38,7 +38,7 @@ class BNCI2014001(MNEBNCI):
         if left_hand:
             event_id['left_hand'] = 1
         if right_hand:
-            event_id['left_hand'] = 2
+            event_id['right_hand'] = 2
         if feets:
             event_id['feets'] = 3
         if tongue:

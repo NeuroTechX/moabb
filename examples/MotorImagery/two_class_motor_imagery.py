@@ -40,7 +40,7 @@ context = MotorImageryTwoClasses(datasets=datasets, pipelines=pipelines)
 results = context.evaluate(verbose=True)
 
 for p in results.keys():
-    results[p].to_csv('../../results/MotorImagery/TwoClass/%s.csv' % p)
+    results[p].to_csv('../../results/MotorImagery/TwoClass/%s.csv2' % p)
 
 results = pd.concat(results.values())
 print(results.groupby('Pipeline').mean())
