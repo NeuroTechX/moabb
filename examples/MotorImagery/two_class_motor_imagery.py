@@ -25,7 +25,7 @@ datasets = [OpenvibeMI(),
             GigaDbMI(),
             BBCIEEGfNIRS(motor=True),
             AlexMI(with_rest=False),
-            BNCI2014001(event_id=dict(left_hand=1, right_hand=2)),
+            BNCI2014001(feets=False, tongue=False),
             BNCI2014002(),
             BNCI2014004(),
             BNCI2015001()]
