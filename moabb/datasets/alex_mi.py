@@ -15,9 +15,15 @@ from mne.channels import read_montage
 class AlexMI(BaseDataset):
     """Alex Motor Imagery dataset"""
 
-    def __init__(self):
+    def __init__(self, with_rest=False):
         self.subject_list = range(1, 9)
         self.name = 'Alex Motor Imagery'
+        self.tmin = 0
+        self.tmax = 3
+        self.paradigm = 'Motor Imagery'
+        self.event_id = dict(right_hand=1, feet=2)
+        if with_rest:
+            self.event_id['rest'] = 3
 
     def get_data(self, subjects):
         """return data for a list of subjects."""
@@ -43,4 +49,4 @@ class AlexMI(BaseDataset):
         info = create_info(ch_names=ch_names, ch_types=ch_types,
                            sfreq=512., montage=montage)
         raw = RawArray(data=data, info=info, verbose=False)
-        return raw
+        return [raw]

@@ -20,6 +20,13 @@ class BBCIEEGfNIRS(BaseDataset):
         self.name = 'BBCI EEG fNIRS'
         self.base_folder = base_folder
         self.motor = motor
+        self.tmin = 3.5
+        self.tmax = 10.
+        self.paradigm = 'Motor Imagery'
+        if motor:
+            self.event_id = dict(left_hand=1, right_hand=2)
+        else:
+            self.event_id = dict(mental_arithmetic=1, rest=2)
 
     def get_data(self, subjects):
         """return data for a list of subjects."""

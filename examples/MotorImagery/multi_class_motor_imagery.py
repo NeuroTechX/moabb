@@ -1,4 +1,4 @@
-from moabb.contexts.bbci_eeg_fnirs import BBCIEEGfNIRSMI
+from moabb.contexts.motor_imagery import MotorImageryMultiClasses
 
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
@@ -11,25 +11,33 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from collections import OrderedDict
+from moabb.datasets.bnci import BNCI2014001
 
-context = BBCIEEGfNIRSMI()
+from moabb.datasets.alex_mi import AlexMI
+from moabb.datasets.physionet_mi import PhysionetMI
+
+context = MotorImageryMultiClasses()
+
+datasets = [AlexMI(with_rest=True),
+            BNCI2014001(),
+            PhysionetMI(with_rest=True, feets=False)]
 
 pipelines = OrderedDict()
 pipelines['MDM'] = make_pipeline(Covariances('oas'), MDM())
 pipelines['TS'] = make_pipeline(Covariances('oas'), TSclassifier())
 pipelines['CSP+LDA'] = make_pipeline(Covariances('oas'), CSP(8), LDA())
 
-results = context.evaluate(pipelines, verbose=True)
+results = context.evaluate(datasets, pipelines, verbose=True)
 
 for p in results.keys():
-    results[p].to_csv('../../results/MotorImagery/BBCI_EEG_fNIRS/%s.csv' % p)
+    results[p].to_csv('../../results/MotorImagery/MultiClass/%s.csv' % p)
 
 results = pd.concat(results.values())
 print(results.groupby('Pipeline').mean())
 
-res = results.pivot(values='Score', columns='Pipeline', index='Subject')
+res = results.pivot(values='Score', columns='Pipeline')
 sns.lmplot(data=res, x='CSP+LDA', y='TS', fit_reg=False)
-plt.xlim(0.4, 1)
-plt.ylim(0.4, 1)
-plt.plot([0.4, 1], [0.4, 1], ls='--', c='k')
+plt.xlim(0.25, 1)
+plt.ylim(0.25, 1)
+plt.plot([0.25, 1], [0.25, 1], ls='--', c='k')
 plt.show()
