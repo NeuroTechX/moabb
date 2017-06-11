@@ -1,5 +1,7 @@
 import pandas as pd
 from time import time
+import numpy as np
+import sys
 
 from sklearn.base import BaseEstimator
 
@@ -90,7 +92,12 @@ class WithinSubjectContext(BaseContext):
                 for pipeline in self.pipelines:
                     clf = self.pipelines[pipeline]
                     t_start = time()
-                    score = self.score(clf, X=X, y=y, groups=groups)
+                    try:
+                        score = self.score(clf, X=X, y=y, groups=groups)
+                    except:
+                        e = sys.exc_info()[0]
+                        print(e)
+                        score = np.nan
                     duration = time() - t_start
                     row = [score, dataset_name, subject, pipeline, duration]
                     results[pipeline].loc[len(results[pipeline])] = row
