@@ -31,7 +31,7 @@ class MotorImageryMultiClasses(WithinSubjectContext):
     MotorImageryTwoClasses
     """
 
-    def __init__(self, datasets, pipelines, fmin=7., fmax=35):
+    def __init__(self, datasets, pipelines, fmin=7., fmax=35.):
         self.fmin = fmin
         self.fmax = fmax
         super().__init__(datasets, pipelines)

@@ -21,7 +21,7 @@ class AlexMI(BaseDataset):
         self.tmin = 0
         self.tmax = 3
         self.paradigm = 'Motor Imagery'
-        self.event_id = dict(right_hand=1, feet=2)
+        self.event_id = dict(right_hand=1, feets=2)
         if with_rest:
             self.event_id['rest'] = 3
 
