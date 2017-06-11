@@ -16,8 +16,6 @@ from moabb.datasets.bnci import BNCI2014001
 from moabb.datasets.alex_mi import AlexMI
 from moabb.datasets.physionet_mi import PhysionetMI
 
-context = MotorImageryMultiClasses()
-
 datasets = [AlexMI(with_rest=True),
             BNCI2014001(),
             PhysionetMI(with_rest=True, feets=False)]
@@ -27,7 +25,9 @@ pipelines['MDM'] = make_pipeline(Covariances('oas'), MDM())
 pipelines['TS'] = make_pipeline(Covariances('oas'), TSclassifier())
 pipelines['CSP+LDA'] = make_pipeline(Covariances('oas'), CSP(8), LDA())
 
-results = context.evaluate(datasets, pipelines, verbose=True)
+context = MotorImageryMultiClasses(datasets=datasets, pipelines=pipelines)
+
+results = context.evaluate(verbose=True)
 
 for p in results.keys():
     results[p].to_csv('../../results/MotorImagery/MultiClass/%s.csv' % p)

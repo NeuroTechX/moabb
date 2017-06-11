@@ -19,7 +19,6 @@ from moabb.datasets.bbci_eeg_fnirs import BBCIEEGfNIRS
 from moabb.datasets.gigadb import GigaDbMI
 from moabb.datasets.physionet_mi import PhysionetMI
 from moabb.datasets.openvibe_mi import OpenvibeMI
-context = MotorImageryTwoClasses()
 
 datasets = [OpenvibeMI(),
             PhysionetMI(with_rest=False, feets=False),
@@ -36,7 +35,9 @@ pipelines['MDM'] = make_pipeline(Covariances('oas'), MDM())
 pipelines['TS'] = make_pipeline(Covariances('oas'), TSclassifier())
 pipelines['CSP+LDA'] = make_pipeline(Covariances('oas'), CSP(8), LDA())
 
-results = context.evaluate(datasets, pipelines, verbose=True)
+context = MotorImageryTwoClasses(datasets=datasets, pipelines=pipelines)
+
+results = context.evaluate(verbose=True)
 
 for p in results.keys():
     results[p].to_csv('../../results/MotorImagery/TwoClass/%s.csv' % p)

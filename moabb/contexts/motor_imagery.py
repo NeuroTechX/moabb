@@ -8,10 +8,33 @@ from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
 
 
 class MotorImageryMultiClasses(WithinSubjectContext):
+    """Motor Imagery for multi class classification
 
-    def __init__(self, fmin=7., fmax=35):
+    Multiclass motor imagery context. Evaluation is done in Randomized KFold or
+    LeaveOneGroupOut (depending on the group variable, can be run or session)
+    with accuracy as a metric. Epochs count are equalized.
+
+    Parameters
+    ----------
+    datasets : List of Dataset instances.
+        List of dataset instances on which the pipelines will be evaluated.
+    pipelines : Dict of pipelines instances.
+        Dictionary of pipelines. Keys identifies pipeline names, and values
+        are scikit-learn pipelines instances.
+    fmin : float | None, (default 7.)
+        Low cut-off frequency in Hz. If None the data are only low-passed.
+    fmax : float | None, (default 35)
+        High cut-off frequency in Hz. If None the data are only high-passed.
+
+    See Also
+    --------
+    MotorImageryTwoClasses
+    """
+
+    def __init__(self, datasets, pipelines, fmin=7., fmax=35):
         self.fmin = fmin
         self.fmax = fmax
+        super().__init__(datasets, pipelines)
 
     def _epochs(self, dataset, subjects, event_id):
         """epoch data"""
@@ -79,6 +102,28 @@ class MotorImageryMultiClasses(WithinSubjectContext):
 
 
 class MotorImageryTwoClasses(MotorImageryMultiClasses):
+    """Motor Imagery for binary classification
+
+    Binary motor imagery context. Evaluation is done in Randomized KFold or
+    LeaveOneGroupOut (depending on the group variable, can be run or session)
+    with AUC as a metric.
+
+    Parameters
+    ----------
+    datasets : List of Dataset instances.
+        List of dataset instances on which the pipelines will be evaluated.
+    pipelines : Dict of pipelines instances.
+        Dictionary of pipelines. Keys identifies pipeline names, and values
+        are scikit-learn pipelines instances.
+    fmin : float | None, (default 7.)
+        Low cut-off frequency in Hz. If None the data are only low-passed.
+    fmax : float | None, (default 35)
+        High cut-off frequency in Hz. If None the data are only high-passed.
+
+    See Also
+    --------
+    MotorImageryTwoClasses
+    """
 
     def prepare_data(self, dataset, subjects):
         """Prepare data for classification."""
