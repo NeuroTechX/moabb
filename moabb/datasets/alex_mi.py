@@ -30,5 +30,5 @@ class AlexMI(BaseDataset):
         """return data for a single subject"""
         fname = ('/home/kirsh/Documents/Data/LE2S_Multiclass/subject%d.raw.fif'
                  % subject)
-        raw = Raw(fname, preload=True)
+        raw = Raw(fname, preload=True, verbose=False)
         return [raw]
