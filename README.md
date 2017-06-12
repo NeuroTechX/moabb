@@ -16,11 +16,42 @@ This project will be successful when we read in an abstract “ … the proposed
 
 # requirements
 
+### MNE
+
 Many of the datasets are currently made available through an ongoing MNE PR : https://github.com/mne-tools/mne-python/pull/4019
 
 to have access to the datasets, please checkout the corresponding branch.
 https://help.github.com/articles/checking-out-pull-requests-locally/
 
+you can do that following this process :
+
+Uninstall mne
+
+`pip uninstall mne`
+
+clone mne and switch branch
+
+```
+git clone git@github.com:mne-tools/mne-python.git
+cd mne-python
+git fetch origin pull/4019/head:bnci_mi
+git checkout bnci_mi
+```
+
+install the dev version
+
+`python setup.py develop`
+
+### pyriemann
+
+Same process for pyriemann, you need version from the sources.
+
+```
+pip uninstall pyriemann
+git clone git@github.com:alexandrebarachant/pyRiemann.git
+cd pyriemann
+python setup.py develop
+```
 
 # supported datasets
 
