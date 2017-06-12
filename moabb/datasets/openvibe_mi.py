@@ -17,6 +17,10 @@ class OpenvibeMI(BaseDataset):
     def __init__(self):
         self.subject_list = range(1, 15)
         self.name = 'Openvibe Motor Imagery'
+        self.tmin = 0
+        self.tmax = 3
+        self.paradigm = 'Motor Imagery'
+        self.event_id = dict(right_hand=770, left_hand=769)
 
     def get_data(self, subjects):
         """return data for a list of subjects."""
@@ -44,4 +48,4 @@ class OpenvibeMI(BaseDataset):
         info = create_info(ch_names=ch_names, ch_types=ch_types,
                            sfreq=512., montage=montage)
         raw = RawArray(data=data.values.T, info=info, verbose=False)
-        return raw
+        return [raw]

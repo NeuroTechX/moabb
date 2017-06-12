@@ -11,22 +11,28 @@ from mne.datasets import eegbci
 class PhysionetMI(BaseDataset):
     """Physionet Motor Imagery dataset"""
 
-    def __init__(self, imagined=True, feets=True):
+    def __init__(self, imagined=True, feets=True, with_rest=False):
         self.subject_list = range(1, 110)
         self.name = 'Physionet Motor Imagery'
+        self.tmin = 1
+        self.tmax = 3
+        self.paradigm = 'Motor Imagery'
 
         if feets:
-            self.events_id = dict(rest=0, hands=1, feets=2)
+            self.event_id = dict(hands=2, feets=3)
             if imagined:
                 self.selected_runs = [6, 10, 14]
             else:
                 self.selected_runs = [5, 9, 13]
         else:
-            self.events_id = dict(rest=0, left_hand=1, right_hand=2)
+            self.event_id = dict(left_hand=2, right_hand=3)
             if imagined:
                 self.selected_runs = [4, 8, 12]
             else:
                 self.selected_runs = [3, 7, 11]
+
+        if with_rest:
+            self.event_id['rest'] = 1
 
     def get_data(self, subjects):
         """return data for a list of subjects."""

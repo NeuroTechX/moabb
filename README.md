@@ -27,7 +27,7 @@ https://help.github.com/articles/checking-out-pull-requests-locally/
 Currently, there is 9 motor Imagery dataset supported. 5 of them will be automatically downloaded through MNE.
 The other 4 need to be downloaded manually :
 
-- *Alex_mi* : This dataset is not released yet. it should be done soon. contact alexandre in the meantime.
+- *Alex_mi* : can be downloaded [here](https://zenodo.org/record/806023)
 - *OpenvibeMI* : can be downloaded [here](http://openvibe.inria.fr/datasets-downloads/)
 - *gigadb_mi* : can be downloaded [here](ftp://climb.genomics.cn/pub/10.5524/100001_101000/100295/mat_data/)
 - *bbci_eeg_fnirs* : can be downloaded [here](http://doc.ml.tu-berlin.de/hBCI/)

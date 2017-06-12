@@ -16,9 +16,17 @@ class GigaDbMI(BaseDataset):
     """GigaDb Motor Imagery dataset"""
 
     def __init__(self, base_folder='/home/kirsh/Documents/Data/GigaDbMI'):
-        self.subject_list = range(1, 53)
+        self.subject_list = list(range(1, 53))
+        # some subject have issues
+        for ii in [32, 46, 49]:
+            self.subject_list.remove(ii)
+
         self.base_folder = base_folder
         self.name = 'GigaDb Motor Imagery'
+        self.tmin = 1
+        self.tmax = 3
+        self.paradigm = 'Motor Imagery'
+        self.event_id = dict(left_hand=1, right_hand=2)
 
     def get_data(self, subjects):
         """return data for a list of subjects."""
@@ -56,4 +64,4 @@ class GigaDbMI(BaseDataset):
         info = create_info(ch_names=ch_names, ch_types=ch_types,
                            sfreq=data.srate, montage=montage)
         raw = RawArray(data=eeg_data, info=info, verbose=False)
-        return raw
+        return [raw]
