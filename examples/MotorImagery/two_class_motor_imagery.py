@@ -1,4 +1,4 @@
-from moabb.contexts.motor_imagery import MotorImageryTwoClasses
+from moabb.contexts.motor_imagery import *
 
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
@@ -20,11 +20,7 @@ from moabb.datasets.gigadb import GigaDbMI
 from moabb.datasets.physionet_mi import PhysionetMI
 from moabb.datasets.openvibe_mi import OpenvibeMI
 
-datasets = [OpenvibeMI(),
-            PhysionetMI(with_rest=False, feets=False),
-            GigaDbMI(),
-            BBCIEEGfNIRS(motor=True),
-            AlexMI(with_rest=False),
+datasets = [PhysionetMI(with_rest=False, feets=False),
             BNCI2014001(feets=False, tongue=False),
             BNCI2014002(),
             BNCI2014004(),
@@ -35,7 +31,7 @@ pipelines['MDM'] = make_pipeline(Covariances('oas'), MDM())
 pipelines['TS'] = make_pipeline(Covariances('oas'), TSclassifier())
 pipelines['CSP+LDA'] = make_pipeline(Covariances('oas'), CSP(8), LDA())
 
-context = MotorImageryTwoClasses(datasets=datasets, pipelines=pipelines)
+context = MotorImageryTwoClassCrossSubject(datasets=datasets[1:], pipelines=pipelines)
 
 results = context.evaluate(verbose=True)
 
