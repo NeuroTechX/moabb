@@ -177,7 +177,32 @@ class CrossSubjectContext(BaseContext):
 
 class SubjectUpdateContext(BaseContext):
 
-    def score(self, clf, X, y, info, scoring, n_jobs=1):
+    def score(self, clf, X, y, info, scoring, n_jobs=1, k=5):
         '''
         Return score when pre-training on all subjects and then doing cross-validation within a given subject. 
         '''
+        
+        cv = KFold(k, shuffle=True, random_state=45)
+        # extract subject data regardless of session
+        X_sub = []
+        y_sub = []
+        subj_ind = np.unique(info['Subject'])
+        nsubj = len(subj_ind)
+        for ind,sub in enumerate(subj_ind):
+            X_sub.append(X[info['Subject']==sub,...])
+            y_sub.append(y[info['Subject']==sub])
+
+        out = pd.DataFrame(np.empty(len(X_sub),4),columns=['Score','Subject','Subject time','Pretrain time'])
+
+        for ind in range(nsubj):
+            # this step will probably have to change...
+            trainsubj = [i for i,v in enumerate(subj_ind) if i != ind]
+            ttrain_st = time()
+            clf_2 = ****pretrain****(clf, X_sub[trainsubj], y_sub[trainsubj], n_jobs=n_jobs)
+            ttrain_end = time()
+            ttest_st = time()
+            auc = cross_val_score(clf_2, X_sub[ind], y_sub[ind], cv=cv,
+                                  scoring=scoring, n_jobs=n_jobs)
+            ttest_end = time()
+            out.loc[ind] = [auc.mean(), subj_ind[ind], ttest_end-ttest_st, ttrain_end-ttrain_st]
+        return out
