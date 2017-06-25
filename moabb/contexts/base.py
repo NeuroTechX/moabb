@@ -65,10 +65,39 @@ class BaseContext():
         Output:
             X:       ndarray (trials, channels, timepoints) of data
             y:       ndarray (trials,) **1 or 2d** of labels
-            groups:  ndarray (trials,) specifying which subject each trial belongs to
+         info:       DataFrame specifying session, subject, and possibly other information
         '''
         pass
     
+    def evaluate(self, verbose=False, **kwargs):
+        """Evaluate performances
+
+        Parameters
+        ----------
+        verbose: bool (defaul False)
+            if true, print results durint the evaluation
+
+        Returns
+        -------
+        results: Dict of panda DataFrame
+            Return a dict of pandas dataframe, one for each pipeline
+
+        """
+        columns = ['Score', 'Dataset', 'Subject', 'Pipeline', 'Time']
+        results = dict()
+        for dataset in self.datasets:
+            dataset_name = dataset.get_name()
+            subjects = dataset.get_subject_list()
+            X, y, info = self.prepare_data(dataset, subjects)
+            for pipeline in self.pipelines:
+                clf = self.pipelines[pipeline]
+                score = self.score(clf, X=X, y=y, info=info, **kwargs)
+                score = score.assign(Dataset=dataset_name,Pipeline=pipeline)
+                results[pipeline] = score
+                if verbose:
+                    print(score)
+        return results
+
 class WithinSubjectContext(BaseContext):
     """Within Subject evaluation Context.
 
@@ -86,51 +115,23 @@ class WithinSubjectContext(BaseContext):
     --------
     BaseContext
     """
-
-    def evaluate(self, verbose=False):
-        """Evaluate performances
-
-        Parameters
-        ----------
-        verbose: bool (defaul False)
-            if true, print results durint the evaluation
-
-        Returns
-        -------
-        results: Dict of panda DataFrame
-            Return a dict of pandas dataframe, one for each pipeline
-
-        """
-        columns = ['Score', 'Dataset', 'Subject', 'Pipeline', 'Time']
-        results = dict()
-        for pipeline in self.pipelines:
-            results[pipeline] = pd.DataFrame(columns=columns)
-
-        for dataset in self.datasets:
-            dataset_name = dataset.get_name()
-            subjects = dataset.get_subject_list()
-
-            for subject in subjects:
-                X, y, groups = self.prepare_data(dataset, [subject])
-
-                for pipeline in self.pipelines:
-                    clf = self.pipelines[pipeline]
-                    t_start = time()
-                    score = self.score(clf, X=X, y=y, groups=groups)
-
-                    duration = time() - t_start
-                    row = [score, dataset_name, subject, pipeline, duration]
-                    results[pipeline].loc[len(results[pipeline])] = row
-                    if verbose:
-                        print(row)
-        return results
-
-    def score(self, clf, X, y, groups, scoring, n_jobs=1, k=5):
-        """get the score"""
+    def score(self, clf, X, y, info, scoring, n_jobs=1, k=5):
+        """ for each subject cross-validate"""
+        # how can we enforce the fields of the dataframe?
+        subj_ind = np.unique(info['subject'])
         cv = KFold(k, shuffle=True, random_state=45)
-        auc = cross_val_score(clf, X, y, groups=groups, cv=cv,
-                              scoring=scoring, n_jobs=n_jobs)
-        return auc.mean()    
+        out = pd.DataFrame(columns=['Score', 'Subject', 'Time'])
+        for sub in subj_ind:
+            t_start = time()
+            # extract x and y corresponding to subject
+            X_sub = X[info['Subject']==sub,...]
+            y_sub = y[info['Subject']==sub,...]
+            auc = cross_val_score(clf, X_sub, y_sub, groups=groups, cv=cv,
+                                  scoring=scoring, n_jobs=n_jobs)
+            t_end = time()
+            # do this properly
+            out.append([auc.mean(), sub, t_end-t_start])
+        return out
 
 class CrossSubjectContext(BaseContext):
     '''
@@ -150,46 +151,32 @@ class CrossSubjectContext(BaseContext):
     --------
     BaseContext
     '''
-    def evaluate(self, verbose=False):
-        """Evaluate performances
-
-        Parameters
-        ----------
-        verbose: bool (defaul False)
-            if true, print results during the evaluation
-
-        Returns
-        -------
-        results: Dict of panda DataFrame
-            Return a dict of pandas dataframe, one for each pipeline
-
-        """
-        columns = ['Score', 'Dataset', 'Subject', 'Pipeline', 'Time']
-        results = dict()
-        for pipeline in self.pipelines:
-            results[pipeline] = pd.DataFrame(columns=columns)
-
-        for dataset in self.datasets:
-            dataset_name = dataset.get_name()
-            subjects = dataset.get_subject_list()
-            X, y, groups = self.prepare_data(dataset, subjects)
-
-            for pipeline in self.pipelines:
-                clf = self.pipelines[pipeline]
-                t_start = time()
-                score = self.score(clf, X=X, y=y, groups=groups)
-
-                duration = (time() - t_start) / len(subjects)
-                for subject, accuracy in zip(subjects, score):
-                    row = [accuracy, dataset_name, subject, pipeline, duration]
-                    results[pipeline].loc[len(results[pipeline])] = row
-                    if verbose:
-                        print(row)
-        return results
-
-    def score(self, clf, X, y, groups, scoring, n_jobs=1):
+    def score(self, clf, X, y, info, scoring, n_jobs=1):
         """get the score"""
         cv = LeaveOneGroupOut()
-        auc = cross_val_score(clf, X, y, groups=groups, cv=cv,
-                      scoring=scoring, n_jobs=n_jobs)
-        return auc
+        # extract subject data regardless of session
+        X_sub = []
+        y_sub = []
+        group = []
+        subj_ind = np.unique(info['subject'])
+        for ind,sub in enumerate(subj_ind):
+            X_sub.append(X[info['subject']==sub,...])
+            y_sub.append(y[info['subject']==sub,...])
+            group.extend([ind]*len(y_sub[-1]))
+        X_sub = np.vstack(X_sub)
+        y_sub = np.vstack(y_sub)
+        # this method doesn't allow us to get a time per subject...
+        t_start = time()
+        auc = cross_val_score(clf, X_sub, y_sub, groups=np.asarray(group), cv=cv,
+                              scoring=scoring, n_jobs=n_jobs)
+        t_end = time()
+        
+        return pd.DataFrame({'Subject': subj_ind,'Score':auc,
+                             'Time':[((t_end-t_start)/len(subj_ind))]*len(subj_ind)})
+
+class SubjectUpdateContext(BaseContext):
+
+    def score(self, clf, X, y, info, scoring, n_jobs=1):
+        '''
+        Return score when pre-training on all subjects and then doing cross-validation within a given subject. 
+        '''
