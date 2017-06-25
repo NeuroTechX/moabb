@@ -47,7 +47,7 @@ class BaseContext():
         self.pipelines = pipelines
 
     @abstractmethod
-    def score(self, clf, X, y, groups, n_jobs=1):
+    def score(self, clf, X, y, info, n_jobs=1):
         '''
         Return score 
         '''
@@ -118,19 +118,20 @@ class WithinSubjectContext(BaseContext):
     def score(self, clf, X, y, info, scoring, n_jobs=1, k=5):
         """ for each subject cross-validate"""
         # how can we enforce the fields of the dataframe?
-        subj_ind = np.unique(info['subject'])
+        subj_ind = np.unique(info['Subject'])
         cv = KFold(k, shuffle=True, random_state=45)
-        out = pd.DataFrame(columns=['Score', 'Subject', 'Time'])
-        for sub in subj_ind:
+        out = pd.DataFrame(np.zeros((len(subj_ind),3)),
+                           columns=['Score', 'Subject', 'Time'])
+        for ind, sub in enumerate(subj_ind):
             t_start = time()
             # extract x and y corresponding to subject
             X_sub = X[info['Subject']==sub,...]
-            y_sub = y[info['Subject']==sub,...]
-            auc = cross_val_score(clf, X_sub, y_sub, groups=groups, cv=cv,
+            y_sub = y[info['Subject']==sub]
+            auc = cross_val_score(clf, X_sub, y_sub, cv=cv,
                                   scoring=scoring, n_jobs=n_jobs)
             t_end = time()
             # do this properly
-            out.append([auc.mean(), sub, t_end-t_start])
+            out.loc[ind] = [auc.mean(), sub, t_end-t_start]
         return out
 
 class CrossSubjectContext(BaseContext):
@@ -158,13 +159,13 @@ class CrossSubjectContext(BaseContext):
         X_sub = []
         y_sub = []
         group = []
-        subj_ind = np.unique(info['subject'])
+        subj_ind = np.unique(info['Subject'])
         for ind,sub in enumerate(subj_ind):
-            X_sub.append(X[info['subject']==sub,...])
-            y_sub.append(y[info['subject']==sub,...])
+            X_sub.append(X[info['Subject']==sub,...])
+            y_sub.append(y[info['Subject']==sub])
             group.extend([ind]*len(y_sub[-1]))
         X_sub = np.vstack(X_sub)
-        y_sub = np.vstack(y_sub)
+        y_sub = np.concatenate(y_sub)
         # this method doesn't allow us to get a time per subject...
         t_start = time()
         auc = cross_val_score(clf, X_sub, y_sub, groups=np.asarray(group), cv=cv,
