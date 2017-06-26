@@ -5,6 +5,7 @@ from .base import CrossSubjectContext, WithinSubjectContext, BaseContext
 from mne import Epochs, find_events
 from mne.epochs import concatenate_epochs, equalize_epoch_counts
 from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
+import pandas as pd
 
 class MotorImageryContext(BaseContext):
     """Base motor imagery context
@@ -25,54 +26,75 @@ class MotorImageryContext(BaseContext):
         NOTE: Is this necessary to have defined within the 'motor imagery'
         context, or should we simply put it in BaseContext?
 
+
+        Returns a 2-d list, level 1 is subject and level 2 is sessions/runs within a subject
         """
         raws = dataset.get_data(subjects=subjects)
-        raws = raws[0]
         ep = []
         # we process each subject independently
-        for raw in raws:
+        for subj in raws:
+            ep.append([])
+            # ***we assume that all files are from single sessions here***
+            for raw in subj:
+                # find events
+                events = find_events(raw, shortest_event=0, verbose=False)
 
-            # find events
-            events = find_events(raw, shortest_event=0, verbose=False)
+                # pick some channels
+                raw.pick_types(meg=True, eeg=True, stim=False,
+                               eog=False, exclude='bads')
 
-            # pick some channels
-            raw.pick_types(meg=True, eeg=True, stim=False,
-                           eog=False, exclude='bads')
+                # filter data
+                raw.filter(self.fmin, self.fmax, method='iir')
 
-            # filter data
-            raw.filter(self.fmin, self.fmax, method='iir')
-
-            # epoch data
-            epochs = Epochs(raw, events, event_id, dataset.tmin, dataset.tmax,
-                            proj=False, baseline=None, preload=True,
-                            verbose=False)
-            ep.append(epochs)
-        return ep
+                # epoch data
+                epochs = Epochs(raw, events, event_id, dataset.tmin, dataset.tmax,
+                                proj=False, baseline=None, preload=True,
+                                verbose=False)
+                ep[-1].append(epochs)
+        return ep #shall we have it yield, since we don't need to load everything at the start?
 
     def prepare_data(self, dataset, subjects, equalize=True):
-        """Prepare data for classification. Also (optionally) equalize classes."""
+        """Prepare data for classification. Also (optionally) equalize classes.
+
+
+        Returns:
+            X:    data as ndarray (trials, channels, timepoints)
+            y:    labels as ndarray (trials, )
+            info: DataFrame with trial index, session, and subject information"""
+        
         event_id = dataset.event_id
-        epochs = self._epochs(dataset, subjects, event_id)
-        groups = []
-        full_epochs = []
-
-        for ii, epoch in enumerate(epochs):
-            epochs_list = [epoch[k] for k in event_id]
-            # equalize for accuracy
-            if equalize:
-                equalize_epoch_counts(epochs_list)
-            ep = concatenate_epochs(epochs_list)
-            groups.extend([ii] * len(ep))
-            full_epochs.append(ep)
-
-        epochs = concatenate_epochs(full_epochs)
-        X = epochs.get_data()*1e6
-        y = epochs.events[:, -1]
-        # replace events with values from 0-len(event_id)
-        ynew = np.zeros(y.shape)
-        for ind, v in enumerate(np.unique(y)):
-            ynew[y==v]=ind
-        groups = np.asarray(groups)
+        subject_epochs = self._epochs(dataset, subjects, event_id)
+        X = []
+        y = []
+        info = []
+        for subind, subj in enumerate(subject_epochs):
+            #Each subject gets a list to keep track of his trials
+            subject_list = []
+            sessions = []
+            for ii, epoch_obj in enumerate(subj):
+                # re-order in terms of events
+                epochs_list = [epoch_obj[k] for k in event_id]
+                # equalize for accuracy
+                if equalize:
+                    equalize_epoch_counts(epochs_list)
+                ep = concatenate_epochs(epochs_list)
+                sessions.extend([ii] * len(ep))
+                subject_list.extend(ep)
+            epochs = concatenate_epochs(subject_list)
+            Xsubj = epochs.get_data()*1e6
+            ysubj = epochs.events[:, -1]
+            # replace events with values from 0-len(event_id)
+            ynew = np.zeros(ysubj.shape)
+            for ind, v in enumerate(np.unique(ysubj)):
+                ynew[y==v]=ind
+            sessionind = np.asarray(sessions)
+            info.append(pd.DataFrame({'Session':sessind,
+                                      'Subject':np.asarray([subind]*len(sessionind))}))
+            X.append(Xsubj)
+            y.append(ynew)
+        X = np.vstack(X)
+        y = np.vstack(y)
+        info = np.vstack
         return X, ynew, groups
 
 class MotorImageryMultiClassWithinSubject(MotorImageryContext, WithinSubjectContext):
