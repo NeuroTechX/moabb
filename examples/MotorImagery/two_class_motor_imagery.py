@@ -31,7 +31,7 @@ pipelines['MDM'] = make_pipeline(Covariances('oas'), MDM())
 pipelines['TS'] = make_pipeline(Covariances('oas'), TSclassifier())
 pipelines['CSP+LDA'] = make_pipeline(Covariances('oas'), CSP(8), LDA())
 
-context = MotorImageryTwoClassCrossSubject(datasets=datasets[1:], pipelines=pipelines)
+context = MotorImageryTwoClassWithinSubject(datasets=datasets[1:], pipelines=pipelines)
 
 results = context.evaluate(verbose=True)
 

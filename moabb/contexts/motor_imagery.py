@@ -56,46 +56,46 @@ class MotorImageryContext(BaseContext):
     def prepare_data(self, dataset, subjects, equalize=True):
         """Prepare data for classification. Also (optionally) equalize classes.
 
-
         Returns:
             X:    data as ndarray (trials, channels, timepoints)
             y:    labels as ndarray (trials, )
             info: DataFrame with trial index, session, and subject information"""
         
         event_id = dataset.event_id
-        subject_epochs = self._epochs(dataset, subjects, event_id)
-        X = []
-        y = []
-        info = []
-        for subind, subj in enumerate(subject_epochs):
-            #Each subject gets a list to keep track of his trials
-            subject_list = []
-            sessions = []
-            for ii, epoch_obj in enumerate(subj):
-                # re-order in terms of events
-                epochs_list = [epoch_obj[k] for k in event_id]
-                # equalize for accuracy
+        subject_list = self._epochs(dataset, subjects, event_id)
+        # because I don't know Pandas that well:
+        session_list = []
+        subjectid_list = []
+        X_list = []
+        y_list = []
+        for i, subj in enumerate(subject_list):
+            # Each Epochs object corresponds to one session
+            session = []
+            full_epochs = []
+            for ii, epochs in enumerate(subj):
+                epochs_list = [epochs[k] for k in event_id]
+                # equalize for accuracy within sessions
                 if equalize:
                     equalize_epoch_counts(epochs_list)
                 ep = concatenate_epochs(epochs_list)
-                sessions.extend([ii] * len(ep))
-                subject_list.extend(ep)
-            epochs = concatenate_epochs(subject_list)
-            Xsubj = epochs.get_data()*1e6
-            ysubj = epochs.events[:, -1]
+                session.extend([ii]*len(ep))
+                full_epochs.append(ep)
+            epochs = concatenate_epochs(full_epochs)
+            X = epochs.get_data()*1e6
+            y = epochs.events[:, -1]
             # replace events with values from 0-len(event_id)
-            ynew = np.zeros(ysubj.shape)
-            for ind, v in enumerate(np.unique(ysubj)):
+            ynew = np.zeros((len(y),))
+            for ind, v in enumerate(np.unique(y)):
                 ynew[y==v]=ind
-            sessionind = np.asarray(sessions)
-            info.append(pd.DataFrame({'Session':sessind,
-                                      'Subject':np.asarray([subind]*len(sessionind))}))
-            X.append(Xsubj)
-            y.append(ynew)
-        X = np.vstack(X)
-        y = np.vstack(y)
-        info = np.vstack
-        return X, ynew, groups
+            # add to the list
+            X_list.append(X)
+            y_list.append(ynew)
+            subjectid_list.extend([i]*X.shape[0])
+            session_list.extend(session)
+        info = pd.DataFrame({'Session':session_list,
+                             'Subject':subjectid_list})
+        return np.vstack(X_list,), np.concatenate(y_list), info
+
 
 class MotorImageryMultiClassWithinSubject(MotorImageryContext, WithinSubjectContext):
     """Motor Imagery for multi class classification
@@ -131,9 +131,9 @@ class MotorImageryMultiClassWithinSubject(MotorImageryContext, WithinSubjectCont
                              dataset.name))
         return MotorImageryContext.prepare_data(self, dataset, subjects, equalize=True)
 
-    def score(self, clf, X, y, groups, scoring='accuracy', n_jobs=1):
+    def score(self, clf, X, y, info, scoring='accuracy', n_jobs=1):
         """get the score"""
-        return WithinSubjectContext.score(self, clf, X, y, groups, scoring, n_jobs)
+        return WithinSubjectContext.score(self, clf, X, y, info, scoring, n_jobs)
 
 
 class MotorImageryTwoClassWithinSubject(MotorImageryContext, WithinSubjectContext):
@@ -170,9 +170,9 @@ class MotorImageryTwoClassWithinSubject(MotorImageryContext, WithinSubjectContex
                              dataset.name))
         return MotorImageryContext.prepare_data(self, dataset, subjects, equalize=False)
 
-    def score(self, clf, X, y, groups, scoring='roc_auc',n_jobs=1):
+    def score(self, clf, X, y, info, scoring='roc_auc',n_jobs=1):
         """get the score"""
-        return WithinSubjectContext.score(self, clf, X, y, groups, scoring, n_jobs)
+        return WithinSubjectContext.score(self, clf, X, y, info, scoring, n_jobs)
 
 class MotorImageryMultiClassCrossSubject(MotorImageryContext, CrossSubjectContext):
     """Motor Imagery for multi class classification
@@ -208,9 +208,9 @@ class MotorImageryMultiClassCrossSubject(MotorImageryContext, CrossSubjectContex
                              dataset.name))
         return MotorImageryContext.prepare_data(self, dataset, subjects, equalize=True)
 
-    def score(self, clf, X, y, groups, scoring='accuracy', n_jobs=1):
+    def score(self, clf, X, y, info, scoring='accuracy', n_jobs=1):
         """get the score"""
-        return CrossSubjectContext.score(self, clf, X, y, groups, scoring, n_jobs)
+        return CrossSubjectContext.score(self, clf, X, y, info, scoring, n_jobs)
 
 
 class MotorImageryTwoClassCrossSubject(MotorImageryContext, CrossSubjectContext):
@@ -247,6 +247,6 @@ class MotorImageryTwoClassCrossSubject(MotorImageryContext, CrossSubjectContext)
                              dataset.name))
         return MotorImageryContext.prepare_data(self, dataset, subjects, equalize=False)
 
-    def score(self, clf, X, y, groups, scoring='roc_auc',n_jobs=1):
+    def score(self, clf, X, y, info, scoring='roc_auc',n_jobs=1):
         """get the score"""
-        return CrossSubjectContext.score(self, clf, X, y, groups, scoring, n_jobs)
+        return CrossSubjectContext.score(self, clf, X, y, info, scoring, n_jobs)
