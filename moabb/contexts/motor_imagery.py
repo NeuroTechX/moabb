@@ -6,6 +6,7 @@ from mne import Epochs, find_events
 from mne.epochs import concatenate_epochs, equalize_epoch_counts
 from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
 import pandas as pd
+
 class MotorImageryContext(BaseContext):
     """Base motor imagery context
 
@@ -25,14 +26,16 @@ class MotorImageryContext(BaseContext):
         NOTE: Is this necessary to have defined within the 'motor imagery'
         context, or should we simply put it in BaseContext?
 
+
+        Returns a 2-d list, level 1 is subject and level 2 is sessions/runs within a subject
         """
-        subjects_list = dataset.get_data(subjects=subjects)
+        raws = dataset.get_data(subjects=subjects)
         ep = []
         # we process each subject independently
-        for subj in subjects_list:
-            sessions = []
+        for subj in raws:
+            ep.append([])
+            # ***we assume that all files are from single sessions here***
             for raw in subj:
-
                 # find events
                 events = find_events(raw, shortest_event=0, verbose=False)
 
@@ -47,12 +50,17 @@ class MotorImageryContext(BaseContext):
                 epochs = Epochs(raw, events, event_id, dataset.tmin, dataset.tmax,
                                 proj=False, baseline=None, preload=True,
                                 verbose=False)
-                sessions.append(epochs)
-            ep.append(sessions)
-        return ep
+                ep[-1].append(epochs)
+        return ep #shall we have it yield, since we don't need to load everything at the start?
 
     def prepare_data(self, dataset, subjects, equalize=True):
-        """Prepare data for classification. Also (optionally) equalize classes."""
+        """Prepare data for classification. Also (optionally) equalize classes.
+
+        Returns:
+            X:    data as ndarray (trials, channels, timepoints)
+            y:    labels as ndarray (trials, )
+            info: DataFrame with trial index, session, and subject information"""
+        
         event_id = dataset.event_id
         subject_list = self._epochs(dataset, subjects, event_id)
         # because I don't know Pandas that well:
@@ -87,6 +95,7 @@ class MotorImageryContext(BaseContext):
         info = pd.DataFrame({'Session':session_list,
                              'Subject':subjectid_list})
         return np.vstack(X_list,), np.concatenate(y_list), info
+
 
 class MotorImageryMultiClassWithinSubject(MotorImageryContext, WithinSubjectContext):
     """Motor Imagery for multi class classification
@@ -199,9 +208,9 @@ class MotorImageryMultiClassCrossSubject(MotorImageryContext, CrossSubjectContex
                              dataset.name))
         return MotorImageryContext.prepare_data(self, dataset, subjects, equalize=True)
 
-    def score(self, clf, X, y, groups, scoring='accuracy', n_jobs=1):
+    def score(self, clf, X, y, info, scoring='accuracy', n_jobs=1):
         """get the score"""
-        return CrossSubjectContext.score(self, clf, X, y, groups, scoring, n_jobs)
+        return CrossSubjectContext.score(self, clf, X, y, info, scoring, n_jobs)
 
 
 class MotorImageryTwoClassCrossSubject(MotorImageryContext, CrossSubjectContext):
