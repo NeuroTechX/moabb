@@ -1,7 +1,7 @@
 """Motor Imagery contexts"""
 
 import numpy as np
-from .base import CrossSubjectContext, WithinSubjectContext, BaseContext
+from .base import *
 from mne import Epochs, find_events
 from mne.epochs import concatenate_epochs, equalize_epoch_counts
 from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
@@ -250,3 +250,41 @@ class MotorImageryTwoClassCrossSubject(MotorImageryContext, CrossSubjectContext)
     def score(self, clf, X, y, info, scoring='roc_auc',n_jobs=1):
         """get the score"""
         return CrossSubjectContext.score(self, clf, X, y, info, scoring, n_jobs)
+
+class MotorImageryTwoClassSubjectUpdate(MotorImageryContext, SubjectUpdateContext):
+    """Motor Imagery for binary classification
+
+    Binary motor imagery context. Evaluation is done in Randomized KFold or
+    LeaveOneGroupOut (depending on the group variable, can be run or session)
+    with AUC as a metric.
+
+    Parameters
+    ----------
+    datasets : List of Dataset instances.
+        List of dataset instances on which the pipelines will be evaluated.
+    pipelines : Dict of pipelines instances.
+        Dictionary of pipelines. Keys identifies pipeline names, and values
+        are scikit-learn pipelines instances.
+    fmin : float | None, (default 7.)
+        Low cut-off frequency in Hz. If None the data are only low-passed.
+    fmax : float | None, (default 35)
+        High cut-off frequency in Hz. If None the data are only high-passed.
+
+    See Also
+    --------
+    MotorImageryTwoClasses
+    """
+    def __init__(self,datasets, pipelines, fmin=7., fmax=35.):
+        MotorImageryContext.__init__(self, datasets, pipelines, fmin, fmax)
+
+    def prepare_data(self, dataset, subjects):
+        """Prepare data for classification."""
+        if len(dataset.event_id) > 2:
+            # multiclass, pick two first classes
+            raise(ValueError("Dataset %s contains more than 2 classes" %
+                             dataset.name))
+        return MotorImageryContext.prepare_data(self, dataset, subjects, equalize=False)
+
+    def score(self, clf, X, y, info, scoring='accuracy',n_jobs=1):
+        """get the score"""
+        return SubjectUpdateContext.score(self, clf, X, y, info, scoring, n_jobs)

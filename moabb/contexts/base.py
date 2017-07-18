@@ -177,7 +177,7 @@ class CrossSubjectContext(BaseContext):
 
 class SubjectUpdateContext(BaseContext):
 
-    def score(self, clf, X, y, info, scoring, n_jobs=1, k=5):
+    def score(self, pipe, X, y, info, scoring, n_jobs=None, k=5):
         '''
         Return score when pre-training on all subjects and then doing cross-validation within a given subject. 
         '''
@@ -192,16 +192,17 @@ class SubjectUpdateContext(BaseContext):
             X_sub.append(X[info['Subject']==sub,...])
             y_sub.append(y[info['Subject']==sub])
 
-        out = pd.DataFrame(np.empty(len(X_sub),4),columns=['Score','Subject','Subject time','Pretrain time'])
-
+        out = pd.DataFrame(np.empty((len(X_sub),4)),columns=['Score','Subject','Subject time','Pretrain time'])
+        jobsarg = {'{}__n_jobs'.format(type(pipe._final_estimator).__name__.lower()):n_jobs} 
         for ind in range(nsubj):
             # this step will probably have to change...
             trainsubj = [i for i,v in enumerate(subj_ind) if i != ind]
             ttrain_st = time()
-            clf_2 = ****pretrain****(clf, X_sub[trainsubj], y_sub[trainsubj], n_jobs=n_jobs)
+            clf = pipe.pre_fit([X_sub[i] for i in trainsubj],
+                               [y_sub[i] for i in trainsubj],**jobsarg)
             ttrain_end = time()
             ttest_st = time()
-            auc = cross_val_score(clf_2, X_sub[ind], y_sub[ind], cv=cv,
+            auc = cross_val_score(clf, X_sub[ind], y_sub[ind], cv=cv,
                                   scoring=scoring, n_jobs=n_jobs)
             ttest_end = time()
             out.loc[ind] = [auc.mean(), subj_ind[ind], ttest_end-ttest_st, ttrain_end-ttrain_st]
