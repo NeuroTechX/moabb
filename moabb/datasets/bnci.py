@@ -3,7 +3,7 @@ BNCI 2014-001 Motor imagery dataset.
 """
 
 from .base import BaseDataset
-from mne.datasets.bnci import load_data
+from .download import load_data
 
 
 class MNEBNCI(BaseDataset):
@@ -26,7 +26,7 @@ class MNEBNCI(BaseDataset):
 class BNCI2014001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset"""
 
-    def __init__(self, left_hand=True, right_hand=True, feets=True,
+    def __init__(self, left_hand=True, right_hand=True, feet=True,
                  tongue=True, tmin=3.5, tmax=5.5):
         self.subject_list = range(1, 10)
         self.name = 'BNCI 2014-001 Motor Imagery'
@@ -39,8 +39,8 @@ class BNCI2014001(MNEBNCI):
             event_id['left_hand'] = 1
         if right_hand:
             event_id['right_hand'] = 2
-        if feets:
-            event_id['feets'] = 3
+        if feet:
+            event_id['feet'] = 3
         if tongue:
             event_id['tongue'] = 4
 
@@ -57,7 +57,7 @@ class BNCI2014002(MNEBNCI):
         self.tmin = tmin
         self.tmax = tmax
         self.paradigm = 'Motor Imagery'
-        self.event_id = dict(right_hand=1, feets=2)
+        self.event_id = dict(right_hand=1, feet=2)
 
 
 class BNCI2014004(MNEBNCI):
@@ -83,4 +83,20 @@ class BNCI2015001(MNEBNCI):
         self.tmin = tmin
         self.tmax = tmax
         self.paradigm = 'Motor Imagery'
-        self.event_id = dict(right_hand=1, feets=2)
+        self.event_id = dict(right_hand=1, feet=2)
+
+class BNCI2015004(MNEBNCI):
+    """BNCI 2015-004 Motor Imagery dataset"""
+
+    def __init__(self, tmin=4.25, tmax=10, motor_imagery=False):
+        self.subject_list = range(1, 10)
+        self.name = 'BNCI 2015-004 multiple paradigms'
+        self.code = '004-2015'
+        self.tmin = tmin
+        self.tmax = tmax
+        if motor_imagery:
+            self.paradigm = 'Motor Imagery'
+            self.event_id = dict(right_hand=4, feet=5)
+        else:
+            self.paradigm = 'Mixed'
+            self.event_id = dict(right_hand=4, feet=5, navigation=3, subtraction=2, word_ass=1)

@@ -6,34 +6,30 @@ from pyriemann.classification import TSclassifier, MDM
 from sklearn.pipeline import make_pipeline
 
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.svm import SVC
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 from collections import OrderedDict
 from moabb.datasets.bnci import (BNCI2014001, BNCI2014002,
-                                 BNCI2014004, BNCI2015001)
+                                 BNCI2014004, BNCI2015001, BNCI2015004)
 
-from moabb.datasets.alex_mi import AlexMI
-from moabb.datasets.bbci_eeg_fnirs import BBCIEEGfNIRS
-from moabb.datasets.gigadb import GigaDbMI
+# from moabb.datasets.alex_mi import AlexMI
+# from moabb.datasets.bbci_eeg_fnirs import BBCIEEGfNIRS
+# from moabb.datasets.gigadb import GigaDbMI
 from moabb.datasets.physionet_mi import PhysionetMI
 from moabb.datasets.openvibe_mi import OpenvibeMI
+pi = PhysionetMI()
+pi.subject_list = range(1,10)
 
-datasets = [OpenvibeMI(),
-            PhysionetMI(with_rest=False, feets=False),
-            GigaDbMI(),
-            BBCIEEGfNIRS(motor=True),
-            AlexMI(with_rest=False),
-            BNCI2014001(feets=False, tongue=False),
-            BNCI2014002(),
-            BNCI2014004(),
-            BNCI2015001()]
+datasets = [OpenvibeMI(), pi]
 
 pipelines = OrderedDict()
 pipelines['MDM'] = make_pipeline(Covariances('oas'), MDM())
 pipelines['TS'] = make_pipeline(Covariances('oas'), TSclassifier())
 pipelines['CSP+LDA'] = make_pipeline(Covariances('oas'), CSP(8), LDA())
+# pipelines['CSP+SVM'] = make_pipeline(Covariances('oas'), CSP(8), SVC())
 
 context = MotorImageryTwoClasses(datasets=datasets, pipelines=pipelines)
 
