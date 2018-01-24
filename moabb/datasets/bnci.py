@@ -112,24 +112,8 @@ def _load_data_001_2014(subject, path=None, force_update=False,
         url = '{u}001-2014/A{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
         data_paths.extend(data_path(url, path, force_update, update_path))
 
+    return _convert_mi(data_paths, ch_names, ch_types)
     # NOTE: assuming each day is a different dataset for now, need to specify this better...
-    from scipy.io import loadmat
-    raws = []
-    event_id = {}
-    for filename in data_paths:
-        data = loadmat(filename, struct_as_record=False, squeeze_me=True)
-
-        runs = []
-        for run in data['data']:
-            raw, evd = _convert_run(run, ch_names, ch_types, verbose)
-            runs.append(raw)
-            event_id.update(evd)
-        raws.append(concatenate_raws(runs))
-    # change labels to match rest
-    for old, new in [['left hand', 'left_hand'], ['right hand', 'right_hand']]:
-        if old in event_id.keys():
-            event_id[new] = event_id.pop(old)
-    return raws, event_id
 
 
 @verbose
@@ -145,22 +129,7 @@ def _load_data_002_2014(subject, path=None, force_update=False,
         url = '{u}002-2014/S{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
         data_paths.extend(data_path(url, path, force_update, update_path))
 
-    raws = []
-    event_id = {}
-    from scipy.io import loadmat
-
-    for filename in data_paths:
-        data = loadmat(filename, struct_as_record=False, squeeze_me=True)
-        for run in data['data']:
-            raw, evd = _convert_run(run, verbose=verbose)
-            raws.append(raw)
-            event_id.update(evd)
-    # change labels to match rest
-    for old, new in [['left hand', 'left_hand'], ['right hand', 'right_hand']]:
-        if old in event_id.keys():
-            event_id[new] = event_id.pop(old)
-    return raws, event_id
-
+    return _convert_mi(data_paths, None, None)
 
 @verbose
 def _load_data_004_2014(subject, path=None, force_update=False,
@@ -178,22 +147,8 @@ def _load_data_004_2014(subject, path=None, force_update=False,
         url = '{u}004-2014/B{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
         data_paths.extend(data_path(url, path, force_update, update_path))
 
-    raws = []
-    event_id = {}
-    from scipy.io import loadmat
 
-    for filename in data_paths:
-        data = loadmat(filename, struct_as_record=False, squeeze_me=True)
-        print(type(data['data']))
-        for run in data['data']:
-            raw, evd = _convert_run(run, ch_names, ch_types, verbose)
-            raws.append(raw)
-            event_id.update(evd)
-    # change labels to match rest
-    for old, new in [['left hand', 'left_hand'], ['right hand', 'right_hand']]:
-        if old in event_id.keys():
-            event_id[new] = event_id.pop(old)
-    return raws, event_id
+    return _convert_mi(data_paths, ch_names, ch_types)
 
 
 @verbose
@@ -261,22 +216,8 @@ def _load_data_001_2015(subject, path=None, force_update=False,
                 'C4', 'C6', 'CP3', 'CPz', 'CP4']
     ch_types = ['eeg'] * 13
 
-    raws = []
-    event_id = {}
-    from scipy.io import loadmat
 
-    for filename in data_paths:
-        data = loadmat(filename, struct_as_record=False, squeeze_me=True)
-        raw, evd = _convert_run(data['data'], ch_names, ch_types, verbose)
-        print(type(data['data']))
-        raws.append(raw)
-        event_id.update(evd)
-    # change labels to match rest
-    for old, new in [['both feet', 'feet'], ['right hand', 'right_hand']]:
-        if old in event_id.keys():
-            event_id[new] = event_id.pop(old)
-    return raws, event_id
-
+    return _convert_mi(data_paths, ch_names, ch_types)
 
 @verbose
 def _load_data_003_2015(subject, path=None, force_update=False,
@@ -351,20 +292,7 @@ def _load_data_004_2015(subject, path=None, force_update=False,
                 'P6', 'P8', 'PO3', 'PO4', 'O1', 'O2']
     ch_types = ['eeg'] * 30
 
-    raws = []
-    event_id = {}
-    from scipy.io import loadmat
-
-    data = loadmat(filename, struct_as_record=False, squeeze_me=True)
-    for run in data['data']:
-        raw, evd = _convert_run(run, ch_names, ch_types, verbose)
-        raws.append(raw)
-        event_id.update(evd)
-    # change labels to match rest
-    for old, new in [['FEET', 'feet'], ['HAND', 'right_hand'], ['NAV', 'navigation'], ['SUB', 'subtraction'], ['WORD', 'word_ass']]:
-        if old in event_id.keys():
-            event_id[new] = event_id.pop(old)
-    return raws, event_id
+    return _convert_mi([filename], ch_names, ch_types)
 
 
 @verbose
@@ -459,10 +387,13 @@ def _convert_mi(data_paths, ch_names, ch_types):
     event_id = {}
     for filename in data_paths:
         data = loadmat(filename, struct_as_record=False, squeeze_me=True)
-
         runs = []
-        for run in data['data']:
-            raw, evd = _convert_run(run, ch_names, ch_types, verbose)
+        if type(data['data']) is np.ndarray:
+            run_array = data['data']
+        else:
+            run_array = [data['data']]
+        for run in run_array:
+            raw, evd = _convert_run(run, ch_names, ch_types, None)
             raws.append(raw) 
             event_id.update(evd)
     # change labels to match rest
