@@ -15,15 +15,17 @@ from collections import OrderedDict
 from moabb.datasets.bnci import (BNCI2014001, BNCI2014002,
                                  BNCI2014004, BNCI2015001, BNCI2015004)
 
-# from moabb.datasets.alex_mi import AlexMI
+from moabb.datasets.alex_mi import AlexMI
 # from moabb.datasets.bbci_eeg_fnirs import BBCIEEGfNIRS
-# from moabb.datasets.gigadb import GigaDbMI
+from moabb.datasets.gigadb import GigaDbMI
 from moabb.datasets.physionet_mi import PhysionetMI
 from moabb.datasets.openvibe_mi import OpenvibeMI
 pi = PhysionetMI()
-pi.subject_list = range(1,10)
+pi.subject_list = range(1,5)
+gb = GigaDbMI()
+gb.subject_list = range(1,3)
 
-datasets = [OpenvibeMI(), pi]
+datasets = [AlexMI(), OpenvibeMI(), BNCI2015004(motor_imagery=True), gb, pi]
 
 pipelines = OrderedDict()
 pipelines['MDM'] = make_pipeline(Covariances('oas'), MDM())

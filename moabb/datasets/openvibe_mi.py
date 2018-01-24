@@ -9,13 +9,11 @@ import os
 from mne import create_info
 from mne.io import RawArray
 from mne.channels import read_montage
-from mne.datasets.utils import _get_path, _do_path_update
-from mne.utils import _fetch_file, _url_to_local_path, verbose
+import moabb.datasets.download as dl
+
 
 INRIA_URL = 'http://openvibe.inria.fr/private/datasets/dataset-1/'
 
-
-@verbose
 def data_path(subject, path=None, force_update=False, update_path=None,
               verbose=None):
     """Get path to local copy of INRIA dataset URL.
@@ -45,27 +43,10 @@ def data_path(subject, path=None, force_update=False, update_path=None,
         Local path to the given data file. This path is contained inside a list
         of length one, for compatibility.
     """  # noqa: E501
-    key = 'MNE_DATASETS_INRIA_PATH'
-    name = 'INRIA'
-    path = _get_path(path, key, name)
     if subject < 1 or subject > 14:
         raise ValueError("Valid subjects between 1 and 14, subject {:d} requested".format(subject))
     url = '{:s}{:02d}-signal.csv.bz2'.format(INRIA_URL, subject)
-
-    destination = _url_to_local_path(url, os.path.join(path, 'MNE-inria-data'))
-    destinations = [destination]
-
-    # Fetch the file
-    if not os.path.isfile(destination) or force_update:
-        if os.path.isfile(destination):
-            os.remove(destination)
-        if not os.path.isdir(os.path.dirname(destination)):
-            os.makedirs(os.path.dirname(destination))
-        _fetch_file(url, destination, print_destination=False)
-
-    # Offer to update the path
-    _do_path_update(path, update_path, key, name)
-    return destination
+    return dl.data_path(url, 'INRIA', path, force_update, update_path, verbose)
 
 def convert_inria_csv_to_mne(path):
     '''
