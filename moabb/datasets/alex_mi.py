@@ -6,7 +6,7 @@ from .base import BaseDataset
 from mne.io import Raw
 import os
 
-import moabb.datasets.download as dl
+import download as dl
 
 ALEX_URL = 'https://zenodo.org/record/806023/files/'
 
@@ -49,22 +49,15 @@ def data_path(subject, path=None, force_update=False, update_path=None,
 class AlexMI(BaseDataset):
     """Alex Motor Imagery dataset"""
 
-    def __init__(self, with_rest=False):
-        self.subject_list = range(1, 9)
-        self.name = 'Alex Motor Imagery'
-        self.tmin = 0
-        self.tmax = 3
-        self.paradigm = 'Motor Imagery'
-        self.event_id = dict(right_hand=2, feet=3)
-        if with_rest:
-            self.event_id['rest'] = 4
-
-    def get_data(self, subjects):
-        """return data for a list of subjects."""
-        data = []
-        for subject in subjects:
-            data.append(self._get_single_subject_data(subject))
-        return data
+    def __init__(self):
+        super().__init__(
+            list(range(1,9)),
+            1,
+            dict(right_hand=2, feet-3, rest=4),
+            'Alexandre Motor Imagery',
+            [0,3],
+            'imagery'
+            )
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""

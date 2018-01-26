@@ -3,7 +3,7 @@ BNCI 2014-001 Motor imagery dataset.
 """
 
 from .base import BaseDataset
-import moabb.datasets.download as dl
+import download as dl
 from mne import create_info, concatenate_raws
 from mne.io import RawArray
 from mne.channels import read_montage
@@ -113,7 +113,6 @@ def _load_data_001_2014(subject, path=None, force_update=False,
         data_paths.extend(data_path(url, path, force_update, update_path))
 
     return _convert_mi(data_paths, ch_names, ch_types)
-    # NOTE: assuming each day is a different dataset for now, need to specify this better...
 
 
 @verbose
@@ -382,8 +381,12 @@ def _load_data_013_2015(subject, path=None, force_update=False,
     return raws, event_id
 
 def _convert_mi(data_paths, ch_names, ch_types):
+    '''
+    Processes (Graz) motor imagery data from MAT files, returns list of recording sessions
+    (each session corresponds to a separate placement of electrodes)
+    '''
     from scipy.io import loadmat
-    raws = []
+    sessions = []
     event_id = {}
     for filename in data_paths:
         data = loadmat(filename, struct_as_record=False, squeeze_me=True)
@@ -394,11 +397,12 @@ def _convert_mi(data_paths, ch_names, ch_types):
             run_array = [data['data']]
         for run in run_array:
             raw, evd = _convert_run(run, ch_names, ch_types, None)
-            raws.append(raw) 
+            runs.append(raw) 
             event_id.update(evd)
+        sessions.append(runs)
     # change labels to match rest
     standardize_keys(event_id)
-    return raws, event_id
+    return sessions, event_id
 
 def standardize_keys(d):
     master_list = [['both feet', 'feet'],
@@ -546,96 +550,83 @@ def _convert_run_epfl(run, verbose=None):
 class MNEBNCI(BaseDataset):
     """Base BNCI dataset"""
 
-    def get_data(self, subjects):
-        """return data for a list of subjects."""
-        data = []
-        for subject in subjects:
-            data.append(self._get_single_subject_data(subject))
-        return data
-
-    def _get_single_subject_data(self, subject):
+    def _get_single_subject_data(self, subject, stack_sessions):
         """return data for a single subject"""
-        raw_files, event_id = load_data(subject=subject, dataset=self.code,
-                                        verbose=False)
-        return raw_files
+        sessions = load_data(subject=subject, dataset=self.code,
+                                        verbose=False)[0]
+        if stack_sessions:
+            new_sessions = []
+            for s in sessions:
+                new_sessions.append([item for sublist in s for item in sublist])
+        else:
+            new_sessions = sessions
+
+        return new_sessions
 
 
 class BNCI2014001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset"""
 
-    def __init__(self, left_hand=True, right_hand=True, feet=True,
-                 tongue=True, tmin=3.5, tmax=5.5):
-        self.subject_list = range(1, 10)
-        self.name = 'BNCI 2014-001 Motor Imagery'
-        self.code = '001-2014'
-        self.tmin = tmin
-        self.tmax = tmax
-        self.paradigm = 'Motor Imagery'
-        event_id = dict()
-        if left_hand:
-            event_id['left_hand'] = 1
-        if right_hand:
-            event_id['right_hand'] = 2
-        if feet:
-            event_id['feet'] = 3
-        if tongue:
-            event_id['tongue'] = 4
-
-        self.event_id = event_id
+    def __init__(self, tmin=3.5, tmax=5.5):
+        super().__init__(range(1,10), 
+                         2, 
+                         dict(zip(['left_hand','right_hand','feet','tongue'],
+                                  [1,2,3,4])),
+                         '001-2014',
+                         [tmin, tmax],
+                         'imagery'
+        )
 
 
 class BNCI2014002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset"""
 
     def __init__(self, tmin=3.5, tmax=5.5):
-        self.subject_list = range(1, 15)
-        self.name = 'BNCI 2014-002 Motor Imagery'
-        self.code = '002-2014'
-        self.tmin = tmin
-        self.tmax = tmax
-        self.paradigm = 'Motor Imagery'
-        self.event_id = dict(right_hand=1, feet=2)
+        super().__init__(range(1,15), 
+                         1, 
+                         dict(zip(['right_hand','feet'],
+                                  [1,2])),
+                         '002-2014',
+                         [tmin, tmax],
+                         'imagery'
+        )
 
 
 class BNCI2014004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset"""
 
     def __init__(self, tmin=4.5, tmax=6.5):
-        self.subject_list = range(1, 10)
-        self.name = 'BNCI 2014-004 Motor Imagery'
-        self.code = '004-2014'
-        self.tmin = tmin
-        self.tmax = tmax
-        self.paradigm = 'Motor Imagery'
-        self.event_id = dict(left_hand=1, right_hand=2)
-
+        super().__init__(range(1,10), 
+                         2, 
+                         dict(zip(['left_hand','right_hand'],
+                                  [1,2])),
+                         '004-2014',
+                         [tmin, tmax],
+                         'imagery'
+        )
 
 class BNCI2015001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset"""
 
     def __init__(self, tmin=4, tmax=7.5):
-        self.subject_list = range(1, 13)
-        self.name = 'BNCI 2015-001 Motor Imagery'
-        self.code = '001-2015'
-        self.tmin = tmin
-        self.tmax = tmax
-        self.paradigm = 'Motor Imagery'
-        self.event_id = dict(right_hand=1, feet=2)
-
+        super().__init__(range(1,13), 
+                         2, 
+                         dict(zip(['right_hand','feet'],
+                                  [1,2])),
+                         '001-2015',
+                         [tmin, tmax],
+                         'imagery'
+        )
 
 class BNCI2015004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset"""
 
-    def __init__(self, tmin=4.25, tmax=10, motor_imagery=False):
-        self.subject_list = range(1, 10)
-        self.name = 'BNCI 2015-004 multiple paradigms'
-        self.code = '004-2015'
-        self.tmin = tmin
-        self.tmax = tmax
-        if motor_imagery:
-            self.paradigm = 'Motor Imagery'
-            self.event_id = dict(right_hand=4, feet=5)
-        else:
-            self.paradigm = 'Mixed'
-            self.event_id = dict(right_hand=4, feet=5,
-                                 navigation=3, subtraction=2, word_ass=1)
+    def __init__(self, tmin=4.25, tmax=10):
+        super().__init__(range(1,10), 
+                         2, 
+                         dict(right_hand=4, feet=5,
+                                 navigation=3, subtraction=2, word_ass=1),
+                         '004-2015',
+                         [tmin, tmax],
+                         'imagery'
+        )

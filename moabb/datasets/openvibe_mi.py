@@ -9,19 +9,19 @@ import os
 from mne import create_info
 from mne.io import RawArray
 from mne.channels import read_montage
-import moabb.datasets.download as dl
+import download as dl
 
 
 INRIA_URL = 'http://openvibe.inria.fr/private/datasets/dataset-1/'
 
-def data_path(subject, path=None, force_update=False, update_path=None,
+def data_path(session, path=None, force_update=False, update_path=None,
               verbose=None):
     """Get path to local copy of INRIA dataset URL.
 
     Parameters
     ----------
-    subject : int
-        Number of subject to use
+    session : int
+        Number of session to use
     path : None | str
         Location of where to look for the data storing location.
         If None, the environment variable or config parameter
@@ -43,9 +43,9 @@ def data_path(subject, path=None, force_update=False, update_path=None,
         Local path to the given data file. This path is contained inside a list
         of length one, for compatibility.
     """  # noqa: E501
-    if subject < 1 or subject > 14:
-        raise ValueError("Valid subjects between 1 and 14, subject {:d} requested".format(subject))
-    url = '{:s}{:02d}-signal.csv.bz2'.format(INRIA_URL, subject)
+    if session < 1 or session > 14:
+        raise ValueError("Valid sessions between 1 and 14, session {:d} requested".format(session))
+    url = '{:s}{:02d}-signal.csv.bz2'.format(INRIA_URL, session)
     return dl.data_path(url, 'INRIA', path, force_update, update_path, verbose)
 
 def convert_inria_csv_to_mne(path):
@@ -70,22 +70,24 @@ def convert_inria_csv_to_mne(path):
 class OpenvibeMI(BaseDataset):
     """Openvibe Motor Imagery dataset"""
 
-    def __init__(self):
-        self.subject_list = range(1, 15)
-        self.name = 'Openvibe Motor Imagery'
-        self.tmin = 0
-        self.tmax = 3
-        self.paradigm = 'Motor Imagery'
-        self.event_id = dict(right_hand=1, left_hand=2)
+    def __init__(self, tmin=0, tmax=3):
+        super().__init__(
+            [1],
+            14,
+            dict(right_hand=1, left_hand=2),
+            'Openvibe Motor Imagery',
+            [tmin,tmax],
+            'imagery'
+            )
 
-    def get_data(self, subjects):
-        """return data for a list of subjects. NOTE: these are different recordings same subj"""
+    def get_data(self, *args):
+        """return data for subject"""
         data = []
-        for subject in subjects:
-            data.append(self._get_single_subject_data(subject))
-        return data
+        for i in range(1,10):
+            data.append(self._get_single_session_data(i))
+        return [data]
 
-    def _get_single_subject_data(self, session):
+    def _get_single_session_data(self, session):
         """return data for a single recordign session"""
 
         return convert_inria_csv_to_mne(data_path(session))

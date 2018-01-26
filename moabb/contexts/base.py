@@ -44,6 +44,9 @@ class BaseContext():
                 raise(ValueError("pipelines must only contains Pipelines instance"))
         self.pipelines = pipelines
 
+    def prepare_data(self, dataset, subjects):
+        pass
+
 
 class WithinSubjectContext(BaseContext):
     """Within Subject evaluation Context.
@@ -83,8 +86,8 @@ class WithinSubjectContext(BaseContext):
             results[pipeline] = pd.DataFrame(columns=columns)
 
         for dataset in self.datasets:
-            dataset_name = dataset.get_name()
-            subjects = dataset.get_subject_list()
+            dataset_name = dataset.code
+            subjects = dataset.subject_list
 
             for subject in subjects:
                 X, y, groups = self.prepare_data(dataset, [subject])

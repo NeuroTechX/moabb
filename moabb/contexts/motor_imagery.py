@@ -39,7 +39,7 @@ class MotorImageryMultiClasses(WithinSubjectContext):
     def _epochs(self, dataset, subjects, event_id):
         """epoch data"""
         raws = dataset.get_data(subjects=subjects)
-        raws = raws[0]
+        raws = raws[0]          # only use first raw (ignores multi-session...) 
         ep = []
         # we process each run independently
         for raw in raws:

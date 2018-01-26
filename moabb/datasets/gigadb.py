@@ -10,7 +10,7 @@ import numpy as np
 from mne import create_info
 from mne.io import RawArray
 from mne.channels import read_montage
-import moabb.datasets.download as dl
+import download as dl
 
 import os
 
@@ -55,25 +55,18 @@ class GigaDbMI(BaseDataset):
     """GigaDb Motor Imagery dataset"""
 
     def __init__(self):
-        self.subject_list = list(range(1, 53))
-        # some subject have issues
+        super().__init__(
+            list(range(1,53)),
+            1,
+            dict(left_hand=1, right_hand=2),
+            'GigaDb Motor Imagery',
+            [1,3],
+            'imagery'
+            )
         for ii in [32, 46, 49]:
             self.subject_list.remove(ii)
 
-        self.name = 'GigaDb Motor Imagery'
-        self.tmin = 1
-        self.tmax = 3
-        self.paradigm = 'Motor Imagery'
-        self.event_id = dict(left_hand=1, right_hand=2)
-
-    def get_data(self, subjects):
-        """return data for a list of subjects."""
-        data = []
-        for subject in subjects:
-            data.append(self._get_single_subject_data(subject))
-        return data
-
-    def _get_single_subject_data(self, subject):
+    def _get_single_subject_data(self, subject, dummy):
         """return data for a single subject"""
         fname = data_path(subject)
 
