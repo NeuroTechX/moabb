@@ -10,7 +10,7 @@ import numpy as np
 from mne import create_info
 from mne.io import RawArray
 from mne.channels import read_montage
-import download as dl
+from . import download as dl
 
 import os
 
@@ -95,4 +95,4 @@ class GigaDbMI(BaseDataset):
         info = create_info(ch_names=ch_names, ch_types=ch_types,
                            sfreq=data.srate, montage=montage)
         raw = RawArray(data=eeg_data, info=info, verbose=False)
-        return [raw]
+        return [[raw]]

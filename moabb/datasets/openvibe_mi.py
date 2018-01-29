@@ -9,7 +9,7 @@ import os
 from mne import create_info
 from mne.io import RawArray
 from mne.channels import read_montage
-import download as dl
+from . import download as dl
 
 
 INRIA_URL = 'http://openvibe.inria.fr/private/datasets/dataset-1/'
@@ -65,7 +65,7 @@ def convert_inria_csv_to_mne(path):
     csv_data['Stim'][right_hand_ind] = 1e6
     montage = read_montage('standard_1005')
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=512., montage=montage)
-    return [RawArray(data=csv_data.values.T * 1e-6, info=info, verbose=False)]
+    return RawArray(data=csv_data.values.T * 1e-6, info=info, verbose=False)
     
 class OpenvibeMI(BaseDataset):
     """Openvibe Motor Imagery dataset"""

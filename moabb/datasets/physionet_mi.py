@@ -3,7 +3,7 @@ Physionet Motor imagery dataset.
 """
 
 from .base import BaseDataset
-
+import numpy as np
 from mne.io import read_raw_edf
 import mne
 from mne.datasets import eegbci
@@ -33,7 +33,7 @@ class PhysionetMI(BaseDataset):
         """return data for a single subject"""
         all_files = []
         raw_fnames = eegbci.load_data(subject, runs=self.hand_runs)
-        raw_files = [read_raw_edf(f, preload=False, verbose=False)
+        raw_files = [read_raw_edf(f, preload=True, verbose=False)
                      for f in raw_fnames]
 
         # strip channel names of "." characters
@@ -45,13 +45,10 @@ class PhysionetMI(BaseDataset):
                      for f in raw_feet_fnames]
         for raw in raw_feet_files:
             events = mne.find_events(raw)
-            print(np.unique(events[:,2]))
-            stim = mne.pick_types(raw.info, stim=True)
-            print(stim)
-            hands_ind = events[:,2] == 2
-            feet_ind = events[:,2] == 3
-            raw[stim[0], events[hands_ind,0]] = 4
-            raw[stim[0], events[feet_ind,0]] = 5
+            events[events[:,2] == 2, 2] = 2
+            events[events[:,2] == 3, 2] = 2
+            events[events[:,2] == 1, 2] = 0
+            raw.add_events(events)
             raw.rename_channels(lambda x: x.strip('.')) 
         all_files.extend(raw_feet_files)
 

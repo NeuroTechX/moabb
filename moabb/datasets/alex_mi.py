@@ -6,7 +6,7 @@ from .base import BaseDataset
 from mne.io import Raw
 import os
 
-import download as dl
+from . import download as dl
 
 ALEX_URL = 'https://zenodo.org/record/806023/files/'
 
@@ -53,13 +53,13 @@ class AlexMI(BaseDataset):
         super().__init__(
             list(range(1,9)),
             1,
-            dict(right_hand=2, feet-3, rest=4),
+            dict(right_hand=2, feet=3, rest=4),
             'Alexandre Motor Imagery',
             [0,3],
             'imagery'
             )
 
-    def _get_single_subject_data(self, subject):
+    def _get_single_subject_data(self, subject, multi_session):
         """return data for a single subject"""
         raw = Raw(data_path(subject), preload=True)
-        return [raw]
+        return [[raw]]
