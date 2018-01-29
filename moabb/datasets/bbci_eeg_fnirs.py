@@ -9,7 +9,7 @@ from scipy.io import loadmat
 from mne import create_info
 from mne.io import RawArray
 from mne.channels import read_montage
-import moabb.datasets.download as dl
+from . import download as dl
 import os.path as op
 import os
 import zipfile as z
@@ -97,25 +97,20 @@ def data_path(subject, path=None, force_update=False, fnirs=False):
 class BBCIEEGfNIRS(BaseDataset):
     """BBCI EEG fNIRS Motor Imagery dataset"""
 
-    def __init__(self, motor=True,
-                 base_folder='/home/kirsh/Documents/Data/BBCI_EEG_fNIRS'):
-        self.subject_list = range(1, 30)
-        self.name = 'BBCI EEG fNIRS'
-        self.base_folder = base_folder
-        self.motor = motor
-        self.tmin = 3.5
-        self.tmax = 10.
-        self.paradigm = 'Motor Imagery'
-        if motor:
-            self.event_id = dict(left_hand=1, right_hand=2)
-        else:
-            self.event_id = dict(mental_arithmetic=1, rest=2)
+    def __init__(self, fnirs=False):
+        super().__init__(list(range(1,30)),
+                         1,
+                         dict(left_hand=1, right_hand=2, subtraction=3, rest=4),
+                         'BBCI EEG fNIRS',
+                         [3.5,10],
+                         'imagery')
+        self.fnirs = fnirs      # TODO: actually incorporate fNIRS somehow 
 
     def get_data(self, subjects):
         """return data for a list of subjects."""
         data = []
         for subject in subjects:
-            data.append(self._get_single_subject_data(subject))
+            data.extend(self._get_single_subject_data(subject))
         return data
 
     def _get_single_subject_data(self, subject):
@@ -127,16 +122,11 @@ class BBCIEEGfNIRS(BaseDataset):
                       struct_as_record=False)['mrk']
         montage = read_montage('standard_1005')
 
-        if self.motor:
-            runs = [0, 2, 4]
-        else:
-            runs = [1, 3, 5]
-
-        for ii in runs:
+        for ii in [0,2,4]:
             eeg = data[ii].x.T * 1e-6
             trig = np.zeros((1, eeg.shape[1]))
-            idx = (mrk[ii].time - 1) // 5
-            trig[0, idx] = mrk[ii].event.desc // 16
+            idx = (mrk[ii].time - 1) / 5
+            trig[0, idx] = mrk[ii].event.desc / 16
             eeg = np.vstack([eeg, trig])
             ch_names = list(data[ii].clab) + ['Stim']
             ch_types = ['eeg'] * 30 + ['eog'] * 2 + ['stim']
@@ -145,4 +135,18 @@ class BBCIEEGfNIRS(BaseDataset):
                                sfreq=200., montage=montage)
             raw = RawArray(data=eeg, info=info, verbose=False)
             raws.append(raw)
-        return raws
+        # arithmetic/rest
+        for ii in [1,3,5]:
+            eeg = data[ii].x.T * 1e-6
+            trig = np.zeros((1, eeg.shape[1]))
+            idx = (mrk[ii].time - 1) / 5
+            trig[0, idx] = mrk[ii].event.desc / 16 + 2
+            eeg = np.vstack([eeg, trig])
+            ch_names = list(data[ii].clab) + ['Stim']
+            ch_types = ['eeg'] * 30 + ['eog'] * 2 + ['stim']
+
+            info = create_info(ch_names=ch_names, ch_types=ch_types,
+                               sfreq=200., montage=montage)
+            raw = RawArray(data=eeg, info=info, verbose=False)
+            raws.append(raw)
+        return [raws]

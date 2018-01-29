@@ -54,7 +54,7 @@ def dataset_search(paradigm, multi_session=False, events=None, two_class=True):
     return out_data
 
 
-def find_intersecting_channels(datasets):
+def find_intersecting_channels(datasets, verbose=False):
     '''
     Given a list of dataset instances return a list of channels shared by all datasets.
     Skip datasets which have 0 overlap with the others
@@ -75,6 +75,8 @@ def find_intersecting_channels(datasets):
                 processed.append(ch)
         allchans.update(processed)
         if len(processed) > 0:
+            if verbose:
+                print('Found EEG channels: {}'.format(processed))
             dset_chans.append(processed)
             keep_datasets.append(d)
         else:
