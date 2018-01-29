@@ -23,7 +23,7 @@ scikit-learn
 matplotlib
 seaborn
 pandas
-
+pyriemann
 
 # supported datasets
 
