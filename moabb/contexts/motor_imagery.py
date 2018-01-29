@@ -1,18 +1,14 @@
 """Motor Imagery contexts"""
 
 import numpy as np
-from .base import WithinSubjectContext
+from .base import WithinSubjectContext, BaseContext
 from mne import Epochs, find_events
 from mne.epochs import concatenate_epochs, equalize_epoch_counts
 from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
 
+class BaseMotorImagery(BaseContext):
+    """Base Motor imagery context
 
-class MotorImageryMultiClasses(WithinSubjectContext):
-    """Motor Imagery for multi class classification
-
-    Multiclass motor imagery context. Evaluation is done in Randomized KFold or
-    LeaveOneGroupOut (depending on the group variable, can be run or session)
-    with accuracy as a metric. Epochs count are equalized.
 
     Parameters
     ----------
@@ -61,6 +57,31 @@ class MotorImageryMultiClasses(WithinSubjectContext):
             ep.append(epochs)
         return ep
 
+
+class MotorImageryMultiClasses(BaseMotorImagery, WithinSubjectContext):
+    """Motor Imagery for multi class classification
+
+    Multiclass motor imagery context. Evaluation is done in Randomized KFold or
+    LeaveOneGroupOut (depending on the group variable, can be run or session)
+    with accuracy as a metric. Epochs count are equalized.
+
+    Parameters
+    ----------
+    datasets : List of Dataset instances.
+        List of dataset instances on which the pipelines will be evaluated.
+    pipelines : Dict of pipelines instances.
+        Dictionary of pipelines. Keys identifies pipeline names, and values
+        are scikit-learn pipelines instances.
+    fmin : float | None, (default 7.)
+        Low cut-off frequency in Hz. If None the data are only low-passed.
+    fmax : float | None, (default 35)
+        High cut-off frequency in Hz. If None the data are only high-passed.
+
+    See Also
+    --------
+    MotorImageryTwoClasses
+    """
+
     def prepare_data(self, dataset, subjects):
         """Prepare data for classification."""
         if len(dataset.event_id) < 3:
@@ -101,7 +122,7 @@ class MotorImageryMultiClasses(WithinSubjectContext):
         return auc.mean()
 
 
-class MotorImageryTwoClasses(MotorImageryMultiClasses):
+class MotorImageryTwoClasses(BaseMotorImagery, WithinSubjectContext):
     """Motor Imagery for binary classification
 
     Binary motor imagery context. Evaluation is done in Randomized KFold or

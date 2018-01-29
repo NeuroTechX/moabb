@@ -16,16 +16,18 @@ This project will be successful when we read in an abstract “ … the proposed
 
 # requirements
 
-Many of the datasets are currently made available through an ongoing MNE PR : https://github.com/mne-tools/mne-python/pull/4019
-
-to have access to the datasets, please checkout the corresponding branch.
-https://help.github.com/articles/checking-out-pull-requests-locally/
-
+mne
+numpy
+scipy
+scikit-learn
+matplotlib
+seaborn
+pandas
+pyriemann
 
 # supported datasets
 
-Currently, there is 9 motor Imagery dataset supported. 5 of them will be automatically downloaded through MNE.
-The other 4 need to be downloaded manually :
+Currently, there are 9 motor Imagery dataset supported, and all of them can be downloaded automatically through the MOABB interface. For more information on the ones not available through the BNCI Horizons 2020 project, see below:
 
 - *Alex_mi* : can be downloaded [here](https://zenodo.org/record/806023)
 - *OpenvibeMI* : can be downloaded [here](http://openvibe.inria.fr/datasets-downloads/)
