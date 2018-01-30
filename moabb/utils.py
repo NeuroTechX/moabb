@@ -11,13 +11,15 @@ for ds in inspect.getmembers(db, inspect.isclass):
     if issubclass(ds[1], BaseDataset):
         dataset_list.append(ds[1])
 
-def dataset_search(paradigm, multi_session=False, events=None, two_class=True):
+def dataset_search(paradigm, multi_session=False, events=None,
+    exact_events=False, two_class=True):
     '''
     Function that returns a list of datasets that match given criteria. Valid
     criteria are:
 
     events: list of strings
     two_class: bool, uses first two classes in events list
+    exact_events: bool, must have all events
     multi_session: bool, if True only returns datasets with more than one
     session per subject. If False return all
     paradigm: 'imagery','p300',(more to come)
@@ -32,6 +34,7 @@ def dataset_search(paradigm, multi_session=False, events=None, two_class=True):
         raise Exception('SORRY NOBDOYS GOTTEN AROUND TO THIS YET')
     for type_d in dataset_list:
         d = type_d()
+        skip_dataset = False
         if multi_session:
             if d.n_sessions < 2:
                 continue
@@ -42,15 +45,20 @@ def dataset_search(paradigm, multi_session=False, events=None, two_class=True):
             else:
                 n_events = 0
                 for e in events:
-                    if n_events >= max_events:
+                    if n_events >= max_events and not exact_events:
                         break
                     if e in d.event_id.keys():
                         keep_event_dict[e] = d.event_id[e]
                         n_events+=1
-                if len(keep_event_dict.keys()) == 0:
-                    continue
-            d.selected_events = keep_event_dict
-            out_data.append(d)
+                    else:
+                        if exact_events:
+                            skip_dataset = True
+                # don't want to use datasets with one valid label
+                if n_events < 2:
+                    skip_dataset=True
+            if keep_event_dict and not skip_dataset:
+                d.selected_events = keep_event_dict
+                out_data.append(d)
     return out_data
 
 

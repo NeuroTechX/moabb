@@ -80,14 +80,17 @@ class OpenvibeMI(BaseDataset):
             'imagery'
             )
 
-    def get_data(self, *args):
+    def get_data(self, subjects, stack_sessions=False):
         """return data for subject"""
         data = []
         for i in range(1,10):
             data.append(self._get_single_session_data(i))
-        return [data]
+        if stack_sessions:
+            return [[data]]
+        else:
+            return [data]
 
     def _get_single_session_data(self, session):
         """return data for a single recordign session"""
 
-        return convert_inria_csv_to_mne(data_path(session))
+        return convert_inria_csv_to_mne(data_path(session)) 

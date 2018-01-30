@@ -106,7 +106,7 @@ class BBCIEEGfNIRS(BaseDataset):
                          'imagery')
         self.fnirs = fnirs      # TODO: actually incorporate fNIRS somehow 
 
-    def get_data(self, subjects):
+    def get_data(self, subjects, stack_sessions):
         """return data for a list of subjects."""
         data = []
         for subject in subjects:
@@ -125,8 +125,8 @@ class BBCIEEGfNIRS(BaseDataset):
         for ii in [0,2,4]:
             eeg = data[ii].x.T * 1e-6
             trig = np.zeros((1, eeg.shape[1]))
-            idx = (mrk[ii].time - 1) / 5
-            trig[0, idx] = mrk[ii].event.desc / 16
+            idx = (mrk[ii].time - 1) // 5
+            trig[0, idx] = mrk[ii].event.desc // 16
             eeg = np.vstack([eeg, trig])
             ch_names = list(data[ii].clab) + ['Stim']
             ch_types = ['eeg'] * 30 + ['eog'] * 2 + ['stim']
@@ -139,8 +139,8 @@ class BBCIEEGfNIRS(BaseDataset):
         for ii in [1,3,5]:
             eeg = data[ii].x.T * 1e-6
             trig = np.zeros((1, eeg.shape[1]))
-            idx = (mrk[ii].time - 1) / 5
-            trig[0, idx] = mrk[ii].event.desc / 16 + 2
+            idx = (mrk[ii].time - 1) // 5
+            trig[0, idx] = mrk[ii].event.desc // 16 + 2
             eeg = np.vstack([eeg, trig])
             ch_names = list(data[ii].clab) + ['Stim']
             ch_types = ['eeg'] * 30 + ['eog'] * 2 + ['stim']

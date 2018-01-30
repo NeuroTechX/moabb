@@ -556,12 +556,9 @@ class MNEBNCI(BaseDataset):
         sessions = load_data(subject=subject, dataset=self.code,
                                         verbose=False)[0]
         if stack_sessions:
-            new_sessions = []
-            for s in sessions:
-                new_sessions.append([item for sublist in s for item in sublist])
+            new_sessions = [[run for session in sessions for run in session]]
         else:
             new_sessions = sessions
-
         return new_sessions
 
 
