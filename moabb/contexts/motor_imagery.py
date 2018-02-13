@@ -90,11 +90,11 @@ class MotorImageryMultiClasses(BaseMotorImagery, WithinSubjectContext):
             subject_processed.append((ep.get_data()*1e6, ep.events[:,-1]))
         return subject_processed
 
-    def score(self, clf, X, y, n_jobs=1):
+    def score(self, clf, X, y, groups=None, n_jobs=1):
         """get the score"""
         cv = KFold(5, shuffle=True, random_state=45)
 
-        auc = cross_val_score(clf, X, y, cv=cv,
+        auc = cross_val_score(clf, X, y, cv=cv, groups=groups,
                               scoring='accuracy', n_jobs=n_jobs)
         return auc.mean()
 
