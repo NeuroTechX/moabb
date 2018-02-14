@@ -558,7 +558,7 @@ class MNEBNCI(BaseDataset):
         if stack_sessions:
             new_sessions = [[run for session in sessions for run in session]]
         else:
-            new_sessions = sessions
+            new_sessions = [sessions]
         return new_sessions
 
 

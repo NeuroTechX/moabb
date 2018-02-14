@@ -52,4 +52,4 @@ class PhysionetMI(BaseDataset):
             raw.rename_channels(lambda x: x.strip('.')) 
         all_files.extend(raw_feet_files)
 
-        return [all_files]
+        return [[all_files]]
