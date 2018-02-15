@@ -12,7 +12,7 @@ for ds in inspect.getmembers(db, inspect.isclass):
         dataset_list.append(ds[1])
 
 def dataset_search(paradigm, multi_session=False, events=None,
-    exact_events=False, two_class=True):
+                   exact_events=False, two_class=True, min_subjects=1):
     '''
     Function that returns a list of datasets that match given criteria. Valid
     criteria are:
@@ -23,6 +23,7 @@ def dataset_search(paradigm, multi_session=False, events=None,
     multi_session: bool, if True only returns datasets with more than one
     session per subject. If False return all
     paradigm: 'imagery','p300',(more to come)
+    min_subjects: int, minimum subjects in dataset
     
     '''
     out_data = []
@@ -35,9 +36,10 @@ def dataset_search(paradigm, multi_session=False, events=None,
     for type_d in dataset_list:
         d = type_d()
         skip_dataset = False
-        if multi_session:
-            if d.n_sessions < 2:
-                continue
+        if multi_session and d.n_sessions < 2:
+            continue
+        if len(d.subject_list) < min_subjects:
+            continue
         if paradigm == d.paradigm:
             keep_event_dict = {}
             if events is None:

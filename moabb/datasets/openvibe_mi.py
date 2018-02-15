@@ -7,7 +7,7 @@ from .base import BaseDataset
 import pandas as pd
 import os
 from mne import create_info
-from mne.io import RawArray
+from mne.io import RawArray, Raw
 from mne.channels import read_montage
 from . import download as dl
 
@@ -65,7 +65,9 @@ def convert_inria_csv_to_mne(path):
     csv_data['Stim'][right_hand_ind] = 1e6
     montage = read_montage('standard_1005')
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=512., montage=montage)
-    return RawArray(data=csv_data.values.T * 1e-6, info=info, verbose=False)
+    raw = RawArray(data=csv_data.values.T * 1e-6, info=info, verbose=False)
+    return raw
+    
     
 class OpenvibeMI(BaseDataset):
     """Openvibe Motor Imagery dataset"""
@@ -91,6 +93,13 @@ class OpenvibeMI(BaseDataset):
             return [data]
 
     def _get_single_session_data(self, session):
-        """return data for a single recordign session"""
-
-        return convert_inria_csv_to_mne(data_path(session)) 
+        """return data for a single recording session"""
+        csv_path = data_path(session)
+        fif_path = os.path.join(os.path.dirname(csv_path),'raw_{:d}.fif'.format(session))
+        if not os.path.isfile(fif_path):
+            print('Resaving .csv file as .fif for ease of future loading')
+            raw = convert_inria_csv_to_mne(csv_path)
+            raw.save(fif_path)
+            return raw
+        else:
+            return Raw(fif_path, preload=True)

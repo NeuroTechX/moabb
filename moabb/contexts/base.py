@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod, abstractproperty
-import pandas as pd
 import numpy as np
 import sys
 
@@ -9,33 +8,9 @@ from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
 import mne
 
 from ..datasets.base import BaseDataset
+from ..viz import Results
 from .. import utils
 
-
-class Results(ABC):
-
-    def __init__(self, evaluation, pipelines):
-        """
-        class that will abstract result storage
-        """
-        self.evaluation = evaluation
-        self.data_columns = ['id', 'time', 'score', 'dataset', 'n_samples']
-        dfs = [[] for p in pipelines.keys()]
-        self.data = dict(zip(pipelines.keys(), dfs))
-
-    def add(self, data_dict, pipeline):
-        if type(data_dict) is dict:
-            data_dict = [data_dict]
-        elif type(data_dict) is not list:
-            raise ValueError('Results are given as neither dict nor list but {}'.format(
-                type(data_dict).__name__))
-        self.data[pipeline].extend(data_dict)
-
-    def to_dataframe(self):
-        for k in self.data.keys():
-            df = pd.DataFrame.from_records(
-                self.data[k], columns=self.data_columns)
-            self.data[k] = df
 
 
 class BaseImageryParadigm(ABC):
@@ -87,7 +62,7 @@ class BaseImageryParadigm(ABC):
             self.verify(d)
         for d in self.datasets:
             print('\n\nProcessing dataset: {}'.format(d.code))
-            self.evaluator.preprocess_data(d)
+            self.evaluator.preprocess_data(d, self)
             for s in d.subject_list:
                 for name, clf in self.pipelines.items():
                     self.results.add(self.process_subject(d, s, clf), name)
@@ -96,11 +71,13 @@ class BaseImageryParadigm(ABC):
     def process_subject(self, dataset, subj, clf):
         return self.evaluator.evaluate(dataset, subj, clf, self)
 
-    def _epochs(self, raws, event_dict, time, bp_low=1, bp_high=40, channels=None):
+    def _epochs(self, raws, event_dict, time, channels=None):
         '''Take list of raws and returns a list of epoch objects. Implements 
         imagery-specific processing as well
 
         '''
+        bp_low = self.fmin
+        bp_high = self.fmax
         if type(raws) is not list:
             raws = [raws]
         ep = []
@@ -145,7 +122,7 @@ class BaseEvaluation(ABC):
         '''
         pass
 
-    def preprocess_data(self, dataset):
+    def preprocess_data(self, dataset, paradigm):
         '''
         optional if you want to optimize data loading for a given dataset/do augmentation/etc
         '''

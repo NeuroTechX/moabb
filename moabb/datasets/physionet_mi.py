@@ -51,5 +51,7 @@ class PhysionetMI(BaseDataset):
             raw.add_events(events)
             raw.rename_channels(lambda x: x.strip('.')) 
         all_files.extend(raw_feet_files)
-
-        return [[all_files]]
+        if not stack_sessions:
+            return [[all_files]]
+        else:
+            return [all_files]

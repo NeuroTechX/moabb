@@ -7,10 +7,42 @@ from mne.epochs import concatenate_epochs, equalize_epoch_counts
 
 from .base import BaseEvaluation
 
-class WithinSubjectEvaluation(BaseEvaluation):
-    """Within Subject evaluation Context.
+class TrainTestEvaluation(BaseEvaluation):
 
-    Evaluate performance of the pipeline on each subject independently,
+    def extract_data_from_cont(self, ep_list, event_id):
+        skip=False
+        event_epochs = dict(zip(event_id.keys(), [[]] * len(event_id)))
+        for epoch in ep_list:
+            for key in event_id.keys():
+                if key in epoch.event_id.keys():
+                    event_epochs[key].append(epoch[key])
+        all_events = []
+        for key in event_id.keys():
+            if len(event_epochs[key]) > 0 :
+                all_events.append(concatenate_epochs(event_epochs[key]))
+        # equalize for accuracy
+        if len(all_events) > 1:
+            equalize_epoch_counts(all_events)
+        ep = concatenate_epochs(all_events)
+        # previously multipled data by 1e6
+        X, y = (ep.get_data(), ep.events[:, -1])
+        return X, y
+    
+    def score(self, clf, X, y, scoring):
+        cv = KFold(5, shuffle=True, random_state=self.random_state)
+
+        y_uniq = np.unique(y)
+        if len(y_uniq) == 2:
+            for ind, l in enumerate(y_uniq):
+                y[y==l] = ind
+        acc = cross_val_score(clf, X, y, cv=cv,
+                              scoring=scoring, n_jobs=self.n_jobs)
+        return acc.mean()
+
+class CrossSubjectEvaluation(TrainTestEvaluation):
+    """Cross Subject evaluation Context.
+
+    Evaluate performance of the pipeline trained on all subjects but one,
     concatenating sessions.
 
     Parameters
@@ -25,52 +57,52 @@ class WithinSubjectEvaluation(BaseEvaluation):
     --------
     BaseContext
     """
-
     def evaluate(self, dataset, subject, clf, paradigm):
         """Prepare data for classification."""
-        event_id = dataset.selected_events
+        # requires that subject be an int
+        s = subject-1
+        self.ind_cache[s] = self.ind_cache[s]*0
+        allX = np.concatenate(self.X_cache)
+        ally = np.concatenate(self.y_cache)
+        groups = np.concatenate(self.ind_cache)
+        # re-generate s group label
+        self.ind_cache[s] = np.ones(self.ind_cache[s].shape)
+        t_start = time()
+        score = self.score(clf, allX, ally, groups, paradigm.scoring)
+        duration = time() - t_start
+        return {'time': duration, 'dataset': dataset.code, 'id': subject, 'score': score, 'n_samples': len(ally)}
+
+    def preprocess_data(self, d, paradigm):
+        assert len(d.subject_list) > 1, "Dataset {} has only one subject".format(d.code)
+        self.X_cache = []
+        event_id = d.selected_events
         if not event_id:
             raise(ValueError("Dataset had no selected events"))
-
-        sub = dataset.get_data([subject], stack_sessions=True)[0]
-        # get all epochs for individual files in given subject
-        epochs = paradigm._epochs(sub, event_id, dataset.interval)
-        # equalize events from different classes
-        event_epochs = dict(zip(event_id.keys(), [[]] * len(event_id)))
-        for epoch in epochs:
-            for key in event_id.keys():
-                if key in epoch.event_id.keys():
-                    event_epochs[key].append(epoch[key])
-        for key in event_id.keys():
-            event_epochs[key] = concatenate_epochs(event_epochs[key])
-
-        # equalize for accuracy
-        equalize_epoch_counts(list(event_epochs.values()))
-        ep = concatenate_epochs(list(event_epochs.values()))
-        # previously multipled data by 1e6
-        X, y = (ep.get_data(), ep.events[:, -1])
-        t_start = time()
-        score = self.score(clf, X, y, paradigm.scoring)
-        duration = time() - t_start
-        return {'time': duration, 'dataset': dataset.code, 'id': subject, 'score': score, 'n_samples': len(y)}
-
-    def score(self, clf, X, y, scoring):
-        cv = KFold(5, shuffle=True, random_state=self.random_state)
-
+        self.y_cache = []
+        self.ind_cache = []
+        for s in d.subject_list:
+            sub = d.get_data([s], stack_sessions=True)[0]
+            # get all epochs for individual files in given subject
+            epochs = paradigm._epochs(sub, event_id, d.interval)
+            # equalize events from different classes
+            X, y = self.extract_data_from_cont(epochs, event_id)
+            self.X_cache.append(X)
+            self.y_cache.append(y)
+            self.ind_cache.append(np.ones(y.shape))
+        
+    def score(self, clf, X, y, groups, scoring):
         y_uniq = np.unique(y)
         if len(y_uniq) == 2:
             for ind, l in enumerate(y_uniq):
                 y[y==l] = ind
-        acc = cross_val_score(clf, X, y, cv=cv,
+        acc = cross_val_score(clf, X, y, cv=[(np.nonzero(groups==1)[0], np.nonzero(groups==0)[0])],
                               scoring=scoring, n_jobs=self.n_jobs)
         return acc.mean()
 
-
-class WithinSessionEvaluation(WithinSubjectEvaluation):
-    """Within Subject evaluation Context.
+class WithinSessionEvaluation(TrainTestEvaluation):
+    """Within session evaluation Context.
 
     """
-
     def evaluate(self, dataset, subject, clf, paradigm):
         """Prepare data for classification."""
         event_id = dataset.selected_events
@@ -85,24 +117,8 @@ class WithinSessionEvaluation(WithinSubjectEvaluation):
 
             # get all epochs for individual files in given session
             epochs = paradigm._epochs(session, event_id, dataset.interval)
-            # equalize events from different classes
-            event_epochs = dict(zip(event_id.keys(), [[]] * len(event_id)))
-            for epoch in epochs:
-                for key in event_id.keys():
-                    if key in epoch.event_id.keys():
-                        event_epochs[key].append(epoch[key])
-            for key in event_id.keys():
-                if len(event_epochs[key]) == 0 :
-                    skip = True
-                    continue
-                event_epochs[key] = concatenate_epochs(event_epochs[key])
-
-            if not skip:
-                # equalize for accuracy
-                equalize_epoch_counts(list(event_epochs.values()))
-                ep = concatenate_epochs(list(event_epochs.values()))
-                # previously multipled data by 1e6
-                X, y = (ep.get_data(), ep.events[:, -1])
+            X, y = self.extract_data_from_cont(epochs, event_id)
+            if len(np.unique(y))>1:
                 t_start = time()
                 score = self.score(clf, X, y, paradigm.scoring)
                 duration = time() - t_start
@@ -111,7 +127,7 @@ class WithinSessionEvaluation(WithinSubjectEvaluation):
         return results
 
 
-class CrossSessionEvaluation(BaseEvaluation):
+class CrossSessionEvaluation(TrainTestEvaluation):
     """Cross session Context.
 
     Evaluate performance of the pipeline across sessions,
@@ -142,19 +158,7 @@ class CrossSessionEvaluation(BaseEvaluation):
             # get list epochs for individual files in given session
             epochs = paradigm._epochs(session, event_id, dataset.interval)
             # equalize events from different classes
-            event_epochs = dict(zip(event_id.keys(), [[]] * len(event_id)))
-            for epoch in epochs:
-                for key in event_id.keys():
-                    if key in epoch.event_id.keys():
-                        event_epochs[key].append(epoch[key])
-            for key in event_id.keys():
-                event_epochs[key] = concatenate_epochs(event_epochs[key])
-
-            # equalize for accuracy
-            equalize_epoch_counts(list(event_epochs.values()))
-            ep = concatenate_epochs(list(event_epochs.values()))
-            # previously multipled data by 1e6
-            X, y = (ep.get_data(), ep.events[:, -1])
+            X, y  = self.extract_data_from_cont(epochs, event_id)
             listX.append(X)
             listy.append(y)
         groups = []
@@ -172,7 +176,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                 'score': score,
                 'n_samples': len(y)}
 
-    def preprocess_data(self, d):
+    def preprocess_data(self, d, paradigm):
         assert d.n_sessions > 1, "Proposed dataset {} has only one session".format(
             d.code)
 
