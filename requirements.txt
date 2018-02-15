@@ -1,3 +1,5 @@
 scikit-learn
 mne
 pyriemann
+matplotlib
+seaborn
