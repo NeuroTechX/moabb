@@ -93,4 +93,5 @@ def find_intersecting_channels(datasets, verbose=False):
             print('Dataset {:s} has no recognizable EEG channels'.format(type(d).__name__))
     for d in dset_chans:
         allchans.intersection_update(d)
+    allchans = [s.replace('Z','z') for s in allchans]
     return allchans, d

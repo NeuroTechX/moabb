@@ -566,13 +566,13 @@ class BNCI2014001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset"""
 
     def __init__(self, tmin=3.5, tmax=5.5):
-        super().__init__(range(1,10), 
-                         2, 
-                         dict(zip(['left_hand','right_hand','feet','tongue'],
+        super().__init__(subjects=range(1,10), 
+                         sessions_per_subject=2, 
+                         events=dict(zip(['left_hand','right_hand','feet','tongue'],
                                   [1,2,3,4])),
-                         '001-2014',
-                         [tmin, tmax],
-                         'imagery'
+                         code='001-2014',
+                         interval=[tmin, tmax],
+                         paradigm='imagery'
         )
 
 

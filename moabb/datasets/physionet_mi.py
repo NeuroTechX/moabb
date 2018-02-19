@@ -14,12 +14,12 @@ class PhysionetMI(BaseDataset):
 
     def __init__(self, imagined=True):
         super().__init__(
-            list(range(1,110)),
-            1,
-            dict(left_hand=2, right_hand=3, feet=5, hands=4, rest=1),
-            'Physionet Motor Imagery',
-            [1,3],
-            'imagery'
+            subjects=list(range(1,110)),
+            sessions_per_subject=1,
+            events=dict(left_hand=2, right_hand=3, feet=5, hands=4, rest=1),
+            code='Physionet Motor Imagery',
+            interval=[1,3],
+            paradigm='imagery'
             )
         
         if imagined:

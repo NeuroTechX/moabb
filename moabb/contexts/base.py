@@ -18,15 +18,20 @@ class BaseImageryParadigm(ABC):
 
     Parameters
     ----------
-    datasets : List of Dataset instances.
+    datasets : List of Dataset instances, or None
         List of dataset instances on which the pipelines will be evaluated.
+        If None, uses all datasets (and should break...)
     pipelines : Dict of pipelines instances.
         Dictionary of pipelines. Keys identifies pipeline names, and values
         are scikit-learn pipelines instances.
+    evaluator: Evaluator instance
+        Instance that defines evaluation scheme
     """
 
-    def __init__(self, pipelines, evaluator, datasets=None):
+    def __init__(self, pipelines, evaluator, datasets=None, fmin=1, fmax=45):
         """init"""
+        self.fmin=fmin
+        self.fmax=fmax
         self.evaluator = evaluator
         if datasets is None:
             datasets = utils.dataset_list
@@ -54,9 +59,15 @@ class BaseImageryParadigm(ABC):
         self.results = Results(type(evaluator).__name__, pipelines)
 
     def verify(self, dataset):
+        '''
+        Method that verifies dataset is correct for given parameters
+        '''
         assert(dataset.paradigm == 'imagery')
 
     def process(self):
+        '''
+        Runs tasks on all given datasets. 
+        '''
         # Verify that datasets are valid for given paradigm first
         for d in self.datasets:
             self.verify(d)
@@ -103,10 +114,23 @@ class BaseImageryParadigm(ABC):
 
     @abstractproperty
     def scoring(self):
+        '''Property that defines scoring metric (e.g. ROC-AUC or accuracy or f-score),
+        given as a sklearn-compatible string
+
+        '''
         pass
 
 
 class BaseEvaluation(ABC):
+    '''Base class that defines necessary operations for an evaluation. Evaluations
+    determine what the train and test sets are and can implement additional data
+    preprocessing steps for more complicated algorithms.
+
+    random_state: if not None, can guarantee same seed
+    n_jobs: 1; number of jobs for fitting of pipeline
+
+    '''
+    
 
     def __init__(self, random_state=None, n_jobs=1):
         """
@@ -124,6 +148,6 @@ class BaseEvaluation(ABC):
 
     def preprocess_data(self, dataset, paradigm):
         '''
-        optional if you want to optimize data loading for a given dataset/do augmentation/etc
+        Optional paramter if any sort of dataset-wide computation is needed per subject
         '''
         pass

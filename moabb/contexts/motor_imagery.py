@@ -28,9 +28,7 @@ class BaseMotorImagery(BaseImageryParadigm):
     """
 
     def __init__(self, pipelines, evaluator, datasets=None, fmin=7, fmax=35):
-        self.fmin = fmin
-        self.fmax = fmax
-        super().__init__(pipelines, evaluator, datasets)
+        super().__init__(pipelines, evaluator, datasets, fmin=fmin, fmax=fmax)
 
 
 class ImageryNClass(BaseMotorImagery):

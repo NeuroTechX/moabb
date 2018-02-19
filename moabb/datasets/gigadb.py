@@ -56,12 +56,12 @@ class GigaDbMI(BaseDataset):
 
     def __init__(self):
         super().__init__(
-            list(range(1,53)),
-            1,
-            dict(left_hand=1, right_hand=2),
-            'GigaDb Motor Imagery',
-            [1,3],
-            'imagery'
+            subjects=list(range(1,53)),
+            sessions_per_subject=1,
+            events=dict(left_hand=1, right_hand=2),
+            code='GigaDb Motor Imagery',
+            interval=[1,3],
+            paradigm='imagery'
             )
         for ii in [32, 46, 49]:
             self.subject_list.remove(ii)

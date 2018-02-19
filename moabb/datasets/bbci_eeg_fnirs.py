@@ -98,12 +98,12 @@ class BBCIEEGfNIRS(BaseDataset):
     """BBCI EEG fNIRS Motor Imagery dataset"""
 
     def __init__(self, fnirs=False):
-        super().__init__(list(range(1,30)),
-                         1,
-                         dict(left_hand=1, right_hand=2, subtraction=3, rest=4),
-                         'BBCI EEG fNIRS',
-                         [3.5,10],
-                         'imagery')
+        super().__init__(subjects=list(range(1,30)),
+                         sessions_per_subject=1,
+                         events=dict(left_hand=1, right_hand=2, subtraction=3, rest=4),
+                         code='BBCI EEG fNIRS',
+                         interval=[3.5,10],
+                         paradigm='imagery')
         self.fnirs = fnirs      # TODO: actually incorporate fNIRS somehow 
 
     def get_data(self, subjects, stack_sessions):
