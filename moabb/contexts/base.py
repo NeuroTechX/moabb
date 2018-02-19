@@ -28,10 +28,11 @@ class BaseImageryParadigm(ABC):
         Instance that defines evaluation scheme
     """
 
-    def __init__(self, pipelines, evaluator, datasets=None, fmin=1, fmax=45):
+    def __init__(self, pipelines, evaluator, datasets=None, fmin=1, fmax=45, channels=None):
         """init"""
         self.fmin=fmin
         self.fmax=fmax
+        self.channels=channels
         self.evaluator = evaluator
         if datasets is None:
             datasets = utils.dataset_list
@@ -62,7 +63,7 @@ class BaseImageryParadigm(ABC):
         '''
         Method that verifies dataset is correct for given parameters
         '''
-        assert(dataset.paradigm == 'imagery')
+        assert dataset.paradigm == 'imagery'
 
     def process(self):
         '''
@@ -82,7 +83,7 @@ class BaseImageryParadigm(ABC):
     def process_subject(self, dataset, subj, clf):
         return self.evaluator.evaluate(dataset, subj, clf, self)
 
-    def _epochs(self, raws, event_dict, time, channels=None):
+    def _epochs(self, raws, event_dict, time):
         '''Take list of raws and returns a list of epoch objects. Implements 
         imagery-specific processing as well
 
@@ -94,11 +95,11 @@ class BaseImageryParadigm(ABC):
         ep = []
         for raw in raws:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
-            if channels is None:
+            if self.channels is None:
+                # TODO: generalize to other sorts of channels
                 raw.pick_types(eeg=True, stim=True)
             else:
-                # TODO: letter case test
-                raw.pick_types(include=channels, stim=True)
+                raw.pick_types(include=self.channels, stim=True)
             raw.filter(bp_low, bp_high, method='iir')
             # ensure events are desired:
             if len(events) > 0:

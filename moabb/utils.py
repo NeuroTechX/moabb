@@ -63,6 +63,16 @@ def dataset_search(paradigm, multi_session=False, events=None,
                 out_data.append(d)
     return out_data
 
+def has_channels(datasets, channels):
+    '''
+    Given a list of datasets, returns those that have the desired channels
+    '''
+    out = []
+    for d in datasets:
+        s1 = d.get_data([1], True)[0][0]
+        if set(channels) <= set(s1.info['ch_names']):
+            out.append(d)
+    return out
 
 def find_intersecting_channels(datasets, verbose=False):
     '''
@@ -76,12 +86,13 @@ def find_intersecting_channels(datasets, verbose=False):
     keep_datasets = []
     for d in datasets:
         print('Searching dataset: {:s}'.format(type(d).__name__))
-        s1 = d.get_data([1])[0][0]
+        s1 = d.get_data([1], True)[0][0]
         s1.pick_types(eeg=True)
         processed = []
         for ch in s1.info['ch_names']:
             ch = ch.upper()
             if ch.find('EEG') == -1:
+                # TODO: less hacky way of finding poorly labeled datasets
                 processed.append(ch)
         allchans.update(processed)
         if len(processed) > 0:

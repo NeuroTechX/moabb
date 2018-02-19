@@ -106,7 +106,7 @@ class BBCIEEGfNIRS(BaseDataset):
                          paradigm='imagery')
         self.fnirs = fnirs      # TODO: actually incorporate fNIRS somehow 
 
-    def get_data(self, subjects, stack_sessions):
+    def get_data(self, subjects, stack_sessions=False):
         """return data for a list of subjects."""
         data = []
         for subject in subjects:

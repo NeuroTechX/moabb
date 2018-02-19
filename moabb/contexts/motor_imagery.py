@@ -27,8 +27,8 @@ class BaseMotorImagery(BaseImageryParadigm):
     MotorImageryTwoClasses
     """
 
-    def __init__(self, pipelines, evaluator, datasets=None, fmin=7, fmax=35):
-        super().__init__(pipelines, evaluator, datasets, fmin=fmin, fmax=fmax)
+    def __init__(self, pipelines, evaluator, datasets=None, fmin=7, fmax=35, **kwargs):
+        super().__init__(pipelines, evaluator, datasets, fmin=fmin, fmax=fmax, **kwargs)
 
 
 class ImageryNClass(BaseMotorImagery):
@@ -44,6 +44,7 @@ class ImageryNClass(BaseMotorImagery):
         super().__init__(pipelines, evaluator, **kwargs)
 
     def verify(self, d):
+        print('Warning: Assumes events have already been selected per dataset')
         super().verify(d)
         assert len(d.selected_events) == self.n_classes
 
@@ -60,8 +61,10 @@ class LeftRightImagery(BaseMotorImagery):
     """
 
     def verify(self, d):
+        events = ['left_hand','right_hand']
         super().verify(d)
-        assert set(d.selected_events.keys()) == set(('left_hand','right_hand'))
+        assert  set(events) <= set(d.event_id.keys())
+        d.selected_events = dict(zip(events, [d.event_id[s] for s in events]))
 
     @property
     def scoring(self):
