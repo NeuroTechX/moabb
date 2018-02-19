@@ -1,0 +1,1 @@
+from .motor_imagery import MotorImageryTwoClasses, MotorImageryMultiClasses

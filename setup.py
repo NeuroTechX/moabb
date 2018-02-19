@@ -9,5 +9,5 @@ setup(name='moabb',
       license='BSD (3-clause)',
       packages=find_packages(),
       install_requires=['numpy', 'scipy', 'scikit-learn', 'pandas',
-                        'mne', 'pyriemann'],
+                        'mne', 'pyriemann', 'pyyaml'],
       zip_safe=False)

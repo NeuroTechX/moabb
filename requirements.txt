@@ -3,3 +3,4 @@ mne
 pyriemann
 matplotlib
 seaborn
+pyyaml

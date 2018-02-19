@@ -387,14 +387,13 @@ def _convert_mi(data_paths, ch_names, ch_types):
     event_id = {}
     for filename in data_paths:
         data = loadmat(filename, struct_as_record=False, squeeze_me=True)
-        runs = []
         if type(data['data']) is np.ndarray:
             run_array = data['data']
         else:
             run_array = [data['data']]
         for run in run_array:
             raw, evd = _convert_run(run, ch_names, ch_types, None)
-            raws.append(raw) 
+            raws.append(raw)
             event_id.update(evd)
     # change labels to match rest
     standardize_keys(event_id)
@@ -440,7 +439,6 @@ def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
     ch_names = ch_names + ['stim']
     ch_types = ch_types + ['stim']
     event_id = {ev: (ii + 1) for ii, ev in enumerate(run.classes)}
-
     info = create_info(ch_names=ch_names, ch_types=ch_types,
                        sfreq=sfreq, montage=montage)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
@@ -479,6 +477,7 @@ def _convert_bbci(filename, ch_types, verbose=None):
         raw, evd = _convert_run_bbci(run, ch_types, verbose)
         raws.append(raw)
         event_id.update(evd)
+
     return raws, event_id
 
 
@@ -557,6 +556,7 @@ class MNEBNCI(BaseDataset):
         """return data for a single subject"""
         raw_files, event_id = load_data(subject=subject, dataset=self.code,
                                         verbose=False)
+        print(event_id)
         return raw_files
 
 
