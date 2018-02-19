@@ -1,27 +1,41 @@
-import pandas as pd
-from time import time
+from abc import ABC, abstractmethod, abstractproperty
 import numpy as np
 import sys
 
 from sklearn.base import BaseEstimator
+from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
+
+import mne
 
 from ..datasets.base import BaseDataset
+from ..viz import Results
+from .. import utils
 
 
-class BaseContext():
+
+class BaseImageryParadigm(ABC):
     """Base Context.
 
     Parameters
     ----------
-    datasets : List of Dataset instances.
+    datasets : List of Dataset instances, or None
         List of dataset instances on which the pipelines will be evaluated.
+        If None, uses all datasets (and should break...)
     pipelines : Dict of pipelines instances.
         Dictionary of pipelines. Keys identifies pipeline names, and values
         are scikit-learn pipelines instances.
+    evaluator: Evaluator instance
+        Instance that defines evaluation scheme
     """
 
-    def __init__(self, datasets, pipelines):
+    def __init__(self, pipelines, evaluator, datasets=None, fmin=1, fmax=45, channels=None):
         """init"""
+        self.fmin=fmin
+        self.fmax=fmax
+        self.channels=channels
+        self.evaluator = evaluator
+        if datasets is None:
+            datasets = utils.dataset_list
         # check dataset
         if not isinstance(datasets, list):
             if isinstance(datasets, BaseDataset):
@@ -37,66 +51,104 @@ class BaseContext():
 
         # check pipelines
         if not isinstance(pipelines, dict):
-            raise(ValueError("pipelines must be a dict or a Pipeline instance"))
+            raise(ValueError("pipelines must be a dict"))
 
         for name, pipeline in pipelines.items():
             if not(isinstance(pipeline, BaseEstimator)):
                 raise(ValueError("pipelines must only contains Pipelines instance"))
         self.pipelines = pipelines
+        self.results = Results(type(evaluator).__name__, pipelines)
+
+    def verify(self, dataset):
+        '''
+        Method that verifies dataset is correct for given parameters
+        '''
+        assert dataset.paradigm == 'imagery'
+
+    def process(self):
+        '''
+        Runs tasks on all given datasets. 
+        '''
+        # Verify that datasets are valid for given paradigm first
+        for d in self.datasets:
+            self.verify(d)
+        for d in self.datasets:
+            print('\n\nProcessing dataset: {}'.format(d.code))
+            self.evaluator.preprocess_data(d, self)
+            for s in d.subject_list:
+                for name, clf in self.pipelines.items():
+                    self.results.add(self.process_subject(d, s, clf), name)
+        self.results.to_dataframe()
+
+    def process_subject(self, dataset, subj, clf):
+        return self.evaluator.evaluate(dataset, subj, clf, self)
+
+    def _epochs(self, raws, event_dict, time):
+        '''Take list of raws and returns a list of epoch objects. Implements 
+        imagery-specific processing as well
+
+        '''
+        bp_low = self.fmin
+        bp_high = self.fmax
+        if type(raws) is not list:
+            raws = [raws]
+        ep = []
+        for raw in raws:
+            events = mne.find_events(raw, shortest_event=0, verbose=False)
+            if self.channels is None:
+                # TODO: generalize to other sorts of channels
+                raw.pick_types(eeg=True, stim=True)
+            else:
+                raw.pick_types(include=self.channels, stim=True)
+            raw.filter(bp_low, bp_high, method='iir')
+            # ensure events are desired:
+            if len(events) > 0:
+                keep_events = dict([(key, val) for key, val in event_dict.items() if
+                                    val in np.unique(events[:, 2])])
+                if len(keep_events) > 0:
+                    epochs = mne.Epochs(raw, events, keep_events, time[0], time[1],
+                                        proj=False, baseline=None, preload=True,
+                                        verbose=False)
+                    ep.append(epochs)
+                    
+        return ep
+
+    @abstractproperty
+    def scoring(self):
+        '''Property that defines scoring metric (e.g. ROC-AUC or accuracy or f-score),
+        given as a sklearn-compatible string
+
+        '''
+        pass
 
 
-class WithinSubjectContext(BaseContext):
-    """Within Subject evaluation Context.
+class BaseEvaluation(ABC):
+    '''Base class that defines necessary operations for an evaluation. Evaluations
+    determine what the train and test sets are and can implement additional data
+    preprocessing steps for more complicated algorithms.
 
-    Evaluate performance of the pipeline on each subject independently.
+    random_state: if not None, can guarantee same seed
+    n_jobs: 1; number of jobs for fitting of pipeline
 
-    Parameters
-    ----------
-    datasets : List of Dataset instances.
-        List of dataset instances on which the pipelines will be evaluated.
-    pipelines : Dict of pipelines instances.
-        Dictionary of pipelines. Keys identifies pipeline names, and values
-        are scikit-learn pipelines instances.
+    '''
+    
 
-    See Also
-    --------
-    BaseContext
-    """
-
-    def evaluate(self, verbose=False):
-        """Evaluate performances
-
-        Parameters
-        ----------
-        verbose: bool (defaul False)
-            if true, print results durint the evaluation
-
-        Returns
-        -------
-        results: Dict of panda DataFrame
-            Return a dict of pandas dataframe, one for each pipeline
+    def __init__(self, random_state=None, n_jobs=1):
+        """
 
         """
-        columns = ['Score', 'Dataset', 'Subject', 'Pipeline', 'Time']
-        results = dict()
-        for pipeline in self.pipelines:
-            results[pipeline] = pd.DataFrame(columns=columns)
+        self.random_state = random_state
+        self.n_jobs = n_jobs
 
-        for dataset in self.datasets:
-            dataset_name = dataset.get_name()
-            subjects = dataset.get_subject_list()
+    @abstractmethod
+    def evaluate(self, dataset, subject, clf, paradigm):
+        '''
+        Return results in a dict
+        '''
+        pass
 
-            for subject in subjects:
-                X, y, groups = self.prepare_data(dataset, [subject])
-
-                for pipeline in self.pipelines:
-                    clf = self.pipelines[pipeline]
-                    t_start = time()
-                    score = self.score(clf, X=X, y=y, groups=groups)
-
-                    duration = time() - t_start
-                    row = [score, dataset_name, subject, pipeline, duration]
-                    results[pipeline].loc[len(results[pipeline])] = row
-                    if verbose:
-                        print(row)
-        return results
+    def preprocess_data(self, dataset, paradigm):
+        '''
+        Optional paramter if any sort of dataset-wide computation is needed per subject
+        '''
+        pass

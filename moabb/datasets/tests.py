@@ -8,36 +8,51 @@ from moabb.datasets.bnci import BNCI2014001, BNCI2014002, BNCI2014004, BNCI20150
 from moabb.datasets.openvibe_mi import OpenvibeMI
 from moabb.datasets.bbci_eeg_fnirs import BBCIEEGfNIRS
 import unittest
+import mne
 
-def test_dataset(data):
-    obj = data()
-    obj.subject_list = obj.subject_list[:2]
-    obj.get_data(obj.subject_list)
 
 class Test_Datasets(unittest.TestCase):
 
-    def test_gigadb(self):
-        test_dataset(GigaDbMI)
+    def run_dataset(self, data, stack_sessions=False):
+        obj = data()
+        obj.subject_list = obj.subject_list[:2]
+        data = obj.get_data(obj.subject_list, stack_sessions)
+        self.assertTrue(type(data) is list, type(data))
+        self.assertTrue(type(data[0]) is list, type(data[0]))
+        self.assertTrue(type(data[0][0]) is list or issubclass(type(data[0][0]), mne.io.BaseRaw),
+                        type(data[0][0]))
 
-    def test_bnci(self):
-        test_dataset(BNCI2014001)
-        test_dataset(BNCI2014002)
-        test_dataset(BNCI2014004)
-        test_dataset(BNCI2015001)
-        test_dataset(BNCI2015004)
+    def test_gigadb(self):
+        self.run_dataset(GigaDbMI)
+
+    def test_bnci_1401(self):
+        self.run_dataset(BNCI2014001)
+        self.run_dataset(BNCI2014001, stack_sessions=True)
+
+    def test_bnci_1402(self):
+        self.run_dataset(BNCI2014002)
+
+    def test_bnci_1404(self):
+        self.run_dataset(BNCI2014004)
+
+    def test_bnci_1501(self):
+        self.run_dataset(BNCI2015001)
+
+    def test_bnci_1504(self):
+        self.run_dataset(BNCI2015004)
 
     def test_alexmi(self):
-        test_dataset(AlexMI)
+        self.run_dataset(AlexMI)
 
     def test_ovmi(self):
-        test_dataset(OpenvibeMI)
+        self.run_dataset(OpenvibeMI)
+        self.run_dataset(OpenvibeMI, stack_sessions=True)
 
     def test_physionet(self):
-        test_dataset(PhysionetMI)
+        self.run_dataset(PhysionetMI)
 
     def test_eegfnirs(self):
-        obj = BBCIEEGfNIRS()
-        obj._get_single_subject_data(1)
+        self.run_dataset(BBCIEEGfNIRS)
 
 if __name__ == '__main__':
     unittest.main()

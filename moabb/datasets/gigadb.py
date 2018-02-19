@@ -10,7 +10,7 @@ import numpy as np
 from mne import create_info
 from mne.io import RawArray
 from mne.channels import read_montage
-import moabb.datasets.download as dl
+from . import download as dl
 
 import os
 
@@ -55,25 +55,18 @@ class GigaDbMI(BaseDataset):
     """GigaDb Motor Imagery dataset"""
 
     def __init__(self):
-        self.subject_list = list(range(1, 53))
-        # some subject have issues
+        super().__init__(
+            subjects=list(range(1,53)),
+            sessions_per_subject=1,
+            events=dict(left_hand=1, right_hand=2),
+            code='GigaDb Motor Imagery',
+            interval=[1,3],
+            paradigm='imagery'
+            )
         for ii in [32, 46, 49]:
             self.subject_list.remove(ii)
 
-        self.name = 'GigaDb Motor Imagery'
-        self.tmin = 1
-        self.tmax = 3
-        self.paradigm = 'Motor Imagery'
-        self.event_id = dict(left_hand=1, right_hand=2)
-
-    def get_data(self, subjects):
-        """return data for a list of subjects."""
-        data = []
-        for subject in subjects:
-            data.append(self._get_single_subject_data(subject))
-        return data
-
-    def _get_single_subject_data(self, subject):
+    def _get_single_subject_data(self, subject, stack_sessions):
         """return data for a single subject"""
         fname = data_path(subject)
 
@@ -102,4 +95,7 @@ class GigaDbMI(BaseDataset):
         info = create_info(ch_names=ch_names, ch_types=ch_types,
                            sfreq=data.srate, montage=montage)
         raw = RawArray(data=eeg_data, info=info, verbose=False)
-        return [raw]
+        if stack_sessions:
+            return [[raw]]
+        else:
+            return [[[raw]]]
