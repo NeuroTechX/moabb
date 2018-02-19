@@ -3,3 +3,5 @@ mne
 pyriemann
 matplotlib
 seaborn
+h5py
+pandas

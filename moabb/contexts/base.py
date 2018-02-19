@@ -76,8 +76,7 @@ class BaseImageryParadigm(ABC):
             print('\n\nProcessing dataset: {}'.format(d.code))
             self.evaluator.preprocess_data(d, self)
             for s in d.subject_list:
-                for name, clf in self.pipelines.items():
-                    self.results.add(self.process_subject(d, s, clf), name)
+                self.results.add(self.process_subject(d, s, self.pipelines))
         self.results.to_dataframe()
 
     def process_subject(self, dataset, subj, clf):

@@ -1,5 +1,6 @@
 from abc import ABC
 import pandas as pd
+import os
 
 
 class Results(ABC):
@@ -12,7 +13,7 @@ class Results(ABC):
 
     '''
 
-    def __init__(self, evaluation, pipelines):
+    def __init__(self, evaluation, pipelines, path=None):
         """
         class that will abstract result storage
         """
@@ -22,13 +23,14 @@ class Results(ABC):
         dfs = [[] for p in pipelines.keys()]
         self.data = dict(zip(pipelines.keys(), dfs))
 
-    def add(self, data_dict, pipeline):
-        if type(data_dict) is dict:
-            data_dict = [data_dict]
-        elif type(data_dict) is not list:
-            raise ValueError('Results are given as neither dict nor list but {}'.format(
-                type(data_dict).__name__))
-        self.data[pipeline].extend(data_dict)
+    def add(self, pipeline_dict):
+        for name, data_dict in pipeline_dict.items():
+            if type(data_dict) is dict:
+                data_dict = [data_dict]
+            elif type(data_dict) is not list:
+                raise ValueError('Results are given as neither dict nor list but {}'.format(
+                    type(data_dict).__name__))
+            self.data[name].extend(data_dict)
 
     def to_dataframe(self):
         for k in self.data.keys():

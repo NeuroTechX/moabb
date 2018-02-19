@@ -26,7 +26,7 @@ class Test_CrossSess(unittest.TestCase):
         r = Results(e, pipelines)
         p = LeftRightImagery(pipelines, e, [d])
         r.add(e.evaluate(d, 1,
-                         pipelines['C'], p), 'C')
+                         pipelines, p))
 
 
 class Test_CrossSubj(unittest.TestCase):
@@ -39,7 +39,7 @@ class Test_CrossSubj(unittest.TestCase):
         p = LeftRightImagery(pipelines, e, [d])
         e.preprocess_data(d, p)
         r.add(e.evaluate(d, 1,
-                         pipelines['C'], p), 'C')
+                         pipelines, p))
 
 
 class Test_WithinSess(unittest.TestCase):
@@ -50,7 +50,7 @@ class Test_WithinSess(unittest.TestCase):
         e = self.return_eval()
         r = Results(e, pipelines)
         p = LeftRightImagery(pipelines, e, [d])
-        r.add(e.evaluate(d, 1, pipelines['C'], p), 'C')
+        r.add(e.evaluate(d, 1, pipelines, p))
 
 
 if __name__ == "__main__":

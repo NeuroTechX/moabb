@@ -48,7 +48,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
 
     """
 
-    def evaluate(self, dataset, subject, clf, paradigm):
+    def evaluate(self, dataset, subject, pipelines, paradigm):
         # requires that subject be an int
         s = subject-1
         self.ind_cache[s] = self.ind_cache[s]*0
@@ -57,15 +57,18 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
         groups = np.concatenate(self.ind_cache)
         # re-generate s group label
         self.ind_cache[s] = np.ones(self.ind_cache[s].shape)
-        t_start = time()
-        score = self.score(clf, allX, ally, groups, paradigm.scoring)
-        duration = time() - t_start
-        return {'time': duration,
-                'dataset': dataset.code,
-                'id': subject,
-                'score': score,
-                'n_samples': groups.sum(),
-                'n_channels': allX.shape[1]}
+        out = {}
+        for name, clf in pipelines.items():
+            t_start = time()
+            score = self.score(clf, allX, ally, groups, paradigm.scoring)
+            duration = time() - t_start
+            out[name]= {'time': duration,
+                    'dataset': dataset.code,
+                    'id': subject,
+                    'score': score,
+                    'n_samples': groups.sum(),
+                    'n_channels': allX.shape[1]}
+        return out
 
     def preprocess_data(self, dataset, paradigm):
         assert len(dataset.subject_list) > 1, "Dataset {} has only one subject".format(
@@ -100,14 +103,14 @@ class WithinSessionEvaluation(TrainTestEvaluation):
 
     """
 
-    def evaluate(self, dataset, subject, clf, paradigm):
+    def evaluate(self, dataset, subject, pipelines, paradigm):
         """Prepare data for classification."""
         event_id = dataset.selected_events
         if not event_id:
             raise(ValueError("Dataset had no selected events"))
 
         sub = dataset.get_data([subject], stack_sessions=False)[0]
-        results = []
+        out = {k: [] for k in pipelines.keys()}
         for ind, session in enumerate(sub):
             skip = False
             sess_id = '{:03d}_{:d}'.format(subject, ind)
@@ -116,16 +119,17 @@ class WithinSessionEvaluation(TrainTestEvaluation):
             epochs = paradigm._epochs(session, event_id, dataset.interval)
             X, y = self.extract_data_from_cont(epochs, event_id)
             if len(np.unique(y)) > 1:
-                t_start = time()
-                score = self.score(clf, X, y, paradigm.scoring)
-                duration = time() - t_start
-                results.append({'time': duration,
-                                'dataset': dataset.code,
-                                'id': sess_id,
-                                'score': score,
-                                'n_samples': len(y),
-                                'n_channels': X.shape[1]})
-        return results
+                for name, clf in pipelines.items():
+                    t_start = time()
+                    score = self.score(clf, X, y, paradigm.scoring)
+                    duration = time() - t_start
+                    out[name].append({'time': duration,
+                                    'dataset': dataset.code,
+                                    'id': sess_id,
+                                    'score': score,
+                                    'n_samples': len(y),
+                                    'n_channels': X.shape[1]})
+        return out
 
     def score(self, clf, X, y, scoring):
         cv = KFold(5, shuffle=True, random_state=self.random_state)
@@ -145,7 +149,7 @@ class CrossSessionEvaluation(TrainTestEvaluation):
 
     """
 
-    def evaluate(self, dataset, subject, clf, paradigm):
+    def evaluate(self, dataset, subject, pipelines, paradigm):
         event_id = dataset.selected_events
         if not event_id:
             raise(ValueError("Dataset had no selected events"))
@@ -166,14 +170,17 @@ class CrossSessionEvaluation(TrainTestEvaluation):
         allX = np.concatenate(listX, axis=0)
         ally = np.concatenate(listy, axis=0)
         groupvec = np.concatenate(groups, axis=0)
-        t_start = time()
-        score = self.score(clf, allX, ally, groupvec, paradigm.scoring)
-        duration = time() - t_start
-        return {'time': duration,
-                'dataset': dataset.code,
-                'id': subject,
-                'score': score,
-                'n_samples': len(y)}
+        out = {}
+        for name, clf in pipelines.items():
+            t_start = time()
+            score = self.score(clf, allX, ally, groupvec, paradigm.scoring)
+            duration = time() - t_start
+            out[name] = {'time': duration,
+                    'dataset': dataset.code,
+                    'id': subject,
+                    'score': score,
+                    'n_samples': len(y)}
+        return out
 
     def preprocess_data(self, dataset, paradigm):
         assert dataset.n_sessions > 1, "Proposed dataset {} has only one session".format(
