@@ -1,14 +1,24 @@
 from abc import ABC
 import pandas as pd
 
+
 class Results(ABC):
+    '''Class to hold results from the evaluation.evaluate method. Appropriate test
+    would be to ensure the result of 'evaluate' is consistent and can be
+    accepted by 'results.add'
+
+    Saves dataframe per pipeline and can query to see if particular subject has
+    already been run
+
+    '''
 
     def __init__(self, evaluation, pipelines):
         """
         class that will abstract result storage
         """
         self.evaluation = evaluation
-        self.data_columns = ['id', 'time', 'score', 'dataset', 'n_samples']
+        self.data_columns = ['id', 'time', 'score',
+                             'dataset', 'n_samples', 'n_channels']
         dfs = [[] for p in pipelines.keys()]
         self.data = dict(zip(pipelines.keys(), dfs))
 
