@@ -66,7 +66,7 @@ class GigaDbMI(BaseDataset):
         for ii in [32, 46, 49]:
             self.subject_list.remove(ii)
 
-    def _get_single_subject_data(self, subject, dummy):
+    def _get_single_subject_data(self, subject, stack_sessions):
         """return data for a single subject"""
         fname = data_path(subject)
 
@@ -95,4 +95,7 @@ class GigaDbMI(BaseDataset):
         info = create_info(ch_names=ch_names, ch_types=ch_types,
                            sfreq=data.srate, montage=montage)
         raw = RawArray(data=eeg_data, info=info, verbose=False)
-        return [[raw]]
+        if stack_sessions:
+            return [[raw]]
+        else:
+            return [[[raw]]]

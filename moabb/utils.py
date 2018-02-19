@@ -12,7 +12,7 @@ for ds in inspect.getmembers(db, inspect.isclass):
         dataset_list.append(ds[1])
 
 def dataset_search(paradigm, multi_session=False, events=None,
-                   exact_events=False, two_class=True, min_subjects=1):
+                   exact_events=False, two_class=True, min_subjects=1, channels=[]):
     '''
     Function that returns a list of datasets that match given criteria. Valid
     criteria are:
@@ -24,8 +24,10 @@ def dataset_search(paradigm, multi_session=False, events=None,
     session per subject. If False return all
     paradigm: 'imagery','p300',(more to come)
     min_subjects: int, minimum subjects in dataset
+    channels: list or set of channels
     
     '''
+    channels = set(channels)
     out_data = []
     max_events = 100
     if two_class:
@@ -60,9 +62,11 @@ def dataset_search(paradigm, multi_session=False, events=None,
                     skip_dataset=True
             if keep_event_dict and not skip_dataset:
                 d.selected_events = keep_event_dict
-                out_data.append(d)
+                if len(channels) > 0:
+                    s1 = d.get_data([1], False)[0][0][0]
+                    if channels <= set(s1.info['ch_names']):
+                        out_data.append(d)
     return out_data
-
 
 def find_intersecting_channels(datasets, verbose=False):
     '''
@@ -76,12 +80,13 @@ def find_intersecting_channels(datasets, verbose=False):
     keep_datasets = []
     for d in datasets:
         print('Searching dataset: {:s}'.format(type(d).__name__))
-        s1 = d.get_data([1])[0][0]
+        s1 = d.get_data([1], False)[0][0][0]
         s1.pick_types(eeg=True)
         processed = []
         for ch in s1.info['ch_names']:
             ch = ch.upper()
             if ch.find('EEG') == -1:
+                # TODO: less hacky way of finding poorly labeled datasets
                 processed.append(ch)
         allchans.update(processed)
         if len(processed) > 0:

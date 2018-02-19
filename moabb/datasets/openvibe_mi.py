@@ -88,9 +88,9 @@ class OpenvibeMI(BaseDataset):
         for i in range(1,10):
             data.append(self._get_single_session_data(i))
         if stack_sessions:
-            return [[data]]
-        else:
             return [data]
+        else:
+            return [[data]]
 
     def _get_single_session_data(self, session):
         """return data for a single recording session"""
@@ -102,4 +102,4 @@ class OpenvibeMI(BaseDataset):
             raw.save(fif_path)
             return raw
         else:
-            return Raw(fif_path, preload=True)
+            return Raw(fif_path, preload=True, verbose='ERROR')
