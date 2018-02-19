@@ -51,12 +51,12 @@ class AlexMI(BaseDataset):
 
     def __init__(self):
         super().__init__(
-            list(range(1,9)),
-            1,
-            dict(right_hand=2, feet=3, rest=4),
-            'Alexandre Motor Imagery',
-            [0,3],
-            'imagery'
+            subjects=list(range(1,9)),
+            sessions_per_subject=1,
+            events=dict(right_hand=2, feet=3, rest=4),
+            code='Alexandre Motor Imagery',
+            interval=[0,3],
+            paradigm='imagery'
             )
 
     def _get_single_subject_data(self, subject, multi_session):

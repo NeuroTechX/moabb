@@ -74,12 +74,12 @@ class OpenvibeMI(BaseDataset):
 
     def __init__(self, tmin=0, tmax=3):
         super().__init__(
-            [1],
-            14,
-            dict(right_hand=1, left_hand=2),
-            'Openvibe Motor Imagery',
-            [tmin,tmax],
-            'imagery'
+            subjects=[1],
+            sessions_per_subject=14,
+            events=dict(right_hand=1, left_hand=2),
+            code='Openvibe Motor Imagery',
+            interval=[tmin,tmax],
+            paradigm='imagery'
             )
 
     def get_data(self, subjects, stack_sessions=False):
