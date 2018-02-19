@@ -1,0 +1,14 @@
+name: Log Variance SVM
+
+paradigms:
+  - MotorImageryTwoClasses
+  - MotorImageryMultiClasses
+
+pipeline:
+  - name: LogVariance
+    from: moabb.pipelines.features
+
+  - name: SVC
+    from: sklearn.svm
+    parameters:
+      kernel: 'linear'

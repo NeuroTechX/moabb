@@ -1,0 +1,14 @@
+name: Log Variance LDA
+
+paradigms:
+  - MotorImageryTwoClasses
+  - MotorImageryMultiClasses
+
+pipeline:
+  - name: LogVariance
+    from: moabb.pipelines.features
+
+  - name: LinearDiscriminantAnalysis
+    from: sklearn.discriminant_analysis
+    parameters:
+      solver: svd

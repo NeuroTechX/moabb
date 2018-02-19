@@ -56,12 +56,13 @@ for yaml_file in yaml_files:
     with open(yaml_file, 'r') as yml:
         content = yml.read()
 
-        # get digest
-        digest = hashlib.md5(content.encode('utf8')).hexdigest()
-        outdir = os.path.join(options.results, digest)
-
         # load config
         config = yaml.load(content)
+
+        # get digest
+        digest = hashlib.md5(content.encode('utf8')).hexdigest()
+        outdir = os.path.join(options.results, digest +
+                              '_(' + config['name'] + ')')
 
         # iterate over paradigms
         for paradigm in config['paradigms']:
@@ -100,6 +101,7 @@ python_files = glob(os.path.join(options.pipelines, '*.py'))
 
 for paradigm in paradigms:
     # get the context
+    # FIXME name are not unique
     pipelines = {p['name']: p['pipeline'] for p in paradigms[paradigm]}
     datasets = DATASETS[paradigm]
     context = getattr(contexts, paradigm)(pipelines=pipelines,

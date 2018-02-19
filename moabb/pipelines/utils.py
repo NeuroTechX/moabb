@@ -23,7 +23,11 @@ def create_pipeline_from_config(config):
         # load the package
         mod = __import__(component['from'], fromlist=[component['name']])
         # create the instance
-        instance = getattr(mod, component['name'])(**component['parameters'])
+        if 'parameters' in component.keys():
+            params = component['parameters']
+        else:
+            params = {}
+        instance = getattr(mod, component['name'])(**params)
         components.append(instance)
 
     pipeline = make_pipeline(*components)
