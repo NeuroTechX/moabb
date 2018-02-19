@@ -59,7 +59,10 @@ class AlexMI(BaseDataset):
             paradigm='imagery'
             )
 
-    def _get_single_subject_data(self, subject, multi_session):
+    def _get_single_subject_data(self, subject, stack_sessions):
         """return data for a single subject"""
-        raw = Raw(data_path(subject), preload=True)
-        return [[raw]]
+        raw = Raw(data_path(subject), preload=True, verbose='ERROR')
+        if stack_sessions:
+            return [[raw]]
+        else:
+            return [[[raw]]]

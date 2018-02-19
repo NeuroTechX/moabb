@@ -111,8 +111,10 @@ class BBCIEEGfNIRS(BaseDataset):
         data = []
         for subject in subjects:
             data.extend(self._get_single_subject_data(subject))
-        return data
-
+        if stack_sessions:
+            return data
+        else:
+            return [data]
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
         fname, fname_mrk = data_path(subject)
