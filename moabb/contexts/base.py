@@ -57,7 +57,6 @@ class BaseImageryParadigm(ABC):
             if not(isinstance(pipeline, BaseEstimator)):
                 raise(ValueError("pipelines must only contains Pipelines instance"))
         self.pipelines = pipelines
-        self.results = Results(type(evaluator).__name__, pipelines)
 
     def verify(self, dataset):
         '''
@@ -65,22 +64,30 @@ class BaseImageryParadigm(ABC):
         '''
         assert dataset.paradigm == 'imagery'
 
-    def process(self):
+    def process(self, results=None):
         '''
         Runs tasks on all given datasets. 
         '''
         # Verify that datasets are valid for given paradigm first
+        if results is None:
+            self.results = Results(self.evaluator)
+        elif type(results) is str:
+            self.results = Results(path=results)
+        elif type(results) is Results:
+            self.results = results
         for d in self.datasets:
             self.verify(d)
         for d in self.datasets:
             print('\n\nProcessing dataset: {}'.format(d.code))
             self.evaluator.preprocess_data(d, self)
             for s in d.subject_list:
-                self.results.add(self.process_subject(d, s, self.pipelines))
-        self.results.to_dataframe()
+                run_pipes = self.results.not_yet_computed(self.pipelines, d, s)
+                if len(run_pipes)>0:
+                    self.results.add(self.process_subject(d, s, run_pipes))
+        return self.results
 
-    def process_subject(self, dataset, subj, clf):
-        return self.evaluator.evaluate(dataset, subj, clf, self)
+    def process_subject(self, dataset, subj, pplines):
+        return self.evaluator.evaluate(dataset, subj, pplines, self)
 
     def _epochs(self, raws, event_dict, time):
         '''Take list of raws and returns a list of epoch objects. Implements 
@@ -96,9 +103,9 @@ class BaseImageryParadigm(ABC):
             events = mne.find_events(raw, shortest_event=0, verbose=False)
             if self.channels is None:
                 # TODO: generalize to other sorts of channels
-                raw.pick_types(eeg=True, stim=True)
+                raw.pick_types(eeg=True, stim=False)
             else:
-                raw.pick_types(include=self.channels, stim=True)
+                raw.pick_types(include=self.channels, stim=False)
             raw.filter(bp_low, bp_high, method='iir')
             # ensure events are desired:
             if len(events) > 0:

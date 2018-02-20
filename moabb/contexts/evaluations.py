@@ -62,12 +62,12 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
             t_start = time()
             score = self.score(clf, allX, ally, groups, paradigm.scoring)
             duration = time() - t_start
-            out[name]= {'time': duration,
-                    'dataset': dataset.code,
-                    'id': subject,
-                    'score': score,
-                    'n_samples': groups.sum(),
-                    'n_channels': allX.shape[1]}
+            out[name] = {'time': duration,
+                         'dataset': dataset,
+                         'id': subject,
+                         'score': score,
+                         'n_samples': groups.sum(),
+                         'n_channels': allX.shape[1]}
         return out
 
     def preprocess_data(self, dataset, paradigm):
@@ -113,7 +113,7 @@ class WithinSessionEvaluation(TrainTestEvaluation):
         out = {k: [] for k in pipelines.keys()}
         for ind, session in enumerate(sub):
             skip = False
-            sess_id = '{:03d}_{:d}'.format(subject, ind)
+            # sess_id = '{:03d}_{:d}'.format(subject, ind)
 
             # get all epochs for individual files in given session
             epochs = paradigm._epochs(session, event_id, dataset.interval)
@@ -124,11 +124,11 @@ class WithinSessionEvaluation(TrainTestEvaluation):
                     score = self.score(clf, X, y, paradigm.scoring)
                     duration = time() - t_start
                     out[name].append({'time': duration,
-                                    'dataset': dataset.code,
-                                    'id': sess_id,
-                                    'score': score,
-                                    'n_samples': len(y),
-                                    'n_channels': X.shape[1]})
+                                      'dataset': dataset,
+                                      'id': subject,
+                                      'score': score,
+                                      'n_samples': len(y),
+                                      'n_channels': X.shape[1]})
         return out
 
     def score(self, clf, X, y, scoring):
@@ -176,10 +176,11 @@ class CrossSessionEvaluation(TrainTestEvaluation):
             score = self.score(clf, allX, ally, groupvec, paradigm.scoring)
             duration = time() - t_start
             out[name] = {'time': duration,
-                    'dataset': dataset.code,
-                    'id': subject,
-                    'score': score,
-                    'n_samples': len(y)}
+                         'dataset': dataset,
+                         'id': subject,
+                         'score': score,
+                         'n_samples': len(y),
+                         'n_channels':allX.shape[1]}
         return out
 
     def preprocess_data(self, dataset, paradigm):
