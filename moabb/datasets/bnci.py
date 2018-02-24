@@ -2,8 +2,8 @@
 BNCI 2014-001 Motor imagery dataset.
 """
 
-from .base import BaseDataset
-from . import download as dl
+from moabb.datasets.base import BaseDataset
+from moabb.datasets import download as dl
 
 from mne import create_info, concatenate_raws
 from mne.io import RawArray

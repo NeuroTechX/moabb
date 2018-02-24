@@ -15,12 +15,14 @@ class BaseDataset():
         self.interval = interval
         self.paradigm = paradigm
 
-    def get_data(self, subjects, stack_sessions=False):
+    def get_data(self, subjects=None, stack_sessions=False):
         """return data for a (list of) subject(s)
         If sessions are not stacked, return each session as a separate dataset"""
         data = []
         if type(subjects) is int:
             subjects = [subjects]
+        elif subjects is None:
+            subjects = self.subject_list
         for subject in subjects:
             if subject not in self.subject_list:
                 raise ValueError('Invalid subject {:s} given'.format(subject))
