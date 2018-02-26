@@ -32,7 +32,7 @@ class PhysionetMI(BaseDataset):
     def _get_single_subject_data(self, subject, stack_sessions):
         """return data for a single subject"""
         all_files = []
-        raw_fnames = eegbci.load_data(subject, runs=self.hand_runs, verbose='ERROR')
+        raw_fnames = eegbci.load_data(subject, runs=self.hand_runs, verbose='ERROR', base_url='http://www.physionet.org/pn4/eegmmidb/')
         raw_files = [read_raw_edf(f, preload=True, verbose='ERROR')
                      for f in raw_fnames]
 

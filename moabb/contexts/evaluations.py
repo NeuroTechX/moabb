@@ -119,6 +119,8 @@ class WithinSessionEvaluation(TrainTestEvaluation):
             epochs = paradigm._epochs(session, event_id, dataset.interval)
             X, y = self.extract_data_from_cont(epochs, event_id)
             if len(np.unique(y)) > 1:
+                counts = np.unique(y,return_counts=True)[1]
+                print('score imbalance: {}'.format(counts))
                 for name, clf in pipelines.items():
                     t_start = time()
                     score = self.score(clf, X, y, paradigm.scoring)

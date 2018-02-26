@@ -83,7 +83,11 @@ class BaseImageryParadigm(ABC):
             for s in d.subject_list:
                 run_pipes = self.results.not_yet_computed(self.pipelines, d, s)
                 if len(run_pipes)>0:
-                    self.results.add(self.process_subject(d, s, run_pipes))
+                    try:
+                        self.results.add(self.process_subject(d, s, run_pipes))
+                    except Exception as e:
+                        print(e)
+                        print('Skipping subject {}'.format(s))
         return self.results
 
     def process_subject(self, dataset, subj, pplines):

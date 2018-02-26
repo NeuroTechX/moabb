@@ -14,7 +14,9 @@ def violinplot(data):
         ax: pyplot Axes reference
     '''
 
-    ax = sea.violinplot(data=data, x="score", y="dataset", hue="pipeline")
+    ax = sea.violinplot(data=data, y="score", x="dataset", hue="pipeline", inner="stick",cut=0)
+    ax.set_ylim([0.5,1])
+    
     return ax
 
 
