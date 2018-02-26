@@ -24,6 +24,7 @@ matplotlib
 seaborn
 pandas
 pyriemann
+h5py
 
 # supported datasets
 
@@ -40,23 +41,49 @@ you can submit new dataset by filling this [form](https://docs.google.com/forms/
 
 # Architecture and main concepts
 
-there is 3 main concepts in the MOABB: the datasets, the context and the pipelines.
+there is 4 main concepts in the MOABB: the datasets, the context, the evaluation, and the pipelines.
 
 ### datasets
 
-A dataset handle and abstract low level access to the data. the dataset will takes data stored locally, in the format in which they have been downloaded, and will convert them into a MNE raw object.
+A dataset handle and abstract low level access to the data. the dataset will
+takes data stored locally, in the format in which they have been downloaded, and
+will convert them into a MNE raw object. There are options to pool all the
+different recording sessions per subject or to evaluate them separately. 
 
 ### contexts
 
-A context define how the raw data will be converted to trials ready to be processed by a decoding algorithm. The context also define how performances are evaluates, i.e. define the cross-validation procedure and the metric used.
-A single dataset can lead to multiple context. For example, a multi-class dataset can be evaluated as a multi-class problem, or as multiples binary classification problem. Similarly, we can have a within subject evaluation context or a cross-subject evaluation.
+A context define how the raw data will be converted to trials ready to be
+processed by a decoding algorithm. This is a function of the paradigm used,
+i.e. in motor imagery one can have two-class, multi-class, or continuous
+paradigms; similarly, different preprocessing is necessary for ERP vs ERD paradigms.
+
+### evaluations
+
+An evaluation defines how we go from trials per subject and session to a
+generalization statistic (AUC score, f-score, accuracy, etc) -- it can be either
+within-recording-session accuracy, across-session within-subject accuracy,
+across-subject accuracy, or other transfer learning settings.
 
 ### pipelines
 
 Pipeline defines all steps required by an algorithm to obtain predictions. Pipelines are typically a chain of sklearn compatible transformers and end with an sklearn compatible estimator.
 See [Pipelines](http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html) for more info.
 
-![archi](architecture.png)
+# Installation
+
+To install, fork or clone the repository and go to the downloaded directory,
+then run
+
+```
+python setup.py develop    # because no stable release yet
+```
+
+To ensure it is running correctly, you can also run
+
+```
+python -m unittest moabb.tests
+```
+once it is installed
 
 # How to contribute
 

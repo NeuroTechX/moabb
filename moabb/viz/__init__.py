@@ -73,7 +73,21 @@ class Results(ABC):
                     dset['data'][-1, :] = np.asarray([d['score'], d['time'], d['n_samples']])
 
     def to_dataframe(self):
-        pass
+        df_list = []
+        with h5py.File(self.filepath, 'r') as f:
+            for name, p_group in f.items():
+                for dname, dset in p_group.items():
+                    array = np.array(dset['data'])
+                    ids = np.array(dset['id'])
+                    df = pd.DataFrame(array, columns=dset.attrs['columns'])
+                    df['id'] = ids
+                    df['channels'] = dset.attrs['channels']
+                    df['n_sessions'] = dset.attrs['n_sessions']
+                    df['dataset'] = dname
+                    df['pipeline'] = name
+                    df_list.append(df)
+        return pd.concat(df_list, ignore_index=True)
+                
 
     def not_yet_computed(self, pipeline_dict, dataset, subj):
         def already_computed(p, d, s):
