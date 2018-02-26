@@ -20,17 +20,19 @@ class Results(ABC):
         class that will abstract result storage
         """
         if path is None:
-            path= os.path.join(os.path.dirname(__file__),'results.hd5')
+            path = os.path.join(os.path.dirname(__file__), 'results.hd5')
         self.filepath = path
         if not os.path.isfile(path):
             if evaluation is None:
-                raise ValueError('If no path is provided, must provide an evaluation')
+                raise ValueError(
+                    'If no path is provided, must provide an evaluation')
             with h5py.File(path, 'w') as f:
                 f.attrs['eval'] = np.string_(type(evaluation).__name__)
         else:
             with h5py.File(path, 'r') as f:
                 if f.attrs['eval'] != np.string_(type(evaluation).__name__):
-                    raise ValueError('Given results file has different evaluation to current: {} vs {}'.format(f.attrs['eval'], type(evaluation).__name__))
+                    raise ValueError('Given results file has different evaluation to current: {} vs {}'.format(
+                        f.attrs['eval'], type(evaluation).__name__))
 
     def add(self, pipeline_dict):
         def to_list(d):
@@ -56,23 +58,24 @@ class Results(ABC):
                     dset.attrs['n_subj'] = len(d1['dataset'].subject_list)
                     dset.attrs['n_sessions'] = d1['dataset'].n_sessions
                     dt = h5py.special_dtype(vlen=str)
-                    dset.create_dataset('id',(0,),dtype=dt, maxshape=(None,))
-                    dset.create_dataset('data',(0,3),maxshape=(None,3))
+                    dset.create_dataset('id', (0,), dtype=dt, maxshape=(None,))
+                    dset.create_dataset('data', (0, 3), maxshape=(None, 3))
                     dset.attrs['channels'] = d1['n_channels']
-                    dset.attrs.create('columns',['score','time', 'samples'], dtype=dt)
+                    dset.attrs.create(
+                        'columns', ['score', 'time', 'samples'], dtype=dt)
                 dset = ppline_grp[dname]
                 for d in dlist:
-                    # add id and scores to group 
-                    length = len(dset['id'])+1
-                    dset['id'].resize(length,0)
-                    dset['data'].resize(length,0)
-                    dset['id'][-1]= str(d['id'])
-                    dset['data'][-1,:] = np.asarray([d['score'], d['time'], d['n_samples']])
+                    # add id and scores to group
+                    length = len(dset['id']) + 1
+                    dset['id'].resize(length, 0)
+                    dset['data'].resize(length, 0)
+                    dset['id'][-1] = str(d['id'])
+                    dset['data'][-1, :] = np.asarray([d['score'], d['time'], d['n_samples']])
 
     def to_dataframe(self):
         pass
 
-    def not_yet_computed(self, pipelines, dataset, subj):
+    def not_yet_computed(self, pipeline_dict, dataset, subj):
         def already_computed(p, d, s):
             with h5py.File(self.filepath, 'r') as f:
                 if p not in f.keys():
@@ -84,4 +87,4 @@ class Results(ABC):
                     else:
                         dset = pipe_grp[d.code]
                         return (str(s) in dset['id'])
-        return {k: pipelines[k] for k in pipelines.keys() if not already_computed(k, dataset, subj)}
+        return {k: pipeline_dict[k] for k in pipeline_dict.keys() if not already_computed(k, dataset, subj)}

@@ -1,7 +1,7 @@
-from . import evaluations as ev
-from ..datasets.bnci import BNCI2014001
-from ..viz import Results
-from .motor_imagery import LeftRightImagery
+from moabb.contexts import evaluations as ev
+from moabb.datasets.bnci import BNCI2014001
+from moabb.viz import Results
+from moabb.contexts.motor_imagery import LeftRightImagery
 import unittest
 
 from pyriemann.spatialfilters import CSP

@@ -1,4 +1,4 @@
-from . import utils
+from moabb import utils
 import unittest
 
 
