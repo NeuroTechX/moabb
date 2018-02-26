@@ -66,6 +66,8 @@ def dataset_search(paradigm, multi_session=False, events=None,
                     s1 = d.get_data([1], False)[0][0][0]
                     if channels <= set(s1.info['ch_names']):
                         out_data.append(d)
+                else:
+                    out_data.append(d)
     return out_data
 
 def find_intersecting_channels(datasets, verbose=False):

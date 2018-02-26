@@ -50,6 +50,12 @@ d3 = {'time': 2,
       'n_samples': 100,
       'n_channels': 10}
 
+d4 = {'time': 2,
+      'dataset': DummyDataset('d2'),
+      'id': 1,
+      'score': 0.9,
+      'n_samples': 100,
+      'n_channels': 10}
 
 def to_result_input(pnames, dsets):
     return dict(zip(pnames, dsets))
@@ -68,6 +74,25 @@ class Test_Stats(unittest.TestCase):
         self.assertAlmostEqual(f, 12.53, places=2)
         self.assertAlmostEqual(p, 0.002, places=3)
 
+
+class Test_Integration(unittest.TestCase):
+
+    def setUp(self):
+        path = os.path.join(os.path.dirname(__file__), 'results.hdf5')
+        self.obj = Results(evaluation=DummyEvaluation(), path=path)
+
+    def tearDown(self):
+        path = os.path.join(os.path.dirname(__file__), 'results.hdf5')
+        if os.path.isfile(path):
+            os.remove(path)
+
+    def test_rmanova(self):
+        _in = to_result_input(['a', 'b', 'c'], [[d1]*5, [d1]*5, [d4]*5])
+        self.obj.add(_in)
+        _in = to_result_input(['a', 'b', 'c'], [[d2]*5, [d2]*5, [d3]*5])
+        self.obj.add(_in)
+        df = self.obj.to_dataframe()
+        ma.rmANOVA(df)
 
 class Test_Results(unittest.TestCase):
 

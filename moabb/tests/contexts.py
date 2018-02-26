@@ -18,7 +18,12 @@ d = BNCI2014001()
 d.selected_events = {k: d.event_id[k] for k in ['left_hand', 'right_hand']}
 
 class Test_CrossSess(unittest.TestCase):
+    '''This is actually integration testing but I don't know how to do this
+    better. A paradigm implements pre-processing so it needs files to run MNE
+    stuff on. To test the scoring and train/test we need to also have data and
+    run it. Putting this on the future docket...
 
+    '''
     def tearDown(self):
         if os.path.isfile('results.hd5'):
             os.remove('results.hd5')

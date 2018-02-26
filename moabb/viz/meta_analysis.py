@@ -7,41 +7,39 @@ import scipy.stats as stats
 
 def violinplot(data):
     '''
-    Function that takes a dict of results with the following columns:
-    id, time, score, dataset, n_samples
-    and keys correspond to pipelines
-    and gives a violin plot for each dataset and pipeline over score
-    '''
-    df = pd.concat(data.values(), keys=data.keys()).reset_index()
-    df = df.rename(columns={'level_0':'pipeline'})
+    Input:
+        data: dataframe
 
-    ax = sea.violinplot(data=df, x="score",y="dataset",hue="pipeline")
+    Out:
+        ax: pyplot Axes reference
+    '''
+
+    ax = sea.violinplot(data=data, x="score", y="dataset", hue="pipeline")
     return ax
 
-def rmANOVA(data):
+
+def rmANOVA(df):
     '''
     My attempt at a repeated-measures ANOVA 
     In:
-        data: dict of pipeline:DataFrame
+        data: dataframe
 
     Out:
         x: symmetric matrix of f-statistics
         **coming soon** p: p-values for each element of x
     '''
-    
-    df = pd.concat(data.values(), keys=data.keys()).reset_index()
-    df = df.rename(columns={'level_0':'pipeline'})
 
     stats_dict = dict()
     for dset in df['dataset'].unique():
-        tmp = df[df['dataset'] == dset]
         alg_list = []
         for alg in df['pipeline'].unique():
-            alg_list.append(tmp[tmp['pipeline'] == alg]['score'].as_matrix())
+            alg_list.append(df[np.logical_and(
+                df['dataset'] == dset, df['pipeline'] == alg)]['score'].as_matrix())
+        alg_list = [a for a in alg_list if len(a) > 0] #some datasets and algorithms may not exist?
         M = np.stack(alg_list).T
-        print('{}\n{}'.format(dset,M))
         stats_dict[dset] = _rmanova(M)
     return stats_dict
+
 
 def _rmanova(matrix):
     mean_subj = matrix.mean(axis=1)
@@ -50,7 +48,7 @@ def _rmanova(matrix):
 
     # SS: sum of squared difference
     SS_algo = len(mean_subj) * np.sum((mean_algo - grand_mean)**2)
-    SS_within_subj = np.sum((matrix - mean_algo[np.newaxis,:])**2)
+    SS_within_subj = np.sum((matrix - mean_algo[np.newaxis, :])**2)
     SS_subject = len(mean_algo) * np.sum((mean_subj - grand_mean)**2)
     SS_error = SS_within_subj - SS_subject
 
@@ -60,8 +58,8 @@ def _rmanova(matrix):
 
     # F-statistics
     f = MS_algo/MS_error
-    n,k = matrix.shape
+    n, k = matrix.shape
     df1 = k-1
-    df2 = (k-1)*(n-1) # calculated as one-way repeated-measures ANOVA
+    df2 = (k-1)*(n-1)  # calculated as one-way repeated-measures ANOVA
     p = stats.f.sf(f, df1, df2)
     return f, p

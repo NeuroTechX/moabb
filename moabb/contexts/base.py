@@ -72,7 +72,7 @@ class BaseImageryParadigm(ABC):
         if results is None:
             self.results = Results(self.evaluator)
         elif type(results) is str:
-            self.results = Results(path=results)
+            self.results = Results(path=results, evaluation=self.evaluator)
         elif type(results) is Results:
             self.results = results
         for d in self.datasets:
