@@ -1,23 +1,7 @@
 import pandas as pd
-import seaborn as sea
 import numpy as np
 import os
 import scipy.stats as stats
-
-
-def violinplot(data):
-    '''
-    Input:
-        data: dataframe
-
-    Out:
-        ax: pyplot Axes reference
-    '''
-
-    ax = sea.violinplot(data=data, y="score", x="dataset", hue="pipeline", inner="stick",cut=0)
-    ax.set_ylim([0.5,1])
-    
-    return ax
 
 
 def rmANOVA(df):

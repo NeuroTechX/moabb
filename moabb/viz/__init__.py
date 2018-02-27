@@ -1,11 +1,11 @@
-from abc import ABC
 import pandas as pd
 import h5py
 import numpy as np
-import os
+import os, platform
+from datetime import datetime
+from . import plotting as plt
 
-
-class Results(ABC):
+class Results:
     '''Class to hold results from the evaluation.evaluate method. Appropriate test
     would be to ensure the result of 'evaluate' is consistent and can be
     accepted by 'results.add'
@@ -102,3 +102,60 @@ class Results(ABC):
                         dset = pipe_grp[d.code]
                         return (str(s) in dset['id'])
         return {k: pipeline_dict[k] for k in pipeline_dict.keys() if not already_computed(k, dataset, subj)}
+
+
+def analyze(out_path, results=None, path=None, name='analysis'):
+    '''Given a results object (or the location for one), generates a folder with
+    results and a dataframe of the exact data used to generate those results, as
+    well as introspection to return information on the computer
+    
+    In:
+    out_path: location to store analysis folder
+
+    results: Obj/None; 
+
+    path: string/None
+
+    Either path or results is necessary
+
+    '''
+    ### input checks ###
+    if results is not None and type(results) is not Results:
+        raise ValueError('Given results argument is not of type moabb.viz.Results')
+    if path is not None:
+        if type(path) is not str:
+            raise ValueError('Given path argument is not string')
+        elif not os.path.isfile(path):
+            raise IOError('Given results file does not exist')
+
+    if not (bool(results is None) ^ bool(path is None)):
+        raise ValueError('Either results or path must be given, but not both')
+
+    if type(out_path) is not str:
+        raise ValueError('Given out_path argument is not string')
+    elif not os.path.isdir(out_path):
+        raise IOError('Given directory does not exist')
+    else:
+        analysis_path = os.path.join(out_path,name)
+        if os.path.isdir(analysis_path):
+            raise IOError("Analysis directory {} already exists".format(analysis_path))
+
+    os.mkdir(analysis_path)
+    # TODO: no good cross-platform way of recording CPU info?
+    with open(os.path.join(analysis_path,'info.txt'),'a') as f:
+        f.write('Date: {:%Y-%m-%d}\n Time: {:%H:%M}\n'.format(datetime.now(), datetime.now()))
+        f.write('System: {}\n'.format(platform.system()))
+        f.write('CPU: {}\n'.format(platform.processor()))
+
+    if results is None:
+        res = Results(path=path)
+    else:
+        res = results
+
+    data = res.to_dataframe()
+    data.to_csv(os.path.join(analysis_path,'data.csv'))
+
+    plt.score_plot(data).savefig(os.path.join(analysis_path,'scores.pdf'))
+    plt.time_line_plot(data).savefig(os.path.join(analysis_path,'time2d.pdf'))
+
+

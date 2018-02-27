@@ -50,9 +50,9 @@ takes data stored locally, in the format in which they have been downloaded, and
 will convert them into a MNE raw object. There are options to pool all the
 different recording sessions per subject or to evaluate them separately. 
 
-### contexts
+### paradigm
 
-A context define how the raw data will be converted to trials ready to be
+A paradigm defines how the raw data will be converted to trials ready to be
 processed by a decoding algorithm. This is a function of the paradigm used,
 i.e. in motor imagery one can have two-class, multi-class, or continuous
 paradigms; similarly, different preprocessing is necessary for ERP vs ERD paradigms.
@@ -75,6 +75,7 @@ To install, fork or clone the repository and go to the downloaded directory,
 then run
 
 ```
+pip install -r requirements.txt
 python setup.py develop    # because no stable release yet
 ```
 
