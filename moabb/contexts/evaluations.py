@@ -31,7 +31,7 @@ class TrainTestEvaluation(BaseEvaluation):
         # previously multipled data by 1e6
         X, y = (ep.get_data(), ep.events[:, -1])
         return X, y
-    
+
 
 class CrossSubjectEvaluation(TrainTestEvaluation):
     """Cross Subject evaluation Context.
@@ -76,7 +76,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
             self.X_cache.append(X)
             self.y_cache.append(y)
             self.ind_cache.append(np.ones(y.shape))
-        
+
     def score(self, clf, X, y, groups, scoring):
         le = LabelEncoder()
         y = le.fit_transform(y)
@@ -85,7 +85,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
         return acc.mean()
 
 class WithinSessionEvaluation(TrainTestEvaluation):
-    """Within session evaluation, returns accuracy computed within each recording session 
+    """Within session evaluation, returns accuracy computed within each recording session
 
     """
     def evaluate(self, dataset, subject, clf, paradigm):
@@ -134,13 +134,12 @@ class CrossSessionEvaluation(TrainTestEvaluation):
             raise(ValueError("Dataset had no selected events"))
 
         sub = dataset.get_data([subject], stack_sessions=False)[0]
-        results = []
         listX, listy = ([], [])
         for ind, session in enumerate(sub):
             # get list epochs for individual files in given session
             epochs = paradigm._epochs(session, event_id, dataset.interval)
             # equalize events from different classes
-            X, y  = self.extract_data_from_cont(epochs, event_id)
+            X, y = self.extract_data_from_cont(epochs, event_id)
             listX.append(X)
             listy.append(y)
         groups = []
@@ -165,6 +164,6 @@ class CrossSessionEvaluation(TrainTestEvaluation):
     def score(self, clf, X, y, groups, scoring):
         le = LabelEncoder()
         y = le.fit_transform(y)
-        acc = cross_val_score(clf, X, y, groups=groups,cv=LeaveOneGroupOut(),
+        acc = cross_val_score(clf, X, y, groups=groups, cv=LeaveOneGroupOut(),
                               scoring=scoring, n_jobs=self.n_jobs)
         return acc.mean()

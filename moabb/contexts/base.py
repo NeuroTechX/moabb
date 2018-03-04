@@ -12,7 +12,6 @@ from ..viz import Results
 from .. import utils
 
 
-
 class BaseImageryParadigm(ABC):
     """Base Context.
 
@@ -28,24 +27,28 @@ class BaseImageryParadigm(ABC):
         Instance that defines evaluation scheme
     """
 
-    def __init__(self, pipelines, evaluator, datasets=None, fmin=1, fmax=45, channels=None):
+    def __init__(self, pipelines, evaluator, datasets=None, fmin=1, fmax=45,
+                 channels=None):
         """init"""
-        self.fmin=fmin
-        self.fmax=fmax
-        self.channels=channels
+        self.fmin = fmin
+        self.fmax = fmax
+        self.channels = channels
         self.evaluator = evaluator
         if datasets is None:
-            datasets = utils.dataset_list
+            datasets = self.compatible_datasets
+            print(datasets)
         # check dataset
         if not isinstance(datasets, list):
             if isinstance(datasets, BaseDataset):
                 datasets = [datasets]
             else:
-                raise(ValueError("datasets must be a list or a dataset instance"))
+                raise(ValueError("datasets must be a list or a dataset "
+                                 "instance"))
 
         for dataset in datasets:
             if not(isinstance(dataset, BaseDataset)):
-                raise(ValueError("datasets must only contains dataset instance"))
+                raise(ValueError("datasets must only contains dataset "
+                                 "instance"))
 
         self.datasets = datasets
 
@@ -55,7 +58,8 @@ class BaseImageryParadigm(ABC):
 
         for name, pipeline in pipelines.items():
             if not(isinstance(pipeline, BaseEstimator)):
-                raise(ValueError("pipelines must only contains Pipelines instance"))
+                raise(ValueError("pipelines must only contains Pipelines "
+                                 "instance"))
         self.pipelines = pipelines
         self.results = Results(type(evaluator).__name__, pipelines)
 
@@ -67,7 +71,7 @@ class BaseImageryParadigm(ABC):
 
     def process(self):
         '''
-        Runs tasks on all given datasets. 
+        Runs tasks on all given datasets.
         '''
         # Verify that datasets are valid for given paradigm first
         for d in self.datasets:
@@ -84,7 +88,7 @@ class BaseImageryParadigm(ABC):
         return self.evaluator.evaluate(dataset, subj, clf, self)
 
     def _epochs(self, raws, event_dict, time):
-        '''Take list of raws and returns a list of epoch objects. Implements 
+        '''Take list of raws and returns a list of epoch objects. Implements
         imagery-specific processing as well
 
         '''
@@ -110,13 +114,20 @@ class BaseImageryParadigm(ABC):
                                         proj=False, baseline=None, preload=True,
                                         verbose=False)
                     ep.append(epochs)
-                    
+
         return ep
 
     @abstractproperty
     def scoring(self):
         '''Property that defines scoring metric (e.g. ROC-AUC or accuracy or f-score),
         given as a sklearn-compatible string
+
+        '''
+        pass
+
+    @abstractproperty
+    def compatible_datasets(self):
+        '''Property that defines the list of compatible datasets.
 
         '''
         pass
@@ -131,7 +142,6 @@ class BaseEvaluation(ABC):
     n_jobs: 1; number of jobs for fitting of pipeline
 
     '''
-    
 
     def __init__(self, random_state=None, n_jobs=1):
         """

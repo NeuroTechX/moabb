@@ -1,12 +1,7 @@
 """Motor Imagery contexts"""
 
-import numpy as np
 from .base import BaseImageryParadigm
 from moabb import utils
-
-from mne import Epochs, find_events
-from mne.epochs import concatenate_epochs, equalize_epoch_counts
-from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
 
 
 class BaseMotorImagery(BaseImageryParadigm):

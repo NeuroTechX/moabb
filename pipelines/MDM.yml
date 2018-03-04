@@ -1,7 +1,6 @@
 name: MDM
 paradigms:
-  - MotorImageryTwoClasses
-  - MotorImageryMultiClasses
+  - LeftRightImagery
 
 citations:
   - https://doi.org/10.1109/TBME.2011.2172210

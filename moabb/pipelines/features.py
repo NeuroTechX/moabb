@@ -9,4 +9,5 @@ class LogVariance(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         """transform."""
+        print(X.shape)
         return np.log(np.var(X, -1))

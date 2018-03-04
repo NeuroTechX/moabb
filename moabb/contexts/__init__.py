@@ -1,2 +1,1 @@
-from moabb.contexts.motor_imagery import (MotorImageryTwoClasses,
-                                          MotorImageryMultiClasses)
+from moabb.contexts.motor_imagery import *

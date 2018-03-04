@@ -104,7 +104,7 @@ class BBCIEEGfNIRS(BaseDataset):
                          code='BBCI EEG fNIRS',
                          interval=[3.5,10],
                          paradigm='imagery')
-        self.fnirs = fnirs      # TODO: actually incorporate fNIRS somehow 
+        self.fnirs = fnirs      # TODO: actually incorporate fNIRS somehow
 
     def get_data(self, subjects, stack_sessions=False):
         """return data for a list of subjects."""
@@ -115,6 +115,7 @@ class BBCIEEGfNIRS(BaseDataset):
             return data
         else:
             return [data]
+
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
         fname, fname_mrk = data_path(subject)
@@ -124,7 +125,7 @@ class BBCIEEGfNIRS(BaseDataset):
                       struct_as_record=False)['mrk']
         montage = read_montage('standard_1005')
 
-        for ii in [0,2,4]:
+        for ii in [0, 2, 4]:
             eeg = data[ii].x.T * 1e-6
             trig = np.zeros((1, eeg.shape[1]))
             idx = (mrk[ii].time - 1) // 5
@@ -138,7 +139,7 @@ class BBCIEEGfNIRS(BaseDataset):
             raw = RawArray(data=eeg, info=info, verbose=False)
             raws.append(raw)
         # arithmetic/rest
-        for ii in [1,3,5]:
+        for ii in [1, 3, 5]:
             eeg = data[ii].x.T * 1e-6
             trig = np.zeros((1, eeg.shape[1]))
             idx = (mrk[ii].time - 1) // 5

@@ -1,8 +1,7 @@
 name: Log Variance SVM
 
 paradigms:
-  - MotorImageryTwoClasses
-  - MotorImageryMultiClasses
+  - LeftRightImagery
 
 pipeline:
   - name: LogVariance

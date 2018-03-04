@@ -11,7 +11,7 @@ from collections import OrderedDict
 # moabb specific imports
 from moabb.pipelines.utils import create_pipeline_from_config
 from moabb import contexts
-from moabb import utils
+from moabb.contexts.evaluations import WithinSessionEvaluation
 
 parser = OptionParser()
 parser.add_option(
@@ -96,10 +96,9 @@ for paradigm in paradigms:
     # get the context
     # FIXME name are not unique
     pipelines = {p['name']: p['pipeline'] for p in paradigms[paradigm]}
-    datasets = paradigms[paradigm].compatible_datasets()
     context = getattr(contexts, paradigm)(
-        pipelines=pipelines, datasets=datasets)
-    results = context.evaluate(verbose=True)
+        pipelines=pipelines, evaluator=WithinSessionEvaluation())
+    context.process()
 
     for pipe in paradigms[paradigm]:
         os.makedirs(pipe['path'])
