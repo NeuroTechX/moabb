@@ -36,7 +36,7 @@ class BaseImageryParadigm(ABC):
         self.evaluator = evaluator
         if datasets is None:
             datasets = self.compatible_datasets
-            print(datasets)
+
         # check dataset
         if not isinstance(datasets, list):
             if isinstance(datasets, BaseDataset):
@@ -81,8 +81,10 @@ class BaseImageryParadigm(ABC):
             self.evaluator.preprocess_data(d, self)
             for s in d.subject_list:
                 for name, clf in self.pipelines.items():
-                    self.results.add(self.process_subject(d, s, clf), name)
-        self.results.to_dataframe()
+                    res = self.process_subject(d, s, clf)
+                    print(name, res)
+                    self.results.add(res, name)
+        return self.results.to_dataframe()
 
     def process_subject(self, dataset, subj, clf):
         return self.evaluator.evaluate(dataset, subj, clf, self)

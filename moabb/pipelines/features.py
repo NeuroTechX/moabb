@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 
+
 class LogVariance(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y):
@@ -9,5 +10,4 @@ class LogVariance(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         """transform."""
-        print(X.shape)
         return np.log(np.var(X, -1))
