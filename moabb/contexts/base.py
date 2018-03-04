@@ -67,7 +67,7 @@ class BaseImageryParadigm(ABC):
 
     def process(self):
         '''
-        Runs tasks on all given datasets. 
+        Runs tasks on all given datasets.
         '''
         # Verify that datasets are valid for given paradigm first
         for d in self.datasets:
@@ -84,7 +84,7 @@ class BaseImageryParadigm(ABC):
         return self.evaluator.evaluate(dataset, subj, clf, self)
 
     def _epochs(self, raws, event_dict, time):
-        '''Take list of raws and returns a list of epoch objects. Implements 
+        '''Take list of raws and returns a list of epoch objects. Implements
         imagery-specific processing as well
 
         '''
@@ -97,9 +97,9 @@ class BaseImageryParadigm(ABC):
             events = mne.find_events(raw, shortest_event=0, verbose=False)
             if self.channels is None:
                 # TODO: generalize to other sorts of channels
-                raw.pick_types(eeg=True, stim=True)
+                raw.pick_types(eeg=True, stim=False)
             else:
-                raw.pick_types(include=self.channels, stim=True)
+                raw.pick_types(include=self.channels, stim=False)
             raw.filter(bp_low, bp_high, method='iir')
             # ensure events are desired:
             if len(events) > 0:
@@ -110,7 +110,7 @@ class BaseImageryParadigm(ABC):
                                         proj=False, baseline=None, preload=True,
                                         verbose=False)
                     ep.append(epochs)
-                    
+
         return ep
 
     @abstractproperty
@@ -131,7 +131,7 @@ class BaseEvaluation(ABC):
     n_jobs: 1; number of jobs for fitting of pipeline
 
     '''
-    
+
 
     def __init__(self, random_state=None, n_jobs=1):
         """
