@@ -1,7 +1,6 @@
 name: CSP + LDA
 paradigms:
-  - MotorImageryTwoClasses
-  - MotorImageryMultiClasses
+  - LeftRightImagery
 
 citations:
   - https://doi.org/10.1007/BF01129656

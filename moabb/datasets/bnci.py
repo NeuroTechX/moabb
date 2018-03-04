@@ -16,14 +16,23 @@ BNCI_URL = 'http://bnci-horizon-2020.eu/database/data-sets/'
 BBCI_URL = 'http://doc.ml.tu-berlin.de/bbci/'
 
 
-def data_path(url, path=None, force_update=False, update_path=None, verbose=None):
-    return [dl.data_path(url, 'BNCI', path, force_update, update_path, verbose)]
+def data_path(url,
+              path=None,
+              force_update=False,
+              update_path=None,
+              verbose=None):
+    return [
+        dl.data_path(url, 'BNCI', path, force_update, update_path, verbose)
+    ]
 
 
 @verbose
-def load_data(subject, dataset='001-2014', path=None, force_update=False,
-
-              update_path=None, base_url=BNCI_URL,
+def load_data(subject,
+              dataset='001-2014',
+              path=None,
+              force_update=False,
+              update_path=None,
+              base_url=BNCI_URL,
               verbose=None):  # noqa: D301
     """Get paths to local copies of a BNCI dataset files.
 
@@ -60,52 +69,61 @@ def load_data(subject, dataset='001-2014', path=None, force_update=False,
     event_id: dict
         dictonary containing events and their code.
     """
-    dataset_list = {'001-2014': _load_data_001_2014,
-                    '002-2014': _load_data_002_2014,
-                    '004-2014': _load_data_004_2014,
-                    '008-2014': _load_data_008_2014,
-                    '009-2014': _load_data_009_2014,
-                    '001-2015': _load_data_001_2015,
-                    '003-2015': _load_data_003_2015,
-                    '004-2015': _load_data_004_2015,
-                    '009-2015': _load_data_009_2015,
-                    '010-2015': _load_data_010_2015,
-                    '012-2015': _load_data_012_2015,
-                    '013-2015': _load_data_013_2015}
+    dataset_list = {
+        '001-2014': _load_data_001_2014,
+        '002-2014': _load_data_002_2014,
+        '004-2014': _load_data_004_2014,
+        '008-2014': _load_data_008_2014,
+        '009-2014': _load_data_009_2014,
+        '001-2015': _load_data_001_2015,
+        '003-2015': _load_data_003_2015,
+        '004-2015': _load_data_004_2015,
+        '009-2015': _load_data_009_2015,
+        '010-2015': _load_data_010_2015,
+        '012-2015': _load_data_012_2015,
+        '013-2015': _load_data_013_2015
+    }
 
-    baseurl_list = {'001-2014': BNCI_URL,
-                    '002-2014': BNCI_URL,
-                    '001-2015': BNCI_URL,
-                    '004-2014': BNCI_URL,
-                    '008-2014': BNCI_URL,
-                    '009-2014': BNCI_URL,
-                    '003-2015': BNCI_URL,
-                    '004-2015': BNCI_URL,
-                    '009-2015': BBCI_URL,
-                    '010-2015': BBCI_URL,
-                    '012-2015': BBCI_URL,
-                    '013-2015': BNCI_URL}
+    baseurl_list = {
+        '001-2014': BNCI_URL,
+        '002-2014': BNCI_URL,
+        '001-2015': BNCI_URL,
+        '004-2014': BNCI_URL,
+        '008-2014': BNCI_URL,
+        '009-2014': BNCI_URL,
+        '003-2015': BNCI_URL,
+        '004-2015': BNCI_URL,
+        '009-2015': BBCI_URL,
+        '010-2015': BBCI_URL,
+        '012-2015': BBCI_URL,
+        '013-2015': BNCI_URL
+    }
 
     if dataset not in dataset_list.keys():
         raise ValueError("Dataset '%s' is not a valid BNCI dataset ID. "
-                         "Valid dataset are %s."
-                         % (dataset, ", ".join(dataset_list.keys())))
+                         "Valid dataset are %s." %
+                         (dataset, ", ".join(dataset_list.keys())))
 
     return dataset_list[dataset](subject, path, force_update, update_path,
                                  baseurl_list[dataset], verbose)
 
 
 @verbose
-def _load_data_001_2014(subject, path=None, force_update=False,
-                        update_path=None, base_url=BNCI_URL,
+def _load_data_001_2014(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BNCI_URL,
                         verbose=None):
     """Load data for 001-2014 dataset."""
     if (subject < 1) or (subject > 9):
         raise ValueError("Subject must be between 1 and 9. Got %d." % subject)
 
-    ch_names = ['Fz', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4', 'C5', 'C3',
-                'C1', 'Cz', 'C2', 'C4', 'C6', 'CP3', 'CP1', 'CPz',
-                'CP2', 'CP4', 'P1', 'Pz', 'P2', 'POz', 'EOG1', 'EOG2', 'EOG3']
+    ch_names = [
+        'Fz', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2',
+        'C4', 'C6', 'CP3', 'CP1', 'CPz', 'CP2', 'CP4', 'P1', 'Pz', 'P2', 'POz',
+        'EOG1', 'EOG2', 'EOG3'
+    ]
     ch_types = ['eeg'] * 22 + ['eog'] * 3
 
     data_paths = []
@@ -117,8 +135,11 @@ def _load_data_001_2014(subject, path=None, force_update=False,
 
 
 @verbose
-def _load_data_002_2014(subject, path=None, force_update=False,
-                        update_path=None, base_url=BNCI_URL,
+def _load_data_002_2014(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BNCI_URL,
                         verbose=None):
     """Load data for 002-2014 dataset."""
     if (subject < 1) or (subject > 14):
@@ -131,9 +152,13 @@ def _load_data_002_2014(subject, path=None, force_update=False,
 
     return _convert_mi(data_paths, None, None)
 
+
 @verbose
-def _load_data_004_2014(subject, path=None, force_update=False,
-                        update_path=None, base_url=BNCI_URL,
+def _load_data_004_2014(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BNCI_URL,
                         verbose=None):
     """Load data for 004-2014 dataset."""
     if (subject < 1) or (subject > 9):
@@ -147,13 +172,15 @@ def _load_data_004_2014(subject, path=None, force_update=False,
         url = '{u}004-2014/B{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
         data_paths.extend(data_path(url, path, force_update, update_path))
 
-
     return _convert_mi(data_paths, ch_names, ch_types)
 
 
 @verbose
-def _load_data_008_2014(subject, path=None, force_update=False,
-                        update_path=None, base_url=BNCI_URL,
+def _load_data_008_2014(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BNCI_URL,
                         verbose=None):
     """Load data for 008-2014 dataset."""
     if (subject < 1) or (subject > 8):
@@ -170,8 +197,11 @@ def _load_data_008_2014(subject, path=None, force_update=False,
 
 
 @verbose
-def _load_data_009_2014(subject, path=None, force_update=False,
-                        update_path=None, base_url=BNCI_URL,
+def _load_data_009_2014(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BNCI_URL,
                         verbose=None):
     """Load data for 009-2014 dataset."""
     if (subject < 1) or (subject > 10):
@@ -195,8 +225,11 @@ def _load_data_009_2014(subject, path=None, force_update=False,
 
 
 @verbose
-def _load_data_001_2015(subject, path=None, force_update=False,
-                        update_path=None, base_url=BNCI_URL,
+def _load_data_001_2015(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BNCI_URL,
                         verbose=None):
     """Load data for 001-2015 dataset."""
     if (subject < 1) or (subject > 12):
@@ -212,16 +245,21 @@ def _load_data_001_2015(subject, path=None, force_update=False,
         url = '{u}001-2015/S{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
         data_paths.extend(data_path(url, path, force_update, update_path))
 
-    ch_names = ['FC3', 'FCz', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2',
-                'C4', 'C6', 'CP3', 'CPz', 'CP4']
+    ch_names = [
+        'FC3', 'FCz', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP3',
+        'CPz', 'CP4'
+    ]
     ch_types = ['eeg'] * 13
-
 
     return _convert_mi(data_paths, ch_names, ch_types)
 
+
 @verbose
-def _load_data_003_2015(subject, path=None, force_update=False,
-                        update_path=None, base_url=BNCI_URL,
+def _load_data_003_2015(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BNCI_URL,
                         verbose=None):
     """Load data for 003-2015 dataset."""
     if (subject < 1) or (subject > 10):
@@ -238,14 +276,15 @@ def _load_data_003_2015(subject, path=None, force_update=False,
     data = data['s%d' % subject]
     sfreq = 256.
 
-    ch_names = ['Fz', 'Cz', 'P3', 'Pz', 'P4', 'PO7', 'Oz', 'PO8',
-                'Target', 'Flash']
+    ch_names = [
+        'Fz', 'Cz', 'P3', 'Pz', 'P4', 'PO7', 'Oz', 'PO8', 'Target', 'Flash'
+    ]
 
     ch_types = ['eeg'] * 8 + ['stim'] * 2
     montage = read_montage('standard_1005')
 
-    info = create_info(ch_names=ch_names, ch_types=ch_types,
-                       sfreq=sfreq, montage=montage)
+    info = create_info(
+        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
 
     for run in [data.train, data.test]:
         # flash events on the channel 9
@@ -274,8 +313,11 @@ def _load_data_003_2015(subject, path=None, force_update=False,
 
 
 @verbose
-def _load_data_004_2015(subject, path=None, force_update=False,
-                        update_path=None, base_url=BNCI_URL,
+def _load_data_004_2015(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BNCI_URL,
                         verbose=None):
     """Load data for 004-2015 dataset."""
     if (subject < 1) or (subject > 9):
@@ -286,26 +328,32 @@ def _load_data_004_2015(subject, path=None, force_update=False,
     url = '{u}004-2015/{s}.mat'.format(u=base_url, s=subjects[subject - 1])
     filename = data_path(url, path, force_update, update_path)[0]
 
-    ch_names = ['AFz', 'F7', 'F3', 'Fz', 'F4', 'F8', 'FC3', 'FCz',
-                'FC4', 'T3', 'C3', 'Cz', 'C4', 'T4', 'CP3', 'CPz',
-                'CP4', 'P7', 'P5', 'P3', 'P1', 'Pz', 'P2', 'P4',
-                'P6', 'P8', 'PO3', 'PO4', 'O1', 'O2']
+    ch_names = [
+        'AFz', 'F7', 'F3', 'Fz', 'F4', 'F8', 'FC3', 'FCz', 'FC4', 'T3', 'C3',
+        'Cz', 'C4', 'T4', 'CP3', 'CPz', 'CP4', 'P7', 'P5', 'P3', 'P1', 'Pz',
+        'P2', 'P4', 'P6', 'P8', 'PO3', 'PO4', 'O1', 'O2'
+    ]
     ch_types = ['eeg'] * 30
 
     return _convert_mi([filename], ch_names, ch_types)
 
 
 @verbose
-def _load_data_009_2015(subject, path=None, force_update=False,
-                        update_path=None, base_url=BBCI_URL,
+def _load_data_009_2015(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BBCI_URL,
                         verbose=None):
     """Load data for 009-2015 dataset."""
     if (subject < 1) or (subject > 21):
         raise ValueError("Subject must be between 1 and 21. Got %d." % subject)
 
-    subjects = ['fce', 'kw', 'faz', 'fcj', 'fcg', 'far', 'faw', 'fax', 'fcc',
-                'fcm', 'fas', 'fch', 'fcd', 'fca', 'fcb', 'fau', 'fci', 'fav',
-                'fat', 'fcl', 'fck']
+    subjects = [
+        'fce', 'kw', 'faz', 'fcj', 'fcg', 'far', 'faw', 'fax', 'fcc', 'fcm',
+        'fas', 'fch', 'fcd', 'fca', 'fcb', 'fau', 'fci', 'fav', 'fat', 'fcl',
+        'fck'
+    ]
     s = subjects[subject - 1]
     url = '{u}BNCIHorizon2020-AMUSE/AMUSE_VP{s}.mat'.format(u=base_url, s=s)
     filename = data_path(url, path, force_update, update_path)[0]
@@ -316,15 +364,20 @@ def _load_data_009_2015(subject, path=None, force_update=False,
 
 
 @verbose
-def _load_data_010_2015(subject, path=None, force_update=False,
-                        update_path=None, base_url=BBCI_URL,
+def _load_data_010_2015(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BBCI_URL,
                         verbose=None):
     """Load data for 010-2015 dataset."""
     if (subject < 1) or (subject > 12):
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
 
-    subjects = ['fat', 'gcb', 'gcc', 'gcd', 'gce', 'gcf', 'gcg', 'gch', 'iay',
-                'icn', 'icr', 'pia']
+    subjects = [
+        'fat', 'gcb', 'gcc', 'gcd', 'gce', 'gcf', 'gcg', 'gch', 'iay', 'icn',
+        'icr', 'pia'
+    ]
 
     s = subjects[subject - 1]
     url = '{u}BNCIHorizon2020-RSVP/RSVP_VP{s}.mat'.format(u=base_url, s=s)
@@ -336,15 +389,19 @@ def _load_data_010_2015(subject, path=None, force_update=False,
 
 
 @verbose
-def _load_data_012_2015(subject, path=None, force_update=False,
-                        update_path=None, base_url=BBCI_URL,
+def _load_data_012_2015(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BBCI_URL,
                         verbose=None):
     """Load data for 012-2015 dataset."""
     if (subject < 1) or (subject > 12):
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
 
-    subjects = ['nv', 'nw', 'nx', 'ny', 'nz', 'mg', 'oa', 'ob', 'oc', 'od',
-                'ja', 'oe']
+    subjects = [
+        'nv', 'nw', 'nx', 'ny', 'nz', 'mg', 'oa', 'ob', 'oc', 'od', 'ja', 'oe'
+    ]
 
     s = subjects[subject - 1]
     url = '{u}BNCIHorizon2020-PASS2D/PASS2D_VP{s}.mat'.format(u=base_url, s=s)
@@ -356,8 +413,11 @@ def _load_data_012_2015(subject, path=None, force_update=False,
 
 
 @verbose
-def _load_data_013_2015(subject, path=None, force_update=False,
-                        update_path=None, base_url=BNCI_URL,
+def _load_data_013_2015(subject,
+                        path=None,
+                        force_update=False,
+                        update_path=None,
+                        base_url=BNCI_URL,
                         verbose=None):
     """Load data for 013-2015 dataset."""
     if (subject < 1) or (subject > 6):
@@ -365,8 +425,8 @@ def _load_data_013_2015(subject, path=None, force_update=False,
 
     data_paths = []
     for r in ['s1', 's2']:
-        url = '{u}013-2015/Subject{s:02d}_{r}.mat'.format(u=base_url,
-                                                          s=subject, r=r)
+        url = '{u}013-2015/Subject{s:02d}_{r}.mat'.format(
+            u=base_url, s=subject, r=r)
         data_paths.extend(data_path(url, path, force_update, update_path))
 
     raws = []
@@ -380,6 +440,7 @@ def _load_data_013_2015(subject, path=None, force_update=False,
             raws.append(raw)
             event_id.update(evd)
     return raws, event_id
+
 
 def _convert_mi(data_paths, ch_names, ch_types):
     '''
@@ -404,15 +465,12 @@ def _convert_mi(data_paths, ch_names, ch_types):
     standardize_keys(event_id)
     return sessions, event_id
 
+
 def standardize_keys(d):
-    master_list = [['both feet', 'feet'],
-                   ['left hand', 'left_hand'],
-                   ['right hand', 'right_hand'],
-                   ['FEET', 'feet'],
-                   ['HAND', 'right_hand'],
-                   ['NAV', 'navigation'],
-                   ['SUB', 'subtraction'],
-                   ['WORD', 'word_ass']]
+    master_list = [['both feet', 'feet'], ['left hand', 'left_hand'], [
+        'right hand', 'right_hand'
+    ], ['FEET', 'feet'], ['HAND', 'right_hand'], ['NAV', 'navigation'],
+                   ['SUB', 'subtraction'], ['WORD', 'word_ass']]
     for old, new in master_list:
         if old in d.keys():
             d[new] = d.pop(old)
@@ -444,8 +502,8 @@ def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
     ch_names = ch_names + ['stim']
     ch_types = ch_types + ['stim']
     event_id = {ev: (ii + 1) for ii, ev in enumerate(run.classes)}
-    info = create_info(ch_names=ch_names, ch_types=ch_types,
-                       sfreq=sfreq, montage=montage)
+    info = create_info(
+        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
     return raw, event_id
 
@@ -464,8 +522,8 @@ def _convert_run_p300_sl(run, verbose=None):
     eeg_data = np.c_[eeg_data, run.y, flash_stim]
     event_id = {ev: (ii + 1) for ii, ev in enumerate(run.classes)}
     event_id.update({ev: (ii + 3) for ii, ev in enumerate(run.classes_stim)})
-    info = create_info(ch_names=ch_names, ch_types=ch_types,
-                       sfreq=sfreq, montage=montage)
+    info = create_info(
+        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
     return raw, event_id
 
@@ -509,8 +567,8 @@ def _convert_run_bbci(run, ch_types, verbose=None):
     ch_names = ch_names + ['Target', 'Flash']
     ch_types = ch_types + ['stim'] * 2
 
-    info = create_info(ch_names=ch_names, ch_types=ch_types,
-                       sfreq=sfreq, montage=montage)
+    info = create_info(
+        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
     return raw, event_id
 
@@ -541,8 +599,8 @@ def _convert_run_epfl(run, verbose=None):
     ch_types = ch_types + ['stim']
     event_id = {'correct': 1, 'error': 2}
 
-    info = create_info(ch_names=ch_names, ch_types=ch_types,
-                       sfreq=sfreq, montage=montage)
+    info = create_info(
+        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
     return raw, event_id
 
@@ -552,85 +610,63 @@ class MNEBNCI(BaseDataset):
 
     def _get_single_subject_data(self, subject, stack_sessions):
         """return data for a single subject"""
-<<<<<<< HEAD
-        raw_files, event_id = load_data(subject=subject, dataset=self.code,
-                                        verbose=False)
-        print(event_id)
-        return raw_files
-=======
-        sessions = load_data(subject=subject, dataset=self.code,
-                                        verbose=False)[0]
+        sessions = load_data(
+            subject=subject, dataset=self.code, verbose=False)[0]
         if stack_sessions:
             new_sessions = [[run for session in sessions for run in session]]
         else:
             new_sessions = [sessions]
         return new_sessions
->>>>>>> master
 
 
 class BNCI2014001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset"""
 
     def __init__(self, tmin=3.5, tmax=5.5):
-        super().__init__(subjects=range(1,10),
-                         sessions_per_subject=2,
-                         events=dict(zip(['left_hand','right_hand','feet','tongue'],
-                                  [1,2,3,4])),
-                         code='001-2014',
-                         interval=[tmin, tmax],
-                         paradigm='imagery'
-        )
+        super().__init__(
+            subjects=range(1, 10),
+            sessions_per_subject=2,
+            events=dict(
+                zip(['left_hand', 'right_hand', 'feet', 'tongue'],
+                    [1, 2, 3, 4])),
+            code='001-2014',
+            interval=[tmin, tmax],
+            paradigm='imagery')
 
 
 class BNCI2014002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset"""
 
     def __init__(self, tmin=3.5, tmax=5.5):
-        super().__init__(range(1,15),
-                         1,
-                         dict(zip(['right_hand','feet'],
-                                  [1,2])),
-                         '002-2014',
-                         [tmin, tmax],
-                         'imagery'
-        )
+        super().__init__(
+            range(1, 15), 1, dict(zip(['right_hand', 'feet'], [1, 2])),
+            '002-2014', [tmin, tmax], 'imagery')
 
 
 class BNCI2014004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset"""
 
     def __init__(self, tmin=4.5, tmax=6.5):
-        super().__init__(range(1,10),
-                         2,
-                         dict(zip(['left_hand','right_hand'],
-                                  [1,2])),
-                         '004-2014',
-                         [tmin, tmax],
-                         'imagery'
-        )
+        super().__init__(
+            range(1, 10), 2, dict(zip(['left_hand', 'right_hand'], [1, 2])),
+            '004-2014', [tmin, tmax], 'imagery')
+
 
 class BNCI2015001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset"""
 
     def __init__(self, tmin=4, tmax=7.5):
-        super().__init__(range(1,13),
-                         2,
-                         dict(zip(['right_hand','feet'],
-                                  [1,2])),
-                         '001-2015',
-                         [tmin, tmax],
-                         'imagery'
-        )
+        super().__init__(
+            range(1, 13), 2, dict(zip(['right_hand', 'feet'], [1, 2])),
+            '001-2015', [tmin, tmax], 'imagery')
+
 
 class BNCI2015004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset"""
 
     def __init__(self, tmin=4.25, tmax=10):
-        super().__init__(range(1,10),
-                         2,
-                         dict(right_hand=4, feet=5,
-                                 navigation=3, subtraction=2, word_ass=1),
-                         '004-2015',
-                         [tmin, tmax],
-                         'imagery'
-        )
+        super().__init__(
+            range(1, 10), 2,
+            dict(
+                right_hand=4, feet=5, navigation=3, subtraction=2, word_ass=1),
+            '004-2015', [tmin, tmax], 'imagery')

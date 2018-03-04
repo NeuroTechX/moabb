@@ -11,41 +11,32 @@ from collections import OrderedDict
 # moabb specific imports
 from moabb.pipelines.utils import create_pipeline_from_config
 from moabb import contexts
-
-from moabb.datasets.bnci import (BNCI2014001, BNCI2014002,
-                                 BNCI2014004, BNCI2015001, BNCI2015004)
-
-from moabb.datasets.alex_mi import AlexMI
-from moabb.datasets.bbci_eeg_fnirs import BBCIEEGfNIRS
-from moabb.datasets.gigadb import GigaDbMI
-from moabb.datasets.physionet_mi import PhysionetMI
-from moabb.datasets.openvibe_mi import OpenvibeMI
+from moabb import utils
 
 parser = OptionParser()
-parser.add_option("-p", "--pipelines",
-                  dest="pipelines", type='str', default='./pipelines/',
-                  help="Folder containing the pipelines to evaluates.")
-parser.add_option("-r", "--results",
-                  dest="results", type='str', default='./results/',
-                  help="Folder to store the results.")
-parser.add_option("-f", "--force-update",
-                  dest="force", action="store_true", default=False,
-                  help="Force evaluation of cached pipelines.")
+parser.add_option(
+    "-p",
+    "--pipelines",
+    dest="pipelines",
+    type='str',
+    default='./pipelines/',
+    help="Folder containing the pipelines to evaluates.")
+parser.add_option(
+    "-r",
+    "--results",
+    dest="results",
+    type='str',
+    default='./results/',
+    help="Folder to store the results.")
+parser.add_option(
+    "-f",
+    "--force-update",
+    dest="force",
+    action="store_true",
+    default=False,
+    help="Force evaluation of cached pipelines.")
 
 (options, args) = parser.parse_args()
-
-# FIXME : get automatically datset compatibles with some contexts
-DATASETS = {'MotorImageryTwoClasses': [AlexMI(),
-                                       OpenvibeMI(),
-                                       BNCI2015004(motor_imagery=True),
-                                       PhysionetMI(),
-                                       GigaDbMI(),
-                                       BBCIEEGfNIRS()],
-
-            'MotorImageryMultiClasses': [AlexMI(with_rest=True),
-                                         #BNCI2014001(),
-                                         PhysionetMI(with_rest=True,
-                                                     feets=False)]}
 
 paradigms = OrderedDict()
 
@@ -61,8 +52,8 @@ for yaml_file in yaml_files:
 
         # get digest
         digest = hashlib.md5(content.encode('utf8')).hexdigest()
-        outdir = os.path.join(options.results, digest +
-                              '_(' + config['name'] + ')')
+        outdir = os.path.join(options.results,
+                              digest + '_(' + config['name'] + ')')
 
         # iterate over paradigms
         for paradigm in config['paradigms']:
@@ -76,9 +67,11 @@ for yaml_file in yaml_files:
 
             pipe = create_pipeline_from_config(config['pipeline'])
 
-            pipeline = {'pipeline': pipe,
-                        'name': config['name'],
-                        'path': outpath}
+            pipeline = {
+                'pipeline': pipe,
+                'name': config['name'],
+                'path': outpath
+            }
 
             # append the pipeline in the paradigm list
             if paradigm not in paradigms.keys():
@@ -103,9 +96,9 @@ for paradigm in paradigms:
     # get the context
     # FIXME name are not unique
     pipelines = {p['name']: p['pipeline'] for p in paradigms[paradigm]}
-    datasets = DATASETS[paradigm]
-    context = getattr(contexts, paradigm)(pipelines=pipelines,
-                                          datasets=datasets)
+    datasets = paradigms[paradigm].compatible_datasets()
+    context = getattr(contexts, paradigm)(
+        pipelines=pipelines, datasets=datasets)
     results = context.evaluate(verbose=True)
 
     for pipe in paradigms[paradigm]:
