@@ -82,7 +82,6 @@ class BaseImageryParadigm(ABC):
             for s in d.subject_list:
                 for name, clf in self.pipelines.items():
                     res = self.process_subject(d, s, clf)
-                    print(name, res)
                     self.results.add(res, name)
         return self.results.to_dataframe()
 

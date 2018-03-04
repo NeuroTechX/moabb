@@ -97,7 +97,7 @@ for paradigm in paradigms:
     # FIXME name are not unique
     pipelines = {p['name']: p['pipeline'] for p in paradigms[paradigm]}
     context = getattr(contexts, paradigm)(
-        pipelines=pipelines, evaluator=WithinSessionEvaluation())
+        pipelines=pipelines, evaluator=WithinSessionEvaluation(random_state=42))
     context.process()
 
     for pipe in paradigms[paradigm]:
