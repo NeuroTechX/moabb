@@ -101,9 +101,9 @@ class BaseImageryParadigm(ABC):
             events = mne.find_events(raw, shortest_event=0, verbose=False)
             if self.channels is None:
                 # TODO: generalize to other sorts of channels
-                raw.pick_types(eeg=True, stim=True)
+                raw.pick_types(eeg=True, stim=False)
             else:
-                raw.pick_types(include=self.channels, stim=True)
+                raw.pick_types(include=self.channels, stim=False)
             raw.filter(bp_low, bp_high, method='iir')
             # ensure events are desired:
             if len(events) > 0:
