@@ -7,21 +7,21 @@ from .base import BaseDataset
 import pandas as pd
 import os
 from mne import create_info
-from mne.io import RawArray
+from mne.io import RawArray, Raw
 from mne.channels import read_montage
-import moabb.datasets.download as dl
+from . import download as dl
 
 
 INRIA_URL = 'http://openvibe.inria.fr/private/datasets/dataset-1/'
 
-def data_path(subject, path=None, force_update=False, update_path=None,
+def data_path(session, path=None, force_update=False, update_path=None,
               verbose=None):
     """Get path to local copy of INRIA dataset URL.
 
     Parameters
     ----------
-    subject : int
-        Number of subject to use
+    session : int
+        Number of session to use
     path : None | str
         Location of where to look for the data storing location.
         If None, the environment variable or config parameter
@@ -43,9 +43,9 @@ def data_path(subject, path=None, force_update=False, update_path=None,
         Local path to the given data file. This path is contained inside a list
         of length one, for compatibility.
     """  # noqa: E501
-    if subject < 1 or subject > 14:
-        raise ValueError("Valid subjects between 1 and 14, subject {:d} requested".format(subject))
-    url = '{:s}{:02d}-signal.csv.bz2'.format(INRIA_URL, subject)
+    if session < 1 or session > 14:
+        raise ValueError("Valid sessions between 1 and 14, session {:d} requested".format(session))
+    url = '{:s}{:02d}-signal.csv.bz2'.format(INRIA_URL, session)
     return dl.data_path(url, 'INRIA', path, force_update, update_path, verbose)
 
 def convert_inria_csv_to_mne(path):
@@ -65,27 +65,41 @@ def convert_inria_csv_to_mne(path):
     csv_data['Stim'][right_hand_ind] = 1e6
     montage = read_montage('standard_1005')
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=512., montage=montage)
-    return [RawArray(data=csv_data.values.T * 1e-6, info=info, verbose=False)]
+    raw = RawArray(data=csv_data.values.T * 1e-6, info=info, verbose=False)
+    return raw
+    
     
 class OpenvibeMI(BaseDataset):
     """Openvibe Motor Imagery dataset"""
 
-    def __init__(self):
-        self.subject_list = range(1, 15)
-        self.name = 'Openvibe Motor Imagery'
-        self.tmin = 0
-        self.tmax = 3
-        self.paradigm = 'Motor Imagery'
-        self.event_id = dict(right_hand=1, left_hand=2)
+    def __init__(self, tmin=0, tmax=3):
+        super().__init__(
+            subjects=[1],
+            sessions_per_subject=14,
+            events=dict(right_hand=1, left_hand=2),
+            code='Openvibe Motor Imagery',
+            interval=[tmin,tmax],
+            paradigm='imagery'
+            )
 
-    def get_data(self, subjects):
-        """return data for a list of subjects. NOTE: these are different recordings same subj"""
+    def get_data(self, subjects, stack_sessions=False):
+        """return data for subject"""
         data = []
-        for subject in subjects:
-            data.append(self._get_single_subject_data(subject))
-        return data
+        for i in range(1,10):
+            data.append(self._get_single_session_data(i))
+        if stack_sessions:
+            return [data]
+        else:
+            return [[data]]
 
-    def _get_single_subject_data(self, session):
-        """return data for a single recordign session"""
-
-        return convert_inria_csv_to_mne(data_path(session))
+    def _get_single_session_data(self, session):
+        """return data for a single recording session"""
+        csv_path = data_path(session)
+        fif_path = os.path.join(os.path.dirname(csv_path),'raw_{:d}.fif'.format(session))
+        if not os.path.isfile(fif_path):
+            print('Resaving .csv file as .fif for ease of future loading')
+            raw = convert_inria_csv_to_mne(csv_path)
+            raw.save(fif_path)
+            return raw
+        else:
+            return Raw(fif_path, preload=True, verbose='ERROR')
