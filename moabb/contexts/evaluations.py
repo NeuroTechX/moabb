@@ -8,21 +8,21 @@ from mne.epochs import concatenate_epochs, equalize_epoch_counts
 
 from .base import BaseEvaluation
 
+
 class TrainTestEvaluation(BaseEvaluation):
     '''
     Base class for evaluations that split data into undifferentiated train/test
     (not compatible with multi-task/transfer/multi-dataset schemes)
     '''
     def extract_data_from_cont(self, ep_list, event_id):
-        skip=False
-        event_epochs = dict(zip(event_id.keys(), [[]] * len(event_id)))
+        event_epochs = {key: [] for key in event_id.keys()}
         for epoch in ep_list:
             for key in event_id.keys():
                 if key in epoch.event_id.keys():
                     event_epochs[key].append(epoch[key])
         all_events = []
         for key in event_id.keys():
-            if len(event_epochs[key]) > 0 :
+            if len(event_epochs[key]) > 0:
                 all_events.append(concatenate_epochs(event_epochs[key]))
         # equalize for accuracy
         if len(all_events) > 1:
@@ -31,7 +31,7 @@ class TrainTestEvaluation(BaseEvaluation):
         # previously multipled data by 1e6
         X, y = (ep.get_data(), ep.events[:, -1])
         return X, y
-    
+
 
 class CrossSubjectEvaluation(TrainTestEvaluation):
     """Cross Subject evaluation Context.
@@ -76,7 +76,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
             self.X_cache.append(X)
             self.y_cache.append(y)
             self.ind_cache.append(np.ones(y.shape))
-        
+
     def score(self, clf, X, y, groups, scoring):
         le = LabelEncoder()
         y = le.fit_transform(y)
@@ -85,7 +85,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
         return acc.mean()
 
 class WithinSessionEvaluation(TrainTestEvaluation):
-    """Within session evaluation, returns accuracy computed within each recording session 
+    """Within session evaluation, returns accuracy computed within each recording session
 
     """
     def evaluate(self, dataset, subject, clf, paradigm):
