@@ -32,7 +32,7 @@ class PhysionetMI(BaseDataset):
     def _get_single_subject_data(self, subject, stack_sessions):
         """return data for a single subject"""
         all_files = []
-        raw_fnames = eegbci.load_data(subject, runs=self.hand_runs, verbose='ERROR')
+        raw_fnames = eegbci.load_data(subject, runs=self.hand_runs, verbose='ERROR', base_url='http://www.physionet.org/pn4/eegmmidb/')
         raw_files = [read_raw_edf(f, preload=True, verbose='ERROR')
                      for f in raw_fnames]
 
@@ -45,13 +45,13 @@ class PhysionetMI(BaseDataset):
                      for f in raw_feet_fnames]
         for raw in raw_feet_files:
             events = mne.find_events(raw)
-            events[events[:,2] == 2, 2] = 2
-            events[events[:,2] == 3, 2] = 2
+            # Event values are added together, previous and current (1,2,3->1,4,5)
+            events[events[:,2] != 1, 2] = 2
             events[events[:,2] == 1, 2] = 0
             raw.add_events(events)
             raw.rename_channels(lambda x: x.strip('.')) 
         all_files.extend(raw_feet_files)
-        if not stack_sessions:
-            return [[all_files]]
-        else:
+        if stack_sessions:
             return [all_files]
+        else:
+            return [[all_files]]

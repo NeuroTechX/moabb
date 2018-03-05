@@ -12,8 +12,11 @@ from ..viz import Results
 from .. import utils
 
 
+class BaseParadigm(ABC):
+    pass
 
-class BaseImageryParadigm(ABC):
+
+class BaseImageryParadigm(BaseParadigm):
     """Base Context.
 
     Parameters
@@ -30,9 +33,9 @@ class BaseImageryParadigm(ABC):
 
     def __init__(self, pipelines, evaluator, datasets=None, fmin=1, fmax=45, channels=None):
         """init"""
-        self.fmin=fmin
-        self.fmax=fmax
-        self.channels=channels
+        self.fmin = fmin
+        self.fmax = fmax
+        self.channels = channels
         self.evaluator = evaluator
         if datasets is None:
             datasets = utils.dataset_list
@@ -57,7 +60,6 @@ class BaseImageryParadigm(ABC):
             if not(isinstance(pipeline, BaseEstimator)):
                 raise(ValueError("pipelines must only contains Pipelines instance"))
         self.pipelines = pipelines
-        self.results = Results(type(evaluator).__name__, pipelines)
 
     def verify(self, dataset):
         '''
@@ -65,23 +67,30 @@ class BaseImageryParadigm(ABC):
         '''
         assert dataset.paradigm == 'imagery'
 
-    def process(self):
+    def process(self, overwrite=False, suffix=''):
         '''
         Runs tasks on all given datasets.
         '''
         # Verify that datasets are valid for given paradigm first
+        self.results = Results(type(self.evaluator),
+                               type(self), overwrite=overwrite, suffix=suffix)
         for d in self.datasets:
             self.verify(d)
         for d in self.datasets:
             print('\n\nProcessing dataset: {}'.format(d.code))
             self.evaluator.preprocess_data(d, self)
             for s in d.subject_list:
-                for name, clf in self.pipelines.items():
-                    self.results.add(self.process_subject(d, s, clf), name)
-        self.results.to_dataframe()
+                run_pipes = self.results.not_yet_computed(self.pipelines, d, s)
+                if len(run_pipes) > 0:
+                    try:
+                        self.results.add(self.process_subject(d, s, run_pipes))
+                    except Exception as e:
+                        print(e)
+                        print('Skipping subject {}'.format(s))
+        return self.results
 
-    def process_subject(self, dataset, subj, clf):
-        return self.evaluator.evaluate(dataset, subj, clf, self)
+    def process_subject(self, dataset, subj, pplines):
+        return self.evaluator.evaluate(dataset, subj, pplines, self)
 
     def _epochs(self, raws, event_dict, time):
         '''Take list of raws and returns a list of epoch objects. Implements
@@ -132,12 +141,12 @@ class BaseEvaluation(ABC):
 
     '''
 
-
     def __init__(self, random_state=None, n_jobs=1):
         """
 
         """
-        self.random_state = random_state
+        if random_state is None:
+            self.random_state = np.random.randint(0, 1000, 1)[0]
         self.n_jobs = n_jobs
 
     @abstractmethod

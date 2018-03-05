@@ -9,7 +9,7 @@ from mne.utils import _fetch_file, _url_to_local_path, verbose
 
 
 @verbose
-def data_path(url, sign, path=None, force_update=False, update_path=None,
+def data_path(url, sign, path=None, force_update=False, update_path=True,
               verbose=None):
     """Get path to local copy of given dataset URL.
 

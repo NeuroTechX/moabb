@@ -12,14 +12,14 @@ for ds in inspect.getmembers(db, inspect.isclass):
         dataset_list.append(ds[1])
 
 def dataset_search(paradigm, multi_session=False, events=None,
-                   exact_events=False, two_class=True, min_subjects=1, channels=[]):
+                   has_all_events=False, total_classes=100, min_subjects=1, channels=[]):
     '''
     Function that returns a list of datasets that match given criteria. Valid
     criteria are:
 
     events: list of strings
-    two_class: bool, uses first two classes in events list
-    exact_events: bool, must have all events
+    total_classes: int, total number of classes, will either truncate or choose from events. Defaults to 100 to keep all classes
+    has_all_events: bool, skip datasets that don't have all events in events
     multi_session: bool, if True only returns datasets with more than one
     session per subject. If False return all
     paradigm: 'imagery','p300',(more to come)
@@ -29,9 +29,9 @@ def dataset_search(paradigm, multi_session=False, events=None,
     '''
     channels = set(channels)
     out_data = []
-    max_events = 100
-    if two_class:
-        max_events = 2
+    n_classes = total_classes
+    if events is not None and has_all_events:
+        n_classes = len(events)
     assert paradigm in ['imagery','p300']
     if paradigm=='p300':
         raise Exception('SORRY NOBDOYS GOTTEN AROUND TO THIS YET')
@@ -45,17 +45,20 @@ def dataset_search(paradigm, multi_session=False, events=None,
         if paradigm == d.paradigm:
             keep_event_dict = {}
             if events is None:
-                keep_event_dict = d.event_id.copy()
+                # randomly keep n_classes events
+                for k in d.event_id.keys():
+                   if len(keep_event_dict) < n_classes:
+                       keep_event_dict[k] = d.event_id[k]
             else:
                 n_events = 0
                 for e in events:
-                    if n_events >= max_events and not exact_events:
+                    if n_events == n_classes:
                         break
                     if e in d.event_id.keys():
                         keep_event_dict[e] = d.event_id[e]
                         n_events+=1
                     else:
-                        if exact_events:
+                        if has_all_events:
                             skip_dataset = True
                 # don't want to use datasets with one valid label
                 if n_events < 2:
@@ -66,6 +69,8 @@ def dataset_search(paradigm, multi_session=False, events=None,
                     s1 = d.get_data([1], False)[0][0][0]
                     if channels <= set(s1.info['ch_names']):
                         out_data.append(d)
+                else:
+                    out_data.append(d)
     return out_data
 
 def find_intersecting_channels(datasets, verbose=False):
