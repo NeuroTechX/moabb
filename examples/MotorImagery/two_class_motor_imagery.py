@@ -22,7 +22,8 @@ pipelines['CSP+SVM'] = make_pipeline(Covariances('oas'), CSP(8), SVC())  #
 
 context = LeftRightImagery(pipelines, WithinSessionEvaluation(), datasets)
 
-results = context.process(results='/is/ei/vjayaram/code/git/moabb/examples/MotorImagery/2class.hdf5')
+results = context.process()
 
-analyze('/is/ei/vjayaram/code/git/moabb/examples/MotorImagery/',results=results) 
+results = context.process()
+analyze(results, '')
 
