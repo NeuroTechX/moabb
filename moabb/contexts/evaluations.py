@@ -45,6 +45,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
     random_state
     n_jobs
 
+
     """
 
     def evaluate(self, dataset, subject, pipelines, paradigm):

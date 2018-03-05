@@ -12,8 +12,11 @@ from ..viz import Results
 from .. import utils
 
 
+class BaseParadigm(ABC):
+    pass
 
-class BaseImageryParadigm(ABC):
+
+class BaseImageryParadigm(BaseParadigm):
     """Base Context.
 
     Parameters
@@ -30,9 +33,9 @@ class BaseImageryParadigm(ABC):
 
     def __init__(self, pipelines, evaluator, datasets=None, fmin=1, fmax=45, channels=None):
         """init"""
-        self.fmin=fmin
-        self.fmax=fmax
-        self.channels=channels
+        self.fmin = fmin
+        self.fmax = fmax
+        self.channels = channels
         self.evaluator = evaluator
         if datasets is None:
             datasets = utils.dataset_list
@@ -64,17 +67,13 @@ class BaseImageryParadigm(ABC):
         '''
         assert dataset.paradigm == 'imagery'
 
-    def process(self, results=None):
+    def process(self, overwrite=False, suffix=''):
         '''
         Runs tasks on all given datasets.
         '''
         # Verify that datasets are valid for given paradigm first
-        if results is None:
-            self.results = Results(self.evaluator)
-        elif type(results) is str:
-            self.results = Results(path=results, evaluation=self.evaluator)
-        elif type(results) is Results:
-            self.results = results
+        self.results = Results(type(self.evaluator),
+                               type(self), overwrite=overwrite, suffix=suffix)
         for d in self.datasets:
             self.verify(d)
         for d in self.datasets:
@@ -82,7 +81,7 @@ class BaseImageryParadigm(ABC):
             self.evaluator.preprocess_data(d, self)
             for s in d.subject_list:
                 run_pipes = self.results.not_yet_computed(self.pipelines, d, s)
-                if len(run_pipes)>0:
+                if len(run_pipes) > 0:
                     try:
                         self.results.add(self.process_subject(d, s, run_pipes))
                     except Exception as e:
@@ -142,12 +141,12 @@ class BaseEvaluation(ABC):
 
     '''
 
-
     def __init__(self, random_state=None, n_jobs=1):
         """
 
         """
-        self.random_state = random_state
+        if random_state is None:
+            self.random_state = np.random.randint(0, 1000, 1)[0]
         self.n_jobs = n_jobs
 
     @abstractmethod
