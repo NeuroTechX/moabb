@@ -16,8 +16,7 @@ class TrainTestEvaluation(BaseEvaluation):
     '''
 
     def extract_data_from_cont(self, ep_list, event_id):
-        skip = False
-        event_epochs = dict(zip(event_id.keys(), [[]] * len(event_id)))
+        event_epochs = {key: [] for key in event_id.keys()}
         for epoch in ep_list:
             for key in event_id.keys():
                 if key in epoch.event_id.keys():
@@ -99,7 +98,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
 
 
 class WithinSessionEvaluation(TrainTestEvaluation):
-    """Within session evaluation, returns accuracy computed within each recording session 
+    """Within session evaluation, returns accuracy computed within each recording session
 
     """
 
