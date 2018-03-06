@@ -24,4 +24,4 @@ context = LeftRightImagery(pipelines, WithinSessionEvaluation(), datasets)
 
 results = context.process()
 
-analyze(results, '')
+analyze(results, './')
