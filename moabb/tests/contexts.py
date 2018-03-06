@@ -34,8 +34,9 @@ class Test_CrossSess(unittest.TestCase):
 
     def test_eval_results(self):
         e = self.return_eval()
-        r = Results(e,'results.hd5')
         p = LeftRightImagery(pipelines, e, [d])
+        r = Results(evaluation_class=type(e), paradigm_class=type(p),
+                    suffix='test')
         e.preprocess_data(d,p)
         r.add(e.evaluate(d, 1,
                          pipelines, p))

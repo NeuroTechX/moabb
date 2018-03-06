@@ -81,7 +81,8 @@ class BaseMotorImagery(BaseParadigm):
             events = mne.find_events(raw, shortest_event=0, verbose=False)
             channels = () if self.channels is None else self.channels
             # picks channels
-            picks = mne.pick_types(eeg=True, stim=False, include=channels)
+            picks = mne.pick_types(raw.info, eeg=True, stim=False,
+                                   include=channels)
 
             # ensure events are desired:
             if len(events) > 0:
@@ -90,7 +91,7 @@ class BaseMotorImagery(BaseParadigm):
                 if len(keep_events) > 0:
                     # copy before filtering, so we let raws intact.
                     raw_f = raw.copy().filter(bp_low, bp_high, method='iir',
-                                              picks=picks)
+                                              picks=picks, verbose=False)
                     epochs = mne.Epochs(raw_f, events, event_id=keep_events,
                                         tmin=time[0], tmax=time[1], proj=False,
                                         baseline=None, preload=True,
