@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import inspect
 
-from . import plotting as plt
+from moabb.viz import plotting as plt
 
 
 class Results:
@@ -25,7 +25,8 @@ class Results:
         class that will abstract result storage
         """
         import moabb.utils as ut
-        from moabb.contexts.base import BaseParadigm, BaseEvaluation
+        from moabb.contexts.base import BaseParadigm
+        from moabb.evaluations.base import BaseEvaluation
         assert issubclass(evaluation_class, BaseEvaluation)
         assert issubclass(paradigm_class, BaseParadigm)
         self.mod_dir = os.path.dirname(os.path.abspath(inspect.getsourcefile(ut)))
@@ -118,7 +119,7 @@ def analyze(results, out_path, name='analysis', suffix=''):
     In:
     out_path: location to store analysis folder
 
-    results: Obj/tuple; 
+    results: Obj/tuple;
 
     path: string/None
 

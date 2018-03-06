@@ -3,26 +3,11 @@ import numpy as np
 
 from sklearn.base import BaseEstimator
 
-import mne
-
 from moabb.datasets.base import BaseDataset
-from moabb.viz import Results
 from moabb import utils
 
 
 class BaseParadigm(ABC):
-
-
-    @abstractproperty
-    def scoring(self):
-        '''Property that defines scoring metric (e.g. ROC-AUC or accuracy or f-score),
-        given as a sklearn-compatible string
-
-        '''
-        pass
-
-
-class BaseImageryParadigm(BaseParadigm):
     """Base Context.
 
     Parameters
@@ -37,12 +22,8 @@ class BaseImageryParadigm(BaseParadigm):
         Instance that defines evaluation scheme
     """
 
-    def __init__(self, pipelines, evaluator, datasets=None, fmin=1, fmax=45,
-                 channels=None):
+    def __init__(self, pipelines, evaluator, datasets=None):
         """init"""
-        self.fmin = fmin
-        self.fmax = fmax
-        self.channels = channels
         self.evaluator = evaluator
         if datasets is None:
             datasets = utils.dataset_list
@@ -51,11 +32,13 @@ class BaseImageryParadigm(BaseParadigm):
             if isinstance(datasets, BaseDataset):
                 datasets = [datasets]
             else:
-                raise(ValueError("datasets must be a list or a dataset instance"))
+                raise(ValueError("datasets must be a list or a dataset "
+                                 "instance"))
 
         for dataset in datasets:
             if not(isinstance(dataset, BaseDataset)):
-                raise(ValueError("datasets must only contains dataset instance"))
+                raise(ValueError("datasets must only contains dataset "
+                                 "instance"))
 
         self.datasets = datasets
 
@@ -65,66 +48,15 @@ class BaseImageryParadigm(BaseParadigm):
 
         for name, pipeline in pipelines.items():
             if not(isinstance(pipeline, BaseEstimator)):
-                raise(ValueError("pipelines must only contains Pipelines instance"))
+                raise(ValueError("pipelines must only contains Pipelines "
+                                 "instance"))
         self.pipelines = pipelines
 
-    def verify(self, dataset):
-        '''
-        Method that verifies dataset is correct for given parameters
-        '''
-        assert dataset.paradigm == 'imagery'
-
-    def process(self, overwrite=False, suffix=''):
-        '''
-        Runs tasks on all given datasets.
-        '''
-        # Verify that datasets are valid for given paradigm first
-        self.results = Results(type(self.evaluator),
-                               type(self), overwrite=overwrite, suffix=suffix)
-        for d in self.datasets:
-            self.verify(d)
-        for d in self.datasets:
-            print('\n\nProcessing dataset: {}'.format(d.code))
-            self.evaluator.preprocess_data(d, self)
-            for s in d.subject_list:
-                run_pipes = self.results.not_yet_computed(self.pipelines, d, s)
-                if len(run_pipes) > 0:
-                    try:
-                        self.results.add(self.process_subject(d, s, run_pipes))
-                    except Exception as e:
-                        print(e)
-                        print('Skipping subject {}'.format(s))
-        return self.results
-
-    def process_subject(self, dataset, subj, pplines):
-        return self.evaluator.evaluate(dataset, subj, pplines, self)
-
-    def _epochs(self, raws, event_dict, time):
-        '''Take list of raws and returns a list of epoch objects. Implements
-        imagery-specific processing as well
+    @abstractproperty
+    def scoring(self):
+        '''Property that defines scoring metric (e.g. ROC-AUC or accuracy
+        or f-score), given as a sklearn-compatible string or a compatible
+        sklearn scorer.
 
         '''
-        bp_low = self.fmin
-        bp_high = self.fmax
-        if type(raws) is not list:
-            raws = [raws]
-        ep = []
-        for raw in raws:
-            events = mne.find_events(raw, shortest_event=0, verbose=False)
-            if self.channels is None:
-                # TODO: generalize to other sorts of channels
-                raw.pick_types(eeg=True, stim=False)
-            else:
-                raw.pick_types(include=self.channels, stim=False)
-            raw.filter(bp_low, bp_high, method='iir')
-            # ensure events are desired:
-            if len(events) > 0:
-                keep_events = dict([(key, val) for key, val in event_dict.items() if
-                                    val in np.unique(events[:, 2])])
-                if len(keep_events) > 0:
-                    epochs = mne.Epochs(raw, events, keep_events, time[0], time[1],
-                                        proj=False, baseline=None, preload=True,
-                                        verbose=False)
-                    ep.append(epochs)
-
-        return ep
+        pass
