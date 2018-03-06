@@ -11,8 +11,10 @@ for ds in inspect.getmembers(db, inspect.isclass):
     if issubclass(ds[1], BaseDataset):
         dataset_list.append(ds[1])
 
+
 def dataset_search(paradigm, multi_session=False, events=None,
-                   has_all_events=False, total_classes=100, min_subjects=1, channels=[]):
+                   has_all_events=False, total_classes=100, min_subjects=1,
+                   channels=[]):
     '''
     Function that returns a list of datasets that match given criteria. Valid
     criteria are:
@@ -25,7 +27,7 @@ def dataset_search(paradigm, multi_session=False, events=None,
     paradigm: 'imagery','p300',(more to come)
     min_subjects: int, minimum subjects in dataset
     channels: list or set of channels
-    
+
     '''
     channels = set(channels)
     out_data = []
@@ -77,7 +79,7 @@ def find_intersecting_channels(datasets, verbose=False):
     '''
     Given a list of dataset instances return a list of channels shared by all datasets.
     Skip datasets which have 0 overlap with the others
-    
+
     returns: set of common channels, list of datasets with valid channels
     '''
     allchans = set()

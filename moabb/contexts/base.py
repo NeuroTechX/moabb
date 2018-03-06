@@ -1,19 +1,25 @@
 from abc import ABC, abstractmethod, abstractproperty
 import numpy as np
-import sys
 
 from sklearn.base import BaseEstimator
-from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
 
 import mne
 
-from ..datasets.base import BaseDataset
-from ..viz import Results
-from .. import utils
+from moabb.datasets.base import BaseDataset
+from moabb.viz import Results
+from moabb import utils
 
 
 class BaseParadigm(ABC):
-    pass
+
+
+    @abstractproperty
+    def scoring(self):
+        '''Property that defines scoring metric (e.g. ROC-AUC or accuracy or f-score),
+        given as a sklearn-compatible string
+
+        '''
+        pass
 
 
 class BaseImageryParadigm(BaseParadigm):
@@ -31,7 +37,8 @@ class BaseImageryParadigm(BaseParadigm):
         Instance that defines evaluation scheme
     """
 
-    def __init__(self, pipelines, evaluator, datasets=None, fmin=1, fmax=45, channels=None):
+    def __init__(self, pipelines, evaluator, datasets=None, fmin=1, fmax=45,
+                 channels=None):
         """init"""
         self.fmin = fmin
         self.fmax = fmax
@@ -121,43 +128,3 @@ class BaseImageryParadigm(BaseParadigm):
                     ep.append(epochs)
 
         return ep
-
-    @abstractproperty
-    def scoring(self):
-        '''Property that defines scoring metric (e.g. ROC-AUC or accuracy or f-score),
-        given as a sklearn-compatible string
-
-        '''
-        pass
-
-
-class BaseEvaluation(ABC):
-    '''Base class that defines necessary operations for an evaluation. Evaluations
-    determine what the train and test sets are and can implement additional data
-    preprocessing steps for more complicated algorithms.
-
-    random_state: if not None, can guarantee same seed
-    n_jobs: 1; number of jobs for fitting of pipeline
-
-    '''
-
-    def __init__(self, random_state=None, n_jobs=1):
-        """
-
-        """
-        if random_state is None:
-            self.random_state = np.random.randint(0, 1000, 1)[0]
-        self.n_jobs = n_jobs
-
-    @abstractmethod
-    def evaluate(self, dataset, subject, clf, paradigm):
-        '''
-        Return results in a dict
-        '''
-        pass
-
-    def preprocess_data(self, dataset, paradigm):
-        '''
-        Optional paramter if any sort of dataset-wide computation is needed per subject
-        '''
-        pass

@@ -4,7 +4,7 @@ import moabb.viz.meta_analysis as ma
 from moabb.viz import Results
 import os
 from moabb.datasets.base import BaseDataset
-from moabb.contexts.base import BaseEvaluation
+from moabb.evaluations.base import BaseEvaluation
 
 # dummy evaluation
 
