@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
-import moabb.viz.meta_analysis as ma
-from moabb.viz import Results
+import moabb.analysis.meta_analysis as ma
+from moabb.analysis import Results
 import os
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.base import BaseEvaluation

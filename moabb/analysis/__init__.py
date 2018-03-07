@@ -2,8 +2,8 @@ import os
 import platform
 from datetime import datetime
 
-from moabb.viz import plotting as plt
-from moabb.viz.results import Results
+from moabb.analysis import plotting as plt
+from moabb.analysis.results import Results
 
 
 def analyze(results, out_path, name='analysis', suffix=''):

@@ -1,6 +1,6 @@
 from moabb.evaluations import evaluations as ev
 from moabb.datasets.bnci import BNCI2014001
-from moabb.viz import Results
+from moabb.analysis import Results
 from moabb.contexts.motor_imagery import LeftRightImagery
 import unittest
 

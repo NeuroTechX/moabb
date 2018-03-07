@@ -3,7 +3,7 @@
 import mne
 import numpy as np
 
-from moabb.viz import Results
+from moabb.analysis import Results
 from moabb.contexts.base import BaseParadigm
 
 
