@@ -121,4 +121,4 @@ class LeftRightImagery(BaseMotorImagery):
     def datasets(self):
         return utils.dataset_search(paradigm='imagery',
                                     events=['right_hand', 'left_hand'],
-                                    exact_events=True)
+                                    has_all_events=True)

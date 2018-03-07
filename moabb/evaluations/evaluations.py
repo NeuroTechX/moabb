@@ -192,7 +192,7 @@ class CrossSessionEvaluation(TrainTestEvaluation):
                          'n_channels':allX.shape[1]}
         return out
 
-    def preprocess_data(self, dataset, paradigm):
+    def preprocess_data(self, dataset):
         assert dataset.n_sessions > 1, "Proposed dataset {} has only one session".format(
             dataset.code)
 
