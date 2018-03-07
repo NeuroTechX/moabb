@@ -4,7 +4,7 @@ import mne
 import numpy as np
 
 from moabb.analysis import Results
-from moabb.contexts.base import BaseParadigm
+from moabb.paradigms.base import BaseParadigm
 
 
 class BaseMotorImagery(BaseParadigm):

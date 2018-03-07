@@ -1,5 +1,5 @@
 from moabb.evaluations import WithinSessionEvaluation
-from moabb.contexts.motor_imagery import LeftRightImagery
+from moabb.paradigms.motor_imagery import LeftRightImagery
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
 from pyriemann.classification import TSclassifier

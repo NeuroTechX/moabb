@@ -22,7 +22,7 @@ class Results:
         class that will abstract result storage
         """
         import moabb.datasets.utils as ut
-        from moabb.contexts.base import BaseParadigm
+        from moabb.paradigms.base import BaseParadigm
         from moabb.evaluations.base import BaseEvaluation
         assert issubclass(evaluation_class, BaseEvaluation)
         assert issubclass(paradigm_class, BaseParadigm)

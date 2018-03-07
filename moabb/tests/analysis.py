@@ -5,7 +5,7 @@ from moabb.analysis import Results
 import os
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.base import BaseEvaluation
-from moabb.contexts.base import BaseParadigm
+from moabb.paradigms.base import BaseParadigm
 # dummy evaluation
 
 
