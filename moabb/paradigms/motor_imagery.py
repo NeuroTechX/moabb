@@ -3,8 +3,8 @@
 import mne
 import numpy as np
 
-from moabb.analysis import Results
 from moabb.paradigms.base import BaseParadigm
+from moabb.datasets import utils
 
 
 class BaseMotorImagery(BaseParadigm):
@@ -27,11 +27,9 @@ class BaseMotorImagery(BaseParadigm):
 
     """
 
-    def __init__(self, pipelines, evaluator, datasets=None, fmin=7, fmax=35,
-                 channels=None, **kwargs):
+    def __init__(self, fmin=7, fmax=35, channels=None, **kwargs):
         """init"""
-        super().__init__(pipelines=pipelines, evaluator=evaluator,
-                         datasets=datasets, **kwargs)
+        super().__init__(**kwargs)
         self.fmin = fmin
         self.fmax = fmax
         self.channels = channels
@@ -41,31 +39,6 @@ class BaseMotorImagery(BaseParadigm):
         Method that verifies dataset is correct for given parameters
         '''
         assert dataset.paradigm == 'imagery'
-
-    def process(self, overwrite=False, suffix=''):
-        '''
-        Runs tasks on all given datasets.
-        '''
-        # Verify that datasets are valid for given paradigm first
-        self.results = Results(type(self.evaluator),
-                               type(self), overwrite=overwrite, suffix=suffix)
-        for d in self.datasets:
-            self.verify(d)
-        for d in self.datasets:
-            print('\n\nProcessing dataset: {}'.format(d.code))
-            self.evaluator.preprocess_data(d, self)
-            for s in d.subject_list:
-                run_pipes = self.results.not_yet_computed(self.pipelines, d, s)
-                if len(run_pipes) > 0:
-                    try:
-                        self.results.add(self.process_subject(d, s, run_pipes))
-                    except Exception as e:
-                        print(e)
-                        print('Skipping subject {}'.format(s))
-        return self.results
-
-    def process_subject(self, dataset, subj, pplines):
-        return self.evaluator.evaluate(dataset, subj, pplines, self)
 
     def _epochs(self, raws, event_dict, time):
         '''Take list of raws and returns a list of epoch objects. Implements
@@ -100,6 +73,14 @@ class BaseMotorImagery(BaseParadigm):
 
         return ep
 
+    @property
+    def datasets(self):
+        return utils.dataset_search(paradigm='imagery')
+
+    @property
+    def scoring(self):
+        return 'accuracy'
+
 
 class ImageryNClass(BaseMotorImagery):
     """Imagery for multi class classification
@@ -109,18 +90,14 @@ class ImageryNClass(BaseMotorImagery):
 
     """
 
-    def __init__(self, pipelines, evaluator, n_classes, **kwargs):
+    def __init__(self, n_classes, **kwargs):
         self.n_classes = n_classes
-        super().__init__(pipelines, evaluator, **kwargs)
+        super().__init__(**kwargs)
 
     def verify(self, d):
         print('Warning: Assumes events have already been selected per dataset')
         super().verify(d)
         assert len(d.selected_events) == self.n_classes
-
-    @property
-    def scoring(self):
-        return 'accuracy'
 
 
 class LeftRightImagery(BaseMotorImagery):
@@ -139,3 +116,9 @@ class LeftRightImagery(BaseMotorImagery):
     @property
     def scoring(self):
         return 'roc_auc'
+
+    @property
+    def datasets(self):
+        return utils.dataset_search(paradigm='imagery',
+                                    events=['right_hand', 'left_hand'],
+                                    exact_events=True)
