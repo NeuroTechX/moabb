@@ -85,7 +85,7 @@ def data_path(subject, path=None, force_update=False, fnirs=False):
             "Valid subjects between 1 and 30, subject {:d} requested".format(subject))
     key = 'MNE_DATASETS_BBCIFNIRS_PATH'
     path = _get_path(path, key, 'BBCI EEG-fNIRS')
-    _do_path_update(path, None, key, 'BBCI EEG-fNIRS')
+    _do_path_update(path, True, key, 'BBCI EEG-fNIRS')
     if not op.isdir(op.join(path, 'MNE-eegfnirs-data')):
         os.makedirs(op.join(path, 'MNE-eegfnirs-data'))
     if fnirs:

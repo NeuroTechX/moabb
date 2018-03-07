@@ -14,14 +14,16 @@ for ds in inspect.getmembers(db, inspect.isclass):
 
 
 def dataset_search(paradigm, multi_session=False, events=None,
-                   exact_events=False, two_class=True, min_subjects=1, channels=[]):
+                   has_all_events=False, total_classes=100, min_subjects=1,
+                   channels=[]):
     '''
     Function that returns a list of datasets that match given criteria. Valid
     criteria are:
 
     events: list of strings
-    two_class: bool, uses first two classes in events list
-    exact_events: bool, must have all events
+    total_classes: int, total number of classes, will either truncate or choose
+    from events. Defaults to 100 to keep all classes.
+    has_all_events: bool, skip datasets that don't have all events in events
     multi_session: bool, if True only returns datasets with more than one
     session per subject. If False return all
     paradigm: 'imagery','p300',(more to come)
@@ -30,16 +32,11 @@ def dataset_search(paradigm, multi_session=False, events=None,
 
     '''
     channels = set(channels)
-    out_datasets = []
-
-    max_events = np.inf
-    if two_class:
-        max_events = 2
-
-    # we only have two type of paradigms
+    out_data = []
+    n_classes = total_classes
+    if events is not None and has_all_events:
+        n_classes = len(events)
     assert paradigm in ['imagery', 'p300']
-
-    # FIXME: whoot
     if paradigm == 'p300':
         raise Exception('SORRY NOBDOYS GOTTEN AROUND TO THIS YET')
 
@@ -56,36 +53,39 @@ def dataset_search(paradigm, multi_session=False, events=None,
         if paradigm == d.paradigm:
             keep_event_dict = {}
             if events is None:
-                keep_event_dict = d.event_id.copy()
+                # randomly keep n_classes events
+                for k in d.event_id.keys():
+                    if len(keep_event_dict) < n_classes:
+                        keep_event_dict[k] = d.event_id[k]
             else:
                 n_events = 0
                 for e in events:
-                    if n_events >= max_events and not exact_events:
+                    if n_events == n_classes:
                         break
                     if e in d.event_id.keys():
                         keep_event_dict[e] = d.event_id[e]
                         n_events += 1
                     else:
-                        if exact_events:
+                        if has_all_events:
                             skip_dataset = True
                 # don't want to use datasets with one valid label
                 if n_events < 2:
                     skip_dataset = True
-
             if keep_event_dict and not skip_dataset:
                 d.selected_events = keep_event_dict
                 if len(channels) > 0:
                     s1 = d.get_data([1], False)[0][0][0]
                     if channels <= set(s1.info['ch_names']):
-                        out_datasets.append(d)
+                        out_data.append(d)
                 else:
-                    out_datasets.append(d)
-    return out_datasets
+                    out_data.append(d)
+    return out_data
 
 
 def find_intersecting_channels(datasets, verbose=False):
     '''
-    Given a list of dataset instances return a list of channels shared by all datasets.
+    Given a list of dataset instances return a list of channels shared by all
+    datasets.
     Skip datasets which have 0 overlap with the others
 
     returns: set of common channels, list of datasets with valid channels
@@ -113,5 +113,5 @@ def find_intersecting_channels(datasets, verbose=False):
             print('Dataset {:s} has no recognizable EEG channels'.format(type(d).__name__))
     for d in dset_chans:
         allchans.intersection_update(d)
-    allchans = [s.replace('Z','z') for s in allchans]
+    allchans = [s.replace('Z', 'z') for s in allchans]
     return allchans, d

@@ -1,28 +1,31 @@
 from time import time
 import numpy as np
+import logging
 
 from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
 from sklearn.preprocessing import LabelEncoder
 
 from mne.epochs import concatenate_epochs, equalize_epoch_counts
 
-from .base import BaseEvaluation
+from moabb.evaluations.base import BaseEvaluation
+
+log = logging.getLogger()
 
 class TrainTestEvaluation(BaseEvaluation):
     '''
     Base class for evaluations that split data into undifferentiated train/test
     (not compatible with multi-task/transfer/multi-dataset schemes)
     '''
+
     def extract_data_from_cont(self, ep_list, event_id):
-        skip=False
-        event_epochs = dict(zip(event_id.keys(), [[]] * len(event_id)))
+        event_epochs = {key: [] for key in event_id.keys()}
         for epoch in ep_list:
             for key in event_id.keys():
                 if key in epoch.event_id.keys():
                     event_epochs[key].append(epoch[key])
         all_events = []
         for key in event_id.keys():
-            if len(event_epochs[key]) > 0 :
+            if len(event_epochs[key]) > 0:
                 all_events.append(concatenate_epochs(event_epochs[key]))
         # equalize for accuracy
         if len(all_events) > 1:
@@ -44,8 +47,10 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
     random_state
     n_jobs
 
+
     """
-    def evaluate(self, dataset, subject, clf, paradigm):
+
+    def evaluate(self, dataset, subject, pipelines):
         # requires that subject be an int
         s = subject-1
         self.ind_cache[s] = self.ind_cache[s]*0
@@ -54,13 +59,22 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
         groups = np.concatenate(self.ind_cache)
         # re-generate s group label
         self.ind_cache[s] = np.ones(self.ind_cache[s].shape)
-        t_start = time()
-        score = self.score(clf, allX, ally, groups, paradigm.scoring)
-        duration = time() - t_start
-        return {'time': duration, 'dataset': dataset.code, 'id': subject, 'score': score, 'n_samples': len(ally)}
+        out = {}
+        for name, clf in pipelines.items():
+            t_start = time()
+            score = self.score(clf, allX, ally, groups, self.paradigm.scoring)
+            duration = time() - t_start
+            out[name] = {'time': duration,
+                         'dataset': dataset,
+                         'id': subject,
+                         'score': score,
+                         'n_samples': groups.sum(),
+                         'n_channels': allX.shape[1]}
+        return out
 
-    def preprocess_data(self, dataset, paradigm):
-        assert len(dataset.subject_list) > 1, "Dataset {} has only one subject".format(dataset.code)
+    def preprocess_data(self, dataset):
+        assert len(dataset.subject_list) > 1, "Dataset {} has only one subject".format(
+            dataset.code)
         self.X_cache = []
         event_id = dataset.selected_events
         if not event_id:
@@ -70,7 +84,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
         for s in dataset.subject_list:
             sub = dataset.get_data([s], stack_sessions=True)[0]
             # get all epochs for individual files in given subject
-            epochs = paradigm._epochs(sub, event_id, dataset.interval)
+            epochs = self.paradigm._epochs(sub, event_id, dataset.interval)
             # equalize events from different classes
             X, y = self.extract_data_from_cont(epochs, event_id)
             self.X_cache.append(X)
@@ -80,36 +94,46 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
     def score(self, clf, X, y, groups, scoring):
         le = LabelEncoder()
         y = le.fit_transform(y)
-        acc = cross_val_score(clf, X, y, cv=[(np.nonzero(groups==1)[0], np.nonzero(groups==0)[0])],
+        acc = cross_val_score(clf, X, y, cv=[(np.nonzero(groups == 1)[0],
+                                              np.nonzero(groups == 0)[0])],
                               scoring=scoring, n_jobs=self.n_jobs)
         return acc.mean()
+
 
 class WithinSessionEvaluation(TrainTestEvaluation):
     """Within session evaluation, returns accuracy computed within each recording session
 
     """
-    def evaluate(self, dataset, subject, clf, paradigm):
+
+    def evaluate(self, dataset, subject, pipelines):
         """Prepare data for classification."""
         event_id = dataset.selected_events
         if not event_id:
             raise(ValueError("Dataset had no selected events"))
 
         sub = dataset.get_data([subject], stack_sessions=False)[0]
-        results = []
+        out = {k: [] for k in pipelines.keys()}
         for ind, session in enumerate(sub):
-            skip=  False
-            sess_id = '{:03d}_{:d}'.format(subject, ind)
+            skip = False
+            # sess_id = '{:03d}_{:d}'.format(subject, ind)
 
             # get all epochs for individual files in given session
-            epochs = paradigm._epochs(session, event_id, dataset.interval)
+            epochs = self.paradigm._epochs(session, event_id, dataset.interval)
             X, y = self.extract_data_from_cont(epochs, event_id)
-            if len(np.unique(y))>1:
-                t_start = time()
-                score = self.score(clf, X, y, paradigm.scoring)
-                duration = time() - t_start
-                results.append({'time': duration, 'dataset': dataset.code,
-                                'id': sess_id, 'score': score, 'n_samples': len(y)})
-        return results
+            if len(np.unique(y)) > 1:
+                counts = np.unique(y,return_counts=True)[1]
+                log.debug('score imbalance: {}'.format(counts))
+                for name, clf in pipelines.items():
+                    t_start = time()
+                    score = self.score(clf, X, y, self.paradigm.scoring)
+                    duration = time() - t_start
+                    out[name].append({'time': duration,
+                                      'dataset': dataset,
+                                      'id': subject,
+                                      'score': score,
+                                      'n_samples': len(y),
+                                      'n_channels': X.shape[1]})
+        return out
 
     def score(self, clf, X, y, scoring):
         cv = KFold(5, shuffle=True, random_state=self.random_state)
@@ -120,6 +144,14 @@ class WithinSessionEvaluation(TrainTestEvaluation):
                               scoring=scoring, n_jobs=self.n_jobs)
         return acc.mean()
 
+    def preprocess_data(self, dataset):
+        '''
+        Optional paramter if any sort of dataset-wide computation is needed
+        per subject
+        '''
+        pass
+
+
 class CrossSessionEvaluation(TrainTestEvaluation):
     """Cross session Context.
 
@@ -128,7 +160,7 @@ class CrossSessionEvaluation(TrainTestEvaluation):
 
     """
 
-    def evaluate(self, dataset, subject, clf, paradigm):
+    def evaluate(self, dataset, subject, pipelines):
         event_id = dataset.selected_events
         if not event_id:
             raise(ValueError("Dataset had no selected events"))
@@ -137,7 +169,7 @@ class CrossSessionEvaluation(TrainTestEvaluation):
         listX, listy = ([], [])
         for ind, session in enumerate(sub):
             # get list epochs for individual files in given session
-            epochs = paradigm._epochs(session, event_id, dataset.interval)
+            epochs = self.paradigm._epochs(session, event_id, dataset.interval)
             # equalize events from different classes
             X, y = self.extract_data_from_cont(epochs, event_id)
             listX.append(X)
@@ -148,16 +180,20 @@ class CrossSessionEvaluation(TrainTestEvaluation):
         allX = np.concatenate(listX, axis=0)
         ally = np.concatenate(listy, axis=0)
         groupvec = np.concatenate(groups, axis=0)
-        t_start = time()
-        score = self.score(clf, allX, ally, groupvec, paradigm.scoring)
-        duration = time() - t_start
-        return {'time': duration,
-                'dataset': dataset.code,
-                'id': subject,
-                'score': score,
-                'n_samples': len(y)}
+        out = {}
+        for name, clf in pipelines.items():
+            t_start = time()
+            score = self.score(clf, allX, ally, groupvec, self.paradigm.scoring)
+            duration = time() - t_start
+            out[name] = {'time': duration,
+                         'dataset': dataset,
+                         'id': subject,
+                         'score': score,
+                         'n_samples': len(y),
+                         'n_channels':allX.shape[1]}
+        return out
 
-    def preprocess_data(self, dataset, paradigm):
+    def preprocess_data(self, dataset):
         assert dataset.n_sessions > 1, "Proposed dataset {} has only one session".format(
             dataset.code)
 
