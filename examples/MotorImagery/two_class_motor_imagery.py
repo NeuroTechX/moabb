@@ -14,6 +14,12 @@ from moabb.analysis import analyze
 import mne
 mne.set_log_level(False)
 
+import logging
+import coloredlogs
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
+coloredlogs.install(level=logging.INFO)
+
 datasets = utils.dataset_search('imagery', events=['right_hand', 'left_hand'],
                                 has_all_events=True, min_subjects=2,
                                 multi_session=False)

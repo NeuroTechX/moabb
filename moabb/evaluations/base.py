@@ -1,3 +1,4 @@
+import logging
 from abc import ABC, abstractmethod
 
 from sklearn.base import BaseEstimator
@@ -5,6 +6,8 @@ from sklearn.base import BaseEstimator
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
 from moabb.paradigms.base import BaseParadigm
+
+log = logging.getLogger()
 
 
 class BaseEvaluation(ABC):
@@ -80,7 +83,7 @@ class BaseEvaluation(ABC):
                           suffix=suffix)
 
         for dataset in self.datasets:
-            print('\n\nProcessing dataset: {}'.format(dataset.code))
+            log.info('Processing dataset: {}'.format(dataset.code))
             self.preprocess_data(dataset)
 
             for subject in dataset.subject_list:
@@ -91,10 +94,17 @@ class BaseEvaluation(ABC):
                 if len(run_pipes) > 0:
                     try:
                         res = self.evaluate(dataset, subject, run_pipes)
+                        for pipe in res:
+                            for r in res[pipe]:
+                                message = '{} | '.format(pipe)
+                                message += '{} | {} '.format(r['dataset'].code,
+                                                             r['id'])
+                                message += ': Score %.3f' % r['score']
+                            log.info(message)
                         results.add(res)
                     except Exception as e:
-                        print(e)
-                        print('Skipping subject {}'.format(subject))
+                        log.error(e)
+                        log.warning('Skipping subject {}'.format(subject))
         return results
 
     @abstractmethod

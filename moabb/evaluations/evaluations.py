@@ -1,5 +1,6 @@
 from time import time
 import numpy as np
+import logging
 
 from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
 from sklearn.preprocessing import LabelEncoder
@@ -8,6 +9,7 @@ from mne.epochs import concatenate_epochs, equalize_epoch_counts
 
 from moabb.evaluations.base import BaseEvaluation
 
+log = logging.getLogger()
 
 class TrainTestEvaluation(BaseEvaluation):
     '''
@@ -120,7 +122,7 @@ class WithinSessionEvaluation(TrainTestEvaluation):
             X, y = self.extract_data_from_cont(epochs, event_id)
             if len(np.unique(y)) > 1:
                 counts = np.unique(y,return_counts=True)[1]
-                print('score imbalance: {}'.format(counts))
+                log.debug('score imbalance: {}'.format(counts))
                 for name, clf in pipelines.items():
                     t_start = time()
                     score = self.score(clf, X, y, self.paradigm.scoring)
