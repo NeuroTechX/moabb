@@ -6,7 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 
 from mne.epochs import concatenate_epochs, equalize_epoch_counts
 
-from .base import BaseEvaluation
+from moabb.evaluations.base import BaseEvaluation
 
 
 class TrainTestEvaluation(BaseEvaluation):

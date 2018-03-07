@@ -14,7 +14,7 @@ def score_plot(data):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     sea.violinplot(data=data, y="score", x="dataset",
-                        hue="pipeline", inner="stick", cut=0, ax=ax)
+                   hue="pipeline", inner="stick", cut=0, ax=ax)
     ax.set_ylim([0.5, 1])
 
     return fig

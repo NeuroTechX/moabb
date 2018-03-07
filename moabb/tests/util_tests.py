@@ -1,4 +1,4 @@
-from moabb import utils
+from moabb.datasets import utils
 import unittest
 
 
@@ -22,7 +22,7 @@ class Test_Utils(unittest.TestCase):
         for out in l:
             print('rh/f: {}, {}'.format(type(out).__name__, out.selected_events))
         l = utils.dataset_search('imagery', events=[
-            'right_hand', 'left_hand', 'feet', 'tongue', 'rest'],total_classes=2)
+            'right_hand', 'left_hand', 'feet', 'tongue', 'rest'], total_classes=2)
         for out in l:
             print('two class: {}'.format(out.selected_events))
 

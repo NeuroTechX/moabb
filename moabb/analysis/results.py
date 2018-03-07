@@ -1,14 +1,10 @@
 import os
-import platform
-from datetime import datetime
-
 import h5py
 import numpy as np
 import pandas as pd
 import inspect
 
-from . import plotting as plt
-
+from datetime import datetime
 
 class Results:
     '''Class to hold results from the evaluation.evaluate method. Appropriate test
@@ -20,17 +16,21 @@ class Results:
 
     '''
 
-    def __init__(self, evaluation_class, paradigm_class, suffix='', overwrite=False):
+    def __init__(self, evaluation_class, paradigm_class, suffix='',
+                 overwrite=False):
         """
         class that will abstract result storage
         """
-        import moabb.utils as ut
-        from moabb.contexts.base import BaseParadigm, BaseEvaluation
+        import moabb.datasets.utils as ut
+        from moabb.paradigms.base import BaseParadigm
+        from moabb.evaluations.base import BaseEvaluation
         assert issubclass(evaluation_class, BaseEvaluation)
         assert issubclass(paradigm_class, BaseParadigm)
         self.mod_dir = os.path.dirname(os.path.abspath(inspect.getsourcefile(ut)))
-        self.filepath = os.path.join(self.mod_dir, 'results', paradigm_class.__name__,
-                                     evaluation_class.__name__, 'results{}.hdf5'.format('_'+suffix))
+        self.filepath = os.path.join(self.mod_dir, 'results',
+                                     paradigm_class.__name__,
+                                     evaluation_class.__name__,
+                                     'results{}.hdf5'.format('_'+suffix))
         os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
         self.filepath = self.filepath
         if overwrite and os.path.isfile(self.filepath):
@@ -45,8 +45,8 @@ class Results:
             if type(d) is dict:
                 return [d]
             elif type(d) is not list:
-                raise ValueError('Results are given as neither dict nor list but {}'.format(
-                    type(d).__name__))
+                raise ValueError("Results are given as neither dict nor list"
+                                 "but {}".format(type(d).__name__))
             else:
                 return d
         with h5py.File(self.filepath, 'r+') as f:
@@ -76,8 +76,9 @@ class Results:
                     dset['id'].resize(length, 0)
                     dset['data'].resize(length, 0)
                     dset['id'][-1] = str(d['id'])
-                    dset[
-                        'data'][-1, :] = np.asarray([d['score'], d['time'], d['n_samples']])
+                    dset['data'][-1, :] = np.asarray([d['score'],
+                                                      d['time'],
+                                                      d['n_samples']])
 
     def to_dataframe(self):
         df_list = []
@@ -107,46 +108,6 @@ class Results:
                     else:
                         dset = pipe_grp[d.code]
                         return (str(s) in dset['id'])
-        return {k: pipeline_dict[k] for k in pipeline_dict.keys() if not already_computed(k, dataset, subj)}
-
-
-def analyze(results, out_path, name='analysis', suffix=''):
-    '''Given a results object (or the location for one), generates a folder with
-    results and a dataframe of the exact data used to generate those results, as
-    well as introspection to return information on the computer
-
-    In:
-    out_path: location to store analysis folder
-
-    results: Obj/tuple; 
-
-    path: string/None
-
-    Either path or results is necessary
-
-    '''
-    ### input checks ###
-    if type(results) is not Results:
-        res = Results(*results, suffix=suffix)
-    if type(out_path) is not str:
-        raise ValueError('Given out_path argument is not string')
-    elif not os.path.isdir(out_path):
-        raise IOError('Given directory does not exist')
-    else:
-        analysis_path = os.path.join(out_path, name)
-
-    os.makedirs(analysis_path, exist_ok=True)
-    # TODO: no good cross-platform way of recording CPU info?
-    with open(os.path.join(analysis_path, 'info.txt'), 'a') as f:
-        f.write(
-            'Date: {:%Y-%m-%d}\n Time: {:%H:%M}\n'.format(datetime.now(), datetime.now()))
-        f.write('System: {}\n'.format(platform.system()))
-        f.write('CPU: {}\n'.format(platform.processor()))
-
-    res = results
-
-    data = res.to_dataframe()
-    data.to_csv(os.path.join(analysis_path, 'data.csv'))
-
-    plt.score_plot(data).savefig(os.path.join(analysis_path, 'scores.pdf'))
-    plt.time_line_plot(data).savefig(os.path.join(analysis_path, 'time2d.pdf'))
+        ret = {k: pipeline_dict[k] for k in pipeline_dict.keys()
+               if not already_computed(k, dataset, subj)}
+        return ret

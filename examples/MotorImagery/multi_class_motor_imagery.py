@@ -1,4 +1,4 @@
-from moabb.contexts.motor_imagery import MotorImageryMultiClasses
+from moabb.paradigms.motor_imagery import MotorImageryMultiClasses
 
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP

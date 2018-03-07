@@ -1,17 +1,26 @@
 import unittest
 import numpy as np
-import moabb.viz.meta_analysis as ma
-from moabb.viz import Results
+import moabb.analysis.meta_analysis as ma
+from moabb.analysis import Results
 import os
 from moabb.datasets.base import BaseDataset
-from moabb.contexts.base import BaseEvaluation
-
+from moabb.evaluations.base import BaseEvaluation
+from moabb.paradigms.base import BaseParadigm
 # dummy evaluation
 
 
 class DummyEvaluation(BaseEvaluation):
 
     def evaluate(self, dataset, subject, clf, paradigm):
+        raise NotImplementedError('dummy')
+
+
+class DummyParadigm(BaseParadigm):
+
+    def __init__(self):
+        pass
+
+    def scoring(self):
         raise NotImplementedError('dummy')
 
 
@@ -24,7 +33,6 @@ class DummyDataset(BaseDataset):
         """
         super().__init__(list(range(5)), 2, {
             'a': 1, 'b': 2}, code, [1, 2], 'imagery')
-
 
 
 # Create dummy data for tests
@@ -57,6 +65,7 @@ d4 = {'time': 2,
       'n_samples': 100,
       'n_channels': 10}
 
+
 def to_result_input(pnames, dsets):
     return dict(zip(pnames, dsets))
 
@@ -78,11 +87,12 @@ class Test_Stats(unittest.TestCase):
 class Test_Integration(unittest.TestCase):
 
     def setUp(self):
-        path = os.path.join(os.path.dirname(__file__), 'results.hdf5')
-        self.obj = Results(evaluation=DummyEvaluation(), path=path)
+        self.obj = Results(evaluation_class=type(DummyEvaluation()),
+                           paradigm_class=type(DummyParadigm()),
+                           suffix='test')
 
     def tearDown(self):
-        path = os.path.join(os.path.dirname(__file__), 'results.hdf5')
+        path = self.obj.filepath
         if os.path.isfile(path):
             os.remove(path)
 
@@ -94,14 +104,16 @@ class Test_Integration(unittest.TestCase):
         df = self.obj.to_dataframe()
         ma.rmANOVA(df)
 
+
 class Test_Results(unittest.TestCase):
 
     def setUp(self):
-        path = os.path.join(os.path.dirname(__file__), 'results.hdf5')
-        self.obj = Results(evaluation=DummyEvaluation(), path=path)
+        self.obj = Results(evaluation_class=type(DummyEvaluation()),
+                           paradigm_class=type(DummyParadigm()),
+                           suffix='test')
 
     def tearDown(self):
-        path = os.path.join(os.path.dirname(__file__), 'results.hdf5')
+        path = self.obj.filepath
         if os.path.isfile(path):
             os.remove(path)
 
