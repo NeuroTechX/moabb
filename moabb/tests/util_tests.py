@@ -1,4 +1,4 @@
-from moabb import utils
+from moabb.datasets import utils
 import unittest
 
 

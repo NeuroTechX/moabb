@@ -8,8 +8,11 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.svm import SVC
 
 from collections import OrderedDict
-from moabb import utils
+from moabb.datasets import utils
 from moabb.viz import analyze
+
+import mne
+mne.set_log_level(False)
 
 datasets = utils.dataset_search('imagery', events=['right_hand', 'left_hand'],
                                 has_all_events=True, min_subjects=2,

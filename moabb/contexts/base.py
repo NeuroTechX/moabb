@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.base import BaseEstimator
 
 from moabb.datasets.base import BaseDataset
-from moabb import utils
+from moabb.datasets import utils
 
 
 class BaseParadigm(ABC):
