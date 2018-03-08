@@ -3,6 +3,9 @@
 import os
 import yaml
 import hashlib
+import mne
+import logging
+import coloredlogs
 
 from glob import glob
 from optparse import OptionParser
@@ -10,8 +13,14 @@ from collections import OrderedDict
 
 # moabb specific imports
 from moabb.pipelines.utils import create_pipeline_from_config
-from moabb import contexts
-from moabb.contexts.evaluations import WithinSessionEvaluation
+from moabb import paradigms as para
+from moabb.evaluations import WithinSessionEvaluation
+
+# set logs
+mne.set_log_level(False)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
+coloredlogs.install(level=logging.INFO)
 
 parser = OptionParser()
 parser.add_option(
@@ -52,25 +61,16 @@ for yaml_file in yaml_files:
 
         # get digest
         digest = hashlib.md5(content.encode('utf8')).hexdigest()
-        outdir = os.path.join(options.results,
-                              digest + '_(' + config['name'] + ')')
 
         # iterate over paradigms
         for paradigm in config['paradigms']:
-            outpath = os.path.join(outdir, paradigm)
-
-            # if folder exist and we not forcing it, we go to the next step
-            # we should do something smarter with caching on the dataset level
-            # so that we dont run everything twice.
-            if os.path.isdir(outpath) & (not options.force):
-                continue
 
             pipe = create_pipeline_from_config(config['pipeline'])
 
             pipeline = {
                 'pipeline': pipe,
                 'name': config['name'],
-                'path': outpath
+                'digest': digest
             }
 
             # append the pipeline in the paradigm list
@@ -79,15 +79,6 @@ for yaml_file in yaml_files:
 
             paradigms[paradigm].append(pipeline)
 
-        if os.path.isdir(outdir):
-            continue
-
-        # create folder
-        os.makedirs(outdir)
-
-        # save config file
-        with open(os.path.join(outdir, 'config.yml'), 'w') as outfile:
-            yaml.dump(config, outfile, default_flow_style=False)
 
 # we can do the same for python defined pipeline
 python_files = glob(os.path.join(options.pipelines, '*.py'))
@@ -95,11 +86,7 @@ python_files = glob(os.path.join(options.pipelines, '*.py'))
 for paradigm in paradigms:
     # get the context
     # FIXME name are not unique
-    pipelines = {p['name']: p['pipeline'] for p in paradigms[paradigm]}
-    context = getattr(contexts, paradigm)(
-        pipelines=pipelines, evaluator=WithinSessionEvaluation(random_state=42))
-    context.process()
-
-    for pipe in paradigms[paradigm]:
-        os.makedirs(pipe['path'])
-        results[pipe['name']].to_csv(os.path.join(pipe['path'], 'results.csv'))
+    pipelines = {p['digest']: p['pipeline'] for p in paradigms[paradigm]}
+    p = getattr(para, paradigm)()
+    context = WithinSessionEvaluation(paradigm=p, random_state=42)
+    results = context.process(pipelines=pipelines)

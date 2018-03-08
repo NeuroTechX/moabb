@@ -21,12 +21,12 @@ class Results:
         """
         class that will abstract result storage
         """
-        import moabb.datasets.utils as ut
+        import moabb
         from moabb.paradigms.base import BaseParadigm
         from moabb.evaluations.base import BaseEvaluation
         assert issubclass(evaluation_class, BaseEvaluation)
         assert issubclass(paradigm_class, BaseParadigm)
-        self.mod_dir = os.path.dirname(os.path.abspath(inspect.getsourcefile(ut)))
+        self.mod_dir = os.path.dirname(os.path.abspath(inspect.getsourcefile(moabb)))
         self.filepath = os.path.join(self.mod_dir, 'results',
                                      paradigm_class.__name__,
                                      evaluation_class.__name__,
