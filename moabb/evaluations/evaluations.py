@@ -1,5 +1,6 @@
 from time import time
 import numpy as np
+import logging
 
 from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
 from sklearn.preprocessing import LabelEncoder
@@ -8,6 +9,7 @@ from mne.epochs import concatenate_epochs, equalize_epoch_counts
 
 from moabb.evaluations.base import BaseEvaluation
 
+log = logging.getLogger()
 
 class TrainTestEvaluation(BaseEvaluation):
     '''
@@ -48,7 +50,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
 
     """
 
-    def evaluate(self, dataset, subject, pipelines, paradigm):
+    def evaluate(self, dataset, subject, pipelines):
         # requires that subject be an int
         s = subject-1
         self.ind_cache[s] = self.ind_cache[s]*0
@@ -60,7 +62,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
         out = {}
         for name, clf in pipelines.items():
             t_start = time()
-            score = self.score(clf, allX, ally, groups, paradigm.scoring)
+            score = self.score(clf, allX, ally, groups, self.paradigm.scoring)
             duration = time() - t_start
             out[name] = {'time': duration,
                          'dataset': dataset,
@@ -70,7 +72,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
                          'n_channels': allX.shape[1]}
         return out
 
-    def preprocess_data(self, dataset, paradigm):
+    def preprocess_data(self, dataset):
         assert len(dataset.subject_list) > 1, "Dataset {} has only one subject".format(
             dataset.code)
         self.X_cache = []
@@ -82,7 +84,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
         for s in dataset.subject_list:
             sub = dataset.get_data([s], stack_sessions=True)[0]
             # get all epochs for individual files in given subject
-            epochs = paradigm._epochs(sub, event_id, dataset.interval)
+            epochs = self.paradigm._epochs(sub, event_id, dataset.interval)
             # equalize events from different classes
             X, y = self.extract_data_from_cont(epochs, event_id)
             self.X_cache.append(X)
@@ -103,7 +105,7 @@ class WithinSessionEvaluation(TrainTestEvaluation):
 
     """
 
-    def evaluate(self, dataset, subject, pipelines, paradigm):
+    def evaluate(self, dataset, subject, pipelines):
         """Prepare data for classification."""
         event_id = dataset.selected_events
         if not event_id:
@@ -116,14 +118,14 @@ class WithinSessionEvaluation(TrainTestEvaluation):
             # sess_id = '{:03d}_{:d}'.format(subject, ind)
 
             # get all epochs for individual files in given session
-            epochs = paradigm._epochs(session, event_id, dataset.interval)
+            epochs = self.paradigm._epochs(session, event_id, dataset.interval)
             X, y = self.extract_data_from_cont(epochs, event_id)
             if len(np.unique(y)) > 1:
                 counts = np.unique(y,return_counts=True)[1]
-                print('score imbalance: {}'.format(counts))
+                log.debug('score imbalance: {}'.format(counts))
                 for name, clf in pipelines.items():
                     t_start = time()
-                    score = self.score(clf, X, y, paradigm.scoring)
+                    score = self.score(clf, X, y, self.paradigm.scoring)
                     duration = time() - t_start
                     out[name].append({'time': duration,
                                       'dataset': dataset,
@@ -142,6 +144,13 @@ class WithinSessionEvaluation(TrainTestEvaluation):
                               scoring=scoring, n_jobs=self.n_jobs)
         return acc.mean()
 
+    def preprocess_data(self, dataset):
+        '''
+        Optional paramter if any sort of dataset-wide computation is needed
+        per subject
+        '''
+        pass
+
 
 class CrossSessionEvaluation(TrainTestEvaluation):
     """Cross session Context.
@@ -151,7 +160,7 @@ class CrossSessionEvaluation(TrainTestEvaluation):
 
     """
 
-    def evaluate(self, dataset, subject, pipelines, paradigm):
+    def evaluate(self, dataset, subject, pipelines):
         event_id = dataset.selected_events
         if not event_id:
             raise(ValueError("Dataset had no selected events"))
@@ -161,7 +170,7 @@ class CrossSessionEvaluation(TrainTestEvaluation):
         listX, listy = ([], [])
         for ind, session in enumerate(sub):
             # get list epochs for individual files in given session
-            epochs = paradigm._epochs(session, event_id, dataset.interval)
+            epochs = self.paradigm._epochs(session, event_id, dataset.interval)
             # equalize events from different classes
             X, y = self.extract_data_from_cont(epochs, event_id)
             listX.append(X)
@@ -175,7 +184,7 @@ class CrossSessionEvaluation(TrainTestEvaluation):
         out = {}
         for name, clf in pipelines.items():
             t_start = time()
-            score = self.score(clf, allX, ally, groupvec, paradigm.scoring)
+            score = self.score(clf, allX, ally, groupvec, self.paradigm.scoring)
             duration = time() - t_start
             out[name] = {'time': duration,
                          'dataset': dataset,
@@ -185,7 +194,7 @@ class CrossSessionEvaluation(TrainTestEvaluation):
                          'n_channels':allX.shape[1]}
         return out
 
-    def preprocess_data(self, dataset, paradigm):
+    def preprocess_data(self, dataset):
         assert dataset.n_sessions > 1, "Proposed dataset {} has only one session".format(
             dataset.code)
 
