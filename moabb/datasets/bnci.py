@@ -450,6 +450,7 @@ def _convert_mi(data_paths, ch_names, ch_types):
     from scipy.io import loadmat
     sessions = []
     event_id = {}
+    raws = []
     for filename in data_paths:
         data = loadmat(filename, struct_as_record=False, squeeze_me=True)
         if type(data['data']) is np.ndarray:
@@ -460,17 +461,21 @@ def _convert_mi(data_paths, ch_names, ch_types):
             raw, evd = _convert_run(run, ch_names, ch_types, None)
             raws.append(raw)
             event_id.update(evd)
-        sessions.append(runs)
+        sessions.append(raws)
     # change labels to match rest
     standardize_keys(event_id)
     return sessions, event_id
 
 
 def standardize_keys(d):
-    master_list = [['both feet', 'feet'], ['left hand', 'left_hand'], [
-        'right hand', 'right_hand'
-    ], ['FEET', 'feet'], ['HAND', 'right_hand'], ['NAV', 'navigation'],
-                   ['SUB', 'subtraction'], ['WORD', 'word_ass']]
+    master_list = [['both feet', 'feet'],
+                   ['left hand', 'left_hand'],
+                   ['right hand', 'right_hand'],
+                   ['FEET', 'feet'],
+                   ['HAND', 'right_hand'],
+                   ['NAV', 'navigation'],
+                   ['SUB', 'subtraction'],
+                   ['WORD', 'word_ass']]
     for old, new in master_list:
         if old in d.keys():
             d[new] = d.pop(old)
