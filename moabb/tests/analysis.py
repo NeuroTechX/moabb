@@ -14,6 +14,9 @@ class DummyEvaluation(BaseEvaluation):
     def evaluate(self, dataset, subject, clf, paradigm):
         raise NotImplementedError('dummy')
 
+    def preprocess_data(self):
+        pass
+
 
 class DummyParadigm(BaseParadigm):
 

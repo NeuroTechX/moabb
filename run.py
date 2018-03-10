@@ -2,7 +2,6 @@
 
 import os
 import yaml
-import hashlib
 import mne
 import logging
 import coloredlogs
@@ -59,25 +58,17 @@ for yaml_file in yaml_files:
         # load config
         config = yaml.load(content)
 
-        # get digest
-        digest = hashlib.md5(content.encode('utf8')).hexdigest()
-
         # iterate over paradigms
         for paradigm in config['paradigms']:
 
-            pipe = create_pipeline_from_config(config['pipeline'])
-
-            pipeline = {
-                'pipeline': pipe,
-                'name': config['name'],
-                'digest': digest
-            }
+            pipeline = create_pipeline_from_config(config['pipeline'])
 
             # append the pipeline in the paradigm list
             if paradigm not in paradigms.keys():
-                paradigms[paradigm] = []
+                paradigms[paradigm] = {}
 
-            paradigms[paradigm].append(pipeline)
+            # FIXME name are not unique
+            paradigms[paradigm][config['name']] = pipeline
 
 
 # we can do the same for python defined pipeline
@@ -85,8 +76,7 @@ python_files = glob(os.path.join(options.pipelines, '*.py'))
 
 for paradigm in paradigms:
     # get the context
-    # FIXME name are not unique
-    pipelines = {p['digest']: p['pipeline'] for p in paradigms[paradigm]}
+
     p = getattr(para, paradigm)()
     context = WithinSessionEvaluation(paradigm=p, random_state=42)
-    results = context.process(pipelines=pipelines)
+    results = context.process(pipelines=paradigms[paradigm])
