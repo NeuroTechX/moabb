@@ -5,3 +5,4 @@ matplotlib
 seaborn
 h5py
 pandas
+coloredlogs
