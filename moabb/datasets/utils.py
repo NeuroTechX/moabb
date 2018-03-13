@@ -14,14 +14,14 @@ for ds in inspect.getmembers(db, inspect.isclass):
 
 
 def dataset_search(paradigm, multi_session=False, events=None,
-                   has_all_events=False, total_classes=100, min_subjects=1,
+                   has_all_events=False, total_classes=None, min_subjects=1,
                    channels=[]):
     '''
     Function that returns a list of datasets that match given criteria. Valid
     criteria are:
 
     events: list of strings
-    total_classes: int, total number of classes, will either truncate or choose
+    total_classes: int or None, total number of classes (returns all if None), will either truncate or choose
     from events. Defaults to 100 to keep all classes.
     has_all_events: bool, skip datasets that don't have all events in events
     multi_session: bool, if True only returns datasets with more than one
@@ -54,23 +54,28 @@ def dataset_search(paradigm, multi_session=False, events=None,
             keep_event_dict = {}
             if events is None:
                 # randomly keep n_classes events
-                for k in d.event_id.keys():
-                    if len(keep_event_dict) < n_classes:
-                        keep_event_dict[k] = d.event_id[k]
+                if n_classes is None:
+                    keep_event_dict = d.event_id.copy()
+                else:
+                    for k in d.event_id.keys():
+                        if len(keep_event_dict) < n_classes:
+                            keep_event_dict[k] = d.event_id[k]
             else:
                 n_events = 0
                 for e in events:
-                    if n_events == n_classes:
-                        break
+                    if n_classes is not None:
+                        if n_events == n_classes:
+                            break
                     if e in d.event_id.keys():
                         keep_event_dict[e] = d.event_id[e]
                         n_events += 1
                     else:
                         if has_all_events:
                             skip_dataset = True
-                # don't want to use datasets with one valid label
-                if n_events < 2:
-                    skip_dataset = True
+                # don't want to use datasets with less than total number of labels
+                if n_classes is not None:
+                    if n_events < n_classes:
+                        skip_dataset = True
             if keep_event_dict and not skip_dataset:
                 d.selected_events = keep_event_dict
                 if len(channels) > 0:

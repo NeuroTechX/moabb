@@ -18,23 +18,31 @@ class TrainTestEvaluation(BaseEvaluation):
     (not compatible with multi-task/transfer/multi-dataset schemes)
     '''
 
-    def extract_data_from_cont(self, ep_list, event_id):
-        event_epochs = {key: [] for key in event_id.keys()}
-        for epoch in ep_list:
+    def extract_data_from_cont(self, band_dict, event_id):
+        Xall = []
+        y = None
+        for ep_list in band_dict.values():
+            event_epochs = {key: [] for key in event_id.keys()}
+            for epoch in ep_list:
+                for key in event_id.keys():
+                    if key in epoch.event_id.keys():
+                        event_epochs[key].append(epoch[key])
+            all_events = []
             for key in event_id.keys():
-                if key in epoch.event_id.keys():
-                    event_epochs[key].append(epoch[key])
-        all_events = []
-        for key in event_id.keys():
-            if len(event_epochs[key]) > 0:
-                all_events.append(concatenate_epochs(event_epochs[key]))
-        # equalize for accuracy
-        if len(all_events) > 1:
-            equalize_epoch_counts(all_events)
-        ep = concatenate_epochs(all_events)
-        # previously multipled data by 1e6
-        X, y = (ep.get_data(), ep.events[:, -1])
-        return X, y
+                if len(event_epochs[key]) > 0:
+                    all_events.append(concatenate_epochs(event_epochs[key]))
+            # equalize for accuracy
+            if len(all_events) > 1:
+                equalize_epoch_counts(all_events)
+            ep = concatenate_epochs(all_events)
+            # previously multipled data by 1e6
+            X, y = (ep.get_data(), ep.events[:, -1])
+            Xall.append(X)
+        # TODO: This works but is hacky
+        if len(Xall) == 1:
+            return Xall[0], y
+        else:
+            return np.stack(Xall, axis=3), y
 
 
 class CrossSubjectEvaluation(TrainTestEvaluation):

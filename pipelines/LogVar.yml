@@ -1,11 +1,11 @@
 name: Log Variance LDA
 
 paradigms:
-  - LeftRightImagery
+  - LeftRightImagerySinglePass
 
 pipeline:
   - name: LogVariance
-    from: moabb.pipelines.features
+    from: moabb.pipelines.single_pass
 
   - name: LinearDiscriminantAnalysis
     from: sklearn.discriminant_analysis

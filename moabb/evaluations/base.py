@@ -1,4 +1,5 @@
 import logging
+import traceback
 from abc import ABC, abstractmethod
 
 from sklearn.base import BaseEstimator
@@ -104,6 +105,7 @@ class BaseEvaluation(ABC):
                         results.add(res, pipelines=pipelines)
                     except Exception as e:
                         log.error(e)
+                        log.debug(traceback.format_exc())
                         log.warning('Skipping subject {}'.format(subject))
         return results
 

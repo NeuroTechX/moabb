@@ -1,11 +1,11 @@
 name: Log Variance SVM
 
 paradigms:
-  - LeftRightImagery
+  - LeftRightImagerySinglePass
 
 pipeline:
   - name: LogVariance
-    from: moabb.pipelines.features
+    from: moabb.pipelines.single_pass
 
   - name: SVC
     from: sklearn.svm
