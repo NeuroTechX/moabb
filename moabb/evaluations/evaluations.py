@@ -1,13 +1,12 @@
-from time import time
-import numpy as np
 import logging
+from time import time
 
+import numpy as np
 from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
 
-from mne.epochs import concatenate_epochs, equalize_epoch_counts
-
 from moabb.evaluations.base import BaseEvaluation
+
 
 log = logging.getLogger()
 

@@ -51,6 +51,9 @@ class BaseMotorImagery(BaseParadigm):
             assert dataset.interval[1] > self.interval[1]
 
     def raw_to_trials(self, raw, events, picks, event_dict, time):
+        '''
+        Given a single raw file turn it into a features matrix and labels
+        '''
         raw_f = raw.filter(self.fmin, self.fmax, method='iir', picks=picks,
                            verbose=False)
         epochs = mne.Epochs(raw_f, events, event_id=event_dict,
