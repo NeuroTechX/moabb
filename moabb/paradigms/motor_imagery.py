@@ -27,54 +27,65 @@ class BaseMotorImagery(BaseParadigm):
         Low cut-off frequency in Hz. If None the data are only low-passed.
     fmax : float | None, (default 35)
         High cut-off frequency in Hz. If None the data are only high-passed.
+    interval: list | None, (default None)
+        Interval to cut trial. If None, defaults to the dataset-defined interval
 
     """
 
-    def __init__(self, fmin=7, fmax=35, channels=None, **kwargs):
+    def __init__(self, fmin=7, fmax=35, channels=None, interval=None, **kwargs):
         """init"""
         super().__init__(**kwargs)
         self.fmin = fmin
         self.fmax = fmax
         self.channels = channels
+        self.interval = interval
+        if self.interval is not None:
+            assert self.interval[0] >= 0
 
     def verify(self, dataset):
         '''
         Method that verifies dataset is correct for given parameters
         '''
         assert dataset.paradigm == 'imagery'
+        if self.interval is not None:
+            assert dataset.interval[1] > self.interval[1]
 
-    def _epochs(self, raws, event_dict, time):
-        '''Take list of raws and returns a list of epoch objects. Implements
+    def raw_to_trials(self, raw, events, picks, event_dict, time):
+        raw_f = raw.filter(self.fmin, self.fmax, method='iir', picks=picks,
+                           verbose=False)
+        epochs = mne.Epochs(raw_f, events, event_id=event_dict,
+                            tmin=time[0], tmax=time[1], proj=False,
+                            baseline=None, preload=True,
+                            verbose=False, picks=picks)
+        return epochs.get_data(), epochs.events[:, -1]
+
+    def cont_to_trials(self, raws, event_dict, time):
+        '''Take list of raws and returns trial data and labels. Implements
         imagery-specific processing as well
 
         '''
-        bp_low = self.fmin
-        bp_high = self.fmax
         if type(raws) is not list:
             raws = [raws]
-        ep = []
+        Xall = []
+        yall = []
         for raw in raws:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
             channels = () if self.channels is None else self.channels
             # picks channels
             picks = mne.pick_types(raw.info, eeg=True, stim=False,
                                    include=channels)
-
+            log.debug('Picks: {}'.format(picks))
             # ensure events are desired:
             if len(events) > 0:
                 keep_events = {key: val for key, val in event_dict.items() if
                                val in np.unique(events[:, 2])}
                 if len(keep_events) > 0:
                     # copy before filtering, so we let raws intact.
-                    raw_f = raw.copy().filter(bp_low, bp_high, method='iir',
-                                              picks=picks, verbose=False)
-                    epochs = mne.Epochs(raw_f, events, event_id=keep_events,
-                                        tmin=time[0], tmax=time[1], proj=False,
-                                        baseline=None, preload=True,
-                                        verbose=False, picks=picks)
-                    ep.append(epochs)
-
-        return {1: ep}
+                    X, y = self.raw_to_trials(
+                        raw, events, picks, keep_events, time)
+                    Xall.append(X)
+                    yall.append(y)
+        return np.concatenate(Xall, axis=0), np.concatenate(yall, axis=0)
 
     @property
     def datasets(self):
@@ -94,40 +105,21 @@ class MotorImageryMultiPass(BaseMotorImagery):
         self.fbands = fbands
         self.channels = channels
 
+    def raw_to_trials(self, raw, events, picks, event_dict, time):
+        y = None
+        X = []
+        for fmin, fmax in self.fbands:
+            raw_f = raw.filter(fmin, fmax, method='iir', picks=picks,
+                               verbose=False)
+            epochs = mne.Epochs(raw_f, events, event_id=event_dict,
+                                tmin=time[0], tmax=time[1], proj=False,
+                                baseline=None, preload=True,
+                                verbose=False, picks=picks)
+            xband, y = epochs.get_data(), epochs.events[:, -1]
+            X.append(xband)
+        return np.stack(X, axis=3), y
 
-    def _epochs(self, raws, event_dict, time):
-        '''Take list of raws and returns a list of epoch objects. Implements
-        imagery-specific processing as well
 
-        '''
-        if type(raws) is not list:
-            raws = [raws]
-        ep = []
-        out_dict = {i:[] for i in range(self.fbands.shape[0])}
-        for raw in raws:
-            events = mne.find_events(raw, shortest_event=0, verbose=False)
-            channels = () if self.channels is None else self.channels
-            # picks channels
-            picks = mne.pick_types(raw.info, eeg=True, stim=False,
-                                   include=channels)
-
-            # ensure events are desired:
-            if len(events) > 0:
-                keep_events = {key: val for key, val in event_dict.items() if
-                               val in np.unique(events[:, 2])}
-                if len(keep_events) > 0:
-                    # copy before filtering, so we let raws intact.
-                    for band_ind, (bp_low, bp_high) in enumerate(self.fbands):
-                        raw_f = raw.copy().filter(bp_low, bp_high, method='iir',
-                                                picks=picks, verbose=False)
-                        epochs = mne.Epochs(raw_f, events, event_id=keep_events,
-                                            tmin=time[0], tmax=time[1], proj=False,
-                                            baseline=None, preload=True,
-                                            verbose=False, picks=picks)
-                        out_dict[band_ind].append(epochs)
-
-        return out_dict
-    
 def ImageryNClassFactory(parent):
 
     class ImageryNClass(parent):
