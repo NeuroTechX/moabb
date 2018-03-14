@@ -1,9 +1,13 @@
 import os
 import h5py
 import hashlib
+import sqlite3
 import numpy as np
 import pandas as pd
 import inspect
+import logging
+
+log = logging.getLogger()
 
 from datetime import datetime
 
@@ -11,7 +15,6 @@ from datetime import datetime
 def get_digest(obj):
     """Return hash of an object repr."""
     return hashlib.md5(repr(obj).encode('utf8')).hexdigest()
-
 
 class Results:
     '''Class to hold results from the evaluation.evaluate method. Appropriate test
@@ -33,7 +36,6 @@ class Results:
         from moabb.evaluations.base import BaseEvaluation
         assert issubclass(evaluation_class, BaseEvaluation)
         assert issubclass(paradigm_class, BaseParadigm)
-
         self.mod_dir = os.path.dirname(os.path.abspath(inspect.getsourcefile(moabb)))
         self.filepath = os.path.join(self.mod_dir, 'results',
                                      paradigm_class.__name__,
@@ -138,6 +140,96 @@ class Results:
                 if dataset.code not in pipe_grp.keys():
                     return False
                 else:
-                    # if dataset, check for subject
-                    dset = pipe_grp[dataset.code]
-                    return (str(subject) in dset['id'])
+                    pipe_grp = f[p]
+                    if d.code not in pipe_grp.keys():
+                        return False
+                    else:
+                        dset = pipe_grp[d.code]
+                        return (str(s) in dset['id'])
+        ret = {k: pipeline_dict[k] for k in pipeline_dict.keys()
+               if not already_computed(k, dataset, subj)}
+        return ret
+
+
+class ResultsDB:
+    '''Class to interface with results database. Can add new data and also return
+    dataframes based on queries '''
+
+    def __init__(self, write=False, evaluation=None, paradigm=None):
+        """
+        Initialize class. If database does not exist, create it.
+        write: bool, do you want to write values (if yes, then need eval and paradigm)
+        evaluation: BaseEvaluation child
+        paradigm: BaseParadigm child
+        """
+        # first ensure that the database exists
+        import moabb
+        self.mod_dir = os.path.dirname(
+            os.path.abspath(inspect.getsourcefile(moabb)))
+        self.filepath = os.path.join(self.mod_dir, 'results', 'results.db')
+        if not os.path.isfile(self.filepath):
+            os.makedirs(os.path.join(self.mod_dir, 'results'), exist_ok=True)
+            self._setup()
+        self.conn = sqlite3.connect(self.filepath)
+
+        if write:
+            if evaluation is None or paradigm is None:
+                raise ValueError('If writing results, evaluation and paradigm must be specified')
+        self.write = write
+        self.evaluation = '{0!r}'.format(evaluation)
+        self.paradigm = '{0!r}'.format(paradigm)
+        
+            
+
+    def _setup(self):
+        '''
+        Set up initial table structure 
+        '''
+        self.conn = sqlite3.connect(self.filepath)
+        with self.conn as c:
+            c.execute('''
+            CREATE TABLE context(id INTEGER PRIMARY KEY,
+                                 eval TEXT,
+                                 pprocess_hash TEXT,
+                                 paradigm_hash TEXT)''')
+            c.execute('''
+            CREATE TABLE datasets(code TEXT PRIMARY KEY,
+                                  sr REAL,
+                                  subjects INTEGER)''')
+        self.conn.close()
+
+    def add(self, pipeline_dict):
+        '''
+        Add data appropriately to database. Fail if parameters not already there
+        pipeline_dict: dict of (pipeline hash, dict of information)
+        '''
+        pass
+
+    def check_dataset(self, dataset):
+        '''Check if dataset is already in dset table and add if not.'''
+        with self.conn as c:
+            reslist = c.execute(
+                "SELECT 1 FROM datasets WHERE code=?", (dataset.code,)).fetchall()
+            log.debug(reslist)
+            if len(reslist) == 0:
+                # add dataset
+                log.info('Adding dataset {} to database...'.format(dataset.code))
+                raw = dataset.get_data([1], False)[0][0][0]
+                sr = raw.info['sfreq']
+                c.execute('INSERT INTO datasets VALUES(?,?,?)', (dataset.code, sr, len(dataset.subject_list)))
+
+            elif len(reslist) != 1:
+                raise ValueError(
+                    "Multiple entries for dataset {} in database??".format(dataset.code))
+
+    def not_yet_computed(self, pipeline_dict, dataset, subj):
+        '''
+        Confirm that subject, dataset, pipeline combos are not yet in database.
+        Returns pipeline dict with only new pipelines'''
+        pass
+
+    def to_dataframe(self):
+        '''
+        Given search criteria (TBD) return dataframe of results
+        '''
+        pass

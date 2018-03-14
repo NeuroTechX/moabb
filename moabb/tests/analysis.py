@@ -157,6 +157,28 @@ class Test_Results(unittest.TestCase):
             ('a', 'b', 'c')), np.unique(df['pipeline']))
         self.assertTrue(df.shape[0] == 6, df.shape[0])
 
+class Test_ResultsDB(unittest.TestCase):
+
+    def setUpClass(cls):
+        pass
+
+    def testCanAddDataset(self):
+        pass
+
+    def testCanAddMultiplePipelines(self):
+        pass
+
+    def testRecognizesAlreadyComputed(self):
+        pass
+
+    def testDetectsChangedPipeline(self):
+        pass
+
+    def testDetectsChangedParadigmParameters(self):
+        pass
+
+    def testCanExportToDataframe(self):
+        pass
 
 if __name__ == "__main__":
     unittest.main()
