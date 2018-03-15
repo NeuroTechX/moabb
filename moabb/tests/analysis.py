@@ -244,7 +244,16 @@ class Test_ResultsDB(unittest.TestCase):
         self.assertTrue(len(not_yet_computed) == 1, not_yet_computed)
 
     def testCanExportToDataframe(self):
-        pass
+        obj = ResultsDB(write=True, evaluation=DummyEvaluation(DummyParadigm()), _debug=True)
+        _in = to_result_input(['a', 'b', 'c'], [d1, d1, d2])
+        obj.add(_in)
+        _in = to_result_input(['a', 'b', 'c'], [d2, d2, d3])
+        obj.add(_in)
+        df = obj.to_dataframe()
+        log.debug(df)
+        self.assertTrue(set(np.unique(df['pipeline'])) == set(
+            ('a', 'b', 'c')), np.unique(df['pipeline']))
+        self.assertTrue(df.shape[0] == 6, df.shape[0])
 
 if __name__ == "__main__":
     unittest.main()

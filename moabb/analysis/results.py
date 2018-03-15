@@ -240,18 +240,18 @@ class ResultsDB:
             ''')
         self.conn.close()
 
+    def in_table(self, pipe, code, subj):
+        with self.conn as c:
+            results = c.execute("SELECT * FROM scores WHERE pipeline = ? AND dataset = ? AND context = ? AND subj = ?",
+                                (pipe, code, subj, self.context_id)).fetchall()
+            return (len(results) > 0)
+    
     def add(self, pipeline_dict):
         '''
         Add data appropriately to database. Fail if parameters not already there
         pipeline_dict: dict of (pipeline hash, dict of information)
         '''
         assert self.write, "Writing not enabled for this ResultsDB object"
-
-        def in_table(pipe, res):
-            with self.conn as c:
-                results = c.execute("SELECT * FROM scores WHERE pipeline = ? AND dataset = ? AND context = ?",
-                                    (pipe, res['dataset'].code, self.context_id)).fetchall()
-                return (len(results) > 0)
 
         def _insert(pipe, res_list):
             with self.conn as c:
@@ -282,7 +282,7 @@ class ResultsDB:
 
         for pipe, res_list in pipeline_dict.items():
             res_list = to_list(res_list)
-            if in_table(pipe, res_list[0]):
+            if self.in_table(pipe, res_list[0]['dataset'].code, res_list[0]['id']):
                 _update(pipe, res_list)
             else:
                 _insert(pipe, res_list)
@@ -313,8 +313,7 @@ class ResultsDB:
         out = {}
         with self.conn as c:
             for pipe in pipeline_dict.keys():
-                entries = c.execute("SELECT * FROM scores WHERE pipeline=? AND dataset=? AND subj=? and context=?", (pipe, dataset.code, subj, self.context_id)).fetchall()
-                if len(entries) == 0:
+                if not self.in_table(pipe, dataset.code, subj):
                     out[pipe] = pipeline_dict[pipe]
         return out
                 
@@ -323,4 +322,7 @@ class ResultsDB:
         '''
         Given search criteria (TBD) return dataframe of results
         '''
-        pass
+        if not self.write:
+            raise NotImplementedError('Cross-preprocessing/cross-whatever search not yet implemented')
+        return pd.read_sql_query('SELECT * FROM scores WHERE context = {:d}'.format(self.context_id),
+                                 self.conn)
