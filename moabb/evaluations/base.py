@@ -48,11 +48,14 @@ class BaseEvaluation(ABC):
             datasets = self.paradigm.datasets
 
         if not isinstance(datasets, list):
-            if isinstance(datasets, BaseDataset):
-                datasets = [datasets]
+            if datasets is None:
+                datasets = paradigm.datasets
             else:
-                raise(ValueError("datasets must be a list or a dataset "
-                                 "instance"))
+                if isinstance(datasets, BaseDataset):
+                    datasets = [datasets]
+                else:
+                    raise(ValueError("datasets must be a list or a dataset "
+                                    "instance"))
 
         for dataset in datasets:
             if not(isinstance(dataset, BaseDataset)):

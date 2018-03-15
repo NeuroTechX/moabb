@@ -1,8 +1,8 @@
-from moabb.tests.analysis import *
-from moabb.tests.datasets import *
-from moabb.tests.contexts import *
-from moabb.tests.util_tests import *
-import unittest
+# from moabb.tests.analysis import *
+# from moabb.tests.datasets import *
+# from moabb.tests.contexts import *
+# from moabb.tests.util_tests import *
+# import unittest
 
-if __name__ == "__main__":
-    unittest.main()
+# if __name__ == "__main__":
+#     unittest.main()

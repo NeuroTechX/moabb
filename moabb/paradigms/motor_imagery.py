@@ -135,6 +135,7 @@ def ImageryNClassFactory(parent):
 
         def __init__(self, n_classes, **kwargs):
             self.n_classes = n_classes
+            self.human_paradigm = 'ImageryNClass'
             super().__init__(**kwargs)
 
         def verify(self, d):
@@ -146,8 +147,7 @@ def ImageryNClassFactory(parent):
         @property
         def datasets(self):
             return utils.dataset_search(paradigm='imagery',
-                                        total_classes=self.n_classes,
-                                        has_all_events=True)
+                                        total_classes=self.n_classes)
 
     return ImageryNClass
 
@@ -159,7 +159,13 @@ def LeftRightImageryFactory(parent):
         Metric is 'roc_auc'
 
         """
-
+        def __init__(self, **kwargs):
+            """
+        
+            """
+            super().__init__(**kwargs)
+            self.human_paradigm = 'LeftRightImagery'
+            
         def verify(self, d):
             events = ['left_hand', 'right_hand']
             super().verify(d)

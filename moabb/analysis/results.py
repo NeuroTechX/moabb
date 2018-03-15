@@ -16,6 +16,7 @@ def get_digest(obj):
     """Return hash of an object repr."""
     return hashlib.md5(repr(obj).encode('utf8')).hexdigest()
 
+
 class Results:
     '''Class to hold results from the evaluation.evaluate method. Appropriate test
     would be to ensure the result of 'evaluate' is consistent and can be
@@ -36,11 +37,12 @@ class Results:
         from moabb.evaluations.base import BaseEvaluation
         assert issubclass(evaluation_class, BaseEvaluation)
         assert issubclass(paradigm_class, BaseParadigm)
-        self.mod_dir = os.path.dirname(os.path.abspath(inspect.getsourcefile(moabb)))
+        self.mod_dir = os.path.dirname(
+            os.path.abspath(inspect.getsourcefile(moabb)))
         self.filepath = os.path.join(self.mod_dir, 'results',
                                      paradigm_class.__name__,
                                      evaluation_class.__name__,
-                                     'results{}.hdf5'.format('_'+suffix))
+                                     'results{}.hdf5'.format('_' + suffix))
 
         os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
         self.filepath = self.filepath
@@ -153,33 +155,63 @@ class Results:
 
 class ResultsDB:
     '''Class to interface with results database. Can add new data and also return
-    dataframes based on queries '''
+    dataframes based on queries 
 
-    def __init__(self, write=False, evaluation=None, paradigm=None):
+    The integrity of this structure depends on the pipelines and the paradigms
+    having unambiguous __repr__ methods.
+
+    '''
+
+    def __init__(self, write=False, evaluation=None, _debug=False):
         """
         Initialize class. If database does not exist, create it.
         write: bool, do you want to write values (if yes, then need eval and paradigm)
         evaluation: BaseEvaluation child
-        paradigm: BaseParadigm child
         """
         # first ensure that the database exists
         import moabb
         self.mod_dir = os.path.dirname(
             os.path.abspath(inspect.getsourcefile(moabb)))
-        self.filepath = os.path.join(self.mod_dir, 'results', 'results.db')
+        if not _debug:
+            self.filepath = os.path.join(self.mod_dir, 'results', 'results.db')
+        else:
+            self.filepath = os.path.join(
+                self.mod_dir, 'results', 'results_test.db')
         if not os.path.isfile(self.filepath):
             os.makedirs(os.path.join(self.mod_dir, 'results'), exist_ok=True)
             self._setup()
         self.conn = sqlite3.connect(self.filepath)
 
-        if write:
-            if evaluation is None or paradigm is None:
-                raise ValueError('If writing results, evaluation and paradigm must be specified')
         self.write = write
-        self.evaluation = '{0!r}'.format(evaluation)
-        self.paradigm = '{0!r}'.format(paradigm)
-        
-            
+        if write:
+            if evaluation is None:
+                raise ValueError(
+                    'If writing results, evaluation must be specified')
+            self.evaluation = get_digest(evaluation)
+            self.paradigm = get_digest(evaluation.paradigm)
+            self.human_paradigm = evaluation.paradigm.human_paradigm
+            self.context_id = self.check_context(
+                self.evaluation, self.paradigm, self.human_paradigm)
+
+    def check_context(self, eval_hash, par_hash, human_par_hash):
+        '''
+        Check if evaluation, paradigm, and human paradigm combination exists already.
+        If so, return the generated ID. If not, insert and return the appropriate ID
+        '''
+        with self.conn as c:
+            id_list = c.execute("SELECT id FROM context WHERE eval = ? AND pprocess_hash = ? AND paradigm_hash = ?", (
+                eval_hash, par_hash, human_par_hash)).fetchall()
+            log.debug(id_list)
+            context_id = None
+            if len(id_list) == 0:
+                log.info('Adding new context to database')
+                cur = c.cursor()
+                cur.execute("INSERT INTO context(eval, pprocess_hash, paradigm_hash) VALUES(?,?,?)",
+                            (eval_hash, par_hash, human_par_hash))
+                context_id = cur.lastrowid
+            else:
+                context_id = id_list[0][0]
+            return context_id
 
     def _setup(self):
         '''
@@ -196,6 +228,16 @@ class ResultsDB:
             CREATE TABLE datasets(code TEXT PRIMARY KEY,
                                   sr REAL,
                                   subjects INTEGER)''')
+            c.execute('''
+            CREATE TABLE scores(score FLOAT,
+                                subj INT,
+                                dataset TEXT,
+                                time FLOAT,
+                                n_samples INT,
+                                n_channels INT, 
+                                pipeline TEXT,
+                                context INT)
+            ''')
         self.conn.close()
 
     def add(self, pipeline_dict):
@@ -203,20 +245,61 @@ class ResultsDB:
         Add data appropriately to database. Fail if parameters not already there
         pipeline_dict: dict of (pipeline hash, dict of information)
         '''
-        pass
+        assert self.write, "Writing not enabled for this ResultsDB object"
+
+        def in_table(pipe, res):
+            with self.conn as c:
+                results = c.execute("SELECT * FROM scores WHERE pipeline = ? AND dataset = ? AND context = ?",
+                                    (pipe, res['dataset'].code, self.context_id)).fetchall()
+                return (len(results) > 0)
+
+        def _insert(pipe, res_list):
+            with self.conn as c:
+                c.executemany("INSERT INTO scores VALUES (?,?,?,?,?,?,?,?)",
+                              [(r['score'],
+                                r['id'],
+                                r['dataset'].code,
+                                r['time'],
+                                r['n_samples'],
+                                r['n_channels'],
+                                pipe,
+                                self.context_id) for r in res_list])
+
+        def _update(pipe, res_list):
+            with self.conn as c:
+                c.execute("DELETE FROM scores WHERE pipeline = ? AND dataset = ? AND context = ?",
+                          (pipe, res_list[0]['dataset'].code, self.context_id))
+            _insert(pipe, res_list)
+
+        def to_list(res):
+            if type(res) is dict:
+                return [res]
+            elif type(res) is not list:
+                raise ValueError("Results are given as neither dict nor list"
+                                 "but {}".format(type(res).__name__))
+            else:
+                return res
+
+        for pipe, res_list in pipeline_dict.items():
+            res_list = to_list(res_list)
+            if in_table(pipe, res_list[0]):
+                _update(pipe, res_list)
+            else:
+                _insert(pipe, res_list)
 
     def check_dataset(self, dataset):
         '''Check if dataset is already in dset table and add if not.'''
         with self.conn as c:
             reslist = c.execute(
-                "SELECT 1 FROM datasets WHERE code=?", (dataset.code,)).fetchall()
+                "SELECT * FROM datasets WHERE code=?", (dataset.code,)).fetchall()
             log.debug(reslist)
             if len(reslist) == 0:
                 # add dataset
                 log.info('Adding dataset {} to database...'.format(dataset.code))
                 raw = dataset.get_data([1], False)[0][0][0]
                 sr = raw.info['sfreq']
-                c.execute('INSERT INTO datasets VALUES(?,?,?)', (dataset.code, sr, len(dataset.subject_list)))
+                c.execute('INSERT INTO datasets VALUES(?,?,?)',
+                          (dataset.code, sr, len(dataset.subject_list)))
 
             elif len(reslist) != 1:
                 raise ValueError(
@@ -226,7 +309,15 @@ class ResultsDB:
         '''
         Confirm that subject, dataset, pipeline combos are not yet in database.
         Returns pipeline dict with only new pipelines'''
-        pass
+        assert self.write, "Writing not enabled for this ResultsDB object"
+        out = {}
+        with self.conn as c:
+            for pipe in pipeline_dict.keys():
+                entries = c.execute("SELECT * FROM scores WHERE pipeline=? AND dataset=? AND subj=? and context=?", (pipe, dataset.code, subj, self.context_id)).fetchall()
+                if len(entries) == 0:
+                    out[pipe] = pipeline_dict[pipe]
+        return out
+                
 
     def to_dataframe(self):
         '''
