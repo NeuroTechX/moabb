@@ -31,6 +31,13 @@ class BaseMotorImagery(BaseParadigm):
         Interval to cut trial. If None, defaults to the dataset-defined interval
 
     """
+    def __repr__(self):
+        return '{}(fmin={},fmax={},channels={},interval={})'.format(
+            type(self).__name__,
+            self.fmin,
+            self.fmax,
+            self.channels,
+            self.interval)
 
     def __init__(self, fmin=7, fmax=35, channels=None, interval=None, **kwargs):
         """init"""
@@ -100,6 +107,13 @@ class BaseMotorImagery(BaseParadigm):
 
 
 class MotorImageryMultiPass(BaseMotorImagery):
+
+    def __repr__(self):
+        return '{}(fbands={}, channels={},interval={})'.format(
+            type(self).__name__,
+            self.fbands,
+            self.channels,
+            self.interval)
 
     def __init__(self, fbands=np.array([[8, 14], [20, 30]]),
                  channels=None, **kwargs):

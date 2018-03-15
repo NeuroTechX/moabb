@@ -167,6 +167,7 @@ class ResultsDB:
         Initialize class. If database does not exist, create it.
         write: bool, do you want to write values (if yes, then need eval and paradigm)
         evaluation: BaseEvaluation child
+        _debug: flag to save to separate database for testing
         """
         # first ensure that the database exists
         import moabb
@@ -187,11 +188,12 @@ class ResultsDB:
             if evaluation is None:
                 raise ValueError(
                     'If writing results, evaluation must be specified')
-            self.evaluation = get_digest(evaluation)
-            self.paradigm = get_digest(evaluation.paradigm)
+            self.evaluation = repr(evaluation)
+            self.paradigm = repr(evaluation.paradigm))
             self.human_paradigm = evaluation.paradigm.human_paradigm
             self.context_id = self.check_context(
-                self.evaluation, self.paradigm, self.human_paradigm)
+                get_digest(evaluation), get_digest(evaluation.paradigm),
+                self.human_paradigm)
 
     def check_context(self, eval_hash, par_hash, human_par_hash):
         '''

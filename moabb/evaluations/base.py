@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 from sklearn.base import BaseEstimator
 
-from moabb.analysis import Results
+from moabb.analysis import ResultsDB
 from moabb.datasets.base import BaseDataset
 from moabb.paradigms.base import BaseParadigm
 
@@ -29,6 +29,8 @@ class BaseEvaluation(ABC):
         number of jobs for fitting of pipeline
 
     '''
+    def __repr__(self):
+        return '{}(random_state={})'.format(type(self).__name__,self.random_state)
 
     def __init__(self, paradigm, datasets=None, random_state=None, n_jobs=1):
         """
@@ -55,7 +57,7 @@ class BaseEvaluation(ABC):
                     datasets = [datasets]
                 else:
                     raise(ValueError("datasets must be a list or a dataset "
-                                    "instance"))
+                                     "instance"))
 
         for dataset in datasets:
             if not(isinstance(dataset, BaseDataset)):
@@ -81,10 +83,7 @@ class BaseEvaluation(ABC):
                 raise(ValueError("pipelines must only contains Pipelines "
                                  "instance"))
 
-        results = Results(type(self),
-                          type(self.paradigm),
-                          overwrite=overwrite,
-                          suffix=suffix)
+        results = ResultsDB(write=True, evaluation=self)
 
         for dataset in self.datasets:
             log.info('Processing dataset: {}'.format(dataset.code))
