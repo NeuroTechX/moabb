@@ -1,5 +1,6 @@
 import os
 import h5py
+import re
 import hashlib
 import numpy as np
 import pandas as pd
@@ -9,8 +10,9 @@ from datetime import datetime
 
 
 def get_digest(obj):
-    """Return hash of an object repr."""
-    return hashlib.md5(repr(obj).encode('utf8')).hexdigest()
+    """Return hash of an object repr. If there are memory addresses, wipes them"""
+    str_no_addresses = re.sub('0x[a-z0-9]*', '0x__',repr(obj)).encode('utf8')
+    return hashlib.md5(str_no_addresses).hexdigest()
 
 
 class Results:

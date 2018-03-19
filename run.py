@@ -8,7 +8,7 @@ import coloredlogs
 import importlib
 
 from glob import glob
-from optparse import OptionParser
+from argparse import ArgumentParser
 from collections import OrderedDict
 from sklearn.base import BaseEstimator
 from sklearn.pipeline import Pipeline
@@ -16,31 +16,31 @@ from copy import deepcopy
 
 # moabb specific imports
 from moabb.pipelines.utils import create_pipeline_from_config
-from moabb import paradigms as para
+from moabb import paradigms as moabb_paradigms
 from moabb.evaluations import WithinSessionEvaluation
 
 # set logs
 mne.set_log_level(False)
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
-coloredlogs.install(level=logging.INFO)
+# logging.basicConfig(level=logging.WARNING)
+log = logging.getLogger()
+# coloredlogs.install(level=logging.WARNING)
 
-parser = OptionParser()
-parser.add_option(
+parser = ArgumentParser(description="Main run script for MOABB")
+parser.add_argument(
     "-p",
     "--pipelines",
     dest="pipelines",
-    type='str',
+    type=str,
     default='./pipelines/',
     help="Folder containing the pipelines to evaluates.")
-parser.add_option(
+parser.add_argument(
     "-r",
     "--results",
     dest="results",
-    type='str',
+    type=str,
     default='./results/',
     help="Folder to store the results.")
-parser.add_option(
+parser.add_argument(
     "-f",
     "--force-update",
     dest="force",
@@ -48,20 +48,50 @@ parser.add_option(
     default=False,
     help="Force evaluation of cached pipelines.")
 
-(options, args) = parser.parse_args()
+parser.add_argument(
+    "-v",
+    "--verbose",
+    dest="verbose",
+    action="store_true",
+    default=False)
+parser.add_argument(
+    "-d",
+    "--debug",
+    dest="debug",
+    action="store_true",
+    default=False,
+    help="Print debug level parse statements. Overrides verbose")
 
-paradigms = OrderedDict()
+parser.add_argument(
+    "-c",
+    "--contexts",
+    dest="context",
+    type=str,
+    default=None,
+    help="File path to context.yml file that describes context parameters. If none, assumes all defaults.")
+options = parser.parse_args()
+
+assert os.path.isdir(os.path.abspath(options.pipelines)
+                     ), "Given pipeline path {} is not valid".format(options.pipelines)
+
+if options.debug:
+    coloredlogs.install(level=logging.DEBUG)
+elif options.verbose:
+    coloredlogs.install(level=logging.INFO)
+else:
+    coloredlogs.install(level=logging.WARNING)
+
 
 # get list of config files
 yaml_files = glob(os.path.join(options.pipelines, '*.yml'))
 
-configs = []
+pipeline_configs = []
 for yaml_file in yaml_files:
-    with open(yaml_file, 'r') as yml:
-        content = yml.read()
+    with open(yaml_file, 'r') as _file:
+        content = _file.read()
 
         # load config
-        configs.append(yaml.load(content))
+        pipeline_configs.append(yaml.load(content))
 
 # we can do the same for python defined pipeline
 python_files = glob(os.path.join(options.pipelines, '*.py'))
@@ -71,24 +101,37 @@ for python_file in python_files:
     foo = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(foo)
 
-    configs.append(foo.PIPELINE)
+    pipeline_configs.append(foo.PIPELINE)
 
-for config in configs:
+context_params = {}
+if options.context is not None:
+    with open(options.context, 'r') as cfile:
+        context_params = yaml.load(cfile.read())
+
+paradigms = OrderedDict()
+for config in pipeline_configs:
 
     if 'paradigms' not in config.keys():
-        logger.error(f"{config} must have a 'paradigms' key.")
+        log.error("{} must have a 'paradigms' key.".format(config))
         continue
 
     # iterate over paradigms
 
     for paradigm in config['paradigms']:
 
+        # check if it is in the context parameters file
+        if len(context_params) > 0:
+            if paradigm not in context_params.keys():
+                log.debug(context_params)
+                log.warning("Paradigm {} not in context file {}".format(
+                    paradigm, context_params.keys()))
+
         if isinstance(config['pipeline'], list):
             pipeline = create_pipeline_from_config(config['pipeline'])
         elif isinstance(config['pipeline'], BaseEstimator):
             pipeline = deepcopy(config['pipeline'])
         else:
-            print(config['pipeline'])
+            log.error(config['pipeline'])
             raise(ValueError('pipeline must be a list or a sklearn estimator'))
 
         # append the pipeline in the paradigm list
@@ -100,7 +143,10 @@ for config in configs:
 
 for paradigm in paradigms:
     # get the context
-
-    p = getattr(para, paradigm)()
+    if paradigm in context_params.keys():
+        log.debug(context_params[paradigm])
+        p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
+    else:
+        p = getattr(moabb_paradigms, paradigm)()
     context = WithinSessionEvaluation(paradigm=p, random_state=42)
     results = context.process(pipelines=paradigms[paradigm])
