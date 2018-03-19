@@ -3,6 +3,7 @@ Utils for easy database selection
 '''
 
 import inspect
+import numpy as np
 import moabb.datasets as db
 from moabb.datasets.base import BaseDataset
 
@@ -38,13 +39,17 @@ def dataset_search(paradigm, multi_session=False, events=None,
     assert paradigm in ['imagery', 'p300']
     if paradigm == 'p300':
         raise Exception('SORRY NOBDOYS GOTTEN AROUND TO THIS YET')
+
     for type_d in dataset_list:
         d = type_d()
         skip_dataset = False
+
         if multi_session and d.n_sessions < 2:
             continue
+
         if len(d.subject_list) < min_subjects:
             continue
+
         if paradigm == d.paradigm:
             keep_event_dict = {}
             if events is None:

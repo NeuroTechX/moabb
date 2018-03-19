@@ -11,6 +11,7 @@ from moabb.evaluations.base import BaseEvaluation
 
 log = logging.getLogger()
 
+
 class TrainTestEvaluation(BaseEvaluation):
     '''
     Base class for evaluations that split data into undifferentiated train/test
@@ -114,14 +115,12 @@ class WithinSessionEvaluation(TrainTestEvaluation):
         sub = dataset.get_data([subject], stack_sessions=False)[0]
         out = {k: [] for k in pipelines.keys()}
         for ind, session in enumerate(sub):
-            skip = False
-            # sess_id = '{:03d}_{:d}'.format(subject, ind)
 
             # get all epochs for individual files in given session
             epochs = self.paradigm._epochs(session, event_id, dataset.interval)
             X, y = self.extract_data_from_cont(epochs, event_id)
             if len(np.unique(y)) > 1:
-                counts = np.unique(y,return_counts=True)[1]
+                counts = np.unique(y, return_counts=True)[1]
                 log.debug('score imbalance: {}'.format(counts))
                 for name, clf in pipelines.items():
                     t_start = time()
@@ -166,7 +165,6 @@ class CrossSessionEvaluation(TrainTestEvaluation):
             raise(ValueError("Dataset had no selected events"))
 
         sub = dataset.get_data([subject], stack_sessions=False)[0]
-        results = []
         listX, listy = ([], [])
         for ind, session in enumerate(sub):
             # get list epochs for individual files in given session

@@ -72,7 +72,7 @@ class BaseEvaluation(ABC):
         if not isinstance(pipelines, dict):
             raise(ValueError("pipelines must be a dict"))
 
-        for name, pipeline in pipelines.items():
+        for _, pipeline in pipelines.items():
             if not(isinstance(pipeline, BaseEstimator)):
                 raise(ValueError("pipelines must only contains Pipelines "
                                  "instance"))
@@ -101,7 +101,7 @@ class BaseEvaluation(ABC):
                                                              r['id'])
                                 message += ': Score %.3f' % r['score']
                             log.info(message)
-                        results.add(res)
+                        results.add(res, pipelines=pipelines)
                     except Exception as e:
                         log.error(e)
                         log.warning('Skipping subject {}'.format(subject))

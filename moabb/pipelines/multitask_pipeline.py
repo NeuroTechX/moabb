@@ -12,6 +12,7 @@ from sklearn.utils import tosequence
 from sklearn.utils.metaestimators import if_delegate_has_method
 import sklearn.pipeline as pipeline
 
+
 class MultitaskPipeline(pipeline.Pipeline):
     """Class that extends the sklearn Pipeline to have the ability to take in lists
     of datasets and run transforms and classifiers that use offline data in a
@@ -19,7 +20,7 @@ class MultitaskPipeline(pipeline.Pipeline):
     through the list of transforms and pre-fits them as they require, then
     pre-trains the classifier. It can then be used like a normal Pipeline, in
     that the fit method is stateless *given* that pre_fit has already been
-    called. 
+    called.
 
     Parameters
     ----------
@@ -55,7 +56,7 @@ class MultitaskPipeline(pipeline.Pipeline):
                 names[i] += "-%d" % namecount[name]
                 namecount[name] -= 1
 
-        return list(zip(names, estimators))    
+        return list(zip(names, estimators))
 
     def _pre_validate_steps(self):
         names, estimators = zip(*self.steps)
@@ -240,4 +241,3 @@ class MultitaskPipeline(pipeline.Pipeline):
         p : MultitaskPipeline
         """
         return MultitaskPipeline(MultitaskPipeline._name_estimators(steps))
-

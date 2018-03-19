@@ -1,0 +1,13 @@
+name: Log Variance LDA
+
+paradigms:
+  - LeftRightImagery
+
+pipeline:
+  - name: LogVariance
+    from: moabb.pipelines.features
+
+  - name: LinearDiscriminantAnalysis
+    from: sklearn.discriminant_analysis
+    parameters:
+      solver: svd
