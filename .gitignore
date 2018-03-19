@@ -107,3 +107,8 @@ ENV/
 *.*~
 *.hd5
 *.hdf5
+analysis/*
+/moabb/tests/barplot.pdf
+/moabb/tests/orderplot.pdf
+/moabb/tests/orderplot_full.pdf
+/test_context.yml
