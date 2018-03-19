@@ -68,7 +68,7 @@ parser.add_argument(
     dest="context",
     type=str,
     default=None,
-    help="File path to context.yml file that describes context parameters. If none, assumes all defaults.")
+    help="File path to context.yml file that describes context parameters. If none, assumes all defaults. Must contain an entry for all paradigms described in the pipelines")
 options = parser.parse_args()
 
 assert os.path.isdir(os.path.abspath(options.pipelines)
@@ -139,14 +139,14 @@ for config in pipeline_configs:
             paradigms[paradigm] = {}
 
         # FIXME name are not unique
+        log.debug('Pipeline: \n\n {} \n'.format(repr(pipeline.get_params())))
         paradigms[paradigm][config['name']] = pipeline
 
 for paradigm in paradigms:
     # get the context
-    if paradigm in context_params.keys():
-        log.debug(context_params[paradigm])
-        p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
-    else:
-        p = getattr(moabb_paradigms, paradigm)()
+    if len(context_params) == 0:
+        context_params[paradigm] = {}
+    log.debug('{}: {}'.format(paradigm, context_params[paradigm]))
+    p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
     context = WithinSessionEvaluation(paradigm=p, random_state=42)
     results = context.process(pipelines=paradigms[paradigm])
