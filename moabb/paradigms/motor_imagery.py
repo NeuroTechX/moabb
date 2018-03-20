@@ -54,8 +54,8 @@ class BaseMotorImagery(BaseParadigm):
         '''
         Given a single raw file turn it into a features matrix and labels
         '''
-        raw_f = raw.filter(self.fmin, self.fmax, method='iir', picks=picks,
-                           verbose=False)
+        raw_f = raw.copy().filter(self.fmin, self.fmax, method='iir', picks=picks,
+                                  verbose=False)
         epochs = mne.Epochs(raw_f, events, event_id=event_dict,
                             tmin=time[0], tmax=time[1], proj=False,
                             baseline=None, preload=True,
@@ -101,7 +101,12 @@ class BaseMotorImagery(BaseParadigm):
 
 class MotorImageryMultiPass(BaseMotorImagery):
 
-    def __init__(self, fbands=np.array([[8, 14], [20, 30]]),
+    def __init__(self, fbands=np.array([[8, 12],
+                                        [12, 16],
+                                        [16, 20],
+                                        [20, 24],
+                                        [24, 28],
+                                        [28, 32]]),
                  channels=None, **kwargs):
         """init"""
         super().__init__(**kwargs)
@@ -112,8 +117,8 @@ class MotorImageryMultiPass(BaseMotorImagery):
         y = None
         X = []
         for fmin, fmax in self.fbands:
-            raw_f = raw.filter(fmin, fmax, method='iir', picks=picks,
-                               verbose=False)
+            raw_f = raw.copy().filter(fmin, fmax, method='iir', picks=picks,
+                                      verbose=False)
             epochs = mne.Epochs(raw_f, events, event_id=event_dict,
                                 tmin=time[0], tmax=time[1], proj=False,
                                 baseline=None, preload=True,
