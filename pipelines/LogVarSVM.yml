@@ -5,7 +5,7 @@ paradigms:
 
 pipeline:
   - name: LogVariance
-    from: moabb.pipelines.single_pass
+    from: moabb.pipelines.features
 
   - name: SVC
     from: sklearn.svm
