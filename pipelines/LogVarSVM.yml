@@ -1,7 +1,7 @@
 name: Log Variance SVM
 
 paradigms:
-  - LeftRightImagery
+  - LeftRightImagerySinglePass
 
 pipeline:
   - name: LogVariance

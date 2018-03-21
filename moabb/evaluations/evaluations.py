@@ -1,43 +1,17 @@
-from time import time
-import numpy as np
 import logging
+from time import time
 
-from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, KFold
+import numpy as np
+from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
 
-from mne.epochs import concatenate_epochs, equalize_epoch_counts
-
 from moabb.evaluations.base import BaseEvaluation
+
 
 log = logging.getLogger()
 
 
-class TrainTestEvaluation(BaseEvaluation):
-    '''
-    Base class for evaluations that split data into undifferentiated train/test
-    (not compatible with multi-task/transfer/multi-dataset schemes)
-    '''
-
-    def extract_data_from_cont(self, ep_list, event_id):
-        event_epochs = {key: [] for key in event_id.keys()}
-        for epoch in ep_list:
-            for key in event_id.keys():
-                if key in epoch.event_id.keys():
-                    event_epochs[key].append(epoch[key])
-        all_events = []
-        for key in event_id.keys():
-            if len(event_epochs[key]) > 0:
-                all_events.append(concatenate_epochs(event_epochs[key]))
-        # equalize for accuracy
-        if len(all_events) > 1:
-            equalize_epoch_counts(all_events)
-        ep = concatenate_epochs(all_events)
-        # previously multipled data by 1e6
-        X, y = (ep.get_data(), ep.events[:, -1])
-        return X, y
-
-
-class CrossSubjectEvaluation(TrainTestEvaluation):
+class CrossSubjectEvaluation(BaseEvaluation):
     """Cross Subject evaluation Context.
 
     Evaluate performance of the pipeline trained on all subjects but one,
@@ -85,9 +59,8 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
         for s in dataset.subject_list:
             sub = dataset.get_data([s], stack_sessions=True)[0]
             # get all epochs for individual files in given subject
-            epochs = self.paradigm._epochs(sub, event_id, dataset.interval)
-            # equalize events from different classes
-            X, y = self.extract_data_from_cont(epochs, event_id)
+            X, y = self.paradigm.cont_to_trials(
+                sub, event_id, dataset.interval)
             self.X_cache.append(X)
             self.y_cache.append(y)
             self.ind_cache.append(np.ones(y.shape))
@@ -101,7 +74,7 @@ class CrossSubjectEvaluation(TrainTestEvaluation):
         return acc.mean()
 
 
-class WithinSessionEvaluation(TrainTestEvaluation):
+class WithinSessionEvaluation(BaseEvaluation):
     """Within session evaluation, returns accuracy computed within each recording session
 
     """
@@ -117,8 +90,8 @@ class WithinSessionEvaluation(TrainTestEvaluation):
         for ind, session in enumerate(sub):
 
             # get all epochs for individual files in given session
-            epochs = self.paradigm._epochs(session, event_id, dataset.interval)
-            X, y = self.extract_data_from_cont(epochs, event_id)
+            X, y = self.paradigm.cont_to_trials(
+                session, event_id, dataset.interval)
             if len(np.unique(y)) > 1:
                 counts = np.unique(y, return_counts=True)[1]
                 log.debug('score imbalance: {}'.format(counts))
@@ -135,7 +108,7 @@ class WithinSessionEvaluation(TrainTestEvaluation):
         return out
 
     def score(self, clf, X, y, scoring):
-        cv = KFold(5, shuffle=True, random_state=self.random_state)
+        cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
 
         le = LabelEncoder()
         y = le.fit_transform(y)
@@ -151,7 +124,7 @@ class WithinSessionEvaluation(TrainTestEvaluation):
         pass
 
 
-class CrossSessionEvaluation(TrainTestEvaluation):
+class CrossSessionEvaluation(BaseEvaluation):
     """Cross session Context.
 
     Evaluate performance of the pipeline across sessions but for a single subject.
@@ -168,9 +141,8 @@ class CrossSessionEvaluation(TrainTestEvaluation):
         listX, listy = ([], [])
         for ind, session in enumerate(sub):
             # get list epochs for individual files in given session
-            epochs = self.paradigm._epochs(session, event_id, dataset.interval)
-            # equalize events from different classes
-            X, y = self.extract_data_from_cont(epochs, event_id)
+            X, y = self.paradigm.cont_to_trials(
+                session, event_id, dataset.interval)
             listX.append(X)
             listy.append(y)
         groups = []
@@ -182,14 +154,15 @@ class CrossSessionEvaluation(TrainTestEvaluation):
         out = {}
         for name, clf in pipelines.items():
             t_start = time()
-            score = self.score(clf, allX, ally, groupvec, self.paradigm.scoring)
+            score = self.score(clf, allX, ally, groupvec,
+                               self.paradigm.scoring)
             duration = time() - t_start
             out[name] = {'time': duration,
                          'dataset': dataset,
                          'id': subject,
                          'score': score,
                          'n_samples': len(y),
-                         'n_channels':allX.shape[1]}
+                         'n_channels': allX.shape[1]}
         return out
 
     def preprocess_data(self, dataset):

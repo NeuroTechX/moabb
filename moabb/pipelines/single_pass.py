@@ -1,5 +1,5 @@
-import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
+import numpy as np
 
 
 class LogVariance(BaseEstimator, TransformerMixin):
@@ -9,5 +9,6 @@ class LogVariance(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        """transform."""
+        """transform"""
+        assert X.ndim == 3
         return np.log(np.var(X, -1))

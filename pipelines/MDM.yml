@@ -1,6 +1,6 @@
 name: MDM
 paradigms:
-  - LeftRightImagery
+  - LeftRightImagerySinglePass
 
 citations:
   - https://doi.org/10.1109/TBME.2011.2172210
