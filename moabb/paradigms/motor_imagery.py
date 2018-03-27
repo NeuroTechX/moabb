@@ -184,9 +184,9 @@ def LeftRightImageryFactory(parent):
     return LeftRightImagery
 
 
-globals()['LeftRightImagerySinglePass'] = LeftRightImageryFactory(
+globals()['LeftRightImagery'] = LeftRightImageryFactory(
     BaseMotorImagery)
-globals()['ImageryNClassSinglePass'] = ImageryNClassFactory(BaseMotorImagery)
+globals()['ImageryNClass'] = ImageryNClassFactory(BaseMotorImagery)
 globals()['LeftRightImageryMultiPass'] = LeftRightImageryFactory(
     MotorImageryMultiPass)
 globals()['ImageryNClassMultiPass'] = ImageryNClassFactory(

@@ -68,7 +68,9 @@ parser.add_argument(
     dest="context",
     type=str,
     default=None,
-    help="File path to context.yml file that describes context parameters. If none, assumes all defaults. Must contain an entry for all paradigms described in the pipelines")
+    help="File path to context.yml file that describes context parameters."
+         "If none, assumes all defaults. Must contain an entry for all " 
+         "paradigms described in the pipelines")
 options = parser.parse_args()
 
 assert os.path.isdir(os.path.abspath(options.pipelines)

@@ -48,7 +48,7 @@ there is 4 main concepts in the MOABB: the datasets, the context, the evaluation
 A dataset handle and abstract low level access to the data. the dataset will
 takes data stored locally, in the format in which they have been downloaded, and
 will convert them into a MNE raw object. There are options to pool all the
-different recording sessions per subject or to evaluate them separately. 
+different recording sessions per subject or to evaluate them separately.
 
 ### paradigm
 
@@ -85,6 +85,12 @@ To ensure it is running correctly, you can also run
 python -m unittest moabb.tests
 ```
 once it is installed
+
+# Run tje moabb
+
+```
+python -m moabb.run --verbose
+```
 
 # How to contribute
 
