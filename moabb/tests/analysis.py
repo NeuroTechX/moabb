@@ -92,7 +92,7 @@ class Test_Stats(unittest.TestCase):
 class Test_Integration(unittest.TestCase):
 
     def setUp(self):
-        self.obj = Results(evaluation_class=type(DummyEvaluation()),
+        self.obj = Results(evaluation_class=type(DummyEvaluation(DummyParadigm())),
                            paradigm_class=type(DummyParadigm()),
                            suffix='test')
 
