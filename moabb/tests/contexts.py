@@ -1,7 +1,5 @@
 from moabb.evaluations import evaluations as ev
-from moabb.datasets.fake import FakeDataset
-
-from moabb.paradigms.motor_imagery import LeftRightImagery
+from moabb.tests.fake import FakeDataset, FakeImageryParadigm
 import unittest
 
 from pyriemann.spatialfilters import CSP
@@ -25,7 +23,7 @@ class Test_CrossSess(unittest.TestCase):
     '''
 
     def return_eval(self):
-        return ev.CrossSessionEvaluation(paradigm=LeftRightImagery(),
+        return ev.CrossSessionEvaluation(paradigm=FakeImageryParadigm(),
                                          datasets=[dataset])
 
     def test_eval_results(self):
@@ -39,7 +37,7 @@ class Test_CrossSess(unittest.TestCase):
 
 class Test_CrossSubj(Test_CrossSess):
     def return_eval(self):
-        return ev.CrossSubjectEvaluation(paradigm=LeftRightImagery(),
+        return ev.CrossSubjectEvaluation(paradigm=FakeImageryParadigm(),
                                          datasets=[dataset])
 
     def test_eval_results(self):
@@ -53,7 +51,7 @@ class Test_CrossSubj(Test_CrossSess):
 
 class Test_WithinSess(Test_CrossSess):
     def return_eval(self):
-        return ev.WithinSessionEvaluation(paradigm=LeftRightImagery(),
+        return ev.WithinSessionEvaluation(paradigm=FakeImageryParadigm(),
                                           datasets=[dataset])
 
     def test_eval_results(self):

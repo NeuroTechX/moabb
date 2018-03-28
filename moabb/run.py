@@ -11,7 +11,6 @@ from glob import glob
 from argparse import ArgumentParser
 from collections import OrderedDict
 from sklearn.base import BaseEstimator
-from sklearn.pipeline import Pipeline
 from copy import deepcopy
 
 # moabb specific imports
@@ -69,7 +68,7 @@ parser.add_argument(
     type=str,
     default=None,
     help="File path to context.yml file that describes context parameters."
-         "If none, assumes all defaults. Must contain an entry for all " 
+         "If none, assumes all defaults. Must contain an entry for all "
          "paradigms described in the pipelines")
 options = parser.parse_args()
 
