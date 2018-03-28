@@ -67,8 +67,8 @@ def convert_inria_csv_to_mne(path):
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=512., montage=montage)
     raw = RawArray(data=csv_data.values.T * 1e-6, info=info, verbose=False)
     return raw
-    
-    
+
+
 class OpenvibeMI(BaseDataset):
     """Openvibe Motor Imagery dataset"""
 
@@ -78,14 +78,13 @@ class OpenvibeMI(BaseDataset):
             sessions_per_subject=14,
             events=dict(right_hand=1, left_hand=2),
             code='Openvibe Motor Imagery',
-            interval=[tmin,tmax],
-            paradigm='imagery'
-            )
+            interval=[tmin, tmax],
+            paradigm='imagery')
 
-    def get_data(self, subjects, stack_sessions=False):
+    def _get_single_subject_data(self, subjects, stack_sessions=False):
         """return data for subject"""
         data = []
-        for i in range(1,10):
+        for i in range(1, 10):
             data.append(self._get_single_session_data(i))
         if stack_sessions:
             return [data]
@@ -95,7 +94,8 @@ class OpenvibeMI(BaseDataset):
     def _get_single_session_data(self, session):
         """return data for a single recording session"""
         csv_path = data_path(session)
-        fif_path = os.path.join(os.path.dirname(csv_path),'raw_{:d}.fif'.format(session))
+        fif_path = os.path.join(os.path.dirname(csv_path),
+                                'raw_{:d}.fif'.format(session))
         if not os.path.isfile(fif_path):
             print('Resaving .csv file as .fif for ease of future loading')
             raw = convert_inria_csv_to_mne(csv_path)

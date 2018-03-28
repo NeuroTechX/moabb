@@ -6,6 +6,7 @@ import os
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.base import BaseEvaluation
 from moabb.paradigms.base import BaseParadigm
+from moabb.tests.fake import FakeDataset
 # dummy evaluation
 
 
@@ -23,31 +24,28 @@ class DummyParadigm(BaseParadigm):
     def __init__(self):
         pass
 
+    @property
     def scoring(self):
         raise NotImplementedError('dummy')
 
+    def verify(self, dataset):
+        pass
 
-# dummy datasets
-class DummyDataset(BaseDataset):
-
-    def __init__(self, code):
-        """
-
-        """
-        super().__init__(list(range(5)), 2, {
-            'a': 1, 'b': 2}, code, [1, 2], 'imagery')
+    @property
+    def datasets(self):
+        return [FakeDataset(['d1', 'd2'])]
 
 
 # Create dummy data for tests
 d1 = {'time': 1,
-      'dataset': DummyDataset('d1'),
+      'dataset': FakeDataset(['d1', 'd2']),
       'id': 1,
       'score': 0.9,
       'n_samples': 100,
       'n_channels': 10}
 
 d2 = {'time': 2,
-      'dataset': DummyDataset('d1'),
+      'dataset': FakeDataset(['d1', 'd2']),
       'id': 2,
       'score': 0.9,
       'n_samples': 100,
@@ -55,18 +53,22 @@ d2 = {'time': 2,
 
 
 d3 = {'time': 2,
-      'dataset': DummyDataset('d2'),
+      'dataset': FakeDataset(['d1', 'd2']),
       'id': 2,
       'score': 0.9,
       'n_samples': 100,
       'n_channels': 10}
 
 d4 = {'time': 2,
-      'dataset': DummyDataset('d2'),
+      'dataset': FakeDataset(['d1', 'd2']),
       'id': 1,
       'score': 0.9,
       'n_samples': 100,
       'n_channels': 10}
+
+
+def to_pipeline_dict(pnames):
+    return {n: 'pipeline {}'.format(n) for n in pnames}
 
 
 def to_result_input(pnames, dsets):
@@ -90,7 +92,7 @@ class Test_Stats(unittest.TestCase):
 class Test_Integration(unittest.TestCase):
 
     def setUp(self):
-        self.obj = Results(evaluation_class=type(DummyEvaluation()),
+        self.obj = Results(evaluation_class=type(DummyEvaluation(DummyParadigm())),
                            paradigm_class=type(DummyParadigm()),
                            suffix='test')
 
@@ -101,9 +103,9 @@ class Test_Integration(unittest.TestCase):
 
     def test_rmanova(self):
         _in = to_result_input(['a', 'b', 'c'], [[d1]*5, [d1]*5, [d4]*5])
-        self.obj.add(_in)
+        self.obj.add(_in, to_pipeline_dict(['a', 'b', 'c']))
         _in = to_result_input(['a', 'b', 'c'], [[d2]*5, [d2]*5, [d3]*5])
-        self.obj.add(_in)
+        self.obj.add(_in, to_pipeline_dict(['a', 'b', 'c']))
         df = self.obj.to_dataframe()
         ma.rmANOVA(df)
 
@@ -111,7 +113,7 @@ class Test_Integration(unittest.TestCase):
 class Test_Results(unittest.TestCase):
 
     def setUp(self):
-        self.obj = Results(evaluation_class=type(DummyEvaluation()),
+        self.obj = Results(evaluation_class=type(DummyEvaluation(DummyParadigm())),
                            paradigm_class=type(DummyParadigm()),
                            suffix='test')
 
@@ -121,37 +123,37 @@ class Test_Results(unittest.TestCase):
             os.remove(path)
 
     def testCanAddSample(self):
-        self.obj.add(to_result_input(['a'], [d1]))
+        self.obj.add(to_result_input(['a'], [d1]), to_pipeline_dict(['a']))
 
     def testRecognizesAlreadyComputed(self):
         _in = to_result_input(['a'], [d1])
-        self.obj.add(_in)
+        self.obj.add(_in, to_pipeline_dict(['a']))
         not_yet_computed = self.obj.not_yet_computed(
-            {'a': 1}, d1['dataset'], d1['id'])
+            to_pipeline_dict(['a']), d1['dataset'], d1['id'])
         self.assertTrue(len(not_yet_computed) == 0)
 
     def testCanAddMultiplePipelines(self):
         _in = to_result_input(['a', 'b', 'c'], [d1, d1, d2])
-        self.obj.add(_in)
+        self.obj.add(_in, to_pipeline_dict(['a', 'b', 'c']))
 
     def testCanAddMultipleValuesPerPipeline(self):
         _in = to_result_input(['a', 'b'], [[d1, d2], [d2, d1]])
-        self.obj.add(_in)
+        self.obj.add(_in, to_pipeline_dict(['a', 'b']))
         not_yet_computed = self.obj.not_yet_computed(
-            {'a': 1}, d1['dataset'], d1['id'])
+            to_pipeline_dict(['a']), d1['dataset'], d1['id'])
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
         not_yet_computed = self.obj.not_yet_computed(
-            {'b': 2}, d2['dataset'], d2['id'])
+            to_pipeline_dict(['b']), d2['dataset'], d2['id'])
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
         not_yet_computed = self.obj.not_yet_computed(
-            {'b': 1}, d1['dataset'], d1['id'])
+            to_pipeline_dict(['b']), d1['dataset'], d1['id'])
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
 
     def testCanExportToDataframe(self):
         _in = to_result_input(['a', 'b', 'c'], [d1, d1, d2])
-        self.obj.add(_in)
+        self.obj.add(_in, to_pipeline_dict(['a', 'b', 'c']))
         _in = to_result_input(['a', 'b', 'c'], [d2, d2, d3])
-        self.obj.add(_in)
+        self.obj.add(_in, to_pipeline_dict(['a', 'b', 'c']))
         df = self.obj.to_dataframe()
         self.assertTrue(set(np.unique(df['pipeline'])) == set(
             ('a', 'b', 'c')), np.unique(df['pipeline']))

@@ -39,12 +39,12 @@ class CrossSubjectEvaluation(BaseEvaluation):
             t_start = time()
             score = self.score(clf, allX, ally, groups, self.paradigm.scoring)
             duration = time() - t_start
-            out[name] = {'time': duration,
-                         'dataset': dataset,
-                         'id': subject,
-                         'score': score,
-                         'n_samples': groups.sum(),
-                         'n_channels': allX.shape[1]}
+            out[name] = [{'time': duration,
+                          'dataset': dataset,
+                          'id': subject,
+                          'score': score,
+                          'n_samples': groups.sum(),
+                          'n_channels': allX.shape[1]}]
         return out
 
     def preprocess_data(self, dataset):
@@ -85,10 +85,9 @@ class WithinSessionEvaluation(BaseEvaluation):
         if not event_id:
             raise(ValueError("Dataset had no selected events"))
 
-        sub = dataset.get_data([subject], stack_sessions=False)[0]
+        sub = dataset.get_data([subject], stack_sessions=True)[0]
         out = {k: [] for k in pipelines.keys()}
         for ind, session in enumerate(sub):
-
             # get all epochs for individual files in given session
             X, y = self.paradigm.cont_to_trials(
                 session, event_id, dataset.interval)
@@ -137,7 +136,7 @@ class CrossSessionEvaluation(BaseEvaluation):
         if not event_id:
             raise(ValueError("Dataset had no selected events"))
 
-        sub = dataset.get_data([subject], stack_sessions=False)[0]
+        sub = dataset.get_data([subject], stack_sessions=True)[0]
         listX, listy = ([], [])
         for ind, session in enumerate(sub):
             # get list epochs for individual files in given session
@@ -157,12 +156,12 @@ class CrossSessionEvaluation(BaseEvaluation):
             score = self.score(clf, allX, ally, groupvec,
                                self.paradigm.scoring)
             duration = time() - t_start
-            out[name] = {'time': duration,
-                         'dataset': dataset,
-                         'id': subject,
-                         'score': score,
-                         'n_samples': len(y),
-                         'n_channels': allX.shape[1]}
+            out[name] = [{'time': duration,
+                          'dataset': dataset,
+                          'id': subject,
+                          'score': score,
+                          'n_samples': len(y),
+                          'n_channels': allX.shape[1]}]
         return out
 
     def preprocess_data(self, dataset):

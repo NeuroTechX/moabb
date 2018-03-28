@@ -109,8 +109,8 @@ class Results:
     def to_dataframe(self):
         df_list = []
         with h5py.File(self.filepath, 'r') as f:
-            for _, p_group in f.items():
-                name = p_group['name']
+            for digest, p_group in f.items():
+                name = p_group.attrs['name']
                 for dname, dset in p_group.items():
                     array = np.array(dset['data'])
                     ids = np.array(dset['id'])

@@ -26,10 +26,8 @@ class Test_Utils(unittest.TestCase):
         for out in l:
             print('two class: {}'.format(out.selected_events))
 
-
     def test_dataset_channel_search(self):
-        all_datasets = utils.dataset_list
-        chans = ['C3','Cz']
+        chans = ['C3', 'Cz']
         All = utils.dataset_search('imagery', events=[
             'right_hand', 'left_hand', 'feet', 'tongue', 'rest'])
         has_chans = utils.dataset_search('imagery', events=[
