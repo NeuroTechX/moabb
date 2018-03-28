@@ -1,9 +1,10 @@
 """
 Base class for a dataset
 """
+import abc
 
 
-class BaseDataset():
+class BaseDataset(metaclass=abc.ABCMeta):
     """Base dataset"""
 
     def __init__(self, subjects, sessions_per_subject, events, code, interval, paradigm):
@@ -29,5 +30,7 @@ class BaseDataset():
             data.extend(self._get_single_subject_data(subject, stack_sessions))
         return data
 
-    def _get_single_subject_data(self, subject, sessions):
+    @abc.abstractmethod
+    def _get_single_subject_data(self, subject, stack_sessions):
+        """get data from a single subject."""
         pass

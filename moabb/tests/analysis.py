@@ -6,6 +6,7 @@ import os
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.base import BaseEvaluation
 from moabb.paradigms.base import BaseParadigm
+from moabb.datasets.fake import FakeDataset
 # dummy evaluation
 
 
@@ -23,31 +24,27 @@ class DummyParadigm(BaseParadigm):
     def __init__(self):
         pass
 
+    @property
     def scoring(self):
         raise NotImplementedError('dummy')
 
+    def verify(self, dataset):
+        pass
 
-# dummy datasets
-class DummyDataset(BaseDataset):
-
-    def __init__(self, code):
-        """
-
-        """
-        super().__init__(list(range(5)), 2, {
-            'a': 1, 'b': 2}, code, [1, 2], 'imagery')
-
+    @property
+    def datasets(self):
+        return [FakeDataset(['d1', 'd2'])]
 
 # Create dummy data for tests
 d1 = {'time': 1,
-      'dataset': DummyDataset('d1'),
+      'dataset': FakeDataset(['d1', 'd2']),
       'id': 1,
       'score': 0.9,
       'n_samples': 100,
       'n_channels': 10}
 
 d2 = {'time': 2,
-      'dataset': DummyDataset('d1'),
+      'dataset': FakeDataset(['d1', 'd2']),
       'id': 2,
       'score': 0.9,
       'n_samples': 100,
@@ -55,14 +52,14 @@ d2 = {'time': 2,
 
 
 d3 = {'time': 2,
-      'dataset': DummyDataset('d2'),
+      'dataset': FakeDataset(['d1', 'd2']),
       'id': 2,
       'score': 0.9,
       'n_samples': 100,
       'n_channels': 10}
 
 d4 = {'time': 2,
-      'dataset': DummyDataset('d2'),
+      'dataset': FakeDataset(['d1', 'd2']),
       'id': 1,
       'score': 0.9,
       'n_samples': 100,
@@ -111,7 +108,7 @@ class Test_Integration(unittest.TestCase):
 class Test_Results(unittest.TestCase):
 
     def setUp(self):
-        self.obj = Results(evaluation_class=type(DummyEvaluation()),
+        self.obj = Results(evaluation_class=type(DummyEvaluation(DummyParadigm())),
                            paradigm_class=type(DummyParadigm()),
                            suffix='test')
 
