@@ -9,3 +9,4 @@ install:
 script:
   - python -m unittest moabb.tests
   - python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
+  - python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
