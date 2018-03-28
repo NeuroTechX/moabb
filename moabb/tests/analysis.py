@@ -35,7 +35,6 @@ class DummyParadigm(BaseParadigm):
     def datasets(self):
         return [FakeDataset(['d1', 'd2'])]
 
-
 # Create dummy data for tests
 d1 = {'time': 1,
       'dataset': FakeDataset(['d1', 'd2']),
