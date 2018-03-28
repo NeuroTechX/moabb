@@ -21,7 +21,7 @@ class PhysionetMI(BaseDataset):
             interval=[1,3],
             paradigm='imagery'
             )
-        
+
         if imagined:
             self.feet_runs = [6, 10, 14]
             self.hand_runs = [4, 8, 12]
@@ -46,10 +46,10 @@ class PhysionetMI(BaseDataset):
         for raw in raw_feet_files:
             events = mne.find_events(raw)
             # Event values are added together, previous and current (1,2,3->1,4,5)
-            events[events[:,2] != 1, 2] = 2
-            events[events[:,2] == 1, 2] = 0
+            events[events[:, 2] != 1, 2] = 2
+            events[events[:, 2] == 1, 2] = 0
             raw.add_events(events)
-            raw.rename_channels(lambda x: x.strip('.')) 
+            raw.rename_channels(lambda x: x.strip('.'))
         all_files.extend(raw_feet_files)
         if stack_sessions:
             return [all_files]

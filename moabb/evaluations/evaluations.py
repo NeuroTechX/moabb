@@ -85,7 +85,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         if not event_id:
             raise(ValueError("Dataset had no selected events"))
 
-        sub = dataset.get_data([subject], stack_sessions=True)[0]
+        sub = dataset.get_data([subject], stack_sessions=False)[0]
         out = {k: [] for k in pipelines.keys()}
         for ind, session in enumerate(sub):
             # get all epochs for individual files in given session
