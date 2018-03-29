@@ -48,15 +48,16 @@ def data_path(session, path=None, force_update=False, update_path=None,
     url = '{:s}{:02d}-signal.csv.bz2'.format(INRIA_URL, session)
     return dl.data_path(url, 'INRIA', path, force_update, update_path, verbose)
 
+
 def convert_inria_csv_to_mne(path):
     '''
     Convert an INRIA CSV file to a RawArray
     '''
 
     csv_data = pd.read_csv(path, index_col=0, sep=',')
-    csv_data = csv_data.drop(['Epoch','Event Date','Event Duration'],axis=1)
-    csv_data = csv_data.rename(columns={'Event Id':'Stim', 'Ref_Nose':'Nz'})
-    ch_types=['eeg']*11 + ['stim']
+    csv_data = csv_data.drop(['Epoch', 'Event Date', 'Event Duration'], axis=1)
+    csv_data = csv_data.rename(columns={'Event Id': 'Stim', 'Ref_Nose': 'Nz'})
+    ch_types = ['eeg']*11 + ['stim']
     ch_names = list(csv_data.columns)
     left_hand_ind = csv_data['Stim'] == '769'
     right_hand_ind = csv_data['Stim'] == '770'
@@ -64,7 +65,8 @@ def convert_inria_csv_to_mne(path):
     csv_data['Stim'][left_hand_ind] = 2e6
     csv_data['Stim'][right_hand_ind] = 1e6
     montage = read_montage('standard_1005')
-    info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=512., montage=montage)
+    info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=512.,
+                       montage=montage)
     raw = RawArray(data=csv_data.values.T * 1e-6, info=info, verbose=False)
     return raw
 
@@ -81,15 +83,13 @@ class OpenvibeMI(BaseDataset):
             interval=[tmin, tmax],
             paradigm='imagery')
 
-    def _get_single_subject_data(self, subjects, stack_sessions=False):
+    def _get_single_subject_data(self, subject):
         """return data for subject"""
-        data = []
-        for i in range(1, 10):
-            data.append(self._get_single_session_data(i))
-        if stack_sessions:
-            return [data]
-        else:
-            return [[data]]
+        data = {}
+        for ii in range(1, 10):
+            raw = self._get_single_session_data(ii)
+            data["session_%d" % ii] = {'run_0': raw}
+        return data
 
     def _get_single_session_data(self, session):
         """return data for a single recording session"""
