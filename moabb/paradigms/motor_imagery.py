@@ -29,12 +29,13 @@ class BaseMotorImagery(BaseParadigm):
     """
 
     def __init__(self, filters=[[7, 35]], channels=None, interval=None,
-                 events=None, **kwargs):
+                 events=None, resample=None, **kwargs):
         """init"""
         super().__init__(**kwargs)
         self.filters = filters
         self.channels = channels
         self.events = events
+        self.resample = resample
 
         if interval is not None:
             if not isinstance(interval, list):
@@ -83,6 +84,9 @@ class BaseMotorImagery(BaseParadigm):
             tmin, tmax = self.dataset_interval
         else:
             tmin, tmax = self.interval
+
+        if self.resample is not None:
+            raw = raw.copy().resample(self.resample)
 
         X = []
         for bandpass in self.filters:

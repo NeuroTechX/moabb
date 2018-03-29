@@ -78,48 +78,29 @@ class BaseEvaluation(ABC):
                 raise(ValueError("pipelines must only contains Pipelines "
                                  "instance"))
 
-        results = Results(type(self),
-                          type(self.paradigm),
-                          overwrite=overwrite,
-                          suffix=suffix)
+        self.results = Results(type(self),
+                               type(self.paradigm),
+                               overwrite=overwrite,
+                               suffix=suffix)
 
         for dataset in self.datasets:
             log.info('Processing dataset: {}'.format(dataset.code))
-            self.preprocess_data(dataset)
+            self.evaluate(dataset, pipelines)
 
-            for subject in dataset.subject_list:
-                # check if we already have result for this subject/pipeline
-                run_pipes = results.not_yet_computed(pipelines,
-                                                     dataset,
-                                                     subject)
-                if len(run_pipes) > 0:
-                    try:
-                        res = self.evaluate(dataset, subject, run_pipes)
-                        for pipe in res:
-                            for r in res[pipe]:
-                                message = '{} | '.format(pipe)
-                                message += '{} | {} '.format(r['dataset'].code,
-                                                             r['id'])
-                                message += ': Score %.3f' % r['score']
-                            log.info(message)
-                        results.add(res, pipelines=pipelines)
-                    except Exception as e:
-                        log.error(e)
-                        log.debug(traceback.format_exc())
-                        log.warning('Skipping subject {}'.format(subject))
-        return results
+        return self.results
+
+    def push_result(self, res, pipelines):
+        for pipe, r in res.items():
+            message = '{} | '.format(pipe)
+            message += '{} | {} | {}'.format(r['dataset'].code,
+                                             r['id'], r['session'])
+            message += ': Score %.3f' % r['score']
+            log.info(message)
+        self.results.add(res, pipelines=pipelines)
 
     @abstractmethod
-    def evaluate(self, dataset, subject, pipelines):
+    def evaluate(self, dataset, pipelines):
         '''
-        Return results in a dict
-        '''
-        pass
 
-    @abstractmethod
-    def preprocess_data(self, dataset):
-        '''
-        Optional paramter if any sort of dataset-wide computation is needed
-        per subject
         '''
         pass

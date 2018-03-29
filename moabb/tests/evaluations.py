@@ -29,8 +29,7 @@ class Test_CrossSess(unittest.TestCase):
 
     def test_eval_results(self):
         e = self.return_eval()
-        e.preprocess_data(dataset)
-        res = e.evaluate(dataset, 1, pipelines)
+        res = e.evaluate(dataset, pipelines)
 
         # return 1 results averaged across the 2 sessions
         self.assertEqual(len(res['C']), 1)
@@ -44,7 +43,7 @@ class Test_CrossSubj(Test_CrossSess):
     def test_eval_results(self):
         e = self.return_eval()
         e.preprocess_data(dataset)
-        res = e.evaluate(dataset, 1, pipelines)
+        res = e.evaluate(dataset, pipelines)
 
         # return 1 results for 1 subject
         self.assertEqual(len(res['C']), 1)
@@ -58,7 +57,7 @@ class Test_WithinSess(Test_CrossSess):
     def test_eval_results(self):
         e = self.return_eval()
         e.preprocess_data(dataset)
-        res = e.evaluate(dataset, 1, pipelines)
+        res = e.evaluate(dataset, pipelines)
 
         # return 2 results for each session
         self.assertEqual(len(res['C']), 2)
