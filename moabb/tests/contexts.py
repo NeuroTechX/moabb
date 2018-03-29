@@ -1,5 +1,6 @@
 from moabb.evaluations import evaluations as ev
-from moabb.tests.fake import FakeDataset, FakeImageryParadigm
+from moabb.datasets.fake import FakeDataset
+from moabb.paradigms.motor_imagery import FakeImageryParadigm
 import unittest
 
 from pyriemann.spatialfilters import CSP

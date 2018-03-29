@@ -11,7 +11,7 @@ import unittest
 import mne
 
 
-class Test_Datasets(unittest.TestCase):
+class Test_Downloads(unittest.TestCase):
 
     def run_dataset(self, data, stack_sessions=False):
         obj = data()

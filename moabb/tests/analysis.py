@@ -6,7 +6,7 @@ import os
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.base import BaseEvaluation
 from moabb.paradigms.base import BaseParadigm
-from moabb.tests.fake import FakeDataset
+from moabb.datasets.fake import FakeDataset
 # dummy evaluation
 
 
