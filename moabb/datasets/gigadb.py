@@ -12,9 +12,8 @@ from mne.io import RawArray
 from mne.channels import read_montage
 from . import download as dl
 
-import os
-
 GIGA_URL = 'ftp://penguin.genomics.cn/pub/10.5524/100001_101000/100295/mat_data/'
+
 
 def data_path(subject, path=None, force_update=False, update_path=None,
               verbose=None):
@@ -49,24 +48,26 @@ def data_path(subject, path=None, force_update=False, update_path=None,
         raise ValueError("Valid subjects between 1 and 52, subject {:d} requested".format(subject))
     url = '{:s}s{:02d}.mat'.format(GIGA_URL, subject)
 
-    return dl.data_path(url, 'GIGADB', path, force_update, update_path, verbose)
+    return dl.data_path(url, 'GIGADB', path, force_update, update_path,
+                        verbose)
+
 
 class GigaDbMI(BaseDataset):
     """GigaDb Motor Imagery dataset"""
 
     def __init__(self):
         super().__init__(
-            subjects=list(range(1,53)),
+            subjects=list(range(1, 53)),
             sessions_per_subject=1,
             events=dict(left_hand=1, right_hand=2),
             code='GigaDb Motor Imagery',
-            interval=[1,3],
-            paradigm='imagery'
-            )
+            interval=[1, 3],
+            paradigm='imagery',
+            doi='10.5524/100295')
         for ii in [32, 46, 49]:
             self.subject_list.remove(ii)
 
-    def _get_single_subject_data(self, subject, stack_sessions):
+    def _get_single_subject_data(self, subject):
         """return data for a single subject"""
         fname = data_path(subject)
 
@@ -90,12 +91,12 @@ class GigaDbMI(BaseDataset):
         eeg_data_r = np.vstack([data.imagery_right * 1e-6,
                                 data.imagery_event * 2])
 
-        eeg_data = np.hstack([eeg_data_l, eeg_data_r])  # stacking causes first trials of _r to be corrupted slightly by any sort of filtering -- can fix by making them two raw arrays?
+        # trials are already non continuous. edge artifact can appears but
+        # are likely to be present during rest / inter-trial activity
+        eeg_data = np.hstack([eeg_data_l, eeg_data_r])
 
         info = create_info(ch_names=ch_names, ch_types=ch_types,
                            sfreq=data.srate, montage=montage)
         raw = RawArray(data=eeg_data, info=info, verbose=False)
-        if stack_sessions:
-            return [[raw]]
-        else:
-            return [[[raw]]]
+
+        return {'session_0': {'run_0': raw}}

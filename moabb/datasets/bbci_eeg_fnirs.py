@@ -48,7 +48,7 @@ def fnirs_data_path(path, subject):
         # fNIRS
         if not op.isfile(op.join(path, 'fNIRS.zip')):
             _fetch_file('http://doc.ml.tu-berlin.de/hBCI/NIRS/NIRS_01-29.zip',
-                    op.join(path, 'fNIRS.zip'), print_destination=False)
+                        op.join(path, 'fNIRS.zip'), print_destination=False)
         if not op.isdir(op.join(path, 'NIRS')):
             os.makedirs(op.join(path, 'NIRS'))
         with z.ZipFile(op.join(path, 'fNIRS.zip'), 'r') as f:
@@ -81,8 +81,8 @@ def data_path(subject, path=None, force_update=False, fnirs=False):
         of length one, for compatibility.
     """  # noqa: E501
     if subject < 1 or subject > 30:
-        raise ValueError(
-            "Valid subjects between 1 and 30, subject {:d} requested".format(subject))
+        raise ValueError("Valid subjects between 1 and 30, "
+                         "subject {:d} requested".format(subject))
     key = 'MNE_DATASETS_BBCIFNIRS_PATH'
     path = _get_path(path, key, 'BBCI EEG-fNIRS')
     _do_path_update(path, True, key, 'BBCI EEG-fNIRS')
@@ -97,59 +97,72 @@ def data_path(subject, path=None, force_update=False, fnirs=False):
 class BBCIEEGfNIRS(BaseDataset):
     """BBCI EEG fNIRS Motor Imagery dataset"""
 
-    def __init__(self, fnirs=False):
-        super().__init__(subjects=list(range(1,30)),
-                         sessions_per_subject=1,
-                         events=dict(left_hand=1, right_hand=2, subtraction=3, rest=4),
-                         code='BBCI EEG fNIRS',
-                         interval=[3.5,10],
-                         paradigm='imagery')
-        self.fnirs = fnirs      # TODO: actually incorporate fNIRS somehow
+    def __init__(self, fnirs=False, motor_imagery=True,
+                 mental_arithmetic=False):
+        if not any([motor_imagery, mental_arithmetic]):
+            raise(ValueError("at least one of motor_imagery or"
+                             " mental_arithmetic must be true"))
+        events = dict()
+        paradigms = []
+        n_sessions = 0
+        if motor_imagery:
+            events.update(dict(left_hand=1, right_hand=2))
+            paradigms.append('imagery')
+            n_sessions += 3
 
-    def get_data(self, subjects, stack_sessions=False):
-        """return data for a list of subjects."""
-        data = []
-        for subject in subjects:
-            data.extend(self._get_single_subject_data(subject))
-        if stack_sessions:
-            return data
-        else:
-            return [data]
+        if mental_arithmetic:
+            events.update(dict(substraction=3, rest=4))
+            paradigms.append('arithmetic')
+            n_sessions += 3
+
+        self.motor_imagery = motor_imagery
+        self.mental_arithmetic = mental_arithmetic
+
+        super().__init__(subjects=list(range(1, 30)),
+                         sessions_per_subject=n_sessions,
+                         events=events,
+                         code='BBCI EEG fNIRS',
+                         interval=[3.5, 10],
+                         paradigm=('/').join(paradigms),
+                         doi='10.1109/TNSRE.2016.2628057')
+
+        self.fnirs = fnirs  # TODO: actually incorporate fNIRS somehow
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
         fname, fname_mrk = data_path(subject)
-        raws = []
         data = loadmat(fname, squeeze_me=True, struct_as_record=False)['cnt']
         mrk = loadmat(fname_mrk, squeeze_me=True,
                       struct_as_record=False)['mrk']
-        montage = read_montage('standard_1005')
 
-        for ii in [0, 2, 4]:
-            eeg = data[ii].x.T * 1e-6
-            trig = np.zeros((1, eeg.shape[1]))
-            idx = (mrk[ii].time - 1) // 5
-            trig[0, idx] = mrk[ii].event.desc // 16
-            eeg = np.vstack([eeg, trig])
-            ch_names = list(data[ii].clab) + ['Stim']
-            ch_types = ['eeg'] * 30 + ['eog'] * 2 + ['stim']
+        sessions = {}
+        # motor imagery
+        if self.motor_imagery:
+            for ii in [0, 2, 4]:
+                session = self._convert_one_session(data, mrk, ii,
+                                                    trig_offset=0)
+                sessions['session_%d' % ii] = session
 
-            info = create_info(ch_names=ch_names, ch_types=ch_types,
-                               sfreq=200., montage=montage)
-            raw = RawArray(data=eeg, info=info, verbose=False)
-            raws.append(raw)
         # arithmetic/rest
-        for ii in [1, 3, 5]:
-            eeg = data[ii].x.T * 1e-6
-            trig = np.zeros((1, eeg.shape[1]))
-            idx = (mrk[ii].time - 1) // 5
-            trig[0, idx] = mrk[ii].event.desc // 16 + 2
-            eeg = np.vstack([eeg, trig])
-            ch_names = list(data[ii].clab) + ['Stim']
-            ch_types = ['eeg'] * 30 + ['eog'] * 2 + ['stim']
+        if self.mental_arithmetic:
+            for ii in [1, 3, 5]:
+                session = self._convert_one_session(data, mrk, ii,
+                                                    trig_offset=2)
+                sessions['session_%d' % ii] = session
 
-            info = create_info(ch_names=ch_names, ch_types=ch_types,
-                               sfreq=200., montage=montage)
-            raw = RawArray(data=eeg, info=info, verbose=False)
-            raws.append(raw)
-        return [raws]
+        return sessions
+
+    def _convert_one_session(self, data, mrk, session, trig_offset=0):
+        eeg = data[session].x.T * 1e-6
+        trig = np.zeros((1, eeg.shape[1]))
+        idx = (mrk[session].time - 1) // 5
+        trig[0, idx] = mrk[session].event.desc // 16 + trig_offset
+        eeg = np.vstack([eeg, trig])
+        ch_names = list(data[session].clab) + ['Stim']
+        ch_types = ['eeg'] * 30 + ['eog'] * 2 + ['stim']
+
+        montage = read_montage('standard_1005')
+        info = create_info(ch_names=ch_names, ch_types=ch_types,
+                           sfreq=200., montage=montage)
+        raw = RawArray(data=eeg, info=info, verbose=False)
+        return {'run_0': raw}

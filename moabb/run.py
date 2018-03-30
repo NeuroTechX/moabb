@@ -16,8 +16,7 @@ from copy import deepcopy
 # moabb specific imports
 from moabb.pipelines.utils import create_pipeline_from_config
 from moabb import paradigms as moabb_paradigms
-from moabb.evaluations import WithinSessionEvaluation, CrossSessionEvaluation
-
+from moabb.evaluations import WithinSessionEvaluation
 # set logs
 mne.set_log_level(False)
 # logging.basicConfig(level=logging.WARNING)
@@ -149,5 +148,5 @@ for paradigm in paradigms:
         context_params[paradigm] = {}
     log.debug('{}: {}'.format(paradigm, context_params[paradigm]))
     p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
-    context = CrossSessionEvaluation(paradigm=p, random_state=42)
+    context = WithinSessionEvaluation(paradigm=p, random_state=42)
     results = context.process(pipelines=paradigms[paradigm])

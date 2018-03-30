@@ -86,7 +86,7 @@ class OpenvibeMI(BaseDataset):
     def _get_single_subject_data(self, subject):
         """return data for subject"""
         data = {}
-        for ii in range(1, 10):
+        for ii in range(1, 15):
             raw = self._get_single_session_data(ii)
             data["session_%d" % ii] = {'run_0': raw}
         return data

@@ -30,3 +30,6 @@ class Test_Datasets(unittest.TestCase):
         # We should get a raw array at the end
         self.assertEqual(type(data[1]['session_0']['run_0']),
                          mne.io.RawArray)
+
+        # bad subject id must raise error
+        self.assertRaises(ValueError, ds.get_data, [1000])

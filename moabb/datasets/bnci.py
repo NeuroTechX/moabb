@@ -5,12 +5,11 @@ BNCI 2014-001 Motor imagery dataset.
 from moabb.datasets.base import BaseDataset
 from moabb.datasets import download as dl
 
-from mne import create_info, concatenate_raws
+from mne import create_info
 from mne.io import RawArray
 from mne.channels import read_montage
 from mne.utils import verbose
 import numpy as np
-import os
 
 BNCI_URL = 'http://bnci-horizon-2020.eu/database/data-sets/'
 BBCI_URL = 'http://doc.ml.tu-berlin.de/bbci/'
@@ -126,12 +125,15 @@ def _load_data_001_2014(subject,
     ]
     ch_types = ['eeg'] * 22 + ['eog'] * 3
 
-    data_paths = []
+    sessions = {}
     for r in ['T', 'E']:
         url = '{u}001-2014/A{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
-        data_paths.extend(data_path(url, path, force_update, update_path))
-
-    return _convert_mi(data_paths, ch_names, ch_types)
+        filename = data_path(url, path, force_update, update_path)
+        runs, ev = _convert_mi(filename[0], ch_names, ch_types)
+        # FIXME: deal with run with no event (1:3) and name them
+        sessions['session_%s' % r] = {'run_%d' % ii: run
+                                      for ii, run in enumerate(runs[3:])}
+    return sessions
 
 
 @verbose
@@ -145,12 +147,17 @@ def _load_data_002_2014(subject,
     if (subject < 1) or (subject > 14):
         raise ValueError("Subject must be between 1 and 14. Got %d." % subject)
 
-    data_paths = []
+    runs = []
     for r in ['T', 'E']:
         url = '{u}002-2014/S{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
-        data_paths.extend(data_path(url, path, force_update, update_path))
+        filename = data_path(url, path, force_update, update_path)[0]
 
-    return _convert_mi(data_paths, None, None)
+        # FIXME: electrode position and name are not provided directly.
+        raws, _ = _convert_mi(filename, None, ['eeg'] * 15)
+        runs.extend(raws)
+
+    runs = {'run_%d' % ii: run for ii, run in enumerate(runs)}
+    return {'session_0': runs}
 
 
 @verbose
@@ -167,12 +174,16 @@ def _load_data_004_2014(subject,
     ch_names = ['C3', 'Cz', 'C4', 'EOG1', 'EOG2', 'EOG3']
     ch_types = ['eeg'] * 3 + ['eog'] * 3
 
-    data_paths = []
+    sessions = []
     for r in ['T', 'E']:
         url = '{u}004-2014/B{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
-        data_paths.extend(data_path(url, path, force_update, update_path))
+        filename = data_path(url, path, force_update, update_path)[0]
+        raws, _ = _convert_mi(filename,  ch_names, ch_types)
+        sessions.extend(raws)
 
-    return _convert_mi(data_paths, ch_names, ch_types)
+    sessions = {'session_%d' % ii: {'run_0': run}
+                for ii, run in enumerate(sessions)}
+    return sessions
 
 
 @verbose
@@ -236,22 +247,22 @@ def _load_data_001_2015(subject,
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
 
     if subject in [8, 9, 10, 11]:
-        sessions = ['A', 'B', 'C']  # 3 sessions for those subjects
+        ses = ['A', 'B', 'C']  # 3 sessions for those subjects
     else:
-        sessions = ['A', 'B']
+        ses = ['A', 'B']
 
-    data_paths = []
-    for r in sessions:
-        url = '{u}001-2015/S{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
-        data_paths.extend(data_path(url, path, force_update, update_path))
-
-    ch_names = [
-        'FC3', 'FCz', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP3',
-        'CPz', 'CP4'
-    ]
+    ch_names = ['FC3', 'FCz', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6',
+                'CP3', 'CPz', 'CP4']
     ch_types = ['eeg'] * 13
 
-    return _convert_mi(data_paths, ch_names, ch_types)
+    sessions = {}
+    for r in ses:
+        url = '{u}001-2015/S{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
+        filename = data_path(url, path, force_update, update_path)
+        runs, ev = _convert_mi(filename[0], ch_names, ch_types)
+        sessions['session_%s' % r] = {'run_%d' % ii: run
+                                      for ii, run in enumerate(runs)}
+    return sessions
 
 
 @verbose
@@ -334,8 +345,10 @@ def _load_data_004_2015(subject,
         'P2', 'P4', 'P6', 'P8', 'PO3', 'PO4', 'O1', 'O2'
     ]
     ch_types = ['eeg'] * 30
-
-    return _convert_mi([filename], ch_names, ch_types)
+    raws, ev = _convert_mi(filename, ch_names, ch_types)
+    sessions = {'session_%d' % ii: {'run_0': run}
+                for ii, run in enumerate(raws)}
+    return sessions
 
 
 @verbose
@@ -442,29 +455,29 @@ def _load_data_013_2015(subject,
     return raws, event_id
 
 
-def _convert_mi(data_paths, ch_names, ch_types):
+def _convert_mi(filename, ch_names, ch_types):
     '''
-    Processes (Graz) motor imagery data from MAT files, returns list of recording sessions
-    (each session corresponds to a separate placement of electrodes)
+    Processes (Graz) motor imagery data from MAT files, returns list of
+    recording runs.
     '''
     from scipy.io import loadmat
-    sessions = []
+
+    runs = []
     event_id = {}
-    raws = []
-    for filename in data_paths:
-        data = loadmat(filename, struct_as_record=False, squeeze_me=True)
-        if type(data['data']) is np.ndarray:
-            run_array = data['data']
-        else:
-            run_array = [data['data']]
-        for run in run_array:
-            raw, evd = _convert_run(run, ch_names, ch_types, None)
-            raws.append(raw)
-            event_id.update(evd)
-        sessions.append(raws)
+    data = loadmat(filename, struct_as_record=False, squeeze_me=True)
+
+    if type(data['data']) is np.ndarray:
+        run_array = data['data']
+    else:
+        run_array = [data['data']]
+
+    for run in run_array:
+        raw, evd = _convert_run(run, ch_names, ch_types, None)
+        runs.append(raw)
+        event_id.update(evd)
     # change labels to match rest
     standardize_keys(event_id)
-    return sessions, event_id
+    return runs, event_id
 
 
 def standardize_keys(d):
@@ -613,15 +626,10 @@ def _convert_run_epfl(run, verbose=None):
 class MNEBNCI(BaseDataset):
     """Base BNCI dataset"""
 
-    def _get_single_subject_data(self, subject, stack_sessions):
+    def _get_single_subject_data(self, subject):
         """return data for a single subject"""
-        sessions = load_data(
-            subject=subject, dataset=self.code, verbose=False)[0]
-        if stack_sessions:
-            new_sessions = [[run for session in sessions for run in session]]
-        else:
-            new_sessions = [sessions]
-        return new_sessions
+        sessions = load_data(subject=subject, dataset=self.code, verbose=False)
+        return sessions
 
 
 class BNCI2014001(MNEBNCI):
@@ -629,14 +637,13 @@ class BNCI2014001(MNEBNCI):
 
     def __init__(self, tmin=3.5, tmax=5.5):
         super().__init__(
-            subjects=range(1, 10),
+            subjects=list(range(1, 10)),
             sessions_per_subject=2,
-            events=dict(
-                zip(['left_hand', 'right_hand', 'feet', 'tongue'],
-                    [1, 2, 3, 4])),
+            events={'left_hand': 1, 'right_hand': 2, 'feet': 3, 'tongue': 4},
             code='001-2014',
             interval=[tmin, tmax],
-            paradigm='imagery')
+            paradigm='imagery',
+            doi='10.3389/fnins.2012.00055')
 
 
 class BNCI2014002(MNEBNCI):
@@ -644,8 +651,13 @@ class BNCI2014002(MNEBNCI):
 
     def __init__(self, tmin=3.5, tmax=5.5):
         super().__init__(
-            range(1, 15), 1, dict(zip(['right_hand', 'feet'], [1, 2])),
-            '002-2014', [tmin, tmax], 'imagery')
+            subjects=list(range(1, 15)),
+            sessions_per_subject=1,
+            events={'right_hand': 1, 'feet': 2},
+            code='002-2014',
+            interval=[tmin, tmax],
+            paradigm='imagery',
+            doi='10.1515/bmt-2014-0117')
 
 
 class BNCI2014004(MNEBNCI):
@@ -653,17 +665,28 @@ class BNCI2014004(MNEBNCI):
 
     def __init__(self, tmin=4.5, tmax=6.5):
         super().__init__(
-            range(1, 10), 2, dict(zip(['left_hand', 'right_hand'], [1, 2])),
-            '004-2014', [tmin, tmax], 'imagery')
+            subjects=list(range(1, 10)),
+            sessions_per_subject=5,
+            events={'left_hand': 1, 'right_hand': 2},
+            code='004-2014',
+            interval=[tmin, tmax],
+            paradigm='imagery',
+            doi='10.1109/TNSRE.2007.906956')
 
 
 class BNCI2015001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset"""
 
     def __init__(self, tmin=4, tmax=7.5):
+        # FIXME: some participant have 3 sessions
         super().__init__(
-            range(1, 13), 2, dict(zip(['right_hand', 'feet'], [1, 2])),
-            '001-2015', [tmin, tmax], 'imagery')
+            subjects=list(range(1, 13)),
+            sessions_per_subject=2,
+            events={'right_hand': 1, 'feet': 2},
+            code='001-2015',
+            interval=[tmin, tmax],
+            paradigm='imagery',
+            doi='10.1109/tnsre.2012.2189584')
 
 
 class BNCI2015004(MNEBNCI):
@@ -671,7 +694,11 @@ class BNCI2015004(MNEBNCI):
 
     def __init__(self, tmin=4.25, tmax=10):
         super().__init__(
-            range(1, 10), 2,
-            dict(
-                right_hand=4, feet=5, navigation=3, subtraction=2, word_ass=1),
-            '004-2015', [tmin, tmax], 'imagery')
+            subjects=list(range(1, 10)),
+            sessions_per_subject=2,
+            events=dict(right_hand=4, feet=5, navigation=3, subtraction=2,
+                        word_ass=1),
+            code='004-2015',
+            interval=[tmin, tmax],
+            paradigm='imagery',
+            doi='10.1371/journal.pone.0123727')

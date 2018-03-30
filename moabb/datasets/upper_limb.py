@@ -11,7 +11,7 @@ from . import download as dl
 UPPER_LIMB_URL = 'https://zenodo.org/record/834976/files/'
 
 
-def data_paths(subject, imagined=True, path=None, force_update=False,
+def data_paths(subject, im='imagination', path=None, force_update=False,
                update_path=None, verbose=None):
     """Get path to local copy of ALEX dataset URL.
 
@@ -19,8 +19,8 @@ def data_paths(subject, imagined=True, path=None, force_update=False,
     ----------
     subject : int
         Number of subject to use
-    imagined : bool
-        If true, return motor imagination run, otherwise return motor execution
+    im : str
+        can be either imagination or execution
     path : None | str
         Location of where to look for the data storing location.
         If None, the environment variable or config parameter
@@ -48,11 +48,6 @@ def data_paths(subject, imagined=True, path=None, force_update=False,
 
     paths = []
 
-    if imagined:
-        im = 'imagination'
-    else:
-        im = 'execution'
-
     for run in range(1, 11):
         url = f"{UPPER_LIMB_URL}/motor{im}_subject{subject}_run{run}.gdf"
         p = dl.data_path(url, 'UPPER_LIMB', path, force_update, update_path,
@@ -63,41 +58,61 @@ def data_paths(subject, imagined=True, path=None, force_update=False,
 
 
 class UpperLimb(BaseDataset):
-    """Upper Limb motor dataset"""
+    """Upper Limb motor dataset.
 
-    def __init__(self, imagined=True):
+    Upper limb dataset :
+    http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0182578
+
+    Consist in 6 upper limb movement, recoded over 2 sessions.
+    The first session is motor execution, the second session is imagination.
+
+    """
+
+    def __init__(self, imagined=True, executed=False):
         self.imagined = imagined
-        event_id = {"elbow_flexion": 1536,
-                    "elbow_extension": 1537,
-                    "supination": 1538,
-                    "pronation": 1539,
-                    "hand_close": 1540,
-                    "hand_open": 1541,
+        self.executed = executed
+        event_id = {"right_elbow_flexion": 1536,
+                    "right_elbow_extension": 1537,
+                    "right_supination": 1538,
+                    "right_pronation": 1539,
+                    "right_hand_close": 1540,
+                    "right_hand_open": 1541,
                     "rest": 1542}
 
+        n_sessions = int(imagined) + int(executed)
         super().__init__(
             subjects=list(range(1, 16)),
-            sessions_per_subject=1,
+            sessions_per_subject=n_sessions,
             events=event_id,
             code='Upper Limb Imagery',
             interval=[2.5, 5],
-            paradigm='imagery')
+            paradigm='imagery',
+            doi='10.1371/journal.pone.0182578')
 
-    def _get_single_subject_data(self, subject, stack_sessions):
+    def _get_single_subject_data(self, subject):
         """return data for a single subject"""
-        paths = data_paths(subject, self.imagined)
 
-        eog = ['eog-l', 'eog-m', 'eog-r']
-        montage = read_montage('standard_1005')
-        raws = []
-        for path in paths:
-            raw = read_raw_edf(path, montage=montage, eog=eog,
-                               misc=range(64, 96), preload=True,
-                               verbose='ERROR')
-            # there is nan in the data
-            raw._data[np.isnan(raw._data)] = 0
-            raws.append(raw)
-        if stack_sessions:
-            return [raws]
-        else:
-            return [[raws]]
+        sessions = []
+        if self.imagined:
+            sessions.append('imagination')
+
+        if self.executed:
+            sessions.append('execution')
+
+        out = {}
+        for session in sessions:
+            paths = data_paths(subject, session)
+
+            eog = ['eog-l', 'eog-m', 'eog-r']
+            montage = read_montage('standard_1005')
+            data = {}
+            for ii, path in enumerate(paths):
+                raw = read_raw_edf(path, montage=montage, eog=eog,
+                                   misc=range(64, 96), preload=True,
+                                   verbose='ERROR')
+                # there is nan in the data
+                raw._data[np.isnan(raw._data)] = 0
+                data['run_%d' % ii] = raw
+
+            out[session] = data
+        return out

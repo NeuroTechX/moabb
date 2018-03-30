@@ -8,7 +8,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
     """Base dataset"""
 
     def __init__(self, subjects, sessions_per_subject, events, code, interval,
-                 paradigm):
+                 paradigm, doi=None):
 
         if not isinstance(subjects, list):
             raise(ValueError("subjects must be a list"))
@@ -19,6 +19,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self.code = code
         self.interval = interval
         self.paradigm = paradigm
+        self.doi = doi
 
     def get_data(self, subjects=None):
         """
@@ -58,7 +59,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         data = dict()
         for subject in subjects:
             if subject not in self.subject_list:
-                raise ValueError('Invalid subject {:s} given'.format(subject))
+                raise ValueError('Invalid subject {:d} given'.format(subject))
             data[subject] = self._get_single_subject_data(subject)
 
         return data
