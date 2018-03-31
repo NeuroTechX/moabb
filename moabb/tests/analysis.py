@@ -14,6 +14,9 @@ class DummyEvaluation(BaseEvaluation):
     def evaluate(self, dataset, pipelines):
         raise NotImplementedError('dummy')
 
+    def verify(self, dataset):
+        pass
+
 
 class DummyParadigm(BaseParadigm):
 
@@ -91,8 +94,8 @@ class Test_Stats(unittest.TestCase):
 class Test_Integration(unittest.TestCase):
 
     def setUp(self):
-        self.obj = Results(evaluation_class=type(DummyEvaluation(DummyParadigm())),
-                           paradigm_class=type(DummyParadigm()),
+        self.obj = Results(evaluation_class=DummyEvaluation,
+                           paradigm_class=DummyParadigm,
                            suffix='test')
 
     def tearDown(self):
@@ -112,8 +115,8 @@ class Test_Integration(unittest.TestCase):
 class Test_Results(unittest.TestCase):
 
     def setUp(self):
-        self.obj = Results(evaluation_class=type(DummyEvaluation(DummyParadigm())),
-                           paradigm_class=type(DummyParadigm()),
+        self.obj = Results(evaluation_class=DummyEvaluation,
+                           paradigm_class=DummyParadigm,
                            suffix='test')
 
     def tearDown(self):

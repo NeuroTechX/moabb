@@ -30,7 +30,6 @@ class Test_WithinSess(unittest.TestCase):
 
     def tearDown(self):
         path = self.eval.results.filepath
-        print(path)
         if os.path.isfile(path):
             os.remove(path)
 
@@ -47,11 +46,28 @@ class Test_CrossSubj(Test_WithinSess):
         self.eval = ev.CrossSubjectEvaluation(paradigm=FakeImageryParadigm(),
                                               datasets=[dataset])
 
+    def test_compatible_dataset(self):
+        # raise
+        ds = FakeDataset(['left_hand', 'right_hand'], n_subjects=1)
+        self.assertRaises(AssertionError, self.eval.verify, dataset=ds)
+
+        # do not raise
+        ds = FakeDataset(['left_hand', 'right_hand'], n_subjects=2)
+        self.assertIsNone(self.eval.verify(dataset=ds))
+
 
 class Test_CrossSess(Test_WithinSess):
     def setUp(self):
         self.eval = ev.CrossSessionEvaluation(paradigm=FakeImageryParadigm(),
                                               datasets=[dataset])
+
+    def test_compatible_dataset(self):
+        ds = FakeDataset(['left_hand', 'right_hand'], n_sessions=1)
+        self.assertRaises(AssertionError, self.eval.verify, dataset=ds)
+
+        # do not raise
+        ds = FakeDataset(['left_hand', 'right_hand'], n_sessions=2)
+        self.assertIsNone(self.eval.verify(dataset=ds))
 
 
 if __name__ == "__main__":

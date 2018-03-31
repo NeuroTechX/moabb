@@ -36,7 +36,7 @@ class BaseParadigm(ABC):
         '''
 
     @abstractmethod
-    def process_raw(self, raw):
+    def process_raw(self, raw, dataset):
         """
         Process one raw data file.
 
@@ -96,7 +96,7 @@ class BaseParadigm(ABC):
         for subject, sessions in data.items():
             for session, runs in sessions.items():
                 for run, raw in runs.items():
-                    proc = self.process_raw(raw)
+                    proc = self.process_raw(raw, dataset)
 
                     if proc is None:
                         # this mean the run did not contain any selected event

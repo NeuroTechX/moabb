@@ -30,10 +30,10 @@ class PhysionetMI(BaseDataset):
             self.feet_runs = [5, 9, 13]
             self.hand_runs = [3, 7, 11]
 
-    def _load_one_run(self, subject, run):
+    def _load_one_run(self, subject, run, preload=True):
         raw_fname = eegbci.load_data(subject, runs=[run], verbose='ERROR',
                                      base_url=BASE_URL)[0]
-        raw = read_raw_edf(raw_fname, preload=True, verbose='ERROR')
+        raw = read_raw_edf(raw_fname, preload=preload, verbose='ERROR')
         raw.rename_channels(lambda x: x.strip('.'))
         return raw
 

@@ -65,6 +65,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                               n_jobs=self.n_jobs)
         return acc.mean()
 
+    def verify(self, dataset):
+        pass
+
 
 class CrossSessionEvaluation(BaseEvaluation):
     """Cross session Context.
@@ -76,6 +79,7 @@ class CrossSessionEvaluation(BaseEvaluation):
     """
 
     def evaluate(self, dataset, pipelines):
+        self.verify(dataset)
         for subject in dataset.subject_list:
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
@@ -91,10 +95,6 @@ class CrossSessionEvaluation(BaseEvaluation):
             y = le.fit_transform(y)
             groups = metadata.session.values
             scorer = get_scorer(self.paradigm.scoring)
-
-            if len(np.unique(groups)) < 2:
-                log.warning(f"Subject {subject} does not have enough sessions"
-                            "Skip this subject")
 
             for name, clf in run_pipes.items():
 
@@ -116,6 +116,9 @@ class CrossSessionEvaluation(BaseEvaluation):
                            'pipeline': name}
                     yield res
 
+    def verify(self, dataset):
+        assert dataset.n_sessions > 1
+
 
 class CrossSubjectEvaluation(BaseEvaluation):
     """Cross Subject evaluation Context.
@@ -126,16 +129,11 @@ class CrossSubjectEvaluation(BaseEvaluation):
     """
 
     def evaluate(self, dataset, pipelines):
-        # check if we already have result for this subject/pipeline
-        # we might need a better granularity, if we query the DB
-        if len(dataset.subject_list) < 2:
-            log.warning(f"Dataset {dataset} does not have enough subject for"
-                        " CrossSubjectEvaluation. Skip this dataset")
-            return
-
+        self.verify(dataset)
         # this is a bit akward, but we need to check if at least one pipe
         # have to be run before loading the data. If at least one pipeline
-        # need to be run, we have to load all the data
+        # need to be run, we have to load all the data.
+        # we might need a better granularity, if we query the DB
         run_pipes = {}
         for subject in dataset.subject_list:
             run_pipes.update(self.results.not_yet_computed(pipelines,
@@ -160,7 +158,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             cv = LeaveOneGroupOut()
             for train, test in cv.split(X, y, groups):
 
-                subject = test[0]
+                subject = groups[test[0]]
                 # now we can check if this subject has results
                 run_pipes = self.results.not_yet_computed(pipelines, dataset,
                                                           subject)
@@ -179,10 +177,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         res = {'time': duration,
                                'dataset': dataset,
                                'id': subject,
-                               'session': groups[test][0],
+                               'session': session,
                                'score': score,
                                'n_samples': len(train),
                                'n_channels': X.shape[1],
                                'pipeline': name}
 
                         yield res
+
+    def verify(self, dataset):
+        assert len(dataset.subject_list) > 1

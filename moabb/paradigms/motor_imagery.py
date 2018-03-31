@@ -60,11 +60,9 @@ class BaseMotorImagery(BaseParadigm):
         if self.events:
             assert set(self.events) <= set(dataset.event_id.keys())
 
-        # By default, store event and interval from the dataset
-        self.dataset_event_id = dataset.event_id
-        self.dataset_interval = dataset.interval
+        # we should verify list of channels, somehow
 
-    def process_raw(self, raw):
+    def process_raw(self, raw, dataset):
         # find the events
         events = mne.find_events(raw, shortest_event=0, verbose=False)
         channels = () if self.channels is None else self.channels
@@ -75,9 +73,9 @@ class BaseMotorImagery(BaseParadigm):
 
         # get event id
         if self.events is None:
-            event_id = self.dataset_event_id
+            event_id = dataset.event_id
         else:
-            event_id = {ev: self.dataset_event_id[ev] for ev in self.events}
+            event_id = {ev: dataset.event_id[ev] for ev in self.events}
 
         # pick events, based on event_id
         try:
@@ -88,7 +86,7 @@ class BaseMotorImagery(BaseParadigm):
 
         # get interval
         if self.interval is None:
-            tmin, tmax = self.dataset_interval
+            tmin, tmax = dataset.interval
         else:
             tmin, tmax = self.interval
 

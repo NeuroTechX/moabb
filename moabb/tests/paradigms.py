@@ -50,9 +50,13 @@ class Test_MotorImagery(unittest.TestCase):
         # test process_raw return empty list if raw does not contain any
         # selected event. cetain runs in dataset are event specific.
         dataset = FakeDataset()
-        dataset.event_id = {'a': 4, 'b': 5}
         raw = dataset.get_data([1])[1]['session_0']['run_0']
-        self.assertIsNone(paradigm.process_raw(raw))
+        # add something on the event channel
+        raw._data[-1] *= 10
+        self.assertIsNone(paradigm.process_raw(raw, dataset))
+        # zeros it out
+        raw._data[-1] *= 0
+        self.assertIsNone(paradigm.process_raw(raw, dataset))
 
     def test_leftright_paradigm(self):
         # we cant pass event to this class

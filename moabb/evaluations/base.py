@@ -61,7 +61,14 @@ class BaseEvaluation(ABC):
                                  "instance"))
 
         for dataset in datasets:
-            self.paradigm.verify(dataset)
+            # fixme, we might want to drop dataset that are not compatible
+            try:
+                self.paradigm.verify(dataset)
+                self.verify(dataset)
+            except AssertionError:
+                log.warning(f"{dataset} not compatible with evaluation or "
+                            "paradigm. Removing this dataset from the list.")
+                datasets.remove(dataset)
 
         self.datasets = datasets
 
@@ -117,3 +124,11 @@ class BaseEvaluation(ABC):
                    'pipeline': pipeline name}
         '''
         pass
+
+    @abstractmethod
+    def verify(self, dataset):
+        """Verify the dataset is compatible.
+
+        this method should raise an error if the dataset is not compatible
+        with the evaluation method.
+        """
