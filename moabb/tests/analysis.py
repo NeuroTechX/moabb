@@ -3,7 +3,6 @@ import numpy as np
 import moabb.analysis.meta_analysis as ma
 from moabb.analysis import Results
 import os
-from moabb.datasets.base import BaseDataset
 from moabb.evaluations.base import BaseEvaluation
 from moabb.paradigms.base import BaseParadigm
 from moabb.datasets.fake import FakeDataset
@@ -12,11 +11,8 @@ from moabb.datasets.fake import FakeDataset
 
 class DummyEvaluation(BaseEvaluation):
 
-    def evaluate(self, dataset, subject, clf, paradigm):
+    def evaluate(self, dataset, pipelines):
         raise NotImplementedError('dummy')
-
-    def preprocess_data(self):
-        pass
 
 
 class DummyParadigm(BaseParadigm):
@@ -31,9 +27,13 @@ class DummyParadigm(BaseParadigm):
     def verify(self, dataset):
         pass
 
+    def process_raw(raw):
+        raise NotImplementedError('dummy')
+
     @property
     def datasets(self):
         return [FakeDataset(['d1', 'd2'])]
+
 
 # Create dummy data for tests
 d1 = {'time': 1,

@@ -96,7 +96,14 @@ class BaseParadigm(ABC):
         for subject, sessions in data.items():
             for session, runs in sessions.items():
                 for run, raw in runs.items():
-                    x, lbs, met = self.process_raw(raw)
+                    proc = self.process_raw(raw)
+
+                    if proc is None:
+                        # this mean the run did not contain any selected event
+                        # go to next
+                        continue
+
+                    x, lbs, met = proc
                     met['subject'] = subject
                     met['session'] = session
                     met['run'] = run

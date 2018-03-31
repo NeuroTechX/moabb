@@ -79,6 +79,13 @@ class BaseMotorImagery(BaseParadigm):
         else:
             event_id = {ev: self.dataset_event_id[ev] for ev in self.events}
 
+        # pick events, based on event_id
+        try:
+            events = mne.pick_events(events, include=list(event_id.values()))
+        except RuntimeError:
+            # skip raw if no event found
+            return
+
         # get interval
         if self.interval is None:
             tmin, tmax = self.dataset_interval

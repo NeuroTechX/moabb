@@ -132,7 +132,7 @@ def _load_data_001_2014(subject,
         runs, ev = _convert_mi(filename[0], ch_names, ch_types)
         # FIXME: deal with run with no event (1:3) and name them
         sessions['session_%s' % r] = {'run_%d' % ii: run
-                                      for ii, run in enumerate(runs[3:])}
+                                      for ii, run in enumerate(runs)}
     return sessions
 
 

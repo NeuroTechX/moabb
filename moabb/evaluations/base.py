@@ -30,7 +30,8 @@ class BaseEvaluation(ABC):
 
     '''
 
-    def __init__(self, paradigm, datasets=None, random_state=None, n_jobs=1):
+    def __init__(self, paradigm, datasets=None, random_state=None, n_jobs=1,
+                 overwrite=False, suffix=''):
         """
         Init.
         """
@@ -64,7 +65,12 @@ class BaseEvaluation(ABC):
 
         self.datasets = datasets
 
-    def process(self, pipelines, overwrite=False, suffix=''):
+        self.results = Results(type(self),
+                               type(self.paradigm),
+                               overwrite=overwrite,
+                               suffix=suffix)
+
+    def process(self, pipelines):
         '''
         Runs tasks on all given datasets.
         '''
@@ -78,29 +84,36 @@ class BaseEvaluation(ABC):
                 raise(ValueError("pipelines must only contains Pipelines "
                                  "instance"))
 
-        self.results = Results(type(self),
-                               type(self.paradigm),
-                               overwrite=overwrite,
-                               suffix=suffix)
-
         for dataset in self.datasets:
             log.info('Processing dataset: {}'.format(dataset.code))
-            self.evaluate(dataset, pipelines)
+            results = self.evaluate(dataset, pipelines)
+            for res in results:
+                self.push_result(res, pipelines)
 
-        return self.results
+        return self.results.to_dataframe()
 
     def push_result(self, res, pipelines):
-        for pipe, r in res.items():
-            message = '{} | '.format(pipe)
-            message += '{} | {} | {}'.format(r['dataset'].code,
-                                             r['id'], r['session'])
-            message += ': Score %.3f' % r['score']
-            log.info(message)
-        self.results.add(res, pipelines=pipelines)
+        message = '{} | '.format(res['pipeline'])
+        message += '{} | {} | {}'.format(res['dataset'].code,
+                                         res['id'], res['session'])
+        message += ': Score %.3f' % res['score']
+        log.info(message)
+        self.results.add({res['pipeline']: res}, pipelines=pipelines)
 
     @abstractmethod
     def evaluate(self, dataset, pipelines):
-        '''
+        '''Evaluate results on a single dataset.
 
+        This method return a generator. each results item is a dict with
+        the following convension :
+
+            res = {'time': Duration of the training ,
+                   'dataset': dataset id,
+                   'id': subject id,
+                   'session': session id,
+                   'score': score,
+                   'n_samples': number of training examples,
+                   'n_channels': number of channel,
+                   'pipeline': pipeline name}
         '''
         pass

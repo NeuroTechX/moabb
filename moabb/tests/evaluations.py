@@ -2,6 +2,7 @@ from moabb.evaluations import evaluations as ev
 from moabb.datasets.fake import FakeDataset
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 import unittest
+import os
 
 from pyriemann.spatialfilters import CSP
 from pyriemann.estimation import Covariances
@@ -12,10 +13,10 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 
 pipelines = OrderedDict()
 pipelines['C'] = make_pipeline(Covariances('oas'), CSP(8), LDA())
-dataset = FakeDataset(['left_hand', 'right_hand'])
+dataset = FakeDataset(['left_hand', 'right_hand'], n_subjects=2)
 
 
-class Test_CrossSess(unittest.TestCase):
+class Test_WithinSess(unittest.TestCase):
     '''This is actually integration testing but I don't know how to do this
     better. A paradigm implements pre-processing so it needs files to run MNE
     stuff on. To test the scoring and train/test we need to also have data and
@@ -23,44 +24,35 @@ class Test_CrossSess(unittest.TestCase):
 
     '''
 
-    def return_eval(self):
-        return ev.CrossSessionEvaluation(paradigm=FakeImageryParadigm(),
-                                         datasets=[dataset])
+    def setUp(self):
+        self.eval = ev.WithinSessionEvaluation(paradigm=FakeImageryParadigm(),
+                                               datasets=[dataset])
+
+    def tearDown(self):
+        path = self.eval.results.filepath
+        print(path)
+        if os.path.isfile(path):
+            os.remove(path)
 
     def test_eval_results(self):
-        e = self.return_eval()
-        res = e.evaluate(dataset, pipelines)
+        results = [r for r in self.eval.evaluate(dataset, pipelines)]
 
-        # return 1 results averaged across the 2 sessions
-        self.assertEqual(len(res['C']), 1)
-
-
-class Test_CrossSubj(Test_CrossSess):
-    def return_eval(self):
-        return ev.CrossSubjectEvaluation(paradigm=FakeImageryParadigm(),
-                                         datasets=[dataset])
-
-    def test_eval_results(self):
-        e = self.return_eval()
-        e.preprocess_data(dataset)
-        res = e.evaluate(dataset, pipelines)
-
-        # return 1 results for 1 subject
-        self.assertEqual(len(res['C']), 1)
+        # We should get 4 results, 2 session 2 subject
+        self.assertEqual(len(results), 4)
 
 
-class Test_WithinSess(Test_CrossSess):
-    def return_eval(self):
-        return ev.WithinSessionEvaluation(paradigm=FakeImageryParadigm(),
-                                          datasets=[dataset])
+class Test_CrossSubj(Test_WithinSess):
 
-    def test_eval_results(self):
-        e = self.return_eval()
-        e.preprocess_data(dataset)
-        res = e.evaluate(dataset, pipelines)
+    def setUp(self):
+        self.eval = ev.CrossSubjectEvaluation(paradigm=FakeImageryParadigm(),
+                                              datasets=[dataset])
 
-        # return 2 results for each session
-        self.assertEqual(len(res['C']), 2)
+
+class Test_CrossSess(Test_WithinSess):
+    def setUp(self):
+        self.eval = ev.CrossSessionEvaluation(paradigm=FakeImageryParadigm(),
+                                              datasets=[dataset])
+
 
 if __name__ == "__main__":
     unittest.main()
