@@ -88,7 +88,7 @@ python -m unittest moabb.tests
 ```
 once it is installed
 
-# Run tje moabb
+# Run the Moabb
 
 ```
 python -m moabb.run --verbose

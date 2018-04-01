@@ -13,7 +13,7 @@ UPPER_LIMB_URL = 'https://zenodo.org/record/834976/files/'
 
 def data_paths(subject, im='imagination', path=None, force_update=False,
                update_path=None, verbose=None):
-    """Get path to local copy of ALEX dataset URL.
+    """Get path to local copy of UPPER LIMB dataset URL.
 
     Parameters
     ----------
@@ -24,14 +24,14 @@ def data_paths(subject, im='imagination', path=None, force_update=False,
     path : None | str
         Location of where to look for the data storing location.
         If None, the environment variable or config parameter
-        ``MNE_DATASETS_INRIA_PATH`` is used. If it doesn't exist, the
+        ``MNE_DATASETS_UPPER_LIMB_PATH`` is used. If it doesn't exist, the
         "~/mne_data" directory is used. If the dataset
         is not found under the given path, the data
         will be automatically downloaded to the specified folder.
     force_update : bool
         Force update of the dataset even if a local copy exists.
     update_path : bool | None
-        If True, set the MNE_DATASETS_INRIA_PATH in mne-python
+        If True, set the MNE_DATASETS_UPPER_LIMB_PATH in mne-python
         config to the given path. If None, the user is prompted.
     verbose : bool, str, int, or None
         If not None, override default verbose level (see :func:`mne.verbose`).
