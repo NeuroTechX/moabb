@@ -102,7 +102,7 @@ class BaseEvaluation(ABC):
     def push_result(self, res, pipelines):
         message = '{} | '.format(res['pipeline'])
         message += '{} | {} | {}'.format(res['dataset'].code,
-                                         res['id'], res['session'])
+                                         res['subject'], res['session'])
         message += ': Score %.3f' % res['score']
         log.info(message)
         self.results.add({res['pipeline']: res}, pipelines=pipelines)
@@ -116,7 +116,7 @@ class BaseEvaluation(ABC):
 
             res = {'time': Duration of the training ,
                    'dataset': dataset id,
-                   'id': subject id,
+                   'subject': subject id,
                    'session': session id,
                    'score': score,
                    'n_samples': number of training examples,

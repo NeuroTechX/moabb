@@ -21,8 +21,6 @@ class WithinSessionEvaluation(BaseEvaluation):
     """
 
     def evaluate(self, dataset, pipelines):
-        """Prepare data for classification."""
-
         for subject in dataset.subject_list:
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
@@ -47,7 +45,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     duration = time() - t_start
                     res = {'time': duration / 5.,  # 5 fold CV
                            'dataset': dataset,
-                           'id': subject,
+                           'subject': subject,
                            'session': session,
                            'score': score,
                            'n_samples': len(y[ix]),  # not training sample
@@ -108,7 +106,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                     duration = time() - t_start
                     res = {'time': duration,
                            'dataset': dataset,
-                           'id': subject,
+                           'subject': subject,
                            'session': groups[test][0],
                            'score': score,
                            'n_samples': len(train),
@@ -176,7 +174,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                         res = {'time': duration,
                                'dataset': dataset,
-                               'id': subject,
+                               'subject': subject,
                                'session': session,
                                'score': score,
                                'n_samples': len(train),
