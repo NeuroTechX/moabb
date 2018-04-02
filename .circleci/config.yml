@@ -1,0 +1,60 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  moabb:
+    docker:
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/python:3.6.1
+
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - data-cache
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+            python setup.py develop
+
+      - run: mkdir -p ~/mne_data
+      - run:
+          name: set path for data
+          command: |
+            python -c "import mne; print(mne.datasets.eegbci.load_data(1, [6, 10, 14], update_path=True))";
+            python -c "import moabb.datasets; print(moabb.datasets.alex_mi.data_path(1, update_path=True))";
+            python -c "import moabb.datasets; print(moabb.datasets.bbci_eeg_fnirs.data_path(1, update_path=True))";
+            python -c "import moabb.datasets; print(moabb.datasets.bnci.load_data(1, update_path=True))";
+            python -c "import moabb.datasets; print(moabb.datasets.gigadb.data_path(1, update_path=True))";
+            python -c "import moabb.datasets; print(moabb.datasets.openvibe_mi.data_path(1, update_path=True))";
+            python -c "import moabb.datasets; print(moabb.datasets.upper_limb.data_path(1, update_path=True))";
+      - run: ls -al ~/mne_data;
+
+      - save_cache:
+          key: data-cache
+          paths:
+            - ~/mne_data
+            - ~/.mne
+
+      # run the moabb
+      - run:
+          name: run moabb
+          command: |
+            . venv/bin/activate
+            python -m moabb.run --verbose
+
+      - store_artifacts:
+          path: ./moabb/results/
+          destination: moabb_results
