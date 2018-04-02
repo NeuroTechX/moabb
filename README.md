@@ -94,6 +94,15 @@ once it is installed
 python -m moabb.run --verbose
 ```
 
+# Generate the documentation
+
+To generate the documentation :
+
+```
+cd docs
+make html
+```
+
 # How to contribute
 
 1. Look for open issues or open one.

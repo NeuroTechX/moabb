@@ -1,3 +1,9 @@
+"""
+A dataset handle and abstract low level access to the data. the dataset will
+takes data stored locally, in the format in which they have been downloaded,
+and will convert them into a MNE raw object. There are options to pool all the
+different recording sessions per subject or to evaluate them separately.
+"""
 from .gigadb import GigaDbMI
 from .alex_mi import AlexMI
 from .physionet_mi import PhysionetMI
