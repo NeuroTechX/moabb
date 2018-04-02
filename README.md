@@ -12,6 +12,10 @@ This project will be successful when we read in an abstract “ … the proposed
 
 **This is work in progress. API will change significantly (as well as the results of the benchmark).**
 
+# Docs
+
+[http://moabb.readthedocs.io](http://moabb.readthedocs.io)
+
 # Install
 
 `python setup.py develop`
