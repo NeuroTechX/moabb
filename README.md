@@ -1,6 +1,7 @@
 # Mother of all BCI Benchmark
 
 [![Build Status](https://travis-ci.org/NeuroTechX/moabb.svg?branch=master)](https://travis-ci.org/NeuroTechX/moabb)
+[![Documentation Status](https://readthedocs.org/projects/moabb/badge/?version=latest)](http://moabb.readthedocs.io/en/latest/?badge=latest)
 
 Reproducible Research in BCI has a long way to go. While many BCI datasets are made freely available, researchers do not publish code, and reproducing results required to benchmark new algorithms turns out to be more tricky than it should be. Performances can be significantly impacted by parameters of the preprocessing steps, toolboxes used and implementation “tricks” that are almost never reported in the literature. As a results, there is no comprehensive benchmark of BCI algorithm, and newcomers are spending a tremendous amount of time browsing literature to find out what algorithm works best and on which dataset.
 
