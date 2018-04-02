@@ -37,7 +37,7 @@ jobs:
             . venv/bin/activate
             python -c "import mne; print(mne.datasets.eegbci.load_data(1, [6, 10, 14], update_path=True))";
             python -c "import moabb.datasets; print(moabb.datasets.alex_mi.data_path(1, update_path=True))";
-            python -c "import moabb.datasets; print(moabb.datasets.bbci_eeg_fnirs.data_path(1, update_path=True))";
+            python -c "import moabb.datasets; print(moabb.datasets.bbci_eeg_fnirs.data_path(1))";
             python -c "import moabb.datasets; print(moabb.datasets.bnci.load_data(1, update_path=True))";
             python -c "import moabb.datasets; print(moabb.datasets.gigadb.data_path(1, update_path=True))";
             python -c "import moabb.datasets; print(moabb.datasets.openvibe_mi.data_path(1, update_path=True))";
