@@ -19,9 +19,8 @@ jobs:
       # dependences
       - restore_cache:
           keys:
-            - deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-            - deps1-{{ .Branch }}
-            - deps1-
+            - deps1-{{ checksum "requirements.txt" }}
+            - deps1
 
       # Download and cache dependencies
       - restore_cache:
@@ -36,12 +35,13 @@ jobs:
             pip install -r requirements.txt
 
       - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          key: deps1-{{ checksum "requirements.txt" }}
           paths:
             - "venv"
       - run:
           name: install
           command: |
+            . venv/bin/activate
             python setup.py develop
 
       - run: mkdir -p ~/mne_data
