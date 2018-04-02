@@ -30,6 +30,7 @@ jobs:
             python setup.py develop
 
       - run: mkdir -p ~/mne_data
+
       - run:
           name: set path for data
           command: |
@@ -40,6 +41,7 @@ jobs:
             python -c "import moabb.datasets; print(moabb.datasets.gigadb.data_path(1, update_path=True))";
             python -c "import moabb.datasets; print(moabb.datasets.openvibe_mi.data_path(1, update_path=True))";
             python -c "import moabb.datasets; print(moabb.datasets.upper_limb.data_path(1, update_path=True))";
+
       - run: ls -al ~/mne_data;
 
       - save_cache:
