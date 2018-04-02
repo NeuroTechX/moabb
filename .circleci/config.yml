@@ -16,6 +16,13 @@ jobs:
     steps:
       - checkout
 
+      # dependences
+      - restore_cache:
+          keys:
+            - deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+            - deps1-{{ .Branch }}
+            - deps1-
+
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -27,6 +34,14 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
+
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: install
+          command: |
             python setup.py develop
 
       - run: mkdir -p ~/mne_data
@@ -39,9 +54,8 @@ jobs:
             python -c "import moabb.datasets; print(moabb.datasets.alex_mi.data_path(1, update_path=True))";
             python -c "import moabb.datasets; print(moabb.datasets.bbci_eeg_fnirs.data_path(1))";
             python -c "import moabb.datasets; print(moabb.datasets.bnci.load_data(1, update_path=True))";
-            python -c "import moabb.datasets; print(moabb.datasets.gigadb.data_path(1, update_path=True))";
             python -c "import moabb.datasets; print(moabb.datasets.openvibe_mi.data_path(1, update_path=True))";
-            python -c "import moabb.datasets; print(moabb.datasets.upper_limb.data_path(1, update_path=True))";
+            python -c "import moabb.datasets; print(moabb.datasets.upper_limb.data_paths(1, update_path=True))";
 
       - run: ls -al ~/mne_data;
 
