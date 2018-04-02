@@ -35,12 +35,7 @@ h5py
 
 # supported datasets
 
-Currently, there are 9 motor Imagery dataset supported, and all of them can be downloaded automatically through the MOABB interface. For more information on the ones not available through the BNCI Horizons 2020 project, see below:
-
-- *Alex_mi* : can be downloaded [here](https://zenodo.org/record/806023)
-- *OpenvibeMI* : can be downloaded [here](http://openvibe.inria.fr/datasets-downloads/)
-- *gigadb_mi* : can be downloaded [here](ftp://climb.genomics.cn/pub/10.5524/100001_101000/100295/mat_data/)
-- *bbci_eeg_fnirs* : can be downloaded [here](http://doc.ml.tu-berlin.de/hBCI/)
+The list of supported dataset can be found here : http://moabb.readthedocs.io/en/latest/datasets.html
 
 ### Submit a new dataset
 
