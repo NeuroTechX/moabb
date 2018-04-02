@@ -15,10 +15,13 @@
 import sphinx_bootstrap_theme
 import os
 import sys
+import matplotlib
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../../'))
 import moabb
 
+
+matplotlib.use('Agg')
 # -- Project information -----------------------------------------------------
 
 project = 'moabb'
