@@ -15,6 +15,7 @@ Motor Imagery Datasets
     :template: class.rst
 
     features.LogVariance
+    filter_bank.FilterBank
 
 ------------
 Base & Utils
