@@ -122,22 +122,15 @@ def find_intersecting_channels(datasets, verbose=False):
     return allchans, d
 
 
-def _download_all(update_path=True):
+def _download_all(update_path=True, verbose=None):
     """Download all data.
 
     This function is mainly used to generate the data cache on circleci
     """
-    if update_path:
-        import mne
-        mne.datasets.eegbci.load_data(1, [6, 10, 14], update_path=True)
-        db.alex_mi.data_path(1, update_path=True)
-        db.bbci_eeg_fnirs.data_path(1)
-        db.bnci.load_data(1, update_path=True)
-        db.gigadb.data_path(1, update_path=True)
-        db.openvibe_mi.data_path(1, update_path=True)
-        db.upper_limb.data_paths(1, update_path=True)
 
     # iterate over dataset
     for ds in dataset_list:
+        # iterate over subjects
         for subject in ds().subject_list:
-            ds().get_data([subject])
+            # call datapath to trigger the download
+            ds().data_path(subject, update_path=True, verbose=verbose)

@@ -14,7 +14,7 @@ import os.path as op
 import os
 import zipfile as z
 from mne.datasets.utils import _get_path, _do_path_update
-from mne.utils import _fetch_file, _url_to_local_path, verbose
+from mne.utils import _fetch_file, _url_to_local_path
 
 BBCIFNIRS_URL = 'http://doc.ml.tu-berlin.de/hBCI/'
 
@@ -57,43 +57,6 @@ def fnirs_data_path(path, subject):
     return [op.join(datapath, fn) for fn in ['cnt.mat', 'mrk.mat']]
 
 
-def data_path(subject, path=None, force_update=False, fnirs=False):
-    """Get path to local copy of bbci_eeg_fnirs dataset URL.
-
-    Parameters
-    ----------
-    subject : int
-        Number of subject to use
-    path : None | str
-        Location of where to look for the data storing location.
-        If None, the environment variable or config parameter
-        ``MNE_DATASETS_BBCIFNIRS_PATH`` is used. If it doesn't exist, the
-        "~/mne_data" directory is used. If the dataset
-        is not found under the given path, the data
-        will be automatically downloaded to the specified folder.
-    force_update : bool
-        Force update of the dataset even if a local copy exists.
-
-    Returns
-    -------
-    path : list of str
-        Local path to the given data file. This path is contained inside a list
-        of length one, for compatibility.
-    """  # noqa: E501
-    if subject < 1 or subject > 30:
-        raise ValueError(
-            "Valid subjects between 1 and 30, subject {:d} requested".format(subject))
-    key = 'MNE_DATASETS_BBCIFNIRS_PATH'
-    path = _get_path(path, key, 'BBCI EEG-fNIRS')
-    _do_path_update(path, True, key, 'BBCI EEG-fNIRS')
-    if not op.isdir(op.join(path, 'MNE-eegfnirs-data')):
-        os.makedirs(op.join(path, 'MNE-eegfnirs-data'))
-    if fnirs:
-        return fnirs_data_path(op.join(path, 'MNE-eegfnirs-data'), subject)
-    else:
-        return eeg_data_path(op.join(path, 'MNE-eegfnirs-data'), subject)
-
-
 class BBCIEEGfNIRS(BaseDataset):
     """BBCI EEG fNIRS Motor Imagery dataset"""
 
@@ -118,7 +81,7 @@ class BBCIEEGfNIRS(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
-        fname, fname_mrk = data_path(subject)
+        fname, fname_mrk = self.data_path(subject)
         raws = []
         data = loadmat(fname, squeeze_me=True, struct_as_record=False)['cnt']
         mrk = loadmat(fname_mrk, squeeze_me=True,
@@ -153,3 +116,19 @@ class BBCIEEGfNIRS(BaseDataset):
             raw = RawArray(data=eeg, info=info, verbose=False)
             raws.append(raw)
         return [raws]
+
+    def data_path(self, subject, path=None, force_update=False,
+                  update_path=None, verbose=None):
+        if subject not in self.subject_list:
+            raise(ValueError("Invalid subject number"))
+
+        key = 'MNE_DATASETS_BBCIFNIRS_PATH'
+        path = _get_path(path, key, 'BBCI EEG-fNIRS')
+        # FIXME: this always update the path
+        _do_path_update(path, True, key, 'BBCI EEG-fNIRS')
+        if not op.isdir(op.join(path, 'MNE-eegfnirs-data')):
+            os.makedirs(op.join(path, 'MNE-eegfnirs-data'))
+        if self.fnirs:
+            return fnirs_data_path(op.join(path, 'MNE-eegfnirs-data'), subject)
+        else:
+            return eeg_data_path(op.join(path, 'MNE-eegfnirs-data'), subject)

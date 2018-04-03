@@ -623,6 +623,11 @@ class MNEBNCI(BaseDataset):
             new_sessions = [sessions]
         return new_sessions
 
+    def data_path(self, subject, path=None, force_update=False,
+                  update_path=None, verbose=None):
+        print(f"warning - datapath not implemented correctly for {self.code}")
+        return load_data(subject=subject, dataset=self.code, verbose=False)[0]
+
 
 class BNCI2014001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset"""

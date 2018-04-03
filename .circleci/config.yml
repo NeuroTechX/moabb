@@ -51,7 +51,7 @@ jobs:
           name: download all data
           command: |
             . venv/bin/activate
-            python -c "import moabb.datasets.utils; moabb.datasets.utils._download_all(True)";
+            python -c "import moabb.datasets.utils; moabb.datasets.utils._download_all(True, verbose=False)";
 
       - run: ls -al ~/mne_data;
 
