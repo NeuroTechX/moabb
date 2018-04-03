@@ -1,6 +1,6 @@
-========
+=========
 Pipelines
-========
+=========
 
 .. automodule:: moabb.pipelines
 

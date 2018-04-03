@@ -1,9 +1,7 @@
 from moabb.datasets.base import BaseDataset
 
-from .base import BaseDataset
 from mne.io import read_raw_edf
 from mne.channels import read_montage
-import os
 import numpy as np
 
 from . import download as dl
@@ -55,7 +53,7 @@ class UpperLimb(BaseDataset):
 
         out = {}
         for session in sessions:
-            paths = self.data_path(subject, session)
+            paths = self.data_path(subject, session=session)
 
             eog = ['eog-l', 'eog-m', 'eog-r']
             montage = read_montage('standard_1005')
@@ -90,7 +88,7 @@ class UpperLimb(BaseDataset):
 
         for session in sessions:
             for run in range(1, 11):
-                url = f"{UPPER_LIMB_URL}/motor{session}_subject{subject}_run{run}.gdf"
+                url = f"{UPPER_LIMB_URL}motor{session}_subject{subject}_run{run}.gdf"
                 p = dl.data_path(url, 'UPPERLIMB', path, force_update,
                                  update_path, verbose)
                 paths.append(p)

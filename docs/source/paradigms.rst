@@ -1,14 +1,14 @@
-===========
+=========
 Paradigms
-===========
+=========
 
 .. automodule:: moabb.paradigms
 
 .. currentmodule:: moabb.paradigms
 
-----------------------
+-----------------------
 Motor Imagery Paradigms
-----------------------
+-----------------------
 
 .. autosummary::
     :toctree: generated/

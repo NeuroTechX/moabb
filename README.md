@@ -15,7 +15,7 @@ This project will be successful when we read in an abstract “ … the proposed
 
 # Docs
 
-[https://neurotechx.github.io/moabb.github.io/docs/](https://neurotechx.github.io/moabb.github.io/docs/)
+[http://moabb.neurotechx.com/docs/](http://moabb.neurotechx.com/docs/)
 
 # Install
 
@@ -35,7 +35,7 @@ h5py
 
 # supported datasets
 
-The list of supported dataset can be found here : https://neurotechx.github.io/moabb.github.io/docs/datasets.html
+The list of supported dataset can be found here : http://moabb.neurotechx.com/docs/datasets.html
 
 ### Submit a new dataset
 

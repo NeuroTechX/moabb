@@ -6,9 +6,9 @@ Evaluations
 
 .. currentmodule:: moabb.evaluations
 
-----------------------
+-----------
 Evaluations
-----------------------
+-----------
 
 .. autosummary::
     :toctree: generated/
