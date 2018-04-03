@@ -75,9 +75,10 @@ class BaseParadigm(ABC):
 
         return the data, labels and a dataframe with metadata. the dataframe
         will contain at least the following columns
-            - subject : the subject indice
-            - session : the session indice
-            - run : the run indice
+
+        - subject : the subject indice
+        - session : the session indice
+        - run : the run indice
 
         parameters
         ----------

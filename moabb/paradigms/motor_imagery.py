@@ -50,9 +50,6 @@ class BaseMotorImagery(BaseParadigm):
         self.interval = interval
 
     def verify(self, dataset):
-        '''
-        Method that verifies dataset is correct for given parameters
-        '''
         assert dataset.paradigm == 'imagery'
 
         # check if dataset has required events
