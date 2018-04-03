@@ -71,3 +71,17 @@ jobs:
       - store_artifacts:
           path: docs/build/html
           destination: doc
+
+      - deploy:
+          name: Triage deployment
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "circleci" ]; then
+              echo "Deploying dev docs.";
+              git config --global user.email "circle@neurotechx.com";
+              git config --global user.name "Circle Ci";
+              pushd ~/moabb.github.io && git checkout master && git pull origin master && popd;
+              pushd docs/build && rm -Rf ~/moabb.github.io/docs && cp -a html ~/moabb.github.io/docs && popd;
+              pushd ~/moabb.github.io && git add -A && git commit -m "CircleCI update of docs (${CIRCLE_BUILD_NUM})." && git push origin master && popd;
+            else
+              echo "No deployment (build: ${CIRCLE_BRANCH}).";
+            fi
