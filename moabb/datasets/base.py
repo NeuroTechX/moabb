@@ -27,12 +27,13 @@ class BaseDataset(metaclass=abc.ABCMeta):
 
         The returned data is a dictionary with the folowing structure
 
+        ```
         data = {'subject_id' :
                     {'session_id':
                         {'run_id': raw}
                     }
                 }
-
+        ```
         subjects are on top, then we have sessions, then runs.
         A sessions is a recording done in a single day, without removing the
         EEG cap. A session is constitued of at least one run. A run is a single
