@@ -29,11 +29,21 @@ class BaseParadigm(ABC):
 
     @abstractmethod
     def verify(self, dataset):
-        '''
-        Method that verifies dataset is correct for given parameters.
+        """Verify the dataset is compatible with the paradigm.
 
-        This function is called when we extract data.
-        '''
+        This method is called to verify dataset is compatible with the
+        paradigm.
+
+        This method should raise an error if the dataset is not compatible
+        with the paradigm. This is for example the case if the
+        dataset is an ERP dataset for motor imagery paradigm, or if the
+        dataset does not contain any of the required events.
+
+        Parameters
+        ----------
+        dataset : dataset instance
+            The dataset to verify.
+        """
 
     @abstractmethod
     def process_raw(self, raw, dataset):

@@ -142,10 +142,10 @@ class BaseEvaluation(ABC):
         """Verify the dataset is compatible with evaluation.
 
         This method is called to verify dataset given in the constructor
-        are compatible with the evaluation paradigm.
+        are compatible with the evaluation context.
 
         This method should raise an error if the dataset is not compatible
-        with the evaluation method. This is for example the case if the
+        with the evaluation context. This is for example the case if the
         dataset does not contain enought session for a cross-session eval.
 
         Parameters

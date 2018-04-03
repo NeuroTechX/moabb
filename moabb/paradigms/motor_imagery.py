@@ -30,7 +30,6 @@ class BaseMotorImagery(BaseParadigm):
 
     def __init__(self, filters=[[7, 35]], channels=None, interval=None,
                  events=None, resample=None, **kwargs):
-        """init"""
         super().__init__(**kwargs)
         self.filters = filters
         self.channels = channels
