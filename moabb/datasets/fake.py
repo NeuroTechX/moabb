@@ -49,3 +49,7 @@ class FakeDataset(BaseDataset):
                            sfreq=sfreq, montage=montage)
         raw = RawArray(data=eeg_data.T, info=info, verbose=False)
         return raw
+
+    def data_path(self, subject, path=None, force_update=False,
+                  update_path=None, verbose=None):
+        pass

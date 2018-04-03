@@ -11,42 +11,7 @@ from mne.io import RawArray, Raw
 from mne.channels import read_montage
 from . import download as dl
 
-
 INRIA_URL = 'http://openvibe.inria.fr/private/datasets/dataset-1/'
-
-def data_path(session, path=None, force_update=False, update_path=None,
-              verbose=None):
-    """Get path to local copy of INRIA dataset URL.
-
-    Parameters
-    ----------
-    session : int
-        Number of session to use
-    path : None | str
-        Location of where to look for the data storing location.
-        If None, the environment variable or config parameter
-        ``MNE_DATASETS_INRIA_PATH`` is used. If it doesn't exist, the
-        "~/mne_data" directory is used. If the dataset
-        is not found under the given path, the data
-        will be automatically downloaded to the specified folder.
-    force_update : bool
-        Force update of the dataset even if a local copy exists.
-    update_path : bool | None
-        If True, set the MNE_DATASETS_INRIA_PATH in mne-python
-        config to the given path. If None, the user is prompted.
-    verbose : bool, str, int, or None
-        If not None, override default verbose level (see :func:`mne.verbose`).
-
-    Returns
-    -------
-    path : list of str
-        Local path to the given data file. This path is contained inside a list
-        of length one, for compatibility.
-    """  # noqa: E501
-    if session < 1 or session > 14:
-        raise ValueError("Valid sessions between 1 and 14, session {:d} requested".format(session))
-    url = '{:s}{:02d}-signal.csv.bz2'.format(INRIA_URL, session)
-    return dl.data_path(url, 'INRIA', path, force_update, update_path, verbose)
 
 
 def convert_inria_csv_to_mne(path):
@@ -93,7 +58,7 @@ class OpenvibeMI(BaseDataset):
 
     def _get_single_session_data(self, session):
         """return data for a single recording session"""
-        csv_path = data_path(session)
+        csv_path = self.data_path(1)[session - 1]
         fif_path = os.path.join(os.path.dirname(csv_path),
                                 'raw_{:d}.fif'.format(session))
         if not os.path.isfile(fif_path):
@@ -103,3 +68,15 @@ class OpenvibeMI(BaseDataset):
             return raw
         else:
             return Raw(fif_path, preload=True, verbose='ERROR')
+
+    def data_path(self, subject, path=None, force_update=False,
+                  update_path=None, verbose=None):
+        if subject not in self.subject_list:
+            raise(ValueError("Invalid subject number"))
+
+        paths = []
+        for session in range(1, 15):
+            url = '{:s}{:02d}-signal.csv.bz2'.format(INRIA_URL, session)
+            paths.append(dl.data_path(url, 'INRIA', path, force_update,
+                         update_path, verbose))
+        return paths

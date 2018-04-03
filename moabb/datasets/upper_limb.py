@@ -11,52 +11,6 @@ from . import download as dl
 UPPER_LIMB_URL = 'https://zenodo.org/record/834976/files/'
 
 
-def data_paths(subject, im='imagination', path=None, force_update=False,
-               update_path=None, verbose=None):
-    """Get path to local copy of UPPER LIMB dataset URL.
-
-    Parameters
-    ----------
-    subject : int
-        Number of subject to use
-    im : str
-        can be either imagination or execution
-    path : None | str
-        Location of where to look for the data storing location.
-        If None, the environment variable or config parameter
-        ``MNE_DATASETS_UPPER_LIMB_PATH`` is used. If it doesn't exist, the
-        "~/mne_data" directory is used. If the dataset
-        is not found under the given path, the data
-        will be automatically downloaded to the specified folder.
-    force_update : bool
-        Force update of the dataset even if a local copy exists.
-    update_path : bool | None
-        If True, set the MNE_DATASETS_UPPER_LIMB_PATH in mne-python
-        config to the given path. If None, the user is prompted.
-    verbose : bool, str, int, or None
-        If not None, override default verbose level (see :func:`mne.verbose`).
-
-    Returns
-    -------
-    path : list of str
-        Local path to the given data file. This path is contained inside a list
-        of length one, for compatibility.
-    """  # noqa: E501
-    if subject < 1 or subject > 15:
-        raise ValueError("Valid subjects between 1 and 15,"
-                         " subject {:d} requested".format(subject))
-
-    paths = []
-
-    for run in range(1, 11):
-        url = f"{UPPER_LIMB_URL}/motor{im}_subject{subject}_run{run}.gdf"
-        p = dl.data_path(url, 'UPPER_LIMB', path, force_update, update_path,
-                         verbose)
-        paths.append(p)
-
-    return paths
-
-
 class UpperLimb(BaseDataset):
     """Upper Limb motor dataset.
 
@@ -101,7 +55,7 @@ class UpperLimb(BaseDataset):
 
         out = {}
         for session in sessions:
-            paths = data_paths(subject, session)
+            paths = self.data_path(subject, session)
 
             eog = ['eog-l', 'eog-m', 'eog-r']
             montage = read_montage('standard_1005')
@@ -116,3 +70,29 @@ class UpperLimb(BaseDataset):
 
             out[session] = data
         return out
+
+    def data_path(self, subject, path=None, force_update=False,
+                  update_path=None, verbose=None, session=None):
+        if subject not in self.subject_list:
+            raise(ValueError("Invalid subject number"))
+
+        paths = []
+
+        if session is None:
+            sessions = []
+            if self.imagined:
+                sessions.append('imagination')
+
+            if self.executed:
+                sessions.append('execution')
+        else:
+            sessions = [session]
+
+        for session in sessions:
+            for run in range(1, 11):
+                url = f"{UPPER_LIMB_URL}/motor{session}_subject{subject}_run{run}.gdf"
+                p = dl.data_path(url, 'UPPERLIMB', path, force_update,
+                                 update_path, verbose)
+                paths.append(p)
+
+        return paths

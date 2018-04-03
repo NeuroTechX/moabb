@@ -57,3 +57,15 @@ class PhysionetMI(BaseDataset):
             data['run_%d' % run] = raw
 
         return {"session_0": data}
+
+    def data_path(self, subject, path=None, force_update=False,
+                  update_path=None, verbose=None):
+        if subject not in self.subject_list:
+            raise(ValueError("Invalid subject number"))
+
+        paths = []
+        paths += eegbci.load_data(subject, runs=self.feet_runs,
+                                  verbose=verbose)
+        paths += eegbci.load_data(subject, runs=self.hand_runs,
+                                  verbose=verbose)
+        return paths
