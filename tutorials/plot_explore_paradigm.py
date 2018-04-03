@@ -18,7 +18,6 @@ This tutorial explore the paradigm object, with 3 examples of paradigm :
  - BaseMotorImagery
  - FilterBankMotorImagery
  - LeftRightImagery
-
 """
 # Authors: Alexandre Barachant <alexandre.barachant@gmail.com>
 #
@@ -33,7 +32,7 @@ print(__doc__)
 
 ###############################################################################
 # Base MotorImagery
-# -------------
+# -----------------
 #
 # First, lets take a example of the BaseMotorImagery paradigm.
 
@@ -75,34 +74,43 @@ print(X.shape)
 print(np.unique(y))
 
 ###############################################################################
-# metadata
+# metadata have at least 3 columns, subject, session and run.
+#
+# - subject is the subject id of the corresponding trial
+# - session is the session id. A session is a all the data recorded without
+# removing the EEG cap.
+# - run is the individual continuous recording made during a session. A Session
+# may or may not contain multiple run.
 
 print(metadata.head())
 
 ###############################################################################
-# Load our data
+# For this data, we have one subjecy, 2 sessions (2 different recording day)
+# and 6 run per session.
 
 print(metadata.describe(include='all'))
 
 ###############################################################################
-# Load our data
+# Paradigm object can also return the list of all dataset compatible. here
+# it will return the list all the imagery datasets from the moabb.
 
 compatible_datasets = paradigm.datasets
 print([dataset.code for dataset in compatible_datasets])
 
 ###############################################################################
 # FilterBank MotorImagery
-# -------------
+# -----------------------
 #
-# First we'll load the data we'll use in connectivity estimation. We'll use
-# the sample MEG data provided with MNE.
+# FilterBankMotorImagery is the same paradigm, but with a different
+# preprocessing. In this case, it apply a bank of 6 bandpass filter on the data
+# before concatenating the output.
 
 paradigm = FilterBankMotorImagery()
 
 print(paradigm.__doc__)
 
 ###############################################################################
-# Load our data
+# therefore, the output X is a 4D array, with trial x channel x time x filter
 
 X, y, metadata = paradigm.get_data(dataset=dataset, subjects=subjects)
 
@@ -110,23 +118,25 @@ print(X.shape)
 
 ###############################################################################
 # LeftRight MotorImagery
-# -------------
+# ----------------------
 #
-# First we'll load the data we'll use in connectivity estimation. We'll use
-# the sample MEG data provided with MNE.
+# LeftRightImagery is a variation over the BaseMotorImagery paradigm,
+# restricted to left and right hand events.
 
 paradigm = LeftRightImagery()
 
 print(paradigm.__doc__)
 
 ###############################################################################
-# Load our data
+# the compatible dataset list is a subset of motor imagery dataset that
+# contains at least left and right hand events.
 
 compatible_datasets = paradigm.datasets
 print([dataset.code for dataset in compatible_datasets])
 
 ###############################################################################
-# Load our data
+# So if we apply this this to our original dataset, it will only return trials
+# corresponding to left and right hand motor imagination.
 
 X, y, metadata = paradigm.get_data(dataset=dataset, subjects=subjects)
 
