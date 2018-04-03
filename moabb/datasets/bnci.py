@@ -636,7 +636,7 @@ class MNEBNCI(BaseDataset):
         print(f"warning - datapath not implemented correctly for {self.code}")
         return load_data(subject=subject, dataset=self.code, verbose=verbose,
                          update_path=update_path, path=path,
-                         force_update=force_update)[0]
+                         force_update=force_update)
 
 
 class BNCI2014001(MNEBNCI):
