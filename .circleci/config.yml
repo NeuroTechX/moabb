@@ -62,11 +62,14 @@ jobs:
             - ~/.mne
 
       - run:
-          name: run moabb
+          name: build docs
           command: |
             . venv/bin/activate
             cd ./docs
             make html
+
+      - run: if [ ! -d ~/moabb.github.io ]; then git clone https://github.com/NeuroTechX/moabb.github.io.git ~/moabb.github.io --depth=1; fi;
+
 
       - store_artifacts:
           path: docs/build/html
