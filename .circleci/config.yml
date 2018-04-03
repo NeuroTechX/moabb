@@ -54,10 +54,18 @@ jobs:
             python -c "import moabb.datasets; print(moabb.datasets.alex_mi.data_path(1, update_path=True))";
             python -c "import moabb.datasets; print(moabb.datasets.bbci_eeg_fnirs.data_path(1))";
             python -c "import moabb.datasets; print(moabb.datasets.bnci.load_data(1, update_path=True))";
+            python -c "import moabb.datasets; print(moabb.datasets.gigadb.data_path(1, update_path=True))";
             python -c "import moabb.datasets; print(moabb.datasets.openvibe_mi.data_path(1, update_path=True))";
             python -c "import moabb.datasets; print(moabb.datasets.upper_limb.data_paths(1, update_path=True))";
 
       - run: ls -al ~/mne_data;
+
+      # dependences
+      - restore_cache:
+          keys:
+            - results-{{ .Branch }}-{{ .Revision }}
+            - results-{{ .Branch }}-
+            - results-
 
       # run the moabb
       - run:
@@ -65,6 +73,11 @@ jobs:
           command: |
             . venv/bin/activate
             python -m moabb.run --verbose
+
+      - save_cache:
+          key: results-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ./moabb/results/
 
       - save_cache:
           key: data-cache
