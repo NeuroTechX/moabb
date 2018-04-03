@@ -13,6 +13,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import sphinx_bootstrap_theme
+import sphinx_gallery
 import os
 import sys
 import matplotlib
@@ -53,11 +54,22 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
+    'sphinx_gallery.gen_gallery',
 ]
 
 napoleon_google_docstring = False
 napoleon_use_param = False
 napoleon_use_ivar = True
+
+plot_include_source = True
+plot_formats = [("png", 90)]
+plot_html_show_formats = False
+plot_html_show_source_link = False
+
+sphinx_gallery_conf = {
+   'examples_dirs': ['../../examples', '../../tutorials'],
+   'gallery_dirs': ['auto_examples', 'auto_tutorials'],
+   'backreferences_dir': False}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

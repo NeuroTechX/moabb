@@ -14,6 +14,7 @@ for binary classification problem, accuracy for multiclass, or kappa
 coefficient for continuous paradigms.
 
 This tutorial explore the paradigm object, with 3 examples of paradigm :
+
  - BaseMotorImagery
  - FilterBankMotorImagery
  - LeftRightImagery

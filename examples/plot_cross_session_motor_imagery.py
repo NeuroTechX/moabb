@@ -7,6 +7,7 @@ This Example show how to perform a cross session motor imagery analysis on the
 very popular dataset 2a from the BCI competition IV.
 
 We will compare two pipelines :
+
 - CSP + LDA
 - Riemannian Geometry + Logistic Regression
 
