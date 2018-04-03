@@ -27,15 +27,14 @@ class BaseEvaluation(ABC):
         if not None, can guarantee same seed
     n_jobs: 1;
         number of jobs for fitting of pipeline
-
+    overwrite: bool (defaul False)
+        if true, overwrite the results.
+    suffix: str
+        suffix for the results file.
     '''
 
     def __init__(self, paradigm, datasets=None, random_state=None, n_jobs=1,
                  overwrite=False, suffix=''):
-        """
-        Init.
-        """
-
         self.random_state = random_state
         self.n_jobs = n_jobs
 
@@ -78,8 +77,21 @@ class BaseEvaluation(ABC):
                                suffix=suffix)
 
     def process(self, pipelines):
-        '''
-        Runs tasks on all given datasets.
+        '''Runs all pipelines on all datasets.
+
+        This function will apply all provided pipelines and return a dataframe
+        containing the results of the evaluation.
+
+        Parameters
+        ----------
+        pipelines : dict of pipeline instance.
+            A dict containing the sklearn pipeline to evaluate.
+
+        Return
+        ------
+        results: pd.DataFrame
+            A dataframe containing the results.
+
         '''
 
         # check pipelines
@@ -112,7 +124,7 @@ class BaseEvaluation(ABC):
         '''Evaluate results on a single dataset.
 
         This method return a generator. each results item is a dict with
-        the following convension :
+        the following convension::
 
             res = {'time': Duration of the training ,
                    'dataset': dataset id,
@@ -127,8 +139,17 @@ class BaseEvaluation(ABC):
 
     @abstractmethod
     def verify(self, dataset):
-        """Verify the dataset is compatible.
+        """Verify the dataset is compatible with evaluation.
 
-        this method should raise an error if the dataset is not compatible
-        with the evaluation method.
+        This method is called to verify dataset given in the constructor
+        are compatible with the evaluation paradigm.
+
+        This method should raise an error if the dataset is not compatible
+        with the evaluation method. This is for example the case if the
+        dataset does not contain enought session for a cross-session eval.
+
+        Parameters
+        ----------
+        dataset : dataset instance
+            The dataset to verify.
         """
