@@ -101,3 +101,23 @@ class UpperLimb(BaseDataset):
             return [raws]
         else:
             return [[raws]]
+
+    def data_path(self, subject, path=None, force_update=False,
+                  update_path=None, verbose=None):
+        if subject not in self.subject_list:
+            raise(ValueError("Invalid subject number"))
+
+        paths = []
+
+        if self.imagined:
+            im = 'imagination'
+        else:
+            im = 'execution'
+
+        for run in range(1, 11):
+            url = f"{UPPER_LIMB_URL}/motor{im}_subject{subject}_run{run}.gdf"
+            p = dl.data_path(url, 'UPPER_LIMB', path, force_update,
+                             update_path, verbose)
+            paths.append(p)
+
+        return paths

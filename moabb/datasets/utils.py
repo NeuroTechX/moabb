@@ -120,3 +120,15 @@ def find_intersecting_channels(datasets, verbose=False):
         allchans.intersection_update(d)
     allchans = [s.replace('Z', 'z') for s in allchans]
     return allchans, d
+
+
+def _download_all(update_path=True, verbose=None):
+    """Download all data.
+
+    This function is mainly used to generate the data cache.
+    """
+
+    # iterate over dataset
+    for ds in dataset_list:
+        # call download
+        ds().download(update_path=True, verbose=verbose)

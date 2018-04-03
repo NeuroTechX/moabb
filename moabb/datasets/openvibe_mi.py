@@ -45,8 +45,7 @@ def data_path(session, path=None, force_update=False, update_path=None,
     """  # noqa: E501
     if session < 1 or session > 14:
         raise ValueError("Valid sessions between 1 and 14, session {:d} requested".format(session))
-    url = '{:s}{:02d}-signal.csv.bz2'.format(INRIA_URL, session)
-    return dl.data_path(url, 'INRIA', path, force_update, update_path, verbose)
+
 
 def convert_inria_csv_to_mne(path):
     '''
@@ -93,7 +92,7 @@ class OpenvibeMI(BaseDataset):
 
     def _get_single_session_data(self, session):
         """return data for a single recording session"""
-        csv_path = data_path(session)
+        csv_path = self.data_path(1)[session]
         fif_path = os.path.join(os.path.dirname(csv_path),
                                 'raw_{:d}.fif'.format(session))
         if not os.path.isfile(fif_path):
@@ -103,3 +102,15 @@ class OpenvibeMI(BaseDataset):
             return raw
         else:
             return Raw(fif_path, preload=True, verbose='ERROR')
+
+    def data_path(self, subject, path=None, force_update=False,
+                  update_path=None, verbose=None):
+        if subject not in self.subject_list:
+            raise(ValueError("Invalid subject number"))
+
+        paths = []
+        for session in range(1, 15):
+            url = '{:s}{:02d}-signal.csv.bz2'.format(INRIA_URL, session)
+            paths.append(dl.data_path(url, 'INRIA', path, force_update,
+                         update_path, verbose))
+        return paths
