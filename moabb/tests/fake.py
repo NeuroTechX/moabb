@@ -48,6 +48,10 @@ class FakeDataset(BaseDataset):
         raw = RawArray(data=eeg_data.T, info=info, verbose=False)
         return raw
 
+    def data_path(self, subject, path=None, force_update=False,
+                  update_path=None, verbose=None):
+        pass
+
 
 class FakeImageryParadigm(BaseMotorImagery):
     """fake Imagery for left hand/right hand classification
