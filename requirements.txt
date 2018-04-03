@@ -7,3 +7,6 @@ h5py
 pandas
 pyyaml
 coloredlogs
+sphinx-gallery
+sphinx-bootstrap_theme
+numpydoc

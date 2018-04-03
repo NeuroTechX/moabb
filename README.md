@@ -1,6 +1,7 @@
 # Mother of all BCI Benchmark
 
 [![Build Status](https://travis-ci.org/NeuroTechX/moabb.svg?branch=master)](https://travis-ci.org/NeuroTechX/moabb)
+[![Documentation Status](https://readthedocs.org/projects/moabb/badge/?version=latest)](http://moabb.readthedocs.io/en/latest/?badge=latest)
 
 Reproducible Research in BCI has a long way to go. While many BCI datasets are made freely available, researchers do not publish code, and reproducing results required to benchmark new algorithms turns out to be more tricky than it should be. Performances can be significantly impacted by parameters of the preprocessing steps, toolboxes used and implementation “tricks” that are almost never reported in the literature. As a results, there is no comprehensive benchmark of BCI algorithm, and newcomers are spending a tremendous amount of time browsing literature to find out what algorithm works best and on which dataset.
 
@@ -11,6 +12,10 @@ This project will be successful when we read in an abstract “ … the proposed
 # Disclaimer
 
 **This is work in progress. API will change significantly (as well as the results of the benchmark).**
+
+# Docs
+
+[http://moabb.readthedocs.io](http://moabb.readthedocs.io)
 
 # Install
 
@@ -30,12 +35,7 @@ h5py
 
 # supported datasets
 
-Currently, there are 9 motor Imagery dataset supported, and all of them can be downloaded automatically through the MOABB interface. For more information on the ones not available through the BNCI Horizons 2020 project, see below:
-
-- *Alex_mi* : can be downloaded [here](https://zenodo.org/record/806023)
-- *OpenvibeMI* : can be downloaded [here](http://openvibe.inria.fr/datasets-downloads/)
-- *gigadb_mi* : can be downloaded [here](ftp://climb.genomics.cn/pub/10.5524/100001_101000/100295/mat_data/)
-- *bbci_eeg_fnirs* : can be downloaded [here](http://doc.ml.tu-berlin.de/hBCI/)
+The list of supported dataset can be found here : http://moabb.readthedocs.io/en/latest/datasets.html
 
 ### Submit a new dataset
 
@@ -92,6 +92,15 @@ once it is installed
 
 ```
 python -m moabb.run --verbose
+```
+
+# Generate the documentation
+
+To generate the documentation :
+
+```
+cd docs
+make html
 ```
 
 # How to contribute
