@@ -16,17 +16,11 @@ jobs:
     steps:
       - checkout
 
-      # dependences
+      # install and cache dep
       - restore_cache:
           keys:
             - deps1-{{ checksum "requirements.txt" }}
             - deps1-
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - data-cache-v2
-          - data-cache
 
       - run:
           name: install dependencies
@@ -45,6 +39,12 @@ jobs:
             . venv/bin/activate
             python setup.py develop
 
+      # Download and cache data
+      - restore_cache:
+          keys:
+          - data-cache-v2
+          - data-cache
+
       - run: mkdir -p ~/mne_data
 
       - run:
@@ -55,14 +55,19 @@ jobs:
 
       - run: ls -al ~/mne_data;
 
-      # dependences
+      - save_cache:
+          key: data-cache-v2
+          paths:
+            - ~/mne_data
+            - ~/.mne
+
+      # Run the moabb
       - restore_cache:
           keys:
             - results-{{ .Branch }}-{{ .Revision }}
             - results-{{ .Branch }}-
             - results-
 
-      # run the moabb
       - run:
           name: run moabb
           command: |
@@ -74,12 +79,7 @@ jobs:
           paths:
             - ./moabb/results/
 
-      - save_cache:
-          key: data-cache-v2
-          paths:
-            - ~/mne_data
-            - ~/.mne
-
+      # store artifact
       - store_artifacts:
           path: ./moabb/results/
           destination: moabb_results
