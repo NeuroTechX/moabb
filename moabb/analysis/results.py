@@ -11,7 +11,10 @@ from datetime import datetime
 
 
 def get_digest(obj):
-    """Return hash of an object repr. If there are memory addresses, wipes them"""
+    """Return hash of an object repr.
+
+    If there are memory addresses, wipes them
+    """
     if issubclass(type(obj), BaseEstimator):
         str_repr = repr(obj.get_params())
     else:
@@ -21,12 +24,13 @@ def get_digest(obj):
 
 
 class Results:
-    '''Class to hold results from the evaluation.evaluate method. Appropriate test
-    would be to ensure the result of 'evaluate' is consistent and can be
-    accepted by 'results.add'
+    '''Class to hold results from the evaluation.evaluate method.
 
-    Saves dataframe per pipeline and can query to see if particular subject has
-    already been run
+    Appropriate test would be to ensure the result of 'evaluate' is
+    consistent and can be accepted by 'results.add'
+
+    Saves dataframe per pipeline and can query to see if particular
+    subject has already been run
 
     '''
 
@@ -65,8 +69,8 @@ class Results:
             if type(res) is dict:
                 return [res]
             elif type(res) is not list:
-                raise ValueError("Results are given as neither dict nor list"
-                                 "but {}".format(type(res).__name__))
+                raise ValueError("Results are given as neither dict nor"
+                                 "list but {}".format(type(res).__name__))
             else:
                 return res
 
@@ -90,18 +94,22 @@ class Results:
                     dset.attrs['n_subj'] = len(d1['dataset'].subject_list)
                     dset.attrs['n_sessions'] = d1['dataset'].n_sessions
                     dt = h5py.special_dtype(vlen=str)
-                    dset.create_dataset('id', (0,), dtype=dt, maxshape=(None,))
-                    dset.create_dataset('data', (0, 3), maxshape=(None, 3))
+                    dset.create_dataset('id', (0, 2), dtype=dt,
+                                        maxshape=(None, 2))
+                    dset.create_dataset('data', (0, 3),
+                                        maxshape=(None, 3))
                     dset.attrs['channels'] = d1['n_channels']
-                    dset.attrs.create(
-                        'columns', ['score', 'time', 'samples'], dtype=dt)
+                    dset.attrs.create('columns',
+                                      ['score', 'time', 'samples'],
+                                      dtype=dt)
                 dset = ppline_grp[dname]
                 for d in dlist:
                     # add id and scores to group
                     length = len(dset['id']) + 1
                     dset['id'].resize(length, 0)
                     dset['data'].resize(length, 0)
-                    dset['id'][-1] = str(d['id'])
+                    dset['id'][-1, :] = np.asarray([str(d['subject']),
+                                                    str(d['session'])])
                     dset['data'][-1, :] = np.asarray([d['score'],
                                                       d['time'],
                                                       d['n_samples']])
@@ -109,13 +117,15 @@ class Results:
     def to_dataframe(self):
         df_list = []
         with h5py.File(self.filepath, 'r') as f:
-            for digest, p_group in f.items():
+            for _, p_group in f.items():
                 name = p_group.attrs['name']
                 for dname, dset in p_group.items():
                     array = np.array(dset['data'])
                     ids = np.array(dset['id'])
-                    df = pd.DataFrame(array, columns=dset.attrs['columns'])
-                    df['id'] = ids
+                    df = pd.DataFrame(array,
+                                      columns=dset.attrs['columns'])
+                    df['subject'] = ids[:, 0]
+                    df['session'] = ids[:, 1]
                     df['channels'] = dset.attrs['channels']
                     df['n_sessions'] = dset.attrs['n_sessions']
                     df['dataset'] = dname
@@ -129,7 +139,7 @@ class Results:
                if not self._already_computed(pipelines[k], dataset, subj)}
         return ret
 
-    def _already_computed(self, pipeline, dataset, subject):
+    def _already_computed(self, pipeline, dataset, subject, session=None):
         """Check if we have results for a current combination of pipeline
         / dataset / subject.
         """
@@ -148,4 +158,4 @@ class Results:
                 else:
                     # if dataset, check for subject
                     dset = pipe_grp[dataset.code]
-                    return (str(subject) in dset['id'])
+                    return (str(subject) in dset['id'][:, 0])

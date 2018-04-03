@@ -4,7 +4,6 @@ from mne.channels import read_montage
 import numpy as np
 
 from moabb.datasets.base import BaseDataset
-from moabb.paradigms.motor_imagery import BaseMotorImagery
 
 
 class FakeDataset(BaseDataset):
@@ -14,17 +13,20 @@ class FakeDataset(BaseDataset):
 
     """
 
-    def __init__(self, event_list=['fake_c1', 'fake_c2', 'fake_c3']):
+    def __init__(self, event_list=['fake_c1', 'fake_c2', 'fake_c3'],
+                 n_sessions=2, n_runs=2, n_subjects=10):
+        self.n_runs = n_runs
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
-        super().__init__(range(1, 3), 2, event_id,
+        super().__init__(list(range(1, n_subjects + 1)), n_sessions, event_id,
                          'FakeDataset', [1, 3], 'imagery')
 
-    def _get_single_subject_data(self, subject, stack_sessions):
-        data = [self._generate_raw(), self._generate_raw()]
-        if stack_sessions:
-            return [data]
-        else:
-            return [[data]]
+    def _get_single_subject_data(self, subject):
+
+        data = dict()
+        for session in range(self.n_sessions):
+            data[f"session_{session}"] = {f"run_{ii}": self._generate_raw()
+                                          for ii in range(self.n_runs)}
+        return data
 
     def _generate_raw(self):
 
@@ -51,26 +53,3 @@ class FakeDataset(BaseDataset):
     def data_path(self, subject, path=None, force_update=False,
                   update_path=None, verbose=None):
         pass
-
-
-class FakeImageryParadigm(BaseMotorImagery):
-    """fake Imagery for left hand/right hand classification
-
-    Metric is 'roc_auc'
-
-    """
-
-    def verify(self, d):
-        events = ['left_hand', 'right_hand']
-        super().verify(d)
-        assert set(events) <= set(d.event_id.keys())
-        d.selected_events = dict(
-            zip(events, [d.event_id[s] for s in events]))
-
-    @property
-    def scoring(self):
-        return 'roc_auc'
-
-    @property
-    def datasets(self):
-        return [FakeDataset(['left_hand', 'right_hand'])]

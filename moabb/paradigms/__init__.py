@@ -6,4 +6,3 @@ paradigms; similarly, different preprocessing is necessary for ERP vs ERD
 paradigms.
 """
 from moabb.paradigms.motor_imagery import *
-from moabb.tests.fake import FakeImageryParadigm

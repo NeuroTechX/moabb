@@ -11,40 +11,7 @@ from mne.io import RawArray, Raw
 from mne.channels import read_montage
 from . import download as dl
 
-
 INRIA_URL = 'http://openvibe.inria.fr/private/datasets/dataset-1/'
-
-def data_path(session, path=None, force_update=False, update_path=None,
-              verbose=None):
-    """Get path to local copy of INRIA dataset URL.
-
-    Parameters
-    ----------
-    session : int
-        Number of session to use
-    path : None | str
-        Location of where to look for the data storing location.
-        If None, the environment variable or config parameter
-        ``MNE_DATASETS_INRIA_PATH`` is used. If it doesn't exist, the
-        "~/mne_data" directory is used. If the dataset
-        is not found under the given path, the data
-        will be automatically downloaded to the specified folder.
-    force_update : bool
-        Force update of the dataset even if a local copy exists.
-    update_path : bool | None
-        If True, set the MNE_DATASETS_INRIA_PATH in mne-python
-        config to the given path. If None, the user is prompted.
-    verbose : bool, str, int, or None
-        If not None, override default verbose level (see :func:`mne.verbose`).
-
-    Returns
-    -------
-    path : list of str
-        Local path to the given data file. This path is contained inside a list
-        of length one, for compatibility.
-    """  # noqa: E501
-    if session < 1 or session > 14:
-        raise ValueError("Valid sessions between 1 and 14, session {:d} requested".format(session))
 
 
 def convert_inria_csv_to_mne(path):
@@ -53,9 +20,9 @@ def convert_inria_csv_to_mne(path):
     '''
 
     csv_data = pd.read_csv(path, index_col=0, sep=',')
-    csv_data = csv_data.drop(['Epoch','Event Date','Event Duration'],axis=1)
-    csv_data = csv_data.rename(columns={'Event Id':'Stim', 'Ref_Nose':'Nz'})
-    ch_types=['eeg']*11 + ['stim']
+    csv_data = csv_data.drop(['Epoch', 'Event Date', 'Event Duration'], axis=1)
+    csv_data = csv_data.rename(columns={'Event Id': 'Stim', 'Ref_Nose': 'Nz'})
+    ch_types = ['eeg']*11 + ['stim']
     ch_names = list(csv_data.columns)
     left_hand_ind = csv_data['Stim'] == '769'
     right_hand_ind = csv_data['Stim'] == '770'
@@ -63,7 +30,8 @@ def convert_inria_csv_to_mne(path):
     csv_data['Stim'][left_hand_ind] = 2e6
     csv_data['Stim'][right_hand_ind] = 1e6
     montage = read_montage('standard_1005')
-    info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=512., montage=montage)
+    info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=512.,
+                       montage=montage)
     raw = RawArray(data=csv_data.values.T * 1e-6, info=info, verbose=False)
     return raw
 
@@ -80,19 +48,17 @@ class OpenvibeMI(BaseDataset):
             interval=[tmin, tmax],
             paradigm='imagery')
 
-    def _get_single_subject_data(self, subjects, stack_sessions=False):
+    def _get_single_subject_data(self, subject):
         """return data for subject"""
-        data = []
-        for i in range(1, 10):
-            data.append(self._get_single_session_data(i))
-        if stack_sessions:
-            return [data]
-        else:
-            return [[data]]
+        data = {}
+        for ii in range(1, 15):
+            raw = self._get_single_session_data(ii)
+            data["session_%d" % ii] = {'run_0': raw}
+        return data
 
     def _get_single_session_data(self, session):
         """return data for a single recording session"""
-        csv_path = self.data_path(1)[session]
+        csv_path = self.data_path(1)[session - 1]
         fif_path = os.path.join(os.path.dirname(csv_path),
                                 'raw_{:d}.fif'.format(session))
         if not os.path.isfile(fif_path):

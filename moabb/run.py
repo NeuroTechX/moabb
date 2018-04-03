@@ -16,8 +16,9 @@ from copy import deepcopy
 # moabb specific imports
 from moabb.pipelines.utils import create_pipeline_from_config
 from moabb import paradigms as moabb_paradigms
-from moabb.evaluations import WithinSessionEvaluation
-
+from moabb.evaluations import (WithinSessionEvaluation,
+                               CrossSessionEvaluation,
+                               CrossSubjectEvaluation)
 # set logs
 mne.set_log_level(False)
 # logging.basicConfig(level=logging.WARNING)
