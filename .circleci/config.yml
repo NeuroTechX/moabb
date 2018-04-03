@@ -69,5 +69,5 @@ jobs:
             make html
 
       - store_artifacts:
-          path: moabb/docs/_build/html
+          path: moabb/docs/build/html
           destination: doc
