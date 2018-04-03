@@ -81,7 +81,7 @@ jobs:
       - deploy:
           name: Triage deployment
           command: |
-            if [ "${CIRCLE_BRANCH}" == "circleci" ]; then
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
               echo "Deploying dev docs.";
               git config --global user.email "circle@neurotechx.com";
               git config --global user.name "Circle Ci";
