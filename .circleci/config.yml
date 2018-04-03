@@ -48,10 +48,10 @@ jobs:
       - run: mkdir -p ~/mne_data
 
       - run:
-          name: download all data
+          name: download data
           command: |
             . venv/bin/activate
-            python -c "import moabb.datasets.utils; moabb.datasets.utils._download_all(True)";
+            python -c "import moabb.datasets; moabb.datasets.BNCI2014001().download(update_path=True,verbose=False)";
 
       - run: ls -al ~/mne_data;
 
@@ -61,25 +61,13 @@ jobs:
             - ~/mne_data
             - ~/.mne
 
-      # Run the moabb
-      - restore_cache:
-          keys:
-            - results-{{ .Branch }}-{{ .Revision }}
-            - results-{{ .Branch }}-
-            - results-
-
       - run:
           name: run moabb
           command: |
             . venv/bin/activate
-            python -m moabb.run --verbose
+            cd ./docs
+            make html
 
-      - save_cache:
-          key: results-{{ .Branch }}-{{ .Revision }}
-          paths:
-            - ./moabb/results/
-
-      # store artifact
       - store_artifacts:
-          path: ./moabb/results/
-          destination: moabb_results
+          path: docs/_build/html
+          destination: doc

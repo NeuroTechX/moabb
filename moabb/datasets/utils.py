@@ -125,12 +125,10 @@ def find_intersecting_channels(datasets, verbose=False):
 def _download_all(update_path=True, verbose=None):
     """Download all data.
 
-    This function is mainly used to generate the data cache on circleci
+    This function is mainly used to generate the data cache.
     """
 
     # iterate over dataset
     for ds in dataset_list:
-        # iterate over subjects
-        for subject in ds().subject_list:
-            # call datapath to trigger the download
-            ds().data_path(subject, update_path=True, verbose=verbose)
+        # call download
+        ds().download(update_path=True, verbose=verbose)
