@@ -52,7 +52,8 @@ class Zhou2016(BaseDataset):
             code='Zhou 2016',
             # MI 1-6s, prepare 0-1, break 6-10
             # boundary effects
-            interval=[1, 6],
+            interval=[0, 5],
+            task_interval=[1,6],
             paradigm='imagery',
             doi='10.1371/journal.pone.0162657')
 

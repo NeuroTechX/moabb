@@ -642,7 +642,7 @@ class MNEBNCI(BaseDataset):
 class BNCI2014001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset"""
 
-    def __init__(self, tmin=3.5, tmax=6):
+    def __init__(self, tmin=0.5, tmax=4):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
@@ -650,13 +650,14 @@ class BNCI2014001(MNEBNCI):
             code='001-2014',
             interval=[tmin, tmax],
             paradigm='imagery',
+            task_interval=[0, 4],
             doi='10.3389/fnins.2012.00055')
 
 
 class BNCI2014002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset"""
 
-    def __init__(self, tmin=3.5, tmax=8):
+    def __init__(self, tmin=0, tmax=5):
         super().__init__(
             subjects=list(range(1, 15)),
             sessions_per_subject=1,
@@ -664,13 +665,14 @@ class BNCI2014002(MNEBNCI):
             code='002-2014',
             interval=[tmin, tmax],
             paradigm='imagery',
+            task_interval=[3, 8]
             doi='10.1515/bmt-2014-0117')
 
 
 class BNCI2014004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset"""
 
-    def __init__(self, tmin=3, tmax=7.5):
+    def __init__(self, tmin=0, tmax=4.5):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=5,
@@ -678,13 +680,14 @@ class BNCI2014004(MNEBNCI):
             code='004-2014',
             interval=[tmin, tmax],
             paradigm='imagery',
+            task_interval=[3, 7.5],
             doi='10.1109/TNSRE.2007.906956')
 
 
 class BNCI2015001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset"""
 
-    def __init__(self, tmin=3, tmax=8):
+    def __init__(self, tmin=0, tmax=5):
         # FIXME: some participant have 3 sessions
         super().__init__(
             subjects=list(range(1, 13)),
@@ -693,13 +696,14 @@ class BNCI2015001(MNEBNCI):
             code='001-2015',
             interval=[tmin, tmax],
             paradigm='imagery',
+            task_interval=[3, 8],
             doi='10.1109/tnsre.2012.2189584')
 
 
 class BNCI2015004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset"""
 
-    def __init__(self, tmin=3, tmax=10):
+    def __init__(self, tmin=0, tmax=7):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
@@ -708,4 +712,5 @@ class BNCI2015004(MNEBNCI):
             code='004-2015',
             interval=[tmin, tmax],
             paradigm='imagery',
+            task_interval=[3,10],
             doi='10.1371/journal.pone.0123727')

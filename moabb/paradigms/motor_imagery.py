@@ -13,7 +13,7 @@ log = logging.getLogger()
 
 
 class BaseMotorImagery(BaseParadigm):
-    """Base Imagery paradigm  Context.
+    """Base Motor imagery paradigm. Please use one of the child classes
 
     Parameters
     ----------
@@ -69,14 +69,14 @@ class BaseMotorImagery(BaseParadigm):
 
         # get event id
         if self.events is None:
-            event_id = dataset.event_id
+            event_id = dataset.selected_events
         else:
             event_id = {ev: dataset.event_id[ev] for ev in self.events}
 
         # pick events, based on event_id
         try:
             events = mne.pick_events(events, include=list(event_id.values()))
-        except RuntimeError:
+        except RuntimeError as r:
             # skip raw if no event found
             return
 
@@ -84,6 +84,7 @@ class BaseMotorImagery(BaseParadigm):
         if self.interval is None:
             tmin, tmax = dataset.interval
         else:
+            # TODO: make this work with varying offsets since not all data starts at 0
             tmin, tmax = self.interval
 
         if self.resample is not None:
@@ -125,8 +126,20 @@ class BaseMotorImagery(BaseParadigm):
         return 'accuracy'
 
 
+class MotorImagery(BaseMotorImagery):
+
+    def __init__(self, bp_low=8, bp_high=32, **kwargs):
+        """
+        Single-pass MI. Takes arguments bp_low and bp_high and not filters
+        """
+        if 'filters' in kwargs.keys():
+            raise(ValueError('MotorImagery does not take argument \'filters\''))
+        super().__init__(filters=[[bp_low, bp_high]], **kwargs)
+
+
 class FilterBankMotorImagery(BaseMotorImagery):
     """Filter Bank MI."""
+
     def __init__(self, filters=[[8, 12], [12, 16], [16, 20], [20, 24],
                                 [24, 28], [28, 32]], **kwargs):
         """init"""
@@ -139,6 +152,7 @@ class LeftRightImagery(BaseMotorImagery):
     Metric is 'roc_auc'
 
     """
+
     def __init__(self, **kwargs):
         if 'events' in kwargs.keys():
             raise(ValueError('LeftRightImagery dont accept events'))
@@ -155,6 +169,7 @@ class FilterBankLeftRightImagery(FilterBankMotorImagery):
     Metric is 'roc_auc'
 
     """
+
     def __init__(self, **kwargs):
         if 'events' in kwargs.keys():
             raise(ValueError('LeftRightImagery dont accept events'))
@@ -163,6 +178,84 @@ class FilterBankLeftRightImagery(FilterBankMotorImagery):
     @property
     def scoring(self):
         return 'roc_auc'
+
+
+def FilterBankImageryNClass(FilterBankMotorImagery):
+    """
+    Filter bank n-class imagery.
+
+    Metric is 'roc-auc' if 2 classes and 'accuracy' if more
+
+    Parameters
+    -----------
+
+    events: List of event labels, used to filter datasets (e.g. if only motor imagery is desired)
+
+    n_classes: int, number of classes each dataset must have. If events is given, requires all imagery sorts to be within the events list
+
+    """
+
+    def __init__(self, n_classes=2, **kwargs):
+        "docstring"
+        super().__init__(**kwargs)
+        self.n_classes = n_classes
+        self.possible_events = self.events
+        assert n_classes <= len(
+            self.possible_events), 'More classes than events specified'
+        self.events = None
+
+    @property
+    def datasets(self):
+        return utils.dataset_search(paradigm='imagery',
+                                    events=self.possible_events,
+                                    total_classes=self.n_classes,
+                                    has_all_events=False)
+
+    @property
+    def scoring(self):
+        if self.n_classes == 2:
+            return 'roc-auc'
+        else:
+            return 'accuracy'
+
+
+def ImageryNClass(MotorImagery):
+    """
+    N-class imagery.
+
+    Metric is 'roc-auc' if 2 classes and 'accuracy' if more
+
+    Parameters
+    -----------
+
+    events: List of event labels, used to filter datasets (e.g. if only motor imagery is desired)
+
+    n_classes: int, number of classes each dataset must have. If events is given, requires all imagery sorts to be within the events list
+
+    """
+
+    def __init__(self, n_classes=2, **kwargs):
+        "docstring"
+        super().__init__(**kwargs)
+        self.n_classes = n_classes
+        self.possible_events = self.events
+        assert n_classes <= len(
+            self.possible_events), 'More classes than events specified'
+        self.events = None
+
+    @property
+    def datasets(self):
+        return utils.dataset_search(paradigm='imagery',
+                                    events=self.possible_events,
+                                    total_classes=self.n_classes,
+                                    has_all_events=False)
+
+    @property
+    def scoring(self):
+        if self.n_classes == 2:
+            return 'roc-auc'
+        else:
+            return 'accuracy'
 
 
 class FakeImageryParadigm(LeftRightImagery):

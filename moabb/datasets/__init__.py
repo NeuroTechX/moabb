@@ -11,3 +11,5 @@ from .bnci import BNCI2014001, BNCI2014002, BNCI2014004, BNCI2015001, BNCI201500
 from .openvibe_mi import OpenvibeMI
 from .bbci_eeg_fnirs import BBCIEEGfNIRS
 from .upper_limb import UpperLimb
+from .Weibo2014 import Weibo2014
+from .Zhou2016 import Zhou2016

@@ -7,17 +7,63 @@ import abc
 class BaseDataset(metaclass=abc.ABCMeta):
     """Base dataset"""
 
-    def __init__(self, subjects, sessions_per_subject, events, code, interval,
-                 paradigm, doi=None):
+    def __init__(self, subjects, sessions_per_subject, events,
+                 code, interval, paradigm, task_interval=None, doi=None):
+        """
+        Parameters required for all datasets
 
+        parameters
+        ----------
+        subjects: List of int
+            List of subject number # TODO: make identifiers more general
+        
+        sessions_per_subject: int
+            Number of sessions per subject
+
+        events: dict of string: int
+            String codes for events matched with labels in the stim channel. Currently imagery codes codes can include:
+            - left_hand
+            - right_hand
+            - hands
+            - feet
+            - rest
+            - left_hand_right_foot
+            - right_hand_left_foot
+            - tongue
+            - navigation
+            - subtraction
+            - word_ass (for word association)
+
+        code: string
+            Unique identifier for dataset, used in all plots
+
+        interval: list with 2 entries
+            Interval relative to trial start for imagery
+
+        paradigm: ['p300','imagery']
+            Defines what sort of dataset this is (currently only imagery is implemented)
+        
+        task_interval: list of 2 entries or None
+            Defines the start and end of the imagery *relative to event marker.* If not specified, defaults to interval. 
+        
+        doi: DOI for dataset, optional (for now)
+        """
         if not isinstance(subjects, list):
             raise(ValueError("subjects must be a list"))
 
         self.subject_list = subjects
         self.n_sessions = sessions_per_subject
         self.event_id = events
+        self.selected_events = events.copy()
         self.code = code
         self.interval = interval
+        if task_interval is None:
+            assert interval[0]==0, 'Interval does not start at 0 so task onset is necessary'
+            self.task_interval = list(interval)
+        else:
+            if interval[1]-interval[0] >= task_interval[1]-task_interval[0]:
+                raise Warning('Given interval extends outside of imagery period')
+            self.task_interval = task_interval
         self.paradigm = paradigm
         self.doi = doi
 

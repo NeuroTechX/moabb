@@ -13,6 +13,9 @@ import numpy as np
 import os
 import shutil
 
+import logging
+log = logging.getLogger()
+
 FILES = []
 FILES.append('https://dataverse.harvard.edu/api/access/datafile/2499178')
 FILES.append('https://dataverse.harvard.edu/api/access/datafile/2499182')
@@ -85,7 +88,7 @@ class Weibo2014(BaseDataset):
             code='Weibo 2014',
             # Full trial is 0-8 but with trialwise bandpass this reduces
             # boundary effects
-            interval=[1, 7],
+            interval=[0, 8],
             paradigm='imagery',
             doi='10.7910/DVN/27306')
 
@@ -107,7 +110,8 @@ class Weibo2014(BaseDataset):
         raw_events[:, 0, 0] = event_ids
         data = np.concatenate([raw_data, raw_events], axis=1)
         # add buffer in between trials
-        zeroshape = (data.shape[0], data.shape[1], 10)
+        log.warning('Trial data de-meaned and concatenated with a buffer to create cont data')
+        zeroshape = (data.shape[0], data.shape[1], 50)
         data = np.concatenate([np.zeros(zeroshape), data,
                                np.zeros(zeroshape)], axis=2)
         raw = mne.io.RawArray(data=np.concatenate(list(data),axis=1),

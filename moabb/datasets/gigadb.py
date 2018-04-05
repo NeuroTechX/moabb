@@ -11,6 +11,9 @@ from mne import create_info
 from mne.io import RawArray
 from mne.channels import read_montage
 from . import download as dl
+import logging
+
+log = logging.getLogger()
 
 GIGA_URL = 'ftp://penguin.genomics.cn/pub/10.5524/100001_101000/100295/mat_data/'
 
@@ -26,6 +29,7 @@ class GigaDbMI(BaseDataset):
             code='GigaDb Motor Imagery',
             interval=[0.5, 2.5], # full trial is 0-3s, this drops edge effects
             paradigm='imagery',
+            task_interval=[0,3],
             doi='10.5524/100295')
         for ii in [32, 46, 49]:
             self.subject_list.remove(ii)
@@ -57,6 +61,7 @@ class GigaDbMI(BaseDataset):
         # trials are already non continuous. edge artifact can appears but
         # are likely to be present during rest / inter-trial activity
         eeg_data = np.hstack([eeg_data_l, eeg_data_r])
+        log.warning('Trials stacked to create continuous data --  edge effects present')
 
         info = create_info(ch_names=ch_names, ch_types=ch_types,
                            sfreq=data.srate, montage=montage)
