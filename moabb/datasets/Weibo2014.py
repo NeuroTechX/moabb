@@ -36,7 +36,7 @@ def eeg_data_path(base_path, subject):
             os.makedirs(os.path.join(base_path, dataname), exist_ok=True)
             f.extractall(os.path.join(base_path, dataname))
             for fname in os.listdir(os.path.join(base_path, dataname)):
-                for ind, prefix in zip(range(1, 5), file1_subj):
+                for ind, prefix in zip(sub_inds, sub_names):
                     if fname.startswith(prefix):
                         os.rename(os.path.join(base_path, dataname, fname),
                                   os.path.join(base_path,
