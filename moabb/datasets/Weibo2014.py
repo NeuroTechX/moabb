@@ -58,7 +58,8 @@ def eeg_data_path(base_path, subject):
 class Weibo2014(BaseDataset):
     """Weibo 2014 Motor Imagery dataset [1]
 
-    References ----------- 
+    References 
+    ----------- 
     Yi Weibo, 2014, "EEG data of simple and compound limb
     motor imagery", https://doi.org/10.7910/DVN/27306, Harvard Dataverse, V1
 
