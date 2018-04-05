@@ -58,6 +58,13 @@ class BaseMotorImagery(BaseParadigm):
 
         # we should verify list of channels, somehow
 
+    def used_events(self, dataset):
+        if self.events is None:
+            event_id = dataset.event_id
+        else:
+            event_id = {ev: dataset.event_id[ev] for ev in self.events}
+        return event_id
+
     def process_raw(self, raw, dataset):
         # find the events
         events = mne.find_events(raw, shortest_event=0, verbose=False)
@@ -68,17 +75,15 @@ class BaseMotorImagery(BaseParadigm):
                                include=channels)
 
         # get event id
-        if self.events is None:
-            event_id = dataset.selected_events
-        else:
-            event_id = {ev: dataset.event_id[ev] for ev in self.events}
+        event_id = self.used_events(dataset)
 
         # pick events, based on event_id
         try:
             events = mne.pick_events(events, include=list(event_id.values()))
             # not all runs have all events. Reduce event dict to only occurring events
-            events_in_run = np.unique(events[:,2])
-            run_event_dict = {k: v for k, v in event_id.items() if v in events_in_run}
+            events_in_run = np.unique(events[:, 2])
+            run_event_dict = {k: v for k,
+                              v in event_id.items() if v in events_in_run}
         except RuntimeError as r:
             # skip raw if no event found
             return
@@ -201,15 +206,42 @@ class FilterBankImageryNClass(FilterBankMotorImagery):
         "docstring"
         super().__init__(**kwargs)
         self.n_classes = n_classes
-        self.possible_events = self.events
         assert n_classes <= len(
-            self.possible_events), 'More classes than events specified'
-        self.events = None
+            self.events), 'More classes than events specified'
+
+        if self.events is None:
+            log.warning("Choosing from all possible events")
+
+    def verify(self, dataset):
+        assert dataset.paradigm == 'imagery'
+        if self.events is None:
+            assert len(dataset.event_id) >= self.n_classes
+        else:
+            overlap = len(set(self.events) & set(dataset.event_id.keys()))
+            assert overlap >= self.n_classes
+
+    def used_events(self, dataset):
+        out = {}
+        if self.events is None:
+            for k, v in dataset.event_id.items():
+                out[k] = v
+                if len(out) == self.n_classes:
+                    break
+        else:
+            for event in self.events:
+                if event in dataset.event_id.keys():
+                    out[event] = dataset.event_id[event]
+                if len(out) == self.n_classes:
+                    break
+        if len(out) < self.n_classes:
+            raise ValueError("Dataset {} did not have enough events in {} to run analysis".format(
+                dataset.code, self.events))
+        return out
 
     @property
     def datasets(self):
         return utils.dataset_search(paradigm='imagery',
-                                    events=self.possible_events,
+                                    events=self.events,
                                     total_classes=self.n_classes,
                                     has_all_events=False)
 
@@ -240,15 +272,42 @@ class ImageryNClass(MotorImagery):
         "docstring"
         super().__init__(**kwargs)
         self.n_classes = n_classes
-        self.possible_events = self.events
         assert n_classes <= len(
-            self.possible_events), 'More classes than events specified'
-        self.events = None
+            self.events), 'More classes than events specified'
+
+        if self.events is None:
+            log.warning("Choosing from all possible events")
+
+    def verify(self, dataset):
+        assert dataset.paradigm == 'imagery'
+        if self.events is None:
+            assert len(dataset.event_id) >= self.n_classes
+        else:
+            overlap = len(set(self.events) & set(dataset.event_id.keys()))
+            assert overlap >= self.n_classes
+
+    def used_events(self, dataset):
+        out = {}
+        if self.events is None:
+            for k, v in dataset.event_id.items():
+                out[k] = v
+                if len(out) == self.n_classes:
+                    break
+        else:
+            for event in self.events:
+                if event in dataset.event_id.keys():
+                    out[event] = dataset.event_id[event]
+                if len(out) == self.n_classes:
+                    break
+        if len(out) < self.n_classes:
+            raise ValueError("Dataset {} did not have enough events in {} to run analysis".format(
+                dataset.code, self.events))
+        return out
 
     @property
     def datasets(self):
         return utils.dataset_search(paradigm='imagery',
-                                    events=self.possible_events,
+                                    events=self.events,
                                     total_classes=self.n_classes,
                                     has_all_events=False)
 

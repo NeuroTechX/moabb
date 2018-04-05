@@ -26,57 +26,45 @@ def eeg_data_path(base_path, subject):
     file1_subj = ['cl', 'cyy', 'kyf', 'lnn']
     file2_subj = ['ls', 'ry', 'wcf']
     file3_subj = ['wx', 'yyx', 'zd']
-    if not os.path.isfile(os.path.join(base_path, 'subject_{}.mat'.format(subject))):
+
+    def get_subjects(sub_inds, sub_names, ind):
+        dataname = 'data{}'.format(ind)
+        if not os.path.isfile(os.path.join(base_path, dataname+'.zip')):
+            _fetch_file(FILES[ind], os.path.join(
+                base_path, dataname + '.zip'), print_destination=False)
+        with z.ZipFile(os.path.join(base_path, dataname + '.zip'), 'r') as f:
+            os.makedirs(os.path.join(base_path, dataname), exist_ok=True)
+            f.extractall(os.path.join(base_path, dataname))
+            for fname in os.listdir(os.path.join(base_path, dataname)):
+                for ind, prefix in zip(range(1, 5), file1_subj):
+                    if fname.startswith(prefix):
+                        os.rename(os.path.join(base_path, dataname, fname),
+                                  os.path.join(base_path,
+                                               'subject_{}.mat'.format(ind)))
+        os.remove(os.path.join(base_path, dataname + '.zip'))
+        shutil.rmtree(os.path.join(base_path, dataname))
+
+    if not os.path.isfile(os.path.join(base_path,
+                                       'subject_{}.mat'.format(subject))):
         if subject in range(1, 5):
-            if not os.path.isfile(os.path.join(base_path, 'data1.zip')):
-                _fetch_file(FILES[0], os.path.join(
-                    base_path, 'data1.zip'), print_destination=False)
-            with z.ZipFile(os.path.join(base_path, 'data1.zip'), 'r') as f:
-                os.makedirs(os.path.join(base_path, 'data1'), exist_ok=True)
-                f.extractall(os.path.join(base_path, 'data1'))
-                for fname in os.listdir(os.path.join(base_path, 'data1')):
-                    for ind, prefix in zip(range(1, 5), file1_subj):
-                        if fname.startswith(prefix):
-                            os.rename(os.path.join(base_path, 'data1', fname),
-                                      os.path.join(base_path,
-                                                   'subject_{}.mat'.format(ind)))
-            os.remove(os.path.join(base_path, 'data1.zip'))
-            shutil.rmtree(os.path.join(base_path, 'data1'))
+            get_subjects(list(range(1, 5)), file1_subj, 0)
         elif subject in range(5, 8):
-            if not os.path.isfile(os.path.join(base_path, 'data2.zip')):
-                _fetch_file(FILES[1], os.path.join(
-                    base_path, 'data2.zip'), print_destination=False)
-            with z.ZipFile(os.path.join(base_path, 'data2.zip'), 'r') as f:
-                os.makedirs(os.path.join(base_path, 'data2'), exist_ok=True)
-                f.extractall(os.path.join(base_path, 'data2'))
-                for fname in os.listdir(os.path.join(base_path, 'data2')):
-                    for ind, prefix in zip(range(5, 8), file2_subj):
-                        if fname.startswith(prefix):
-                            os.rename(os.path.join(base_path, 'data2', fname),
-                                      os.path.join(base_path,
-                                                   'subject_{}.mat'.format(ind)))
-            os.remove(os.path.join(base_path, 'data2.zip'))
-            shutil.rmtree(os.path.join(base_path, 'data2'))
+            get_subjects(list(range(5, 8)), file2_subj, 1)
         elif subject in range(8, 11):
-            if not os.path.isfile(os.path.join(base_path, 'data3.zip')):
-                _fetch_file(FILES[2], os.path.join(
-                    base_path, 'data3.zip'), print_destination=False)
-            with z.ZipFile(os.path.join(base_path, 'data3.zip'), 'r') as f:
-                os.makedirs(os.path.join(base_path, 'data3'), exist_ok=True)
-                f.extractall(os.path.join(base_path, 'data3'))
-                for fname in os.listdir(os.path.join(base_path, 'data3')):
-                    for ind, prefix in zip(range(8, 11), file3_subj):
-                        if fname.startswith(prefix):
-                            os.rename(os.path.join(base_path, 'data3', fname),
-                                      os.path.join(base_path,
-                                                   'subject_{}.mat'.format(ind)))
-            os.remove(os.path.join(base_path, 'data3.zip'))
-            shutil.rmtree(os.path.join(base_path, 'data3'))
+            get_subjects(list(range(8, 11)), file3_subj, 2)
     return os.path.join(base_path, 'subject_{}.mat'.format(subject))
 
 
 class Weibo2014(BaseDataset):
-    """Weibo 2014 Motor Imagery dataset"""
+    """Weibo 2014 Motor Imagery dataset [1]
+
+    References ----------- 
+    Yi Weibo, 2014, "EEG data of simple and compound limb
+    motor imagery", https://doi.org/10.7910/DVN/27306, Harvard Dataverse, V1
+
+    """
+
+
 
     def __init__(self):
         super().__init__(
@@ -99,9 +87,10 @@ class Weibo2014(BaseDataset):
         data = loadmat(fname, squeeze_me=True, struct_as_record=False,
                        verify_compressed_data_integrity=False)
         montage = mne.channels.read_montage('standard_1020')
-        info = mne.create_info(ch_names=['EEG{}'.format(i) for i in range(1,65)]+['STIM014'],
+        info = mne.create_info(ch_names=['EEG{}'.format(i) for i in range(1, 65)]+['STIM014'],
                                ch_types=['eeg']*64+['stim'],
-                               sfreq=200, montage=None) # until we get the channel names
+                               sfreq=200, montage=None)
+        # until we get the channel names montage is None
         event_ids = data['label'].ravel()
         raw_data = np.transpose(data['data'], axes=[2, 0, 1])
         # de-mean each trial
@@ -110,11 +99,12 @@ class Weibo2014(BaseDataset):
         raw_events[:, 0, 0] = event_ids
         data = np.concatenate([raw_data, raw_events], axis=1)
         # add buffer in between trials
-        log.warning('Trial data de-meaned and concatenated with a buffer to create cont data')
+        log.warning(
+            'Trial data de-meaned and concatenated with a buffer to create cont data')
         zeroshape = (data.shape[0], data.shape[1], 50)
         data = np.concatenate([np.zeros(zeroshape), data,
                                np.zeros(zeroshape)], axis=2)
-        raw = mne.io.RawArray(data=np.concatenate(list(data),axis=1),
+        raw = mne.io.RawArray(data=np.concatenate(list(data), axis=1),
                               info=info, verbose=False)
         return {'session_0': {'run_0': raw}}
 

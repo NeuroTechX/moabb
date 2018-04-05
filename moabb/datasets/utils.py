@@ -30,8 +30,6 @@ def dataset_search(paradigm, multi_session=False, events=None,
     min_subjects: int, minimum subjects in dataset
     channels: list or set of channels
 
-    If given events, modifies selected_events attribute of each dataset to only include events on the list. 
-    If given total classes, randomly selects n out of the full event dictionary
     '''
     channels = set(channels)
     out_data = []
@@ -79,7 +77,6 @@ def dataset_search(paradigm, multi_session=False, events=None,
                     if n_events < n_classes:
                         skip_dataset = True
             if keep_event_dict and not skip_dataset:
-                d.selected_events = keep_event_dict
                 if len(channels) > 0:
                     s1 = d.get_data([1], False)[0][0][0]
                     if channels <= set(s1.info['ch_names']):

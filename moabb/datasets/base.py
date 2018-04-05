@@ -57,7 +57,6 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self.subject_list = subjects
         self.n_sessions = sessions_per_subject
         self.event_id = events
-        self.selected_events = events.copy()
         self.code = code
         self.interval = interval
         if task_interval is None:

@@ -25,7 +25,9 @@ Motor Imagery Datasets
     BBCIEEGfNIRS
     OpenvibeMI
     PhysionetMI
-    UpperLimb
+	       UpperLimb
+	       Zhou2016
+    Weibo2014
 
 ------------
 ERP Datasets

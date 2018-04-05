@@ -41,7 +41,41 @@ def local_data_path(base_path, subject):
 
 
 class Zhou2016(BaseDataset):
-    """Zhou 2016 Imagery dataset"""
+    """Dataset from Zhou et al. 2016 [1]
+
+    Abstract
+    ------------
+
+    Independent component analysis (ICA) as a promising spatial filtering method
+    can separate motor-related independent components (MRICs) from the
+    multichannel electroencephalogram (EEG) signals. However, the unpredictable
+    burst interferences may significantly degrade the performance of ICA-based
+    brain-computer interface (BCI) system. In this study, we proposed a new
+    algorithm frame to address this issue by combining the single-trial-based
+    ICA filter with zero-training classifier. We developed a two-round data
+    selection method to identify automatically the badly corrupted EEG trials in
+    the training set. The “high quality” training trials were utilized to
+    optimize the ICA filter. In addition, we proposed an accuracy-matrix method
+    to locate the artifact data segments within a single trial and investigated
+    which types of artifacts can influence the performance of the ICA-based
+    MIBCIs. Twenty-six EEG datasets of three-class motor imagery were used to
+    validate the proposed methods, and the classification accuracies were
+    compared with that obtained by frequently used common spatial pattern (CSP)
+    spatial filtering algorithm. The experimental results demonstrated that the
+    proposed optimizing strategy could effectively improve the stability,
+    practicality and classification performance of ICA-based MIBCI. The study
+    revealed that rational use of ICA method may be crucial in building a
+    practical ICA-based MIBCI system.
+
+    References
+    ------------
+
+    [1] Zhou B, Wu X, Lv Z, Zhang L, Guo X (2016) A Fully Automated Trial
+    Selection Method for Optimization of Motor Imagery Based Brain-Computer
+    Interface. PLoS ONE 11(9):
+    e0162657. https://doi.org/10.1371/journal.pone.0162657
+
+    """
 
     def __init__(self):
         super().__init__(
