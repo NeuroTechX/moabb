@@ -85,7 +85,7 @@ class BBCIEEGfNIRS(BaseDataset):
                          sessions_per_subject=n_sessions,
                          events=events,
                          code='BBCI EEG fNIRS',
-                         interval=[3.5, 10],
+                         interval=[0, 10], # marker is for *task* start not cue start
                          paradigm=('/').join(paradigms),
                          doi='10.1109/TNSRE.2016.2628057')
 

@@ -19,8 +19,9 @@ class PhysionetMI(BaseDataset):
             sessions_per_subject=1,
             events=dict(left_hand=2, right_hand=3, feet=5, hands=4, rest=1),
             code='Physionet Motor Imagery',
-            interval=[1, 3],
-            paradigm='imagery'
+            interval=[0, 3], # website does not specify how long the trials are...
+            paradigm='imagery',
+            doi='10.1109/TBME.2004.827072'
             )
 
         if imagined:

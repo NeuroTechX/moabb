@@ -642,7 +642,7 @@ class MNEBNCI(BaseDataset):
 class BNCI2014001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset"""
 
-    def __init__(self, tmin=3.5, tmax=5.5):
+    def __init__(self, tmin=3.5, tmax=6):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
@@ -656,7 +656,7 @@ class BNCI2014001(MNEBNCI):
 class BNCI2014002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset"""
 
-    def __init__(self, tmin=3.5, tmax=5.5):
+    def __init__(self, tmin=3.5, tmax=8):
         super().__init__(
             subjects=list(range(1, 15)),
             sessions_per_subject=1,
@@ -670,7 +670,7 @@ class BNCI2014002(MNEBNCI):
 class BNCI2014004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset"""
 
-    def __init__(self, tmin=4.5, tmax=6.5):
+    def __init__(self, tmin=3, tmax=7.5):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=5,
@@ -684,7 +684,7 @@ class BNCI2014004(MNEBNCI):
 class BNCI2015001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset"""
 
-    def __init__(self, tmin=4, tmax=7.5):
+    def __init__(self, tmin=3, tmax=8):
         # FIXME: some participant have 3 sessions
         super().__init__(
             subjects=list(range(1, 13)),
@@ -699,7 +699,7 @@ class BNCI2015001(MNEBNCI):
 class BNCI2015004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset"""
 
-    def __init__(self, tmin=4.25, tmax=10):
+    def __init__(self, tmin=3, tmax=10):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,

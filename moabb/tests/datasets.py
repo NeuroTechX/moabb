@@ -4,6 +4,22 @@ import mne
 from moabb.datasets.fake import FakeDataset
 
 
+def _run_tests_on_dataset(d):
+    for s in d.subject_list:
+        data = d.get_data(subjects=[s])
+
+        # we should get a dict
+        assert isinstance(data, dict)
+
+        # We should get a raw array at the end
+        rawdata = data[s]['session_0']['run_0']
+        assert issubclass(type(rawdata), mne.io.BaseRaw), type(rawdata)
+
+        # print events
+        print(mne.find_events(rawdata))
+        print(d.event_id)
+
+
 class Test_Datasets(unittest.TestCase):
 
     def test_fake_dataset(self):

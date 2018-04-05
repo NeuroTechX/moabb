@@ -37,7 +37,7 @@ class UpperLimb(BaseDataset):
             sessions_per_subject=n_sessions,
             events=event_id,
             code='Upper Limb Imagery',
-            interval=[2.5, 5],
+            interval=[2.5, 5], # according to paper 2-5
             paradigm='imagery',
             doi='10.1371/journal.pone.0182578')
 

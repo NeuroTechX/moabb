@@ -24,7 +24,7 @@ class GigaDbMI(BaseDataset):
             sessions_per_subject=1,
             events=dict(left_hand=1, right_hand=2),
             code='GigaDb Motor Imagery',
-            interval=[1, 3],
+            interval=[0.5, 2.5], # full trial is 0-3s, this drops edge effects
             paradigm='imagery',
             doi='10.5524/100295')
         for ii in [32, 46, 49]:
@@ -49,7 +49,7 @@ class GigaDbMI(BaseDataset):
         ch_names = eeg_ch_names + emg_ch_names + ['Stim']
         ch_types = ['eeg'] * 64 + ['emg'] * 4 + ['stim']
         montage = read_montage('standard_1005')
-
+        
         eeg_data_l = np.vstack([data.imagery_left * 1e-6, data.imagery_event])
         eeg_data_r = np.vstack([data.imagery_right * 1e-6,
                                 data.imagery_event * 2])
