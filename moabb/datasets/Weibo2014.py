@@ -33,11 +33,11 @@ def eeg_data_path(base_path, subject):
                 f.extractall(os.path.join(base_path, 'data1'))
                 for fname in os.listdir(os.path.join(base_path, 'data1')):
                     for ind, prefix in zip(range(1, 5), file1_subj):
-                        if fname.beginswith(prefix):
+                        if fname.startswith(prefix):
                             os.rename(os.path.join(base_path, 'data1', fname),
                                       os.path.join(base_path,
-                                                   'subject_{}.mat'.format(prefix)))
-            os.remove(os.path.join(base_path, 'data.zip'))
+                                                   'subject_{}.mat'.format(ind)))
+            os.remove(os.path.join(base_path, 'data1.zip'))
             shutil.rmtree(os.path.join(base_path, 'data1'))
         elif subject in range(5, 8):
             if not os.path.isfile(os.path.join(base_path, 'data2.zip')):
