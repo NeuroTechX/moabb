@@ -2,6 +2,9 @@
 Base class for a dataset
 """
 import abc
+import logging
+
+log = logging.getLogger()
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
@@ -61,8 +64,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
             assert interval[0]==0, 'Interval does not start at 0 so task onset is necessary'
             self.task_interval = list(interval)
         else:
-            if interval[1]-interval[0] >= task_interval[1]-task_interval[0]:
-                raise Warning('Given interval extends outside of imagery period')
+            if interval[1]-interval[0] > task_interval[1]-task_interval[0]:
+                log.warning('Given interval extends outside of imagery period')
             self.task_interval = task_interval
         self.paradigm = paradigm
         self.doi = doi

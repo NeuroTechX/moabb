@@ -76,6 +76,9 @@ class BaseMotorImagery(BaseParadigm):
         # pick events, based on event_id
         try:
             events = mne.pick_events(events, include=list(event_id.values()))
+            # not all runs have all events. Reduce event dict to only occurring events
+            events_in_run = np.unique(events[:,2])
+            run_event_dict = {k: v for k, v in event_id.items() if v in events_in_run}
         except RuntimeError as r:
             # skip raw if no event found
             return
@@ -84,7 +87,6 @@ class BaseMotorImagery(BaseParadigm):
         if self.interval is None:
             tmin, tmax = dataset.interval
         else:
-            # TODO: make this work with varying offsets since not all data starts at 0
             tmin, tmax = self.interval
 
         if self.resample is not None:
@@ -97,13 +99,13 @@ class BaseMotorImagery(BaseParadigm):
             raw_f = raw.copy().filter(fmin, fmax, method='iir',
                                       picks=picks, verbose=False)
             # epoch data
-            epochs = mne.Epochs(raw_f, events, event_id=event_id,
+            epochs = mne.Epochs(raw_f, events, event_id=run_event_dict,
                                 tmin=tmin, tmax=tmax, proj=False,
                                 baseline=None, preload=True,
                                 verbose=False, picks=picks)
             X.append(epochs.get_data())
 
-        inv_events = {k: v for v, k in event_id.items()}
+        inv_events = {k: v for v, k in run_event_dict.items()}
         labels = np.array([inv_events[e] for e in epochs.events[:, -1]])
 
         # if only one band, return a 3D array, otherwise return a 4D
@@ -128,13 +130,13 @@ class BaseMotorImagery(BaseParadigm):
 
 class MotorImagery(BaseMotorImagery):
 
-    def __init__(self, bp_low=8, bp_high=32, **kwargs):
+    def __init__(self, fmin=8, fmax=32, **kwargs):
         """
-        Single-pass MI. Takes arguments bp_low and bp_high and not filters
+        Single-pass MI. Takes arguments fmin and fmax and not filters
         """
         if 'filters' in kwargs.keys():
             raise(ValueError('MotorImagery does not take argument \'filters\''))
-        super().__init__(filters=[[bp_low, bp_high]], **kwargs)
+        super().__init__(filters=[[fmin, fmax]], **kwargs)
 
 
 class FilterBankMotorImagery(BaseMotorImagery):
@@ -180,7 +182,7 @@ class FilterBankLeftRightImagery(FilterBankMotorImagery):
         return 'roc_auc'
 
 
-def FilterBankImageryNClass(FilterBankMotorImagery):
+class FilterBankImageryNClass(FilterBankMotorImagery):
     """
     Filter bank n-class imagery.
 
@@ -214,12 +216,12 @@ def FilterBankImageryNClass(FilterBankMotorImagery):
     @property
     def scoring(self):
         if self.n_classes == 2:
-            return 'roc-auc'
+            return 'roc_auc'
         else:
             return 'accuracy'
 
 
-def ImageryNClass(MotorImagery):
+class ImageryNClass(MotorImagery):
     """
     N-class imagery.
 
@@ -253,7 +255,7 @@ def ImageryNClass(MotorImagery):
     @property
     def scoring(self):
         if self.n_classes == 2:
-            return 'roc-auc'
+            return 'roc_auc'
         else:
             return 'accuracy'
 

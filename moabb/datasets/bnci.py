@@ -665,7 +665,7 @@ class BNCI2014002(MNEBNCI):
             code='002-2014',
             interval=[tmin, tmax],
             paradigm='imagery',
-            task_interval=[3, 8]
+            task_interval=[3, 8],
             doi='10.1515/bmt-2014-0117')
 
 
@@ -712,5 +712,5 @@ class BNCI2015004(MNEBNCI):
             code='004-2015',
             interval=[tmin, tmax],
             paradigm='imagery',
-            task_interval=[3,10],
+            task_interval=[3, 10],
             doi='10.1371/journal.pone.0123727')
