@@ -1,9 +1,9 @@
-from abc import ABC, abstractproperty, abstractmethod
+from abc import ABCMeta, abstractproperty, abstractmethod
 import numpy as np
 import pandas as pd
 
 
-class BaseParadigm(ABC):
+class BaseParadigm(metaclass=ABCMeta):
     """Base Paradigm.
     """
 

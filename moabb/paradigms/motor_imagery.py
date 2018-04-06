@@ -1,5 +1,6 @@
-"""Motor Imagery contexts"""
+"""Motor Imagery Paradigms"""
 
+import abc
 import mne
 import numpy as np
 import pandas as pd
@@ -12,7 +13,7 @@ from moabb.datasets.fake import FakeDataset
 log = logging.getLogger()
 
 
-class BaseMotorImagery(BaseParadigm):
+class BaseMotorImagery(BaseParadigm, metaclass=abc.ABCMeta):
     """Base Motor imagery paradigm. Please use one of the child classes
 
     Parameters
@@ -196,10 +197,13 @@ class FilterBankImageryNClass(FilterBankMotorImagery):
     Parameters
     -----------
 
-    events: List of event labels, used to filter datasets (e.g. if only motor imagery is desired)
+    events: List of str
+        event labels used to filter datasets (e.g. if only motor imagery is
+        desired).
 
-    n_classes: int, number of classes each dataset must have. If events is given, requires all imagery sorts to be within the events list
-
+    n_classes: int,
+        number of classes each dataset must have. If events is given,
+        requires all imagery sorts to be within the events list.
     """
 
     def __init__(self, n_classes=2, **kwargs):
@@ -262,9 +266,13 @@ class ImageryNClass(MotorImagery):
     Parameters
     -----------
 
-    events: List of event labels, used to filter datasets (e.g. if only motor imagery is desired)
+    events: List of str
+        event labels used to filter datasets (e.g. if only motor imagery is
+        desired).
 
-    n_classes: int, number of classes each dataset must have. If events is given, requires all imagery sorts to be within the events list
+    n_classes: int,
+        number of classes each dataset must have. If events is given,
+        requires all imagery sorts to be within the events list.
 
     """
 

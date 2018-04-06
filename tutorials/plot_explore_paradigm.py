@@ -15,7 +15,7 @@ coefficient for continuous paradigms.
 
 This tutorial explore the paradigm object, with 3 examples of paradigm :
 
- - BaseMotorImagery
+ - MotorImagery
  - FilterBankMotorImagery
  - LeftRightImagery
 """
@@ -25,18 +25,18 @@ This tutorial explore the paradigm object, with 3 examples of paradigm :
 
 import numpy as np
 from moabb.datasets import BNCI2014001
-from moabb.paradigms import (LeftRightImagery, BaseMotorImagery,
+from moabb.paradigms import (LeftRightImagery, MotorImagery,
                              FilterBankMotorImagery)
 
 print(__doc__)
 
 ###############################################################################
-# Base MotorImagery
+# MotorImagery
 # -----------------
 #
-# First, lets take a example of the BaseMotorImagery paradigm.
+# First, lets take a example of the MotorImagery paradigm.
 
-paradigm = BaseMotorImagery()
+paradigm = MotorImagery()
 
 print(paradigm.__doc__)
 
