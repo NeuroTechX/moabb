@@ -135,7 +135,7 @@ class BaseMotorImagery(BaseParadigm):
         return 'accuracy'
 
 
-class MotorImagery(BaseMotorImagery):
+class SinglePass(BaseMotorImagery):
 
     def __init__(self, fmin=8, fmax=32, **kwargs):
         """
@@ -155,7 +155,7 @@ class FilterBankMotorImagery(BaseMotorImagery):
         super().__init__(filters=filters, **kwargs)
 
 
-class LeftRightImagery(BaseMotorImagery):
+class LeftRightImagery(SinglePass):
     """Motor Imagery for left hand/right hand classification
 
     Metric is 'roc_auc'
@@ -195,7 +195,7 @@ class FilterBankLeftRightImagery(FilterBankMotorImagery):
         return 'roc_auc'
 
 
-class FilterBankImageryNClass(FilterBankMotorImagery):
+class FilterBankMotorImagery(FilterBankMotorImagery):
     """
     Filter bank n-class imagery.
 
@@ -269,9 +269,9 @@ class FilterBankImageryNClass(FilterBankMotorImagery):
             return 'accuracy'
 
 
-class ImageryNClass(MotorImagery):
+class MotorImagery(SinglePass):
     """
-    N-class imagery.
+    N-class motor imagery.
 
     Metric is 'roc-auc' if 2 classes and 'accuracy' if more
 

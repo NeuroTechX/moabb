@@ -36,7 +36,7 @@ print(__doc__)
 #
 # First, lets take a example of the MotorImagery paradigm.
 
-paradigm = MotorImagery()
+paradigm = MotorImagery(n_classes=4)
 
 print(paradigm.__doc__)
 

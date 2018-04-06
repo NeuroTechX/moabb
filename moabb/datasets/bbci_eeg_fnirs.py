@@ -60,29 +60,100 @@ def fnirs_data_path(path, subject):
 class BBCIEEGfNIRS(BaseDataset):
     """BBCI EEG fNIRS Motor Imagery dataset
 
-    Data Acquisition
+    Data Acquisition 
+    ---------------------------------------- 
+
+    EEG and NIRS data was collected in an ordinary bright room. EEG data was
+    recorded by a multichannel BrainAmp EEG amplifier with thirty active
+    electrodes (Brain Products GmbH, Gilching, Germany) with linked mastoids
+    reference at 1000 Hz sampling rate. The EEG amplifier was also used to
+    measure the electrooculogram (EOG), electrocardiogram (ECG) and respiration
+    with a piezo based breathing belt. Thirty EEG electrodes were placed on a
+    custom-made stretchy fabric cap (EASYCAP GmbH, Herrsching am Ammersee,
+    Germany) and placed according to the international 10-5 system (AFp1, AFp2,
+    AFF1h, AFF2h, AFF5h, AFF6h, F3, F4, F7, F8, FCC3h, FCC4h, FCC5h, FCC6h, T7,
+    T8, Cz, CCP3h, CCP4h, CCP5h, CCP6h, Pz, P3, P4, P7, P8, PPO1h, PPO2h, POO1,
+    POO2 and Fz for ground electrode).
+
+    NIRS data was collected by NIRScout (NIRx GmbH, Berlin, Germany) at 12.5 Hz
+    sampling rate. Each adjacent source-detector pair creates one physiological
+    NIRS channel. Fourteen sources and sixteen detectors resulting in thirty-six
+    physiological channels were placed at frontal (nine channels around Fp1,
+    Fp2, and Fpz), motor (twelve channels around C3 and C4, respectively) and
+    visual areas (three channels around Oz). The inter-optode distance was 30
+    mm. NIRS optodes were fixed on the same cap as the EEG electrodes. Ambient
+    lights were sufficiently blocked by a firm contact between NIRS optodes and
+    scalp and use of an opaque cap.
+
+    EOG was recorded using two vertical (above and below left eye) and two
+    horizontal (outer canthus of each eye) electrodes. ECG was recorded based on
+    Einthoven triangle derivations I and II, and respiration was measured using
+    a respiration belt on the lower chest. EOG, ECG and respiration were sampled
+    at the same sampling rate of the EEG. ECG and respiration data were not
+    analyzed in this study, but are provided along with the other signals.
+
+    Experimental Procedure 
     ----------------------------------------
-    EEG and NIRS data was collected in an ordinary bright room. EEG data was recorded by a multichannel BrainAmp EEG amplifier with thirty active electrodes (Brain Products GmbH, Gilching, Germany) with linked mastoids reference at 1000 Hz sampling rate. The EEG amplifier was also used to measure the electrooculogram (EOG), electrocardiogram (ECG) and respiration with a piezo based breathing belt. Thirty EEG electrodes were placed on a custom-made stretchy fabric cap (EASYCAP GmbH, Herrsching am Ammersee, Germany) and placed according to the international 10-5 system (AFp1, AFp2, AFF1h, AFF2h, AFF5h, AFF6h, F3, F4, F7, F8, FCC3h, FCC4h, FCC5h, FCC6h, T7, T8, Cz, CCP3h, CCP4h, CCP5h, CCP6h, Pz, P3, P4, P7, P8, PPO1h, PPO2h, POO1, POO2 and Fz for ground electrode).
 
-    NIRS data was collected by NIRScout (NIRx GmbH, Berlin, Germany) at 12.5 Hz sampling rate. Each adjacent source-detector pair creates one physiological NIRS channel. Fourteen sources and sixteen detectors resulting in thirty-six physiological channels were placed at frontal (nine channels around Fp1, Fp2, and Fpz), motor (twelve channels around C3 and C4, respectively) and visual areas (three channels around Oz). The inter-optode distance was 30 mm. NIRS optodes were fixed on the same cap as the EEG electrodes. Ambient lights were sufficiently blocked by a firm contact between NIRS optodes and scalp and use of an opaque cap.
+    The subjects sat on a comfortable armchair in front of a 50-inch white
+    screen. The distance between their heads and the screen was 1.6 m. They were
+    asked not to move any part of the body during the data recording. The
+    experiment consisted of three sessions of left and right hand MI (dataset A)
+    and MA and baseline tasks (taking a rest without any thought) (dataset B)
+    each. Each session comprised a 1 min pre-experiment resting period, 20
+    repetitions of the given task and a 1 min post-experiment resting
+    period. The task started with 2 s of a visual introduction of the task,
+    followed by 10 s of a task period and resting period which was given
+    randomly from 15 to 17 s. At the beginning and end of the task period, a
+    short beep (250 ms) was played. All instructions were displayed on the white
+    screen by a video projector. MI and MA tasks were performed in separate
+    sessions but in alternating order (i.e., sessions 1, 3 and 5 for MI (dataset
+    A) and sessions 2, 4 and 6 for MA (dataset B)). Fig. 2 shows the schematic
+    diagram of the experimental paradigm. Five sorts of motion artifacts induced
+    by eye and head movements (dataset C) were measured. The motion artifacts
+    were recorded after all MI and MA task recordings. The experiment did not
+    include the pre- and post-experiment resting state periods.
 
-    EOG was recorded using two vertical (above and below left eye) and two horizontal (outer canthus of each eye) electrodes. ECG was recorded based on Einthoven triangle derivations I and II, and respiration was measured using a respiration belt on the lower chest. EOG, ECG and respiration were sampled at the same sampling rate of the EEG. ECG and respiration data were not analyzed in this study, but are provided along with the other signals. 
-
-    Experimental Procedure
-    ----------------------------------------
-
-    The subjects sat on a comfortable armchair in front of a 50-inch white screen. The distance between their heads and the screen was 1.6 m. They were asked not to move any part of the body during the data recording. The experiment consisted of three sessions of left and right hand MI (dataset A) and MA and baseline tasks (taking a rest without any thought) (dataset B) each. Each session comprised a 1 min pre-experiment resting period, 20 repetitions of the given task and a 1 min post-experiment resting period. The task started with 2 s of a visual introduction of the task, followed by 10 s of a task period and resting period which was given randomly from 15 to 17 s. At the beginning and end of the task period, a short beep (250 ms) was played. All instructions were displayed on the white screen by a video projector. MI and MA tasks were performed in separate sessions but in alternating order (i.e., sessions 1, 3 and 5 for MI (dataset A) and sessions 2, 4 and 6 for MA (dataset B)). Fig. 2 shows the schematic diagram of the experimental paradigm. Five sorts of motion artifacts induced by eye and head movements (dataset C) were measured. The motion artifacts were recorded after all MI and MA task recordings. The experiment did not include the pre- and post-experiment resting state periods.
-
-    Motor Imagery (Dataset A)
+    Motor Imagery (Dataset A) 
     ----------------------------
 
-    For motor imagery, subjects were instructed to perform haptic motor imagery (i.e. to imagine the feeling of opening and closing their hands as they were grabbing a ball) to ensure that actual motor imagery, not visual imagery, was performed. All subjects were naive to the MI experiment. For the visual instruction, a black arrow pointing to either the left or right side appeared at the center of the screen for 2 s. The arrow disappeared with a short beep sound and then a black fixation cross was displayed during the task period. The subjects were asked to imagine hand gripping (opening and closing their hands) in a 1 Hz pace. This pace was shown to and repeated by the subjects by performing real hand gripping before the experiment. Motor imagery was performed continuously over the task period. The task period was finished with a short beep sound and a 'STOP' displayed for 1s on the screen. The fixation cross was displayed again during the rest period and the subjects were asked to gaze at it to minimize their eye movements. This process was repeated twenty times in a single session (ten trials per condition in a single session; thirty trials in the whole sessions). In a single session, motor imagery tasks were performed on the basis of ten subsequent blocks randomly consisting of one of two conditions: Either first left and then right hand motor imagery or vice versa.
+    For motor imagery, subjects were instructed to perform haptic motor imagery
+    (i.e. to imagine the feeling of opening and closing their hands as they were
+    grabbing a ball) to ensure that actual motor imagery, not visual imagery,
+    was performed. All subjects were naive to the MI experiment. For the visual
+    instruction, a black arrow pointing to either the left or right side
+    appeared at the center of the screen for 2 s. The arrow disappeared with a
+    short beep sound and then a black fixation cross was displayed during the
+    task period. The subjects were asked to imagine hand gripping (opening and
+    closing their hands) in a 1 Hz pace. This pace was shown to and repeated by
+    the subjects by performing real hand gripping before the experiment. Motor
+    imagery was performed continuously over the task period. The task period was
+    finished with a short beep sound and a 'STOP' displayed for 1s on the
+    screen. The fixation cross was displayed again during the rest period and
+    the subjects were asked to gaze at it to minimize their eye movements. This
+    process was repeated twenty times in a single session (ten trials per
+    condition in a single session; thirty trials in the whole sessions). In a
+    single session, motor imagery tasks were performed on the basis of ten
+    subsequent blocks randomly consisting of one of two conditions: Either first
+    left and then right hand motor imagery or vice versa.
 
-    Mental Arithmetic (Dataset B)
+    Mental Arithmetic (Dataset B) 
     ----------------------------------------
 
-    For the visual instruction of the MA task, an initial subtraction such as 'three-digit number minus one-digit number' (e.g., 384-8) appeared at the center of the screen for 2 s. The subjects were instructed to memorize the numbers while the initial subtraction was displayed on the screen. The initial subtraction disappeared with a short beep sound and a black fixation cross was displayed during the task period in which the subjects were asked to repeatedly perform to subtract the one-digit number from the result of the previous subtraction. For the baseline task, no specific sign but the black fixation cross was displayed on the screen, and the subjects were instructed to take a rest. Note that there were other rest periods between the MA and baseline task periods, as same with the MI paradigm. Both task periods were finished with a short beep sound and a 'STOP' displayed for 1 s on the screen. The fixation cross was displayed again during the rest period. MA and baseline trials were randomized in the same way as MI.
-
+    For the visual instruction of the MA task, an initial subtraction such as
+    'three-digit number minus one-digit number' (e.g., 384-8) appeared at the
+    center of the screen for 2 s. The subjects were instructed to memorize the
+    numbers while the initial subtraction was displayed on the screen. The
+    initial subtraction disappeared with a short beep sound and a black fixation
+    cross was displayed during the task period in which the subjects were asked
+    to repeatedly perform to subtract the one-digit number from the result of
+    the previous subtraction. For the baseline task, no specific sign but the
+    black fixation cross was displayed on the screen, and the subjects were
+    instructed to take a rest. Note that there were other rest periods between
+    the MA and baseline task periods, as same with the MI paradigm. Both task
+    periods were finished with a short beep sound and a 'STOP' displayed for 1 s
+    on the screen. The fixation cross was displayed again during the rest
+    period. MA and baseline trials were randomized in the same way as MI.
 
     """
 
