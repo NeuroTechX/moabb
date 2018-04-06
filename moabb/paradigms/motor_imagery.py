@@ -13,7 +13,7 @@ from moabb.datasets.fake import FakeDataset
 log = logging.getLogger()
 
 
-class BaseMotorImagery(BaseParadigm, metaclass=abc.ABCMeta):
+class BaseMotorImagery(BaseParadigm):
     """Base Motor imagery paradigm. Please use one of the child classes
 
     Parameters
@@ -109,7 +109,8 @@ class BaseMotorImagery(BaseParadigm, metaclass=abc.ABCMeta):
                                 tmin=tmin, tmax=tmax, proj=False,
                                 baseline=None, preload=True,
                                 verbose=False, picks=picks)
-            X.append(epochs.get_data())
+            # MNE is in V, rescale to have uV
+            X.append(1e6 * epochs.get_data())
 
         inv_events = {k: v for v, k in run_event_dict.items()}
         labels = np.array([inv_events[e] for e in epochs.events[:, -1]])

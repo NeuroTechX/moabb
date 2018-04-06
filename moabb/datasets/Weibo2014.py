@@ -56,17 +56,41 @@ def eeg_data_path(base_path, subject):
 
 
 class Weibo2014(BaseDataset):
-    """Weibo 2014 Motor Imagery dataset [1]
+    """Weibo 2014 Motor Imagery dataset.
 
-    References 
-    ----------- 
-    Yi Weibo, 2014, "EEG data of simple and compound limb
-    motor imagery", https://doi.org/10.7910/DVN/27306, Harvard Dataverse, V1
+    Dataset from the article *Evaluation of EEG oscillatory patterns and
+    cognitive process during simple and compound limb motor imagery* [1]_.
 
+    It contains data recorded on 10 subjects, with 60 electrodes.
+
+    This dataset was used to investigate the differences of the EEG patterns
+    between simple limb motor imagery and compound limb motor
+    imagery. Seven kinds of mental tasks have been designed, involving three
+    tasks of simple limb motor imagery (left hand, right hand, feet), three
+    tasks of compound limb motor imagery combining hand with hand/foot
+    (both hands, left hand combined with right foot, right hand combined with
+    left foot) and rest state.
+
+    At the beginning of each trial (8 seconds), a white circle appeared at the
+    center of the monitor. After 2 seconds, a red circle (preparation cue)
+    appeared for 1 second to remind the subjects of paying attention to the
+    character indication next. Then red circle disappeared and character
+    indication (‘Left Hand’, ‘Left Hand & Right Foot’, et al) was presented on
+    the screen for 4 seconds, during which the participants were asked to
+    perform kinesthetic motor imagery rather than a visual type of imagery
+    while avoiding any muscle movement. After 7 seconds, ‘Rest’ was presented
+    for 1 second before next trial (Fig. 1(a)). The experiments were divided
+    into 9 sections, involving 8 sections consisting of 60 trials each for six
+    kinds of MI tasks (10 trials for each MI task in one section) and one
+    section consisting of 80 trials for rest state. The sequence of six MI
+    tasks was randomized. Intersection break was about 5 to 10 minutes.
+
+    References
+    -----------
+    .. [1] Yi, Weibo, et al. "Evaluation of EEG oscillatory patterns and
+           cognitive process during simple and compound limb motor imagery."
+           PloS one 9.12 (2014). https://doi.org/10.1371/journal.pone.0114853
     """
-
-
-
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),
@@ -77,9 +101,10 @@ class Weibo2014(BaseDataset):
             code='Weibo 2014',
             # Full trial is 0-8 but with trialwise bandpass this reduces
             # boundary effects
-            interval=[0, 8],
+            interval=[3, 7],
+            task_interval=[0, 8],
             paradigm='imagery',
-            doi='10.7910/DVN/27306')
+            doi='10.1371/journal.pone.0114853')
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
@@ -87,9 +112,22 @@ class Weibo2014(BaseDataset):
         # TODO: add 1s 0 buffer between trials and make continuous
         data = loadmat(fname, squeeze_me=True, struct_as_record=False,
                        verify_compressed_data_integrity=False)
-        montage = mne.channels.read_montage('standard_1020')
-        info = mne.create_info(ch_names=['EEG{}'.format(i) for i in range(1, 65)]+['STIM014'],
-                               ch_types=['eeg']*64+['stim'],
+        montage = mne.channels.read_montage('standard_1005')
+        ch_names = ['Fp1', 'Fpz', 'Fp2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1',
+                    'Fz', 'F2', 'F4', 'F6', 'F8', 'FT7', 'FC5', 'FC3', 'FC1',
+                    'FCz', 'FC2', 'FC4', 'FC6', 'FT8', 'T7', 'C5', 'C3', 'C1',
+                    'Cz', 'C2', 'C4', 'C6', 'T8', 'TP7', 'CP5', 'CP3', 'CP1',
+                    'CPz', 'CP2', 'CP4', 'CP6', 'TP8', 'P7', 'P5', 'P3', 'P1',
+                    'Pz', 'P2', 'P4', 'P6', 'P8', 'PO7', 'PO5', 'PO3', 'POz',
+                    'PO4', 'PO6', 'PO8', 'CB1', 'O1', 'Oz', 'O2', 'CB2', 'VEO',
+                    'HEO']
+
+        ch_types = ['eeg'] * 62 + ['eog'] * 2
+        # FIXME not sure what are those CB1 / CB2
+        ch_types[57] = 'misc'
+        ch_types[61] = 'misc'
+        info = mne.create_info(ch_names=ch_names + ['STIM014'],
+                               ch_types=ch_types + ['stim'],
                                sfreq=200, montage=None)
         # until we get the channel names montage is None
         event_ids = data['label'].ravel()
@@ -98,15 +136,17 @@ class Weibo2014(BaseDataset):
         raw_data = raw_data - np.mean(raw_data, axis=2, keepdims=True)
         raw_events = np.zeros((raw_data.shape[0], 1, raw_data.shape[2]))
         raw_events[:, 0, 0] = event_ids
-        data = np.concatenate([raw_data, raw_events], axis=1)
+        data = np.concatenate([1e-6 * raw_data, raw_events], axis=1)
         # add buffer in between trials
         log.warning(
-            'Trial data de-meaned and concatenated with a buffer to create cont data')
+            "Trial data de-meaned and concatenated with a buffer to create "
+            "cont data")
         zeroshape = (data.shape[0], data.shape[1], 50)
         data = np.concatenate([np.zeros(zeroshape), data,
                                np.zeros(zeroshape)], axis=2)
         raw = mne.io.RawArray(data=np.concatenate(list(data), axis=1),
                               info=info, verbose=False)
+        raw.set_montage(montage)
         return {'session_0': {'run_0': raw}}
 
     def data_path(self, subject, path=None, force_update=False,
