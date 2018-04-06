@@ -53,8 +53,7 @@ def dataset_search(paradigm, multi_session=False, events=None,
 
         if paradigm == d.paradigm:
             if interval is not None:
-                min_interval = interval[1]-interval[0]
-                if d.interval[1]-d.interval[0] < min_interval:
+                if d.interval[1]-d.interval[0] < interval:
                     continue
             keep_event_dict = {}
             if events is None:
