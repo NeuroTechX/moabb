@@ -11,7 +11,10 @@ BASE_URL = 'http://www.physionet.org/pn4/eegmmidb/'
 
 
 class PhysionetMI(BaseDataset):
-    """Physionet Motor Imagery dataset"""
+    """Physionet Motor Imagery dataset [1]
+
+    [1]https://physionet.org/pn4/eegmmidb/
+    """
 
     def __init__(self, imagined=True):
         super().__init__(

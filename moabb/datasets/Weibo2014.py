@@ -91,6 +91,7 @@ class Weibo2014(BaseDataset):
            cognitive process during simple and compound limb motor imagery."
            PloS one 9.12 (2014). https://doi.org/10.1371/journal.pone.0114853
     """
+
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),
@@ -99,10 +100,8 @@ class Weibo2014(BaseDataset):
                         hands=3, feet=4, left_hand_right_foot=5,
                         right_hand_left_foot=6, rest=7),
             code='Weibo 2014',
-            # Full trial is 0-8 but with trialwise bandpass this reduces
-            # boundary effects
+            # Full trial w/ rest is 0-8
             interval=[3, 7],
-            task_interval=[0, 8],
             paradigm='imagery',
             doi='10.1371/journal.pone.0114853')
 

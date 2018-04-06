@@ -11,7 +11,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
     """Base dataset"""
 
     def __init__(self, subjects, sessions_per_subject, events,
-                 code, interval, paradigm, task_interval=None, doi=None):
+                 code, interval, paradigm, doi=None):
         """
         Parameters required for all datasets
 
@@ -41,13 +41,10 @@ class BaseDataset(metaclass=abc.ABCMeta):
             Unique identifier for dataset, used in all plots
 
         interval: list with 2 entries
-            Interval relative to trial start for imagery
+            Imagery interval as defined in the dataset description
 
         paradigm: ['p300','imagery']
             Defines what sort of dataset this is (currently only imagery is implemented)
-        
-        task_interval: list of 2 entries or None
-            Defines the start and end of the imagery *relative to event marker.* If not specified, defaults to interval. 
         
         doi: DOI for dataset, optional (for now)
         """
@@ -59,13 +56,6 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self.event_id = events
         self.code = code
         self.interval = interval
-        if task_interval is None:
-            assert interval[0]==0, 'Interval does not start at 0 so task onset is necessary'
-            self.task_interval = list(interval)
-        else:
-            if interval[1]-interval[0] > task_interval[1]-task_interval[0]:
-                log.warning('Given interval extends outside of imagery period')
-            self.task_interval = task_interval
         self.paradigm = paradigm
         self.doi = doi
 

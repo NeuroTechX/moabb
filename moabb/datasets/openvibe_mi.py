@@ -39,13 +39,13 @@ def convert_inria_csv_to_mne(path):
 class OpenvibeMI(BaseDataset):
     """Openvibe Motor Imagery dataset"""
 
-    def __init__(self, tmin=0, tmax=3):
+    def __init__(self):
         super().__init__(
             subjects=[1],
             sessions_per_subject=14,
             events=dict(right_hand=1, left_hand=2),
             code='Openvibe Motor Imagery',
-            interval=[tmin, tmax],
+            interval=[0, 3],
             paradigm='imagery')
 
     def _get_single_subject_data(self, subject):

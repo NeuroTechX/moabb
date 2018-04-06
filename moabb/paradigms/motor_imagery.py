@@ -59,12 +59,9 @@ class BaseMotorImagery(BaseParadigm):
 
         # we should verify list of channels, somehow
 
+    @abc.abstractmethod
     def used_events(self, dataset):
-        if self.events is None:
-            event_id = dataset.event_id
-        else:
-            event_id = {ev: dataset.event_id[ev] for ev in self.events}
-        return event_id
+        pass
 
     def process_raw(self, raw, dataset):
         # find the events
@@ -167,6 +164,9 @@ class LeftRightImagery(BaseMotorImagery):
             raise(ValueError('LeftRightImagery dont accept events'))
         super().__init__(events=['left_hand', 'right_hand'], **kwargs)
 
+    def used_events(self, dataset):
+        return {ev: dataset.event_id[ev] for ev in self.events}
+
     @property
     def scoring(self):
         return 'roc_auc'
@@ -183,6 +183,9 @@ class FilterBankLeftRightImagery(FilterBankMotorImagery):
         if 'events' in kwargs.keys():
             raise(ValueError('LeftRightImagery dont accept events'))
         super().__init__(events=['left_hand', 'right_hand'], **kwargs)
+
+    def used_events(self, dataset):
+        return {ev: dataset.event_id[ev] for ev in self.events}
 
     @property
     def scoring(self):
