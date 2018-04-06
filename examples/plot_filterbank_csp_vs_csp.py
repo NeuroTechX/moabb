@@ -67,8 +67,9 @@ datasets = [BNCI2014001()]
 overwrite = False  # set to True if we want to overwrite cached results
 
 # broadband filters
-filters = [[8, 35]]
-paradigm = LeftRightImagery(filters=filters)
+fmin=8
+fmax=35
+paradigm = LeftRightImagery(fmin=fmin, fmax=fmax)
 evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=datasets,
                                     suffix='examples', overwrite=overwrite)
 results = evaluation.process(pipelines)
@@ -78,7 +79,7 @@ results = results[results.pipeline == 'CSP + LDA']
 
 # bank of 6 filter, by 4 Hz increment
 filters = [[8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 35]]
-paradigm = FilterBankLeftRightImagery()
+paradigm = FilterBankLeftRightImagery(filters=filters)
 evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=datasets,
                                     suffix='examples', overwrite=overwrite)
 results_fb = evaluation.process(pipelines_fb)

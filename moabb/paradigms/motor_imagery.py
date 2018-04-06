@@ -146,7 +146,7 @@ class SinglePass(BaseMotorImagery):
         super().__init__(filters=[[fmin, fmax]], **kwargs)
 
 
-class FilterBankMotorImagery(BaseMotorImagery):
+class FilterBank(BaseMotorImagery):
     """Filter Bank MI."""
 
     def __init__(self, filters=[[8, 12], [12, 16], [16, 20], [20, 24],
@@ -175,7 +175,7 @@ class LeftRightImagery(SinglePass):
         return 'roc_auc'
 
 
-class FilterBankLeftRightImagery(FilterBankMotorImagery):
+class FilterBankLeftRightImagery(FilterBank):
     """Filter Bank Motor Imagery for left hand/right hand classification
 
     Metric is 'roc_auc'
@@ -195,9 +195,9 @@ class FilterBankLeftRightImagery(FilterBankMotorImagery):
         return 'roc_auc'
 
 
-class FilterBankMotorImagery(FilterBankMotorImagery):
+class FilterBankMotorImagery(FilterBank):
     """
-    Filter bank n-class imagery.
+    Filter bank n-class motor imagery.
 
     Metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
@@ -292,11 +292,12 @@ class MotorImagery(SinglePass):
         "docstring"
         super().__init__(**kwargs)
         self.n_classes = n_classes
-        assert n_classes <= len(
-            self.events), 'More classes than events specified'
 
         if self.events is None:
             log.warning("Choosing from all possible events")
+        else:
+            assert n_classes <= len(
+                self.events), 'More classes than events specified'
 
     def verify(self, dataset):
         assert dataset.paradigm == 'imagery'
