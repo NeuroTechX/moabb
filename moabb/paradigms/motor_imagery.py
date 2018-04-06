@@ -22,8 +22,9 @@ class BaseMotorImagery(BaseParadigm):
     filters: List of list (defaults [[7, 35]])
         bank of filter to apply
     interval: list | None, (default None)
-        time interval to epoch trial. If None, defaults to the dataset-defined
-        interval
+        time interval to epoch trial, shifted to imagery start (e.g. 
+        [0,2] becomes [3,5] if imagery starts 3s after the cue). If None, 
+        defaults to the dataset-defined interval
     events: List of str | None (default None)
         event to use for epoching. If None, default to all events defined in
         the dataset.
@@ -78,10 +79,6 @@ class BaseMotorImagery(BaseParadigm):
         # pick events, based on event_id
         try:
             events = mne.pick_events(events, include=list(event_id.values()))
-            # not all runs have all events. Reduce event dict to only occurring events
-            events_in_run = np.unique(events[:, 2])
-            run_event_dict = {k: v for k,
-                              v in event_id.items() if v in events_in_run}
         except RuntimeError as r:
             # skip raw if no event found
             return
@@ -90,7 +87,7 @@ class BaseMotorImagery(BaseParadigm):
         if self.interval is None:
             tmin, tmax = dataset.interval
         else:
-            tmin, tmax = self.interval
+            tmin, tmax = [t + dataset.interval[0] for t in self.interval]
 
         if self.resample is not None:
             raw = raw.copy().resample(self.resample)
@@ -102,14 +99,15 @@ class BaseMotorImagery(BaseParadigm):
             raw_f = raw.copy().filter(fmin, fmax, method='iir',
                                       picks=picks, verbose=False)
             # epoch data
-            epochs = mne.Epochs(raw_f, events, event_id=run_event_dict,
+            epochs = mne.Epochs(raw_f, events, event_id=event_id,
                                 tmin=tmin, tmax=tmax, proj=False,
                                 baseline=None, preload=True,
-                                verbose=False, picks=picks)
+                                verbose=False, picks=picks,
+                                on_missing='ignore')
             # MNE is in V, rescale to have uV
             X.append(1e6 * epochs.get_data())
 
-        inv_events = {k: v for v, k in run_event_dict.items()}
+        inv_events = {k: v for v, k in event_id.items()}
         labels = np.array([inv_events[e] for e in epochs.events[:, -1]])
 
         # if only one band, return a 3D array, otherwise return a 4D
@@ -123,8 +121,13 @@ class BaseMotorImagery(BaseParadigm):
 
     @property
     def datasets(self):
+        if self.interval is None:
+            interval = None
+        else:
+            interval = self.interval[1]-self.interval[0]
         return utils.dataset_search(paradigm='imagery',
                                     events=self.events,
+                                    interval=interval,
                                     has_all_events=True)
 
     @property
@@ -248,9 +251,14 @@ class FilterBankImageryNClass(FilterBankMotorImagery):
 
     @property
     def datasets(self):
+        if self.interval is None:
+            interval = None
+        else:
+            interval = self.interval[1]-self.interval[0]
         return utils.dataset_search(paradigm='imagery',
                                     events=self.events,
                                     total_classes=self.n_classes,
+                                    interval=interval,
                                     has_all_events=False)
 
     @property
@@ -318,9 +326,14 @@ class ImageryNClass(MotorImagery):
 
     @property
     def datasets(self):
+        if self.interval is None:
+            interval = None
+        else:
+            interval = self.interval[1]-self.interval[0]
         return utils.dataset_search(paradigm='imagery',
                                     events=self.events,
                                     total_classes=self.n_classes,
+                                    interval=interval,
                                     has_all_events=False)
 
     @property
