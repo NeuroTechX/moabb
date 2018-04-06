@@ -12,11 +12,16 @@ class Test_MotorImagery(unittest.TestCase):
 
     def test_BaseImagery_paradigm(self):
 
-        self.assertRaises(ValueError, BaseMotorImagery, interval=1)
-        self.assertRaises(ValueError, BaseMotorImagery, interval=[0, 1, 3])
-        self.assertRaises(ValueError, BaseMotorImagery, interval=[1, 0])
+        class SimpleMotorImagery(BaseMotorImagery):
 
-        paradigm = BaseMotorImagery()
+            def used_events(self, dataset):
+                return dataset.event_id
+
+        self.assertRaises(ValueError, SimpleMotorImagery, interval=1)
+        self.assertRaises(ValueError, SimpleMotorImagery, interval=[0, 1, 3])
+        self.assertRaises(ValueError, SimpleMotorImagery, interval=[1, 0])
+
+        paradigm = SimpleMotorImagery()
         dataset = FakeDataset()
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
@@ -39,7 +44,7 @@ class Test_MotorImagery(unittest.TestCase):
         self.assertEquals(len(np.unique(metadata.session)), 2)
 
         # can work with filter bank
-        paradigm = BaseMotorImagery(filters=[[7, 12], [12, 24]])
+        paradigm = SimpleMotorImagery(filters=[[7, 12], [12, 24]])
         dataset = FakeDataset()
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 

@@ -217,11 +217,12 @@ class FilterBankMotorImagery(FilterBank):
         "docstring"
         super().__init__(**kwargs)
         self.n_classes = n_classes
-        assert n_classes <= len(
-            self.events), 'More classes than events specified'
 
         if self.events is None:
             log.warning("Choosing from all possible events")
+        else:
+            assert n_classes <= len(
+                self.events), 'More classes than events specified'
 
     def verify(self, dataset):
         assert dataset.paradigm == 'imagery'
