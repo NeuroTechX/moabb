@@ -14,8 +14,8 @@ for ds in inspect.getmembers(db, inspect.isclass):
 
 
 def dataset_search(paradigm, multi_session=False, events=None,
-                   has_all_events=False, total_classes=None, min_subjects=1,
-                   channels=[]):
+                   has_all_events=False, total_classes=None, interval=None,
+                   min_subjects=1, channels=[]):
     '''
     Function that returns a list of datasets that match given criteria. Valid
     criteria are:
@@ -27,6 +27,7 @@ def dataset_search(paradigm, multi_session=False, events=None,
     multi_session: bool, if True only returns datasets with more than one
     session per subject. If False return all
     paradigm: 'imagery','p300',(more to come)
+    interval: Length of motor imagery interval, in seconds. Only used in imagery paradigm
     min_subjects: int, minimum subjects in dataset
     channels: list or set of channels
 
@@ -51,6 +52,9 @@ def dataset_search(paradigm, multi_session=False, events=None,
             continue
 
         if paradigm == d.paradigm:
+            if interval is not None:
+                if d.interval[1]-d.interval[0] < interval:
+                    continue
             keep_event_dict = {}
             if events is None:
                 # randomly keep n_classes events
