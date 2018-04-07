@@ -17,9 +17,7 @@ class Test_MotorImagery(unittest.TestCase):
             def used_events(self, dataset):
                 return dataset.event_id
 
-        self.assertRaises(ValueError, SimpleMotorImagery, interval=1)
-        self.assertRaises(ValueError, SimpleMotorImagery, interval=[0, 1, 3])
-        self.assertRaises(ValueError, SimpleMotorImagery, interval=[1, 0])
+        self.assertRaises(ValueError, SimpleMotorImagery, tmin=1, tmax=0)
 
         paradigm = SimpleMotorImagery()
         dataset = FakeDataset()

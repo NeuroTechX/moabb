@@ -14,42 +14,53 @@ log = logging.getLogger()
 
 
 class BaseMotorImagery(BaseParadigm):
-    """Base Motor imagery paradigm. Please use one of the child classes
+    """Base Motor imagery paradigm.
+
+    Please use one of the child classes
 
     Parameters
     ----------
 
-    filters: List of list (defaults [[7, 35]])
-        bank of filter to apply
-    interval: list | None, (default None)
-        time interval to epoch trial, shifted to imagery start (e.g. 
-        [0,2] becomes [3,5] if imagery starts 3s after the cue). If None, 
-        defaults to the dataset-defined interval
+    filters: list of list (defaults [[7, 35]])
+        bank of bandpass filter to apply.
+
     events: List of str | None (default None)
         event to use for epoching. If None, default to all events defined in
         the dataset.
+
+    tmin: float (default 0.0)
+        Start time (in second) of the epoch, relative to the dataset specific
+        task interval e.g. tmin = 1 would mean the epoch will start 1 second
+        after the begining of the task as defined by the dataset.
+
+    tmax: float | None, (default None)
+        End time (in second) of the epoch, relative to the begining of the
+        dataset specific task interval. tmax = 5 would mean the epoch will end
+        5 second after the begining of the task as defined in the dataset. If
+        None, use the dataset value.
+
+    channels: list of str | None (default None)
+        list of channel to select. If None, use all EEG channels available in
+        the dataset.
+
+    resample: float | None (default None)
+        If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, filters=[[7, 35]], channels=None, interval=None,
-                 events=None, resample=None, **kwargs):
+    def __init__(self, filters=[[7, 35]], events=None, tmin=0.0, tmax=None,
+                 channels=None, resample=None, **kwargs):
         super().__init__(**kwargs)
         self.filters = filters
         self.channels = channels
         self.events = events
         self.resample = resample
 
-        if interval is not None:
-            if not isinstance(interval, list):
-                raise(ValueError("interval must be a list"))
+        if (tmax is not None):
+            if tmin >= tmax:
+                raise(ValueError("tmax must be greater than tmin"))
 
-            if len(interval) != 2:
-                raise(ValueError("interval must be a list of 2 elements"))
-
-            if interval[0] >= interval[1]:
-                raise(ValueError("first element of interval must be greater"
-                                 "than the second element"))
-
-        self.interval = interval
+        self.tmin = tmin
+        self.tmax = tmax
 
     def verify(self, dataset):
         assert dataset.paradigm == 'imagery'
@@ -84,10 +95,11 @@ class BaseMotorImagery(BaseParadigm):
             return
 
         # get interval
-        if self.interval is None:
-            tmin, tmax = dataset.interval
+        tmin = self.tmin + dataset.interval[0]
+        if self.tmax is None:
+            tmax = dataset.interval[1]
         else:
-            tmin, tmax = [t + dataset.interval[0] for t in self.interval]
+            tmax = self.tmax + dataset.interval[0]
 
         if self.resample is not None:
             raw = raw.copy().resample(self.resample)
