@@ -29,7 +29,10 @@ This document (the README file) is a hub to give you some information about the 
 * [Find out more](#find-out-more)
 * [Installation](#install)
 * [Running](#running)
-* [License](#license)
+* [Supported datasets](#datasets)
+* [Documentation](#docs)
+* [Architecture and main concepts](#architecture)
+
 
 ## What are we doing?
 
@@ -135,7 +138,7 @@ python -m moabb.run --verbose
 
 [http://moabb.neurotechx.com/docs/](http://moabb.neurotechx.com/docs/)
 
-## Supported datasets
+## <a name="datasets"></a> Supported datasets:
 
 The list of supported dataset can be found here : http://moabb.neurotechx.com/docs/datasets.html
 
@@ -143,7 +146,7 @@ The list of supported dataset can be found here : http://moabb.neurotechx.com/do
 
 you can submit new dataset by filling this [form](https://docs.google.com/forms/d/e/1FAIpQLScxbpqK4omKsUs4tA2XpfeHJATo_SbYvT0hpxoeKDb5k_TZvQ/viewform). Please check first that the algorithm is not in the [list](https://docs.google.com/spreadsheets/d/1fQNFXGu1J1yJ9jFCer9EQQatjCPJWg7O-uCGF0Z4PiM/edit).  
 
-## Architecture and main concepts
+## <a name="architecture"></a> Architecture and main concepts:
 
 there is 4 main concepts in the MOABB: the datasets, the paradigm, the evaluation, and the pipelines.
 
