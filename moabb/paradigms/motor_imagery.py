@@ -48,8 +48,8 @@ class BaseMotorImagery(BaseParadigm):
     """
 
     def __init__(self, filters=[[7, 35]], events=None, tmin=0.0, tmax=None,
-                 channels=None, resample=None, **kwargs):
-        super().__init__(**kwargs)
+                 channels=None, resample=None):
+        super().__init__()
         self.filters = filters
         self.channels = channels
         self.events = events
@@ -133,10 +133,10 @@ class BaseMotorImagery(BaseParadigm):
 
     @property
     def datasets(self):
-        if self.interval is None:
+        if self.tmax is None:
             interval = None
         else:
-            interval = self.interval[1]-self.interval[0]
+            interval = self.tmax - self.tmin
         return utils.dataset_search(paradigm='imagery',
                                     events=self.events,
                                     interval=interval,
@@ -148,11 +148,42 @@ class BaseMotorImagery(BaseParadigm):
 
 
 class SinglePass(BaseMotorImagery):
+    """Single Bandpass filter motot Imagery.
 
+    Motor imagery paradigm with only one bandpass filter (default 8 to 32 Hz)
+
+    Parameters
+    ----------
+    fmin: float (default 8)
+        cutoff frequency (Hz) for the high pass filter
+
+    fmax: float (default 32)
+        cutoff frequency (Hz) for the low pass filter
+
+    events: List of str | None (default None)
+        event to use for epoching. If None, default to all events defined in
+        the dataset.
+
+    tmin: float (default 0.0)
+        Start time (in second) of the epoch, relative to the dataset specific
+        task interval e.g. tmin = 1 would mean the epoch will start 1 second
+        after the begining of the task as defined by the dataset.
+
+    tmax: float | None, (default None)
+        End time (in second) of the epoch, relative to the begining of the
+        dataset specific task interval. tmax = 5 would mean the epoch will end
+        5 second after the begining of the task as defined in the dataset. If
+        None, use the dataset value.
+
+    channels: list of str | None (default None)
+        list of channel to select. If None, use all EEG channels available in
+        the dataset.
+
+    resample: float | None (default None)
+        If not None, resample the eeg data with the sampling rate provided.
+
+    """
     def __init__(self, fmin=8, fmax=32, **kwargs):
-        """
-        Single-pass MI. Takes arguments fmin and fmax and not filters
-        """
         if 'filters' in kwargs.keys():
             raise(ValueError('MotorImagery does not take argument \'filters\''))
         super().__init__(filters=[[fmin, fmax]], **kwargs)
@@ -264,10 +295,10 @@ class FilterBankMotorImagery(FilterBank):
 
     @property
     def datasets(self):
-        if self.interval is None:
+        if self.tmax is None:
             interval = None
         else:
-            interval = self.interval[1]-self.interval[0]
+            interval = self.tmax - self.tmin
         return utils.dataset_search(paradigm='imagery',
                                     events=self.events,
                                     total_classes=self.n_classes,
@@ -299,10 +330,32 @@ class MotorImagery(SinglePass):
         number of classes each dataset must have. If events is given,
         requires all imagery sorts to be within the events list.
 
+    fmin: float (default 8)
+        cutoff frequency (Hz) for the high pass filter
+
+    fmax: float (default 32)
+        cutoff frequency (Hz) for the low pass filter
+
+    tmin: float (default 0.0)
+        Start time (in second) of the epoch, relative to the dataset specific
+        task interval e.g. tmin = 1 would mean the epoch will start 1 second
+        after the begining of the task as defined by the dataset.
+
+    tmax: float | None, (default None)
+        End time (in second) of the epoch, relative to the begining of the
+        dataset specific task interval. tmax = 5 would mean the epoch will end
+        5 second after the begining of the task as defined in the dataset. If
+        None, use the dataset value.
+
+    channels: list of str | None (default None)
+        list of channel to select. If None, use all EEG channels available in
+        the dataset.
+
+    resample: float | None (default None)
+        If not None, resample the eeg data with the sampling rate provided.
     """
 
     def __init__(self, n_classes=2, **kwargs):
-        "docstring"
         super().__init__(**kwargs)
         self.n_classes = n_classes
 
@@ -340,10 +393,10 @@ class MotorImagery(SinglePass):
 
     @property
     def datasets(self):
-        if self.interval is None:
+        if self.tmax is None:
             interval = None
         else:
-            interval = self.interval[1]-self.interval[0]
+            interval = self.tmax - self.tmin
         return utils.dataset_search(paradigm='imagery',
                                     events=self.events,
                                     total_classes=self.n_classes,
@@ -359,7 +412,7 @@ class MotorImagery(SinglePass):
 
 
 class FakeImageryParadigm(LeftRightImagery):
-    """fake Imagery for left hand/right hand classification
+    """Fake Imagery for left hand/right hand classification.
     """
 
     @property
