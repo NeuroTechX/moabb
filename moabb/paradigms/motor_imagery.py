@@ -47,7 +47,7 @@ class BaseMotorImagery(BaseParadigm):
         If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, filters=((7, 35)), events=None, tmin=0.0, tmax=None,
+    def __init__(self, filters=([7, 35],), events=None, tmin=0.0, tmax=None,
                  channels=None, resample=None):
         super().__init__()
         self.filters = filters
