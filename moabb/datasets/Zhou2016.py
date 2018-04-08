@@ -1,15 +1,13 @@
 '''
-Simple and compound motor imagery
+Simple and compound motor imagery.
 https://doi.org/10.1371/journal.pone.0114853
 '''
 
 from .base import BaseDataset
 import zipfile as z
-from scipy.io import loadmat
+from mne.io import read_raw_cnt
 from mne.datasets.utils import _get_path, _do_path_update
 from mne.utils import _fetch_file
-import mne
-import numpy as np
 import os
 import shutil
 
@@ -28,20 +26,22 @@ def local_data_path(base_path, subject):
         datapath = os.path.join(base_path, 'data')
         for i in range(1, 5):
             os.makedirs(os.path.join(base_path, 'subject_{}'.format(i)))
-            for session in range(1,4):
-                for run in ['A','B']:
-                    os.rename(os.path.join(datapath, 'S{}_{}{}.cnt'.format(i,session, run)),
+            for session in range(1, 4):
+                for run in ['A', 'B']:
+                    os.rename(os.path.join(datapath,
+                                           'S{}_{}{}.cnt'.format(i, session,
+                                                                 run)),
                               os.path.join(base_path,
                                            'subject_{}'.format(i),
-                                           '{}{}.cnt'.format(session,run)))
+                                           '{}{}.cnt'.format(session, run)))
         shutil.rmtree(os.path.join(base_path, 'data'))
     subjpath = os.path.join(base_path, 'subject_{}'.format(subject))
-    return [[os.path.join(subjpath,
-                          '{}{}.cnt'.format(y, x)) for x in ['A', 'B']] for y in ['1', '2', '3']]
+    return [[os.path.join(subjpath, '{}{}.cnt'.format(y, x))
+             for x in ['A', 'B']] for y in ['1', '2', '3']]
 
 
 class Zhou2016(BaseDataset):
-    """Dataset from Zhou et al. 2016.
+    """Motor Imagery dataset from Zhou et al 2016.
 
     Dataset from the article *A Fully Automated Trial Selection Method for
     Optimization of Motor Imagery Based Brain-Computer Interface* [1]_.
@@ -92,9 +92,8 @@ class Zhou2016(BaseDataset):
             out[sess_key] = {}
             for run_ind, fname in enumerate(runlist):
                 run_key = 'run_{}'.format(run_ind)
-                out[sess_key][run_key] = mne.io.read_raw_cnt(fname,
-                                                             preload=True,
-                                                             montage='standard_1020')
+                out[sess_key][run_key] = read_raw_cnt(fname, preload=True,
+                                                      montage='standard_1005')
         return out
 
     def data_path(self, subject, path=None, force_update=False,

@@ -640,20 +640,24 @@ class MNEBNCI(BaseDataset):
 
 
 class BNCI2014001(MNEBNCI):
-    """BNCI 2014-001 Motor Imagery dataset
+    """BNCI 2014-001 Motor Imagery dataset.
+
+    Dataset IIa from BCI Competition 4 [1]_.
+
+    **Dataset Description**
 
     This data set consists of EEG data from 9 subjects.  The cue-based BCI
     paradigm consisted of four different motor imagery tasks, namely the imag-
     ination of movement of the left hand (class 1), right hand (class 2), both
     feet (class 3), and tongue (class 4).  Two sessions on different days were
-    recorded for each subject.  Each session is comprised of 6 runs separated by
-    short breaks.  One run consists of 48 trials (12 for each of the four
+    recorded for each subject.  Each session is comprised of 6 runs separated
+    by short breaks.  One run consists of 48 trials (12 for each of the four
     possible classes), yielding a total of 288 trials per session.
 
-    The subjects were sitting in a comfortable armchair in front of a com- puter
+    The subjects were sitting in a comfortable armchair in front of a computer
     screen.  At the beginning of a trial ( t = 0 s), a fixation cross appeared
-    on the black screen.  In addition, a short acoustic warning tone was pre-
-    sented.  After two seconds ( t = 2 s), a cue in the form of an arrow
+    on the black screen.  In addition, a short acoustic warning tone was
+    presented.  After two seconds ( t = 2 s), a cue in the form of an arrow
     pointing either to the left, right, down or up (corresponding to one of the
     four classes left hand, right hand, foot or tongue) appeared and stayed on
     the screen for 1.25 s.  This prompted the subjects to perform the desired
@@ -663,16 +667,19 @@ class BNCI2014001(MNEBNCI):
 
     Twenty-two Ag/AgCl electrodes (with inter-electrode distances of 3.5 cm)
     were used to record the EEG; the montage is shown in Figure 3 left.  All
-    signals were recorded monopolarly with the left mastoid serving as reference
-    and the right mastoid as ground.  The signals were sampled with 250 Hz and
-    bandpass-filtered between 0.5 Hz and 100 Hz. The sensitivity of the
-    amplifier was set to 100 μV . An additional 50 Hz notch filter was enabled
-    to suppress line noise
+    signals were recorded monopolarly with the left mastoid serving as
+    reference and the right mastoid as ground. The signals were sampled with.
+    250 Hz and bandpass-filtered between 0.5 Hz and 100 Hz. The sensitivity of
+    the amplifier was set to 100 μV . An additional 50 Hz notch filter was
+    enabled to suppress line noise
 
     References
     ----------
 
-    .. [1] doi.org/10.3389/fnins.2012.00055
+    .. [1] Tangermann, M., Müller, K.R., Aertsen, A., Birbaumer, N., Braun, C.,
+           Brunner, C., Leeb, R., Mehring, C., Miller, K.J., Mueller-Putz, G.
+           and Nolte, G., 2012. Review of the BCI competition IV.
+           Frontiers in neuroscience, 6, p.55.
     """
 
     def __init__(self):
@@ -687,8 +694,12 @@ class BNCI2014001(MNEBNCI):
 
 
 class BNCI2014002(MNEBNCI):
-    """BNCI 2014-002 Motor Imagery dataset
-    
+    """BNCI 2014-002 Motor Imagery dataset.
+
+    Motor Imagery Dataset from [1]_.
+
+    **Dataset description**
+
     The session consisted of eight runs, five of them for training and three
     with feedback for validation.  One run was composed of 20 trials.  Taken
     together, we recorded 50 trials per class for training and 30 trials per
@@ -700,7 +711,8 @@ class BNCI2014002(MNEBNCI):
     with MI as soon as they recognized the cue and to perform the indicated MI
     until the cross disappeared at 8 s. A rest period with a random length
     between 2 s and 3 s was presented between trials. Participants did not
-    receive feedback during training.  Feedback was presented in form of a white
+    receive feedback during training.  Feedback was presented in form of a
+    white
     coloured bar-graph.  The length of the bar-graph reflected the amount of
     correct classifications over the last second.  EEG was measured with a
     biosignal amplifier and active Ag/AgCl electrodes (g.USBamp, g.LADYbird,
@@ -712,12 +724,15 @@ class BNCI2014002(MNEBNCI):
     mastoid and the ground electrode on the right mastoid.  The 13 participants
     were aged between 20 and 30 years, 8 naive to the task, and had no known
     medical or neurological diseases.
-    
+
     References
     -----------
 
-    .. [1] doi.org/10.1515/bmt-2014-0117
-    
+    .. [1] Steyrl, D., Scherer, R., Faller, J. and Müller-Putz, G.R., 2016.
+           Random forests in non-invasive sensorimotor rhythm brain-computer
+           interfaces: a practical and convenient non-linear classifier.
+           Biomedical Engineering/Biomedizinische Technik, 61(1), pp.77-86.
+
     """
 
     def __init__(self):
@@ -732,34 +747,41 @@ class BNCI2014002(MNEBNCI):
 
 
 class BNCI2014004(MNEBNCI):
-    """BNCI 2014-004 Motor Imagery dataset:BCI Competition 2008 – Graz data set B
-    
-    This data set consists of EEG data from 9 subjects of a study published in [1].
-    The subjects were right-handed, had normal or corrected-to-normal vision and
-    were paid for participating in the experiments.  All volunteers were sitting in
-    an armchair, watching a flat screen monitor placed approximately 1 m away at eye
-    level.  For each subject 5 sessions are provided, whereby the first two sessions
-    contain training data without feedback (screening), and the last three sessions
-    were recorded with feedback.
+    """BNCI 2014-004 Motor Imagery dataset.
+
+    Dataset B from BCI Competition 2008 [1]_.
+
+    **Dataset description**
+
+    This data set consists of EEG data from 9 subjects of a study published in
+    [1]_. The subjects were right-handed, had normal or corrected-to-normal
+    vision and were paid for participating in the experiments.
+    All volunteers were sitting in an armchair, watching a flat screen monitor
+    placed approximately 1 m away at eye level. For each subject 5 sessions
+    are provided, whereby the first two sessions contain training data without
+    feedback (screening), and the last three sessions were recorded with
+    feedback.
 
     Three bipolar recordings (C3, Cz, and C4) were recorded with a sampling
-    frequency of 250 Hz.They were bandpass- filtered between 0.5 Hz and 100 Hz, and
-    a notch filter at 50 Hz was enabled.  The placement of the three bipolar
-    recordings (large or small distances, more anterior or posterior) were slightly
-    different for each subject (for more details see [1]).  The electrode position
-    Fz served as EEG ground. In addition to the EEG channels, the electrooculogram
-    (EOG) was recorded with three monopolar electrodes.
+    frequency of 250 Hz.They were bandpass- filtered between 0.5 Hz and 100 Hz,
+    and a notch filter at 50 Hz was enabled.  The placement of the three
+    bipolar recordings (large or small distances, more anterior or posterior)
+    were slightly different for each subject (for more details see [1]).
+    The electrode position Fz served as EEG ground. In addition to the EEG
+    channels, the electrooculogram (EOG) was recorded with three monopolar
+    electrodes.
 
     The cue-based screening paradigm consisted of two classes,
-    namely the motor imagery (MI) of left hand (class 1) and right hand (class 2).
-    Each subject participated in two screening sessions without feedback recorded on
-    two different days within two weeks.  Each session consisted of six runs with
-    ten trials each and two classes of imagery.  This resulted in 20 trials per run
-    and 120 trials per session.  Data of 120 repetitions of each MI class were
-    available for each person in total.  Prior to the first motor im- agery training
-    the subject executed and imagined different movements for each body part and
-    selected the one which they could imagine best (e. g., squeezing a ball or
-    pulling a brake).
+    namely the motor imagery (MI) of left hand (class 1) and right hand
+    (class 2).
+    Each subject participated in two screening sessions without feedback
+    recorded on two different days within two weeks.
+    Each session consisted of six runs with ten trials each and two classes of
+    imagery.  This resulted in 20 trials per run and 120 trials per session.
+    Data of 120 repetitions of each MI class were available for each person in
+    total.  Prior to the first motor im- agery training the subject executed
+    and imagined different movements for each body part and selected the one
+    which they could imagine best (e. g., squeezing a ball or pulling a brake).
 
     Each trial started with a fixation cross and an additional short acoustic
     warning tone (1 kHz, 70 ms).  Some seconds later a visual cue was presented
@@ -768,7 +790,7 @@ class BNCI2014004(MNEBNCI):
     short break of at least 1.5 seconds.  A randomized time of up to 1 second
     was added to the break to avoid adaptation
 
-        For the three online feedback sessions four runs with smiley feedback
+    For the three online feedback sessions four runs with smiley feedback
     were recorded, whereby each run consisted of twenty trials for each type of
     motor imagery.  At the beginning of each trial (second 0) the feedback (a
     gray smiley) was centered on the screen.  At second 2, a short warning beep
@@ -776,10 +798,14 @@ class BNCI2014004(MNEBNCI):
     second 7.5 the screen went blank and a random interval between 1.0 and 2.0
     seconds was added to the trial.
 
-    [1] R. Leeb, F. Lee, C. Keinrath, R. Scherer, H. Bischof, G. Pfurtscheller.
-    Brain-computer  communication:  motivation,  aim,  and  impact  of  ex-
-    ploring a virtual apartment. IEEE Transactions on Neural Systems and
-    Rehabilitation Engineering 15, 473–482, 2007
+    References
+    ----------
+
+    .. [1] R. Leeb, F. Lee, C. Keinrath, R. Scherer, H. Bischof,
+           G. Pfurtscheller. Brain-computer communication: motivation, aim,
+           and impact of exploring a virtual apartment. IEEE Transactions on
+           Neural Systems and Rehabilitation Engineering 15, 473–482, 2007
+
     """
 
     def __init__(self):
@@ -794,7 +820,12 @@ class BNCI2014004(MNEBNCI):
 
 
 class BNCI2015001(MNEBNCI):
-    """BNCI 2015-001 Motor Imagery dataset
+    """BNCI 2015-001 Motor Imagery dataset.
+
+    Dataset from [1]_.
+
+    **Dataset description**
+
     We acquired the EEG from three Laplacian derivations, 3.5 cm (center-to-
     center) around the electrode positions (according to International 10-20
     System of Electrode Placement) C3 (FC3, C5, CP3 and C1), Cz (FCz, C1, CPz
@@ -807,18 +838,21 @@ class BNCI2015001(MNEBNCI):
 
     The task for the user was to perform sustained right hand versus both feet
     movement imagery starting from the cue (second 3) to the end of the cross
-    period (sec- ond 8).  A trial started with 3 s of reference period, followed
-    by a brisk audible cue and a visual cue (arrow right for right hand, arrow
-    down for both feet) from second 3 to 4.25.  The activity period, where the
-    users received feedback, lasted from second 4 to 8.  There was a random 2 to
-    3 s pause between the trials.
+    period (sec- ond 8).  A trial started with 3 s of reference period,
+    followed by a brisk audible cue and a visual cue (arrow right for right
+    hand, arrow down for both feet) from second 3 to 4.25.
+    The activity period, where the users received feedback, lasted from
+    second 4 to 8. There was a random 2 to 3 s pause between the trials.
 
 
+    References
+    ----------
 
-    [1] J.  Faller, C.  Vidaurre, T.  Solis-Escalante, C.  Neuper and R.
-    Scherer (2012) Autocalibration and recurrent adaptation: Towards a plug and
-    play online ERD- BCI.  IEEE Transactions on Neural Systems and
-    Rehabilitation Engineering, 20(3), 313-319 .  Doi: 10.1109/tnsre.2012.2189584.
+    .. [1] J. Faller, C. Vidaurre, T. Solis-Escalante, C. Neuper and R.
+           Scherer (2012). Autocalibration and recurrent adaptation: Towards a
+           plug and play online ERD- BCI.  IEEE Transactions on Neural Systems
+           and Rehabilitation Engineering, 20(3), 313-319.
+
     """
 
     def __init__(self):
@@ -834,44 +868,56 @@ class BNCI2015001(MNEBNCI):
 
 
 class BNCI2015004(MNEBNCI):
-    """BNCI 2015-004 Motor Imagery dataset
+    """BNCI 2015-004 Motor Imagery dataset.
+
+    Dataset from [1]_.
+
+    **Dataset description**
+
     We provide EEG data recorded from nine users with disability (spinal cord
     injury and stroke) on two different days (sessions).  Users performed,
     follow- ing a cue-guided experimental paradigm, five distinct mental tasks
-    (MT).  MTs include mental word association (condition WORD), mental subtrac-
-    tion (SUB), spatial navigation (NAV), right hand motor imagery (HAND) and
+    (MT).  MTs include mental word association (condition WORD), mental
+    subtraction (SUB), spatial navigation (NAV), right hand motor imagery
+    (HAND) and
     feet motor imagery (FEET). Details on the experimental paradigm are
     summarized in Figure 1.  The session for a single subject consisted of 8
     runs resulting in 40 trials of each class for each day.  One single
     experimental run consisted of 25 cues, with 5 of each mental task.  Cues
     were presented in random order.
 
-    EEG was recorded from 30 electrode channels placed on the scalp accord- ing
+    EEG was recorded from 30 electrode channels placed on the scalp according
     to the international 10-20 system.  Electrode positions included channels
     AFz, F7, F3, Fz, F4, F8, FC3, FCz, FC4, T3, C3, Cz, C4, T4, CP3, CPz,CP4,
-    P7, P5, P3, P1, Pz, P2, P4, P6, P8, PO3, PO4, O1, and O2.  Ref- erence and
+    P7, P5, P3, P1, Pz, P2, P4, P6, P8, PO3, PO4, O1, and O2.  Reference and
     ground were placed at the left and right mastoid, respectively.  The g.tec
-    GAMMAsys system with g.LADYbird active electrodes and two g.USBamp biosignal
+    GAMMAsys system with g.LADYbird active electrodes and two g.USBamp
+    biosignal
     amplifiers (Guger Technolgies, Graz, Austria) was used for recording.  EEG
     was band pass filtered 0.5-100 Hz (notch filter at 50 Hz) and sampled at a
     rate of 256 Hz.
 
     The duration of a single imagery trials is 10 s.  At t = 0 s, a cross was
-    presented in the middle of the screen.  Participants were asked to relax and
+    presented in the middle of the screen.  Participants were asked to relax
+    and
     fixate the cross to avoid eye movements.  At t = 3 s, a beep was sounded to
     get the participant’s attention.  The cue indicating the requested imagery
     task, one out of five graphical symbols, was presented from t = 3 s to t =
     4.25 s.  At t = 10 s, a second beep was sounded and the fixation-cross
     disappeared, which indicated the end of the trial.  A variable break
-    (inter-trial- interval, ITI) lasting between 2.5 s and 3.5 s occurred before
+    (inter-trial-interval, ITI) lasting between 2.5 s and 3.5 s occurred
+    before
     the start of the next trial.  Participants were asked to avoid movements
     during the imagery period, and to move and blink during the
     ITI. Experimental runs began and ended with a blank screen (duration 4 s)
 
-    [1] Scherer R, Faller J, Friedrich EVC, Opisso E, Costa U, Kübler A, et
-    al. (2015) Individually Adapted Imagery Improves Brain-Computer Interface
-    Performance in End-Users with Disability. PLoS ONE 10(5):
-    e0123727. https://doi.org/10.1371/journal.pone.0123727
+    References
+    ----------
+
+    .. [1] Scherer R, Faller J, Friedrich EVC, Opisso E, Costa U, Kübler A, et
+           al. (2015) Individually Adapted Imagery Improves Brain-Computer
+           Interface Performance in End-Users with Disability. PLoS ONE 10(5).
+           https://doi.org/10.1371/journal.pone.0123727
     """
 
     def __init__(self):

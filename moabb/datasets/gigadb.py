@@ -15,18 +15,46 @@ import logging
 
 log = logging.getLogger()
 
-GIGA_URL = 'ftp://penguin.genomics.cn/pub/10.5524/100001_101000/100295/mat_data/'
+GIGA_URL = 'ftp://penguin.genomics.cn/pub/10.5524/100001_101000/100295/mat_data/' # noqa
 
 
-class GigaDbMI(BaseDataset):
-    """GigaDb Motor Imagery dataset
-    We conducted a BCI experiment for motor imagery movement (MI movement) of the left and right hands with 52 subjects (19 females, mean age ± SD age = 24.8 ± 3.86 years); the experiment was approved by the Institutional Review Board of Gwangju Institute of Science and Technology. Each subject took part in the same experiment, and subject ID was denoted and indexed as s1, s2, …, s52. Subjects s20 and s33 were both-handed, and the other 50 subjects were right-handed.
+class Cho2017(BaseDataset):
+    """Motor Imagery dataset from Cho et al 2017.
 
-    EEG data were collected using 64 Ag/AgCl active electrodes. As shown in Fig. 1, a 64-channel montage based on the international 10-10 system was used to record the EEG signals with 512 Hz sampling rates. The EEG device used in this experiment was the Biosemi ActiveTwo system. The BCI2000 system 3.0.2 was used to collect EEG data and present instructions (left hand or right hand MI). Furthermore, we recorded EMG as well as EEG simultaneously with the same system and sampling rate to check actual hand movements. Two EMG electrodes were attached to the flexor digitorum profundus and extensor digitorum on each arm.
+    Dataset from the paper [1]_.
 
-    Subjects were asked to imagine the hand movement depending on the instruction given. Five or six runs were performed during the MI experiment. After each run, we calculated the classification accuracy over one run and gave the subject feedback to increase motivation. Between each run, a maximum 4-minute break was given depending on the subject's demands.
+    **Dataset Description**
 
-    [1] Hohyun Cho, Minkyu Ahn, Sangtae Ahn, Moonyoung Kwon, Sung Chan Jun; EEG datasets for motor imagery brain–computer interface, GigaScience, Volume 6, Issue 7, 1 July 2017, Pages 1–8, https://doi.org/10.1093/gigascience/gix034
+    We conducted a BCI experiment for motor imagery movement (MI movement)
+    of the left and right hands with 52 subjects (19 females, mean age ± SD
+    age = 24.8 ± 3.86 years); Each subject took part in the same experiment,
+    and subject ID was denoted and indexed as s1, s2, …, s52.
+    Subjects s20 and s33 were both-handed, and the other 50 subjects
+    were right-handed.
+
+    EEG data were collected using 64 Ag/AgCl active electrodes.
+    A 64-channel montage based on the international 10-10 system was used to
+    record the EEG signals with 512 Hz sampling rates.
+    The EEG device used in this experiment was the Biosemi ActiveTwo system.
+    The BCI2000 system 3.0.2 was used to collect EEG data and present
+    instructions (left hand or right hand MI). Furthermore, we recorded
+    EMG as well as EEG simultaneously with the same system and sampling rate
+    to check actual hand movements. Two EMG electrodes were attached to the
+    flexor digitorum profundus and extensor digitorum on each arm.
+
+    Subjects were asked to imagine the hand movement depending on the
+    instruction given. Five or six runs were performed during the MI
+    experiment. After each run, we calculated the classification
+    accuracy over one run and gave the subject feedback to increase motivation.
+    Between each run, a maximum 4-minute break was given depending on
+    the subject's demands.
+
+    References
+    ----------
+
+    .. [1] Cho, H., Ahn, M., Ahn, S., Kwon, M. and Jun, S.C., 2017.
+           EEG datasets for motor imagery brain computer interface.
+           GigaScience. https://doi.org/10.1093/gigascience/gix034
     """
 
     def __init__(self):
@@ -34,10 +62,11 @@ class GigaDbMI(BaseDataset):
             subjects=list(range(1, 53)),
             sessions_per_subject=1,
             events=dict(left_hand=1, right_hand=2),
-            code='GigaDb Motor Imagery',
+            code='Cho2017',
             interval=[0, 3],  # full trial is 0-3s, but edge effects
             paradigm='imagery',
             doi='10.5524/100295')
+
         for ii in [32, 46, 49]:
             self.subject_list.remove(ii)
 
@@ -71,9 +100,10 @@ class GigaDbMI(BaseDataset):
 
         # trials are already non continuous. edge artifact can appears but
         # are likely to be present during rest / inter-trial activity
-        eeg_data = np.hstack([eeg_data_l, np.zeros((eeg_data_l.shape[0], 500)),eeg_data_r])
-        log.warning(
-            'Trials demeaned and stacked with zero buffer to create continuous data --  edge effects present')
+        eeg_data = np.hstack([eeg_data_l, np.zeros((eeg_data_l.shape[0], 500)),
+                              eeg_data_r])
+        log.warning("Trials demeaned and stacked with zero buffer to create "
+                    "continuous data -- edge effects present")
 
         info = create_info(ch_names=ch_names, ch_types=ch_types,
                            sfreq=data.srate, montage=montage)

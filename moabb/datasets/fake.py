@@ -13,7 +13,7 @@ class FakeDataset(BaseDataset):
 
     """
 
-    def __init__(self, event_list=['fake_c1', 'fake_c2', 'fake_c3'],
+    def __init__(self, event_list=('fake_c1', 'fake_c2', 'fake_c3'),
                  n_sessions=2, n_runs=2, n_subjects=10):
         self.n_runs = n_runs
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}

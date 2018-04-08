@@ -3,7 +3,6 @@ Utils for easy database selection
 '''
 
 import inspect
-import numpy as np
 import moabb.datasets as db
 from moabb.datasets.base import BaseDataset
 
@@ -15,21 +14,39 @@ for ds in inspect.getmembers(db, inspect.isclass):
 
 def dataset_search(paradigm, multi_session=False, events=None,
                    has_all_events=False, total_classes=None, interval=None,
-                   min_subjects=1, channels=[]):
+                   min_subjects=1, channels=()):
     '''
     Function that returns a list of datasets that match given criteria. Valid
     criteria are:
 
+    Parameters
+    ----------
+    paradigm: str
+        'imagery','p300',(more to come)
+
+    multi_session: bool
+        if True only returns datasets with more than one session per subject.
+        If False return all
+
     events: list of strings
-    total_classes: int or None, total number of classes (returns all if None), will either truncate or choose
-    from events. Defaults to 100 to keep all classes.
-    has_all_events: bool, skip datasets that don't have all events in events
-    multi_session: bool, if True only returns datasets with more than one
-    session per subject. If False return all
-    paradigm: 'imagery','p300',(more to come)
-    interval: Length of motor imagery interval, in seconds. Only used in imagery paradigm
-    min_subjects: int, minimum subjects in dataset
-    channels: list or set of channels
+        events to select
+
+    has_all_events: bool
+        skip datasets that don't have all events in events
+
+    total_classes: int or None
+        total number of classes (returns all if None)
+        will either truncate or choose rom events.
+
+    interval:
+        Length of motor imagery interval, in seconds. Only used in imagery
+        paradigm
+
+    min_subjects: int,
+        minimum subjects in dataset
+
+    channels: list of str
+        list or set of channels
 
     '''
     channels = set(channels)
@@ -76,7 +93,8 @@ def dataset_search(paradigm, multi_session=False, events=None,
                     else:
                         if has_all_events:
                             skip_dataset = True
-                # don't want to use datasets with less than total number of labels
+                # don't want to use datasets with less than total number of
+                # labels
                 if n_classes is not None:
                     if n_events < n_classes:
                         skip_dataset = True
@@ -118,7 +136,7 @@ def find_intersecting_channels(datasets, verbose=False):
             dset_chans.append(processed)
             keep_datasets.append(d)
         else:
-            print('Dataset {:s} has no recognizable EEG channels'.format(type(d).__name__))
+            print('Dataset {:s} has no recognizable EEG channels'.format(type(d).__name__)) # noqa
     for d in dset_chans:
         allchans.intersection_update(d)
     allchans = [s.replace('Z', 'z') for s in allchans]
