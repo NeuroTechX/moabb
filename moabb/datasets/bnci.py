@@ -749,7 +749,7 @@ class BNCI2014002(MNEBNCI):
 class BNCI2014004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset.
 
-    Dataset B from BCI Competition 2008 [1]_.
+    Dataset B from BCI Competition 2008.
 
     **Dataset description**
 
@@ -844,7 +844,6 @@ class BNCI2015001(MNEBNCI):
     The activity period, where the users received feedback, lasted from
     second 4 to 8. There was a random 2 to 3 s pause between the trials.
 
-
     References
     ----------
 
@@ -918,6 +917,7 @@ class BNCI2015004(MNEBNCI):
            al. (2015) Individually Adapted Imagery Improves Brain-Computer
            Interface Performance in End-Users with Disability. PLoS ONE 10(5).
            https://doi.org/10.1371/journal.pone.0123727
+
     """
 
     def __init__(self):

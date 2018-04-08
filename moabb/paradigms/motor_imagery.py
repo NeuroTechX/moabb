@@ -47,7 +47,7 @@ class BaseMotorImagery(BaseParadigm):
         If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, filters=[[7, 35]], events=None, tmin=0.0, tmax=None,
+    def __init__(self, filters=((7, 35)), events=None, tmin=0.0, tmax=None,
                  channels=None, resample=None):
         super().__init__()
         self.filters = filters
@@ -185,15 +185,15 @@ class SinglePass(BaseMotorImagery):
     """
     def __init__(self, fmin=8, fmax=32, **kwargs):
         if 'filters' in kwargs.keys():
-            raise(ValueError('MotorImagery does not take argument \'filters\''))
+            raise(ValueError("MotorImagery does not take argument filters"))
         super().__init__(filters=[[fmin, fmax]], **kwargs)
 
 
 class FilterBank(BaseMotorImagery):
     """Filter Bank MI."""
 
-    def __init__(self, filters=[[8, 12], [12, 16], [16, 20], [20, 24],
-                                [24, 28], [28, 32]], **kwargs):
+    def __init__(self, filters=([8, 12], [12, 16], [16, 20], [20, 24],
+                                [24, 28], [28, 32]), **kwargs):
         """init"""
         super().__init__(filters=filters, **kwargs)
 
@@ -290,7 +290,7 @@ class FilterBankMotorImagery(FilterBank):
                     break
         if len(out) < self.n_classes:
             raise ValueError("Dataset {} did not have enough events in {} to run analysis".format(
-                dataset.code, self.events))
+                             dataset.code, self.events))
         return out
 
     @property
