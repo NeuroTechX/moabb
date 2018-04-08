@@ -21,11 +21,14 @@ Motor Imagery Datasets
     BNCI2015004
 
     AlexMI
-    GigaDbMI
-    BBCIEEGfNIRS
+    Cho2017
+    Shin2017A
+    Shin2017B
     OpenvibeMI
     PhysionetMI
-    UpperLimb
+	  Ofner2017
+	  Zhou2016
+    Weibo2014
 
 ------------
 ERP Datasets

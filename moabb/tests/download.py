@@ -1,13 +1,14 @@
 '''
 Tests to ensure that datasets download correctly
 '''
-from moabb.datasets.gigadb import GigaDbMI
+from moabb.datasets.gigadb import Cho2017
 from moabb.datasets.alex_mi import AlexMI
 from moabb.datasets.physionet_mi import PhysionetMI
-from moabb.datasets.bnci import BNCI2014001, BNCI2014002, BNCI2014004, BNCI2015001, BNCI2015004
+from moabb.datasets.bnci import (BNCI2014001, BNCI2014002, BNCI2014004,
+                                 BNCI2015001, BNCI2015004)
 from moabb.datasets.openvibe_mi import OpenvibeMI
-from moabb.datasets.bbci_eeg_fnirs import BBCIEEGfNIRS
-from moabb.datasets.upper_limb import UpperLimb
+from moabb.datasets.bbci_eeg_fnirs import Shin2017A, Shin2017B
+from moabb.datasets.upper_limb import Ofner2017
 import unittest
 import mne
 
@@ -37,8 +38,8 @@ class Test_Downloads(unittest.TestCase):
                 for _, raw in runs.items():
                     self.assertTrue(isinstance(raw, mne.io.BaseRaw))
 
-    def test_gigadb(self):
-        self.run_dataset(GigaDbMI)
+    def test_cho2017(self):
+        self.run_dataset(Cho2017)
 
     def test_bnci_1401(self):
         self.run_dataset(BNCI2014001)
@@ -65,10 +66,11 @@ class Test_Downloads(unittest.TestCase):
         self.run_dataset(PhysionetMI)
 
     def test_eegfnirs(self):
-        self.run_dataset(BBCIEEGfNIRS)
+        self.run_dataset(Shin2017A)
+        self.run_dataset(Shin2017B)
 
     def test_upper_limb(self):
-        self.run_dataset(UpperLimb)
+        self.run_dataset(Ofner2017)
 
 
 if __name__ == '__main__':

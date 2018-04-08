@@ -37,30 +37,70 @@ def convert_inria_csv_to_mne(path):
 
 
 class OpenvibeMI(BaseDataset):
-    """Openvibe Motor Imagery dataset"""
+    """Openvibe Motor Imagery dataset.
 
-    def __init__(self, tmin=0, tmax=3):
+    This datasets includes 14 records of left and right hand motor imagery from
+    a single subject. They include 11 channels : C3, C4, Nz, FC3, FC4, C5, C1,
+    C2, C6, CP3 and CP4. The channels are recorded in common average mode and
+    Nz can be used as a reference if needed. The signal is sampled at 512 Hz
+    and was recorded with our Mindmedia NeXus32B amplifier.
+
+    Each file consists in 40 trials where the subject was requested to imagine
+    either left or right hand movements (20 each). The experiment followed the
+    Graz University protocol [1]_.
+
+    The files were recorded on three different days of the same month.
+
+    The data set has been used in the paper [2]_.
+
+    references
+    ----------
+
+    .. [1] Pfurtscheller, G. & Neuper, C. Motor Imagery and Direct
+           Brain-Computer Communication. Proceedings of the IEEE, 89,
+           1123-1134, 2001.
+
+    .. [2] N. Brodu, F. Lotte, A. Lécuyer. Exploring Two Novel Features for
+           EEG-based Brain-Computer Interfaces: Multifractal Cumulants and
+           Predictive Complexity. Neurocomputing 79: 87-94, 2012.
+
+
+    """
+
+    def __init__(self):
         super().__init__(
             subjects=[1],
-            sessions_per_subject=14,
+            sessions_per_subject=3,
             events=dict(right_hand=1, left_hand=2),
             code='Openvibe Motor Imagery',
-            interval=[tmin, tmax],
+            # 5 second is the duration of the feedback in the OV protocol.
+            interval=[0, 5],
             paradigm='imagery')
 
     def _get_single_subject_data(self, subject):
         """return data for subject"""
         data = {}
-        for ii in range(1, 15):
-            raw = self._get_single_session_data(ii)
-            data["session_%d" % ii] = {'run_0': raw}
+
+        # data are recorded on 3 different day (session). it's not specified
+        # wich run is wich session, but by looking at the data, we can identify
+        # the 3 sessions.
+
+        sessions = [[1, 2, 3, 4],
+                    [5, 6, 7, 8, 9],
+                    [10, 11, 12, 13, 14]]
+
+        for jj, session in enumerate(sessions):
+            for ii, run in enumerate(session):
+                raw = self._get_single_run_data(run)
+                data["session_%d" % jj] = {'run_%d' % ii: raw}
+
         return data
 
-    def _get_single_session_data(self, session):
+    def _get_single_run_data(self, run):
         """return data for a single recording session"""
-        csv_path = self.data_path(1)[session - 1]
+        csv_path = self.data_path(1)[run - 1]
         fif_path = os.path.join(os.path.dirname(csv_path),
-                                'raw_{:d}.fif'.format(session))
+                                'raw_{:d}.fif'.format(run))
         if not os.path.isfile(fif_path):
             print('Resaving .csv file as .fif for ease of future loading')
             raw = convert_inria_csv_to_mne(csv_path)

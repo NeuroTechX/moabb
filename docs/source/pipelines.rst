@@ -6,15 +6,16 @@ Pipelines
 
 .. currentmodule:: moabb.pipelines
 
-----------------------
-Motor Imagery Datasets
-----------------------
+---------
+Pipelines
+---------
 
 .. autosummary::
     :toctree: generated/
     :template: class.rst
 
     features.LogVariance
+    filter_bank.FilterBank
 
 ------------
 Base & Utils

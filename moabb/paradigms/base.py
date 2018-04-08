@@ -1,14 +1,13 @@
-from abc import ABC, abstractproperty, abstractmethod
+from abc import ABCMeta, abstractproperty, abstractmethod
 import numpy as np
 import pandas as pd
 
 
-class BaseParadigm(ABC):
+class BaseParadigm(metaclass=ABCMeta):
     """Base Paradigm.
     """
 
     def __init__(self):
-        """init"""
         pass
 
     @abstractproperty
@@ -57,12 +56,24 @@ class BaseParadigm(ABC):
         metadata is a dataframe with as many row as the length of the data
         and labels.
 
+        Parameters
+        ----------
+
+        raw: mne.Raw instance
+            the raw EEG data.
+
+        dataset : dataset instance
+            The dataset corresponding to the raw file. mainly use to access
+            dataset specific information.
+
         returns
         -------
         X : np.ndarray
             the data that will be used as features for the model
+
         labels: np.ndarray
             the labels for training / evaluating the model
+
         metadata: pd.DataFrame
             A dataframe containing the metadata
 

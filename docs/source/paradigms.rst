@@ -14,9 +14,11 @@ Motor Imagery Paradigms
     :toctree: generated/
     :template: class.rst
 
-    BaseMotorImagery
+    MotorImagery
     LeftRightImagery
 
+    FilterBankMotorImagery
+    FilterBankLeftRightImagery
 
 ------------
 Base & Utils
@@ -26,4 +28,7 @@ Base & Utils
     :toctree: generated/
     :template: class.rst
 
+    motor_imagery.BaseMotorImagery
+    motor_imagery.SinglePass
+    motor_imagery.FilterBank
     base.BaseParadigm

@@ -14,10 +14,10 @@ for binary classification problem, accuracy for multiclass, or kappa
 coefficient for continuous paradigms.
 
 This tutorial explore the paradigm object, with 3 examples of paradigm :
+     - MotorImagery
+     - FilterBankMotorImagery
+     - LeftRightImagery
 
- - BaseMotorImagery
- - FilterBankMotorImagery
- - LeftRightImagery
 """
 # Authors: Alexandre Barachant <alexandre.barachant@gmail.com>
 #
@@ -25,18 +25,18 @@ This tutorial explore the paradigm object, with 3 examples of paradigm :
 
 import numpy as np
 from moabb.datasets import BNCI2014001
-from moabb.paradigms import (LeftRightImagery, BaseMotorImagery,
+from moabb.paradigms import (LeftRightImagery, MotorImagery,
                              FilterBankMotorImagery)
 
 print(__doc__)
 
 ###############################################################################
-# Base MotorImagery
+# MotorImagery
 # -----------------
 #
-# First, lets take a example of the BaseMotorImagery paradigm.
+# First, lets take a example of the MotorImagery paradigm.
 
-paradigm = BaseMotorImagery()
+paradigm = MotorImagery(n_classes=4)
 
 print(paradigm.__doc__)
 
