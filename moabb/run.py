@@ -19,6 +19,9 @@ from moabb import paradigms as moabb_paradigms
 from moabb.evaluations import (WithinSessionEvaluation,
                                CrossSessionEvaluation,
                                CrossSubjectEvaluation)
+from moabb.analysis.results import get_string_rep
+from moabb.analysis import analyze
+
 # set logs
 mne.set_log_level(False)
 # logging.basicConfig(level=logging.WARNING)
@@ -141,9 +144,10 @@ for config in pipeline_configs:
             paradigms[paradigm] = {}
 
         # FIXME name are not unique
-        log.debug('Pipeline: \n\n {} \n'.format(repr(pipeline.get_params())))
+        log.debug('Pipeline: \n\n {} \n'.format(get_string_rep(pipeline)))
         paradigms[paradigm][config['name']] = pipeline
 
+all_results = []
 for paradigm in paradigms:
     # get the context
     if len(context_params) == 0:
@@ -152,3 +156,5 @@ for paradigm in paradigms:
     p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
     context = WithinSessionEvaluation(paradigm=p, random_state=42)
     results = context.process(pipelines=paradigms[paradigm])
+    all_results.append(results.to_dataframe())
+analyze(all_results, './')
