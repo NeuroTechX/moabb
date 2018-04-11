@@ -157,5 +157,5 @@ for paradigm in paradigms:
     p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
     context = WithinSessionEvaluation(paradigm=p, random_state=42)
     results = context.process(pipelines=paradigms[paradigm])
-    all_results.append(results.to_dataframe())
+    all_results.append(results)
 analyze(pd.concat(all_results, ignore_index=True), './')
