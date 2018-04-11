@@ -6,6 +6,7 @@ import mne
 import logging
 import coloredlogs
 import importlib
+import pandas as pd
 
 from glob import glob
 from argparse import ArgumentParser
@@ -157,4 +158,4 @@ for paradigm in paradigms:
     context = WithinSessionEvaluation(paradigm=p, random_state=42)
     results = context.process(pipelines=paradigms[paradigm])
     all_results.append(results.to_dataframe())
-analyze(all_results, './')
+analyze(pd.concat(all_results, ignore_index=True), './')
