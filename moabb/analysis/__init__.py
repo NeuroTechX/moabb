@@ -41,6 +41,3 @@ def analyze(results, out_path, name='analysis', suffix=''):
 
     results.to_csv(os.path.join(analysis_path, 'data.csv'))
 
-    plt.score_plot(results).savefig(os.path.join(analysis_path, 'scores.pdf'))
-    plt.time_line_plot(results).savefig(
-        os.path.join(analysis_path, 'time2d.pdf'))
