@@ -3,6 +3,7 @@ import platform
 from datetime import datetime
 
 from moabb.analysis import plotting as plt
+from moabb.analysis.results import Results
 
 
 def analyze(results, out_path, name='analysis', suffix=''):
