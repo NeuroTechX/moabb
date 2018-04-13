@@ -106,6 +106,34 @@ parser.add_argument(
     help="Print debug level parse statements. Overrides verbose")
 
 parser.add_argument(
+    "-o",
+    "--output",
+    dest="output",
+    type=str,
+    default='./',
+    help="Folder to put analysis results")
+parser.add_argument(
+    "-r",
+    "--results",
+    dest="results",
+    type=str,
+    default='./results/',
+    help="Folder to store the results.")
+parser.add_argument(
+    "-t",
+    "--threads",
+    dest="threads",
+    type=int,
+    default=1,
+    help="Number of threads to run")
+parser.add_argument(
+    "-P",
+    "--plot",
+    dest="plot",
+    action="store_true",
+    default=False,
+    help="Plot results after computing. Defaults false")
+parser.add_argument(
     "-c",
     "--contexts",
     dest="context",
@@ -170,7 +198,7 @@ for paradigm in paradigms:
         context_params[paradigm] = {}
     log.debug('{}: {}'.format(paradigm, context_params[paradigm]))
     p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
-    context = WithinSessionEvaluation(paradigm=p, random_state=42)
+    context = WithinSessionEvaluation(paradigm=p, random_state=42, n_jobs=options.threads)
     results = context.process(pipelines=paradigms[paradigm])
     all_results.append(results)
-analyze(pd.concat(all_results, ignore_index=True), './')
+analyze(pd.concat(all_results, ignore_index=True), options.output, plot=options.plot)
