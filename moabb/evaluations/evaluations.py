@@ -7,6 +7,7 @@ from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, Stratifie
 from sklearn.preprocessing import LabelEncoder
 
 from moabb.evaluations.base import BaseEvaluation
+from sklearn.base import clone
 from sklearn.model_selection._validation import _fit_and_score, _score
 from sklearn.metrics import get_scorer
 
@@ -101,7 +102,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                 cv = LeaveOneGroupOut()
                 for train, test in cv.split(X, y, groups):
                     t_start = time()
-                    score = _fit_and_score(clf, X, y, scorer, train, test,
+                    score = _fit_and_score(clone(clf), X, y, scorer, train, test,
                                            verbose=False, parameters=None,
                                            fit_params=None)[0]
                     duration = time() - t_start
