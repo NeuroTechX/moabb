@@ -7,7 +7,7 @@ import mne
 
 from moabb.datasets import download as dl
 
-DOWNLOAD_URL = 'https://sandbox.zenodo.org/record/213052/files/'
+DOWNLOAD_URL = 'https://zenodo.org/record/1217449/files/'
 
 
 class MunichMI(BaseDataset):
