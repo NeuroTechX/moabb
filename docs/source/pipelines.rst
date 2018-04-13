@@ -6,9 +6,9 @@ Pipelines
 
 .. currentmodule:: moabb.pipelines
 
-----------------------
-Motor Imagery Datasets
-----------------------
+---------
+Pipelines
+---------
 
 .. autosummary::
     :toctree: generated/

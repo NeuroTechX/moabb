@@ -7,14 +7,14 @@ from moabb.analysis.results import Results
 
 
 def analyze(results, out_path, name='analysis', suffix=''):
-    '''Given a results object (or the location for one), generates a folder with
+    '''Given a results dataframe, generates a folder with
     results and a dataframe of the exact data used to generate those results, as
     well as introspection to return information on the computer
 
     In:
     out_path: location to store analysis folder
 
-    results: Obj/tuple;
+    results: Dataframe generated from Results object
 
     path: string/None
 
@@ -22,8 +22,6 @@ def analyze(results, out_path, name='analysis', suffix=''):
 
     '''
     # input checks #
-    if type(results) is not Results:
-        res = Results(*results, suffix=suffix)
     if type(out_path) is not str:
         raise ValueError('Given out_path argument is not string')
     elif not os.path.isdir(out_path):
@@ -34,15 +32,12 @@ def analyze(results, out_path, name='analysis', suffix=''):
     os.makedirs(analysis_path, exist_ok=True)
     # TODO: no good cross-platform way of recording CPU info?
     with open(os.path.join(analysis_path, 'info.txt'), 'a') as f:
+        dt = datetime.now()
         f.write(
-            'Date: {:%Y-%m-%d}\n Time: {:%H:%M}\n'.format(datetime.now(), datetime.now()))
+            'Date: {:%Y-%m-%d}\n Time: {:%H:%M}\n'.format(dt,
+                                                          dt))
         f.write('System: {}\n'.format(platform.system()))
         f.write('CPU: {}\n'.format(platform.processor()))
 
-    res = results
+    results.to_csv(os.path.join(analysis_path, 'data.csv'))
 
-    data = res.to_dataframe()
-    data.to_csv(os.path.join(analysis_path, 'data.csv'))
-
-    plt.score_plot(data).savefig(os.path.join(analysis_path, 'scores.pdf'))
-    plt.time_line_plot(data).savefig(os.path.join(analysis_path, 'time2d.pdf'))

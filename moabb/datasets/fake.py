@@ -13,12 +13,12 @@ class FakeDataset(BaseDataset):
 
     """
 
-    def __init__(self, event_list=['fake_c1', 'fake_c2', 'fake_c3'],
+    def __init__(self, event_list=('fake_c1', 'fake_c2', 'fake_c3'),
                  n_sessions=2, n_runs=2, n_subjects=10):
         self.n_runs = n_runs
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         super().__init__(list(range(1, n_subjects + 1)), n_sessions, event_id,
-                         'FakeDataset', [1, 3], 'imagery')
+                         'FakeDataset', [0, 3], 'imagery')
 
     def _get_single_subject_data(self, subject):
 

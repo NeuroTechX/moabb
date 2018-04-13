@@ -10,17 +10,21 @@ from sklearn.base import BaseEstimator
 from datetime import datetime
 
 
+def get_string_rep(obj):
+    if issubclass(type(obj), BaseEstimator):
+        str_repr = repr(obj.get_params())
+    else:
+        str_repr = repr(obj)
+    str_no_addresses = re.sub('0x[a-z0-9]*', '0x__', str_repr)
+    return str_no_addresses.replace('\n', '').encode('utf8')
+
+
 def get_digest(obj):
     """Return hash of an object repr.
 
     If there are memory addresses, wipes them
     """
-    if issubclass(type(obj), BaseEstimator):
-        str_repr = repr(obj.get_params())
-    else:
-        str_repr = repr(obj)
-    str_no_addresses = re.sub('0x[a-z0-9]*', '0x__', str_repr).encode('utf8')
-    return hashlib.md5(str_no_addresses).hexdigest()
+    return hashlib.md5(get_string_rep(obj)).hexdigest()
 
 
 class Results:

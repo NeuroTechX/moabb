@@ -46,9 +46,9 @@ def data_path(url, sign, path=None, force_update=False, update_path=True,
     """  # noqa: E501
     sign = sign.upper()
     key = 'MNE_DATASETS_{:s}_PATH'.format(sign)
+    key_dest = 'MNE-{:s}-data'.format(sign.lower())
     path = _get_path(path, key, sign)
-    destination = _url_to_local_path(url, op.join(path,
-                                                  'MNE-{:s}-data'.format(sign.lower())))
+    destination = _url_to_local_path(url, op.join(path, key_dest))
     # Fetch the file
     if not op.isfile(destination) or force_update:
         if op.isfile(destination):

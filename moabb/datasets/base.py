@@ -2,14 +2,54 @@
 Base class for a dataset
 """
 import abc
+import logging
+
+log = logging.getLogger()
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
-    """Base dataset"""
+    """BaseDataset
 
-    def __init__(self, subjects, sessions_per_subject, events, code, interval,
-                 paradigm, doi=None):
+    Parameters required for all datasets
 
+    parameters
+    ----------
+    subjects: List of int
+        List of subject number # TODO: make identifiers more general
+
+    sessions_per_subject: int
+        Number of sessions per subject
+
+    events: dict of string: int
+        String codes for events matched with labels in the stim channel.
+        Currently imagery codes codes can include:
+        - left_hand
+        - right_hand
+        - hands
+        - feet
+        - rest
+        - left_hand_right_foot
+        - right_hand_left_foot
+        - tongue
+        - navigation
+        - subtraction
+        - word_ass (for word association)
+
+    code: string
+        Unique identifier for dataset, used in all plots
+
+    interval: list with 2 entries
+        Imagery interval as defined in the dataset description
+
+    paradigm: ['p300','imagery', 'ssvep']
+        Defines what sort of dataset this is (currently only imagery is
+        implemented)
+
+    doi: DOI for dataset, optional (for now)
+    """
+
+    def __init__(self, subjects, sessions_per_subject, events,
+                 code, interval, paradigm, doi=None):
         if not isinstance(subjects, list):
             raise(ValueError("subjects must be a list"))
 
@@ -96,8 +136,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def _get_single_subject_data(self, subject):
-        """
-        Return the data of a single subject
+        """Return the data of a single subject.
 
         The returned data is a dictionary with the folowing structure
 
