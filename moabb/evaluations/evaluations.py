@@ -64,7 +64,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         return acc.mean()
 
     def is_valid(self, dataset):
-        pass
+        return True
 
 
 class CrossSessionEvaluation(BaseEvaluation):
