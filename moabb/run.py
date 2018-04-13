@@ -104,7 +104,6 @@ parser.add_argument(
     action="store_true",
     default=False,
     help="Print debug level parse statements. Overrides verbose")
-
 parser.add_argument(
     "-o",
     "--output",
@@ -113,21 +112,12 @@ parser.add_argument(
     default='./',
     help="Folder to put analysis results")
 parser.add_argument(
-    "-r",
-    "--results",
-    dest="results",
-    type=str,
-    default='./results/',
-    help="Folder to store the results.")
-parser.add_argument(
-    "-t",
     "--threads",
     dest="threads",
     type=int,
     default=1,
     help="Number of threads to run")
 parser.add_argument(
-    "-P",
     "--plot",
     dest="plot",
     action="store_true",
