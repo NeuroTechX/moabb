@@ -27,7 +27,7 @@ class BaseParadigm(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def verify(self, dataset):
+    def is_valid(self, dataset):
         """Verify the dataset is compatible with the paradigm.
 
         This method is called to verify dataset is compatible with the
@@ -108,7 +108,10 @@ class BaseParadigm(metaclass=ABCMeta):
             A dataframe containing the metadata.
         """
 
-        self.verify(dataset)
+        if not self.is_valid(dataset):
+            message = "Dataset {} is not valid for paradigm".format(
+                dataset.code)
+            raise AssertionError(message)
 
         data = dataset.get_data(subjects)
 

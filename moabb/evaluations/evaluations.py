@@ -63,7 +63,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                               n_jobs=self.n_jobs)
         return acc.mean()
 
-    def verify(self, dataset):
+    def is_valid(self, dataset):
         pass
 
 
@@ -77,7 +77,8 @@ class CrossSessionEvaluation(BaseEvaluation):
     """
 
     def evaluate(self, dataset, pipelines):
-        self.verify(dataset)
+        if not self.is_valid(dataset):
+            raise AssertionError('Dataset is not appropriate for evaluation')
         for subject in dataset.subject_list:
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
@@ -114,8 +115,8 @@ class CrossSessionEvaluation(BaseEvaluation):
                            'pipeline': name}
                     yield res
 
-    def verify(self, dataset):
-        assert dataset.n_sessions > 1
+    def is_valid(self, dataset):
+        return (dataset.n_sessions > 1)
 
 
 class CrossSubjectEvaluation(BaseEvaluation):
@@ -127,7 +128,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
     """
 
     def evaluate(self, dataset, pipelines):
-        self.verify(dataset)
+        if not self.is_valid(dataset):
+            raise AssertionError('Dataset is not appropriate for evaluation')
         # this is a bit akward, but we need to check if at least one pipe
         # have to be run before loading the data. If at least one pipeline
         # need to be run, we have to load all the data.
@@ -183,5 +185,5 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                         yield res
 
-    def verify(self, dataset):
-        assert len(dataset.subject_list) > 1
+    def is_valid(self, dataset):
+        return (len(dataset.subject_list) > 1)

@@ -62,14 +62,18 @@ class BaseMotorImagery(BaseParadigm):
         self.tmin = tmin
         self.tmax = tmax
 
-    def verify(self, dataset):
-        assert dataset.paradigm == 'imagery'
+    def is_valid(self, dataset):
+        ret = True
+        if not (dataset.paradigm == 'imagery'):
+            ret = False
 
         # check if dataset has required events
         if self.events:
-            assert set(self.events) <= set(dataset.event_id.keys())
+            if not set(self.events) <= set(dataset.event_id.keys()):
+                ret = False
 
         # we should verify list of channels, somehow
+        return ret
 
     @abc.abstractmethod
     def used_events(self, dataset):
@@ -267,13 +271,18 @@ class FilterBankMotorImagery(FilterBank):
             assert n_classes <= len(
                 self.events), 'More classes than events specified'
 
-    def verify(self, dataset):
-        assert dataset.paradigm == 'imagery'
+    def is_valid(self, dataset):
+        ret = True
+        if not dataset.paradigm == 'imagery':
+            ret = False
         if self.events is None:
-            assert len(dataset.event_id) >= self.n_classes
+            if not len(dataset.event_id) >= self.n_classes:
+                ret = False
         else:
             overlap = len(set(self.events) & set(dataset.event_id.keys()))
-            assert overlap >= self.n_classes
+            if not overlap >= self.n_classes:
+                ret = False
+        return ret
 
     def used_events(self, dataset):
         out = {}
@@ -365,13 +374,18 @@ class MotorImagery(SinglePass):
             assert n_classes <= len(
                 self.events), 'More classes than events specified'
 
-    def verify(self, dataset):
-        assert dataset.paradigm == 'imagery'
+    def is_valid(self, dataset):
+        ret = True
+        if not dataset.paradigm == 'imagery':
+            ret = False
         if self.events is None:
-            assert len(dataset.event_id) >= self.n_classes
+            if not len(dataset.event_id) >= self.n_classes:
+                ret = False
         else:
             overlap = len(set(self.events) & set(dataset.event_id.keys()))
-            assert overlap >= self.n_classes
+            if not overlap >= self.n_classes:
+                ret = False
+        return ret
 
     def used_events(self, dataset):
         out = {}

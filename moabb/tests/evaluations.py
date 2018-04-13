@@ -49,11 +49,11 @@ class Test_CrossSubj(Test_WithinSess):
     def test_compatible_dataset(self):
         # raise
         ds = FakeDataset(['left_hand', 'right_hand'], n_subjects=1)
-        self.assertRaises(AssertionError, self.eval.verify, dataset=ds)
+        self.assertFalse(self.eval.is_valid(dataset=ds))
 
         # do not raise
         ds = FakeDataset(['left_hand', 'right_hand'], n_subjects=2)
-        self.assertIsNone(self.eval.verify(dataset=ds))
+        self.assertTrue(self.eval.is_valid(dataset=ds))
 
 
 class Test_CrossSess(Test_WithinSess):
@@ -63,11 +63,11 @@ class Test_CrossSess(Test_WithinSess):
 
     def test_compatible_dataset(self):
         ds = FakeDataset(['left_hand', 'right_hand'], n_sessions=1)
-        self.assertRaises(AssertionError, self.eval.verify, dataset=ds)
+        self.assertFalse(self.eval.is_valid(ds))
 
         # do not raise
         ds = FakeDataset(['left_hand', 'right_hand'], n_sessions=2)
-        self.assertIsNone(self.eval.verify(dataset=ds))
+        self.assertTrue(self.eval.is_valid(dataset=ds))
 
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ class DummyEvaluation(BaseEvaluation):
     def evaluate(self, dataset, pipelines):
         raise NotImplementedError('dummy')
 
-    def verify(self, dataset):
+    def is_valid(self, dataset):
         pass
 
 
@@ -27,7 +27,7 @@ class DummyParadigm(BaseParadigm):
     def scoring(self):
         raise NotImplementedError('dummy')
 
-    def verify(self, dataset):
+    def is_valid(self, dataset):
         pass
 
     def process_raw(raw):

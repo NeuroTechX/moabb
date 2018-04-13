@@ -58,16 +58,16 @@ class BaseEvaluation(ABC):
             if not(isinstance(dataset, BaseDataset)):
                 raise(ValueError("datasets must only contains dataset "
                                  "instance"))
-
+        rm = []
         for dataset in datasets:
             # fixme, we might want to drop dataset that are not compatible
-            try:
-                self.paradigm.verify(dataset)
-                self.verify(dataset)
-            except AssertionError:
+            valid_for_paradigm = self.paradigm.is_valid(dataset)
+            valid_for_eval = self.is_valid(dataset)
+            if not (valid_for_paradigm and valid_for_eval):
                 log.warning(f"{dataset} not compatible with evaluation or "
                             "paradigm. Removing this dataset from the list.")
-                datasets.remove(dataset)
+                rm.append(dataset)
+        [datasets.remove(r) for r in rm]
 
         self.datasets = datasets
 
@@ -138,18 +138,19 @@ class BaseEvaluation(ABC):
         pass
 
     @abstractmethod
-    def verify(self, dataset):
+    def is_valid(self, dataset):
         """Verify the dataset is compatible with evaluation.
 
         This method is called to verify dataset given in the constructor
         are compatible with the evaluation context.
 
-        This method should raise an error if the dataset is not compatible
-        with the evaluation context. This is for example the case if the
-        dataset does not contain enought session for a cross-session eval.
+        This method should return false if the dataset does not match the
+        evaluation. This is for example the case if the dataset does not contain
+        enought session for a cross-session eval.
 
         Parameters
         ----------
         dataset : dataset instance
             The dataset to verify.
+
         """
