@@ -14,21 +14,21 @@ Motor Imagery Datasets
     :toctree: generated/
     :template: class.rst
 
+    AlexMI
     BNCI2014001
     BNCI2014002
     BNCI2014004
     BNCI2015001
     BNCI2015004
-
-    AlexMI
     Cho2017
-    Shin2017A
-    Shin2017B
+    MunichMI
+    Ofner2017
     OpenvibeMI
     PhysionetMI
-	  Ofner2017
-	  Zhou2016
+    Shin2017A
+    Shin2017B
     Weibo2014
+	  Zhou2016
 
 ------------
 ERP Datasets
