@@ -1,3 +1,4 @@
+# flake8: noqa
 from moabb.tests.analysis import *
 from moabb.tests.datasets import *
 from moabb.tests.evaluations import *

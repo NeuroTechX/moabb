@@ -3,6 +3,7 @@ python:
   - "3.6"
 # command to install dependencies
 install:
+  - pip install flake8
   - pip install -r requirements.txt
   - python setup.py -q install
 # command to run tests
@@ -10,3 +11,4 @@ script:
   - python -m unittest moabb.tests
   - python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
   - python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
+  - flake8 moabb

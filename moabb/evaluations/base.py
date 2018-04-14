@@ -1,5 +1,4 @@
 import logging
-import traceback
 from abc import ABC, abstractmethod
 
 from sklearn.base import BaseEstimator
@@ -71,7 +70,7 @@ class BaseEvaluation(ABC):
                 log.warning(f"{dataset} not compatible with evaluation. "
                             "Removing this dataset from the list.")
                 rm.append(dataset)
-                
+
         [datasets.remove(r) for r in rm]
 
         self.datasets = datasets
@@ -150,8 +149,8 @@ class BaseEvaluation(ABC):
         are compatible with the evaluation context.
 
         This method should return false if the dataset does not match the
-        evaluation. This is for example the case if the dataset does not contain
-        enought session for a cross-session eval.
+        evaluation. This is for example the case if the dataset does not
+        contain enought session for a cross-session eval.
 
         Parameters
         ----------

@@ -1,12 +1,10 @@
-import pandas as pd
 import numpy as np
-import os
 import scipy.stats as stats
 
 
 def rmANOVA(df):
     '''
-    My attempt at a repeated-measures ANOVA 
+    My attempt at a repeated-measures ANOVA
     In:
         data: dataframe
 
@@ -19,9 +17,11 @@ def rmANOVA(df):
     for dset in df['dataset'].unique():
         alg_list = []
         for alg in df['pipeline'].unique():
-            alg_list.append(df[np.logical_and(
-                df['dataset'] == dset, df['pipeline'] == alg)]['score'].as_matrix())
-        alg_list = [a for a in alg_list if len(a) > 0] #some datasets and algorithms may not exist?
+            ix = np.logical_and(df['dataset'] == dset, df['pipeline'] == alg)
+            alg_list.append(df[ix]['score'].as_matrix())
+
+        # some datasets and algorithms may not exist?
+        alg_list = [a for a in alg_list if len(a) > 0]
         M = np.stack(alg_list).T
         stats_dict[dset] = _rmanova(M)
     return stats_dict
