@@ -23,6 +23,45 @@ from moabb.evaluations import (WithinSessionEvaluation,
 from moabb.analysis.results import get_string_rep
 from moabb.analysis import analyze
 
+
+def parse_pipelines_from_directory(d):
+    '''
+    Given directory, returns generated pipeline config dictionaries. Each entry
+    has structure:
+    'name': string
+    'pipeline': sklearn.BaseEstimator
+    'paradigms': list of class names
+    '''
+    assert os.path.isdir(os.path.abspath(d)
+                         ), "Given pipeline path {} is not valid".format(d)
+    pipeline_dir = os.path.abspath(d)
+    # get list of config files
+    yaml_files = glob(os.path.join(d, '*.yml'))
+
+    pipeline_configs = []
+    for yaml_file in yaml_files:
+        with open(yaml_file, 'r') as _file:
+            content = _file.read()
+
+            # load config
+            config_dict = yaml.load(content)
+            ppl = create_pipeline_from_config(config_dict['pipeline'])
+            pipeline_configs.append({'paradigms':config_dict['paradigms'],
+                                     'pipeline':ppl,
+                                     'name':config_dict['name']})
+
+    # we can do the same for python defined pipeline
+    python_files = glob(os.path.join(d, '*.py'))
+
+    for python_file in python_files:
+        spec = importlib.util.spec_from_file_location("custom", python_file)
+        foo = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(foo)
+
+        pipeline_configs.append(foo.PIPELINE)
+
+    return pipeline_configs
+
 # set logs
 mne.set_log_level(False)
 # logging.basicConfig(level=logging.WARNING)
@@ -65,7 +104,25 @@ parser.add_argument(
     action="store_true",
     default=False,
     help="Print debug level parse statements. Overrides verbose")
-
+parser.add_argument(
+    "-o",
+    "--output",
+    dest="output",
+    type=str,
+    default='./',
+    help="Folder to put analysis results")
+parser.add_argument(
+    "--threads",
+    dest="threads",
+    type=int,
+    default=1,
+    help="Number of threads to run")
+parser.add_argument(
+    "--plot",
+    dest="plot",
+    action="store_true",
+    default=False,
+    help="Plot results after computing. Defaults false")
 parser.add_argument(
     "-c",
     "--contexts",
@@ -77,8 +134,6 @@ parser.add_argument(
          "paradigms described in the pipelines")
 options = parser.parse_args()
 
-assert os.path.isdir(os.path.abspath(options.pipelines)
-                     ), "Given pipeline path {} is not valid".format(options.pipelines)
 
 if options.debug:
     coloredlogs.install(level=logging.DEBUG)
@@ -87,27 +142,7 @@ elif options.verbose:
 else:
     coloredlogs.install(level=logging.WARNING)
 
-
-# get list of config files
-yaml_files = glob(os.path.join(options.pipelines, '*.yml'))
-
-pipeline_configs = []
-for yaml_file in yaml_files:
-    with open(yaml_file, 'r') as _file:
-        content = _file.read()
-
-        # load config
-        pipeline_configs.append(yaml.load(content))
-
-# we can do the same for python defined pipeline
-python_files = glob(os.path.join(options.pipelines, '*.py'))
-
-for python_file in python_files:
-    spec = importlib.util.spec_from_file_location("custom", python_file)
-    foo = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(foo)
-
-    pipeline_configs.append(foo.PIPELINE)
+pipeline_configs = parse_pipelines_from_directory(options.pipelines)
 
 context_params = {}
 if options.context is not None:
@@ -132,9 +167,7 @@ for config in pipeline_configs:
                 log.warning("Paradigm {} not in context file {}".format(
                     paradigm, context_params.keys()))
 
-        if isinstance(config['pipeline'], list):
-            pipeline = create_pipeline_from_config(config['pipeline'])
-        elif isinstance(config['pipeline'], BaseEstimator):
+        if isinstance(config['pipeline'], BaseEstimator):
             pipeline = deepcopy(config['pipeline'])
         else:
             log.error(config['pipeline'])
@@ -155,7 +188,7 @@ for paradigm in paradigms:
         context_params[paradigm] = {}
     log.debug('{}: {}'.format(paradigm, context_params[paradigm]))
     p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
-    context = WithinSessionEvaluation(paradigm=p, random_state=42)
+    context = WithinSessionEvaluation(paradigm=p, random_state=42, n_jobs=options.threads)
     results = context.process(pipelines=paradigms[paradigm])
     all_results.append(results)
-analyze(pd.concat(all_results, ignore_index=True), './')
+analyze(pd.concat(all_results, ignore_index=True), options.output, plot=options.plot)

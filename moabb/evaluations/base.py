@@ -63,10 +63,15 @@ class BaseEvaluation(ABC):
             # fixme, we might want to drop dataset that are not compatible
             valid_for_paradigm = self.paradigm.is_valid(dataset)
             valid_for_eval = self.is_valid(dataset)
-            if not (valid_for_paradigm and valid_for_eval):
-                log.warning(f"{dataset} not compatible with evaluation or "
+            if not valid_for_paradigm:
+                log.warning(f"{dataset} not compatible with "
                             "paradigm. Removing this dataset from the list.")
                 rm.append(dataset)
+            elif not valid_for_eval:
+                log.warning(f"{dataset} not compatible with evaluation. "
+                            "Removing this dataset from the list.")
+                rm.append(dataset)
+                
         [datasets.remove(r) for r in rm]
 
         self.datasets = datasets

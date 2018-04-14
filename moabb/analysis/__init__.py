@@ -6,7 +6,7 @@ from moabb.analysis import plotting as plt
 from moabb.analysis.results import Results
 
 
-def analyze(results, out_path, name='analysis', suffix=''):
+def analyze(results, out_path, name='analysis', plot=False):
     '''Given a results dataframe, generates a folder with
     results and a dataframe of the exact data used to generate those results, as
     well as introspection to return information on the computer
@@ -17,6 +17,8 @@ def analyze(results, out_path, name='analysis', suffix=''):
     results: Dataframe generated from Results object
 
     path: string/None
+    
+    plot: whether to plot results
 
     Either path or results is necessary
 
@@ -41,3 +43,4 @@ def analyze(results, out_path, name='analysis', suffix=''):
 
     results.to_csv(os.path.join(analysis_path, 'data.csv'))
 
+    # TODO: add plotting code here...
