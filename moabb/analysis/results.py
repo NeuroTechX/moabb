@@ -118,10 +118,21 @@ class Results:
                                                       d['time'],
                                                       d['n_samples']])
 
-    def to_dataframe(self):
+    def to_dataframe(self, pipelines=None):
         df_list = []
+
+        # get the list of pipeline hash
+        digests = []
+        if pipelines is not None:
+            digests = [get_digest(pipelines[name]) for name in pipelines]
+
         with h5py.File(self.filepath, 'r') as f:
-            for _, p_group in f.items():
+            for digest, p_group in f.items():
+
+                # skip if not in pipeline list
+                if (pipelines is not None) & (digest not in digests):
+                    continue
+
                 name = p_group.attrs['name']
                 for dname, dset in p_group.items():
                     array = np.array(dset['data'])

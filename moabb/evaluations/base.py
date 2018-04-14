@@ -71,7 +71,7 @@ class BaseEvaluation(ABC):
                 log.warning(f"{dataset} not compatible with evaluation. "
                             "Removing this dataset from the list.")
                 rm.append(dataset)
-                
+
         [datasets.remove(r) for r in rm]
 
         self.datasets = datasets
@@ -114,7 +114,7 @@ class BaseEvaluation(ABC):
             for res in results:
                 self.push_result(res, pipelines)
 
-        return self.results.to_dataframe()
+        return self.results.to_dataframe(pipelines=pipelines)
 
     def push_result(self, res, pipelines):
         message = '{} | '.format(res['pipeline'])
@@ -150,8 +150,8 @@ class BaseEvaluation(ABC):
         are compatible with the evaluation context.
 
         This method should return false if the dataset does not match the
-        evaluation. This is for example the case if the dataset does not contain
-        enought session for a cross-session eval.
+        evaluation. This is for example the case if the dataset does not
+        contain enought session for a cross-session eval.
 
         Parameters
         ----------
