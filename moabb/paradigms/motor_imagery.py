@@ -401,8 +401,8 @@ class MotorImagery(SinglePass):
                 if len(out) == self.n_classes:
                     break
         if len(out) < self.n_classes:
-            raise ValueError("Dataset {} did not have enough events in {} to run analysis".format(
-                dataset.code, self.events))
+            raise(ValueError(f"Dataset {dataset.code} did not have enough "
+                             f"events in {self.events} to run analysis"))
         return out
 
     @property
