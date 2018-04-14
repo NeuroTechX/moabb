@@ -2,22 +2,25 @@ import os
 import platform
 from datetime import datetime
 
-from moabb.analysis import plotting as plt
-from moabb.analysis.results import Results
+from moabb.analysis import plotting as plt  # flake8: noqa
+from moabb.analysis.results import Results  # flake8: noqa
 
 
 def analyze(results, out_path, name='analysis', plot=False):
-    '''Given a results dataframe, generates a folder with
-    results and a dataframe of the exact data used to generate those results, as
-    well as introspection to return information on the computer
+    '''Analyze results.
 
-    In:
+    Given a results dataframe, generates a folder with
+    results and a dataframe of the exact data used to generate those results,
+    aswell as introspection to return information on the computer
+
+    parameters
+    ----------
     out_path: location to store analysis folder
 
     results: Dataframe generated from Results object
 
     path: string/None
-    
+
     plot: whether to plot results
 
     Either path or results is necessary

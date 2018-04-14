@@ -3,7 +3,8 @@ from time import time
 
 import numpy as np
 from copy import deepcopy
-from sklearn.model_selection import cross_val_score, LeaveOneGroupOut, StratifiedKFold
+from sklearn.model_selection import (cross_val_score, LeaveOneGroupOut,
+                                     StratifiedKFold)
 from sklearn.preprocessing import LabelEncoder
 
 from moabb.evaluations.base import BaseEvaluation
@@ -102,8 +103,9 @@ class CrossSessionEvaluation(BaseEvaluation):
                 cv = LeaveOneGroupOut()
                 for train, test in cv.split(X, y, groups):
                     t_start = time()
-                    score = _fit_and_score(clone(clf), X, y, scorer, train, test,
-                                           verbose=False, parameters=None,
+                    score = _fit_and_score(clone(clf), X, y, scorer, train,
+                                           test, verbose=False,
+                                           parameters=None,
                                            fit_params=None)[0]
                     duration = time() - t_start
                     res = {'time': duration,

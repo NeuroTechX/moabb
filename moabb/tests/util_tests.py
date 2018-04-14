@@ -13,17 +13,20 @@ class Test_Utils(unittest.TestCase):
             'imagery', multi_session=True)])
         print([type(i).__name__ for i in utils.dataset_search(
             'imagery', multi_session=False)])
-        l = utils.dataset_search('imagery', events=[
-            'right_hand', 'left_hand', 'feet', 'tongue', 'rest'])
-        for out in l:
+        res = utils.dataset_search('imagery', events=[
+              'right_hand', 'left_hand', 'feet', 'tongue', 'rest'])
+        for out in res:
             print('multiclass: {}'.format(out.selected_events))
-        l = utils.dataset_search('imagery', events=[
-            'right_hand', 'feet'], has_all_events=True)
-        for out in l:
-            print('rh/f: {}, {}'.format(type(out).__name__, out.selected_events))
-        l = utils.dataset_search('imagery', events=[
-            'right_hand', 'left_hand', 'feet', 'tongue', 'rest'], total_classes=2)
-        for out in l:
+
+        res = utils.dataset_search('imagery', events=[
+              'right_hand', 'feet'], has_all_events=True)
+        for out in res:
+            print('rh/f: {}, {}'.format(type(out).__name__,
+                                        out.selected_events))
+        res = utils.dataset_search('imagery', events=[
+              'right_hand', 'left_hand', 'feet', 'tongue', 'rest'],
+              total_classes=2)
+        for out in res:
             print('two class: {}'.format(out.selected_events))
 
     def test_dataset_channel_search(self):
@@ -31,7 +34,8 @@ class Test_Utils(unittest.TestCase):
         All = utils.dataset_search('imagery', events=[
             'right_hand', 'left_hand', 'feet', 'tongue', 'rest'])
         has_chans = utils.dataset_search('imagery', events=[
-            'right_hand', 'left_hand', 'feet', 'tongue', 'rest'], channels=chans)
+            'right_hand', 'left_hand', 'feet', 'tongue', 'rest'],
+            channels=chans)
         has_types = set([type(x) for x in has_chans])
         for d in has_chans:
             s1 = d.get_data([1], False)[0][0][0]
@@ -40,6 +44,7 @@ class Test_Utils(unittest.TestCase):
             if type(d) not in has_types:
                 s1 = d.get_data([1], False)[0][0][0]
                 self.assertFalse(set(chans) <= set(s1.info['ch_names']))
+
 
 if __name__ == '__main__':
     unittest.main()
