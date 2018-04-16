@@ -19,7 +19,7 @@ class DummyEvaluation(BaseEvaluation):
         raise NotImplementedError('dummy')
 
     def is_valid(self, dataset):
-        pass
+        return True
 
     def __repr__(self):
         return 'DummyEvaluation'
@@ -37,10 +37,6 @@ class DummyParadigm(BaseParadigm):
 
     def __repr__(self):
         return '{}(id={})'.format(type(self).__name__, self._id)
-
-    @property
-    def datasets(self):
-        return [DummyDataset('b')]
 
     def is_valid(self, dataset):
         return True
@@ -84,7 +80,7 @@ d2 = {'time': 2,
 d3 = {'time': 2,
       'dataset': FakeDataset(['d1', 'd2']),
       'subject': 2,
-      'session': 'session_0',
+      'session': 'session_1',
       'score': 0.9,
       'n_samples': 100,
       'n_channels': 10}
@@ -207,7 +203,7 @@ class Test_ResultsDB(unittest.TestCase):
             os.remove(path)
     def testCanAddDataset(self):
         obj = ResultsDB(write=True, evaluation=DummyEvaluation(DummyParadigm()), _debug=True)
-        obj.check_dataset(DummyDataset('a'))
+        obj.check_dataset(FakeDataset('a'))
 
 
     def testRecognizesAlreadyComputed(self):
@@ -215,7 +211,7 @@ class Test_ResultsDB(unittest.TestCase):
         _in = to_result_input(['a'], [d1])
         obj.add(_in)
         not_yet_computed = obj.not_yet_computed(
-            {'a': 1}, d1['dataset'], d1['id'])
+            {'a': 1}, d1['dataset'], d1['subject'])
         self.assertTrue(len(not_yet_computed) == 0)
 
     def testCanAddMultiplePipelines(self):
@@ -228,25 +224,25 @@ class Test_ResultsDB(unittest.TestCase):
         _in = to_result_input(['a', 'b'], [[d1, d2], [d2, d1]])
         obj.add(_in)
         not_yet_computed = obj.not_yet_computed(
-            {'a': 1}, d1['dataset'], d1['id'])
+            {'a': 1}, d1['dataset'], d1['subject'])
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
         not_yet_computed = obj.not_yet_computed(
-            {'b': 2}, d2['dataset'], d2['id'])
+            {'b': 2}, d2['dataset'], d2['subject'])
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
         not_yet_computed = obj.not_yet_computed(
-            {'b': 1}, d1['dataset'], d1['id'])
+            {'b': 1}, d1['dataset'], d1['subject'])
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
 
     def testRecognizesDifferentContext(self):
-        obj1 = ResultsDB(write=True, evaluation=DummyEvaluation(DummyParadigm()), _debug=True)
-        obj2 = ResultsDB(write=True, evaluation=DummyEvaluation(DummyParadigm('x')), _debug=True)
+        obj1 = ResultsDB(DummyEvaluation, DummyParadigm, write=True, _debug=True)
+        obj2 = ResultsDB(DummyEvaluation, DummyParadigm('x'), write=True, _debug=True)
         _in = to_result_input(['a', 'b'], [[d1, d2], [d2, d1]])
         obj1.add(_in)
         not_yet_computed = obj1.not_yet_computed(
-            {'a': 1}, d1['dataset'], d1['id'])
+            {'a': 1}, d1['dataset'], d1['subject'])
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
         not_yet_computed = obj2.not_yet_computed(
-            {'a': 1}, d1['dataset'], d1['id'])
+            {'a': 1}, d1['dataset'], d1['subject'])
         self.assertTrue(len(not_yet_computed) == 1, not_yet_computed)
 
     def testCanExportToDataframe(self):
@@ -256,10 +252,9 @@ class Test_ResultsDB(unittest.TestCase):
         _in = to_result_input(['a', 'b', 'c'], [d2, d2, d3])
         obj.add(_in)
         df = obj.to_dataframe()
-        log.debug(df)
         self.assertTrue(set(np.unique(df['pipeline'])) == set(
             ('a', 'b', 'c')), np.unique(df['pipeline']))
-        self.assertTrue(df.shape[0] == 6, df.shape[0])
+        self.assertTrue(df.shape[0] == 6, df)
 
 if __name__ == "__main__":
     unittest.main()

@@ -6,6 +6,9 @@ import numpy as np
 import pandas as pd
 import inspect
 import logging
+import re
+
+from sklearn.base import BaseEstimator
 
 log = logging.getLogger()
 
@@ -202,7 +205,7 @@ class ResultsDB:
                 raise ValueError(
                     'If writing results, evaluation must be specified')
             self.evaluation = repr(evaluation)
-            self.paradigm = repr(evaluation.paradigm))
+            self.paradigm = repr(evaluation.paradigm)
             self.human_paradigm = evaluation.paradigm.human_paradigm
             self.context_id = self.check_context(
                 get_digest(evaluation), get_digest(evaluation.paradigm),
@@ -241,11 +244,12 @@ class ResultsDB:
                                  paradigm_hash TEXT)''')
             c.execute('''
             CREATE TABLE datasets(code TEXT PRIMARY KEY,
-                                  sr REAL,
+                                  doi TEXT,
                                   subjects INTEGER)''')
             c.execute('''
             CREATE TABLE scores(score FLOAT,
                                 subj INT,
+                                session TEXT, 
                                 dataset TEXT,
                                 time FLOAT,
                                 n_samples INT,
@@ -270,9 +274,10 @@ class ResultsDB:
 
         def _insert(pipe, res_list):
             with self.conn as c:
-                c.executemany("INSERT INTO scores VALUES (?,?,?,?,?,?,?,?)",
+                c.executemany("INSERT INTO scores VALUES (?,?,?,?,?,?,?,?,?)",
                               [(r['score'],
-                                r['id'],
+                                r['subject'],
+                                r['session'],
                                 r['dataset'].code,
                                 r['time'],
                                 r['n_samples'],
@@ -297,7 +302,7 @@ class ResultsDB:
 
         for pipe, res_list in pipeline_dict.items():
             res_list = to_list(res_list)
-            if self.in_table(pipe, res_list[0]['dataset'].code, res_list[0]['id']):
+            if self.in_table(pipe, res_list[0]['dataset'].code, res_list[0]['subject']):
                 _update(pipe, res_list)
             else:
                 _insert(pipe, res_list)
@@ -311,10 +316,8 @@ class ResultsDB:
             if len(reslist) == 0:
                 # add dataset
                 log.info('Adding dataset {} to database...'.format(dataset.code))
-                raw = dataset.get_data([1], False)[0][0][0]
-                sr = raw.info['sfreq']
                 c.execute('INSERT INTO datasets VALUES(?,?,?)',
-                          (dataset.code, sr, len(dataset.subject_list)))
+                          (dataset.code, dataset.doi, len(dataset.subject_list)))
 
             elif len(reslist) != 1:
                 raise ValueError(
@@ -341,8 +344,3 @@ class ResultsDB:
             raise NotImplementedError('Cross-preprocessing/cross-whatever search not yet implemented')
         return pd.read_sql_query('SELECT * FROM scores WHERE context = {:d}'.format(self.context_id),
                                  self.conn)
-=======
-                    # if dataset, check for subject
-                    dset = pipe_grp[dataset.code]
-                    return (str(subject) in dset['id'][:, 0])
->>>>>>> master

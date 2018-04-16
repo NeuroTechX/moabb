@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 from sklearn.base import BaseEstimator
 
-from moabb.analysis import ResultsDB
+from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
 from moabb.paradigms.base import BaseParadigm
 
