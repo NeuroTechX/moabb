@@ -46,6 +46,13 @@ class BaseMotorImagery(BaseParadigm):
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
     """
+    def __repr__(self):
+        return '{}(fmin={},fmax={},channels={},interval={})'.format(
+            type(self).__name__,
+            self.fmin,
+            self.fmax,
+            self.channels,
+            self.interval)
 
     def __init__(self, filters=([7, 35],), events=None, tmin=0.0, tmax=None,
                  channels=None, resample=None):

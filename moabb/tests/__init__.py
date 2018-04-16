@@ -6,5 +6,5 @@ from moabb.tests.paradigms import *
 # from moabb.tests.util_tests import *
 import unittest
 
-if __name__ == "__main__":
-    unittest.main()
+# if __name__ == "__main__":
+#     unittest.main()

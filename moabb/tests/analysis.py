@@ -1,13 +1,17 @@
 import unittest
+import inspect
 import numpy as np
+import logging
 import moabb.analysis.meta_analysis as ma
-from moabb.analysis import Results
+from moabb.analysis.results import Results, ResultsDB
 import os
 from moabb.evaluations.base import BaseEvaluation
 from moabb.paradigms.base import BaseParadigm
 from moabb.datasets.fake import FakeDataset
 # dummy evaluation
 
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger()
 
 class DummyEvaluation(BaseEvaluation):
 
@@ -15,20 +19,27 @@ class DummyEvaluation(BaseEvaluation):
         raise NotImplementedError('dummy')
 
     def is_valid(self, dataset):
-        pass
+        return True
+
+    def __repr__(self):
+        return 'DummyEvaluation'
 
 
 class DummyParadigm(BaseParadigm):
 
-    def __init__(self):
-        pass
+    def __init__(self, _id='a'):
+        self.human_paradigm = 'test'
+        self._id = _id 
 
     @property
     def scoring(self):
         raise NotImplementedError('dummy')
 
+    def __repr__(self):
+        return '{}(id={})'.format(type(self).__name__, self._id)
+
     def is_valid(self, dataset):
-        pass
+        return True
 
     def process_raw(raw):
         raise NotImplementedError('dummy')
@@ -37,6 +48,16 @@ class DummyParadigm(BaseParadigm):
     def datasets(self):
         return [FakeDataset(['d1', 'd2'])]
 
+    def get_data(self, *args):
+        return [[[DummyRawArray()]]]
+
+class DummyRawArray():
+    def __init__(self):
+        """
+    
+        """
+        self.info = {'sfreq':10} 
+    
 
 # Create dummy data for tests
 d1 = {'time': 1,
@@ -59,7 +80,7 @@ d2 = {'time': 2,
 d3 = {'time': 2,
       'dataset': FakeDataset(['d1', 'd2']),
       'subject': 2,
-      'session': 'session_0',
+      'session': 'session_1',
       'score': 0.9,
       'n_samples': 100,
       'n_channels': 10}
@@ -165,6 +186,75 @@ class Test_Results(unittest.TestCase):
             ('a', 'b', 'c')), np.unique(df['pipeline']))
         self.assertTrue(df.shape[0] == 6, df.shape[0])
 
+class Test_ResultsDB(unittest.TestCase):
+
+    def testSetUp(self):
+        obj = ResultsDB(write=True, evaluation=DummyEvaluation(DummyParadigm()), _debug=True)
+        self.assertTrue(obj.context_id == 1)
+
+
+    @classmethod
+    def tearDownClass(cls):
+        import moabb
+        path = os.path.join(os.path.dirname(os.path.abspath(inspect.getsourcefile(moabb))),
+                            'results',
+                            'results_test.db')
+        if os.path.isfile(path):
+            os.remove(path)
+    def testCanAddDataset(self):
+        obj = ResultsDB(write=True, evaluation=DummyEvaluation(DummyParadigm()), _debug=True)
+        obj.check_dataset(FakeDataset('a'))
+
+
+    def testRecognizesAlreadyComputed(self):
+        obj = ResultsDB(write=True, evaluation=DummyEvaluation(DummyParadigm()), _debug=True)
+        _in = to_result_input(['a'], [d1])
+        obj.add(_in)
+        not_yet_computed = obj.not_yet_computed(
+            {'a': 1}, d1['dataset'], d1['subject'])
+        self.assertTrue(len(not_yet_computed) == 0)
+
+    def testCanAddMultiplePipelines(self):
+        obj = ResultsDB(write=True, evaluation=DummyEvaluation(DummyParadigm()), _debug=True)
+        _in = to_result_input(['a', 'b', 'c'], [d1, d1, d2])
+        obj.add(_in)
+
+    def testCanAddMultipleValuesPerPipeline(self):
+        obj = ResultsDB(write=True, evaluation=DummyEvaluation(DummyParadigm()), _debug=True)
+        _in = to_result_input(['a', 'b'], [[d1, d2], [d2, d1]])
+        obj.add(_in)
+        not_yet_computed = obj.not_yet_computed(
+            {'a': 1}, d1['dataset'], d1['subject'])
+        self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
+        not_yet_computed = obj.not_yet_computed(
+            {'b': 2}, d2['dataset'], d2['subject'])
+        self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
+        not_yet_computed = obj.not_yet_computed(
+            {'b': 1}, d1['dataset'], d1['subject'])
+        self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
+
+    def testRecognizesDifferentContext(self):
+        obj1 = ResultsDB(DummyEvaluation, DummyParadigm, write=True, _debug=True)
+        obj2 = ResultsDB(DummyEvaluation, DummyParadigm('x'), write=True, _debug=True)
+        _in = to_result_input(['a', 'b'], [[d1, d2], [d2, d1]])
+        obj1.add(_in)
+        not_yet_computed = obj1.not_yet_computed(
+            {'a': 1}, d1['dataset'], d1['subject'])
+        self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
+        not_yet_computed = obj2.not_yet_computed(
+            {'a': 1}, d1['dataset'], d1['subject'])
+        self.assertTrue(len(not_yet_computed) == 1, not_yet_computed)
+
+    def testCanExportToDataframe(self):
+        obj = ResultsDB(write=True, evaluation=DummyEvaluation(DummyParadigm()), _debug=True)
+        _in = to_result_input(['a', 'b', 'c'], [d1, d1, d2])
+        obj.add(_in)
+        _in = to_result_input(['a', 'b', 'c'], [d2, d2, d3])
+        obj.add(_in)
+        df = obj.to_dataframe()
+        self.assertTrue(set(np.unique(df['pipeline'])) == set(
+            ('a', 'b', 'c')), np.unique(df['pipeline']))
+        self.assertTrue(df.shape[0] == 6, df)
 
 if __name__ == "__main__":
     unittest.main()

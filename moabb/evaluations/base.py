@@ -31,6 +31,8 @@ class BaseEvaluation(ABC):
     suffix: str
         suffix for the results file.
     '''
+    def __repr__(self):
+        return '{}(random_state={})'.format(type(self).__name__,self.random_state)
 
     def __init__(self, paradigm, datasets=None, random_state=None, n_jobs=1,
                  overwrite=False, suffix=''):
@@ -47,11 +49,14 @@ class BaseEvaluation(ABC):
             datasets = self.paradigm.datasets
 
         if not isinstance(datasets, list):
-            if isinstance(datasets, BaseDataset):
-                datasets = [datasets]
+            if datasets is None:
+                datasets = paradigm.datasets
             else:
-                raise(ValueError("datasets must be a list or a dataset "
-                                 "instance"))
+                if isinstance(datasets, BaseDataset):
+                    datasets = [datasets]
+                else:
+                    raise(ValueError("datasets must be a list or a dataset "
+                                     "instance"))
 
         for dataset in datasets:
             if not(isinstance(dataset, BaseDataset)):
