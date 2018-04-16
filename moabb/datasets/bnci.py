@@ -5,12 +5,11 @@ BNCI 2014-001 Motor imagery dataset.
 from moabb.datasets.base import BaseDataset
 from moabb.datasets import download as dl
 
-from mne import create_info, concatenate_raws
+from mne import create_info
 from mne.io import RawArray
 from mne.channels import read_montage
 from mne.utils import verbose
 import numpy as np
-import os
 
 BNCI_URL = 'http://bnci-horizon-2020.eu/database/data-sets/'
 BBCI_URL = 'http://doc.ml.tu-berlin.de/bbci/'
@@ -126,12 +125,15 @@ def _load_data_001_2014(subject,
     ]
     ch_types = ['eeg'] * 22 + ['eog'] * 3
 
-    data_paths = []
+    sessions = {}
     for r in ['T', 'E']:
         url = '{u}001-2014/A{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
-        data_paths.extend(data_path(url, path, force_update, update_path))
-
-    return _convert_mi(data_paths, ch_names, ch_types)
+        filename = data_path(url, path, force_update, update_path)
+        runs, ev = _convert_mi(filename[0], ch_names, ch_types)
+        # FIXME: deal with run with no event (1:3) and name them
+        sessions['session_%s' % r] = {'run_%d' % ii: run
+                                      for ii, run in enumerate(runs)}
+    return sessions
 
 
 @verbose
@@ -145,12 +147,17 @@ def _load_data_002_2014(subject,
     if (subject < 1) or (subject > 14):
         raise ValueError("Subject must be between 1 and 14. Got %d." % subject)
 
-    data_paths = []
+    runs = []
     for r in ['T', 'E']:
         url = '{u}002-2014/S{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
-        data_paths.extend(data_path(url, path, force_update, update_path))
+        filename = data_path(url, path, force_update, update_path)[0]
 
-    return _convert_mi(data_paths, None, None)
+        # FIXME: electrode position and name are not provided directly.
+        raws, _ = _convert_mi(filename, None, ['eeg'] * 15)
+        runs.extend(raws)
+
+    runs = {'run_%d' % ii: run for ii, run in enumerate(runs)}
+    return {'session_0': runs}
 
 
 @verbose
@@ -167,12 +174,16 @@ def _load_data_004_2014(subject,
     ch_names = ['C3', 'Cz', 'C4', 'EOG1', 'EOG2', 'EOG3']
     ch_types = ['eeg'] * 3 + ['eog'] * 3
 
-    data_paths = []
+    sessions = []
     for r in ['T', 'E']:
         url = '{u}004-2014/B{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
-        data_paths.extend(data_path(url, path, force_update, update_path))
+        filename = data_path(url, path, force_update, update_path)[0]
+        raws, _ = _convert_mi(filename,  ch_names, ch_types)
+        sessions.extend(raws)
 
-    return _convert_mi(data_paths, ch_names, ch_types)
+    sessions = {'session_%d' % ii: {'run_0': run}
+                for ii, run in enumerate(sessions)}
+    return sessions
 
 
 @verbose
@@ -236,22 +247,22 @@ def _load_data_001_2015(subject,
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
 
     if subject in [8, 9, 10, 11]:
-        sessions = ['A', 'B', 'C']  # 3 sessions for those subjects
+        ses = ['A', 'B', 'C']  # 3 sessions for those subjects
     else:
-        sessions = ['A', 'B']
+        ses = ['A', 'B']
 
-    data_paths = []
-    for r in sessions:
-        url = '{u}001-2015/S{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
-        data_paths.extend(data_path(url, path, force_update, update_path))
-
-    ch_names = [
-        'FC3', 'FCz', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP3',
-        'CPz', 'CP4'
-    ]
+    ch_names = ['FC3', 'FCz', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6',
+                'CP3', 'CPz', 'CP4']
     ch_types = ['eeg'] * 13
 
-    return _convert_mi(data_paths, ch_names, ch_types)
+    sessions = {}
+    for r in ses:
+        url = '{u}001-2015/S{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
+        filename = data_path(url, path, force_update, update_path)
+        runs, ev = _convert_mi(filename[0], ch_names, ch_types)
+        sessions['session_%s' % r] = {'run_%d' % ii: run
+                                      for ii, run in enumerate(runs)}
+    return sessions
 
 
 @verbose
@@ -334,8 +345,10 @@ def _load_data_004_2015(subject,
         'P2', 'P4', 'P6', 'P8', 'PO3', 'PO4', 'O1', 'O2'
     ]
     ch_types = ['eeg'] * 30
-
-    return _convert_mi([filename], ch_names, ch_types)
+    raws, ev = _convert_mi(filename, ch_names, ch_types)
+    sessions = {'session_%d' % ii: {'run_0': run}
+                for ii, run in enumerate(raws)}
+    return sessions
 
 
 @verbose
@@ -442,29 +455,29 @@ def _load_data_013_2015(subject,
     return raws, event_id
 
 
-def _convert_mi(data_paths, ch_names, ch_types):
+def _convert_mi(filename, ch_names, ch_types):
     '''
-    Processes (Graz) motor imagery data from MAT files, returns list of recording sessions
-    (each session corresponds to a separate placement of electrodes)
+    Processes (Graz) motor imagery data from MAT files, returns list of
+    recording runs.
     '''
     from scipy.io import loadmat
-    sessions = []
+
+    runs = []
     event_id = {}
-    raws = []
-    for filename in data_paths:
-        data = loadmat(filename, struct_as_record=False, squeeze_me=True)
-        if type(data['data']) is np.ndarray:
-            run_array = data['data']
-        else:
-            run_array = [data['data']]
-        for run in run_array:
-            raw, evd = _convert_run(run, ch_names, ch_types, None)
-            raws.append(raw)
-            event_id.update(evd)
-        sessions.append(raws)
+    data = loadmat(filename, struct_as_record=False, squeeze_me=True)
+
+    if type(data['data']) is np.ndarray:
+        run_array = data['data']
+    else:
+        run_array = [data['data']]
+
+    for run in run_array:
+        raw, evd = _convert_run(run, ch_names, ch_types, None)
+        runs.append(raw)
+        event_id.update(evd)
     # change labels to match rest
     standardize_keys(event_id)
-    return sessions, event_id
+    return runs, event_id
 
 
 def standardize_keys(d):
@@ -613,65 +626,307 @@ def _convert_run_epfl(run, verbose=None):
 class MNEBNCI(BaseDataset):
     """Base BNCI dataset"""
 
-    def _get_single_subject_data(self, subject, stack_sessions):
+    def _get_single_subject_data(self, subject):
         """return data for a single subject"""
-        sessions = load_data(
-            subject=subject, dataset=self.code, verbose=False)[0]
-        if stack_sessions:
-            new_sessions = [[run for session in sessions for run in session]]
-        else:
-            new_sessions = [sessions]
-        return new_sessions
+        sessions = load_data(subject=subject, dataset=self.code, verbose=False)
+        return sessions
+
+    def data_path(self, subject, path=None, force_update=False,
+                  update_path=None, verbose=None):
+        print(f"warning - datapath not implemented correctly for {self.code}")
+        return load_data(subject=subject, dataset=self.code, verbose=verbose,
+                         update_path=update_path, path=path,
+                         force_update=force_update)
 
 
 class BNCI2014001(MNEBNCI):
-    """BNCI 2014-001 Motor Imagery dataset"""
+    """BNCI 2014-001 Motor Imagery dataset.
 
-    def __init__(self, tmin=3.5, tmax=5.5):
+    Dataset IIa from BCI Competition 4 [1]_.
+
+    **Dataset Description**
+
+    This data set consists of EEG data from 9 subjects.  The cue-based BCI
+    paradigm consisted of four different motor imagery tasks, namely the imag-
+    ination of movement of the left hand (class 1), right hand (class 2), both
+    feet (class 3), and tongue (class 4).  Two sessions on different days were
+    recorded for each subject.  Each session is comprised of 6 runs separated
+    by short breaks.  One run consists of 48 trials (12 for each of the four
+    possible classes), yielding a total of 288 trials per session.
+
+    The subjects were sitting in a comfortable armchair in front of a computer
+    screen.  At the beginning of a trial ( t = 0 s), a fixation cross appeared
+    on the black screen.  In addition, a short acoustic warning tone was
+    presented.  After two seconds ( t = 2 s), a cue in the form of an arrow
+    pointing either to the left, right, down or up (corresponding to one of the
+    four classes left hand, right hand, foot or tongue) appeared and stayed on
+    the screen for 1.25 s.  This prompted the subjects to perform the desired
+    motor imagery task.  No feedback was provided.  The subjects were ask to
+    carry out the motor imagery task until the fixation cross disappeared from
+    the screen at t = 6 s.
+
+    Twenty-two Ag/AgCl electrodes (with inter-electrode distances of 3.5 cm)
+    were used to record the EEG; the montage is shown in Figure 3 left.  All
+    signals were recorded monopolarly with the left mastoid serving as
+    reference and the right mastoid as ground. The signals were sampled with.
+    250 Hz and bandpass-filtered between 0.5 Hz and 100 Hz. The sensitivity of
+    the amplifier was set to 100 μV . An additional 50 Hz notch filter was
+    enabled to suppress line noise
+
+    References
+    ----------
+
+    .. [1] Tangermann, M., Müller, K.R., Aertsen, A., Birbaumer, N., Braun, C.,
+           Brunner, C., Leeb, R., Mehring, C., Miller, K.J., Mueller-Putz, G.
+           and Nolte, G., 2012. Review of the BCI competition IV.
+           Frontiers in neuroscience, 6, p.55.
+    """
+
+    def __init__(self):
         super().__init__(
-            subjects=range(1, 10),
+            subjects=list(range(1, 10)),
             sessions_per_subject=2,
-            events=dict(
-                zip(['left_hand', 'right_hand', 'feet', 'tongue'],
-                    [1, 2, 3, 4])),
+            events={'left_hand': 1, 'right_hand': 2, 'feet': 3, 'tongue': 4},
             code='001-2014',
-            interval=[tmin, tmax],
-            paradigm='imagery')
+            interval=[2, 6],
+            paradigm='imagery',
+            doi='10.3389/fnins.2012.00055')
 
 
 class BNCI2014002(MNEBNCI):
-    """BNCI 2014-002 Motor Imagery dataset"""
+    """BNCI 2014-002 Motor Imagery dataset.
 
-    def __init__(self, tmin=3.5, tmax=5.5):
+    Motor Imagery Dataset from [1]_.
+
+    **Dataset description**
+
+    The session consisted of eight runs, five of them for training and three
+    with feedback for validation.  One run was composed of 20 trials.  Taken
+    together, we recorded 50 trials per class for training and 30 trials per
+    class for validation.  Participants had the task of performing sustained (5
+    seconds) kinaesthetic motor imagery (MI) of the right hand and of the feet
+    each as instructed by the cue. At 0 s, a white colored cross appeared on
+    screen, 2 s later a beep sounded to catch the participant’s attention. The
+    cue was displayed from 3 s to 4 s. Participants were instructed to start
+    with MI as soon as they recognized the cue and to perform the indicated MI
+    until the cross disappeared at 8 s. A rest period with a random length
+    between 2 s and 3 s was presented between trials. Participants did not
+    receive feedback during training.  Feedback was presented in form of a
+    white
+    coloured bar-graph.  The length of the bar-graph reflected the amount of
+    correct classifications over the last second.  EEG was measured with a
+    biosignal amplifier and active Ag/AgCl electrodes (g.USBamp, g.LADYbird,
+    Guger Technologies OG, Schiedlberg, Austria) at a sampling rate of 512 Hz.
+    The electrodes placement was designed for obtaining three Laplacian
+    derivations.  Center electrodes at positions C3, Cz, and C4 and four
+    additional electrodes around each center electrode with a distance of 2.5
+    cm, 15 electrodes total.  The reference electrode was mounted on the left
+    mastoid and the ground electrode on the right mastoid.  The 13 participants
+    were aged between 20 and 30 years, 8 naive to the task, and had no known
+    medical or neurological diseases.
+
+    References
+    -----------
+
+    .. [1] Steyrl, D., Scherer, R., Faller, J. and Müller-Putz, G.R., 2016.
+           Random forests in non-invasive sensorimotor rhythm brain-computer
+           interfaces: a practical and convenient non-linear classifier.
+           Biomedical Engineering/Biomedizinische Technik, 61(1), pp.77-86.
+
+    """
+
+    def __init__(self):
         super().__init__(
-            range(1, 15), 1, dict(zip(['right_hand', 'feet'], [1, 2])),
-            '002-2014', [tmin, tmax], 'imagery')
+            subjects=list(range(1, 15)),
+            sessions_per_subject=1,
+            events={'right_hand': 1, 'feet': 2},
+            code='002-2014',
+            interval=[3, 8],
+            paradigm='imagery',
+            doi='10.1515/bmt-2014-0117')
 
 
 class BNCI2014004(MNEBNCI):
-    """BNCI 2014-004 Motor Imagery dataset"""
+    """BNCI 2014-004 Motor Imagery dataset.
 
-    def __init__(self, tmin=4.5, tmax=6.5):
+    Dataset B from BCI Competition 2008.
+
+    **Dataset description**
+
+    This data set consists of EEG data from 9 subjects of a study published in
+    [1]_. The subjects were right-handed, had normal or corrected-to-normal
+    vision and were paid for participating in the experiments.
+    All volunteers were sitting in an armchair, watching a flat screen monitor
+    placed approximately 1 m away at eye level. For each subject 5 sessions
+    are provided, whereby the first two sessions contain training data without
+    feedback (screening), and the last three sessions were recorded with
+    feedback.
+
+    Three bipolar recordings (C3, Cz, and C4) were recorded with a sampling
+    frequency of 250 Hz.They were bandpass- filtered between 0.5 Hz and 100 Hz,
+    and a notch filter at 50 Hz was enabled.  The placement of the three
+    bipolar recordings (large or small distances, more anterior or posterior)
+    were slightly different for each subject (for more details see [1]).
+    The electrode position Fz served as EEG ground. In addition to the EEG
+    channels, the electrooculogram (EOG) was recorded with three monopolar
+    electrodes.
+
+    The cue-based screening paradigm consisted of two classes,
+    namely the motor imagery (MI) of left hand (class 1) and right hand
+    (class 2).
+    Each subject participated in two screening sessions without feedback
+    recorded on two different days within two weeks.
+    Each session consisted of six runs with ten trials each and two classes of
+    imagery.  This resulted in 20 trials per run and 120 trials per session.
+    Data of 120 repetitions of each MI class were available for each person in
+    total.  Prior to the first motor im- agery training the subject executed
+    and imagined different movements for each body part and selected the one
+    which they could imagine best (e. g., squeezing a ball or pulling a brake).
+
+    Each trial started with a fixation cross and an additional short acoustic
+    warning tone (1 kHz, 70 ms).  Some seconds later a visual cue was presented
+    for 1.25 seconds.  Afterwards the subjects had to imagine the corresponding
+    hand movement over a period of 4 seconds.  Each trial was followed by a
+    short break of at least 1.5 seconds.  A randomized time of up to 1 second
+    was added to the break to avoid adaptation
+
+    For the three online feedback sessions four runs with smiley feedback
+    were recorded, whereby each run consisted of twenty trials for each type of
+    motor imagery.  At the beginning of each trial (second 0) the feedback (a
+    gray smiley) was centered on the screen.  At second 2, a short warning beep
+    (1 kHz, 70 ms) was given. The cue was presented from second 3 to 7.5. At
+    second 7.5 the screen went blank and a random interval between 1.0 and 2.0
+    seconds was added to the trial.
+
+    References
+    ----------
+
+    .. [1] R. Leeb, F. Lee, C. Keinrath, R. Scherer, H. Bischof,
+           G. Pfurtscheller. Brain-computer communication: motivation, aim,
+           and impact of exploring a virtual apartment. IEEE Transactions on
+           Neural Systems and Rehabilitation Engineering 15, 473–482, 2007
+
+    """
+
+    def __init__(self):
         super().__init__(
-            range(1, 10), 2, dict(zip(['left_hand', 'right_hand'], [1, 2])),
-            '004-2014', [tmin, tmax], 'imagery')
+            subjects=list(range(1, 10)),
+            sessions_per_subject=5,
+            events={'left_hand': 1, 'right_hand': 2},
+            code='004-2014',
+            interval=[3, 7.5],
+            paradigm='imagery',
+            doi='10.1109/TNSRE.2007.906956')
 
 
 class BNCI2015001(MNEBNCI):
-    """BNCI 2015-001 Motor Imagery dataset"""
+    """BNCI 2015-001 Motor Imagery dataset.
 
-    def __init__(self, tmin=4, tmax=7.5):
+    Dataset from [1]_.
+
+    **Dataset description**
+
+    We acquired the EEG from three Laplacian derivations, 3.5 cm (center-to-
+    center) around the electrode positions (according to International 10-20
+    System of Electrode Placement) C3 (FC3, C5, CP3 and C1), Cz (FCz, C1, CPz
+    and C2) and C4 (FC4, C2, CP4 and C6).  The acquisition hardware was a
+    g.GAMMAsys active electrode system along with a g.USBamp amplifier (g.tec,
+    Guger Tech- nologies OEG, Graz, Austria).  The system sampled at 512 Hz,
+    with a bandpass filter between 0.5 and 100 Hz and a notch filter at 50 Hz.
+    The order of the channels in the data is FC3, FCz, FC4, C5, C3, C1, Cz, C2,
+    C4, C6, CP3, CPz, CP4.
+
+    The task for the user was to perform sustained right hand versus both feet
+    movement imagery starting from the cue (second 3) to the end of the cross
+    period (sec- ond 8).  A trial started with 3 s of reference period,
+    followed by a brisk audible cue and a visual cue (arrow right for right
+    hand, arrow down for both feet) from second 3 to 4.25.
+    The activity period, where the users received feedback, lasted from
+    second 4 to 8. There was a random 2 to 3 s pause between the trials.
+
+    References
+    ----------
+
+    .. [1] J. Faller, C. Vidaurre, T. Solis-Escalante, C. Neuper and R.
+           Scherer (2012). Autocalibration and recurrent adaptation: Towards a
+           plug and play online ERD- BCI.  IEEE Transactions on Neural Systems
+           and Rehabilitation Engineering, 20(3), 313-319.
+
+    """
+
+    def __init__(self):
+        # FIXME: some participant have 3 sessions
         super().__init__(
-            range(1, 13), 2, dict(zip(['right_hand', 'feet'], [1, 2])),
-            '001-2015', [tmin, tmax], 'imagery')
+            subjects=list(range(1, 13)),
+            sessions_per_subject=2,
+            events={'right_hand': 1, 'feet': 2},
+            code='001-2015',
+            interval=[3, 8],
+            paradigm='imagery',
+            doi='10.1109/tnsre.2012.2189584')
 
 
 class BNCI2015004(MNEBNCI):
-    """BNCI 2015-004 Motor Imagery dataset"""
+    """BNCI 2015-004 Motor Imagery dataset.
 
-    def __init__(self, tmin=4.25, tmax=10):
+    Dataset from [1]_.
+
+    **Dataset description**
+
+    We provide EEG data recorded from nine users with disability (spinal cord
+    injury and stroke) on two different days (sessions).  Users performed,
+    follow- ing a cue-guided experimental paradigm, five distinct mental tasks
+    (MT).  MTs include mental word association (condition WORD), mental
+    subtraction (SUB), spatial navigation (NAV), right hand motor imagery
+    (HAND) and
+    feet motor imagery (FEET). Details on the experimental paradigm are
+    summarized in Figure 1.  The session for a single subject consisted of 8
+    runs resulting in 40 trials of each class for each day.  One single
+    experimental run consisted of 25 cues, with 5 of each mental task.  Cues
+    were presented in random order.
+
+    EEG was recorded from 30 electrode channels placed on the scalp according
+    to the international 10-20 system.  Electrode positions included channels
+    AFz, F7, F3, Fz, F4, F8, FC3, FCz, FC4, T3, C3, Cz, C4, T4, CP3, CPz,CP4,
+    P7, P5, P3, P1, Pz, P2, P4, P6, P8, PO3, PO4, O1, and O2.  Reference and
+    ground were placed at the left and right mastoid, respectively.  The g.tec
+    GAMMAsys system with g.LADYbird active electrodes and two g.USBamp
+    biosignal
+    amplifiers (Guger Technolgies, Graz, Austria) was used for recording.  EEG
+    was band pass filtered 0.5-100 Hz (notch filter at 50 Hz) and sampled at a
+    rate of 256 Hz.
+
+    The duration of a single imagery trials is 10 s.  At t = 0 s, a cross was
+    presented in the middle of the screen.  Participants were asked to relax
+    and
+    fixate the cross to avoid eye movements.  At t = 3 s, a beep was sounded to
+    get the participant’s attention.  The cue indicating the requested imagery
+    task, one out of five graphical symbols, was presented from t = 3 s to t =
+    4.25 s.  At t = 10 s, a second beep was sounded and the fixation-cross
+    disappeared, which indicated the end of the trial.  A variable break
+    (inter-trial-interval, ITI) lasting between 2.5 s and 3.5 s occurred
+    before
+    the start of the next trial.  Participants were asked to avoid movements
+    during the imagery period, and to move and blink during the
+    ITI. Experimental runs began and ended with a blank screen (duration 4 s)
+
+    References
+    ----------
+
+    .. [1] Scherer R, Faller J, Friedrich EVC, Opisso E, Costa U, Kübler A, et
+           al. (2015) Individually Adapted Imagery Improves Brain-Computer
+           Interface Performance in End-Users with Disability. PLoS ONE 10(5).
+           https://doi.org/10.1371/journal.pone.0123727
+
+    """
+
+    def __init__(self):
         super().__init__(
-            range(1, 10), 2,
-            dict(
-                right_hand=4, feet=5, navigation=3, subtraction=2, word_ass=1),
-            '004-2015', [tmin, tmax], 'imagery')
+            subjects=list(range(1, 10)),
+            sessions_per_subject=2,
+            events=dict(right_hand=4, feet=5, navigation=3, subtraction=2,
+                        word_ass=1),
+            code='004-2015',
+            interval=[3, 10],
+            paradigm='imagery',
+            doi='10.1371/journal.pone.0123727')

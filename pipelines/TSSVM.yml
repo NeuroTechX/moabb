@@ -1,7 +1,7 @@
 name: Tangent Space SVM
 
 paradigms:
-  - LeftRightImagerySinglePass
+  - LeftRightImagery
 
 citations:
   - https://doi.org/10.1016/j.neucom.2012.12.039

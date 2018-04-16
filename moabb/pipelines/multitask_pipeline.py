@@ -1,23 +1,18 @@
 from collections import defaultdict
 from warnings import warn
-from abc import ABCMeta, abstractmethod
 
-import numpy as np
-from scipy import sparse
-
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.externals.joblib import Parallel, delayed
 from sklearn.externals import six
-from sklearn.utils import tosequence
-from sklearn.utils.metaestimators import if_delegate_has_method
 import sklearn.pipeline as pipeline
 
 
 class MultitaskPipeline(pipeline.Pipeline):
-    """Class that extends the sklearn Pipeline to have the ability to take in lists
-    of datasets and run transforms and classifiers that use offline data in a
-    multi-task manner. This is done by calling pipeline.pre_fit, which then runs
-    through the list of transforms and pre-fits them as they require, then
+    """MultitaskPipeline.
+
+    Class that extends the sklearn Pipeline to have the ability to take in
+    lists of datasets and run transforms and classifiers that use offline data
+    in a multi-task manner.
+    This is done by calling pipeline.pre_fit, which then
+    runs through the list of transforms and pre-fits them as they require, then
     pre-trains the classifier. It can then be used like a normal Pipeline, in
     that the fit method is stateless *given* that pre_fit has already been
     called.
@@ -25,9 +20,9 @@ class MultitaskPipeline(pipeline.Pipeline):
     Parameters
     ----------
     steps : list
-        List of (name, pre_transform) tuples (implementing pre_fit/pre_transform) that are
-        chained, in the order in which they are chained, with the last object
-        an estimator.
+        List of (name, pre_transform) tuples (implementing pre_fit/
+        pre_transform) that are chained, in the order in which they are
+        chained, with the last object an estimator.
     Attributes
     ----------
     named_steps : dict
@@ -43,7 +38,7 @@ class MultitaskPipeline(pipeline.Pipeline):
 
         names = [type(estimator).__name__.lower() for estimator in estimators]
         namecount = defaultdict(int)
-        for est, name in zip(estimators, names):
+        for _, name in zip(estimators, names):
             namecount[name] += 1
 
         for k, v in list(six.iteritems(namecount)):
@@ -71,10 +66,12 @@ class MultitaskPipeline(pipeline.Pipeline):
         for t in pre_transformers:
             if t is None:
                 continue
-            if (not (hasattr(t, "pre_fit") or hasattr(t, "pre_fit_transform")) or not
-                    hasattr(t, "pre_transform")):
+            if (not (hasattr(t, "pre_fit") or hasattr(t, "pre_fit_transform"))
+               or not hasattr(t, "pre_transform")):
+
                 raise TypeError("All intermediate steps should be "
-                                "pre_transformers and implement pre_fit and pre_transform."
+                                "pre_transformers and implement pre_fit and "
+                                "pre_transform."
                                 " '%s' (type %s) doesn't" % (t, type(t)))
 
         # We allow last estimator to be None as an identity pre_transformation
@@ -88,27 +85,30 @@ class MultitaskPipeline(pipeline.Pipeline):
     def _pre_fit(self, X, y=None, **pre_fit_params):
         self._pre_validate_steps()
         pre_fit_params_steps = dict((name, {}) for name, step in self.steps
-                                if step is not None)
+                                    if step is not None)
         for pname, pval in six.iteritems(pre_fit_params):
             step, param = pname.split('__', 1)
             pre_fit_params_steps[step][param] = pval
         Xt = X
         for name, pre_transform in self.steps[:-1]:
+            params = pre_fit_params_steps[name]
             if pre_transform is None:
                 pass
             elif hasattr(pre_transform, "pre_fit_transform"):
-                Xt = pre_transform.pre_fit_transform(Xt, y, **pre_fit_params_steps[name])
+                Xt = pre_transform.pre_fit_transform(Xt, y, **params)
             else:
-                Xt = pre_transform.pre_fit(Xt, y, **pre_fit_params_steps[name]) \
-                              .pre_transform(Xt)
+                Xt = pre_transform.pre_fit(Xt, y, **params).pre_transform(Xt)
         if self._final_estimator is None:
             return Xt, {}
         return Xt, pre_fit_params_steps[self.steps[-1][0]]
 
     def pre_fit(self, X, y=None, **pre_fit_params):
         """Pre_Fit the model
-        Pre_Fit all the pre_transforms one after the other and pre_transform the
-        data, then pre_fit the pre_transformed data using the final estimator.
+
+        Pre_Fit all the pre_transforms one after the other and pre_transform
+        the data, then pre_fit the pre_transformed data using the final
+        estimator.
+
         Parameters
         ----------
         X : iterable
@@ -132,10 +132,12 @@ class MultitaskPipeline(pipeline.Pipeline):
         return self
 
     def pre_fit_transform(self, X, y=None, **pre_fit_params):
-        """Pre_Fit the model and pre_transform with the final estimator
-        Pre_Fits all the pre_transforms one after the other and pre_transforms the
-        data, then uses pre_fit_pre_transform on pre_transformed data with the final
-        estimator.
+        """Pre_Fit the model and pre_transform with the final estimator.
+
+        Pre_Fits all the pre_transforms one after the other and pre_transforms
+        the data, then uses pre_fit_pre_transform on pre_transformed data with
+        the final estimator.
+
         Parameters
         ----------
         X : iterable
@@ -170,21 +172,22 @@ class MultitaskPipeline(pipeline.Pipeline):
         Parameters
         ----------
         X : iterable
-            Data to pre_transform. Must fulfill input requirements of first step
-            of the pipeline.
+            Data to pre_transform. Must fulfill input requirements of first
+            step of the pipeline.
         Returns
         -------
         Xt : array-like, shape = [n_samples, n_pre_transformed_features]
         """
-        # _final_estimator is None or has pre_transform, otherwise attribute error
+        # _final_estimator is None or has pre_transform, otherwise attribute
+        # error
         if self._final_estimator is not None:
-            #...is this a bug? BUG
+            # ...is this a bug? BUG
             self._final_estimator.pre_transform
         return self._pre_transform
 
     def _pre_transform(self, X):
         Xt = X
-        for name, pre_transform in self.steps:
+        for _, pre_transform in self.steps:
             if pre_transform is not None:
                 Xt = pre_transform.pre_transform(Xt)
         return Xt
@@ -205,7 +208,7 @@ class MultitaskPipeline(pipeline.Pipeline):
         Xt : array-like, shape = [n_samples, n_features]
         """
         # raise AttributeError if necessary for hasattr behaviour
-        for name, pre_transform in self.steps:
+        for _, pre_transform in self.steps:
             if pre_transform is not None:
                 pre_transform.inverse_pre_transform
         return self._inverse_pre_transform
@@ -216,7 +219,7 @@ class MultitaskPipeline(pipeline.Pipeline):
                  " pipeline.inverse_pre_transform any more.", FutureWarning)
             X = X[None, :]
         Xt = X
-        for name, pre_transform in self.steps[::-1]:
+        for _, pre_transform in self.steps[::-1]:
             if pre_transform is not None:
                 Xt = pre_transform.inverse_pre_transform(Xt)
         return Xt
@@ -224,17 +227,18 @@ class MultitaskPipeline(pipeline.Pipeline):
     @staticmethod
     def make_pipeline(*steps):
         """Construct a Pipeline from the given estimators.
-        This is a shorthand for the Pipeline constructor; it does not require, and
-        does not permit, naming the estimators. Instead, their names will be set
-        to the lowercase of their types automatically.
+        This is a shorthand for the Pipeline constructor; it does not require,
+        and does not permit, naming the estimators. Instead, their names will
+        be set to the lowercase of their types automatically.
         Examples
         --------
         >>> from sklearn.naive_bayes import GaussianNB
         >>> from sklearn.preprocessing import StandardScaler
         >>> make_pipeline(StandardScaler(), GaussianNB(priors=None))
         ...     # doctest: +NORMALIZE_WHITESPACE
-        Pipeline(steps=[('standardscaler',
-                         StandardScaler(copy=True, with_mean=True, with_std=True)),
+        Pipeline(steps=[('standardscaler', StandardScaler(copy=True,
+                                                          with_mean=True,
+                                                          with_std=True)),
                         ('gaussiannb', GaussianNB(priors=None))])
         Returns
         -------

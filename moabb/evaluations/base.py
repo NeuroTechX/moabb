@@ -1,5 +1,4 @@
 import logging
-import traceback
 from abc import ABC, abstractmethod
 
 from sklearn.base import BaseEstimator
@@ -27,16 +26,16 @@ class BaseEvaluation(ABC):
         if not None, can guarantee same seed
     n_jobs: 1;
         number of jobs for fitting of pipeline
-
+    overwrite: bool (defaul False)
+        if true, overwrite the results.
+    suffix: str
+        suffix for the results file.
     '''
     def __repr__(self):
         return '{}(random_state={})'.format(type(self).__name__,self.random_state)
 
-    def __init__(self, paradigm, datasets=None, random_state=None, n_jobs=1):
-        """
-        Init.
-        """
-
+    def __init__(self, paradigm, datasets=None, random_state=None, n_jobs=1,
+                 overwrite=False, suffix=''):
         self.random_state = random_state
         self.n_jobs = n_jobs
 
@@ -63,15 +62,45 @@ class BaseEvaluation(ABC):
             if not(isinstance(dataset, BaseDataset)):
                 raise(ValueError("datasets must only contains dataset "
                                  "instance"))
-
+        rm = []
         for dataset in datasets:
-            self.paradigm.verify(dataset)
+            # fixme, we might want to drop dataset that are not compatible
+            valid_for_paradigm = self.paradigm.is_valid(dataset)
+            valid_for_eval = self.is_valid(dataset)
+            if not valid_for_paradigm:
+                log.warning(f"{dataset} not compatible with "
+                            "paradigm. Removing this dataset from the list.")
+                rm.append(dataset)
+            elif not valid_for_eval:
+                log.warning(f"{dataset} not compatible with evaluation. "
+                            "Removing this dataset from the list.")
+                rm.append(dataset)
+
+        [datasets.remove(r) for r in rm]
 
         self.datasets = datasets
 
-    def process(self, pipelines, overwrite=False, suffix=''):
-        '''
-        Runs tasks on all given datasets.
+        self.results = Results(type(self),
+                               type(self.paradigm),
+                               overwrite=overwrite,
+                               suffix=suffix)
+
+    def process(self, pipelines):
+        '''Runs all pipelines on all datasets.
+
+        This function will apply all provided pipelines and return a dataframe
+        containing the results of the evaluation.
+
+        Parameters
+        ----------
+        pipelines : dict of pipeline instance.
+            A dict containing the sklearn pipeline to evaluate.
+
+        Return
+        ------
+        results: pd.DataFrame
+            A dataframe containing the results.
+
         '''
 
         # check pipelines
@@ -83,45 +112,54 @@ class BaseEvaluation(ABC):
                 raise(ValueError("pipelines must only contains Pipelines "
                                  "instance"))
 
-        results = ResultsDB(write=True, evaluation=self)
-
         for dataset in self.datasets:
             log.info('Processing dataset: {}'.format(dataset.code))
-            self.preprocess_data(dataset)
+            results = self.evaluate(dataset, pipelines)
+            for res in results:
+                self.push_result(res, pipelines)
 
-            for subject in dataset.subject_list:
-                # check if we already have result for this subject/pipeline
-                run_pipes = results.not_yet_computed(pipelines,
-                                                     dataset,
-                                                     subject)
-                if len(run_pipes) > 0:
-                    try:
-                        res = self.evaluate(dataset, subject, run_pipes)
-                        for pipe in res:
-                            for r in res[pipe]:
-                                message = '{} | '.format(pipe)
-                                message += '{} | {} '.format(r['dataset'].code,
-                                                             r['id'])
-                                message += ': Score %.3f' % r['score']
-                            log.info(message)
-                        results.add(res, pipelines=pipelines)
-                    except Exception as e:
-                        log.error(e)
-                        log.debug(traceback.format_exc())
-                        log.warning('Skipping subject {}'.format(subject))
-        return results
+        return self.results.to_dataframe()
+
+    def push_result(self, res, pipelines):
+        message = '{} | '.format(res['pipeline'])
+        message += '{} | {} | {}'.format(res['dataset'].code,
+                                         res['subject'], res['session'])
+        message += ': Score %.3f' % res['score']
+        log.info(message)
+        self.results.add({res['pipeline']: res}, pipelines=pipelines)
 
     @abstractmethod
-    def evaluate(self, dataset, subject, pipelines):
-        '''
-        Return results in a dict
+    def evaluate(self, dataset, pipelines):
+        '''Evaluate results on a single dataset.
+
+        This method return a generator. each results item is a dict with
+        the following convension::
+
+            res = {'time': Duration of the training ,
+                   'dataset': dataset id,
+                   'subject': subject id,
+                   'session': session id,
+                   'score': score,
+                   'n_samples': number of training examples,
+                   'n_channels': number of channel,
+                   'pipeline': pipeline name}
         '''
         pass
 
     @abstractmethod
-    def preprocess_data(self, dataset):
-        '''
-        Optional paramter if any sort of dataset-wide computation is needed
-        per subject
-        '''
-        pass
+    def is_valid(self, dataset):
+        """Verify the dataset is compatible with evaluation.
+
+        This method is called to verify dataset given in the constructor
+        are compatible with the evaluation context.
+
+        This method should return false if the dataset does not match the
+        evaluation. This is for example the case if the dataset does not
+        contain enought session for a cross-session eval.
+
+        Parameters
+        ----------
+        dataset : dataset instance
+            The dataset to verify.
+
+        """

@@ -1,0 +1,93 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/python:3.6.1
+
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # install and cache dep
+      - restore_cache:
+          keys:
+            - deps1-{{ checksum "requirements.txt" }}
+            - deps1-
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+
+      - save_cache:
+          key: deps1-{{ checksum "requirements.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: install
+          command: |
+            . venv/bin/activate
+            python setup.py develop
+
+      # Download and cache data
+      - restore_cache:
+          keys:
+          - data-cache-v2
+          - data-cache
+
+      - run: mkdir -p ~/mne_data
+
+      - run:
+          name: download data
+          command: |
+            . venv/bin/activate
+            python -c "import moabb.datasets; moabb.datasets.BNCI2014001().download(update_path=True,verbose=False)";
+
+      - run: ls -al ~/mne_data;
+
+      - save_cache:
+          key: data-cache-v2
+          paths:
+            - ~/mne_data
+            - ~/.mne
+
+      - run:
+          name: build docs
+          command: |
+            . venv/bin/activate
+            cd ./docs
+            make html
+
+      - run: if [ ! -d ~/moabb.github.io ]; then git clone https://github.com/NeuroTechX/moabb.github.io.git ~/moabb.github.io --depth=1; fi;
+
+      - store_artifacts:
+          path: docs/build/html
+          destination: doc
+
+      - add_ssh_keys:  # add key from CircleCI account based on fingerprint
+          fingerprints:
+            - "06:1a:b6:65:97:63:63:ea:bc:17:44:b4:22:64:1f:20"
+
+      - deploy:
+          name: Triage deployment
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              echo "Deploying dev docs.";
+              git config --global user.email "circle@neurotechx.com";
+              git config --global user.name "Circle Ci";
+              pushd ~/moabb.github.io && git checkout master && git pull origin master && popd;
+              pushd docs/build && rm -Rf ~/moabb.github.io/docs && cp -a html ~/moabb.github.io/docs && popd;
+              pushd ~/moabb.github.io && git add -A && git commit -m "CircleCI update of docs (${CIRCLE_BUILD_NUM})." && git push origin master && popd;
+            else
+              echo "No deployment (build: ${CIRCLE_BRANCH}).";
+            fi

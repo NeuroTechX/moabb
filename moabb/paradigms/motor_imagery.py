@@ -1,35 +1,50 @@
-"""Motor Imagery contexts"""
+"""Motor Imagery Paradigms"""
 
+import abc
 import mne
 import numpy as np
+import pandas as pd
 import logging
 
 from moabb.paradigms.base import BaseParadigm
 from moabb.datasets import utils
+from moabb.datasets.fake import FakeDataset
 
 log = logging.getLogger()
 
 
 class BaseMotorImagery(BaseParadigm):
-    """Base Imagery paradigm  Context.
+    """Base Motor imagery paradigm.
+
+    Please use one of the child classes
 
     Parameters
     ----------
-    datasets : List of Dataset instances, or None
-        List of dataset instances on which the pipelines will be evaluated.
-        If None, uses all datasets (and should break...)
-    pipelines : Dict of pipelines instances.
-        Dictionary of pipelines. Keys identifies pipeline names, and values
-        are scikit-learn pipelines instances.
-    evaluator: Evaluator instance
-        Instance that defines evaluation scheme
-    fmin : float | None, (default 7.)
-        Low cut-off frequency in Hz. If None the data are only low-passed.
-    fmax : float | None, (default 35)
-        High cut-off frequency in Hz. If None the data are only high-passed.
-    interval: list | None, (default None)
-        Interval to cut trial. If None, defaults to the dataset-defined interval
 
+    filters: list of list (defaults [[7, 35]])
+        bank of bandpass filter to apply.
+
+    events: List of str | None (default None)
+        event to use for epoching. If None, default to all events defined in
+        the dataset.
+
+    tmin: float (default 0.0)
+        Start time (in second) of the epoch, relative to the dataset specific
+        task interval e.g. tmin = 1 would mean the epoch will start 1 second
+        after the begining of the task as defined by the dataset.
+
+    tmax: float | None, (default None)
+        End time (in second) of the epoch, relative to the begining of the
+        dataset specific task interval. tmax = 5 would mean the epoch will end
+        5 second after the begining of the task as defined in the dataset. If
+        None, use the dataset value.
+
+    channels: list of str | None (default None)
+        list of channel to select. If None, use all EEG channels available in
+        the dataset.
+
+    resample: float | None (default None)
+        If not None, resample the eeg data with the sampling rate provided.
     """
     def __repr__(self):
         return '{}(fmin={},fmax={},channels={},interval={})'.format(
@@ -39,177 +54,388 @@ class BaseMotorImagery(BaseParadigm):
             self.channels,
             self.interval)
 
-    def __init__(self, fmin=7, fmax=35, channels=None, interval=None, **kwargs):
-        """init"""
-        super().__init__(**kwargs)
-        self.fmin = fmin
-        self.fmax = fmax
+    def __init__(self, filters=([7, 35],), events=None, tmin=0.0, tmax=None,
+                 channels=None, resample=None):
+        super().__init__()
+        self.filters = filters
         self.channels = channels
-        self.interval = interval
-        if self.interval is not None:
-            assert self.interval[0] >= 0
+        self.events = events
+        self.resample = resample
 
-    def verify(self, dataset):
-        '''
-        Method that verifies dataset is correct for given parameters
-        '''
-        assert dataset.paradigm == 'imagery'
-        if self.interval is not None:
-            assert dataset.interval[1] > self.interval[1]
+        if (tmax is not None):
+            if tmin >= tmax:
+                raise(ValueError("tmax must be greater than tmin"))
 
-    def raw_to_trials(self, raw, events, picks, event_dict, time):
-        '''
-        Given a single raw file turn it into a features matrix and labels
-        '''
-        raw_f = raw.copy().filter(self.fmin, self.fmax, method='iir', picks=picks,
-                                  verbose=False)
-        epochs = mne.Epochs(raw_f, events, event_id=event_dict,
-                            tmin=time[0], tmax=time[1], proj=False,
-                            baseline=None, preload=True,
-                            verbose=False, picks=picks)
-        return epochs.get_data(), epochs.events[:, -1]
+        self.tmin = tmin
+        self.tmax = tmax
 
-    def cont_to_trials(self, raws, event_dict, time):
-        '''Take list of raws and returns trial data and labels. Implements
-        imagery-specific processing as well
+    def is_valid(self, dataset):
+        ret = True
+        if not (dataset.paradigm == 'imagery'):
+            ret = False
 
-        '''
-        if type(raws) is not list:
-            raws = [raws]
-        Xall = []
-        yall = []
-        for raw in raws:
-            events = mne.find_events(raw, shortest_event=0, verbose=False)
-            channels = () if self.channels is None else self.channels
-            # picks channels
-            picks = mne.pick_types(raw.info, eeg=True, stim=False,
-                                   include=channels)
-            log.debug('Picks: {}'.format(picks))
-            # ensure events are desired:
-            if len(events) > 0:
-                keep_events = {key: val for key, val in event_dict.items() if
-                               val in np.unique(events[:, 2])}
-                if len(keep_events) > 0:
-                    # copy before filtering, so we let raws intact.
-                    X, y = self.raw_to_trials(
-                        raw, events, picks, keep_events, time)
-                    Xall.append(X)
-                    yall.append(y)
-        return np.concatenate(Xall, axis=0), np.concatenate(yall, axis=0)
+        # check if dataset has required events
+        if self.events:
+            if not set(self.events) <= set(dataset.event_id.keys()):
+                ret = False
+
+        # we should verify list of channels, somehow
+        return ret
+
+    @abc.abstractmethod
+    def used_events(self, dataset):
+        pass
+
+    def process_raw(self, raw, dataset):
+        # find the events
+        events = mne.find_events(raw, shortest_event=0, verbose=False)
+        channels = () if self.channels is None else self.channels
+
+        # picks channels
+        picks = mne.pick_types(raw.info, eeg=True, stim=False,
+                               include=channels)
+
+        # get event id
+        event_id = self.used_events(dataset)
+
+        # pick events, based on event_id
+        try:
+            events = mne.pick_events(events, include=list(event_id.values()))
+        except RuntimeError as r:
+            # skip raw if no event found
+            return
+
+        # get interval
+        tmin = self.tmin + dataset.interval[0]
+        if self.tmax is None:
+            tmax = dataset.interval[1]
+        else:
+            tmax = self.tmax + dataset.interval[0]
+
+        if self.resample is not None:
+            raw = raw.copy().resample(self.resample)
+
+        X = []
+        for bandpass in self.filters:
+            fmin, fmax = bandpass
+            # filter data
+            raw_f = raw.copy().filter(fmin, fmax, method='iir',
+                                      picks=picks, verbose=False)
+            # epoch data
+            epochs = mne.Epochs(raw_f, events, event_id=event_id,
+                                tmin=tmin, tmax=tmax, proj=False,
+                                baseline=None, preload=True,
+                                verbose=False, picks=picks,
+                                on_missing='ignore')
+            # MNE is in V, rescale to have uV
+            X.append(1e6 * epochs.get_data())
+
+        inv_events = {k: v for v, k in event_id.items()}
+        labels = np.array([inv_events[e] for e in epochs.events[:, -1]])
+
+        # if only one band, return a 3D array, otherwise return a 4D
+        if len(self.filters) == 1:
+            X = X[0]
+        else:
+            X = np.array(X).transpose((1, 2, 3, 0))
+
+        metadata = pd.DataFrame(index=range(len(labels)))
+        return X, labels, metadata
 
     @property
     def datasets(self):
-        return utils.dataset_search(paradigm='imagery')
+        if self.tmax is None:
+            interval = None
+        else:
+            interval = self.tmax - self.tmin
+        return utils.dataset_search(paradigm='imagery',
+                                    events=self.events,
+                                    interval=interval,
+                                    has_all_events=True)
 
     @property
     def scoring(self):
         return 'accuracy'
 
 
-class MotorImageryMultiPass(BaseMotorImagery):
+class SinglePass(BaseMotorImagery):
+    """Single Bandpass filter motot Imagery.
 
-    def __init__(self, fbands=np.array([[8, 12],
-                                        [12, 16],
-                                        [16, 20],
-                                        [20, 24],
-                                        [24, 28],
-                                        [28, 32]]),
-                 channels=None, **kwargs):
+    Motor imagery paradigm with only one bandpass filter (default 8 to 32 Hz)
+
+    Parameters
+    ----------
+    fmin: float (default 8)
+        cutoff frequency (Hz) for the high pass filter
+
+    fmax: float (default 32)
+        cutoff frequency (Hz) for the low pass filter
+
+    events: List of str | None (default None)
+        event to use for epoching. If None, default to all events defined in
+        the dataset.
+
+    tmin: float (default 0.0)
+        Start time (in second) of the epoch, relative to the dataset specific
+        task interval e.g. tmin = 1 would mean the epoch will start 1 second
+        after the begining of the task as defined by the dataset.
+
+    tmax: float | None, (default None)
+        End time (in second) of the epoch, relative to the begining of the
+        dataset specific task interval. tmax = 5 would mean the epoch will end
+        5 second after the begining of the task as defined in the dataset. If
+        None, use the dataset value.
+
+    channels: list of str | None (default None)
+        list of channel to select. If None, use all EEG channels available in
+        the dataset.
+
+    resample: float | None (default None)
+        If not None, resample the eeg data with the sampling rate provided.
+
+    """
+    def __init__(self, fmin=8, fmax=32, **kwargs):
+        if 'filters' in kwargs.keys():
+            raise(ValueError("MotorImagery does not take argument filters"))
+        super().__init__(filters=[[fmin, fmax]], **kwargs)
+
+
+class FilterBank(BaseMotorImagery):
+    """Filter Bank MI."""
+
+    def __init__(self, filters=([8, 12], [12, 16], [16, 20], [20, 24],
+                                [24, 28], [28, 32]), **kwargs):
         """init"""
+        super().__init__(filters=filters, **kwargs)
+
+
+class LeftRightImagery(SinglePass):
+    """Motor Imagery for left hand/right hand classification
+
+    Metric is 'roc_auc'
+
+    """
+
+    def __init__(self, **kwargs):
+        if 'events' in kwargs.keys():
+            raise(ValueError('LeftRightImagery dont accept events'))
+        super().__init__(events=['left_hand', 'right_hand'], **kwargs)
+
+    def used_events(self, dataset):
+        return {ev: dataset.event_id[ev] for ev in self.events}
+
+    @property
+    def scoring(self):
+        return 'roc_auc'
+
+
+class FilterBankLeftRightImagery(FilterBank):
+    """Filter Bank Motor Imagery for left hand/right hand classification
+
+    Metric is 'roc_auc'
+
+    """
+
+    def __init__(self, **kwargs):
+        if 'events' in kwargs.keys():
+            raise(ValueError('LeftRightImagery dont accept events'))
+        super().__init__(events=['left_hand', 'right_hand'], **kwargs)
+
+    def used_events(self, dataset):
+        return {ev: dataset.event_id[ev] for ev in self.events}
+
+    @property
+    def scoring(self):
+        return 'roc_auc'
+
+
+class FilterBankMotorImagery(FilterBank):
+    """
+    Filter bank n-class motor imagery.
+
+    Metric is 'roc-auc' if 2 classes and 'accuracy' if more
+
+    Parameters
+    -----------
+
+    events: List of str
+        event labels used to filter datasets (e.g. if only motor imagery is
+        desired).
+
+    n_classes: int,
+        number of classes each dataset must have. If events is given,
+        requires all imagery sorts to be within the events list.
+    """
+
+    def __init__(self, n_classes=2, **kwargs):
+        "docstring"
         super().__init__(**kwargs)
-        self.fbands = fbands
-        self.channels = channels
+        self.n_classes = n_classes
 
-    def __repr__(self):
-        return '{}(fbands={},channels={},interval={})'.format(
-            type(self).__name__,
-            self.fbands,
-            self.channels,
-            self.interval)
+        if self.events is None:
+            log.warning("Choosing from all possible events")
+        else:
+            assert n_classes <= len(
+                self.events), 'More classes than events specified'
 
+    def is_valid(self, dataset):
+        ret = True
+        if not dataset.paradigm == 'imagery':
+            ret = False
+        if self.events is None:
+            if not len(dataset.event_id) >= self.n_classes:
+                ret = False
+        else:
+            overlap = len(set(self.events) & set(dataset.event_id.keys()))
+            if not overlap >= self.n_classes:
+                ret = False
+        return ret
 
+    def used_events(self, dataset):
+        out = {}
+        if self.events is None:
+            for k, v in dataset.event_id.items():
+                out[k] = v
+                if len(out) == self.n_classes:
+                    break
+        else:
+            for event in self.events:
+                if event in dataset.event_id.keys():
+                    out[event] = dataset.event_id[event]
+                if len(out) == self.n_classes:
+                    break
+        if len(out) < self.n_classes:
+            raise(ValueError(f"Dataset {dataset.code} did not have enough "
+                             f"events in {self.events} to run analysis"))
+        return out
 
-    def raw_to_trials(self, raw, events, picks, event_dict, time):
-        y = None
-        X = []
-        for fmin, fmax in self.fbands:
-            raw_f = raw.copy().filter(fmin, fmax, method='iir', picks=picks,
-                                      verbose=False)
-            epochs = mne.Epochs(raw_f, events, event_id=event_dict,
-                                tmin=time[0], tmax=time[1], proj=False,
-                                baseline=None, preload=True,
-                                verbose=False, picks=picks)
-            xband, y = epochs.get_data(), epochs.events[:, -1]
-            X.append(xband)
-        return np.stack(X, axis=3), y
+    @property
+    def datasets(self):
+        if self.tmax is None:
+            interval = None
+        else:
+            interval = self.tmax - self.tmin
+        return utils.dataset_search(paradigm='imagery',
+                                    events=self.events,
+                                    total_classes=self.n_classes,
+                                    interval=interval,
+                                    has_all_events=False)
 
-
-def ImageryNClassFactory(parent):
-
-    class ImageryNClass(parent):
-        """Imagery for multi class classification
-
-        Returns n-class imagery results, visualization agnostic but forces all
-        datasets to have exactly n classes. Uses 'accuracy' as metric
-
-        """
-
-        def __init__(self, n_classes, **kwargs):
-            self.n_classes = n_classes
-            self.human_paradigm = 'ImageryNClass'
-            super().__init__(**kwargs)
-
-        def verify(self, d):
-            log.warning(
-                'Assumes events have already been selected per dataset')
-            super().verify(d)
-            assert len(d.selected_events) == self.n_classes
-
-        @property
-        def datasets(self):
-            return utils.dataset_search(paradigm='imagery',
-                                        total_classes=self.n_classes)
-
-    return ImageryNClass
-
-
-def LeftRightImageryFactory(parent):
-    class LeftRightImagery(parent):
-        """Motor Imagery for left hand/right hand classification
-
-        Metric is 'roc_auc'
-
-        """
-        def __init__(self, **kwargs):
-            """
-        
-            """
-            super().__init__(**kwargs)
-            self.human_paradigm = 'LeftRightImagery'
-            
-        def verify(self, d):
-            events = ['left_hand', 'right_hand']
-            super().verify(d)
-            assert set(events) <= set(d.event_id.keys())
-            d.selected_events = dict(
-                zip(events, [d.event_id[s] for s in events]))
-
-        @property
-        def scoring(self):
+    @property
+    def scoring(self):
+        if self.n_classes == 2:
             return 'roc_auc'
-
-        @property
-        def datasets(self):
-            return utils.dataset_search(paradigm='imagery',
-                                        events=['right_hand', 'left_hand'],
-                                        has_all_events=True)
-    return LeftRightImagery
+        else:
+            return 'accuracy'
 
 
-globals()['LeftRightImagerySinglePass'] = LeftRightImageryFactory(
-    BaseMotorImagery)
-globals()['ImageryNClassSinglePass'] = ImageryNClassFactory(BaseMotorImagery)
-globals()['LeftRightImageryMultiPass'] = LeftRightImageryFactory(
-    MotorImageryMultiPass)
-globals()['ImageryNClassMultiPass'] = ImageryNClassFactory(
-    MotorImageryMultiPass)
+class MotorImagery(SinglePass):
+    """
+    N-class motor imagery.
+
+    Metric is 'roc-auc' if 2 classes and 'accuracy' if more
+
+    Parameters
+    -----------
+
+    events: List of str
+        event labels used to filter datasets (e.g. if only motor imagery is
+        desired).
+
+    n_classes: int,
+        number of classes each dataset must have. If events is given,
+        requires all imagery sorts to be within the events list.
+
+    fmin: float (default 8)
+        cutoff frequency (Hz) for the high pass filter
+
+    fmax: float (default 32)
+        cutoff frequency (Hz) for the low pass filter
+
+    tmin: float (default 0.0)
+        Start time (in second) of the epoch, relative to the dataset specific
+        task interval e.g. tmin = 1 would mean the epoch will start 1 second
+        after the begining of the task as defined by the dataset.
+
+    tmax: float | None, (default None)
+        End time (in second) of the epoch, relative to the begining of the
+        dataset specific task interval. tmax = 5 would mean the epoch will end
+        5 second after the begining of the task as defined in the dataset. If
+        None, use the dataset value.
+
+    channels: list of str | None (default None)
+        list of channel to select. If None, use all EEG channels available in
+        the dataset.
+
+    resample: float | None (default None)
+        If not None, resample the eeg data with the sampling rate provided.
+    """
+
+    def __init__(self, n_classes=2, **kwargs):
+        super().__init__(**kwargs)
+        self.n_classes = n_classes
+
+        if self.events is None:
+            log.warning("Choosing from all possible events")
+        else:
+            assert n_classes <= len(
+                self.events), 'More classes than events specified'
+
+    def is_valid(self, dataset):
+        ret = True
+        if not dataset.paradigm == 'imagery':
+            ret = False
+        if self.events is None:
+            if not len(dataset.event_id) >= self.n_classes:
+                ret = False
+        else:
+            overlap = len(set(self.events) & set(dataset.event_id.keys()))
+            if not overlap >= self.n_classes:
+                ret = False
+        return ret
+
+    def used_events(self, dataset):
+        out = {}
+        if self.events is None:
+            for k, v in dataset.event_id.items():
+                out[k] = v
+                if len(out) == self.n_classes:
+                    break
+        else:
+            for event in self.events:
+                if event in dataset.event_id.keys():
+                    out[event] = dataset.event_id[event]
+                if len(out) == self.n_classes:
+                    break
+        if len(out) < self.n_classes:
+            raise(ValueError(f"Dataset {dataset.code} did not have enough "
+                             f"events in {self.events} to run analysis"))
+        return out
+
+    @property
+    def datasets(self):
+        if self.tmax is None:
+            interval = None
+        else:
+            interval = self.tmax - self.tmin
+        return utils.dataset_search(paradigm='imagery',
+                                    events=self.events,
+                                    total_classes=self.n_classes,
+                                    interval=interval,
+                                    has_all_events=False)
+
+    @property
+    def scoring(self):
+        if self.n_classes == 2:
+            return 'roc_auc'
+        else:
+            return 'accuracy'
+
+
+class FakeImageryParadigm(LeftRightImagery):
+    """Fake Imagery for left hand/right hand classification.
+    """
+
+    @property
+    def datasets(self):
+        return [FakeDataset(['left_hand', 'right_hand'])]

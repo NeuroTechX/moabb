@@ -1,6 +1,6 @@
 name: CSP + LDA
 paradigms:
-  - LeftRightImagerySinglePass
+  - LeftRightImagery
 
 citations:
   - https://doi.org/10.1007/BF01129656

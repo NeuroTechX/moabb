@@ -11,64 +11,68 @@ from mne import create_info
 from mne.io import RawArray
 from mne.channels import read_montage
 from . import download as dl
+import logging
 
-import os
+log = logging.getLogger()
 
-GIGA_URL = 'ftp://penguin.genomics.cn/pub/10.5524/100001_101000/100295/mat_data/'
+GIGA_URL = 'ftp://penguin.genomics.cn/pub/10.5524/100001_101000/100295/mat_data/' # noqa
 
-def data_path(subject, path=None, force_update=False, update_path=None,
-              verbose=None):
-    """Get path to local copy of GIGA dataset URL.
 
-    Parameters
+class Cho2017(BaseDataset):
+    """Motor Imagery dataset from Cho et al 2017.
+
+    Dataset from the paper [1]_.
+
+    **Dataset Description**
+
+    We conducted a BCI experiment for motor imagery movement (MI movement)
+    of the left and right hands with 52 subjects (19 females, mean age ± SD
+    age = 24.8 ± 3.86 years); Each subject took part in the same experiment,
+    and subject ID was denoted and indexed as s1, s2, …, s52.
+    Subjects s20 and s33 were both-handed, and the other 50 subjects
+    were right-handed.
+
+    EEG data were collected using 64 Ag/AgCl active electrodes.
+    A 64-channel montage based on the international 10-10 system was used to
+    record the EEG signals with 512 Hz sampling rates.
+    The EEG device used in this experiment was the Biosemi ActiveTwo system.
+    The BCI2000 system 3.0.2 was used to collect EEG data and present
+    instructions (left hand or right hand MI). Furthermore, we recorded
+    EMG as well as EEG simultaneously with the same system and sampling rate
+    to check actual hand movements. Two EMG electrodes were attached to the
+    flexor digitorum profundus and extensor digitorum on each arm.
+
+    Subjects were asked to imagine the hand movement depending on the
+    instruction given. Five or six runs were performed during the MI
+    experiment. After each run, we calculated the classification
+    accuracy over one run and gave the subject feedback to increase motivation.
+    Between each run, a maximum 4-minute break was given depending on
+    the subject's demands.
+
+    References
     ----------
-    subject : int
-        Number of subject to use
-    path : None | str
-        Location of where to look for the data storing location.
-        If None, the environment variable or config parameter
-        ``MNE_DATASETS_INRIA_PATH`` is used. If it doesn't exist, the
-        "~/mne_data" directory is used. If the dataset
-        is not found under the given path, the data
-        will be automatically downloaded to the specified folder.
-    force_update : bool
-        Force update of the dataset even if a local copy exists.
-    update_path : bool | None
-        If True, set the MNE_DATASETS_INRIA_PATH in mne-python
-        config to the given path. If None, the user is prompted.
-    verbose : bool, str, int, or None
-        If not None, override default verbose level (see :func:`mne.verbose`).
 
-    Returns
-    -------
-    path : list of str
-        Local path to the given data file. This path is contained inside a list
-        of length one, for compatibility.
-    """  # noqa: E501
-    if subject < 1 or subject > 52:
-        raise ValueError("Valid subjects between 1 and 52, subject {:d} requested".format(subject))
-    url = '{:s}s{:02d}.mat'.format(GIGA_URL, subject)
-
-    return dl.data_path(url, 'GIGADB', path, force_update, update_path, verbose)
-
-class GigaDbMI(BaseDataset):
-    """GigaDb Motor Imagery dataset"""
+    .. [1] Cho, H., Ahn, M., Ahn, S., Kwon, M. and Jun, S.C., 2017.
+           EEG datasets for motor imagery brain computer interface.
+           GigaScience. https://doi.org/10.1093/gigascience/gix034
+    """
 
     def __init__(self):
         super().__init__(
-            subjects=list(range(1,53)),
+            subjects=list(range(1, 53)),
             sessions_per_subject=1,
             events=dict(left_hand=1, right_hand=2),
-            code='GigaDb Motor Imagery',
-            interval=[1,3],
-            paradigm='imagery'
-            )
+            code='Cho2017',
+            interval=[0, 3],  # full trial is 0-3s, but edge effects
+            paradigm='imagery',
+            doi='10.5524/100295')
+
         for ii in [32, 46, 49]:
             self.subject_list.remove(ii)
 
-    def _get_single_subject_data(self, subject, stack_sessions):
+    def _get_single_subject_data(self, subject):
         """return data for a single subject"""
-        fname = data_path(subject)
+        fname = self.data_path(subject)
 
         data = loadmat(fname, squeeze_me=True, struct_as_record=False,
                        verify_compressed_data_integrity=False)['eeg']
@@ -85,17 +89,33 @@ class GigaDbMI(BaseDataset):
         ch_names = eeg_ch_names + emg_ch_names + ['Stim']
         ch_types = ['eeg'] * 64 + ['emg'] * 4 + ['stim']
         montage = read_montage('standard_1005')
+        imagery_left = data.imagery_left - \
+            data.imagery_left.mean(axis=1, keepdims=True)
+        imagery_right = data.imagery_right - \
+            data.imagery_right.mean(axis=1, keepdims=True)
 
-        eeg_data_l = np.vstack([data.imagery_left * 1e-6, data.imagery_event])
-        eeg_data_r = np.vstack([data.imagery_right * 1e-6,
+        eeg_data_l = np.vstack([imagery_left * 1e-6, data.imagery_event])
+        eeg_data_r = np.vstack([imagery_right * 1e-6,
                                 data.imagery_event * 2])
 
-        eeg_data = np.hstack([eeg_data_l, eeg_data_r])  # stacking causes first trials of _r to be corrupted slightly by any sort of filtering -- can fix by making them two raw arrays?
+        # trials are already non continuous. edge artifact can appears but
+        # are likely to be present during rest / inter-trial activity
+        eeg_data = np.hstack([eeg_data_l, np.zeros((eeg_data_l.shape[0], 500)),
+                              eeg_data_r])
+        log.warning("Trials demeaned and stacked with zero buffer to create "
+                    "continuous data -- edge effects present")
 
         info = create_info(ch_names=ch_names, ch_types=ch_types,
                            sfreq=data.srate, montage=montage)
         raw = RawArray(data=eeg_data, info=info, verbose=False)
-        if stack_sessions:
-            return [[raw]]
-        else:
-            return [[[raw]]]
+
+        return {'session_0': {'run_0': raw}}
+
+    def data_path(self, subject, path=None, force_update=False,
+                  update_path=None, verbose=None):
+        if subject not in self.subject_list:
+            raise(ValueError("Invalid subject number"))
+
+        url = '{:s}s{:02d}.mat'.format(GIGA_URL, subject)
+        return dl.data_path(url, 'GIGADB', path, force_update, update_path,
+                            verbose)
