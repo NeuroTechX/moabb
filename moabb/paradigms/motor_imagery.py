@@ -119,7 +119,6 @@ class BaseMotorImagery(BaseParadigm):
                                 on_missing='ignore')
             if self.resample is not None:
                 epochs = epochs.resample(self.resample)
-                log.debug(epochs.info)
             # MNE is in V, rescale to have uV
             X.append(1e6 * epochs.get_data())
 
