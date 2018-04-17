@@ -48,4 +48,4 @@ def analyze(results, out_path, name='analysis', plot=False):
 
     if plot:
         fig, color_dict = plt.score_plot(results)
-        fig.savefig(os.path.join(analysis_path, 'scores.pdf')
+        fig.savefig(os.path.join(analysis_path, 'scores.pdf'))
