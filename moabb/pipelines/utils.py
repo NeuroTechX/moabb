@@ -63,14 +63,14 @@ class FilterBank(BaseEstimator, TransformerMixin):
     def transform(self, X):
         assert X.ndim == 4
         out = [self.models[i].transform(X[..., i]) for i in range(X.shape[-1])]
-        assert out[0].ndim == 2, 'Each band must return a two dimensional matrix, currently have {}'.format(
-            out[0].ndim)
+        assert out[0].ndim == 2, 'output is of dim {}'.format(out[0].ndim)
         if self.flatten:
             return np.concatenate(out, axis=1)
         else:
             return np.stack(out, axis=2)
 
     def __repr__(self):
+        est = self.estimator.get_params()
         return '{}(estimator={}, flatten={})'.format(type(self).__name__,
-                                                     self.estimator.get_params(),
+                                                     est,
                                                      self.flatten)

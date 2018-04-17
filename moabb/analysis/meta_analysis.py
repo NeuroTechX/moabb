@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.stats as stats
 
+
 def collapse_session_scores(df):
     return df.groupby(['pipeline', 'dataset', 'subject']).mean().reset_index()
 
@@ -43,12 +44,12 @@ def _rmanova(matrix):
 
     # MS: Mean of squared difference
     MS_algo = SS_algo / (len(mean_algo) - 1)
-    MS_error = SS_error / ((len(mean_algo) - 1)*(len(mean_subj) - 1))
+    MS_error = SS_error / ((len(mean_algo) - 1) * (len(mean_subj) - 1))
 
     # F-statistics
-    f = MS_algo/MS_error
+    f = MS_algo / MS_error
     n, k = matrix.shape
-    df1 = k-1
-    df2 = (k-1)*(n-1)  # calculated as one-way repeated-measures ANOVA
+    df1 = k - 1
+    df2 = (k - 1) * (n - 1)  # calculated as one-way repeated-measures ANOVA
     p = stats.f.sf(f, df1, df2)
     return f, p

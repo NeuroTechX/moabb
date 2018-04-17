@@ -1,6 +1,5 @@
 import logging
 import matplotlib.pyplot as plt
-import numpy as np
 import seaborn as sea
 
 from moabb.analysis.meta_analysis import collapse_session_scores
@@ -9,6 +8,7 @@ sea.set_palette(PIPELINE_PALETTE)
 sea.set(font='serif', style='whitegrid')
 
 log = logging.getLogger()
+
 
 def _simplify_names(x):
     if len(x) > 10:
@@ -29,7 +29,7 @@ def score_plot(data, pipelines=None):
     data['dataset'] = data['dataset'].apply(_simplify_names)
     if pipelines is not None:
         data = data[data.pipeline.isin(pipelines)]
-    fig = plt.figure(figsize=(8.5,11))
+    fig = plt.figure(figsize=(8.5, 11))
     ax = fig.add_subplot(111)
     sea.stripplot(data=data, y="dataset", x="score", jitter=True, dodge=True,
                   hue="pipeline", zorder=1, alpha=0.7, ax=ax)
@@ -58,7 +58,6 @@ def paired_plot(data, alg1, alg2):
     data = data.reset_index()
     fig = plt.figure(figsize=(11, 8.5))
     ax = fig.add_subplot(111)
-    # dset_ids, color_ind = np.unique(data.dataset, return_inverse=True)
     data.plot.scatter(alg1, alg2, ax=ax)
     ax.plot([0, 1], [0, 1], ls='--', c='k')
     ax.set_xlim([0.5, 1])

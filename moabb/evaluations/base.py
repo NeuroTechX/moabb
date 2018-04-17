@@ -75,7 +75,8 @@ class BaseEvaluation(ABC):
         if len(datasets) > 0:
             self.datasets = datasets
         else:
-            raise Exception("No datasets left after paradigm and evaluation checks")
+            raise Exception('''No datasets left after paradigm
+            and evaluation checks''')
 
         self.results = Results(type(self),
                                type(self.paradigm),
