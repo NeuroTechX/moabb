@@ -1,6 +1,9 @@
 import numpy as np
 import scipy.stats as stats
 
+def collapse_session_scores(df):
+    return df.groupby(['pipeline', 'dataset', 'subject']).mean().reset_index()
+
 
 def rmANOVA(df):
     '''
