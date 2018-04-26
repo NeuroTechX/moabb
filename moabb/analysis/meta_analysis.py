@@ -26,17 +26,18 @@ def compute_pvals_wilcoxon(df, order=None):
         assert set(order) == set(df.columns), errormsg
 
     out = np.zeros((len(df.columns), len(df.columns)))
-    for i in range(len(order)-1):
-        for j in range(i+1, len(order)):
-            pipe1 = order[i]
-            pipe2 = order[j]
-            p = stats.wilcoxon(df.loc[:, pipe1], df.loc[:, pipe2])[1]
-            p /= 2
-            # we want the one-tailed p-value
-            diff = (df.loc[:, pipe1] - df.loc[:, pipe2]).mean()
-            if diff < 0:
-                p = 1 - p # was in the other side of the distribution
-            out[i, j] = p
+    for i in range(len(order)):
+        for j in range(len(order)):
+            if i != j:
+                pipe1 = order[i]
+                pipe2 = order[j]
+                p = stats.wilcoxon(df.loc[:, pipe1], df.loc[:, pipe2])[1]
+                p /= 2
+                # we want the one-tailed p-value
+                diff = (df.loc[:, pipe1] - df.loc[:, pipe2]).mean()
+                if diff < 0:
+                    p = 1 - p  # was in the other side of the distribution
+                out[i, j] = p
     return out
 
 
@@ -57,8 +58,9 @@ def _pairedttest_exhaustive(data):
         randperm = (data * perm[:, None, None]).sum(axis=0)
         # compare to true difference (numpy autocasts bool to 0/1)
         out += (randperm > true)
-    out[out==0] = 1e-10
-    return out / (2**data.shape[0])
+    out = out / (2**data.shape[0])
+    out[out == 0] = 1e-10
+    return out
 
 
 def _pairedttest_random(data, nperms):
@@ -76,7 +78,7 @@ def _pairedttest_random(data, nperms):
         randperm = (data * perm[:, None, None]).sum(axis=0)
         # compare to true difference (numpy autocasts bool to 0/1)
         out += (randperm > true)
-    out[out==0] = 1e-10
+    out[out == 0] = 1e-10
     return out / nperms
 
 
@@ -128,13 +130,13 @@ def compute_effect(df, order=None):
         assert set(order) == set(df.columns), errormsg
 
     out = np.zeros((len(df.columns), len(df.columns)))
-    for i, pipe1 in enumerate(order[:-1]):
-        for j in range(i+1, len(order)):
-            pipe2 = order[j]
-            # for now it's just the standardized difference
-            diffs = (df.loc[:, pipe1] - df.loc[:, pipe2])
-            diffs = diffs.mean() / diffs.std()
-            out[i, j] = diffs
+    for i, pipe1 in enumerate(order):
+        for j, pipe2 in enumerate(order):
+            if i != j:
+                # for now it's just the standardized difference
+                diffs = (df.loc[:, pipe1] - df.loc[:, pipe2])
+                diffs = diffs.mean() / diffs.std()
+                out[i, j] = diffs
     return out
 
 
@@ -173,16 +175,13 @@ def find_significant_differences(df, perm_cutoff=20):
     W_norm = W / W.sum()
     P = np.full((len(algs), len(algs)), np.NaN)
     T = np.full((len(algs), len(algs)), np.NaN)
-    for i in range(len(algs)-1):
-        for j in range(i+1, len(algs)):
-            # print("p vals: {}\n".format(P_full[i,j,:]))
-            P[i, j] = stats.combine_pvalues(P_full[i, j, :], weights=W)[1]
-            # print("effect vals: {}\n".format(T_full[i,j,:]))
-            effect_signs = np.sign(T_full[i,j,:])
-            if abs(effect_signs.sum()) == T_full.shape[-1]:
-                print("all effects same direction")
-                print("{} - {} \n {} \n".format(algs[i], algs[j], T_full[i, j, :]))
-            T[i, j] = (W_norm * T_full[i, j, :]).mean()
+    for i in range(len(algs)):
+        for j in range(len(algs)):
+            if i != j:
+                # print("p vals: {}\n".format(P_full[i,j,:]))
+                P[i, j] = stats.combine_pvalues(P_full[i, j, :], weights=W)[1]
+                # print("effect vals: {}\n".format(T_full[i,j,:]))
+                T[i, j] = (W_norm * T_full[i, j, :]).mean()
     dfP = pd.DataFrame(index=algs, columns=algs, data=P)
     dfT = pd.DataFrame(index=algs, columns=algs, data=T)
     return dfP, dfT

@@ -84,22 +84,24 @@ def to_result_input(pnames, dsets):
 
 class Test_Stats(unittest.TestCase):
 
-    def return_df(self,shape):
+    def return_df(self, shape):
         size = shape[0]*shape[1]
         data = np.arange(size).reshape(*shape)
         return pd.DataFrame(data=data)
 
     def test_wilcoxon(self):
-        P = ma.compute_pvals_wilcoxon(self.return_df((40, 5)))
-        self.assertTrue(np.allclose(P, 0), P)
-    
+        P = ma.compute_pvals_wilcoxon(self.return_df((60, 5)))
+        self.assertTrue(np.allclose(np.tril(P), 0), P)
+
     def test_perm_exhaustive(self):
         P = ma.compute_pvals_perm(self.return_df((4, 5)))
-        self.assertTrue((np.triu(P) == 0).all(), P)
+        Pl = P[np.tril_indices(P.shape[0])]
+        self.assertTrue(np.allclose(Pl, 1e-10), Pl)
 
     def test_perm_random(self):
         P = ma.compute_pvals_perm(self.return_df((18, 5)))
-        self.assertTrue(np.allclose(np.triu(P), 0), P)
+        self.assertTrue(np.allclose(np.tril(P), 0), P)
+
 
 class Test_Integration(unittest.TestCase):
 
@@ -112,6 +114,7 @@ class Test_Integration(unittest.TestCase):
         path = self.obj.filepath
         if os.path.isfile(path):
             os.remove(path)
+
 
 class Test_Results(unittest.TestCase):
 

@@ -67,8 +67,8 @@ datasets = [BNCI2014001()]
 overwrite = False  # set to True if we want to overwrite cached results
 
 # broadband filters
-fmin=8
-fmax=35
+fmin = 8
+fmax = 35
 paradigm = LeftRightImagery(fmin=fmin, fmax=fmax)
 evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=datasets,
                                     suffix='examples', overwrite=overwrite)

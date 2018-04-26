@@ -1,9 +1,10 @@
 import os
 import platform
 from datetime import datetime
-
+import pandas as pd
 from moabb.analysis import plotting as plt  # flake8: noqa
 from moabb.analysis.results import Results  # flake8: noqa
+from moabb.analysis.meta_analysis import find_significant_differences
 
 
 def analyze(results, out_path, name='analysis', plot=False):
@@ -45,7 +46,18 @@ def analyze(results, out_path, name='analysis', plot=False):
         f.write('CPU: {}\n'.format(platform.processor()))
 
     results.to_csv(os.path.join(analysis_path, 'data.csv'))
+    sig_df, effect_df = find_significant_differences(results)
+    sig_df.index = sig_df.index.rename('Pipe1')
+    effect_df.index = effect_df.index.rename('Pipe1')
+    D1 = pd.melt(sig_df.reset_index(), id_vars='Pipe1',
+                 var_name='Pipe2', value_name='p-value')
+    D2 = pd.melt(effect_df.reset_index(), id_vars='Pipe1',
+                 var_name='Pipe2', value_name='effect size')
+    D1.merge(D2).to_csv(os.path.join(analysis_path, 'stats.csv'))
 
     if plot:
         fig, color_dict = plt.score_plot(results)
         fig.savefig(os.path.join(analysis_path, 'scores.pdf'))
+        fig = plt.ordering_heatmap(sig_df, effect_df)
+        fig.savefig(os.path.join(analysis_path, 'ordering.pdf'))
+        

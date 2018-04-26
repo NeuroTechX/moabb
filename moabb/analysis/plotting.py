@@ -63,3 +63,21 @@ def paired_plot(data, alg1, alg2):
     ax.set_xlim([0.5, 1])
     ax.set_ylim([0.5, 1])
     return fig
+
+def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
+    '''Visualize significances as a heatmap with green/grey/red for significantly
+    higher/significantly lower.
+    sig_df is a DataFrame of pipeline x pipeline where each value is a p-value,
+    effect_df is a DF where each value is an effect size
+
+    '''
+    effect_df.columns = effect_df.columns.map(_simplify_names)
+    sig_df.columns = sig_df.columns.map(_simplify_names)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    sea.heatmap(data=effect_df, center=0, annot=True,
+                mask=(sig_df > p_threshold),
+                fmt="2.2f", cmap=sea.light_palette("green"))
+    ax.tick_params(axis='y', labelrotation=0.9)
+    plt.tight_layout()
+    return fig
