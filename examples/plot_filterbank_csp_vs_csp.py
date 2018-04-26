@@ -23,7 +23,7 @@ from mne.decoding import CSP
 from moabb.datasets import BNCI2014001
 from moabb.paradigms import LeftRightImagery, FilterBankLeftRightImagery
 from moabb.evaluations import CrossSessionEvaluation
-from moabb.pipelines.filter_bank import FilterBank
+from moabb.pipelines.utils import FilterBank
 
 moabb.set_log_level('info')
 
