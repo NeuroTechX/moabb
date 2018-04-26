@@ -2,54 +2,97 @@ import numpy as np
 import scipy.stats as stats
 
 
+
 def collapse_session_scores(df):
     return df.groupby(['pipeline', 'dataset', 'subject']).mean().reset_index()
 
+def compute_pvals_Wilcoxon(df, order=None):
+    '''Returns kxk matrix of p-values computed via the Wilcoxon rank-sum test,
+    order defines the order of rows and columns 
+    
+    df: DataFrame, samples are index, columns are pipelines, and values are scores
 
-def rmANOVA(df):
+    order: list of length (num algorithms) with names corresponding to columns of df
+
     '''
-    My attempt at a repeated-measures ANOVA
-    In:
-        data: dataframe
+    if order is None:
+        order = df.columns
+    else:
+        errormsg = 'provided order does not have all columns of dataframe'
+        assert set(order) == set(df.columns), errormsg
+    
+    out = np.zeros((len(df.columns), len(df.columns)))
+    for i, pipe1 in enumerate(order[:-1]):
+        for j, pipe2 in enumerate(order[i+1:]):
+            p = stats.wilcoxon(df[:, pipe1], df[:, pipe2])
+            # we want the one-tailed p-value
+            p /= 2
+            out[i,j] = p
+            out[j,i] = p
+    return out
+    
+
+def pairedttest_perm(df, order=None):
+    '''Returns kxk matrix of p-values computed via permutation test,
+    order defines the order of rows and columns 
+    
+    df: DataFrame, samples are index, columns are pipelines, and values are scores
+
+    order: list of length (num algorithms) with names corresponding to columns of df
+
+    '''
+    if order is None:
+        order = df.columns
+    else:
+        errormsg = 'provided order does not have all columns of dataframe'
+        assert set(order) == set(df.columns), errormsg
+    # reshape df into matrix (sub, k, k) of differences
+    data = np.zeros((df.shape[0], len(order), len(order)))
+    
+
+def compute_effect(df, order=None):
+    '''Returns kxk matrix of effect sizes, order defines the order of rows/columns 
+    
+    df: DataFrame, samples are index, columns are pipelines, and values are scores
+
+    order: list of length (num algorithms) with names corresponding to columns of df
+
+    '''
+    pass
+
+def find_significant_differences(df, perm_cutoff=20):
+    '''
+    Compute matrix of p-values for all algorithms over all datasets via
+    combined p-values method
+    
+    df: DataFrame, long format
+    
+    perm_cutoff: int, opt -- cutoff at which to stop using permutation tests,
+                 which can be very expensive computationally
 
     Out:
-        x: symmetric matrix of f-statistics
-        **coming soon** p: p-values for each element of x
+
+    P: matrix (k,k) of p-values per algorithm pair
+
+    T: matrix (k,k) of signed standardized mean difference
+
     '''
+    df = collapse_session_scores(df) 
+    algs = df.pipeline.unique()
+    dsets = df.dataset.unique()
+    P_full = np.zeros((len(algs), len(algs), len(dsets)))
+    T_full = np.zeros((len(algs), len(algs), len(dsets)))
+    for ind, d in enumerate(dsets):
+        score_data = df[df.dataset == d].pivot(index='subject',
+                                               values='score',
+                                               columns='pipeline')
+        if score_data.shape[0] < 20:
+            P_full[..., ind] = compute_pvals_perm(score_data, algs)
+        else:
+            P_full[..., ind] = compute_pvals_Wilcoxon(score_data, algs)
+        T_full[...,ind] = compute_effect(score_data)
 
-    stats_dict = dict()
-    for dset in df['dataset'].unique():
-        alg_list = []
-        for alg in df['pipeline'].unique():
-            ix = np.logical_and(df['dataset'] == dset, df['pipeline'] == alg)
-            alg_list.append(df[ix]['score'].as_matrix())
-
-        # some datasets and algorithms may not exist?
-        alg_list = [a for a in alg_list if len(a) > 0]
-        M = np.stack(alg_list).T
-        stats_dict[dset] = _rmanova(M)
-    return stats_dict
 
 
-def _rmanova(matrix):
-    mean_subj = matrix.mean(axis=1)
-    mean_algo = matrix.mean(axis=0)
-    grand_mean = matrix[:].mean()
 
-    # SS: sum of squared difference
-    SS_algo = len(mean_subj) * np.sum((mean_algo - grand_mean)**2)
-    SS_within_subj = np.sum((matrix - mean_algo[np.newaxis, :])**2)
-    SS_subject = len(mean_algo) * np.sum((mean_subj - grand_mean)**2)
-    SS_error = SS_within_subj - SS_subject
-
-    # MS: Mean of squared difference
-    MS_algo = SS_algo / (len(mean_algo) - 1)
-    MS_error = SS_error / ((len(mean_algo) - 1) * (len(mean_subj) - 1))
-
-    # F-statistics
-    f = MS_algo / MS_error
-    n, k = matrix.shape
-    df1 = k - 1
-    df2 = (k - 1) * (n - 1)  # calculated as one-way repeated-measures ANOVA
-    p = stats.f.sf(f, df1, df2)
-    return f, p
+    
