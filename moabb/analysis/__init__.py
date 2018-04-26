@@ -46,4 +46,6 @@ def analyze(results, out_path, name='analysis', plot=False):
 
     results.to_csv(os.path.join(analysis_path, 'data.csv'))
 
-    # TODO: add plotting code here...
+    if plot:
+        fig, color_dict = plt.score_plot(results)
+        fig.savefig(os.path.join(analysis_path, 'scores.pdf'))
