@@ -49,7 +49,7 @@ def _pairedttest_exhaustive(data):
     pair of algorithms per subject
 
     '''
-    out = np.zeros((data.shape[1], data.shape[1]))
+    out = np.ones((data.shape[1], data.shape[1]))
     true = data.sum(axis=0)
     for perm in itertools.product([-1, 1], repeat=data.shape[0]):
         # turn into numpy array
@@ -59,7 +59,6 @@ def _pairedttest_exhaustive(data):
         # compare to true difference (numpy autocasts bool to 0/1)
         out += (randperm > true)
     out = out / (2**data.shape[0])
-    out[out == 0] = 1e-10
     return out
 
 
@@ -69,7 +68,7 @@ def _pairedttest_random(data, nperms):
     data is a (subj, alg, alg) matrix of differences between scores for each
     pair of algorithms per subject
     '''
-    out = np.zeros((data.shape[1], data.shape[1]))
+    out = np.ones((data.shape[1], data.shape[1]))
     true = data.sum(axis=0)
     for i in range(nperms):
         perm = np.random.randint(2, size=(data.shape[0],))
@@ -78,7 +77,6 @@ def _pairedttest_random(data, nperms):
         randperm = (data * perm[:, None, None]).sum(axis=0)
         # compare to true difference (numpy autocasts bool to 0/1)
         out += (randperm > true)
-    out[out == 0] = 1e-10
     return out / nperms
 
 
