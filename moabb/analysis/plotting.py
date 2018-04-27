@@ -64,6 +64,7 @@ def paired_plot(data, alg1, alg2):
     ax.set_ylim([0.5, 1])
     return fig
 
+
 def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
     '''Visualize significances as a heatmap with green/grey/red for significantly
     higher/significantly lower.
