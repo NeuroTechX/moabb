@@ -1,8 +1,12 @@
 import logging
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sea
 
 from moabb.analysis.meta_analysis import collapse_session_scores
+
+
 PIPELINE_PALETTE = sea.color_palette("husl", 6)
 sea.set_palette(PIPELINE_PALETTE)
 sea.set(font='serif', style='whitegrid')

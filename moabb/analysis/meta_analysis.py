@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import itertools
 import scipy.stats as stats
+import logging
 
 
 def collapse_session_scores(df):
@@ -98,8 +99,8 @@ def compute_pvals_perm(df, order=None):
         assert set(order) == set(df.columns), errormsg
     # reshape df into matrix (sub, k, k) of differences
     data = np.zeros((df.shape[0], len(order), len(order)))
-    for i in range(len(order)-1):
-        for j in range(i+1, len(order)):
+    for i in range(len(order) - 1):
+        for j in range(i + 1, len(order)):
             pipe1 = order[i]
             pipe2 = order[j]
             data[:, i, j] = df.loc[:, pipe1] - df.loc[:, pipe2]
@@ -138,11 +139,43 @@ def compute_effect(df, order=None):
     return out
 
 
+def compute_dataset_statistics(df, perm_cutoff=20):
+    '''
+    Returns dict of datasets to DataFrames with stats
+
+    '''
+    df = collapse_session_scores(df)
+    algs = df.pipeline.unique()
+    dsets = df.dataset.unique()
+    out = {}
+    for d in dsets:
+        score_data = df[df.dataset == d].pivot(index='subject',
+                                               values='score',
+                                               columns='pipeline')
+        if score_data.shape[0] < perm_cutoff:
+            p = compute_pvals_perm(score_data, algs)
+        else:
+            p = compute_pvals_wilcoxon(score_data, algs)
+        t = compute_effect(score_data, algs)
+        P = pd.DataFrame(index=pd.Index(algs, name='pipe1'),
+                         columns=algs, data=p)
+        T = pd.DataFrame(index=pd.Index(algs, name='pipe1'),
+                         columns=algs, data=t)
+        D1 = pd.melt(P.reset_index(), id_vars='pipe1',
+                     var_name='pipe2', value_name='p')
+        D2 = pd.melt(T.reset_index(), id_vars='pipe1',
+                     var_name='pipe2', value_name='smd')
+        stats_df = D1.merge(D2)
+        stats_df['nsub'] = score_data.shape[0]
+        out[d] = stats_df
+    return pd.concat(out, axis=0, names=['dataset','index']).reset_index()
+
+
 def find_significant_differences(df, perm_cutoff=20):
     '''Compute matrix of p-values for all algorithms over all datasets via
     combined p-values method
 
-    df: DataFrame, long format
+    df: DataFrame, output of compute_dataset_statistics
 
     perm_cutoff: int, opt -- cutoff at which to stop using permutation tests,
                  which can be very expensive computationally
@@ -154,32 +187,21 @@ def find_significant_differences(df, perm_cutoff=20):
     T: matrix (k,k) of signed standardized mean difference
 
     '''
-    df = collapse_session_scores(df)
-    algs = df.pipeline.unique()
     dsets = df.dataset.unique()
-    P_full = np.zeros((len(algs), len(algs), len(dsets)))
-    T_full = np.zeros((len(algs), len(algs), len(dsets)))
-    W = np.zeros((len(dsets),))
-    for ind, d in enumerate(dsets):
-        score_data = df[df.dataset == d].pivot(index='subject',
-                                               values='score',
-                                               columns='pipeline')
-        if score_data.shape[0] < perm_cutoff:
-            P_full[..., ind] = compute_pvals_perm(score_data, algs)
-        else:
-            P_full[..., ind] = compute_pvals_wilcoxon(score_data, algs)
-        T_full[..., ind] = compute_effect(score_data, algs)
-        W[ind] = np.sqrt(score_data.shape[0])
-    W_norm = W / W.sum()
+    algs = df.pipe1.unique()
+    W = np.array([df.loc[df.dataset==d,'nsub'].mean() for d in dsets])
+    P_full = df.pivot_table(values='p', index=['dataset','pipe1'], columns='pipe2')
+    T_full = df.pivot_table(values='smd', index=['dataset','pipe1'], columns='pipe2')
     P = np.full((len(algs), len(algs)), np.NaN)
     T = np.full((len(algs), len(algs)), np.NaN)
     for i in range(len(algs)):
         for j in range(len(algs)):
             if i != j:
-                # print("p vals: {}\n".format(P_full[i,j,:]))
-                P[i, j] = stats.combine_pvalues(P_full[i, j, :], weights=W)[1]
-                # print("effect vals: {}\n".format(T_full[i,j,:]))
-                T[i, j] = (W_norm * T_full[i, j, :]).mean()
+                p = P_full.loc[(slice(None),algs[i]),algs[j]]
+                t = T_full.loc[(slice(None),algs[i]),algs[j]]
+                P[i, j] = stats.combine_pvalues(p, weights=W,
+                                                method='stouffer')[1]
+                T[i, j] = ((W/W.sum()) * t).mean()
     dfP = pd.DataFrame(index=algs, columns=algs, data=P)
     dfT = pd.DataFrame(index=algs, columns=algs, data=T)
     return dfP, dfT
