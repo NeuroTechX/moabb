@@ -3,6 +3,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sea
+import numpy as np
+from scipy.stats import t
 
 from moabb.analysis.meta_analysis import collapse_session_scores
 
@@ -86,3 +88,38 @@ def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
     ax.tick_params(axis='y', labelrotation=0.9)
     plt.tight_layout()
     return fig
+
+def meta_analysis_plot(stats_df, alg1, alg2):
+    '''A meta-analysis style plot that shows the standardized effect with
+    confidence intervals over all datasets for two algorithms. Hypothesis is that alg1 is larger than alg2'''
+    assert (alg1 in stats_df.pipe1.unique())
+    assert (alg2 in stats_df.pipe1.unique())
+    df = stats_df.loc[(stats_df.pipe1==alg1) & (stats_df.pipe2==alg2)]
+    dsets =  df.dataset.unique()
+    ci = []
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    for ind, d in enumerate(dsets):
+        nsub = float(df.loc[df.dataset == d,'nsub'])
+        t_dof = nsub - 1
+        if df.loc[df.dataset==d, 'p'].item() < 0.05:
+            alpha = 1
+        else:
+            alpha = 0.3   
+        ci.append(t.ppf(0.95,t_dof)/np.sqrt(nsub))
+        v = float(df.loc[df.dataset==d,'smd'])
+        ax.plot(np.array([v - ci[-1], v + ci[-1]]),
+                np.ones((2,))*ind, c='b', alpha=alpha)
+    ax.scatter(df['smd'], np.arange(len(dsets)), s=10, marker='x')
+    ax.set_yticks(np.arange(len(dsets)))
+    ax.set_title('{} vs {}: standardized mean difference'.format(alg1,
+                                                                 alg2))
+    ax.set_yticklabels([_simplify_names(d) for d in dsets])
+    plt.tight_layout()
+    return ax
+    
+
+
+if __name__ == '__main__':
+    import os
+    os.chdir('/is/ei/vjayaram/ownCloud/Vinay_share/submissions/MOABB/Figures/analysis/')
