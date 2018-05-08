@@ -6,7 +6,7 @@ import pandas as pd
 from scipy.stats import t
 
 from moabb.analysis.meta_analysis import collapse_session_scores
-from moabb.analysis.meta_analysis import combine_effects
+from moabb.analysis.meta_analysis import combine_effects, combine_pvalues
 
 
 PIPELINE_PALETTE = sea.color_palette("husl", 6)
@@ -123,10 +123,11 @@ def meta_analysis_plot(stats_df, alg1, alg2):
                marker='D',
                c=['k'] + ['tab:grey']*len(dsets))
     sig_ind = np.array(sig_ind)
-    print(sig_ind)
     ax.scatter(df['smd'].iloc[sig_ind],
                sig_ind + 1.4, s=20,
-               marker='*', c='k')
+               marker='*', c='r')
+    if combine_pvalues(df['p'], df['nsub']) < 0.05:
+        ax.scatter([final_effect], [-0.4], s=20, marker='*', c='r')
     ax.set_yticks(np.arange(len(dsets) + 1))
     ax.set_xlim((0-_range, 0+_range))
     ax.axvline(0, linestyle='--', c='k')
@@ -135,10 +136,4 @@ def meta_analysis_plot(stats_df, alg1, alg2):
     ax.set_yticklabels(['Meta-effect'] + [_simplify_names(d) for d in dsets])
     ax.set_xlabel('Standardized Mean Difference')
     plt.tight_layout()
-    return ax
-
-
-if __name__ == '__main__':
-    import os
-    os.chdir(
-        '/is/ei/vjayaram/ownCloud/Vinay_share/submissions/MOABB/Figures/analysis/')
+    return fig

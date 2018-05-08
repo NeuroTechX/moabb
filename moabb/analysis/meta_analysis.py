@@ -180,6 +180,7 @@ def combine_effects(effects, nsubs):
     W = W/W.sum()
     return (W * effects).mean()
 
+
 def combine_pvalues(p, nsubs):
     '''Function that takes pvals from each experiments and number of subjects to
     return meta-analysis significance
@@ -208,7 +209,6 @@ def find_significant_differences(df, perm_cutoff=20):
     dsets = df.dataset.unique()
     algs = df.pipe1.unique()
     nsubs = np.array([df.loc[df.dataset == d, 'nsub'].mean() for d in dsets])
-    W = np.sqrt(nsubs)
     P_full = df.pivot_table(
         values='p', index=['dataset', 'pipe1'], columns='pipe2')
     T_full = df.pivot_table(values='smd', index=[

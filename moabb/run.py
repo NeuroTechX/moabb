@@ -23,6 +23,7 @@ from moabb.analysis import analyze
 
 log = logging.getLogger()
 
+
 def parse_pipelines_from_directory(d):
     '''
     Given directory, returns generated pipeline config dictionaries. Each entry
@@ -61,6 +62,7 @@ def parse_pipelines_from_directory(d):
 
     return pipeline_configs
 
+
 def generate_paradigms(pipeline_configs, context={}):
     paradigms = OrderedDict()
     for config in pipeline_configs:
@@ -95,6 +97,7 @@ def generate_paradigms(pipeline_configs, context={}):
             paradigms[paradigm][config['name']] = pipeline
 
     return paradigms
+
 
 if __name__ == '__main__':
     # set logs
@@ -164,10 +167,9 @@ if __name__ == '__main__':
         type=str,
         default=None,
         help="File path to context.yml file that describes context parameters."
-            "If none, assumes all defaults. Must contain an entry for all "
-            "paradigms described in the pipelines")
+        "If none, assumes all defaults. Must contain an entry for all "
+        "paradigms described in the pipelines")
     options = parser.parse_args()
-
 
     if options.debug:
         coloredlogs.install(level=logging.DEBUG)
@@ -193,7 +195,7 @@ if __name__ == '__main__':
         log.debug('{}: {}'.format(paradigm, context_params[paradigm]))
         p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
         context = WithinSessionEvaluation(paradigm=p, random_state=42,
-                                        n_jobs=options.threads)
+                                          n_jobs=options.threads)
         results = context.process(pipelines=paradigms[paradigm])
         all_results.append(results)
     analyze(pd.concat(all_results, ignore_index=True), options.output,
