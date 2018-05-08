@@ -168,7 +168,25 @@ def compute_dataset_statistics(df, perm_cutoff=20):
         stats_df = D1.merge(D2)
         stats_df['nsub'] = score_data.shape[0]
         out[d] = stats_df
-    return pd.concat(out, axis=0, names=['dataset','index']).reset_index()
+    return pd.concat(out, axis=0, names=['dataset', 'index']).reset_index()
+
+
+def combine_effects(effects, nsubs):
+    '''Function that takes effects from each experiments and number of subjects to
+    return meta-analysis effect
+
+    '''
+    W = np.sqrt(nsubs)
+    W = W/W.sum()
+    return (W * effects).mean()
+
+def combine_pvalues(p, nsubs):
+    '''Function that takes pvals from each experiments and number of subjects to
+    return meta-analysis significance
+
+    '''
+    W = np.sqrt(nsubs)
+    return stats.combine_pvalues(p, weights=W, method='stouffer')[1]
 
 
 def find_significant_differences(df, perm_cutoff=20):
@@ -189,19 +207,21 @@ def find_significant_differences(df, perm_cutoff=20):
     '''
     dsets = df.dataset.unique()
     algs = df.pipe1.unique()
-    W = np.array([df.loc[df.dataset==d,'nsub'].mean() for d in dsets])
-    P_full = df.pivot_table(values='p', index=['dataset','pipe1'], columns='pipe2')
-    T_full = df.pivot_table(values='smd', index=['dataset','pipe1'], columns='pipe2')
+    nsubs = np.array([df.loc[df.dataset == d, 'nsub'].mean() for d in dsets])
+    W = np.sqrt(nsubs)
+    P_full = df.pivot_table(
+        values='p', index=['dataset', 'pipe1'], columns='pipe2')
+    T_full = df.pivot_table(values='smd', index=[
+                            'dataset', 'pipe1'], columns='pipe2')
     P = np.full((len(algs), len(algs)), np.NaN)
     T = np.full((len(algs), len(algs)), np.NaN)
     for i in range(len(algs)):
         for j in range(len(algs)):
             if i != j:
-                p = P_full.loc[(slice(None),algs[i]),algs[j]]
-                t = T_full.loc[(slice(None),algs[i]),algs[j]]
-                P[i, j] = stats.combine_pvalues(p, weights=W,
-                                                method='stouffer')[1]
-                T[i, j] = ((W/W.sum()) * t).mean()
+                p = P_full.loc[(slice(None), algs[i]), algs[j]]
+                t = T_full.loc[(slice(None), algs[i]), algs[j]]
+                P[i, j] = combine_pvalues(p, nsubs)
+                T[i, j] = combine_effects(t, nsubs)
     dfP = pd.DataFrame(index=algs, columns=algs, data=P)
     dfT = pd.DataFrame(index=algs, columns=algs, data=T)
     return dfP, dfT
