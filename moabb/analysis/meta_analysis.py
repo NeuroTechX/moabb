@@ -178,7 +178,7 @@ def combine_effects(effects, nsubs):
     '''
     W = np.sqrt(nsubs)
     W = W/W.sum()
-    return (W * effects).mean()
+    return (W * effects).sum()
 
 
 def combine_pvalues(p, nsubs):
@@ -221,6 +221,8 @@ def find_significant_differences(df, perm_cutoff=20):
                 p = P_full.loc[(slice(None), algs[i]), algs[j]]
                 t = T_full.loc[(slice(None), algs[i]), algs[j]]
                 P[i, j] = combine_pvalues(p, nsubs)
+                if np.isnan(P[i, j]):
+                    P[i, j] = 1.0
                 T[i, j] = combine_effects(t, nsubs)
     dfP = pd.DataFrame(index=algs, columns=algs, data=P)
     dfT = pd.DataFrame(index=algs, columns=algs, data=T)

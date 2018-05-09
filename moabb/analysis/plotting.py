@@ -84,8 +84,11 @@ def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
     ax = fig.add_subplot(111)
     sea.heatmap(data=effect_df, center=0, annot=True,
                 mask=(sig_df > p_threshold),
-                fmt="2.2f", cmap=sea.light_palette("green"))
-    ax.tick_params(axis='y', labelrotation=0.9)
+                fmt="2.2f", cbar_kws={'label': 'Meta-effect'},
+                cmap=sea.light_palette("green"))
+    for l in ax.get_xticklabels():
+        l.set_rotation(45)
+    ax.tick_params(axis='y', rotation=0.9)
     plt.tight_layout()
     return fig
 
