@@ -187,7 +187,8 @@ def combine_pvalues(p, nsubs):
 
     '''
     W = np.sqrt(nsubs)
-    return stats.combine_pvalues(p, weights=W, method='stouffer')[1]
+    out= stats.combine_pvalues(np.array(p), weights=W, method='stouffer')[1]
+    return out
 
 
 def find_significant_differences(df, perm_cutoff=20):

@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sea
 import numpy as np
 import pandas as pd
+import matplotlib.gridspec as gridspec
 from scipy.stats import t
 
 from moabb.analysis.meta_analysis import collapse_session_scores
@@ -99,44 +100,84 @@ def meta_analysis_plot(stats_df, alg1, alg2):
     Hypothesis is that alg1 is larger than alg2'''
     assert (alg1 in stats_df.pipe1.unique())
     assert (alg2 in stats_df.pipe1.unique())
-    df = stats_df.loc[(stats_df.pipe1 == alg1) & (stats_df.pipe2 == alg2)]
-    dsets = df.dataset.unique()
+    df_fw = stats_df.loc[(stats_df.pipe1 == alg1) & (stats_df.pipe2 == alg2)]
+    df_fw = df_fw.sort_values(by='pipe1')
+    df_bk = stats_df.loc[(stats_df.pipe1 == alg2) & (stats_df.pipe2 == alg1)]
+    df_bk = df_bk.sort_values(by='pipe1')
+    dsets = df_fw.dataset.unique()
     ci = []
     fig = plt.figure()
+    gs = gridspec.GridSpec(1,5)
     sig_ind = []
-    ax = fig.add_subplot(111)
+    pvals = []
+    ax = fig.add_subplot(gs[0,:-1])
+    ax.set_yticks(np.arange(len(dsets) + 1))
+    ax.set_yticklabels(['Meta-effect'] + [_simplify_names(d) for d in dsets])
+    pval_ax = fig.add_subplot(gs[0,-1], sharey=ax)
+    plt.setp(pval_ax.get_yticklabels(), visible=False)
     _min = 0
     _max = 0
     for ind, d in enumerate(dsets):
-        nsub = float(df.loc[df.dataset == d, 'nsub'])
+        nsub = float(df_fw.loc[df_fw.dataset == d, 'nsub'])
         t_dof = nsub - 1
-        if df.loc[df.dataset == d, 'p'].item() < 0.05:
-            sig_ind.append(ind)
         ci.append(t.ppf(0.95, t_dof)/np.sqrt(nsub))
-        v = float(df.loc[df.dataset == d, 'smd'])
+        v = float(df_fw.loc[df_fw.dataset == d, 'smd'])
+        if v > 0:
+            p = df_fw.loc[df_fw.dataset == d, 'p'].item()
+            if p < 0.05:
+                sig_ind.append(ind)
+                pvals.append(p)
+        else:
+            p = df_bk.loc[df_bk.dataset == d, 'p'].item()
+            if p < 0.05:
+                sig_ind.append(ind)
+                pvals.append(p)
         _min = _min if (_min < (v-ci[-1])) else (v-ci[-1])
         _max = _max if (_max > (v+ci[-1])) else (v+ci[-1])
         ax.plot(np.array([v - ci[-1], v + ci[-1]]),
                 np.ones((2,)) * (ind + 1), c='tab:grey')
     _range = max(abs(_min), abs(_max))
-    final_effect = combine_effects(df['smd'], df['nsub'])
-    ax.scatter(pd.concat([pd.Series([final_effect]), df['smd']]),
+    ax.set_xlim((0-_range, 0+_range))
+    final_effect = combine_effects(df_fw['smd'], df_fw['nsub'])
+    ax.scatter(pd.concat([pd.Series([final_effect]), df_fw['smd']]),
                np.arange(len(dsets) + 1),
                s=np.array([50] + [30]*len(dsets)),
                marker='D',
                c=['k'] + ['tab:grey']*len(dsets))
     sig_ind = np.array(sig_ind)
-    ax.scatter(df['smd'].iloc[sig_ind],
+    ax.scatter(df_fw['smd'].iloc[sig_ind],
                sig_ind + 1.4, s=20,
                marker='*', c='r')
-    if combine_pvalues(df['p'], df['nsub']) < 0.05:
-        ax.scatter([final_effect], [-0.4], s=20, marker='*', c='r')
-    ax.set_yticks(np.arange(len(dsets) + 1))
-    ax.set_xlim((0-_range, 0+_range))
+    # pvalues axis stuf
+    pval_ax.set_xlim([-0.1,0.1])
+    pval_ax.grid(False)
+    pval_ax.set_title('p-value')
+    pval_ax.set_xticks([])
+    for spine in pval_ax.spines.values():
+        spine.set_visible(False)
+    for ind, p in zip(sig_ind, pvals):
+        pval_ax.text(0, ind+1, horizontalalignment='center', verticalalignment='center',
+                s='{:.2e}'.format(p), fontsize=8)
+    if final_effect > 0:
+        p = combine_pvalues(df_fw['p'], df_fw['nsub'])
+        if p < 0.05:
+            ax.scatter([final_effect], [-0.4], s=20, marker='*', c='r')
+            pval_ax.text(0, 0, horizontalalignment='center', verticalalignment='center',
+                    s='{:.2e}'.format(p), fontsize=8)
+    else:
+        p = combine_pvalues(df_bk['p'], df_bk['nsub'])
+        if p < 0.05:
+            ax.scatter([final_effect], [-0.4], s=20, marker='*', c='r')
+            pval_ax.text(0, 0, horizontalalignment='center', verticalalignment='center',
+                    s='{:.2e}'.format(p), fontsize=8)
+
+    ax.grid(False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
     ax.axvline(0, linestyle='--', c='k')
     ax.axhline(0.5, linestyle='-', linewidth=3, c='k')
-    ax.set_title('{} > {}'.format(alg1, alg2))
-    ax.set_yticklabels(['Meta-effect'] + [_simplify_names(d) for d in dsets])
+    ax.set_title('{} vs {}'.format(alg2, alg1))
     ax.set_xlabel('Standardized Mean Difference')
-    plt.tight_layout()
+    fig.tight_layout()
+
     return fig
