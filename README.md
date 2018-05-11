@@ -56,7 +56,7 @@ This project will be successful when we read in an abstract “ … the proposed
 
 ## Who are we?
 
-The founder of the Mother of all BCI Benchmark is [Alexander Barachant][link_alex_b]. This project is under the umbrella of [NeuroTechX][link_neurotechx], the international community for NeuroTech enthusiasts.
+The founder of the Mother of all BCI Benchmark is [Alexander Barachant][link_alex_b]. He is currently working with [Vinay Jayaram][link_vinay] to update and maintain the codebase. This project is under the umbrella of [NeuroTechX][link_neurotechx], the international community for NeuroTech enthusiasts.
 
 ## What do we need?
 
@@ -144,7 +144,7 @@ The list of supported dataset can be found here : http://moabb.neurotechx.com/do
 
 ### Submit a new dataset
 
-you can submit new dataset by filling this [form](https://docs.google.com/forms/d/e/1FAIpQLScxbpqK4omKsUs4tA2XpfeHJATo_SbYvT0hpxoeKDb5k_TZvQ/viewform). Please check first that the algorithm is not in the [list](https://docs.google.com/spreadsheets/d/1fQNFXGu1J1yJ9jFCer9EQQatjCPJWg7O-uCGF0Z4PiM/edit).  
+you can submit new dataset by filling this [form](https://docs.google.com/forms/d/e/1FAIpQLScxbpqK4omKsUs4tA2XpfeHJATo_SbYvT0hpxoeKDb5k_TZvQ/viewform). The datasets currently on our radar can be seen [here](https://docs.google.com/spreadsheets/d/1fQNFXGu1J1yJ9jFCer9EQQatjCPJWg7O-uCGF0Z4PiM/edit).  
 
 ## <a name="architecture"></a> Architecture and main concepts:
 
@@ -186,6 +186,7 @@ make html
 ```
 
 [link_alex_b]: http://alexandre.barachant.org/
+[link_vinay]: https://ei.is.tuebingen.mpg.de/~vjayaram
 [link_neurotechx]: http://neurotechx.com/
 [link_neurotechx_signup]: https://docs.google.com/forms/d/e/1FAIpQLSfZyzhVdOLU8_oQ4NylHL8EFoKLIVmryGXA4u7HDsZpkTryvg/viewform
 [link_moabb_docs]: http://moabb.neurotechx.com/docs/index.html

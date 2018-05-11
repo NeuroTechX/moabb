@@ -107,13 +107,13 @@ def meta_analysis_plot(stats_df, alg1, alg2):
     dsets = df_fw.dataset.unique()
     ci = []
     fig = plt.figure()
-    gs = gridspec.GridSpec(1,5)
+    gs = gridspec.GridSpec(1, 5)
     sig_ind = []
     pvals = []
-    ax = fig.add_subplot(gs[0,:-1])
+    ax = fig.add_subplot(gs[0, :-1])
     ax.set_yticks(np.arange(len(dsets) + 1))
     ax.set_yticklabels(['Meta-effect'] + [_simplify_names(d) for d in dsets])
-    pval_ax = fig.add_subplot(gs[0,-1], sharey=ax)
+    pval_ax = fig.add_subplot(gs[0, -1], sharey=ax)
     plt.setp(pval_ax.get_yticklabels(), visible=False)
     _min = 0
     _max = 0
@@ -149,27 +149,30 @@ def meta_analysis_plot(stats_df, alg1, alg2):
                sig_ind + 1.4, s=20,
                marker='*', c='r')
     # pvalues axis stuf
-    pval_ax.set_xlim([-0.1,0.1])
+    pval_ax.set_xlim([-0.1, 0.1])
     pval_ax.grid(False)
     pval_ax.set_title('p-value')
     pval_ax.set_xticks([])
     for spine in pval_ax.spines.values():
         spine.set_visible(False)
     for ind, p in zip(sig_ind, pvals):
-        pval_ax.text(0, ind+1, horizontalalignment='center', verticalalignment='center',
-                s='{:.2e}'.format(p), fontsize=8)
+        pval_ax.text(0, ind+1, horizontalalignment='center',
+                     verticalalignment='center',
+                     s='{:.2e}'.format(p), fontsize=8)
     if final_effect > 0:
         p = combine_pvalues(df_fw['p'], df_fw['nsub'])
         if p < 0.05:
             ax.scatter([final_effect], [-0.4], s=20, marker='*', c='r')
-            pval_ax.text(0, 0, horizontalalignment='center', verticalalignment='center',
-                    s='{:.2e}'.format(p), fontsize=8)
+            pval_ax.text(0, 0, horizontalalignment='center',
+                         verticalalignment='center',
+                         s='{:.2e}'.format(p), fontsize=8)
     else:
         p = combine_pvalues(df_bk['p'], df_bk['nsub'])
         if p < 0.05:
             ax.scatter([final_effect], [-0.4], s=20, marker='*', c='r')
-            pval_ax.text(0, 0, horizontalalignment='center', verticalalignment='center',
-                    s='{:.2e}'.format(p), fontsize=8)
+            pval_ax.text(0, 0, horizontalalignment='center',
+                         verticalalignment='center',
+                         s='{:.2e}'.format(p), fontsize=8)
 
     ax.grid(False)
     ax.spines['top'].set_visible(False)
