@@ -1,6 +1,6 @@
 name: CSP + LDA
 paradigms:
-  - LeftRightImagery
+  - MotorImagery
 
 citations:
   - https://doi.org/10.1007/BF01129656
@@ -10,7 +10,7 @@ pipeline:
   - name: Covariances
     from: pyriemann.estimation
     parameters:
-      estimator: oas
+      estimator: scm
 
   - name: CSP
     from: pyriemann.spatialfilters
@@ -20,4 +20,4 @@ pipeline:
   - name: LinearDiscriminantAnalysis
     from: sklearn.discriminant_analysis
     parameters:
-      solver: svd
+      solver: lsqr
