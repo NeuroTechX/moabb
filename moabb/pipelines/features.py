@@ -17,12 +17,21 @@ class LogVariance(BaseEstimator, TransformerMixin):
 
 class FM(BaseEstimator, TransformerMixin):
 
+    def __init__(self, freq=128):
+        '''instantaneous frequencies require a sampling frequency to be properly
+        scaled,
+        which is helpful for some algorithms. This assumes 128 if not told
+        otherwise.
+
+        '''
+        self.freq = freq
+
     def fit(self, X, y):
         """fit."""
         return self
 
     def transform(self, X):
-        """transform. Note however that without the
-        sampling rate these values are unnormalized."""
+        """transform. """
         xphase = np.unwrap(np.angle(signal.hilbert(X, axis=-1)))
-        return np.median(np.diff(xphase, axis=-1) / (2 * np.pi), axis=-1)
+        return np.median(self.freq * np.diff(xphase, axis=-1) / (2 * np.pi),
+                         axis=-1)

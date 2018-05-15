@@ -188,8 +188,9 @@ for paradigm in paradigms:
     log.debug('{}: {}'.format(paradigm, context_params[paradigm]))
     p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
     context = WithinSessionEvaluation(paradigm=p, random_state=42,
-                                      n_jobs=options.threads)
+                                      n_jobs=options.threads,
+                                      overwrite=options.force)
     results = context.process(pipelines=paradigms[paradigm])
     all_results.append(results)
-analyze(pd.concat(all_results, ignore_index=True), options.output,
-        plot=options.plot)
+analyze(pd.concat(all_results, ignore_index=True),
+        options.output, plot=options.plot)
