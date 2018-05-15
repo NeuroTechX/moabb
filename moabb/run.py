@@ -46,9 +46,9 @@ def parse_pipelines_from_directory(d):
             # load config
             config_dict = yaml.load(content)
             ppl = create_pipeline_from_config(config_dict['pipeline'])
-            pipeline_configs.append({'paradigms':config_dict['paradigms'],
-                                     'pipeline':ppl,
-                                     'name':config_dict['name']})
+            pipeline_configs.append({'paradigms': config_dict['paradigms'],
+                                     'pipeline': ppl,
+                                     'name': config_dict['name']})
 
     # we can do the same for python defined pipeline
     python_files = glob(os.path.join(d, '*.py'))
@@ -61,6 +61,7 @@ def parse_pipelines_from_directory(d):
         pipeline_configs.append(foo.PIPELINE)
 
     return pipeline_configs
+
 
 # set logs
 mne.set_log_level(False)
@@ -188,7 +189,10 @@ for paradigm in paradigms:
         context_params[paradigm] = {}
     log.debug('{}: {}'.format(paradigm, context_params[paradigm]))
     p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
-    context = WithinSessionEvaluation(paradigm=p, random_state=42, n_jobs=options.threads)
+    context = WithinSessionEvaluation(paradigm=p, random_state=42,
+                                      n_jobs=options.threads,
+                                      overwrite=options.force)
     results = context.process(pipelines=paradigms[paradigm])
     all_results.append(results)
-analyze(pd.concat(all_results, ignore_index=True), options.output, plot=options.plot)
+analyze(pd.concat(all_results, ignore_index=True),
+        options.output, plot=options.plot)

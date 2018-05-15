@@ -124,6 +124,9 @@ class BaseEvaluation(ABC):
         log.info(message)
         self.results.add({res['pipeline']: res}, pipelines=pipelines)
 
+    def get_results(self):
+        return self.results.to_dataframe()
+
     @abstractmethod
     def evaluate(self, dataset, pipelines):
         '''Evaluate results on a single dataset.
