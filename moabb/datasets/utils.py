@@ -70,7 +70,7 @@ def dataset_search(paradigm, multi_session=False, events=None,
 
         if paradigm == d.paradigm:
             if interval is not None:
-                if d.interval[1]-d.interval[0] < interval:
+                if d.interval[1] - d.interval[0] < interval:
                     continue
             keep_event_dict = {}
             if events is None:
@@ -136,7 +136,8 @@ def find_intersecting_channels(datasets, verbose=False):
             dset_chans.append(processed)
             keep_datasets.append(d)
         else:
-            print('Dataset {:s} has no recognizable EEG channels'.format(type(d).__name__)) # noqa
+            print('Dataset {:s} has no recognizable EEG channels'.
+                  format(type(d).__name__))  # noqa
     for d in dset_chans:
         allchans.intersection_update(d)
     allchans = [s.replace('Z', 'z') for s in allchans]

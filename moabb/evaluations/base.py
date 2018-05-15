@@ -1,5 +1,4 @@
 import logging
-import traceback
 from abc import ABC, abstractmethod
 
 from sklearn.base import BaseEstimator
@@ -73,8 +72,11 @@ class BaseEvaluation(ABC):
                 rm.append(dataset)
 
         [datasets.remove(r) for r in rm]
-
-        self.datasets = datasets
+        if len(datasets) > 0:
+            self.datasets = datasets
+        else:
+            raise Exception('''No datasets left after paradigm
+            and evaluation checks''')
 
         self.results = Results(type(self),
                                type(self.paradigm),

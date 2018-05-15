@@ -105,9 +105,6 @@ class BaseMotorImagery(BaseParadigm):
         else:
             tmax = self.tmax + dataset.interval[0]
 
-        if self.resample is not None:
-            raw = raw.copy().resample(self.resample)
-
         X = []
         for bandpass in self.filters:
             fmin, fmax = bandpass
@@ -120,6 +117,8 @@ class BaseMotorImagery(BaseParadigm):
                                 baseline=None, preload=True,
                                 verbose=False, picks=picks,
                                 on_missing='ignore')
+            if self.resample is not None:
+                epochs = epochs.resample(self.resample)
             # MNE is in V, rescale to have uV
             X.append(1e6 * epochs.get_data())
 
@@ -298,8 +297,8 @@ class FilterBankMotorImagery(FilterBank):
                 if len(out) == self.n_classes:
                     break
         if len(out) < self.n_classes:
-            raise ValueError("Dataset {} did not have enough events in {} to run analysis".format(
-                             dataset.code, self.events))
+            raise(ValueError(f"Dataset {dataset.code} did not have enough "
+                             f"events in {self.events} to run analysis"))
         return out
 
     @property
@@ -401,8 +400,8 @@ class MotorImagery(SinglePass):
                 if len(out) == self.n_classes:
                     break
         if len(out) < self.n_classes:
-            raise ValueError("Dataset {} did not have enough events in {} to run analysis".format(
-                dataset.code, self.events))
+            raise(ValueError(f"Dataset {dataset.code} did not have enough "
+                             f"events in {self.events} to run analysis"))
         return out
 
     @property

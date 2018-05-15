@@ -17,9 +17,7 @@ from copy import deepcopy
 # moabb specific imports
 from moabb.pipelines.utils import create_pipeline_from_config
 from moabb import paradigms as moabb_paradigms
-from moabb.evaluations import (WithinSessionEvaluation,
-                               CrossSessionEvaluation,
-                               CrossSubjectEvaluation)
+from moabb.evaluations import WithinSessionEvaluation
 from moabb.analysis.results import get_string_rep
 from moabb.analysis import analyze
 
@@ -34,7 +32,7 @@ def parse_pipelines_from_directory(d):
     '''
     assert os.path.isdir(os.path.abspath(d)
                          ), "Given pipeline path {} is not valid".format(d)
-    pipeline_dir = os.path.abspath(d)
+
     # get list of config files
     yaml_files = glob(os.path.join(d, '*.yml'))
 
