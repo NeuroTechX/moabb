@@ -1,0 +1,35 @@
+MotorImagery:
+  n_classes: 2
+  events:
+    - feet
+    - left_hand
+    - right_hand
+    - hands
+    - tongue
+  fmin: 8
+  fmax: 35
+  resample: 128
+
+
+FilterBankMotorImagery:
+  n_classes: 2
+  events:
+    - feet
+    - left_hand
+    - right_hand
+    - hands
+    - tongue
+  filters:
+    - - 8
+      - 12
+    - - 12
+      - 16
+    - - 16
+      - 20
+    - - 20
+      - 24
+    - - 24
+      - 28
+    - - 28
+      - 35
+  resample: 128
