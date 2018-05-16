@@ -37,7 +37,7 @@ def score_plot(data, pipelines=None):
         data = data[data.pipeline.isin(pipelines)]
     fig = plt.figure(figsize=(8.5, 11))
     ax = fig.add_subplot(111)
-    markers = ['o', '8', 's', 'p', '+', 'x', 'D', 'd', '>', '<', '^']
+    # markers = ['o', '8', 's', 'p', '+', 'x', 'D', 'd', '>', '<', '^']
     sea.stripplot(data=data, y="dataset", x="score", jitter=0.15,
                   palette=PIPELINE_PALETTE, hue='pipeline', dodge=True, ax=ax,
                   alpha=0.7)
@@ -84,24 +84,29 @@ def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
     annot_df = effect_df.copy()
     for row in annot_df.index:
         for col in annot_df.columns:
-            if sig_df.loc[row,col] < 0.001:
-                annot_df.loc[row,col] = '{:.2f}\n***'.format(annot_df.loc[row, col])
+            if sig_df.loc[row, col] < 0.001:
+                annot_df.loc[row,
+                             col] = '{:.2f}\n***'.format(annot_df.loc[row,
+                                                                      col])
 
             elif sig_df.loc[row, col] < 0.01:
-                annot_df.loc[row,col] = '{:.2f}\n**'.format(annot_df.loc[row, col])
+                annot_df.loc[row,
+                             col] = '{:.2f}\n**'.format(annot_df.loc[row, col])
 
             elif sig_df.loc[row, col] < 0.05:
-                annot_df.loc[row,col] = '{:.2f}\n*'.format(annot_df.loc[row, col])
+                annot_df.loc[row,
+                             col] = '{:.2f}\n*'.format(annot_df.loc[row, col])
 
             else:
-                annot_df.loc[row,col] = '{:.2f}'.format(annot_df.loc[row, col])
+                annot_df.loc[row, col] = '{:.2f}'.format(
+                    annot_df.loc[row, col])
     fig = plt.figure()
     ax = fig.add_subplot(111)
     sea.heatmap(data=effect_df, center=0, annot=annot_df,
-                mask=(sig_df > p_threshold),fmt='',
+                mask=(sig_df > p_threshold), fmt='',
                 cbar_kws={'label': 'Meta-effect'},
                 cmap=sea.light_palette("green"), linewidths=1,
-                linecolor='0.8',annot_kws={'size':10})
+                linecolor='0.8', annot_kws={'size': 10})
     for l in ax.get_xticklabels():
         l.set_rotation(45)
     ax.tick_params(axis='y', rotation=0.9)
@@ -177,7 +182,7 @@ def meta_analysis_plot(stats_df, alg1, alg2):
     # pvalues axis stuf
     pval_ax.set_xlim([-0.1, 0.1])
     pval_ax.grid(False)
-    pval_ax.set_title('p-value', fontdict={'fontsize':10})
+    pval_ax.set_title('p-value', fontdict={'fontsize': 10})
     pval_ax.set_xticks([])
     for spine in pval_ax.spines.values():
         spine.set_visible(False)
