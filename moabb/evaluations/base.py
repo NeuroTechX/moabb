@@ -116,7 +116,7 @@ class BaseEvaluation(ABC):
             for res in results:
                 self.push_result(res, pipelines)
 
-        return self.results.to_dataframe()
+        return self.results.to_dataframe(pipelines=pipelines)
 
     def push_result(self, res, pipelines):
         message = '{} | '.format(res['pipeline'])
@@ -125,6 +125,9 @@ class BaseEvaluation(ABC):
         message += ': Score %.3f' % res['score']
         log.info(message)
         self.results.add({res['pipeline']: res}, pipelines=pipelines)
+
+    def get_results(self):
+        return self.results.to_dataframe()
 
     @abstractmethod
     def evaluate(self, dataset, pipelines):
