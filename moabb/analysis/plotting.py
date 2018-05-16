@@ -84,29 +84,20 @@ def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
     annot_df = effect_df.copy()
     for row in annot_df.index:
         for col in annot_df.columns:
-            if sig_df.loc[row, col] < 0.001:
-                annot_df.loc[row,
-                             col] = '{:.2f}\n***'.format(annot_df.loc[row,
-                                                                      col])
-
-            elif sig_df.loc[row, col] < 0.01:
-                annot_df.loc[row,
-                             col] = '{:.2f}\n**'.format(annot_df.loc[row, col])
-
-            elif sig_df.loc[row, col] < 0.05:
-                annot_df.loc[row,
-                             col] = '{:.2f}\n*'.format(annot_df.loc[row, col])
-
+            if effect_df.loc[row,col] > 0:
+                txt = '{:.2f}\np={:1.0e}'.format(effect_df.loc[row,col],
+                                                    sig_df.loc[row,col])
             else:
-                annot_df.loc[row, col] = '{:.2f}'.format(
-                    annot_df.loc[row, col])
+                txt = ''
+            annot_df.loc[row, col] = txt
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    sea.heatmap(data=effect_df, center=0, annot=annot_df,
-                mask=(sig_df > p_threshold), fmt='',
-                cbar_kws={'label': 'Meta-effect'},
-                cmap=sea.light_palette("green"), linewidths=1,
-                linecolor='0.8', annot_kws={'size': 10})
+    palette = sea.light_palette("green", as_cmap=True)
+    palette.set_under(color=[1,1,1])
+    sea.heatmap(data=-np.log(sig_df), annot=annot_df,
+                fmt='', cmap=palette, linewidths=1,
+                linecolor='0.8', annot_kws={'size': 10}, cbar=False,
+                vmin=-np.log(0.05))
     for l in ax.get_xticklabels():
         l.set_rotation(45)
     ax.tick_params(axis='y', rotation=0.9)
