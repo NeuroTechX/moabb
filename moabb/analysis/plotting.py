@@ -98,7 +98,7 @@ def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
     ax = fig.add_subplot(111)
     palette = sea.light_palette("green", as_cmap=True)
     palette.set_under(color=[1, 1, 1])
-    palette.set_over(color=[0.5,0,0])
+    palette.set_over(color=[0.5, 0, 0])
     sea.heatmap(data=-np.log(sig_df), annot=annot_df,
                 fmt='', cmap=palette, linewidths=1,
                 linecolor='0.8', annot_kws={'size': 10}, cbar=False,
@@ -146,7 +146,7 @@ def meta_analysis_plot(stats_df, alg1, alg2):
     for ind, d in enumerate(dsets):
         nsub = float(df_fw.loc[df_fw.dataset == d, 'nsub'])
         t_dof = nsub - 1
-        ci.append(t.ppf(0.95, t_dof)/np.sqrt(nsub))
+        ci.append(t.ppf(0.95, t_dof) / np.sqrt(nsub))
         v = float(df_fw.loc[df_fw.dataset == d, 'smd'])
         if v > 0:
             p = df_fw.loc[df_fw.dataset == d, 'p'].item()
@@ -158,18 +158,18 @@ def meta_analysis_plot(stats_df, alg1, alg2):
             if p < 0.05:
                 sig_ind.append(ind)
                 pvals.append(p)
-        _min = _min if (_min < (v-ci[-1])) else (v-ci[-1])
-        _max = _max if (_max > (v+ci[-1])) else (v+ci[-1])
+        _min = _min if (_min < (v - ci[-1])) else (v - ci[-1])
+        _max = _max if (_max > (v + ci[-1])) else (v + ci[-1])
         ax.plot(np.array([v - ci[-1], v + ci[-1]]),
                 np.ones((2,)) * (ind + 1), c='tab:grey')
     _range = max(abs(_min), abs(_max))
-    ax.set_xlim((0-_range, 0+_range))
+    ax.set_xlim((0 - _range, 0 + _range))
     final_effect = combine_effects(df_fw['smd'], df_fw['nsub'])
     ax.scatter(pd.concat([pd.Series([final_effect]), df_fw['smd']]),
                np.arange(len(dsets) + 1),
-               s=np.array([50] + [30]*len(dsets)),
+               s=np.array([50] + [30] * len(dsets)),
                marker='D',
-               c=['k'] + ['tab:grey']*len(dsets))
+               c=['k'] + ['tab:grey'] * len(dsets))
     for i, p in zip(sig_ind, pvals):
         m, s = _marker(p)
         ax.scatter(df_fw['smd'].iloc[i],
@@ -183,7 +183,7 @@ def meta_analysis_plot(stats_df, alg1, alg2):
     for spine in pval_ax.spines.values():
         spine.set_visible(False)
     for ind, p in zip(sig_ind, pvals):
-        pval_ax.text(0, ind+1, horizontalalignment='center',
+        pval_ax.text(0, ind + 1, horizontalalignment='center',
                      verticalalignment='center',
                      s='{:.2e}'.format(p), fontsize=8)
     if final_effect > 0:
@@ -211,8 +211,8 @@ def meta_analysis_plot(stats_df, alg1, alg2):
     ax.axvline(0, linestyle='--', c='k')
     ax.axhline(0.5, linestyle='-', linewidth=3, c='k')
     title = '< {} better{}\n{}{} better >'.format(alg2,
-                                                  ' '*(45-len(alg2)),
-                                                  ' '*(45 - len(alg1)),
+                                                  ' ' * (45 - len(alg2)),
+                                                  ' ' * (45 - len(alg1)),
                                                   alg1)
     ax.set_title(title, ha='left', ma='right', loc='left')
     ax.set_xlabel('Standardized Mean Difference')
