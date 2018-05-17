@@ -72,7 +72,7 @@ def paired_plot(data, alg1, alg2):
     return fig
 
 
-def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
+def summary_plot(sig_df, effect_df, p_threshold=0.05):
     '''Visualize significances as a heatmap with green/grey/red for significantly
     higher/significantly lower.
     sig_df is a DataFrame of pipeline x pipeline where each value is a p-value,
