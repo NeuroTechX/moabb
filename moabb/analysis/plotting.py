@@ -88,6 +88,9 @@ def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
                 txt = '{:.2f}\np={:1.0e}'.format(effect_df.loc[row, col],
                                                  sig_df.loc[row, col])
             else:
+                # we need the effect direction and p-value to coincide.
+                # TODO: change stats?
+                sig_df.loc[row, col] = 1
                 txt = ''
             annot_df.loc[row, col] = txt
     fig = plt.figure()
@@ -98,6 +101,8 @@ def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
                 fmt='', cmap=palette, linewidths=1,
                 linecolor='0.8', annot_kws={'size': 10}, cbar=False,
                 vmin=-np.log(0.05))
+    print(effect_df)
+    print(sig_df)
     for l in ax.get_xticklabels():
         l.set_rotation(45)
     ax.tick_params(axis='y', rotation=0.9)
