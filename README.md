@@ -137,6 +137,7 @@ python -m moabb.run --verbose
 ## <a name="docs"></a> Documentation:
 
 [http://moabb.neurotechx.com/docs/](http://moabb.neurotechx.com/docs/)
+You can also find an arXiv preprint with results from a version 1 [here](https://arxiv.org/abs/1805.06427)
 
 ## <a name="datasets"></a> Supported datasets:
 
