@@ -89,20 +89,20 @@ def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
                                                  sig_df.loc[row, col])
             else:
                 # we need the effect direction and p-value to coincide.
-                # TODO: change stats?
-                sig_df.loc[row, col] = 1
+                # TODO: current is hack
+                if sig_df.loc[row, col] < p_threshold:
+                    sig_df.loc[row, col] = 1e-110
                 txt = ''
             annot_df.loc[row, col] = txt
     fig = plt.figure()
     ax = fig.add_subplot(111)
     palette = sea.light_palette("green", as_cmap=True)
     palette.set_under(color=[1, 1, 1])
+    palette.set_over(color=[0.5,0,0])
     sea.heatmap(data=-np.log(sig_df), annot=annot_df,
                 fmt='', cmap=palette, linewidths=1,
                 linecolor='0.8', annot_kws={'size': 10}, cbar=False,
-                vmin=-np.log(0.05))
-    print(effect_df)
-    print(sig_df)
+                vmin=-np.log(0.05), vmax=-np.log(1e-100))
     for l in ax.get_xticklabels():
         l.set_rotation(45)
     ax.tick_params(axis='y', rotation=0.9)
