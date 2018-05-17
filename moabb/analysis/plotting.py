@@ -84,16 +84,16 @@ def ordering_heatmap(sig_df, effect_df, p_threshold=0.05):
     annot_df = effect_df.copy()
     for row in annot_df.index:
         for col in annot_df.columns:
-            if effect_df.loc[row,col] > 0:
-                txt = '{:.2f}\np={:1.0e}'.format(effect_df.loc[row,col],
-                                                    sig_df.loc[row,col])
+            if effect_df.loc[row, col] > 0:
+                txt = '{:.2f}\np={:1.0e}'.format(effect_df.loc[row, col],
+                                                 sig_df.loc[row, col])
             else:
                 txt = ''
             annot_df.loc[row, col] = txt
     fig = plt.figure()
     ax = fig.add_subplot(111)
     palette = sea.light_palette("green", as_cmap=True)
-    palette.set_under(color=[1,1,1])
+    palette.set_under(color=[1, 1, 1])
     sea.heatmap(data=-np.log(sig_df), annot=annot_df,
                 fmt='', cmap=palette, linewidths=1,
                 linecolor='0.8', annot_kws={'size': 10}, cbar=False,
