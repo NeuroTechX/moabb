@@ -3,18 +3,18 @@ Utils for easy database selection
 '''
 
 import inspect
-import moabb.datasets as db
+import moabb.datasets as dsets
 from moabb.datasets.base import BaseDataset
+import moabb.database as db
 
-dataset_list = []
-for ds in inspect.getmembers(db, inspect.isclass):
+for ds in inspect.getmembers(dsets, inspect.isclass):
     if issubclass(ds[1], BaseDataset):
-        dataset_list.append(ds[1])
+        db.add_dataset(ds[1]())
 
 
-def dataset_search(paradigm, multi_session=False, events=None,
-                   has_all_events=False, total_classes=None, interval=None,
-                   min_subjects=1, channels=()):
+def dataset_search(paradigm, multi_session=False, events=[],
+                   has_all_events=False, total_classes=2, interval=None,
+                   min_subjects=2, channels=()):
     '''
     Function that returns a list of datasets that match given criteria. Valid
     criteria are:
@@ -50,61 +50,39 @@ def dataset_search(paradigm, multi_session=False, events=None,
 
     '''
     channels = set(channels)
+    events = set(events)
     out_data = []
-    n_classes = total_classes
-    if events is not None and has_all_events:
-        n_classes = len(events)
-    assert paradigm in ['imagery', 'p300']
-    if paradigm == 'p300':
-        raise Exception('SORRY NOBDOYS GOTTEN AROUND TO THIS YET')
 
+    nsessions = 0
+    if multi_session:
+        nsessions = 1
+
+    dataset_list = []
+    for entry in db.session.query(db.DatasetEntry).\
+            filter(db.DatasetEntry.nsessions > nsessions).\
+            filter(db.DatasetEntry.nsubjects >= min_subjects).\
+            filter(db.DatasetEntry.paradigm == paradigm):
+
+        # test events
+        dset_events = set([e.name for e in entry.events])
+        if has_all_events and events <= dset_events:
+            dataset_list.append(getattr(dsets, entry.classname))
+        elif len(events) == 0 and len(dset_events) >= total_classes:
+            dataset_list.append(getattr(dsets, entry.classname))
+        elif len(dset_events & events) >= total_classes:
+            dataset_list.append(getattr(dsets, entry.classname))
+            
     for type_d in dataset_list:
         d = type_d()
-        skip_dataset = False
-
-        if multi_session and d.n_sessions < 2:
-            continue
-
-        if len(d.subject_list) < min_subjects:
-            continue
-
-        if paradigm == d.paradigm:
-            if interval is not None:
-                if d.interval[1] - d.interval[0] < interval:
-                    continue
-            keep_event_dict = {}
-            if events is None:
-                # randomly keep n_classes events
-                if n_classes is None:
-                    keep_event_dict = d.event_id.copy()
-                else:
-                    for k in d.event_id.keys():
-                        if len(keep_event_dict) < n_classes:
-                            keep_event_dict[k] = d.event_id[k]
-            else:
-                n_events = 0
-                for e in events:
-                    if n_classes is not None:
-                        if n_events == n_classes:
-                            break
-                    if e in d.event_id.keys():
-                        keep_event_dict[e] = d.event_id[e]
-                        n_events += 1
-                    else:
-                        if has_all_events:
-                            skip_dataset = True
-                # don't want to use datasets with less than total number of
-                # labels
-                if n_classes is not None:
-                    if n_events < n_classes:
-                        skip_dataset = True
-            if keep_event_dict and not skip_dataset:
-                if len(channels) > 0:
-                    s1 = d.get_data([1], False)[0][0][0]
-                    if channels <= set(s1.info['ch_names']):
-                        out_data.append(d)
-                else:
-                    out_data.append(d)
+        if interval is not None:
+            if d.interval[1] - d.interval[0] < interval:
+                continue
+        if len(channels) > 0:
+            s1 = d.get_data([1], False)[0][0][0]
+            if channels <= set(s1.info['ch_names']):
+                out_data.append(d)
+        else:
+            out_data.append(d)
     return out_data
 
 
@@ -151,6 +129,7 @@ def _download_all(update_path=True, verbose=None):
     """
 
     # iterate over dataset
-    for ds in dataset_list:
+    for name in db.session.query(db.DatasetEntry.name):
+        ds = getattr(dsets, name)
         # call download
         ds().download(update_path=True, verbose=verbose)

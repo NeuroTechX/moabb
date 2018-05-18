@@ -11,3 +11,4 @@ sphinx-gallery
 sphinx-bootstrap_theme
 numpydoc
 pillow
+sqlalchemy	
