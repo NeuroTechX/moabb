@@ -2,3 +2,4 @@
 .. include:: evaluations.rst
 .. include:: paradigms.rst
 .. include:: pipelines.rst
+.. include:: analysis.rst

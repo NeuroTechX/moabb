@@ -192,9 +192,12 @@ def combine_pvalues(p, nsubs):
     return meta-analysis significance
 
     '''
-    W = np.sqrt(nsubs)
-    out = stats.combine_pvalues(np.array(p), weights=W, method='stouffer')[1]
-    return out
+    if len(p) == 1:
+        return p.item()
+    else:
+        W = np.sqrt(nsubs)
+        out = stats.combine_pvalues(np.array(p), weights=W, method='stouffer')[1]
+        return out
 
 
 def find_significant_differences(df, perm_cutoff=20):

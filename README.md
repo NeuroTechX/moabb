@@ -33,6 +33,7 @@ This document (the README file) is a hub to give you some information about the 
 * [Documentation](#docs)
 * [Architecture and main concepts](#architecture)
 
+We also have a recent arXiv preprint that you can look at [here][link_arxiv]!
 
 ## What are we doing?
 
@@ -149,7 +150,10 @@ you can submit new dataset by filling this [form](https://docs.google.com/forms/
 
 ## <a name="architecture"></a> Architecture and main concepts:
 
-there is 4 main concepts in the MOABB: the datasets, the paradigm, the evaluation, and the pipelines.
+<p align="center">
+  <img alt="banner" src="/images/architecture.png/" width="400">
+</p>
+there are 4 main concepts in the MOABB: the datasets, the paradigm, the evaluation, and the pipelines. In addition, we offer statistical and visualization utilities to simplify the workflow.
 
 ### Datasets
 
@@ -177,6 +181,18 @@ across-subject accuracy, or other transfer learning settings.
 Pipeline defines all steps required by an algorithm to obtain predictions. Pipelines are typically a chain of sklearn compatible transformers and end with an sklearn compatible estimator.
 See [Pipelines](http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html) for more info.
 
+### Statistics and visualization
+
+Once an evaluation has been run, the raw results are returned as a DataFrame. This can be further processed via the following commands to generate some basic visualization and statistical comparisons:
+
+```
+from moabb.analysis import analyze
+
+results = evaluation.process(pipeline_dict)
+analyze(results)
+
+```
+
 ## Generate the documentation
 
 To generate the documentation :
@@ -191,3 +207,4 @@ make html
 [link_neurotechx]: http://neurotechx.com/
 [link_neurotechx_signup]: https://docs.google.com/forms/d/e/1FAIpQLSfZyzhVdOLU8_oQ4NylHL8EFoKLIVmryGXA4u7HDsZpkTryvg/viewform
 [link_moabb_docs]: http://moabb.neurotechx.com/docs/index.html
+[link_arxiv]: https://arxiv.org/abs/1805.06427

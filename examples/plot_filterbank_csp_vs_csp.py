@@ -64,7 +64,7 @@ pipelines_fb['FBCSP + LDA'] = make_pipeline(FilterBank(CSP(n_components=4)),
 # from 8 to 35 Hz.
 
 datasets = [BNCI2014001()]
-overwrite = False  # set to True if we want to overwrite cached results
+overwrite = True  # set to True if we want to overwrite cached results
 
 # broadband filters
 fmin = 8
@@ -86,15 +86,17 @@ results_fb = evaluation.process(pipelines_fb)
 
 results = pd.concat([results, results_fb])
 
+
+
 ##############################################################################
 # Plot Results
 # ----------------
 #
-# Here we plot the results. We the first plot is a pointplot with the average
-# performance of each pipeline across session and subjects.
-# The second plot is a paired scatter plot. Each point representing the score
-# of a single session. An algorithm will outperforms another is most of the
-# points are in its quadrant.
+# Here we plot the results via normal methods. We the first plot is a pointplot
+# with the average performance of each pipeline across session and subjects.
+# The second plot is a paired scatter plot. Each point representing the score of
+# a single session. An algorithm will outperforms another is most of the points
+# are in its quadrant.
 
 fig, axes = plt.subplots(1, 2, figsize=[8, 4], sharey=True)
 
