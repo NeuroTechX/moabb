@@ -87,16 +87,15 @@ results_fb = evaluation.process(pipelines_fb)
 results = pd.concat([results, results_fb])
 
 
-
 ##############################################################################
 # Plot Results
 # ----------------
 #
 # Here we plot the results via normal methods. We the first plot is a pointplot
 # with the average performance of each pipeline across session and subjects.
-# The second plot is a paired scatter plot. Each point representing the score of
-# a single session. An algorithm will outperforms another is most of the points
-# are in its quadrant.
+# The second plot is a paired scatter plot. Each point representing the score
+# of a single session. An algorithm will outperforms another is most of the
+# points are in its quadrant.
 
 fig, axes = plt.subplots(1, 2, figsize=[8, 4], sharey=True)
 

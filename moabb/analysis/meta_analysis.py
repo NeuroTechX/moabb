@@ -196,7 +196,8 @@ def combine_pvalues(p, nsubs):
         return p.item()
     else:
         W = np.sqrt(nsubs)
-        out = stats.combine_pvalues(np.array(p), weights=W, method='stouffer')[1]
+        out = stats.combine_pvalues(np.array(p),
+                                    weights=W, method='stouffer')[1]
         return out
 
 

@@ -14,7 +14,7 @@ they can be used.
 import moabb
 import matplotlib.pyplot as plt
 import moabb.analysis.plotting as moabb_plt
-from moabb.analysis.meta_analysis import find_significant_differences, compute_dataset_statistics #flake8: noqa
+from moabb.analysis.meta_analysis import find_significant_differences, compute_dataset_statistics  # flake8: noqa
 
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import LogisticRegression
@@ -63,11 +63,11 @@ pipelines['RG + LR'] = make_pipeline(Covariances(),
                                      LogisticRegression())
 
 pipelines['CSP + LR'] = make_pipeline(CSP(n_components=8),
-                                       LogisticRegression())
+                                      LogisticRegression())
 
 pipelines['RG + LDA'] = make_pipeline(Covariances(),
-                                     TangentSpace(),
-                                     LDA())
+                                      TangentSpace(),
+                                      LDA())
 
 ##############################################################################
 # Evaluation
@@ -114,7 +114,7 @@ plt.show()
 ###############################################################################
 # Statistical testing and further plots
 # ----------------------------------------
-# 
+#
 # If the statistical significance of results is of interest, the method
 # compute_dataset_statistics allows one to show a meta-analysis style plot as
 # well. For an overview of how all algorithms perform in comparison with each
@@ -137,5 +137,5 @@ plt.show()
 # The summary plot shows the effect and significance related to the hypothesis
 # that the algorithm on the y-axis significantly out-performed the algorithm on
 # the x-axis over all datasets
-moabb_plt.summary_plot(P,T)
+moabb_plt.summary_plot(P, T)
 plt.show()
