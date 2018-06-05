@@ -1,11 +1,6 @@
 # Mother of all BCI Benchmark
 
-<p align="center">
-![banner](./images/M.png)
-</p>
-<p align="center" href="">
-  Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets.
-</p>
+![banner](images/M.png)
 
 ## Disclaimer
 
@@ -15,9 +10,7 @@
 
 ## Welcome!
 
-First and foremost, Welcome! :tada: Willkommen! :confetti_ball: Bienvenue! :balloon::balloon::balloon:
-
-Thank you for visiting the Mother of all BCI Benchmark repository.
+Thank you for visiting the Mother of all BCI Benchmark documentation and associated [GitHub repository](https://github.com/NeuroTechX/moabb).
 
 This document (the README file) is a hub to give you some information about the project. Jump straight to one of the sections below, or just scroll down to find out more.
 
@@ -149,10 +142,9 @@ you can submit new dataset by filling this [form](https://docs.google.com/forms/
 
 ## <a name="architecture"></a> Architecture and main concepts:
 
-<p align="center">
-  <img alt="banner" src="/images/architecture.png/" width="400">
-</p>
-there are 4 main concepts in the MOABB: the datasets, the paradigm, the evaluation, and the pipelines. In addition, we offer statistical and visualization utilities to simplify the workflow.
+![architecture](images/architecture.png)
+
+There are 4 main concepts in the MOABB: the datasets, the paradigm, the evaluation, and the pipelines. In addition, we offer statistical and visualization utilities to simplify the workflow.
 
 ### Datasets
 

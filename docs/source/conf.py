@@ -27,7 +27,7 @@ matplotlib.use('Agg')
 
 project = 'moabb'
 copyright = '2018, Alexandre Barachant'
-author = 'Alexandre Barachant'
+author = 'Alexandre Barachant, Vinay Jayaram'
 
 # The short X.Y version
 version = ''
@@ -55,6 +55,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
     'sphinx_gallery.gen_gallery',
+    'm2r',
 ]
 
 napoleon_google_docstring = False
@@ -80,8 +81,7 @@ numpydoc_show_class_members = True
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
