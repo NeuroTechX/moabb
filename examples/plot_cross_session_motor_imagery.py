@@ -77,7 +77,7 @@ pipelines['RG + LR'] = make_pipeline(Covariances(),
 
 paradigm = LeftRightImagery()
 datasets = [BNCI2014001()]
-overwrite = True  # set to True if we want to overwrite cached results
+overwrite = False  # set to True if we want to overwrite cached results
 evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=datasets,
                                     suffix='examples', overwrite=overwrite)
 

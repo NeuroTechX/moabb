@@ -64,7 +64,7 @@ pipelines_fb['FBCSP + LDA'] = make_pipeline(FilterBank(CSP(n_components=4)),
 # from 8 to 35 Hz.
 
 datasets = [BNCI2014001()]
-overwrite = True  # set to True if we want to overwrite cached results
+overwrite = False  # set to True if we want to overwrite cached results
 
 # broadband filters
 fmin = 8

@@ -12,7 +12,7 @@ Plotting
 
 .. autosummary::
     :toctree: generated/
-    :template: class.rst
+    :template: function.rst
 
 
     plotting.score_plot
@@ -26,7 +26,7 @@ Statistics
 
 .. autosummary::
     :toctree: generated/
-    :template: class.rst
+    :template: function.rst
 
     meta_analysis.find_significant_differences
     meta_analysis.compute_dataset_statistics
