@@ -23,7 +23,6 @@ Motor Imagery Datasets
     Cho2017
     MunichMI
     Ofner2017
-    OpenvibeMI
     PhysionetMI
     Shin2017A
     Shin2017B

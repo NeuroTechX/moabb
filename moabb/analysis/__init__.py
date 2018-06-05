@@ -1,9 +1,10 @@
 import os
 import platform
 from datetime import datetime
-
+import pandas as pd
 from moabb.analysis import plotting as plt  # flake8: noqa
 from moabb.analysis.results import Results  # flake8: noqa
+from moabb.analysis.meta_analysis import find_significant_differences,compute_dataset_statistics # flake8: noqa
 
 
 def analyze(results, out_path, name='analysis', plot=False):
@@ -46,6 +47,11 @@ def analyze(results, out_path, name='analysis', plot=False):
 
     results.to_csv(os.path.join(analysis_path, 'data.csv'))
 
+    stats = compute_dataset_statistics(results)
+    stats.to_csv(os.path.join(analysis_path, 'stats.csv'))
+    P, T = find_significant_differences(stats)
     if plot:
         fig, color_dict = plt.score_plot(results)
         fig.savefig(os.path.join(analysis_path, 'scores.pdf'))
+        fig = plt.summary_plot(P, T)
+        fig.savefig(os.path.join(analysis_path, 'ordering.pdf'))

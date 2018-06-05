@@ -15,7 +15,7 @@ Pipelines
     :template: class.rst
 
     features.LogVariance
-    filter_bank.FilterBank
+    features.FM
 
 ------------
 Base & Utils
@@ -23,6 +23,7 @@ Base & Utils
 
 .. autosummary::
     :toctree: generated/
-    :template: class.rst
+    :template: function.rst
 
     utils.create_pipeline_from_config
+    utils.FilterBank

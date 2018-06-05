@@ -1,5 +1,6 @@
 import unittest
 import numpy as np
+import pandas as pd
 import moabb.analysis.meta_analysis as ma
 from moabb.analysis import Results
 import os
@@ -83,16 +84,24 @@ def to_result_input(pnames, dsets):
 
 class Test_Stats(unittest.TestCase):
 
-    def test_rmanova(self):
-        matrix = np.asarray([[45, 50, 55],
-                             [42, 42, 45],
-                             [36, 41, 43],
-                             [39, 35, 40],
-                             [51, 55, 59],
-                             [44, 49, 56]])
-        f, p = ma._rmanova(matrix)
-        self.assertAlmostEqual(f, 12.53, places=2)
-        self.assertAlmostEqual(p, 0.002, places=3)
+    def return_df(self, shape):
+        size = shape[0]*shape[1]
+        data = np.arange(size).reshape(*shape)
+        return pd.DataFrame(data=data)
+
+    def test_wilcoxon(self):
+        P = ma.compute_pvals_wilcoxon(self.return_df((60, 5)))
+        self.assertTrue(np.allclose(np.tril(P), 0), P)
+
+    def test_perm_exhaustive(self):
+        P = ma.compute_pvals_perm(self.return_df((4, 5)))
+        Pl = P[np.tril_indices(P.shape[0])]
+        self.assertTrue(np.allclose(Pl, (1/2**4)), np.tril(P))
+
+    def test_perm_random(self):
+        P = ma.compute_pvals_perm(self.return_df((18, 5)))
+        Pl = P[np.tril_indices(P.shape[0])]
+        self.assertTrue(np.allclose(Pl, 1e-4), np.tril(P))
 
 
 class Test_Integration(unittest.TestCase):
@@ -106,14 +115,6 @@ class Test_Integration(unittest.TestCase):
         path = self.obj.filepath
         if os.path.isfile(path):
             os.remove(path)
-
-    def test_rmanova(self):
-        _in = to_result_input(['a', 'b', 'c'], [[d1]*5, [d1]*5, [d4]*5])
-        self.obj.add(_in, to_pipeline_dict(['a', 'b', 'c']))
-        _in = to_result_input(['a', 'b', 'c'], [[d2]*5, [d2]*5, [d3]*5])
-        self.obj.add(_in, to_pipeline_dict(['a', 'b', 'c']))
-        df = self.obj.to_dataframe()
-        ma.rmANOVA(df)
 
 
 class Test_Results(unittest.TestCase):
