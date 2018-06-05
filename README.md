@@ -1,7 +1,7 @@
 # Mother of all BCI Benchmark
 
 <p align="center">
-![banner](images/M.png)
+  <img alt="banner" src="/images/M.png/">
 </p>
 <p align="center" href="">
   Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets.
