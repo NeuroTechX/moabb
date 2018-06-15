@@ -1,9 +1,9 @@
 import logging
-import requests
+# import requests
 import numpy as np
-import zipfile as z
+# import zipfile as z
 from mne.datasets.utils import _get_path, _do_path_update
-from mne.utils import _fetch_file
+# from mne.utils import _fetch_file
 import re
 import os
 import os.path as op
@@ -13,7 +13,7 @@ import mne
 
 log = logging.getLogger(__name__)
 
-DROPBOX_URL = 'https://www.dropbox.com/sh/vgxed0kx0b31aiv/AACp4mv31lnuJldW3lvMzT8Ga/'
+DROPBOX_URL = 'https://www.dropbox.com/sh/vgxed0kx0b31aiv/AACp4mv31lnuJldW3lvMzT8Ga/'  # noqa
 
 
 def get_subject_filenames(base_path, subject):
@@ -26,7 +26,7 @@ def get_subject_filenames(base_path, subject):
     #         r = requests.get(DROPBOX_URL+data_type+'?raw=1', stream=True,
     #                          headers=headers)
     #         with open(tmpfile, 'wb') as f:
-    #             for chunk in r.iter_content(chunk_size=1024): 
+    #             for chunk in r.iter_content(chunk_size=1024):
     #                 if chunk:
     #                     f.write(chunk)
     #                     print(chunk)
@@ -52,22 +52,22 @@ movement, but same type of visual cue as for the other classes).  The training
 set consists of the approx.  880 trials of all runs except the last two runs,
 the test set of the approx.  160 trials of the last 2 runs.  This dataset was
 acquired in an EEG lab optimized for non-invasive detection of high- frequency
-movement-related EEG components (Ball et al., 2008; Darvas et al., 2010).      
+movement-related EEG components (Ball et al., 2008; Darvas et al., 2010).
 
   Depending on the direction of a gray arrow that was shown on black back-
 ground, the subjects had to repetitively clench their toes (downward arrow),
 perform sequential finger-tapping of their left (leftward arrow) or right
-(rightward arrow) hand, or relax (upward arrow).  The movements were selected to
-require little proximal muscular activity while still being complex enough to
-keep subjects in- volved.  Within the 4-s trials, the subjects performed the
+(rightward arrow) hand, or relax (upward arrow).  The movements were selected
+to require little proximal muscular activity while still being complex enough
+to keep subjects in- volved.  Within the 4-s trials, the subjects performed the
 repetitive movements at their own pace, which had to be maintained as long as
 the arrow was showing.  Per run, 80 arrows were displayed for 4 s each, with 3
-to 4 s of continuous random inter-trial interval.  The order of presentation was
-pseudo-randomized, with all four arrows being shown every four trials.  Ideally
-13 runs were performed to collect 260 trials of each movement and rest.  The
-stimuli were presented and the data recorded with BCI2000 (Schalk et al., 2004).
-The experiment was approved by the ethical committee of the University of
-Freiburg.
+to 4 s of continuous random inter-trial interval.  The order of presentation
+was pseudo-randomized, with all four arrows being shown every four trials.
+Ideally 13 runs were performed to collect 260 trials of each movement and rest.
+The stimuli were presented and the data recorded with BCI2000 (Schalk et al.,
+2004).  The experiment was approved by the ethical committee of the University
+of Freiburg.
 
 References
 ----------
@@ -105,7 +105,7 @@ neural networks for EEG decoding and visualization." Human brain mapping 38.11
     def _get_single_subject_data(self, subject):
         train, test = [BBCIDataset(path) for path in self.data_path(subject)]
         sessions = {}
-        sessions['session_1'] = {'train': train.load(), 'test':test.load()}
+        sessions['session_1'] = {'train': train.load(), 'test': test.load()}
         return sessions
 
 
@@ -181,7 +181,7 @@ class BBCIDataset(object):
                                       eeg_sensor_names)
             eeg_sensor_names = list(eeg_sensor_names)
             assert (len(eeg_sensor_names) in set(
-                [128, 64, 32, 16])), "check this code if you have different sensors..."
+                [128, 64, 32, 16])), "check this code if you have different sensors..."  # noqa
             self.load_sensor_names = eeg_sensor_names
         chan_inds = self._determine_chan_inds(all_sensor_names,
                                               self.load_sensor_names)
@@ -199,9 +199,13 @@ class BBCIDataset(object):
         assert sensor_names is not None
         chan_inds = [all_sensor_names.index(s) for s in sensor_names]
         assert len(chan_inds) == len(sensor_names), ("All"
-                                                     "sensors should be there.")  # TODO: is it possible for this to fail? the list comp fails first right?
+                                                     "sensors"
+                                                     "should be there.")
+        # TODO: is it possible for this to fail? the list
+        # comp fails first right?
         assert len(set(chan_inds)) == len(chan_inds), ("No"
-                                                       "duplicated sensors wanted.")
+                                                       "duplicated sensors"
+                                                       "wanted.")
         return chan_inds
 
     @staticmethod
@@ -217,7 +221,8 @@ class BBCIDataset(object):
         Returns
         -------
         sensor_names: list of str
-            Sensor names that match the pattern or all sensor names in the file.
+            Sensor names that match the pattern or all
+            sensor names in the file.
         """
         with h5py.File(filename, 'r') as h5file:
             clab_set = h5file['nfo']['clab'][:].squeeze()
@@ -236,9 +241,9 @@ class BBCIDataset(object):
                 np.int64)
 
             # Check whether class names known and correct order
-            class_name_set = h5file['nfo']['className'][:].squeeze()
-            all_class_names = [''.join(chr(c) for c in h5file[obj_ref])
-                               for obj_ref in class_name_set]
+            # class_name_set = h5file['nfo']['className'][:].squeeze()
+            # all_class_names = [''.join(chr(c) for c in h5file[obj_ref])
+            #                    for obj_ref in class_name_set]
 
         event_times_in_samples = event_times_in_ms * cnt.info['sfreq'] / 1000.0
         event_times_in_samples = np.uint32(np.round(event_times_in_samples))
@@ -248,12 +253,13 @@ class BBCIDataset(object):
         for i_event, (i_sample, id_class) in enumerate(
                 zip(event_times_in_samples, event_classes)):
             if i_sample == previous_i_sample:
+                info = "{:d}: ({:.0f} and {:.0f}).\n".format(i_sample,
+                                                             event_classes[
+                                                                 i_event - 1],
+                                                             event_classes[
+                                                                 i_event])
                 log.warning("Same sample has at least two markers.\n"
-                            "{:d}: ({:.0f} and {:.0f}).\n".format(i_sample,
-                                                                  event_classes[
-                                                                      i_event - 1],
-                                                                  event_classes[
-                                                                      i_event]) +
+                            + info +
                             "Marker codes will be summed.")
             previous_i_sample = i_sample
 
