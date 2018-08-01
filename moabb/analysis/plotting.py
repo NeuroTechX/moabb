@@ -72,15 +72,16 @@ def paired_plot(data, alg1, alg2):
     return fig
 
 
-def summary_plot(sig_df, effect_df, p_threshold=0.05):
+def summary_plot(sig_df, effect_df, p_threshold=0.05, simplify=True):
     '''Visualize significances as a heatmap with green/grey/red for significantly
     higher/significantly lower.
     sig_df is a DataFrame of pipeline x pipeline where each value is a p-value,
     effect_df is a DF where each value is an effect size
 
     '''
-    effect_df.columns = effect_df.columns.map(_simplify_names)
-    sig_df.columns = sig_df.columns.map(_simplify_names)
+    if simplify:
+        effect_df.columns = effect_df.columns.map(_simplify_names)
+        sig_df.columns = sig_df.columns.map(_simplify_names)
     annot_df = effect_df.copy()
     for row in annot_df.index:
         for col in annot_df.columns:
