@@ -8,35 +8,14 @@ import re
 import os
 import os.path as op
 from moabb.datasets.base import BaseDataset
+from moabb.datasets import download as dl
 import h5py
 import mne
 
+
 log = logging.getLogger(__name__)
 
-DROPBOX_URL = 'https://www.dropbox.com/sh/vgxed0kx0b31aiv/AACp4mv31lnuJldW3lvMzT8Ga/'  # noqa
-
-
-def get_subject_filenames(base_path, subject):
-    # headers = {'user-agent': 'Wget/1.16 (linux-gnu)'}
-    # if not op.isfile(op.join(base_path, 'train', '1.mat')):
-    #     for data_type in ['train', 'test']:
-    #         tmpfile = op.join(base_path, data_type+'.zip')
-    #         if not op.isdir(op.join(base_path, data_type)):
-    #             os.makedirs(op.join(base_path, data_type))
-    #         r = requests.get(DROPBOX_URL+data_type+'?raw=1', stream=True,
-    #                          headers=headers)
-    #         with open(tmpfile, 'wb') as f:
-    #             for chunk in r.iter_content(chunk_size=1024):
-    #                 if chunk:
-    #                     f.write(chunk)
-    #                     print(chunk)
-    #         with z.ZipFile(tmpfile, 'r') as f:
-    #             f.extractall(op.join(base_path, data_type))
-    #         os.remove(tmpfile)
-    # assert op.isfile(op.join(base_path, 'train', '1.mat')
-    #                  ), os.listdir(base_path)
-    return [op.join(base_path, tr,
-                    '{}.mat'.format(subject)) for tr in ['train', 'test']]
+GIN_URL = "https://web.gin.g-node.org/robintibor/high-gamma-dataset/raw/master/data" #noqa
 
 
 class Schirrmeister2017(BaseDataset):
@@ -93,14 +72,11 @@ neural networks for EEG decoding and visualization." Human brain mapping 38.11
         if subject not in self.subject_list:
             raise(ValueError('Invalid subject number'))
 
-        key = 'MNE_DATASETS_SCHIRRMEISTER2017_PATH'
-        shortkey = 'MNE-schirrmeister-2017'
-        path = _get_path(path, key, 'Schirrmeister 2017')
-        # FIXME: this always update the path
-        _do_path_update(path, True, key, 'Schirrmeister 2017')
-        if not op.isdir(op.join(path, shortkey)):
-            os.makedirs(op.join(path, shortkey))
-        return get_subject_filenames(op.join(path, shortkey), subject)
+        def _url(prefix):
+            return '/'.join([GIN_URL, prefix, '{:d}.mat'.format(subject)])
+
+        return [dl.data_path(_url(t), 'SCHIRRMEISTER2017', path, force_update,
+                             update_path, verbose) for t in ['train','test']]
 
     def _get_single_subject_data(self, subject):
         train, test = [BBCIDataset(path) for path in self.data_path(subject)]
