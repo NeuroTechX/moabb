@@ -11,7 +11,7 @@ from moabb.analysis.meta_analysis import combine_effects, combine_pvalues
 
 
 PIPELINE_PALETTE = sea.color_palette("husl", 6)
-sea.set(font='serif', style='whitegrid', palette=PIPELINE_PALETTE)
+sea.set(font='serif', style='whitegrid', palette=PIPELINE_PALETTE, color_codes=False)
 
 log = logging.getLogger()
 
