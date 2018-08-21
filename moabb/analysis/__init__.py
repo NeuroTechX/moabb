@@ -1,4 +1,5 @@
 import os
+import logging
 import platform
 from datetime import datetime
 import pandas as pd
@@ -6,6 +7,7 @@ from moabb.analysis import plotting as plt  # flake8: noqa
 from moabb.analysis.results import Results  # flake8: noqa
 from moabb.analysis.meta_analysis import find_significant_differences,compute_dataset_statistics # flake8: noqa
 
+log = logging.getLogger()
 
 def analyze(results, out_path, name='analysis', plot=False):
     '''Analyze results.
@@ -35,6 +37,14 @@ def analyze(results, out_path, name='analysis', plot=False):
     else:
         analysis_path = os.path.join(out_path, name)
 
+    unique_ids = [plt._simplify_names(x) for x in results.pipeline.unique()]
+    simplify = True
+    print(unique_ids)
+    print(set(unique_ids))
+    if len(unique_ids) != len(set(unique_ids)):
+        log.warning('Pipeline names are too similar, turning off name shortening')
+        simplify = False
+
     os.makedirs(analysis_path, exist_ok=True)
     # TODO: no good cross-platform way of recording CPU info?
     with open(os.path.join(analysis_path, 'info.txt'), 'a') as f:
@@ -53,5 +63,5 @@ def analyze(results, out_path, name='analysis', plot=False):
     if plot:
         fig, color_dict = plt.score_plot(results)
         fig.savefig(os.path.join(analysis_path, 'scores.pdf'))
-        fig = plt.summary_plot(P, T)
+        fig = plt.summary_plot(P, T, simplify=simplify)
         fig.savefig(os.path.join(analysis_path, 'ordering.pdf'))
