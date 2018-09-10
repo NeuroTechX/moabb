@@ -82,11 +82,11 @@ class BaseMotorImagery(BaseParadigm):
     def process_raw(self, raw, dataset):
         # find the events
         events = mne.find_events(raw, shortest_event=0, verbose=False)
-        channels = () if self.channels is None else self.channels
+        # channels = None if self.channels is None else self.channels
 
         # picks channels
         picks = mne.pick_types(raw.info, eeg=True, stim=False,
-                               include=channels)
+                               selection=self.channels)
 
         # get event id
         event_id = self.used_events(dataset)
