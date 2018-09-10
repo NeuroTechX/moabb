@@ -1,12 +1,7 @@
 import logging
 # import requests
 import numpy as np
-# import zipfile as z
-from mne.datasets.utils import _get_path, _do_path_update
-# from mne.utils import _fetch_file
 import re
-import os
-import os.path as op
 from moabb.datasets.base import BaseDataset
 from moabb.datasets import download as dl
 import h5py
@@ -15,7 +10,7 @@ import mne
 
 log = logging.getLogger(__name__)
 
-GIN_URL = "https://web.gin.g-node.org/robintibor/high-gamma-dataset/raw/master/data" #noqa
+GIN_URL = "https://web.gin.g-node.org/robintibor/high-gamma-dataset/raw/master/data"  # noqa
 
 
 class Schirrmeister2017(BaseDataset):
@@ -76,7 +71,7 @@ neural networks for EEG decoding and visualization." Human brain mapping 38.11
             return '/'.join([GIN_URL, prefix, '{:d}.mat'.format(subject)])
 
         return [dl.data_path(_url(t), 'SCHIRRMEISTER2017', path, force_update,
-                             update_path, verbose) for t in ['train','test']]
+                             update_path, verbose) for t in ['train', 'test']]
 
     def _get_single_subject_data(self, subject):
         train, test = [BBCIDataset(path) for path in self.data_path(subject)]
