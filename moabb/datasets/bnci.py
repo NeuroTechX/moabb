@@ -204,7 +204,9 @@ def _load_data_008_2014(subject,
     run = loadmat(filename, struct_as_record=False, squeeze_me=True)['data']
     raw, event_id = _convert_run_p300_sl(run, verbose=verbose)
 
-    return [raw], event_id
+    sessions = {'session_0': {'run_0': raw}}
+
+    return sessions
 
 
 @verbose
@@ -232,7 +234,12 @@ def _load_data_009_2014(subject,
         raws.append(raw)
         event_id.update(ev)
 
-    return raws, event_id
+    sessions = {}
+    sessions['session_0'] = {}
+    for i, rawi in enumerate(raws):
+        sessions['session_0']['run_' + str(i)] = rawi
+
+    return sessions
 
 
 @verbose
@@ -818,6 +825,136 @@ class BNCI2014004(MNEBNCI):
             paradigm='imagery',
             doi='10.1109/TNSRE.2007.906956')
 
+class BNCI2014008(MNEBNCI):
+    """BNCI 2014-008 P300 dataset.
+
+    Dataset from [1]_.
+
+    **Dataset description**
+
+    This dataset represents a complete record of P300 evoked potentials 
+    using a paradigm originally described by Farwell and Donchin [2]. 
+    In these sessions, 8 users with amyotrophic lateral sclerosis (ALS) 
+    focused on one out of 36 different characters. The objective in this 
+    contest is to predict the correct character in each of the provided 
+    character selection epochs.    
+
+    We included in the study a total of eight volunteers, all naïve to BCI 
+    training. Scalp EEG signals were recorded (g.MOBILAB, g.tec, Austria) 
+    from eight channels according to 10–10 standard (Fz, Cz, Pz, Oz, P3, P4, 
+    PO7 and PO8) using active electrodes (g.Ladybird, g.tec, Austria). 
+    All channels were referenced to the right earlobe and grounded to the left 
+    mastoid. The EEG signal was digitized at 256 Hz and band-pass filtered 
+    between 0.1 and 30 Hz. 
+
+    Participants were required to copy spell seven predefined words of five 
+    characters each (runs), by controlling a P300 matrix speller. Rows and
+    columns on the interface were randomly intensified for 125ms, with an 
+    inter stimulus interval (ISI) of 125ms, yielding a 250 ms lag between the 
+    appearance of two stimuli (stimulus onset asynchrony, SOA). 
+
+    In the first three runs (15 trials in total) EEG data was stored to 
+    perform a calibration of the BCI classifier. Thus no feedback was provided 
+    to the participant up to this point. A stepwise linear discriminant 
+    analysis (SWLDA) was applied to the data from the three calibration runs 
+    (i.e., runs 1–3) to determine the classifier weights (i.e., classifier 
+    coefficients). These weights were then applied during the subsequent four 
+    testing runs (i.e., runs 4–7) when participants were provided with 
+    feedback.    
+
+    References
+    ----------
+
+    .. [1] A. Riccio, L. Simione, F. Schettini, A. Pizzimenti, M. Inghilleri, 
+           M. O. Belardinelli, D. Mattia, and F. Cincotti (2013). Attention 
+           and P300-based BCI performance in people with amyotrophic lateral 
+           sclerosis. Front. Hum. Neurosci., vol. 7:, pag. 732.  
+    .. [2] L. A. Farwell and E. Donchin, Talking off the top of your head: 
+           toward a mental prosthesis utilizing eventrelated
+           brain potentials, Electroencephalogr. Clin. Neurophysiol., 
+           vol. 70, n. 6, pagg. 510–523, 1988.
+
+    """
+
+    def __init__(self):
+        super().__init__(
+            subjects=list(range(1, 9)),
+            sessions_per_subject=1,
+            events={'Target': 2, 'NonTarget': 1},
+            code='008-2014',
+            interval=[0, 1],
+            paradigm='p300',
+            doi='10.3389/fnhum.2013.00732') 
+
+
+class BNCI2014009(MNEBNCI):
+    """BNCI 2014-009 P300 dataset.
+
+    Dataset from [1]_.
+
+    **Dataset description**
+
+    This dataset represents a complete record of P300 evoked potentials 
+    recorded with BCI2000[1] using two different paradigms: a paradigm based 
+    on the P300 Speller originally described by Farwell and Donchin [2]in 
+    overt attention condition and a paradigm based on the GeoSpell 
+    interface [3] used in covert attention condition. In these sessions, 
+    10 healthy subjects focused on one out of 36 different characters. 
+    The objective was to predict the correct character in each of the provided 
+    character selection epochs. 
+
+    In the first interface, cues are organized in a 6×6 matrix and each 
+    character is always visible on the screen and spatially separated from the 
+    others. By design, no fixation cue is provided, as the subject is expected 
+    to gaze at the target character. Stimulation consists in the 
+    intensification of whole lines (rows or columns) of six characters.    
+
+    Ten healthy subjects (10 female, mean age = 26.8 ± 5.6, table I) with 
+    previous experience with P300-based BCIs attended 3 recording sessions. 
+    Scalp EEG potentials were measured using 16 Ag/AgCl electrodes that 
+    covered the left, right and central scalp (Fz, FCz, Cz, CPz, Pz, Oz, F3, 
+    F4, C3, C4, CP3, CP4, P3, P4, PO7, PO8) per the 10-10 standard, arranged 
+    on an elastic cap (Electro-Cap International, Inc.). Each electrode was 
+    referenced to the linked earlobes and grounded to the right mastoid. 
+    The EEG was acquired using a g.USBamp amplifier (g.Tec, Austria), 
+    digitized at 256 Hz, high pass- and low pass-filtered with cutoff 
+    frequencies of 0.1 Hz and 20 Hz, respectively. The electrode impedance did 
+    not exceed 10 kΩ. Visual stimulation, acquisition and online 
+    classification were performed with BCI2000 [1] using a stimulus 
+    presentation application that was modified for this study. Each subject 
+    attended 4 recording sessions. During each session, the subject performed 
+    three runs with each of the stimulation interfaces. At the beginning of 
+    each trial, before the stimulation began, the system prompted the subject 
+    with the character that he had to attend. The target prompt appeared 
+    during a 2 s pre-trial interval. The target appeared in the same position 
+    as in the following stimulation to allow the subject to focus his spatial 
+    attention before the trial started. A trial consisted of eight stimulation 
+    sequences, and thus, 16 intensifications of the target character. 
+    Each stimulus was intensified for 125 ms, with an inter stimulus interval 
+    (ISI) of 125 ms, yielding a 250 ms lag between the appearance of two 
+    stimuli (SOA). To avoid the attentional blink phenomenon, which occurs 
+    when the target-to-target interval (TTI) is shorter than 500 ms [4], 
+    pseudorandom stimulation sequences were assembled, so that each target 
+    intensification would not occur within 500 ms after the previous one. 
+    The same parameters were set for both the GeoSpell and P3Speller [5].
+
+    References
+    ----------
+
+    .. [1]   
+
+    """
+
+    def __init__(self):
+        super().__init__(
+            subjects=list(range(1, 11)),
+            sessions_per_subject=1,
+            events={'Target': 2, 'NonTarget': 1},
+            code='009-2014',
+            interval=[0, 1],
+            paradigm='p300',
+            doi='10.1088/1741-2560/11/3/035008')  
+
 
 class BNCI2015001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset.
@@ -864,6 +1001,33 @@ class BNCI2015001(MNEBNCI):
             interval=[3, 8],
             paradigm='imagery',
             doi='10.1109/tnsre.2012.2189584')
+
+
+class BNCI2015003(MNEBNCI):
+    """BNCI 2015-003 P300 dataset.
+
+    Dataset from [1]_.
+
+    **Dataset description**
+
+ 
+
+    References
+    ----------
+
+    .. [1]   
+
+    """
+
+    def __init__(self):
+        super().__init__(
+            subjects=list(range(1, 11)),
+            sessions_per_subject=1,
+            events={'Target': 2, 'NonTarget': 1},
+            code='003-2015',
+            interval=[0, 1],
+            paradigm='p300',
+            doi='10.1016/j.neulet.2009.06.045') 
 
 
 class BNCI2015004(MNEBNCI):
