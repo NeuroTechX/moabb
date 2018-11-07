@@ -287,7 +287,7 @@ def _load_data_003_2015(subject,
     filename = data_path(url, path, force_update, update_path)[0]
 
     raws = list()
-    event_id = {'Target': 2, 'Non-Target': 1}
+    event_id = {'Target': 2, 'NonTarget': 1}
     from scipy.io import loadmat
 
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
@@ -304,7 +304,9 @@ def _load_data_003_2015(subject,
     info = create_info(
         ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
 
-    for run in [data.train, data.test]:
+    sessions = {}
+    sessions['session_0'] = {}
+    for ri, run in enumerate([data.train, data.test]):
         # flash events on the channel 9
         flashs = run[9:10]
         ix_flash = flashs[0] > 0
@@ -325,9 +327,9 @@ def _load_data_003_2015(subject,
 
         eeg_data = np.r_[run[1:-2] * 1e-6, targets, flashs]
         raw = RawArray(data=eeg_data, info=info, verbose=verbose)
-        raws.append(raw)
-        event_id.update(evd)
-    return raws, event_id
+        sessions['session_0']['run_' + str(ri)] = raw
+
+    return sessions
 
 
 @verbose
@@ -882,7 +884,7 @@ class BNCI2014008(MNEBNCI):
             sessions_per_subject=1,
             events={'Target': 2, 'NonTarget': 1},
             code='008-2014',
-            interval=[0, 1],
+            interval=[0, 1.0],
             paradigm='p300',
             doi='10.3389/fnhum.2013.00732') 
 
@@ -894,14 +896,12 @@ class BNCI2014009(MNEBNCI):
 
     **Dataset description**
 
-    This dataset represents a complete record of P300 evoked potentials 
-    recorded with BCI2000[1] using two different paradigms: a paradigm based 
-    on the P300 Speller originally described by Farwell and Donchin [2]in 
-    overt attention condition and a paradigm based on the GeoSpell 
-    interface [3] used in covert attention condition. In these sessions, 
-    10 healthy subjects focused on one out of 36 different characters. 
+    This dataset presents a complete record of P300 evoked potentials
+    using two different paradigms: a paradigm based on the P300 Speller in
+    overt attention condition and a paradigm based used in covert attention condition.
+    In these sessions, 10 healthy subjects focused on one out of 36 different characters.
     The objective was to predict the correct character in each of the provided 
-    character selection epochs. 
+    character selection epochs. (Note: for now we only make the overt attention data available)
 
     In the first interface, cues are organized in a 6×6 matrix and each 
     character is always visible on the screen and spatially separated from the 
@@ -913,35 +913,19 @@ class BNCI2014009(MNEBNCI):
     previous experience with P300-based BCIs attended 3 recording sessions. 
     Scalp EEG potentials were measured using 16 Ag/AgCl electrodes that 
     covered the left, right and central scalp (Fz, FCz, Cz, CPz, Pz, Oz, F3, 
-    F4, C3, C4, CP3, CP4, P3, P4, PO7, PO8) per the 10-10 standard, arranged 
-    on an elastic cap (Electro-Cap International, Inc.). Each electrode was 
+    F4, C3, C4, CP3, CP4, P3, P4, PO7, PO8) per the 10-10 standard. Each electrode was
     referenced to the linked earlobes and grounded to the right mastoid. 
-    The EEG was acquired using a g.USBamp amplifier (g.Tec, Austria), 
-    digitized at 256 Hz, high pass- and low pass-filtered with cutoff 
-    frequencies of 0.1 Hz and 20 Hz, respectively. The electrode impedance did 
-    not exceed 10 kΩ. Visual stimulation, acquisition and online 
-    classification were performed with BCI2000 [1] using a stimulus 
-    presentation application that was modified for this study. Each subject 
-    attended 4 recording sessions. During each session, the subject performed 
-    three runs with each of the stimulation interfaces. At the beginning of 
-    each trial, before the stimulation began, the system prompted the subject 
-    with the character that he had to attend. The target prompt appeared 
-    during a 2 s pre-trial interval. The target appeared in the same position 
-    as in the following stimulation to allow the subject to focus his spatial 
-    attention before the trial started. A trial consisted of eight stimulation 
-    sequences, and thus, 16 intensifications of the target character. 
-    Each stimulus was intensified for 125 ms, with an inter stimulus interval 
-    (ISI) of 125 ms, yielding a 250 ms lag between the appearance of two 
-    stimuli (SOA). To avoid the attentional blink phenomenon, which occurs 
-    when the target-to-target interval (TTI) is shorter than 500 ms [4], 
-    pseudorandom stimulation sequences were assembled, so that each target 
-    intensification would not occur within 500 ms after the previous one. 
-    The same parameters were set for both the GeoSpell and P3Speller [5].
+    The EEG was acquired at 256 Hz, high pass- and low pass-filtered with cutoff
+    frequencies of 0.1 Hz and 20 Hz, respectively. Each subject attended 4 recording
+    sessions. During each session, the subject performed three runs with each of
+    the stimulation interfaces.
 
     References
     ----------
 
-    .. [1]   
+    .. [1] P Aricò, F Aloise, F Schettini, S Salinari, D Mattia and F Cincotti (2013).
+           Influence of P300 latency jitter on event related potential-based brain–computer
+           interface performance. Journal of Neural Engineering, vol. 11, number 3.
 
     """
 
@@ -951,7 +935,7 @@ class BNCI2014009(MNEBNCI):
             sessions_per_subject=1,
             events={'Target': 2, 'NonTarget': 1},
             code='009-2014',
-            interval=[0, 1],
+            interval=[0, 0.8],
             paradigm='p300',
             doi='10.1088/1741-2560/11/3/035008')  
 
@@ -1010,12 +994,19 @@ class BNCI2015003(MNEBNCI):
 
     **Dataset description**
 
- 
+    This dataset contains recordings from 10 subjects performing a visual P300
+    task for spelling. Results were published in [1]. Sampling frequency was 256 Hz
+    and there were 8 electrodes ('Fz', 'Cz', 'P3', 'Pz', 'P4', 'PO7', 'Oz', 'PO8')
+    which were referenced to the right earlobe. Each subject participated in only
+    one session. For more information, see [1].
 
     References
     ----------
 
-    .. [1]   
+    .. [1]  C. Guger, S. Daban, E. Sellers, C. Holzner, G. Krausz, R. Carabalona,
+            F. Gramatica, and G. Edlinger (2009). How many people are able to control
+            a P300-based brain-computer interface (BCI)?. Neuroscience Letters,
+            vol. 462, pp. 94–98.
 
     """
 
@@ -1025,7 +1016,7 @@ class BNCI2015003(MNEBNCI):
             sessions_per_subject=1,
             events={'Target': 2, 'NonTarget': 1},
             code='003-2015',
-            interval=[0, 1],
+            interval=[0, 0.8],
             paradigm='p300',
             doi='10.1016/j.neulet.2009.06.045') 
 
