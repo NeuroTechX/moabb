@@ -898,10 +898,11 @@ class BNCI2014009(MNEBNCI):
 
     This dataset presents a complete record of P300 evoked potentials
     using two different paradigms: a paradigm based on the P300 Speller in
-    overt attention condition and a paradigm based used in covert attention condition.
-    In these sessions, 10 healthy subjects focused on one out of 36 different characters.
-    The objective was to predict the correct character in each of the provided 
-    character selection epochs. (Note: for now we only make the overt attention data available)
+    overt attention condition and a paradigm based used in covert attention
+    condition. In these sessions, 10 healthy subjects focused on one out of 36
+    different characters. The objective was to predict the correct character
+    in each of the provided character selection epochs.
+    (Note: right now only the overt attention data is available via MOABB)
 
     In the first interface, cues are organized in a 6×6 matrix and each 
     character is always visible on the screen and spatially separated from the 
@@ -913,19 +914,20 @@ class BNCI2014009(MNEBNCI):
     previous experience with P300-based BCIs attended 3 recording sessions. 
     Scalp EEG potentials were measured using 16 Ag/AgCl electrodes that 
     covered the left, right and central scalp (Fz, FCz, Cz, CPz, Pz, Oz, F3, 
-    F4, C3, C4, CP3, CP4, P3, P4, PO7, PO8) per the 10-10 standard. Each electrode was
-    referenced to the linked earlobes and grounded to the right mastoid. 
-    The EEG was acquired at 256 Hz, high pass- and low pass-filtered with cutoff
-    frequencies of 0.1 Hz and 20 Hz, respectively. Each subject attended 4 recording
-    sessions. During each session, the subject performed three runs with each of
-    the stimulation interfaces.
+    F4, C3, C4, CP3, CP4, P3, P4, PO7, PO8) per the 10-10 standard. Each
+    electrode was referenced to the linked earlobes and grounded to the
+    right mastoid. The EEG was acquired at 256 Hz, high pass- and low
+    pass-filtered with cutoff frequencies of 0.1 Hz and 20 Hz, respectively.
+    Each subject attended 4 recording sessions. During each session, the subject
+    performed three runs with each of the stimulation interfaces.
 
     References
     ----------
 
-    .. [1] P Aricò, F Aloise, F Schettini, S Salinari, D Mattia and F Cincotti (2013).
-           Influence of P300 latency jitter on event related potential-based brain–computer
-           interface performance. Journal of Neural Engineering, vol. 11, number 3.
+    .. [1] P Aricò, F Aloise, F Schettini, S Salinari, D Mattia and F Cincotti
+           (2013). Influence of P300 latency jitter on event related potential-
+           based brain–computer interface performance. Journal of Neural
+           Engineering, vol. 11, number 3.
 
     """
 
@@ -995,18 +997,18 @@ class BNCI2015003(MNEBNCI):
     **Dataset description**
 
     This dataset contains recordings from 10 subjects performing a visual P300
-    task for spelling. Results were published in [1]. Sampling frequency was 256 Hz
-    and there were 8 electrodes ('Fz', 'Cz', 'P3', 'Pz', 'P4', 'PO7', 'Oz', 'PO8')
-    which were referenced to the right earlobe. Each subject participated in only
-    one session. For more information, see [1].
+    task for spelling. Results were published in [1]. Sampling frequency was
+    256 Hz and there were 8 electrodes ('Fz', 'Cz', 'P3', 'Pz', 'P4', 'PO7',
+    'Oz', 'PO8') which were referenced to the right earlobe. Each subject
+    participated in only one session. For more information, see [1].
 
     References
     ----------
 
-    .. [1]  C. Guger, S. Daban, E. Sellers, C. Holzner, G. Krausz, R. Carabalona,
-            F. Gramatica, and G. Edlinger (2009). How many people are able to control
-            a P300-based brain-computer interface (BCI)?. Neuroscience Letters,
-            vol. 462, pp. 94–98.
+    .. [1]  C. Guger, S. Daban, E. Sellers, C. Holzner, G. Krausz,
+            R. Carabalona, F. Gramatica, and G. Edlinger (2009). How many people
+            are able to control a P300-based brain-computer interface (BCI)?.
+            Neuroscience Letters, vol. 462, pp. 94–98.
 
     """
 

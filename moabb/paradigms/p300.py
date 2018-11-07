@@ -211,6 +211,7 @@ class P300(SinglePass):
     def scoring(self):
         return 'roc_auc'
 
+
 class FakeP300Paradigm(P300):
     """Fake P300 for Target/NonTarget classification.
     """

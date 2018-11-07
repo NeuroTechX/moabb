@@ -32,7 +32,7 @@ import moabb
 from moabb.paradigms import P300
 from moabb.evaluations import WithinSessionEvaluation
 
-from pyriemann.estimation import ERPCovariances, Xdawn
+from pyriemann.estimation import XdawnCovariances, Xdawn
 from pyriemann.tangentspace import TangentSpace
 
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -42,10 +42,10 @@ from sklearn.pipeline import make_pipeline
 
 moabb.set_log_level('info')
 
-# This is an auxiliary transformer that allows one to vectorize data structures in a pipeline
-# For instance, in the case of a X with dimensions Nt x Nc x Ns, one might be interested in
-# a new data structure with dimensions Nt x (Nc.Ns)
-
+# This is an auxiliary transformer that allows one to vectorize data
+# structures in a pipeline For instance, in the case of a X with dimensions
+# Nt x Nc x Ns, one might be interested in a new data structure with
+# dimensions Nt x (Nc.Ns)
 
 class Vectorizer(BaseEstimator, TransformerMixin):
 
@@ -69,17 +69,21 @@ class Vectorizer(BaseEstimator, TransformerMixin):
 
 pipelines = {}
 
-# we have to do this because the classes are called 'Target' and 'NonTarget' but the
-# evaluation function uses a LabelEncoder, transforming them to 0 and 1
+# we have to do this because the classes are called 'Target' and 'NonTarget'
+# but the evaluation function uses a LabelEncoder, transforming them
+# to 0 and 1
 labels_dict = {'Target': 1, 'NonTarget': 0}
 
-pipelines['RG + LogReg'] = make_pipeline(ERPCovariances(estimator='lwf',
-                                                                    classes=[labels_dict['Target']]),
+pipelines['RG + LogReg'] = make_pipeline(XdawnCovariances(nfilter=4,
+                                                          classes=[labels_dict['Target']],
+                                                          estimator='lwf',
+                                                          xdawn_estimator='lwf'),
                                          TangentSpace(),
                                          LogisticRegression())
 
-pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=4, estimator='lwf'), Vectorizer(), LDA(solver='lsqr',
-                                                                                            shrinkage='auto'))
+pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=4, estimator='lwf'),
+                                       Vectorizer(), LDA(solver='lsqr',
+                                                         shrinkage='auto'))
 
 ##############################################################################
 # Evaluation
@@ -94,8 +98,9 @@ pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=4, estimator='lwf'), Vector
 # be overwritten if necessary.
 
 paradigm = P300()
-overwrite = False  # set to True if we want to overwrite cached results
-evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=paradigm.datasets,
+overwrite = True  # set to True if we want to overwrite cached results
+evaluation = WithinSessionEvaluation(paradigm=paradigm,
+                                     datasets=paradigm.datasets,
                                      suffix='examples', overwrite=overwrite)
 
 results = evaluation.process(pipelines)
