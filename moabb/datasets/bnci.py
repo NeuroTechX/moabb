@@ -178,7 +178,7 @@ def _load_data_004_2014(subject,
     for r in ['T', 'E']:
         url = '{u}004-2014/B{s:02d}{r}.mat'.format(u=base_url, s=subject, r=r)
         filename = data_path(url, path, force_update, update_path)[0]
-        raws, _ = _convert_mi(filename,  ch_names, ch_types)
+        raws, _ = _convert_mi(filename, ch_names, ch_types)
         sessions.extend(raws)
 
     sessions = {'session_%d' % ii: {'run_0': run}
@@ -286,8 +286,6 @@ def _load_data_003_2015(subject,
     url = '{u}003-2015/s{s:d}.mat'.format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
 
-    raws = list()
-    event_id = {'Target': 2, 'NonTarget': 1}
     from scipy.io import loadmat
 
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
@@ -475,7 +473,7 @@ def _convert_mi(filename, ch_names, ch_types):
     event_id = {}
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
 
-    if type(data['data']) is np.ndarray:
+    if isinstance(data['data'], np.ndarray):
         run_array = data['data']
     else:
         run_array = [data['data']]
@@ -827,6 +825,7 @@ class BNCI2014004(MNEBNCI):
             paradigm='imagery',
             doi='10.1109/TNSRE.2007.906956')
 
+
 class BNCI2014008(MNEBNCI):
     """BNCI 2014-008 P300 dataset.
 
@@ -834,46 +833,46 @@ class BNCI2014008(MNEBNCI):
 
     **Dataset description**
 
-    This dataset represents a complete record of P300 evoked potentials 
-    using a paradigm originally described by Farwell and Donchin [2]. 
-    In these sessions, 8 users with amyotrophic lateral sclerosis (ALS) 
-    focused on one out of 36 different characters. The objective in this 
-    contest is to predict the correct character in each of the provided 
-    character selection epochs.    
+    This dataset represents a complete record of P300 evoked potentials
+    using a paradigm originally described by Farwell and Donchin [2].
+    In these sessions, 8 users with amyotrophic lateral sclerosis (ALS)
+    focused on one out of 36 different characters. The objective in this
+    contest is to predict the correct character in each of the provided
+    character selection epochs.
 
-    We included in the study a total of eight volunteers, all naïve to BCI 
-    training. Scalp EEG signals were recorded (g.MOBILAB, g.tec, Austria) 
-    from eight channels according to 10–10 standard (Fz, Cz, Pz, Oz, P3, P4, 
-    PO7 and PO8) using active electrodes (g.Ladybird, g.tec, Austria). 
-    All channels were referenced to the right earlobe and grounded to the left 
-    mastoid. The EEG signal was digitized at 256 Hz and band-pass filtered 
-    between 0.1 and 30 Hz. 
+    We included in the study a total of eight volunteers, all naïve to BCI
+    training. Scalp EEG signals were recorded (g.MOBILAB, g.tec, Austria)
+    from eight channels according to 10–10 standard (Fz, Cz, Pz, Oz, P3, P4,
+    PO7 and PO8) using active electrodes (g.Ladybird, g.tec, Austria).
+    All channels were referenced to the right earlobe and grounded to the left
+    mastoid. The EEG signal was digitized at 256 Hz and band-pass filtered
+    between 0.1 and 30 Hz.
 
-    Participants were required to copy spell seven predefined words of five 
+    Participants were required to copy spell seven predefined words of five
     characters each (runs), by controlling a P300 matrix speller. Rows and
-    columns on the interface were randomly intensified for 125ms, with an 
-    inter stimulus interval (ISI) of 125ms, yielding a 250 ms lag between the 
-    appearance of two stimuli (stimulus onset asynchrony, SOA). 
+    columns on the interface were randomly intensified for 125ms, with an
+    inter stimulus interval (ISI) of 125ms, yielding a 250 ms lag between the
+    appearance of two stimuli (stimulus onset asynchrony, SOA).
 
-    In the first three runs (15 trials in total) EEG data was stored to 
-    perform a calibration of the BCI classifier. Thus no feedback was provided 
-    to the participant up to this point. A stepwise linear discriminant 
-    analysis (SWLDA) was applied to the data from the three calibration runs 
-    (i.e., runs 1–3) to determine the classifier weights (i.e., classifier 
-    coefficients). These weights were then applied during the subsequent four 
-    testing runs (i.e., runs 4–7) when participants were provided with 
-    feedback.    
+    In the first three runs (15 trials in total) EEG data was stored to
+    perform a calibration of the BCI classifier. Thus no feedback was provided
+    to the participant up to this point. A stepwise linear discriminant
+    analysis (SWLDA) was applied to the data from the three calibration runs
+    (i.e., runs 1–3) to determine the classifier weights (i.e., classifier
+    coefficients). These weights were then applied during the subsequent four
+    testing runs (i.e., runs 4–7) when participants were provided with
+    feedback.
 
     References
     ----------
 
-    .. [1] A. Riccio, L. Simione, F. Schettini, A. Pizzimenti, M. Inghilleri, 
-           M. O. Belardinelli, D. Mattia, and F. Cincotti (2013). Attention 
-           and P300-based BCI performance in people with amyotrophic lateral 
-           sclerosis. Front. Hum. Neurosci., vol. 7:, pag. 732.  
-    .. [2] L. A. Farwell and E. Donchin, Talking off the top of your head: 
+    .. [1] A. Riccio, L. Simione, F. Schettini, A. Pizzimenti, M. Inghilleri,
+           M. O. Belardinelli, D. Mattia, and F. Cincotti (2013). Attention
+           and P300-based BCI performance in people with amyotrophic lateral
+           sclerosis. Front. Hum. Neurosci., vol. 7:, pag. 732.
+    .. [2] L. A. Farwell and E. Donchin, Talking off the top of your head:
            toward a mental prosthesis utilizing eventrelated
-           brain potentials, Electroencephalogr. Clin. Neurophysiol., 
+           brain potentials, Electroencephalogr. Clin. Neurophysiol.,
            vol. 70, n. 6, pagg. 510–523, 1988.
 
     """
@@ -886,7 +885,7 @@ class BNCI2014008(MNEBNCI):
             code='008-2014',
             interval=[0, 1.0],
             paradigm='p300',
-            doi='10.3389/fnhum.2013.00732') 
+            doi='10.3389/fnhum.2013.00732')
 
 
 class BNCI2014009(MNEBNCI):
@@ -904,22 +903,22 @@ class BNCI2014009(MNEBNCI):
     in each of the provided character selection epochs.
     (Note: right now only the overt attention data is available via MOABB)
 
-    In the first interface, cues are organized in a 6×6 matrix and each 
-    character is always visible on the screen and spatially separated from the 
-    others. By design, no fixation cue is provided, as the subject is expected 
-    to gaze at the target character. Stimulation consists in the 
-    intensification of whole lines (rows or columns) of six characters.    
+    In the first interface, cues are organized in a 6×6 matrix and each
+    character is always visible on the screen and spatially separated from the
+    others. By design, no fixation cue is provided, as the subject is expected
+    to gaze at the target character. Stimulation consists in the
+    intensification of whole lines (rows or columns) of six characters.
 
-    Ten healthy subjects (10 female, mean age = 26.8 ± 5.6, table I) with 
-    previous experience with P300-based BCIs attended 3 recording sessions. 
-    Scalp EEG potentials were measured using 16 Ag/AgCl electrodes that 
-    covered the left, right and central scalp (Fz, FCz, Cz, CPz, Pz, Oz, F3, 
+    Ten healthy subjects (10 female, mean age = 26.8 ± 5.6, table I) with
+    previous experience with P300-based BCIs attended 3 recording sessions.
+    Scalp EEG potentials were measured using 16 Ag/AgCl electrodes that
+    covered the left, right and central scalp (Fz, FCz, Cz, CPz, Pz, Oz, F3,
     F4, C3, C4, CP3, CP4, P3, P4, PO7, PO8) per the 10-10 standard. Each
     electrode was referenced to the linked earlobes and grounded to the
     right mastoid. The EEG was acquired at 256 Hz, high pass- and low
     pass-filtered with cutoff frequencies of 0.1 Hz and 20 Hz, respectively.
-    Each subject attended 4 recording sessions. During each session, the subject
-    performed three runs with each of the stimulation interfaces.
+    Each subject attended 4 recording sessions. During each session,
+    the subject performed three runs with each of the stimulation interfaces.
 
     References
     ----------
@@ -939,7 +938,7 @@ class BNCI2014009(MNEBNCI):
             code='009-2014',
             interval=[0, 0.8],
             paradigm='p300',
-            doi='10.1088/1741-2560/11/3/035008')  
+            doi='10.1088/1741-2560/11/3/035008')
 
 
 class BNCI2015001(MNEBNCI):
@@ -1006,9 +1005,9 @@ class BNCI2015003(MNEBNCI):
     ----------
 
     .. [1]  C. Guger, S. Daban, E. Sellers, C. Holzner, G. Krausz,
-            R. Carabalona, F. Gramatica, and G. Edlinger (2009). How many people
-            are able to control a P300-based brain-computer interface (BCI)?.
-            Neuroscience Letters, vol. 462, pp. 94–98.
+            R. Carabalona, F. Gramatica, and G. Edlinger (2009). How many
+            people are able to control a P300-based brain-computer interface
+            (BCI)?. Neuroscience Letters, vol. 462, pp. 94–98.
 
     """
 
@@ -1020,7 +1019,7 @@ class BNCI2015003(MNEBNCI):
             code='003-2015',
             interval=[0, 0.8],
             paradigm='p300',
-            doi='10.1016/j.neulet.2009.06.045') 
+            doi='10.1016/j.neulet.2009.06.045')
 
 
 class BNCI2015004(MNEBNCI):

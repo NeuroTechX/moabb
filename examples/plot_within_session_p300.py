@@ -1,3 +1,15 @@
+from sklearn.pipeline import make_pipeline
+from sklearn.linear_model import LogisticRegression
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.base import BaseEstimator, TransformerMixin
+from pyriemann.tangentspace import TangentSpace
+from pyriemann.estimation import XdawnCovariances, Xdawn
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import P300
+import moabb
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 """
 ===========================
 Within Session P300
@@ -23,22 +35,6 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
-
-import moabb
-
-from moabb.paradigms import P300
-from moabb.evaluations import WithinSessionEvaluation
-
-from pyriemann.estimation import XdawnCovariances, Xdawn
-from pyriemann.tangentspace import TangentSpace
-
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import make_pipeline
 
 moabb.set_log_level('info')
 
@@ -46,6 +42,7 @@ moabb.set_log_level('info')
 # structures in a pipeline For instance, in the case of a X with dimensions
 # Nt x Nc x Ns, one might be interested in a new data structure with
 # dimensions Nt x (Nc.Ns)
+
 
 class Vectorizer(BaseEstimator, TransformerMixin):
 
@@ -58,7 +55,7 @@ class Vectorizer(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         """transform. """
-        return np.reshape(X, (len(X),-1))
+        return np.reshape(X, (len(X), -1))
 
 ##############################################################################
 # Create pipelines
@@ -74,12 +71,15 @@ pipelines = {}
 # to 0 and 1
 labels_dict = {'Target': 1, 'NonTarget': 0}
 
-pipelines['RG + LogReg'] = make_pipeline(XdawnCovariances(nfilter=4,
-                                                          classes=[labels_dict['Target']],
-                                                          estimator='lwf',
-                                                          xdawn_estimator='lwf'),
-                                         TangentSpace(),
-                                         LogisticRegression())
+pipelines['RG + LogReg'] = make_pipeline(
+    XdawnCovariances(
+        nfilter=4,
+        classes=[
+            labels_dict['Target']],
+        estimator='lwf',
+        xdawn_estimator='lwf'),
+    TangentSpace(),
+    LogisticRegression())
 
 pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=4, estimator='lwf'),
                                        Vectorizer(), LDA(solver='lsqr',

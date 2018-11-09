@@ -2,12 +2,14 @@ import os
 import logging
 import platform
 from datetime import datetime
-import pandas as pd
-from moabb.analysis import plotting as plt  # flake8: noqa
-from moabb.analysis.results import Results  # flake8: noqa
-from moabb.analysis.meta_analysis import find_significant_differences,compute_dataset_statistics # flake8: noqa
+from moabb.analysis import plotting as plt
+from moabb.analysis.results import Results  # noqa: F401
+from moabb.analysis.meta_analysis import (find_significant_differences,
+                                          compute_dataset_statistics)
+
 
 log = logging.getLogger()
+
 
 def analyze(results, out_path, name='analysis', plot=False):
     '''Analyze results.
@@ -30,7 +32,7 @@ def analyze(results, out_path, name='analysis', plot=False):
 
     '''
     # input checks #
-    if type(out_path) is not str:
+    if not isinstance(out_path, str):
         raise ValueError('Given out_path argument is not string')
     elif not os.path.isdir(out_path):
         raise IOError('Given directory does not exist')
@@ -42,7 +44,8 @@ def analyze(results, out_path, name='analysis', plot=False):
     print(unique_ids)
     print(set(unique_ids))
     if len(unique_ids) != len(set(unique_ids)):
-        log.warning('Pipeline names are too similar, turning off name shortening')
+        log.warning(
+            'Pipeline names are too similar, turning off name shortening')
         simplify = False
 
     os.makedirs(analysis_path, exist_ok=True)

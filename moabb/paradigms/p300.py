@@ -94,7 +94,7 @@ class BaseP300(BaseParadigm):
         # pick events, based on event_id
         try:
             events = mne.pick_events(events, include=list(event_id.values()))
-        except RuntimeError as r:
+        except RuntimeError:
             # skip raw if no event found
             return
 
@@ -205,7 +205,7 @@ class P300(SinglePass):
         super().__init__(events=['Target', 'NonTarget'], **kwargs)
 
     def used_events(self, dataset):
-        return {ev: dataset.event_id[ev] for ev in self.events}        
+        return {ev: dataset.event_id[ev] for ev in self.events}
 
     @property
     def scoring(self):
@@ -218,5 +218,4 @@ class FakeP300Paradigm(P300):
 
     @property
     def datasets(self):
-        return [FakeDataset(['Target', 'NonTarget'])]
-
+        return [FakeDataset(['Target', 'NonTarget'], paradigm='p300')]
