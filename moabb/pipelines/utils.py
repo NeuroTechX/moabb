@@ -78,6 +78,8 @@ class FilterBank(BaseEstimator, TransformerMixin):
             return np.stack(out, axis=2)
 
     def __repr__(self):
-        return '{}(estimator={}, flatten={})'.format(type(self).__name__,
-                                                     self.estimator.get_params(), # flake8: noqa
+        estimator_name = type(self).__name__
+        estimator_prms = self.estimator.get_params()
+        return '{}(estimator={}, flatten={})'.format(estimator_name,
+                                                     estimator_prms,
                                                      self.flatten)

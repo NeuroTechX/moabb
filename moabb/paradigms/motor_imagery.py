@@ -94,7 +94,7 @@ class BaseMotorImagery(BaseParadigm):
         # pick events, based on event_id
         try:
             events = mne.pick_events(events, include=list(event_id.values()))
-        except RuntimeError as r:
+        except RuntimeError:
             # skip raw if no event found
             return
 
@@ -430,4 +430,4 @@ class FakeImageryParadigm(LeftRightImagery):
 
     @property
     def datasets(self):
-        return [FakeDataset(['left_hand', 'right_hand'])]
+        return [FakeDataset(['left_hand', 'right_hand'], paradigm='imagery')]

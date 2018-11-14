@@ -12,6 +12,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import moabb
 import sphinx_bootstrap_theme
 import sphinx_gallery
 import os
@@ -19,7 +20,6 @@ import sys
 import matplotlib
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../../'))
-import moabb
 
 
 matplotlib.use('Agg')
@@ -68,9 +68,9 @@ plot_html_show_formats = False
 plot_html_show_source_link = False
 
 sphinx_gallery_conf = {
-   'examples_dirs': ['../../examples', '../../tutorials'],
-   'gallery_dirs': ['auto_examples', 'auto_tutorials'],
-   'backreferences_dir': False}
+    'examples_dirs': ['../../examples', '../../tutorials'],
+    'gallery_dirs': ['auto_examples', 'auto_tutorials'],
+    'backreferences_dir': False}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
