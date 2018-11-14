@@ -1,4 +1,3 @@
-
 from sklearn.svm import SVC
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP

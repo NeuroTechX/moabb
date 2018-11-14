@@ -1,4 +1,3 @@
-
 from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
 from pyriemann.estimation import Covariances
