@@ -2,6 +2,7 @@ import os
 import platform
 from datetime import datetime
 from moabb.analysis import plotting as plt  # noqa: E501
+from moabb.analysis.results import Results  # noqa: E501,F401
 from moabb.analysis.meta_analysis import find_significant_differences, compute_dataset_statistics  # noqa: E501
 
 
