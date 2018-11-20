@@ -79,5 +79,5 @@ class FilterBank(BaseEstimator, TransformerMixin):
 
     def __repr__(self):
         return '{}(estimator={}, flatten={})'.format(type(self).__name__,
-                                                     self.estimator.get_params(), # flake8: noqa
+                                                     self.estimator.get_params(),  # noqa: E501
                                                      self.flatten)

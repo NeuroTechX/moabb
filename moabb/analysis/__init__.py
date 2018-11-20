@@ -1,10 +1,8 @@
 import os
 import platform
 from datetime import datetime
-import pandas as pd
-from moabb.analysis import plotting as plt  # flake8: noqa
-from moabb.analysis.results import Results  # flake8: noqa
-from moabb.analysis.meta_analysis import find_significant_differences,compute_dataset_statistics # flake8: noqa
+from moabb.analysis import plotting as plt  # noqa: E501
+from moabb.analysis.meta_analysis import find_significant_differences, compute_dataset_statistics  # noqa: E501
 
 
 def analyze(results, out_path, name='analysis', plot=False):

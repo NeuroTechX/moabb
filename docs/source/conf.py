@@ -13,13 +13,12 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import sphinx_bootstrap_theme
-import sphinx_gallery
 import os
 import sys
 import matplotlib
+import moabb  # noqa: F401
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../../'))
-import moabb
 
 
 matplotlib.use('Agg')
