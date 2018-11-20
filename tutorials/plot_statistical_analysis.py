@@ -14,7 +14,7 @@ they can be used.
 import moabb
 import matplotlib.pyplot as plt
 import moabb.analysis.plotting as moabb_plt
-from moabb.analysis.meta_analysis import find_significant_differences, compute_dataset_statistics  # flake8: noqa
+from moabb.analysis.meta_analysis import find_significant_differences, compute_dataset_statistics  # noqa: E501
 
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import LogisticRegression
@@ -125,7 +125,7 @@ plt.show()
 stats = compute_dataset_statistics(results)
 P, T = find_significant_differences(stats)
 
-################################################################################
+###############################################################################
 # The meta-analysis style plot shows the standardized mean difference within
 # each tested dataset for the two algorithms in question, in addition to a
 # meta-effect and significances both per-dataset and overall.
@@ -133,7 +133,7 @@ fig = moabb_plt.meta_analysis_plot(stats, 'CSP + LDA', 'RG + LDA')
 plt.show()
 
 
-################################################################################
+###############################################################################
 # The summary plot shows the effect and significance related to the hypothesis
 # that the algorithm on the y-axis significantly out-performed the algorithm on
 # the x-axis over all datasets

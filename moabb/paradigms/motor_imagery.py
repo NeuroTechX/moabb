@@ -94,7 +94,7 @@ class BaseMotorImagery(BaseParadigm):
         # pick events, based on event_id
         try:
             events = mne.pick_events(events, include=list(event_id.values()))
-        except RuntimeError as r:
+        except RuntimeError:
             # skip raw if no event found
             return
 
@@ -186,6 +186,7 @@ class SinglePass(BaseMotorImagery):
         If not None, resample the eeg data with the sampling rate provided.
 
     """
+
     def __init__(self, fmin=8, fmax=32, **kwargs):
         if 'filters' in kwargs.keys():
             raise(ValueError("MotorImagery does not take argument filters"))
