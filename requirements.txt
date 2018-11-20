@@ -2,7 +2,7 @@ scikit-learn
 mne
 pyriemann
 matplotlib
-seaborn=0.8.1
+seaborn==0.8.1
 h5py
 pandas
 pyyaml
