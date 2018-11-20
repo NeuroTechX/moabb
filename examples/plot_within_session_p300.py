@@ -73,7 +73,7 @@ labels_dict = {'Target': 1, 'NonTarget': 0}
 
 pipelines['RG + LogReg'] = make_pipeline(
     XdawnCovariances(
-        nfilter=4,
+        nfilter=2,
         classes=[
             labels_dict['Target']],
         estimator='lwf',
@@ -81,7 +81,7 @@ pipelines['RG + LogReg'] = make_pipeline(
     TangentSpace(),
     LogisticRegression())
 
-pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=4, estimator='lwf'),
+pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=2, estimator='lwf'),
                                        Vectorizer(), LDA(solver='lsqr',
                                                          shrinkage='auto'))
 
@@ -98,9 +98,13 @@ pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=4, estimator='lwf'),
 # be overwritten if necessary.
 
 paradigm = P300()
+# It is possible to use the full paradigm.datasets here, but for the sake of
+# runtime we limit the number of examples
+dsets = paradigm.datasets[0]
+dsets.subject_list = dsets.subject_list[:3]
 overwrite = True  # set to True if we want to overwrite cached results
 evaluation = WithinSessionEvaluation(paradigm=paradigm,
-                                     datasets=paradigm.datasets,
+                                     datasets=dsets,
                                      suffix='examples', overwrite=overwrite)
 
 results = evaluation.process(pipelines)
