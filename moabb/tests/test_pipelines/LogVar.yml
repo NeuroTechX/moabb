@@ -2,6 +2,7 @@ name: Log Variance LDA
 
 paradigms:
   - FakeImageryParadigm
+  - FakeP300Paradigm
 
 pipeline:
   - name: LogVariance
