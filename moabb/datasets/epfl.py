@@ -204,5 +204,4 @@ class EPFLP300(BaseDataset):
         subject_paths = glob.glob(
             path_folder + pattern)
 
-
         return subject_paths
