@@ -8,7 +8,7 @@ import glob
 import zipfile
 import yaml
 
-BI2013a_URL = 'https://sandbox.zenodo.org/record/248677/files/'
+BI2013a_URL = 'https://zenodo.org/record/1494240/files/'
 
 class BrainInvaders2013a(BaseDataset):
     '''P300 dataset from a Brain Invaders experiment in 2013.
@@ -90,22 +90,9 @@ class BrainInvaders2013a(BaseDataset):
 
             raw_original = mne.io.read_raw_edf(file_path,
                                                montage='standard_1020',
-                                               preload=True,
-                                               verbose='ERROR')
+                                               preload=True)
 
-            # this is just to correct for a problem on the flashing codes
-            d_original,_ = raw_original[:,:]
-            [n_events, pos, typ, chn, dur] = raw_original.find_edf_events()
-            stim_aux = np.zeros(d_original.shape[1])
-            stim_aux[pos[typ == 33285]] = 33285
-            stim_aux[pos[typ == 33286]] = 33286
-            d_filtered = np.copy(d_original)
-            d_filtered[-1,:] = stim_aux
-            raw_filtered = mne.io.RawArray(d_filtered,
-                                           raw_original.info,
-                                           verbose=False)
-
-            sessions[session_name][run_name] = raw_filtered
+            sessions[session_name][run_name] = raw_original
 
         return sessions
 
@@ -124,10 +111,10 @@ class BrainInvaders2013a(BaseDataset):
         if not(os.path.isdir(path_folder + 'subject{:d}/'.format(subject))):
             print('unzip', path_zip)
             zip_ref = zipfile.ZipFile(path_zip,"r")
-            zip_ref.extractall(path_folder + 'subject{:d}/'.format(subject))
+            zip_ref.extractall(path_folder)
 
         #filter the data regarding the experimental conditions
-        meta_file = 'subject{:d}/Session1/meta.yml'.format(subject)
+        meta_file = 'subject{:d}/meta.yml'.format(subject)
         meta_path = path_folder + meta_file
         with open(meta_path, 'r') as stream:
             meta = yaml.load(stream)
