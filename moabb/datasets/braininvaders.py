@@ -128,12 +128,12 @@ class bi2013a(BaseDataset):
         sessions = {}
         for file_path in file_path_list:
 
-            session_number = file_path.split('/')[-2].strip('Session')
+            session_number = file_path.split(os.sep)[-2].strip('Session')
             session_name = 'session_' + session_number
             if session_name not in sessions.keys():
                 sessions[session_name] = {}
 
-            run_number = file_path.split('/')[-1]
+            run_number = file_path.split(os.sep)[-1]
             run_number = run_number.split('_')[-1]
             run_number = run_number.split('.gdf')[0]
             run_name = 'run_' + run_number
@@ -158,13 +158,13 @@ class bi2013a(BaseDataset):
         path_folder = path_zip.strip('subject{:d}.zip'.format(subject))
 
         # check if has to unzip
-        if not(os.path.isdir(path_folder + 'subject{:d}/'.format(subject))):
+        if not(os.path.isdir(path_folder + 'subject{:d}'.format(subject))):
             print('unzip', path_zip)
             zip_ref = zipfile.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)
 
         # filter the data regarding the experimental conditions
-        meta_file = 'subject{:d}/meta.yml'.format(subject)
+        meta_file = os.path.join('subject{:d}'.format(subject), 'meta.yml')
         meta_path = path_folder + meta_file
         with open(meta_path, 'r') as stream:
             meta = yaml.load(stream)
@@ -189,6 +189,5 @@ class bi2013a(BaseDataset):
         subject_paths = []
         for filename in filenames:
             subject_paths = subject_paths + \
-                glob.glob(path_folder + 'subject{:d}/Session*/'.format(subject) + filename) # noqa
-
+                glob.glob(os.path.join(path_folder, 'subject{:d}'.format(subject), 'Session*', filename)) # noqa
         return subject_paths
