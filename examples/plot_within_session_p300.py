@@ -74,7 +74,7 @@ labels_dict = {'Target': 1, 'NonTarget': 0}
 
 pipelines['RG + LogReg'] = make_pipeline(
     XdawnCovariances(
-        nfilter=4,
+        nfilter=2,
         classes=[
             labels_dict['Target']],
         estimator='lwf',
@@ -82,7 +82,7 @@ pipelines['RG + LogReg'] = make_pipeline(
     TangentSpace(),
     LogisticRegression())
 
-pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=4, estimator='lwf'),
+pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=2, estimator='lwf'),
                                        Vectorizer(), LDA(solver='lsqr',
                                                          shrinkage='auto'))
 
