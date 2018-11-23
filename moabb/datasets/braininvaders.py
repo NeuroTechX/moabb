@@ -1,14 +1,13 @@
 import mne
 from moabb.datasets.base import BaseDataset
 from moabb.datasets import download as dl
-from mne.io import read_raw_edf
-import numpy as np
 import os
 import glob
 import zipfile
 import yaml
 
 BI2013a_URL = 'https://zenodo.org/record/1494240/files/'
+
 
 class BrainInvaders2013a(BaseDataset):
     '''P300 dataset from a Brain Invaders experiment in 2013.
@@ -55,16 +54,20 @@ class BrainInvaders2013a(BaseDataset):
            Geometry, 2014, Available at arXiv (ref. arXiv:1409.0107)
     '''
 
-    def __init__(self, NonAdaptive=True, Adaptive=False,
-                       Training=True, Online=False):
+    def __init__(
+            self,
+            NonAdaptive=True,
+            Adaptive=False,
+            Training=True,
+            Online=False):
         super().__init__(
-        subjects=list(range(1,24+1)),
-        sessions_per_subject='varying',
-        events=dict(Target=33285, NonTarget=33286),
-        code='Brain Invaders 2013a',
-        interval=[0, 1],
-        paradigm='p300',
-        doi='')
+            subjects=list(range(1, 24 + 1)),
+            sessions_per_subject='varying',
+            events=dict(Target=33285, NonTarget=33286),
+            code='Brain Invaders 2013a',
+            interval=[0, 1],
+            paradigm='p300',
+            doi='')
 
         self.adaptive = Adaptive
         self.nonadaptive = NonAdaptive
@@ -102,18 +105,18 @@ class BrainInvaders2013a(BaseDataset):
         if subject not in self.subject_list:
             raise(ValueError("Invalid subject number"))
 
-        #check if has the .zip
+        # check if has the .zip
         url = '{:s}subject{:d}.zip'.format(BI2013a_URL, subject)
         path_zip = dl.data_path(url, 'BRAININVADERS')
         path_folder = path_zip.strip('subject{:d}.zip'.format(subject))
 
-        #check if has to unzip
+        # check if has to unzip
         if not(os.path.isdir(path_folder + 'subject{:d}/'.format(subject))):
             print('unzip', path_zip)
-            zip_ref = zipfile.ZipFile(path_zip,"r")
+            zip_ref = zipfile.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)
 
-        #filter the data regarding the experimental conditions
+        # filter the data regarding the experimental conditions
         meta_file = 'subject{:d}/meta.yml'.format(subject)
         meta_path = path_folder + meta_file
         with open(meta_path, 'r') as stream:
@@ -135,10 +138,10 @@ class BrainInvaders2013a(BaseDataset):
             if (run_condition in conditions) and (run_type in types):
                 filenames = filenames + [run['filename']]
 
-        #list the filepaths for this subject
+        # list the filepaths for this subject
         subject_paths = []
         for filename in filenames:
-            subject_paths = subject_paths + glob.glob(
-            path_folder + 'subject{:d}/Session*/'.format(subject) + filename)
+            subject_paths = subject_paths + \
+                glob.glob(path_folder + 'subject{:d}/Session*/'.format(subject) + filename) # noqa
 
         return subject_paths
