@@ -167,6 +167,7 @@ class EPFLP300(BaseDataset):
 
             session_name = 'session_' + \
                 file_path.split(os.sep)[-2].strip('session')
+
             if session_name not in sessions.keys():
                 sessions[session_name] = {}
 
@@ -202,5 +203,6 @@ class EPFLP300(BaseDataset):
         pattern = os.path.join('subject{:d}'.format(subject), '*', '*')
         subject_paths = glob.glob(
             path_folder + pattern)
+
 
         return subject_paths

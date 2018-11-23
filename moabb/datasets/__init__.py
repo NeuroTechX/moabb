@@ -18,3 +18,4 @@ from .mpi_mi import MunichMI
 from .schirrmeister2017 import Schirrmeister2017
 from .epfl import EPFLP300
 from .braininvaders import bi2013a
+
