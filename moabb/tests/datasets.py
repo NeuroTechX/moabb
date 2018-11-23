@@ -27,25 +27,28 @@ class Test_Datasets(unittest.TestCase):
         n_subjects = 3
         n_sessions = 2
         n_runs = 2
-        ds = FakeDataset(n_sessions=n_sessions, n_runs=n_runs,
-                         n_subjects=n_subjects)
-        data = ds.get_data()
 
-        # we should get a dict
-        self.assertTrue(isinstance(data, dict))
+        for paradigm in ['imagery', 'p300']:
 
-        # we get the right number of subject
-        self.assertEqual(len(data), n_subjects)
+            ds = FakeDataset(n_sessions=n_sessions, n_runs=n_runs,
+                             n_subjects=n_subjects, paradigm=paradigm)
+            data = ds.get_data()
 
-        # right number of session
-        self.assertEqual(len(data[1]), n_sessions)
+            # we should get a dict
+            self.assertTrue(isinstance(data, dict))
 
-        # right number of run
-        self.assertEqual(len(data[1]['session_0']), n_runs)
+            # we get the right number of subject
+            self.assertEqual(len(data), n_subjects)
 
-        # We should get a raw array at the end
-        self.assertEqual(type(data[1]['session_0']['run_0']),
-                         mne.io.RawArray)
+            # right number of session
+            self.assertEqual(len(data[1]), n_sessions)
 
-        # bad subject id must raise error
-        self.assertRaises(ValueError, ds.get_data, [1000])
+            # right number of run
+            self.assertEqual(len(data[1]['session_0']), n_runs)
+
+            # We should get a raw array at the end
+            self.assertEqual(type(data[1]['session_0']['run_0']),
+                             mne.io.RawArray)
+
+            # bad subject id must raise error
+            self.assertRaises(ValueError, ds.get_data, [1000])

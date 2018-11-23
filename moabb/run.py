@@ -189,7 +189,7 @@ if __name__ == '__main__':
     all_results = []
     for paradigm in paradigms:
         # get the context
-        if len(context_params) == 0:
+        if paradigm not in context_params.keys():
             context_params[paradigm] = {}
         log.debug('{}: {}'.format(paradigm, context_params[paradigm]))
         p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
