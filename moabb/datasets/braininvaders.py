@@ -25,10 +25,10 @@ class bi2013a(BaseDataset):
 
     The experiment uses the Brain Invaders P300-based Brain-Computer Interface
     [7], which uses the Open-ViBE platform for on-line EEG data acquisition and
-    processing [1, 9]. For classification purposes the Brain Invaders implements
-    on-line Riemannian MDM classifiers [2, 3, 4, 6]. This experiment features
-    both a training-test (classical) mode of operation and a calibration-less
-    mode of operation [4, 5, 6].
+    processing [1, 9]. For classification purposes the Brain Invaders
+    implements on-line Riemannian MDM classifiers [2, 3, 4, 6]. This experiment
+    features both a training-test (classical) mode of operation and a
+    calibration-less mode of operation [4, 5, 6].
 
     The recordings concerned 24 subjects in total. Subjects 1 to 7 participated
     to eight sessions, run in different days, subject 8 to 24 participated to
@@ -44,10 +44,10 @@ class bi2013a(BaseDataset):
     data using the Riemannian method explained in [4]. Subjects were completely
     blind to the mode of operation and the two runs appeared to them identical.
 
-    In the Brain Invaders P300 paradigm, a repetition is composed of 12 flashes,
-    of which 2 include the Target symbol (Target flashes) and 10 do not
-    (non-Target flash). Please see [7] for a description of the paradigm. For
-    this experiment, in the Training phases the number of flashes is fixed
+    In the Brain Invaders P300 paradigm, a repetition is composed of 12
+    flashes, of which 2 include the Target symbol (Target flashes) and 10 do
+    not (non-Target flash). Please see [7] for a description of the paradigm.
+    For this experiment, in the Training phases the number of flashes is fixed
     (80 Target flashes and 400 non-Target flashes). In the Online phases the
     number of Target and non-Target still are in a ratio 1/5, however their
     number is variable because the Brain Invaders works with a fixed number of
