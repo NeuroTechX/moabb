@@ -54,7 +54,7 @@ def dataset_search(paradigm, multi_session=False, events=None,
     n_classes = total_classes
     if events is not None and has_all_events:
         n_classes = len(events)
-    assert paradigm in ['imagery', 'p300']
+    assert paradigm in ['imagery', 'p300', 'ssvep']
     if paradigm == 'p300':
         raise Exception('SORRY NOBDOYS GOTTEN AROUND TO THIS YET')
 
