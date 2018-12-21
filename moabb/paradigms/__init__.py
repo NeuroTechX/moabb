@@ -7,3 +7,4 @@ paradigms.
 """
 # flake8: noqa
 from moabb.paradigms.motor_imagery import *
+from moabb.paradigms.ssvep import BaseSSVEP
