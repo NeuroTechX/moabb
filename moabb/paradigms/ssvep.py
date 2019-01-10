@@ -123,8 +123,8 @@ class BaseSSVEP(BaseParadigm):
             self.filters = [[float(f)-0.5, float(f)+0.5]
                             for f in freq_id.keys()
                             if f.replace('.','',1).isnumeric()]
-            if self.n_classes is None:
-                self.filters.append([1, 45])
+            # if self.n_classes is None:
+            self.filters.append([1, 45])
 
         X = []
         for bandpass in self.filters:
