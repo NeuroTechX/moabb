@@ -1,7 +1,8 @@
 import unittest
 
 from moabb.datasets.fake import FakeDataset
-from moabb.paradigms import (LeftRightImagery, BaseMotorImagery,
+from moabb.paradigms import (BaseSSVEP,
+                             LeftRightImagery, BaseMotorImagery,
                              FilterBankMotorImagery,
                              FilterBankLeftRightImagery)
 
@@ -94,3 +95,49 @@ class Test_MotorImagery(unittest.TestCase):
         # X must be a 3D Array
         self.assertEquals(len(X.shape), 4)
         self.assertEquals(X.shape[-1], 6)
+
+
+class Test_SSVEP(unittest.TestCase):
+
+    def test_BaseSSVEP_paradigm(self):
+
+        class SimpleSSVEP(BaseSSVEP):
+            
+            def used_events(self, dataset):
+                return dataset.event_id
+
+        self.assertRaises(ValueError, SimpleSSVEP, tmin=1, tmax=0)
+
+        paradigm = SimpleSSVEP()
+        dataset = FakeDataset(paradigm='ssvep')
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        # Verify that they have the same length
+        self.assertEquals(len(X), len(labels), len(metadata))
+        # X must be a 3D Array
+        self.assertEquals(len(X.shape), 3)
+        # labels must contain 3 values
+        self.assertEquals(len(np.unique(labels)), 3)
+
+        # metadata must have subjets, sessions, runs
+        self.assertTrue('subject' in metadata.columns)
+        self.assertTrue('session' in metadata.columns)
+        self.assertTrue('run' in metadata.columns)
+
+        # Only one subject in the metadata
+        self.assertEquals(np.unique(metadata.subject), 1)
+
+        # we should have two sessions in the metadata
+        self.assertEquals(len(np.unique(metadata.session)), 2)
+
+        # Accept filters
+        paradigm = SimpleSSVEP(filters=[[10.5, 11.5], [12.5, 13.5]])
+        dataset = FakeDataset(paradigm='ssvep')
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+        # X must be a 3D Array
+        self.assertEquals(len(X.shape), 4)
+        self.assertEquals(X.shape[-1], 2)
+
+
+
+        

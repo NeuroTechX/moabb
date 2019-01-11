@@ -2,6 +2,7 @@ name: Log Variance LDA
 
 paradigms:
   - FakeImageryParadigm
+  - FakeSSVEPParadigm
 
 pipeline:
   - name: LogVariance
