@@ -36,9 +36,10 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
 moabb.set_log_level('info')
 
-# We will need some auxiliary transformers for filtering the signal appropriately.
+# We will need some auxiliary transformers for filtering the signal.
 # The first auxiliary transformer allows to get only the signal filtered around
 # stim freq [f-0.5, f+0.5] Hz
+
 
 class FilteredSignal(BaseEstimator, TransformerMixin):
 
@@ -56,7 +57,9 @@ class FilteredSignal(BaseEstimator, TransformerMixin):
         out = out.reshape((n_trials, n_channels * n_freqs, n_times))
         return out
 
-# This second auxiliary transformer apply a broadband filter (1-45 Hz) on the signal
+# This second auxiliary transformer apply a broadband filter (1-45 Hz) on
+# the signal
+
 
 class BroadbandSignal(BaseEstimator, TransformerMixin):
 
@@ -74,30 +77,34 @@ class BroadbandSignal(BaseEstimator, TransformerMixin):
 # The following class define a SSVEP CCA classifier, where the CCA is computed
 # from the set of training signals and some pure sinusoids to act as reference.
 # Classification is made by taking the frequency with the max correlation.
-    
+
+
 class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
     def __init__(self, interval, freqs, n_harmonics=3):
         self.Yf = dict()
         self.cca = CCA(n_components=1)
         self.slen = interval[1] - interval[0]
-        self.freqs =  freqs 
+        self.freqs = freqs
         self.n_harmonics = n_harmonics
         self.one_hot = {}
-        for i, k in enumerate(freqs.keys()): self.one_hot[k] = i
+        for i, k in enumerate(freqs.keys()):
+            self.one_hot[k] = i
 
     def fit(self, X, y, sample_weight=None):
         """fit."""
         # n_trials, n_channels, n_times = X.shape
         n_times = X.shape[2]
-        
+
         for f in self.freqs:
-            if f.replace('.','',1).isnumeric():
+            if f.replace('.', '', 1).isnumeric():
                 freq = float(f)
                 yf = []
-                for h in range(1, self.n_harmonics+1):
-                    yf.append(np.sin(2*np.pi*freq*h*np.linspace(0, self.slen, n_times)))
-                    yf.append(np.cos(2*np.pi*freq*h*np.linspace(0, self.slen, n_times)))
+                for h in range(1, self.n_harmonics + 1):
+                    yf.append(np.sin(2 * np.pi * freq * h *
+                                     np.linspace(0, self.slen, n_times)))
+                    yf.append(np.cos(2 * np.pi * freq * h *
+                                     np.linspace(0, self.slen, n_times)))
                 self.Yf[f] = np.array(yf)
         return self
 
@@ -107,9 +114,9 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         for i, x in enumerate(X):
             corr_f = {}
             for f in self.freqs:
-                if f.replace('.','',1).isnumeric():
+                if f.replace('.', '', 1).isnumeric():
                     S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
-                    corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0,1]
+                    corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0, 1]
             y.append(self.one_hot[max(corr_f, key=lambda k: corr_f[k])])
         return y
 
@@ -118,15 +125,16 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         P = np.zeros(shape=(len(X), len(self.freqs)))
         for i, x in enumerate(X):
             for j, f in enumerate(self.freqs):
-                if f.replace('.','',1).isnumeric():
+                if f.replace('.', '', 1).isnumeric():
                     S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
-                    P[i, j] = np.corrcoef(S_x.T, S_y.T)[0,1]
+                    P[i, j] = np.corrcoef(S_x.T, S_y.T)[0, 1]
         return P / np.resize(P.sum(axis=1), P.T.shape).T
 
 
 # Loading the SSVEP paradigm and the SSVEP Exo dataset, restricting to
 # the first two classes (here 13 and 17 Hz) and the first 10 subjects.
-paradigm = BaseSSVEP(n_classes=2) 
+paradigm = BaseSSVEP(n_classes=2)
+SSVEPExo().download(update_path=True, verbose=False)
 datasets = [SSVEPExo()]
 datasets[0].subject_list = datasets[0].subject_list[:10]
 X, y, metadata = paradigm.get_data(dataset=datasets[0])
@@ -185,9 +193,9 @@ results = evaluation.process(pipelines)
 
 fig, ax = plt.subplots(facecolor='white', figsize=[8, 4])
 sns.stripplot(data=results, y='score', x='pipeline', ax=ax, jitter=True,
-                                alpha=.5, zorder=1, palette="Set1")
+              alpha=.5, zorder=1, palette="Set1")
 sns.pointplot(data=results, y='score', x='pipeline', ax=ax,
-                                zorder=1, palette="Set1")
+              zorder=1, palette="Set1")
 ax.set_ylabel('Accuracy')
 ax.set_ylim(0.3, 1.0)
 plt.savefig('ssvep.png')
