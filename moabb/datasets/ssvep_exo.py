@@ -7,8 +7,8 @@ from mne.io import Raw
 
 from . import download as dl
 
-# SSVEPEXO_URL = 'https://github.com/sylvchev/dataset-ssvep-exoskeleton/raw/master/'
 SSVEPEXO_URL = 'https://zenodo.org/record/2392979/files/'
+
 
 class SSVEPExo(BaseDataset):
     """SSVEP Exo dataset
@@ -18,11 +18,11 @@ class SSVEPExo(BaseDataset):
     The datasets contains recording from 12 male and female subjects aged
     between 20 and 28 years. Informed consent was obtained from all subjects,
     each one has signed a form attesting her or his consent. The subject sits
-    in an electric wheelchair, his right upper limb is resting on the 
+    in an electric wheelchair, his right upper limb is resting on the
     exoskeleton. The exoskeleton is functional but is not used during the
     recording of this experiment.
 
-    A panel of size 20x30 cm is attached on the left side of the chair, with 
+    A panel of size 20x30 cm is attached on the left side of the chair, with
     3 groups of 4 LEDs blinking at different frequencies. Even if the panel
     is on the left side, the user could see it without moving its head. The
     subjects were asked to sit comfortably in the wheelchair and to follow the
@@ -41,16 +41,16 @@ class SSVEPExo(BaseDataset):
 
     references
     ----------
-    [1] Emmanuel K. Kalunga, Sylvain Chevallier, Quentin Barthelemy. _Online 
-    SSVEP-based BCI using Riemannian Geometry_. Neurocomputing, 2016. 
-    arXiv research report on arXiv:1501.03227.    
+    .. [1] Emmanuel K. Kalunga, Sylvain Chevallier, Quentin Barthelemy. "Online
+           SSVEP-based BCI using Riemannian Geometry". Neurocomputing, 2016.
+           arXiv research report on arXiv:1501.03227.
     """
 
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=2,
-            events={'13':2, '17':3, '21':4, 'rest':1},
+            events={'13': 2, '17': 3, '21': 4, 'rest': 1},
             code='SSVEP Exoskeleton',
             interval=[2, 4],
             paradigm='ssvep',
@@ -68,16 +68,17 @@ class SSVEPExo(BaseDataset):
 
     def data_path(self, subject, path=None, force_update=False,
                   update_path=None, verbose=None):
-        
-        runs = {s+1:n for s, n in enumerate([2]*6+[3]+[2]*2+[4, 2, 5])}
-        
+
+        runs = {s + 1: n for s,
+                n in enumerate([2] * 6 + [3] + [2] * 2 + [4, 2, 5])}
+
         if subject not in self.subject_list:
             raise(ValueError("Invalid subject number"))
 
         paths = []
         for run in range(runs[subject]):
             url = '{:s}subject{:02d}_run{:d}_raw.fif'.format(SSVEPEXO_URL,
-                                                            subject, run+1)
+                                                             subject, run + 1)
             p = dl.data_path(url, 'SSVEPEXO', path, force_update, update_path,
                              verbose)
             paths.append(p)
