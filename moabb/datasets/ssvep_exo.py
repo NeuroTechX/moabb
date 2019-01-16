@@ -36,8 +36,9 @@ class SSVEPExo(BaseDataset):
     frequency (13Hz, 17Hz and 21Hz) and 8 trials for the reject class, i.e.
     when the subject is not focusing on any specific blinking LED.
 
-    There is between 2 and 5 sessions for each user, recorded on different days,
-    by the same operators, on the same hardware and in the same conditions.
+    There is between 2 and 5 sessions for each user, recorded on different
+    days, by the same operators, on the same hardware and in the same
+    conditions.
 
     references
     ----------

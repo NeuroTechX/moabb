@@ -102,7 +102,7 @@ class Test_SSVEP(unittest.TestCase):
     def test_BaseSSVEP_paradigm(self):
 
         class SimpleSSVEP(BaseSSVEP):
-            
+
             def used_events(self, dataset):
                 return dataset.event_id
 
@@ -137,7 +137,3 @@ class Test_SSVEP(unittest.TestCase):
         # X must be a 3D Array
         self.assertEquals(len(X.shape), 4)
         self.assertEquals(X.shape[-1], 2)
-
-
-
-        

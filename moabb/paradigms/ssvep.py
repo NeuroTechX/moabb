@@ -40,6 +40,7 @@ class BaseSSVEP(BaseParadigm):
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
     """
+
     def __init__(self, filters=None, freqs=None, tmin=0.0, tmax=None,
                  channels=None, n_classes=None, resample=None):
         super().__init__()
@@ -62,7 +63,7 @@ class BaseSSVEP(BaseParadigm):
             ret = False
         if self.freqs is None and self.n_classes is None:
             return ret
-        
+
         if self.freqs is None and self.n_classes is not None:
             if not len(dataset.event_id) >= self.n_classes:
                 ret = False
@@ -82,7 +83,7 @@ class BaseSSVEP(BaseParadigm):
                 if self.n_classes and len(out) == self.n_classes:
                     break
         else:
-            for freqs in self.freqs:
+            for freq in self.freqs:
                 if freq in dataset.event_id.keys():
                     out[freq] = dataset.event_id[freq]
                 if self.n_classes and len(out) == self.n_classes:
@@ -120,9 +121,9 @@ class BaseSSVEP(BaseParadigm):
 
         # get filters
         if self.filters is None:
-            self.filters = [[float(f)-0.5, float(f)+0.5]
+            self.filters = [[float(f) - 0.5, float(f) + 0.5]
                             for f in freq_id.keys()
-                            if f.replace('.','',1).isnumeric()]
+                            if f.replace('.', '', 1).isnumeric()]
             # if self.n_classes is None:
             self.filters.append([1, 45])
 
@@ -173,7 +174,7 @@ class BaseSSVEP(BaseParadigm):
             return 'roc_auc'
         else:
             return 'accuracy'
-    
+
 
 class FakeSSVEPParadigm(BaseSSVEP):
     """Fake SSVEP classification.
