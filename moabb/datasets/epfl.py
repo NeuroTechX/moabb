@@ -166,7 +166,8 @@ class EPFLP300(BaseDataset):
         for file_path in sorted(file_path_list):
 
             session_name = 'session_' + \
-                file_path.split('/')[-2].strip('session')
+                file_path.split(os.sep)[-2].strip('session')
+
             if session_name not in sessions.keys():
                 sessions[session_name] = {}
 
@@ -193,13 +194,14 @@ class EPFLP300(BaseDataset):
         path_folder = path_zip.strip('subject{:d}.zip'.format(subject))
 
         # check if has to unzip
-        if not(os.path.isdir(path_folder + 'subject{:d}/'.format(subject))):
+        if not(os.path.isdir(path_folder + 'subject{:d}'.format(subject))):
             print('unzip', path_zip)
             zip_ref = zipfile.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)
 
         # get the path to all files
+        pattern = os.path.join('subject{:d}'.format(subject), '*', '*')
         subject_paths = glob.glob(
-            path_folder + 'subject{:d}/*/*'.format(subject))
+            path_folder + pattern)
 
         return subject_paths

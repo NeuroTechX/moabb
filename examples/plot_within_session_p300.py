@@ -27,6 +27,7 @@ from pyriemann.tangentspace import TangentSpace
 from pyriemann.estimation import XdawnCovariances, Xdawn
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
+from moabb.datasets import EPFLP300
 import moabb
 import numpy as np
 import seaborn as sns
@@ -98,15 +99,11 @@ pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=2, estimator='lwf'),
 # be overwritten if necessary.
 
 paradigm = P300()
-# It is possible to use the full paradigm.datasets here, but for the sake of
-# runtime we limit the number of examples
-dsets = paradigm.datasets[0]
-dsets.subject_list = dsets.subject_list[:3]
+dataset = EPFLP300()
 overwrite = True  # set to True if we want to overwrite cached results
 evaluation = WithinSessionEvaluation(paradigm=paradigm,
-                                     datasets=dsets,
+                                     datasets=dataset,
                                      suffix='examples', overwrite=overwrite)
-
 results = evaluation.process(pipelines)
 
 ##############################################################################
