@@ -20,7 +20,6 @@ We will use the P300 paradigm, which uses the AUC as metric.
 
 # getting rid of the warnings about the future (on s'en fout !)
 from sklearn.pipeline import make_pipeline
-from sklearn.linear_model import LogisticRegression
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.base import BaseEstimator, TransformerMixin
 from pyriemann.tangentspace import TangentSpace
@@ -56,7 +55,7 @@ class Vectorizer(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         """transform. """
-        return np.reshape(X, (len(X), -1))
+        return np.reshape(X, (X.shape[0], -1))
 
 ##############################################################################
 # Create pipelines
@@ -72,7 +71,7 @@ pipelines = {}
 # to 0 and 1
 labels_dict = {'Target': 1, 'NonTarget': 0}
 
-pipelines['RG + LogReg'] = make_pipeline(
+pipelines['RG + LDA'] = make_pipeline(
     XdawnCovariances(
         nfilter=2,
         classes=[
@@ -80,7 +79,7 @@ pipelines['RG + LogReg'] = make_pipeline(
         estimator='lwf',
         xdawn_estimator='lwf'),
     TangentSpace(),
-    LogisticRegression())
+    LDA(solver='lsqr', shrinkage='auto'))
 
 pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=2, estimator='lwf'),
                                        Vectorizer(), LDA(solver='lsqr',
@@ -98,11 +97,13 @@ pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=2, estimator='lwf'),
 # will not run again the evaluation unless a parameter has changed. Results can
 # be overwritten if necessary.
 
-paradigm = P300()
+paradigm = P300(resample=128)
 dataset = EPFLP300()
+dataset.subject_list = dataset.subject_list[:2]
+datasets = [dataset]
 overwrite = True  # set to True if we want to overwrite cached results
 evaluation = WithinSessionEvaluation(paradigm=paradigm,
-                                     datasets=dataset,
+                                     datasets=datasets,
                                      suffix='examples', overwrite=overwrite)
 results = evaluation.process(pipelines)
 
