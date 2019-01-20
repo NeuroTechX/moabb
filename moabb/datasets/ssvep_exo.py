@@ -61,7 +61,7 @@ class SSVEPExo(BaseDataset):
         """Return the data of a single subject"""
 
         out = {}
-        paths = self.data_path(subject)
+        paths = self.data_path(subject, update_path=True, verbose=False)
         for ii, path in enumerate(paths):
             raw = Raw(path, preload=True, verbose='ERROR')
             out['run_%d' % ii] = raw
