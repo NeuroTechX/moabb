@@ -134,9 +134,12 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 # Loading the SSVEP paradigm and the SSVEP Exo dataset, restricting to
 # the first two classes (here 13 and 17 Hz) and the first 10 subjects.
 paradigm = BaseSSVEP(n_classes=3)
-SSVEPExo().download(update_path=True, verbose=False)
+n_subject = 2
+for i in range(n_subject):
+    SSVEPExo()._get_single_subject_data(i + 1)
+# SSVEPExo().download(update_path=True, verbose=False)
 datasets = [SSVEPExo()]
-datasets[0].subject_list = datasets[0].subject_list[:2]
+datasets[0].subject_list = datasets[0].subject_list[:n_subject]
 X, y, metadata = paradigm.get_data(dataset=datasets[0])
 interval = datasets[0].interval
 
