@@ -138,17 +138,17 @@ n_subject = 2
 for i in range(n_subject):
     SSVEPExo()._get_single_subject_data(i + 1)
 # SSVEPExo().download(update_path=True, verbose=False)
-datasets = [SSVEPExo()]
-datasets[0].subject_list = datasets[0].subject_list[:n_subject]
-X, y, metadata = paradigm.get_data(dataset=datasets[0])
-interval = datasets[0].interval
+datasets = SSVEPExo()
+datasets.subject_list = datasets.subject_list[:n_subject]
+X, y, metadata = paradigm.get_data(dataset=datasets)
+interval = datasets.interval
 
 # Classes are defined by the frequency of the stimulation, here we use
 # the first two frequencies of the dataset, 13 and 17 Hz.
 # The evaluation function uses a LabelEncoder, transforming them
 # to 0 and 1
 
-freqs = paradigm.used_freqs(datasets[0])
+freqs = paradigm.used_freqs(datasets)
 
 ##############################################################################
 # Create pipelines
