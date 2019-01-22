@@ -22,7 +22,7 @@ def dataset_search(paradigm, multi_session=False, events=None,
     Parameters
     ----------
     paradigm: str
-        'imagery','p300',(more to come)
+        'imagery','p300','ssvep'
 
     multi_session: bool
         if True only returns datasets with more than one session per subject.
