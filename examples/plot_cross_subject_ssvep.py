@@ -2,7 +2,7 @@
 ===========================
 Cross Subject SSVEP
 ===========================
-This Example shows how to perform a cross subject analysis on a SSVEP dataset.
+This example shows how to perform a cross subject analysis on a SSVEP dataset.
 We will compare two pipelines :
 - Riemannian Geometry
 - CCA
@@ -21,25 +21,27 @@ from pyriemann.tangentspace import TangentSpace
 from pyriemann.estimation import Covariances
 
 from moabb.evaluations import CrossSubjectEvaluation
-from moabb.paradigms import BaseSSVEP
+from moabb.paradigms import SSVEP, FilterBankSSVEP
 from moabb.datasets import SSVEPExo
 import moabb
 
 import numpy as np
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import warnings
-
-# ------------------------------------------------------------------------------
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
 moabb.set_log_level('info')
 
-# We will need some auxiliary transformers for filtering the signal.
-# The first auxiliary transformer allows to get only the signal filtered around
-# stim freq [f-0.5, f+0.5] Hz
-
+###############################################################################
+# Auxiliary functions
+# -------------------
+#
+# We will need an auxiliary transformer for filtering the signal.
+# This auxiliary transformer allows to reshape the signal for building
+# extended covariances matrices
 
 class FilteredSignal(BaseEstimator, TransformerMixin):
 
@@ -52,32 +54,16 @@ class FilteredSignal(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         """transform. """
-        out = X[:, :, :, :-1].transpose((0, 3, 1, 2))
+        out = X.transpose((0, 3, 1, 2))
         n_trials, n_freqs, n_channels, n_times = out.shape
         out = out.reshape((n_trials, n_channels * n_freqs, n_times))
         return out
 
-# This second auxiliary transformer apply a broadband filter (1-45 Hz) on
-# the signal
-
-
-class BroadbandSignal(BaseEstimator, TransformerMixin):
-
-    def __init__(self):
-        pass
-
-    def fit(self, X, y):
-        """fit."""
-        return self
-
-    def transform(self, X):
-        """transform. """
-        return X[:, :, :, -1]
-
-# The following class define a SSVEP CCA classifier, where the CCA is computed
+###############################################################################
+# The following class defines a SSVEP CCA classifier, where the CCA is computed
 # from the set of training signals and some pure sinusoids to act as reference.
-# Classification is made by taking the frequency with the max correlation.
-
+# Classification is made by taking the frequency with the max correlation, as
+# proposed in Bin et al. (2009) https://doi.org/10.1088/1741-2560/6/4/046002
 
 class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
@@ -93,7 +79,6 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
     def fit(self, X, y, sample_weight=None):
         """fit."""
-        # n_trials, n_channels, n_times = X.shape
         n_times = X.shape[2]
 
         for f in self.freqs:
@@ -132,23 +117,27 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
 
 # Loading the SSVEP paradigm and the SSVEP Exo dataset, restricting to
-# the first two classes (here 13 and 17 Hz) and the first 10 subjects.
-paradigm = BaseSSVEP(n_classes=3)
+# the first three classes (here 13, 17 and 21 Hz) and the first 2 subjects.
+# Two paradigms are created, one for the CCA classification and another one
+# based on filter-bank decomposition for designing extended covariance
+# matrices.
+
+
 n_subject = 2
 for i in range(n_subject):
     SSVEPExo()._get_single_subject_data(i + 1)
-# SSVEPExo().download(update_path=True, verbose=False)
-datasets = SSVEPExo()
-datasets.subject_list = datasets.subject_list[:n_subject]
-X, y, metadata = paradigm.get_data(dataset=datasets)
-interval = datasets.interval
+dataset = SSVEPExo()
+dataset.subject_list = dataset.subject_list[:n_subject]
+interval = dataset.interval
+paradigm = SSVEP(fmin=10, fmax=25, n_classes=3)
+paradigm_fb = FilterBankSSVEP(filters=None, n_classes=3)
 
 # Classes are defined by the frequency of the stimulation, here we use
 # the first two frequencies of the dataset, 13 and 17 Hz.
 # The evaluation function uses a LabelEncoder, transforming them
 # to 0 and 1
 
-freqs = paradigm.used_freqs(datasets)
+freqs = paradigm.used_events(dataset)
 
 ##############################################################################
 # Create pipelines
@@ -158,18 +147,19 @@ freqs = paradigm.used_freqs(datasets)
 # The first pipeline uses Riemannian geometry, by building an extended
 # covariance matrices from the signal filtered around the considered
 # frequency and applying a logistic regression in the tangent plane.
-# The second pipeline reloes on the above defined CCA classifier.
+# The second pipeline relies on the above defined CCA classifier.
 
-pipelines = {}
-pipelines['RG + LogReg'] = make_pipeline(
+pipelines_fb = {}
+pipelines_fb['RG + LogReg'] = make_pipeline(
     FilteredSignal(),
     Covariances(estimator='lwf'),
     TangentSpace(),
     LogisticRegression(solver='lbfgs', multi_class='auto'))
 
+pipelines = {}
 pipelines['CCA'] = make_pipeline(
-    BroadbandSignal(),
     SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
+#    BroadbandSignal(),
 
 ##############################################################################
 # Evaluation
@@ -183,10 +173,22 @@ pipelines['CCA'] = make_pipeline(
 # will not run again the evaluation unless a parameter has changed. Results can
 # be overwritten if necessary.
 
-overwrite = True  # set to True if we want to overwrite cached results
+overwrite = False  # set to True if we want to overwrite cached results
+
 evaluation = CrossSubjectEvaluation(paradigm=paradigm,
-                                    datasets=datasets, overwrite=overwrite)
+                                    datasets=dataset, overwrite=overwrite)
 results = evaluation.process(pipelines)
+
+# Filter bank processing, determine automatically the filter from the
+# stimulation frequency values of events.
+evaluation_fb = CrossSubjectEvaluation(paradigm=paradigm_fb,
+                                    datasets=dataset, overwrite=overwrite)
+results_fb = evaluation_fb.process(pipelines_fb)
+
+###############################################################################
+# After processing the two, we simply concatenate the results.
+
+results = pd.concat([results, results_fb])
 
 ##############################################################################
 # Plot Results
