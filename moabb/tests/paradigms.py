@@ -67,6 +67,12 @@ class Test_MotorImagery(unittest.TestCase):
         raw._data[-1] *= 0
         self.assertIsNone(paradigm.process_raw(raw, dataset))
 
+    def test_BaseImagery_noevent(self):
+        # Assert error if events from paradigm and dataset dont overlap
+        paradigm = SimpleMotorImagery(events=['left_hand', 'right_hand'])
+        dataset = FakeDataset()
+        self.assertRaises(AssertionError, paradigm.get_data, dataset)
+
     def test_LeftRightImagery_paradigm(self):
         # with a good dataset
         paradigm = LeftRightImagery()
@@ -94,6 +100,10 @@ class Test_MotorImagery(unittest.TestCase):
         # X must be a 4D Array
         self.assertEqual(len(X.shape), 4)
         self.assertEqual(X.shape[-1], 6)
+
+    def test_FilterBankMotorImagery_moreclassesthanevent(self):
+        self.assertRaises(AssertionError, FilterBankMotorImagery, n_classes=3,
+                          events=['hands', 'feet'])
 
     def test_FilterBankLeftRightImagery_paradigm(self):
         # can work with filter bank
@@ -171,6 +181,16 @@ class Test_SSVEP(unittest.TestCase):
         dataset = FakeDataset(event_list=['13', '15'], paradigm='ssvep')
         self.assertRaises(ValueError, paradigm.get_data, dataset)
 
+    def test_BaseSSVEP_moreclassesthanevent(self):
+        self.assertRaises(AssertionError, BaseSSVEP, n_classes=3,
+                          events=['13.', '14.'])
+
+    def test_SSVEP_noevent(self):
+        # Assert error if events from paradigm and dataset dont overlap
+        paradigm = SSVEP(events=['11', '12'], n_classes=2)
+        dataset = FakeDataset(event_list=['13', '14'], paradigm='ssvep')
+        self.assertRaises(AssertionError, paradigm.get_data, dataset)
+
     def test_SSVEP_paradigm(self):
         paradigm = SSVEP(n_classes=None)
         dataset = FakeDataset(event_list=['13', '15', '17', '19'],
@@ -210,9 +230,8 @@ class Test_SSVEP(unittest.TestCase):
 
     def test_SSVEP_filter(self):
         # Do not accept multiple filters
-        self.assertRaises(
-            ValueError, SSVEP, filters=[
-                (10.5, 11.5), (12.5, 13.5)])
+        self.assertRaises(ValueError, SSVEP,
+                          filters=[(10.5, 11.5), (12.5, 13.5)])
 
     def test_FilterBankSSVEP_paradigm(self):
         # FilterBankSSVEP with all events

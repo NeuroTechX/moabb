@@ -68,8 +68,12 @@ class BaseSSVEP(BaseParadigm):
         ret = True
         if not (dataset.paradigm == 'ssvep'):
             ret = False
-        if self.events is None and self.n_classes is None:
-            return ret
+
+        # check if dataset has required events
+        if self.events:
+            if not set(self.events) <= set(dataset.event_id.keys()):
+                ret = False
+
         return ret
 
     def used_events(self, dataset):
