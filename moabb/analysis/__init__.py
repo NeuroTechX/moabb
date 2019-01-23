@@ -4,9 +4,8 @@ import platform
 from datetime import datetime
 from moabb.analysis import plotting as plt
 from moabb.analysis.results import Results  # noqa: F401
-from moabb.analysis.meta_analysis import (find_significant_differences,
-                                          compute_dataset_statistics)
-
+from moabb.analysis.meta_analysis import (
+    find_significant_differences, compute_dataset_statistics)  # noqa: E501
 
 log = logging.getLogger()
 
@@ -52,9 +51,7 @@ def analyze(results, out_path, name='analysis', plot=False):
     # TODO: no good cross-platform way of recording CPU info?
     with open(os.path.join(analysis_path, 'info.txt'), 'a') as f:
         dt = datetime.now()
-        f.write(
-            'Date: {:%Y-%m-%d}\n Time: {:%H:%M}\n'.format(dt,
-                                                          dt))
+        f.write('Date: {:%Y-%m-%d}\n Time: {:%H:%M}\n'.format(dt, dt))
         f.write('System: {}\n'.format(platform.system()))
         f.write('CPU: {}\n'.format(platform.processor()))
 

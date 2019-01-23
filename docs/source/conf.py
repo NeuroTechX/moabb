@@ -14,10 +14,10 @@
 #
 import moabb
 import sphinx_bootstrap_theme
-import sphinx_gallery
 import os
 import sys
 import matplotlib
+import moabb  # noqa: F401
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../../'))
 

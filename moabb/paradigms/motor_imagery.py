@@ -186,6 +186,7 @@ class SinglePass(BaseMotorImagery):
         If not None, resample the eeg data with the sampling rate provided.
 
     """
+
     def __init__(self, fmin=8, fmax=32, **kwargs):
         if 'filters' in kwargs.keys():
             raise(ValueError("MotorImagery does not take argument filters"))

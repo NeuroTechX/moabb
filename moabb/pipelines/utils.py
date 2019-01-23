@@ -63,8 +63,10 @@ class FilterBank(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y=None):
         assert X.ndim == 4
-        self.models = [deepcopy(self.estimator).fit(X[..., i], y)
-                       for i in range(X.shape[-1])]
+        self.models = [
+            deepcopy(self.estimator).fit(X[..., i], y)
+            for i in range(X.shape[-1])
+        ]
         return self
 
     def transform(self, X):
@@ -80,6 +82,5 @@ class FilterBank(BaseEstimator, TransformerMixin):
     def __repr__(self):
         estimator_name = type(self).__name__
         estimator_prms = self.estimator.get_params()
-        return '{}(estimator={}, flatten={})'.format(estimator_name,
-                                                     estimator_prms,
-                                                     self.flatten)
+        return '{}(estimator={}, flatten={})'.format(
+            estimator_name, estimator_prms, self.flatten)
