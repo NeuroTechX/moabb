@@ -43,6 +43,7 @@ moabb.set_log_level('info')
 # This auxiliary transformer allows to reshape the signal for building
 # extended covariances matrices
 
+
 class FilteredSignal(BaseEstimator, TransformerMixin):
 
     def __init__(self):
@@ -64,6 +65,7 @@ class FilteredSignal(BaseEstimator, TransformerMixin):
 # from the set of training signals and some pure sinusoids to act as reference.
 # Classification is made by taking the frequency with the max correlation, as
 # proposed in Bin et al. (2009) https://doi.org/10.1088/1741-2560/6/4/046002
+
 
 class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
@@ -182,7 +184,7 @@ results = evaluation.process(pipelines)
 # Filter bank processing, determine automatically the filter from the
 # stimulation frequency values of events.
 evaluation_fb = CrossSubjectEvaluation(paradigm=paradigm_fb,
-                                    datasets=dataset, overwrite=overwrite)
+                                       datasets=dataset, overwrite=overwrite)
 results_fb = evaluation_fb.process(pipelines_fb)
 
 ###############################################################################
