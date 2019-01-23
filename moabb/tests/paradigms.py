@@ -149,13 +149,8 @@ class Test_SSVEP(unittest.TestCase):
     def test_BaseSSVEP_nclasses_default(self):
         # Default is with 2 classes
         paradigm = BaseSSVEP()
-        dataset = FakeDataset(
-            event_list=[
-                '13',
-                '15',
-                '17',
-                '19'],
-            paradigm='ssvep')
+        dataset = FakeDataset(event_list=['13', '15', '17', '19'],
+                              paradigm='ssvep')
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # labels must contain 2 values, as n_classes is 2 by default
@@ -164,17 +159,17 @@ class Test_SSVEP(unittest.TestCase):
     def test_BaseSSVEP_specified_nclasses(self):
         # Set the number of classes
         paradigm = BaseSSVEP(n_classes=3)
-        dataset = FakeDataset(
-            event_list=[
-                '13',
-                '15',
-                '17',
-                '19'],
-            paradigm='ssvep')
+        dataset = FakeDataset(event_list=['13', '15', '17', '19'],
+                              paradigm='ssvep')
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # labels must contain 3 values
         self.assertEqual(len(np.unique(labels)), 3)
+
+    def test_BaseSSVEP_toomany_nclasses(self):
+        paradigm = BaseSSVEP(n_classes=4)
+        dataset = FakeDataset(event_list=['13', '15'], paradigm='ssvep')
+        self.assertRaises(ValueError, paradigm.get_data, dataset)
 
     def test_SSVEP_paradigm(self):
         paradigm = SSVEP(n_classes=None)
