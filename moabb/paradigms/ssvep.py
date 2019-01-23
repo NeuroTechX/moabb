@@ -1,8 +1,5 @@
 """Steady-State Visually Evoked Paradigms"""
 
-import mne
-import numpy as np
-import pandas as pd
 import logging
 
 from moabb.paradigms.base import BaseParadigm
@@ -18,7 +15,7 @@ class BaseSSVEP(BaseParadigm):
     Parameters
     ----------
     filters: list of list | None (default [7, 45])
-        Bank of bandpass filter to apply. 
+        Bank of bandpass filter to apply.
 
     events: list of str | None (default None)
         List of stimulation frequencies. If None, use all stimulus
@@ -45,7 +42,8 @@ class BaseSSVEP(BaseParadigm):
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
     """
-    def __init__(self, filters=[7, 45], events=None, n_classes=2, tmin=0.0,
+
+    def __init__(self, filters=[(7, 45)], events=None, n_classes=2, tmin=0.0,
                  tmax=None, channels=None, resample=None):
         super().__init__()
         self.filters = filters
@@ -54,35 +52,24 @@ class BaseSSVEP(BaseParadigm):
         self.channels = channels
         self.resample = resample
 
-        if tmax is not None and  tmin >= tmax:
+        if tmax is not None and tmin >= tmax:
             raise(ValueError("tmax must be greater than tmin"))
         self.tmin = tmin
         self.tmax = tmax
-        
+
         if self.events is None:
             log.warning("Choosing the first " + str(n_classes) + " classes"
-                        + "from all possible events")
+                        + " from all possible events")
         else:
             assert n_classes <= len(
                 self.events), 'More classes than events specified'
-        
 
     def is_valid(self, dataset):
         ret = True
         if not (dataset.paradigm == 'ssvep'):
             ret = False
-            
         if self.events is None and self.n_classes is None:
             return ret
-
-        # if self.events is None and self.n_classes is not None:
-        #     if not len(dataset.event_id) >= self.n_classes:
-        #         ret = False
-        # else:
-        #     overlap = len(set(self.events) & set(dataset.event_id.keys()))
-        #     if not overlap >= self.n_classes:
-        #         ret = False
-                
         return ret
 
     def used_events(self, dataset):
@@ -103,66 +90,14 @@ class BaseSSVEP(BaseParadigm):
                              f"freqs in {self.events} to run analysis"))
         return out
 
-    def process_raw(self, raw, dataset):
-        # find the events
-        events = mne.find_events(raw, shortest_event=0, verbose=False)
-        channels = () if self.channels is None else self.channels
-
-        # picks channels
-        picks = mne.pick_types(raw.info, eeg=True, stim=False,
-                               include=channels)
-
-        # get events id
+    def prepare_process(self, dataset):
         event_id = self.used_events(dataset)
-
-        # pick events, based on event_id
-        try:
-            events = mne.pick_events(events, include=list(event_id.values()))
-        except RuntimeError:
-            # skip raw if no event found
-            return
-
-        # get interval
-        tmin = self.tmin + dataset.interval[0]
-        if self.tmax is None:
-            tmax = dataset.interval[1]
-        else:
-            tmax = self.tmax + dataset.interval[0]
 
         # get filters
         if self.filters is None:
             self.filters = [[float(f) - 0.5, float(f) + 0.5]
                             for f in event_id.keys()
                             if f.replace('.', '', 1).isnumeric()]
-
-        X = []
-        for bandpass in self.filters:
-            fmin, fmax = bandpass
-            # filter data
-            raw_f = raw.copy().filter(fmin, fmax, method='iir',
-                                      picks=picks, verbose=False)
-            # epoch data
-            epochs = mne.Epochs(raw_f, events, event_id=event_id,
-                                tmin=tmin, tmax=tmax, proj=False,
-                                baseline=None, preload=True,
-                                verbose=False, picks=picks,
-                                on_missing='ignore')
-            if self.resample is not None:
-                epochs = epochs.resample(self.resample)
-            # MNE is in V, rescale to have uV
-            X.append(1e6 * epochs.get_data())
-
-        inv_events = {k: v for v, k in event_id.items()}
-        labels = np.array([inv_events[e] for e in epochs.events[:, -1]])
-
-        # if only one band, return a 3D array, otherwise return a 4D
-        if len(self.filters) == 1:
-            X = X[0]
-        else:
-            X = np.array(X).transpose((1, 2, 3, 0))
-
-        metadata = pd.DataFrame(index=range(len(labels)))
-        return X, labels, metadata
 
     @property
     def datasets(self):
@@ -223,17 +158,18 @@ class SSVEP(BaseSSVEP):
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
     """
+
     def __init__(self, fmin=7, fmax=45, **kwargs):
         if 'filters' in kwargs.keys():
             raise(ValueError("MotorImagery does not take argument filters"))
         super().__init__(filters=[(fmin, fmax)], **kwargs)
-        
+
 
 class FilterBankSSVEP(BaseSSVEP):
     """ Filtered bank n-class SSVEP paradigm
 
     SSVEP paradigm with multiple narrow bandpass filters, centered around the
-    frequencies of considered events. 
+    frequencies of considered events.
     Metric is 'roc-auc' if 2 classes and 'accuracy' if more.
 
     Parameters
@@ -267,6 +203,7 @@ class FilterBankSSVEP(BaseSSVEP):
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
     """
+
     def __init__(self, filters=None, **kwargs):
         super().__init__(filters=filters, **kwargs)
 
