@@ -188,7 +188,8 @@ if __name__ == '__main__':
     paradigms = generate_paradigms(pipeline_configs, context_params)
 
     if len(context_params) == 0:
-        for paradigm in paradigms: context_params[paradigm] = {}
+        for paradigm in paradigms:
+            context_params[paradigm] = {}
 
     all_results = []
     for paradigm in paradigms:
