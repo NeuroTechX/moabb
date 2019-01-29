@@ -218,4 +218,4 @@ class FakeSSVEPParadigm(BaseSSVEP):
 
     @property
     def datasets(self):
-        return [FakeDataset(events=['13', '15'], paradigm='ssvep')]
+        return [FakeDataset(event_list=['13', '15'], paradigm='ssvep')]

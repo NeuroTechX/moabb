@@ -23,6 +23,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
     def __init__(self, interval, freqs, n_harmonics=3):
         self.Yf = dict()
         self.cca = CCA(n_components=1)
+        self.interval = interval
         self.slen = interval[1] - interval[0]
         self.freqs = freqs
         self.n_harmonics = n_harmonics
