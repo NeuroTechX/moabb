@@ -27,7 +27,8 @@ Motor Imagery Datasets
     Shin2017A
     Shin2017B
     Weibo2014
-	  Zhou2016
+    Zhou2016
+    SSVEPExo
 
 ------------
 ERP Datasets
