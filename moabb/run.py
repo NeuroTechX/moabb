@@ -186,11 +186,13 @@ if __name__ == '__main__':
 
     paradigms = generate_paradigms(pipeline_configs, context_params)
 
+    if len(context_params) == 0:
+        for paradigm in paradigms:
+            context_params[paradigm] = {}
+
     all_results = []
     for paradigm in paradigms:
         # get the context
-        if paradigm not in context_params.keys():
-            context_params[paradigm] = {}
         log.debug('{}: {}'.format(paradigm, context_params[paradigm]))
         p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
         context = WithinSessionEvaluation(paradigm=p, random_state=42,
