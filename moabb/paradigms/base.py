@@ -45,19 +45,6 @@ class BaseParadigm(metaclass=ABCMeta):
             The dataset to verify.
         """
 
-    def prepare_process(self, dataset):
-        """Prepare processing of raw files
-        This function allows to set parameter of the paradigm class prior to
-        the preprocessing (process_raw). Does nothing by default and could be
-        overloaded if needed.
-        Parameters
-        ----------
-        dataset : dataset instance
-            The dataset corresponding to the raw file. mainly use to access
-            dataset specific information.
-        """
-        pass
-
     def process_raw(self, raw, dataset):
         """
         Process one raw data file.
