@@ -6,5 +6,5 @@ paradigms; similarly, different preprocessing is necessary for ERP vs ERD
 paradigms.
 """
 # flake8: noqa
-from moabb.paradigms.motor_imagery import *
 from moabb.paradigms.p300 import *
+from moabb.paradigms.motor_imagery import *
