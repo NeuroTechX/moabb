@@ -1,9 +1,6 @@
 """Motor Imagery Paradigms"""
 
 import abc
-import mne
-import numpy as np
-import pandas as pd
 import logging
 
 from moabb.paradigms.base import BaseParadigm
@@ -78,61 +75,6 @@ class BaseMotorImagery(BaseParadigm):
     @abc.abstractmethod
     def used_events(self, dataset):
         pass
-
-    def process_raw(self, raw, dataset):
-        # find the events
-        events = mne.find_events(raw, shortest_event=0, verbose=False)
-        # channels = None if self.channels is None else self.channels
-
-        # picks channels
-        picks = mne.pick_types(raw.info, eeg=True, stim=False,
-                               selection=self.channels)
-
-        # get event id
-        event_id = self.used_events(dataset)
-
-        # pick events, based on event_id
-        try:
-            events = mne.pick_events(events, include=list(event_id.values()))
-        except RuntimeError:
-            # skip raw if no event found
-            return
-
-        # get interval
-        tmin = self.tmin + dataset.interval[0]
-        if self.tmax is None:
-            tmax = dataset.interval[1]
-        else:
-            tmax = self.tmax + dataset.interval[0]
-
-        X = []
-        for bandpass in self.filters:
-            fmin, fmax = bandpass
-            # filter data
-            raw_f = raw.copy().filter(fmin, fmax, method='iir',
-                                      picks=picks, verbose=False)
-            # epoch data
-            epochs = mne.Epochs(raw_f, events, event_id=event_id,
-                                tmin=tmin, tmax=tmax, proj=False,
-                                baseline=None, preload=True,
-                                verbose=False, picks=picks,
-                                on_missing='ignore')
-            if self.resample is not None:
-                epochs = epochs.resample(self.resample)
-            # MNE is in V, rescale to have uV
-            X.append(1e6 * epochs.get_data())
-
-        inv_events = {k: v for v, k in event_id.items()}
-        labels = np.array([inv_events[e] for e in epochs.events[:, -1]])
-
-        # if only one band, return a 3D array, otherwise return a 4D
-        if len(self.filters) == 1:
-            X = X[0]
-        else:
-            X = np.array(X).transpose((1, 2, 3, 0))
-
-        metadata = pd.DataFrame(index=range(len(labels)))
-        return X, labels, metadata
 
     @property
     def datasets(self):
