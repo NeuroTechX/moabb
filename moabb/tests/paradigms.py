@@ -175,7 +175,6 @@ class Test_P300(unittest.TestCase):
 
     def test_P300_specifyevent(self):
         # we cant pass event to this class
-        paradigm = P300()
         self.assertRaises(ValueError, P300, events=['a'])
 
     def test_P300_wrongevent(self):
