@@ -38,6 +38,12 @@ ERP Datasets
     :toctree: generated/
     :template: class.rst
 
+    BNCI2014008
+    BNCI2014009
+    BNCI2015003
+    bi2013a
+    EPFLP300
+
 --------------
 SSVEP Datasets
 --------------
@@ -45,6 +51,8 @@ SSVEP Datasets
 .. autosummary::
     :toctree: generated/
     :template: class.rst
+
+    SSVEPExo
 
 ------------
 Base & Utils
