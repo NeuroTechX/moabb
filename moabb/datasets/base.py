@@ -20,7 +20,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
     sessions_per_subject: int
         Number of sessions per subject
 
-    events: dict of string: int
+    events: dict of strings
         String codes for events matched with labels in the stim channel.
         Currently imagery codes codes can include:
         - left_hand

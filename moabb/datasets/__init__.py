@@ -18,3 +18,4 @@ from .upper_limb import Ofner2017
 from .Weibo2014 import Weibo2014
 from .Zhou2016 import Zhou2016
 from .mpi_mi import MunichMI
+from .ssvep_exo import SSVEPExo
