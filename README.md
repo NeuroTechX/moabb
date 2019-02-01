@@ -1,7 +1,7 @@
 # Mother of all BCI Benchmark
-<div align="center">
-  <img src="/images/M.png">
-</div>
+<p align="center">
+  <img alt="banner" src="/images/M.png/">
+</p>
 <p align="center" href="">
   Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets.
 </p>
@@ -32,15 +32,15 @@ This document (the README file) is a hub to give you some information about the 
 * [Documentation](#docs)
 * [Architecture and main concepts](#architecture)
 
-We also have a recent [arXiv preprint][link_arxiv]. 
+We also have a recent [paper][link_paper] in JNE.
 
 ## What are we doing?
 
 ### The problem
 
-* Reproducible Research in BCI has a long way to go. 
-* While many BCI datasets are made freely available, researchers do not publish code, and reproducing results required to benchmark new algorithms turns out to be more tricky than it should be. 
-* Performances can be significantly impacted by parameters of the preprocessing steps, toolboxes used and implementation “tricks” that are almost never reported in the literature. 
+* Reproducible Research in BCI has a long way to go.
+* While many BCI datasets are made freely available, researchers do not publish code, and reproducing results required to benchmark new algorithms turns out to be more tricky than it should be.
+* Performances can be significantly impacted by parameters of the preprocessing steps, toolboxes used and implementation “tricks” that are almost never reported in the literature.
 
 As a results, there is no comprehensive benchmark of BCI algorithm, and newcomers are spending a tremendous amount of time browsing literature to find out what algorithm works best and on which dataset.
 
@@ -48,7 +48,7 @@ As a results, there is no comprehensive benchmark of BCI algorithm, and newcomer
 
 The Mother of all BCI Benchmark will:
 
-* Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets. 
+* Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets.
 * The code will be made available on github, serving as a reference point for the future algorithmic developments.
 * Algorithms can be ranked and promoted on a website, providing a clear picture of the different solutions available in the field.
 
@@ -205,3 +205,4 @@ make html
 [link_neurotechx_signup]: https://docs.google.com/forms/d/e/1FAIpQLSfZyzhVdOLU8_oQ4NylHL8EFoKLIVmryGXA4u7HDsZpkTryvg/viewform
 [link_moabb_docs]: http://moabb.neurotechx.com/docs/index.html
 [link_arxiv]: https://arxiv.org/abs/1805.06427
+[link_jne]: http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta

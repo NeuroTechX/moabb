@@ -59,7 +59,6 @@ def parse_pipelines_from_directory(d):
         spec.loader.exec_module(foo)
 
         pipeline_configs.append(foo.PIPELINE)
-
     return pipeline_configs
 
 

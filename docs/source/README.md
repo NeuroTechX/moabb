@@ -26,7 +26,7 @@ This document (the README file) is a hub to give you some information about the 
 * [Documentation](#docs)
 * [Architecture and main concepts](#architecture)
 
-We also have a recent [arXiv preprint][link_arxiv]. 
+We also have a recent [paper][link_paper] in JNE. 
 
 ## What are we doing?
 
@@ -198,3 +198,4 @@ make html
 [link_neurotechx_signup]: https://docs.google.com/forms/d/e/1FAIpQLSfZyzhVdOLU8_oQ4NylHL8EFoKLIVmryGXA4u7HDsZpkTryvg/viewform
 [link_moabb_docs]: http://moabb.neurotechx.com/docs/index.html
 [link_arxiv]: https://arxiv.org/abs/1805.06427
+[link_jne]: http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta

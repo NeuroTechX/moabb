@@ -14,7 +14,8 @@ they can be used.
 import moabb
 import matplotlib.pyplot as plt
 import moabb.analysis.plotting as moabb_plt
-from moabb.analysis.meta_analysis import find_significant_differences, compute_dataset_statistics  # noqa: E501
+from moabb.analysis.meta_analysis import (
+    find_significant_differences, compute_dataset_statistics)  # noqa: E501
 
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import LogisticRegression
@@ -55,19 +56,15 @@ print(__doc__)
 
 pipelines = {}
 
-pipelines['CSP + LDA'] = make_pipeline(CSP(n_components=8),
-                                       LDA())
+pipelines['CSP + LDA'] = make_pipeline(CSP(n_components=8), LDA())
 
-pipelines['RG + LR'] = make_pipeline(Covariances(),
-                                     TangentSpace(),
+pipelines['RG + LR'] = make_pipeline(Covariances(), TangentSpace(),
                                      LogisticRegression())
 
-pipelines['CSP + LR'] = make_pipeline(CSP(n_components=8),
-                                      LogisticRegression())
+pipelines['CSP + LR'] = make_pipeline(
+    CSP(n_components=8), LogisticRegression())
 
-pipelines['RG + LDA'] = make_pipeline(Covariances(),
-                                      TangentSpace(),
-                                      LDA())
+pipelines['RG + LDA'] = make_pipeline(Covariances(), TangentSpace(), LDA())
 
 ##############################################################################
 # Evaluation
@@ -82,13 +79,17 @@ pipelines['RG + LDA'] = make_pipeline(Covariances(),
 # be overwritten if necessary.
 
 paradigm = LeftRightImagery()
-datasets = [BNCI2014001()]
+dataset = BNCI2014001()
+dataset.subject_list = dataset.subject_list[:4]
+datasets = [dataset]
 overwrite = False  # set to True if we want to overwrite cached results
-evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=datasets,
-                                    suffix='examples', overwrite=overwrite)
+evaluation = CrossSessionEvaluation(
+    paradigm=paradigm,
+    datasets=datasets,
+    suffix='examples',
+    overwrite=overwrite)
 
 results = evaluation.process(pipelines)
-
 
 ##############################################################################
 # MOABB plotting
@@ -110,7 +111,6 @@ plt.show()
 fig = moabb_plt.paired_plot(results, 'CSP + LDA', 'RG + LDA')
 plt.show()
 
-
 ###############################################################################
 # Statistical testing and further plots
 # ----------------------------------------
@@ -121,7 +121,6 @@ plt.show()
 # other, the method find_significant_differences and the summary_plot are
 # possible.
 
-
 stats = compute_dataset_statistics(results)
 P, T = find_significant_differences(stats)
 
@@ -131,7 +130,6 @@ P, T = find_significant_differences(stats)
 # meta-effect and significances both per-dataset and overall.
 fig = moabb_plt.meta_analysis_plot(stats, 'CSP + LDA', 'RG + LDA')
 plt.show()
-
 
 ###############################################################################
 # The summary plot shows the effect and significance related to the hypothesis

@@ -67,9 +67,9 @@ plot_html_show_formats = False
 plot_html_show_source_link = False
 
 sphinx_gallery_conf = {
-   'examples_dirs': ['../../examples', '../../tutorials'],
-   'gallery_dirs': ['auto_examples', 'auto_tutorials'],
-   'backreferences_dir': False}
+    'examples_dirs': ['../../examples', '../../tutorials'],
+    'gallery_dirs': ['auto_examples', 'auto_tutorials'],
+    'backreferences_dir': False}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

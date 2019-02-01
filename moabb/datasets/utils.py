@@ -22,7 +22,7 @@ def dataset_search(paradigm, multi_session=False, events=None,
     Parameters
     ----------
     paradigm: str
-        'imagery','p300','ssvep'
+        'imagery', 'p300', 'ssvep'
 
     multi_session: bool
         if True only returns datasets with more than one session per subject.
@@ -55,8 +55,6 @@ def dataset_search(paradigm, multi_session=False, events=None,
     if events is not None and has_all_events:
         n_classes = len(events)
     assert paradigm in ['imagery', 'p300', 'ssvep']
-    if paradigm == 'p300':
-        raise Exception('SORRY NOBDOYS GOTTEN AROUND TO THIS YET')
 
     for type_d in dataset_list:
         d = type_d()

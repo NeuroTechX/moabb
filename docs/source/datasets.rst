@@ -24,11 +24,13 @@ Motor Imagery Datasets
     MunichMI
     Ofner2017
     PhysionetMI
+    Schirrmeister2017
     Shin2017A
     Shin2017B
     Weibo2014
     Zhou2016
     SSVEPExo
+
 
 ------------
 ERP Datasets
@@ -38,6 +40,12 @@ ERP Datasets
     :toctree: generated/
     :template: class.rst
 
+    bi2013a
+    BNCI2014008
+    BNCI2014009
+    BNCI2015003
+    EPFLP300
+
 --------------
 SSVEP Datasets
 --------------
@@ -45,6 +53,8 @@ SSVEP Datasets
 .. autosummary::
     :toctree: generated/
     :template: class.rst
+
+    SSVEPExo
 
 ------------
 Base & Utils

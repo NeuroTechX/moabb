@@ -112,3 +112,6 @@ analysis/*
 /moabb/tests/orderplot.pdf
 /moabb/tests/orderplot_full.pdf
 /test_context.yml
+
+# mac os x stuff
+*DS_store*

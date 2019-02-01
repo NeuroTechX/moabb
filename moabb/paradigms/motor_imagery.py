@@ -373,4 +373,4 @@ class FakeImageryParadigm(LeftRightImagery):
 
     @property
     def datasets(self):
-        return [FakeDataset(['left_hand', 'right_hand'])]
+        return [FakeDataset(['left_hand', 'right_hand'], paradigm='imagery')]

@@ -34,11 +34,13 @@ class FakeDataset(BaseDataset):
 
         montage = read_montage('standard_1005')
         sfreq = 128
-        duration = len(self.event_id)*60
+        duration = len(self.event_id) * 60
         eeg_data = 2e-5 * np.random.randn(duration * sfreq, len(ch_names))
         y = np.zeros((duration * sfreq))
         for ii, ev in enumerate(self.event_id):
-            y[((1 + 5*ii)*128)::(5*len(self.event_id)*128)] = self.event_id[ev]
+            start_idx = ((1 + 5 * ii) * 128)
+            jump = (5 * len(self.event_id) * 128)
+            y[start_idx::jump] = self.event_id[ev]
 
         ch_types = ['eeg'] * len(ch_names) + ['stim']
         ch_names = ch_names + ['stim']
