@@ -199,6 +199,7 @@ class Test_P300(unittest.TestCase):
         self.assertEquals(len(np.unique(labels)), 2)
         self.assertEquals(list(np.unique(labels)),
                           sorted(['Target', 'NonTarget']))
+
     def test_BaseImagery_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap
         paradigm = SimpleMotorImagery(events=['left_hand', 'right_hand'])
