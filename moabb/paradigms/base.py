@@ -97,11 +97,10 @@ class BaseParadigm(metaclass=ABCMeta):
         """
         # find the events
         events = mne.find_events(raw, shortest_event=0, verbose=False)
-        channels = () if self.channels is None else self.channels
-
-        # picks channels
-        picks = mne.pick_types(raw.info, eeg=True, stim=False,
-                               include=channels)
+        if self.channels is None:
+            picks = mne.pick_types(raw.info, eeg=True, stim=False)
+        else:
+            picks = mne.pick_types(raw.info, selection=self.channels, eeg=True)
 
         # get events id
         event_id = self.used_events(dataset)

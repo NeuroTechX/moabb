@@ -23,6 +23,72 @@ from moabb.analysis import analyze
 
 log = logging.getLogger()
 
+def parser_init():
+    parser = ArgumentParser(description="Main run script for MOABB")
+    parser.add_argument(
+        "-p",
+        "--pipelines",
+        dest="pipelines",
+        type=str,
+        default='./pipelines/',
+        help="Folder containing the pipelines to evaluates.")
+    parser.add_argument(
+        "-r",
+        "--results",
+        dest="results",
+        type=str,
+        default='./results/',
+        help="Folder to store the results.")
+    parser.add_argument(
+        "-f",
+        "--force-update",
+        dest="force",
+        action="store_true",
+        default=False,
+        help="Force evaluation of cached pipelines.")
+
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        dest="verbose",
+        action="store_true",
+        default=False)
+    parser.add_argument(
+        "-d",
+        "--debug",
+        dest="debug",
+        action="store_true",
+        default=False,
+        help="Print debug level parse statements. Overrides verbose")
+    parser.add_argument(
+        "-o",
+        "--output",
+        dest="output",
+        type=str,
+        default='./',
+        help="Folder to put analysis results")
+    parser.add_argument(
+        "--threads",
+        dest="threads",
+        type=int,
+        default=1,
+        help="Number of threads to run")
+    parser.add_argument(
+        "--plot",
+        dest="plot",
+        action="store_true",
+        default=False,
+        help="Plot results after computing. Defaults false")
+    parser.add_argument(
+        "-c",
+        "--contexts",
+        dest="context",
+        type=str,
+        default=None,
+        help="File path to context.yml file that describes context parameters."
+        "If none, assumes all defaults. Must contain an entry for all "
+        "paradigms described in the pipelines")
+    return parser
 
 def parse_pipelines_from_directory(d):
     '''
@@ -30,7 +96,7 @@ def parse_pipelines_from_directory(d):
     has structure:
     'name': string
     'pipeline': sklearn.BaseEstimator
-    'paradigms': list of class names
+    'paradigms': list of class names that are compatible with said pipeline
     '''
     assert os.path.isdir(os.path.abspath(d)
                          ), "Given pipeline path {} is not valid".format(d)
@@ -104,70 +170,7 @@ if __name__ == '__main__':
     # logging.basicConfig(level=logging.WARNING)
     # coloredlogs.install(level=logging.WARNING)
 
-    parser = ArgumentParser(description="Main run script for MOABB")
-    parser.add_argument(
-        "-p",
-        "--pipelines",
-        dest="pipelines",
-        type=str,
-        default='./pipelines/',
-        help="Folder containing the pipelines to evaluates.")
-    parser.add_argument(
-        "-r",
-        "--results",
-        dest="results",
-        type=str,
-        default='./results/',
-        help="Folder to store the results.")
-    parser.add_argument(
-        "-f",
-        "--force-update",
-        dest="force",
-        action="store_true",
-        default=False,
-        help="Force evaluation of cached pipelines.")
-
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        dest="verbose",
-        action="store_true",
-        default=False)
-    parser.add_argument(
-        "-d",
-        "--debug",
-        dest="debug",
-        action="store_true",
-        default=False,
-        help="Print debug level parse statements. Overrides verbose")
-    parser.add_argument(
-        "-o",
-        "--output",
-        dest="output",
-        type=str,
-        default='./',
-        help="Folder to put analysis results")
-    parser.add_argument(
-        "--threads",
-        dest="threads",
-        type=int,
-        default=1,
-        help="Number of threads to run")
-    parser.add_argument(
-        "--plot",
-        dest="plot",
-        action="store_true",
-        default=False,
-        help="Plot results after computing. Defaults false")
-    parser.add_argument(
-        "-c",
-        "--contexts",
-        dest="context",
-        type=str,
-        default=None,
-        help="File path to context.yml file that describes context parameters."
-        "If none, assumes all defaults. Must contain an entry for all "
-        "paradigms described in the pipelines")
+    parser = parser_init()
     options = parser.parse_args()
 
     if options.debug:
