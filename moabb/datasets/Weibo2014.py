@@ -29,7 +29,7 @@ def eeg_data_path(base_path, subject):
 
     def get_subjects(sub_inds, sub_names, ind):
         dataname = 'data{}'.format(ind)
-        if not os.path.isfile(os.path.join(base_path, dataname+'.zip')):
+        if not os.path.isfile(os.path.join(base_path, dataname + '.zip')):
             _fetch_file(FILES[ind], os.path.join(
                 base_path, dataname + '.zip'), print_destination=False)
         with z.ZipFile(os.path.join(base_path, dataname + '.zip'), 'r') as f:

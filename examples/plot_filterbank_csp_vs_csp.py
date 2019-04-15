@@ -63,7 +63,10 @@ pipelines_fb['FBCSP + LDA'] = make_pipeline(FilterBank(CSP(n_components=4)),
 # The second is a `FilterBankLeftRightImagery` with a bank of 6 filter, ranging
 # from 8 to 35 Hz.
 
-datasets = [BNCI2014001()]
+# Because this is being auto-generated we only use 2 subjects
+dataset = BNCI2014001()
+dataset.subject_list = dataset.subject_list[:2]
+datasets = [dataset]
 overwrite = False  # set to True if we want to overwrite cached results
 
 # broadband filters

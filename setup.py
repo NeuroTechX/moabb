@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='moabb',
-      version='0.1.1',
+      version='0.2.1',
       description='Mother of all BCI Benchmarks',
       url='',
       author='Alexandre Barachant, Vinay Jayaram',
