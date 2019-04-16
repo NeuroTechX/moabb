@@ -35,3 +35,30 @@ class FM(BaseEstimator, TransformerMixin):
         xphase = np.unwrap(np.angle(signal.hilbert(X, axis=-1)))
         return np.median(self.freq * np.diff(xphase, axis=-1) / (2 * np.pi),
                          axis=-1)
+
+
+class ExtendedSSVEPSignal(BaseEstimator, TransformerMixin):
+    """Prepare FilterBank SSVEP EEG signal for estimating extended covariances
+
+    Riemannian approaches on SSVEP rely on extended covariances matrices, where
+    the filtered signals are contenated to estimate a large covariance matrice.
+
+    FilterBank SSVEP EEG are of shape (n_trials, n_channels, n_times, n_freqs)
+    and should be convert in (n_trials, n_channels*n_freqs, n_times) to
+    estimate covariance matrices of (n_channels*n_freqs,  n_channels*n_freqs).
+    """
+    def __init__(self):
+        """Empty init for ExtendedSSVEPSignal"""
+        pass
+
+    def fit(self, X, y):
+        """No need to fit for ExtendedSSVEPSignal"""
+        return self
+
+    def transform(self, X):
+        """Transpose and reshape EEG for extended covmat estimation
+        """
+        out = X.transpose((0, 3, 1, 2))
+        n_trials, n_freqs, n_channels, n_times = out.shape
+        out = out.reshape((n_trials, n_channels * n_freqs, n_times))
+        return out

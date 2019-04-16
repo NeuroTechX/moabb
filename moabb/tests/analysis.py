@@ -85,7 +85,7 @@ def to_result_input(pnames, dsets):
 class Test_Stats(unittest.TestCase):
 
     def return_df(self, shape):
-        size = shape[0]*shape[1]
+        size = shape[0] * shape[1]
         data = np.arange(size).reshape(*shape)
         return pd.DataFrame(data=data)
 
@@ -96,7 +96,7 @@ class Test_Stats(unittest.TestCase):
     def test_perm_exhaustive(self):
         P = ma.compute_pvals_perm(self.return_df((4, 5)))
         Pl = P[np.tril_indices(P.shape[0])]
-        self.assertTrue(np.allclose(Pl, (1/2**4)), np.tril(P))
+        self.assertTrue(np.allclose(Pl, (1 / 2 ** 4)), np.tril(P))
 
     def test_perm_random(self):
         P = ma.compute_pvals_perm(self.return_df((18, 5)))

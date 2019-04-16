@@ -1,8 +1,8 @@
 scikit-learn
-mne
+mne >= 0.16
 pyriemann
-matplotlib
-seaborn
+matplotlib >= 2.2
+seaborn >= 0.9.0
 h5py
 pandas
 pyyaml

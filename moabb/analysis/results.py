@@ -54,7 +54,7 @@ class Results:
         self.filepath = os.path.join(self.mod_dir, 'results',
                                      paradigm_class.__name__,
                                      evaluation_class.__name__,
-                                     'results{}.hdf5'.format('_'+suffix))
+                                     'results{}.hdf5'.format('_' + suffix))
 
         os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
         self.filepath = self.filepath
