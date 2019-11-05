@@ -94,7 +94,7 @@ class PhysionetMI(BaseDataset):
                                      base_url=BASE_URL)[0]
         raw = read_raw_edf(raw_fname, preload=preload, verbose='ERROR')
         raw.rename_channels(lambda x: x.strip('.'))
-        raw.set_montage(mne.channels.read_montage('standard_1005'))
+        raw.set_montage(mne.channels.make_standard_montage('standard_1005'))
         return raw
 
     def _get_single_subject_data(self, subject):
