@@ -1,6 +1,6 @@
 from mne import create_info
 from mne.io import RawArray
-from mne.channels import read_montage
+from mne.channels import make_standard_montage
 import numpy as np
 
 from moabb.datasets.base import BaseDataset
@@ -32,7 +32,7 @@ class FakeDataset(BaseDataset):
 
         ch_names = ['C3', 'Cz', 'C4']
 
-        montage = read_montage('standard_1005')
+        montage = make_standard_montage('standard_1005')
         sfreq = 128
         duration = len(self.event_id) * 60
         eeg_data = 2e-5 * np.random.randn(duration * sfreq, len(ch_names))
