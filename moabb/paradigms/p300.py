@@ -48,12 +48,13 @@ class BaseP300(BaseParadigm):
     """
 
     def __init__(self, filters=([1, 24],), events=None, tmin=0.0, tmax=None,
-                 channels=None, resample=None):
+                 channels=None, resample=None, unit_factor=1e6):
         super().__init__()
         self.filters = filters
         self.channels = channels
         self.events = events
         self.resample = resample
+        self.unit_factor = unit_factor
 
         if (tmax is not None):
             if tmin >= tmax:
@@ -81,7 +82,12 @@ class BaseP300(BaseParadigm):
 
     def process_raw(self, raw, dataset):
         # find the events
-        events = mne.find_events(raw, shortest_event=0, verbose=False)
+        try:
+            events = mne.find_events(raw, shortest_event=0, verbose=False)
+        except ValueError:
+            # some file formats (e.g. Brainvision) provide events in
+            # annotations instead of stim channel
+            events, _ = mne.events_from_annotations(raw, verbose=False)
         channels = () if self.channels is None else self.channels
 
         # picks channels
@@ -120,7 +126,7 @@ class BaseP300(BaseParadigm):
             if self.resample is not None:
                 epochs = epochs.resample(self.resample)
             # MNE is in V, rescale to have uV
-            X.append(1e6 * epochs.get_data())
+            X.append(self.unit_factor * epochs.get_data())
 
         inv_events = {k: v for v, k in event_id.items()}
         labels = np.array([inv_events[e] for e in epochs.events[:, -1]])
