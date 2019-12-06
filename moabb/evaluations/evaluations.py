@@ -62,7 +62,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         le = LabelEncoder()
         y = le.fit_transform(y)
         acc = cross_val_score(clf, X, y, cv=cv, scoring=scoring,
-                              n_jobs=self.n_jobs)
+                              n_jobs=self.n_jobs, error_score=self.error_score)
         return acc.mean()
 
     def is_valid(self, dataset):
@@ -106,7 +106,8 @@ class CrossSessionEvaluation(BaseEvaluation):
                     score = _fit_and_score(clone(clf), X, y, scorer, train,
                                            test, verbose=False,
                                            parameters=None,
-                                           fit_params=None)[0]
+                                           fit_params=None,
+                                           error_score=self.error_score)[0]
                     duration = time() - t_start
                     res = {'time': duration,
                            'dataset': dataset,
