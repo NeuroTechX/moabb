@@ -49,7 +49,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
     """
 
     def __init__(self, subjects, sessions_per_subject, events,
-                 code, interval, paradigm, doi=None):
+                 code, interval, paradigm, doi=None, unit_factor=1e6):
         if not isinstance(subjects, list):
             raise(ValueError("subjects must be a list"))
 
@@ -60,6 +60,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self.interval = interval
         self.paradigm = paradigm
         self.doi = doi
+        self.unit_factor = unit_factor
 
     def get_data(self, subjects=None):
         """
