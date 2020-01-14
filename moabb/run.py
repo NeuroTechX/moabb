@@ -23,6 +23,7 @@ from moabb.analysis import analyze
 
 log = logging.getLogger()
 
+
 def parser_init():
     parser = ArgumentParser(description="Main run script for MOABB")
     parser.add_argument(
@@ -89,6 +90,7 @@ def parser_init():
         "If none, assumes all defaults. Must contain an entry for all "
         "paradigms described in the pipelines")
     return parser
+
 
 def parse_pipelines_from_directory(d):
     '''

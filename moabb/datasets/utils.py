@@ -94,7 +94,6 @@ def dataset_search(paradigm, multi_session=False, events=None,
     return out_data
 
 
-
 def find_intersecting_channels(datasets, verbose=False):
     '''
     Given a list of dataset instances return a list of channels shared by all

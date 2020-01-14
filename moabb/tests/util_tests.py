@@ -14,14 +14,15 @@ class Test_Utils(unittest.TestCase):
         print([type(i).__name__ for i in utils.dataset_search(
             'imagery', multi_session=False)])
         res = utils.dataset_search('imagery', events=[
-              'right_hand', 'left_hand', 'feet', 'tongue', 'rest'])
+            'right_hand', 'left_hand', 'feet', 'tongue', 'rest'])
         for out in res:
             print('multiclass: {}'.format(out.event_id.keys()))
 
         res = utils.dataset_search('imagery', events=[
-              'right_hand', 'feet'], has_all_events=True)
+            'right_hand', 'feet'], has_all_events=True)
         for out in res:
-            self.assertTrue(set(['right_hand','feet']) <= set(out.event_id.keys()))
+            self.assertTrue(set(['right_hand', 'feet'])
+                            <= set(out.event_id.keys()))
 
     def test_dataset_channel_search(self):
         chans = ['C3', 'Cz']

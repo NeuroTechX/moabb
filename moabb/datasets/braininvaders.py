@@ -1,4 +1,5 @@
 import mne
+from mne.channels import make_standard_montage
 from moabb.datasets.base import BaseDataset
 from moabb.datasets import download as dl
 import os
@@ -141,7 +142,7 @@ class bi2013a(BaseDataset):
             raw_original = mne.io.read_raw_gdf(file_path,
                                                preload=True)
             raw_original.rename_channels({'FP1': 'Fp1', 'FP2': 'Fp2'})
-            raw_original.set_montage(mne.channels.make_standard_montage('standard_1020'))
+            raw_original.set_montage(make_standard_montage('standard_1020'))
 
             sessions[session_name][run_name] = raw_original
 
