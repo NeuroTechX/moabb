@@ -7,7 +7,7 @@ from moabb.datasets import download as dl
 
 from mne import create_info
 from mne.io import RawArray
-from mne.channels import read_montage
+from mne.channels import make_standard_montage
 from mne.utils import verbose
 import numpy as np
 
@@ -297,7 +297,7 @@ def _load_data_003_2015(subject,
     ]
 
     ch_types = ['eeg'] * 8 + ['stim'] * 2
-    montage = read_montage('standard_1005')
+    montage = make_standard_montage('standard_1005')
 
     info = create_info(
         ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
@@ -507,7 +507,7 @@ def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
     # parse eeg data
     event_id = {}
     n_chan = run.X.shape[1]
-    montage = read_montage('standard_1005')
+    montage = make_standard_montage('standard_1005')
     eeg_data = 1e-6 * run.X
     sfreq = run.fs
 
@@ -536,7 +536,7 @@ def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
 @verbose
 def _convert_run_p300_sl(run, verbose=None):
     """Convert one p300 run from santa lucia file format."""
-    montage = read_montage('standard_1005')
+    montage = make_standard_montage('standard_1005')
     eeg_data = 1e-6 * run.X
     sfreq = 256
     ch_names = list(run.channels) + ['Target stim', 'Flash stim']
@@ -573,7 +573,7 @@ def _convert_bbci(filename, ch_types, verbose=None):
 def _convert_run_bbci(run, ch_types, verbose=None):
     """Convert one run to raw."""
     # parse eeg data
-    montage = read_montage('standard_1005')
+    montage = make_standard_montage('standard_1005')
     eeg_data = 1e-6 * run.X
     sfreq = run.fs
 
@@ -604,7 +604,7 @@ def _convert_run_epfl(run, verbose=None):
     # parse eeg data
     event_id = {}
 
-    montage = read_montage('standard_1005')
+    montage = make_standard_montage('standard_1005')
     eeg_data = 1e-6 * run.eeg
     sfreq = run.header.SampleRate
 

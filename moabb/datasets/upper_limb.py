@@ -1,7 +1,7 @@
 from moabb.datasets.base import BaseDataset
 
 from mne.io import read_raw_edf
-from mne.channels import read_montage
+from mne.channels import make_standard_montage
 import numpy as np
 
 from . import download as dl
@@ -91,7 +91,7 @@ class Ofner2017(BaseDataset):
             paths = self.data_path(subject, session=session)
 
             eog = ['eog-l', 'eog-m', 'eog-r']
-            montage = read_montage('standard_1005')
+            montage = make_standard_montage('standard_1005')
             data = {}
             for ii, path in enumerate(paths):
                 raw = read_raw_edf(path, montage=montage, eog=eog,

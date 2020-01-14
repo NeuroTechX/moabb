@@ -110,7 +110,7 @@ class bi2013a(BaseDataset):
         super().__init__(
             subjects=list(range(1, 24 + 1)),
             sessions_per_subject=1,
-            events=dict(Target=33285, NonTarget=33286),
+            events=dict(Target=1, NonTarget=2),
             code='Brain Invaders 2013a',
             interval=[0, 1],
             paradigm='p300',
@@ -138,9 +138,10 @@ class bi2013a(BaseDataset):
             run_number = run_number.split('.gdf')[0]
             run_name = 'run_' + run_number
 
-            raw_original = mne.io.read_raw_edf(file_path,
-                                               montage='standard_1020',
+            raw_original = mne.io.read_raw_gdf(file_path,
                                                preload=True)
+            raw_original.rename_channels({'FP1': 'Fp1', 'FP2': 'Fp2'})
+            raw_original.set_montage(mne.channels.make_standard_montage('standard_1020'))
 
             sessions[session_name][run_name] = raw_original
 

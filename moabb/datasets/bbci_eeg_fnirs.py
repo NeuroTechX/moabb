@@ -8,7 +8,7 @@ import numpy as np
 from scipy.io import loadmat
 from mne import create_info
 from mne.io import RawArray
-from mne.channels import read_montage
+from mne.channels import make_standard_montage
 import os.path as op
 import os
 import zipfile as z
@@ -127,7 +127,7 @@ class Shin2017(BaseDataset):
         ch_names = list(data[session].clab) + ['Stim']
         ch_types = ['eeg'] * 30 + ['eog'] * 2 + ['stim']
 
-        montage = read_montage('standard_1005')
+        montage = make_standard_montage('standard_1005')
         info = create_info(ch_names=ch_names, ch_types=ch_types,
                            sfreq=200., montage=montage)
         raw = RawArray(data=eeg, info=info, verbose=False)
