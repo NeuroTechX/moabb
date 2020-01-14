@@ -74,7 +74,7 @@ print(LeftRightImagery().datasets)
 
 ##########################################################################
 # Or you can run a search through the available datasets:
-print(utils.dataset_search(paradigm='imagery', total_classes=2))
+print(utils.dataset_search(paradigm='imagery', min_subjects=6))
 
 ##########################################################################
 # Or you can simply make your own list (which we do here due to computational
