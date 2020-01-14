@@ -32,7 +32,7 @@ This document (the README file) is a hub to give you some information about the 
 * [Documentation](#docs)
 * [Architecture and main concepts](#architecture)
 
-We also have a recent [paper][link_paper] in JNE.
+We also have a recent [paper][link_jne] in JNE.
 
 ## What are we doing?
 

@@ -109,7 +109,7 @@ class bi2013a(BaseDataset):
             Online=False):
         super().__init__(
             subjects=list(range(1, 24 + 1)),
-            sessions_per_subject='varying',
+            sessions_per_subject=1,
             events=dict(Target=1, NonTarget=2),
             code='Brain Invaders 2013a',
             interval=[0, 1],
