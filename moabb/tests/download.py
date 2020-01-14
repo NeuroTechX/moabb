@@ -14,6 +14,7 @@ import mne
 
 _ = mne.set_log_level('CRITICAL')
 
+
 class Test_Downloads(unittest.TestCase):
 
     def run_dataset(self, dataset):
