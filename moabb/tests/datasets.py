@@ -3,6 +3,7 @@ import unittest
 import mne
 from moabb.datasets.fake import FakeDataset
 
+_ = mne.set_log_level('CRITICAL')
 
 def _run_tests_on_dataset(d):
     for s in d.subject_list:
