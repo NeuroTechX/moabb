@@ -95,12 +95,19 @@ class BaseParadigm(metaclass=ABCMeta):
             A dataframe containing the metadata
 
         """
-        # find the events
-        events = mne.find_events(raw, shortest_event=0, verbose=False)
-        if self.channels is None:
-            picks = mne.pick_types(raw.info, eeg=True, stim=False)
+        # find the events, first check stim_channels then annotations
+        stim_channels = mne.utils._get_stim_channel(
+            None, raw.info, raise_error=False)
+        if len(stim_channels) > 0:
+            events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
-            picks = mne.pick_types(raw.info, selection=self.channels, eeg=True)
+            events, _ = mne.events_from_annotations(raw, verbose=False)
+
+        channels = () if self.channels is None else self.channels
+
+        # picks channels
+        picks = mne.pick_types(raw.info, eeg=True, stim=False,
+                               include=channels)
 
         # get events id
         event_id = self.used_events(dataset)
@@ -133,8 +140,8 @@ class BaseParadigm(metaclass=ABCMeta):
                                 on_missing='ignore')
             if self.resample is not None:
                 epochs = epochs.resample(self.resample)
-            # MNE is in V, rescale to have uV
-            X.append(1e6 * epochs.get_data())
+            # rescale to work with uV
+            X.append(dataset.unit_factor * epochs.get_data())
 
         inv_events = {k: v for v, k in event_id.items()}
         labels = np.array([inv_events[e] for e in epochs.events[:, -1]])
