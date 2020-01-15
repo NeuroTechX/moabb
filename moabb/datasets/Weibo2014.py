@@ -111,7 +111,7 @@ class Weibo2014(BaseDataset):
         # TODO: add 1s 0 buffer between trials and make continuous
         data = loadmat(fname, squeeze_me=True, struct_as_record=False,
                        verify_compressed_data_integrity=False)
-        montage = mne.channels.read_montage('standard_1005')
+        montage = mne.channels.make_standard_montage('standard_1005')
         ch_names = ['Fp1', 'Fpz', 'Fp2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1',
                     'Fz', 'F2', 'F4', 'F6', 'F8', 'FT7', 'FC5', 'FC3', 'FC1',
                     'FCz', 'FC2', 'FC4', 'FC6', 'FT8', 'T7', 'C5', 'C3', 'C1',

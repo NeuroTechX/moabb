@@ -12,6 +12,8 @@ from moabb.datasets.upper_limb import Ofner2017
 import unittest
 import mne
 
+_ = mne.set_log_level('CRITICAL')
+
 
 class Test_Downloads(unittest.TestCase):
 

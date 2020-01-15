@@ -1,5 +1,5 @@
 scikit-learn
-mne >= 0.16
+mne >= 0.19
 pyriemann
 matplotlib >= 2.2
 seaborn >= 0.9.0

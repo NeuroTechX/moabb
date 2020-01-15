@@ -18,7 +18,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         List of subject number # TODO: make identifiers more general
 
     sessions_per_subject: int
-        Number of sessions per subject
+        Number of sessions per subject (if varying, take minimum)
 
     events: dict of strings
         String codes for events matched with labels in the stim channel.
