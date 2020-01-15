@@ -94,6 +94,11 @@ class PhysionetMI(BaseDataset):
                                      base_url=BASE_URL)[0]
         raw = read_raw_edf(raw_fname, preload=preload, verbose='ERROR')
         raw.rename_channels(lambda x: x.strip('.'))
+        raw.rename_channels(lambda x: x.upper())
+        raw.rename_channels({'AFZ': 'AFz', 'PZ': 'Pz', 'FPZ': 'Fpz',
+                             'FCZ': 'FCz', 'FP1': 'Fp1', 'CZ': 'Cz',
+                             'OZ': 'Oz', 'POZ': 'POz', 'IZ': 'Iz',
+                             'CPZ': 'CPz', 'FP2': 'Fp2', 'FZ': 'Fz'})
         raw.set_montage(mne.channels.make_standard_montage('standard_1005'))
         return raw
 

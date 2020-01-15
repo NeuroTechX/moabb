@@ -93,7 +93,8 @@ class Zhou2016(BaseDataset):
             out[sess_key] = {}
             for run_ind, fname in enumerate(runlist):
                 run_key = 'run_{}'.format(run_ind)
-                out[sess_key][run_key] = read_raw_cnt(fname, preload=True)
+                out[sess_key][run_key] = read_raw_cnt(fname, preload=True,
+                                                      eog=['VEOU', 'VEOL'])
                 out[sess_key][run_key].set_montage(
                     make_standard_montage('standard_1005'))
         return out

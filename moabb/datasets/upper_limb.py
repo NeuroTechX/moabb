@@ -94,9 +94,9 @@ class Ofner2017(BaseDataset):
             montage = make_standard_montage('standard_1005')
             data = {}
             for ii, path in enumerate(paths):
-                raw = read_raw_edf(path, montage=montage, eog=eog,
-                                   misc=range(64, 96), preload=True,
-                                   verbose='ERROR')
+                raw = read_raw_edf(path, eog=eog, misc=range(64, 96),
+                                   preload=True, verbose='ERROR')
+                raw.set_montage(montage)
                 # there is nan in the data
                 raw._data[np.isnan(raw._data)] = 0
                 data['run_%d' % ii] = raw

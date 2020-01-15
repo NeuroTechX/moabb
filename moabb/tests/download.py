@@ -18,8 +18,17 @@ import mne
 
 
 class Test_Downloads(unittest.TestCase):
-
+    
     def run_dataset(self, dataset):
+        def _get_events(raw):
+            stim_channels = mne.utils._get_stim_channel(
+                None, raw.info, raise_error=False)
+            if len(stim_channels) > 0:
+                events = mne.find_events(raw, shortest_event=0, verbose=False)
+            else:
+                events, _ = mne.events_from_annotations(raw, verbose=False)
+            return events
+
         obj = dataset()
         obj.subject_list = obj.subject_list[:2]
         data = obj.get_data(obj.subject_list)
@@ -44,7 +53,7 @@ class Test_Downloads(unittest.TestCase):
 
                 # each raw should contains events
                 for _, raw in runs.items():
-                    self.assertTrue(len(raw.info['events']) != 0)
+                    self.assertTrue(len(_get_events(raw) != 0))
 
     def test_cho2017(self):
         self.run_dataset(Cho2017)
