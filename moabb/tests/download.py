@@ -6,13 +6,15 @@ from moabb.datasets.alex_mi import AlexMI
 from moabb.datasets.physionet_mi import PhysionetMI
 from moabb.datasets.bnci import (BNCI2014001, BNCI2014002, BNCI2014004,
                                  BNCI2015001, BNCI2015004)
-from moabb.datasets.openvibe_mi import OpenvibeMI
 from moabb.datasets.bbci_eeg_fnirs import Shin2017A, Shin2017B
 from moabb.datasets.upper_limb import Ofner2017
+from moabb.datasets.mpi_mi import MunichMI
+from moabb.datasets.schirrmeister2017 import Schirrmeister2017
+from moabb.datasets.Weibo2014 import Weibo2014
+from moabb.datasets.Zhou2016 import Zhou2016
+from moabb.datasets.ssvep_exo import SSVEPExo
 import unittest
 import mne
-
-_ = mne.set_log_level('CRITICAL')
 
 
 class Test_Downloads(unittest.TestCase):
@@ -40,6 +42,10 @@ class Test_Downloads(unittest.TestCase):
                 for _, raw in runs.items():
                     self.assertTrue(isinstance(raw, mne.io.BaseRaw))
 
+                # each raw should contains events
+                for _, raw in runs.items():
+                    self.assertTrue(len(raw.info['events']) != 0)
+
     def test_cho2017(self):
         self.run_dataset(Cho2017)
 
@@ -61,9 +67,6 @@ class Test_Downloads(unittest.TestCase):
     def test_alexmi(self):
         self.run_dataset(AlexMI)
 
-    def test_ovmi(self):
-        self.run_dataset(OpenvibeMI)
-
     def test_physionet(self):
         self.run_dataset(PhysionetMI)
 
@@ -73,6 +76,21 @@ class Test_Downloads(unittest.TestCase):
 
     def test_upper_limb(self):
         self.run_dataset(Ofner2017)
+
+    def test_mpi_mi(self):
+        self.run_dataset(MunichMI)
+
+    def test_schirrmeister2017(self):
+        self.run_dataset(Schirrmeister2017)
+
+    def test_Weibo2014(self):
+        self.run_dataset(Weibo2014)
+
+    def test_Zhou2016(self):
+        self.run_dataset(Zhou2016)
+
+    def test_ssvep_exo(self):
+        self.run_dataset(SSVEPExo)
 
 
 if __name__ == '__main__':
