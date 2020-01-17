@@ -50,7 +50,7 @@ class SSVEPExo(BaseDataset):
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 13)),
-            sessions_per_subject=2,
+            sessions_per_subject=1,
             events={'13': 2, '17': 3, '21': 4, 'rest': 1},
             code='SSVEP Exoskeleton',
             interval=[2, 4],

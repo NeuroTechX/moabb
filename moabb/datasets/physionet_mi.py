@@ -6,8 +6,10 @@ from .base import BaseDataset
 from mne.io import read_raw_edf
 import mne
 from mne.datasets import eegbci
+from mne import get_config, set_config
+import os.path as osp
 
-BASE_URL = 'http://www.physionet.org/pn4/eegmmidb/'
+BASE_URL = 'http://archive.physionet.org/pn4/eegmmidb/'
 
 
 class PhysionetMI(BaseDataset):
@@ -90,16 +92,27 @@ class PhysionetMI(BaseDataset):
             self.hand_runs += [3, 7, 11]
 
     def _load_one_run(self, subject, run, preload=True):
+        if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
+            set_config('MNE_DATASETS_EEGBCI_PATH',
+                       osp.join(osp.expanduser("~"), "mne_data"))
         raw_fname = eegbci.load_data(subject, runs=[run], verbose='ERROR',
                                      base_url=BASE_URL)[0]
         raw = read_raw_edf(raw_fname, preload=preload, verbose='ERROR')
         raw.rename_channels(lambda x: x.strip('.'))
+        raw.rename_channels(lambda x: x.upper())
+        raw.rename_channels({'AFZ': 'AFz', 'PZ': 'Pz', 'FPZ': 'Fpz',
+                             'FCZ': 'FCz', 'FP1': 'Fp1', 'CZ': 'Cz',
+                             'OZ': 'Oz', 'POZ': 'POz', 'IZ': 'Iz',
+                             'CPZ': 'CPz', 'FP2': 'Fp2', 'FZ': 'Fz'})
         raw.set_montage(mne.channels.make_standard_montage('standard_1005'))
         return raw
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
         data = {}
+        if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
+            set_config('MNE_DATASETS_EEGBCI_PATH',
+                       osp.join(osp.expanduser("~"), "mne_data"))
 
         # baseline runs
         data['baseline_eye_open'] = self._load_one_run(subject, 1)
@@ -127,6 +140,9 @@ class PhysionetMI(BaseDataset):
         if subject not in self.subject_list:
             raise(ValueError("Invalid subject number"))
 
+        if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
+            set_config('MNE_DATASETS_EEGBCI_PATH',
+                       osp.join(osp.expanduser("~"), "mne_data"))
         paths = eegbci.load_data(subject,
                                  runs=[1, 2] + self.hand_runs + self.feet_runs,
                                  verbose=verbose)

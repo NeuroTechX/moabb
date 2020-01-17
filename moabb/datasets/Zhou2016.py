@@ -6,6 +6,7 @@ https://doi.org/10.1371/journal.pone.0114853
 from .base import BaseDataset
 import zipfile as z
 from mne.io import read_raw_cnt
+from mne.channels import make_standard_montage
 from mne.datasets.utils import _get_path, _do_path_update
 from mne.utils import _fetch_file
 import os
@@ -93,7 +94,9 @@ class Zhou2016(BaseDataset):
             for run_ind, fname in enumerate(runlist):
                 run_key = 'run_{}'.format(run_ind)
                 out[sess_key][run_key] = read_raw_cnt(fname, preload=True,
-                                                      montage='standard_1005')
+                                                      eog=['VEOU', 'VEOL'])
+                out[sess_key][run_key].set_montage(
+                    make_standard_montage('standard_1005'))
         return out
 
     def data_path(self, subject, path=None, force_update=False,

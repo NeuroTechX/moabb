@@ -480,6 +480,8 @@ def _convert_mi(filename, ch_names, ch_types):
 
     for run in run_array:
         raw, evd = _convert_run(run, ch_names, ch_types, None)
+        if raw is None:
+            continue
         runs.append(raw)
         event_id.update(evd)
     # change labels to match rest
@@ -522,6 +524,8 @@ def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
     # some runs does not contains trials i.e baseline runs
     if len(run.trial) > 0:
         trigger[run.trial - 1, 0] = run.y
+    else:
+        return None, None
 
     eeg_data = np.c_[eeg_data, trigger]
     ch_names = ch_names + ['stim']

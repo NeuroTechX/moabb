@@ -105,7 +105,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
 
         return data
 
-    def download(self, path=None, force_update=False,
+    def download(self, subject_list=None, path=None, force_update=False,
                  update_path=None, verbose=None):
         """Download all data from the dataset.
 
@@ -114,6 +114,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
 
         Parameters
         ----------
+        subject_list : list of int | None
+            List of subjects id to download, if None all subjects
+            are downloaded.
         path : None | str
             Location of where to look for the data storing location.
             If None, the environment variable or config parameter
@@ -130,7 +133,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
             If not None, override default verbose level
             (see :func:`mne.verbose`).
         """
-        for subject in self.subject_list:
+        if subject_list is None:
+            subject_list = self.subject_list
+        for subject in subject_list:
             self.data_path(subject=subject, path=path,
                            force_update=force_update,
                            update_path=update_path, verbose=verbose)
