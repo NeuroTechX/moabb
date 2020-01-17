@@ -1,7 +1,7 @@
 '''
 Tests to ensure that datasets download correctly
 '''
-from moabb.datasets.gigadb import Cho2017
+# from moabb.datasets.gigadb import Cho2017
 from moabb.datasets.alex_mi import AlexMI
 from moabb.datasets.physionet_mi import PhysionetMI
 from moabb.datasets.bnci import (BNCI2014001, BNCI2014002, BNCI2014004,
@@ -58,8 +58,8 @@ class Test_Downloads(unittest.TestCase):
                 for _, raw in runs.items():
                     self.assertTrue(len(_get_events(raw) != 0))
 
-    def test_cho2017(self):
-        self.run_dataset(Cho2017)
+    # def test_cho2017(self):
+    #     self.run_dataset(Cho2017)
 
     def test_bnci_1401(self):
         self.run_dataset(BNCI2014001)
