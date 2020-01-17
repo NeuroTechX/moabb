@@ -9,7 +9,7 @@ from mne.datasets import eegbci
 from mne import get_config, set_config
 import os.path as osp
 
-BASE_URL = 'http://www.physionet.org/pn4/eegmmidb/'
+BASE_URL = 'http://archive.physionet.org/pn4/eegmmidb/'
 
 
 class PhysionetMI(BaseDataset):
