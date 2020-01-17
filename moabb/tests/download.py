@@ -70,8 +70,17 @@ class Test_Downloads(unittest.TestCase):
     def test_bnci_1404(self):
         self.run_dataset(BNCI2014004)
 
+    def test_bnci_1408(self):
+        self.run_dataset(BNCI2014008)
+
+    def test_bnci_1409(self):
+        self.run_dataset(BNCI2014009)
+
     def test_bnci_1501(self):
         self.run_dataset(BNCI2015001)
+
+    def test_bnci_1503(self):
+        self.run_dataset(BNCI2015003)
 
     def test_bnci_1504(self):
         self.run_dataset(BNCI2015004)
