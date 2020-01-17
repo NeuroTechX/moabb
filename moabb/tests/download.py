@@ -21,7 +21,7 @@ import mne
 
 class Test_Downloads(unittest.TestCase):
 
-    def run_dataset(self, dataset):
+    def run_dataset(self, dataset, subj=(0, 2)):
         def _get_events(raw):
             stim_channels = mne.utils._get_stim_channel(
                 None, raw.info, raise_error=False)
@@ -32,7 +32,7 @@ class Test_Downloads(unittest.TestCase):
             return events
 
         obj = dataset()
-        obj.subject_list = obj.subject_list[:2]
+        obj.subject_list = obj.subject_list[subj[0]:subj[1]]
         data = obj.get_data(obj.subject_list)
 
         # get data return a dict
@@ -44,7 +44,6 @@ class Test_Downloads(unittest.TestCase):
         # session must be a dict, and the length must match
         for _, sessions in data.items():
             self.assertTrue(isinstance(sessions, dict))
-            self.assertEqual(len(sessions), obj.n_sessions)
             self.assertTrue(len(sessions) >= obj.n_sessions)
 
             # each session is a dict, with multiple runs
@@ -102,7 +101,7 @@ class Test_Downloads(unittest.TestCase):
         self.run_dataset(MunichMI)
 
     def test_schirrmeister2017(self):
-        self.run_dataset(Schirrmeister2017)
+        self.run_dataset(Schirrmeister2017, subj=(0, 1))
 
     def test_Weibo2014(self):
         self.run_dataset(Weibo2014)
