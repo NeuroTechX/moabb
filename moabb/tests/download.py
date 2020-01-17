@@ -20,7 +20,7 @@ import mne
 
 
 class Test_Downloads(unittest.TestCase):
-    
+
     def run_dataset(self, dataset):
         def _get_events(raw):
             stim_channels = mne.utils._get_stim_channel(
@@ -112,6 +112,9 @@ class Test_Downloads(unittest.TestCase):
 
     def test_ssvep_exo(self):
         self.run_dataset(SSVEPExo)
+
+    def test_bi2013a(self):
+        self.run_dataset(bi2013a)
 
 
 if __name__ == '__main__':

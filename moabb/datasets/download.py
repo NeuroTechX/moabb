@@ -9,6 +9,7 @@ from mne.utils import _fetch_file, _url_to_local_path, verbose
 from mne import get_config, set_config
 import os.path as osp
 
+
 @verbose
 def data_path(url, sign, path=None, force_update=False, update_path=True,
               verbose=None):
