@@ -82,7 +82,7 @@ If you want to report a problem or suggest an enhancement we'd love for you to [
 
 You might be interested in:
 
-* [MOABB documentaion][link_moabb_docs]
+* [MOABB documentation][link_moabb_docs]
 
 And of course, you'll want to know our:
 
