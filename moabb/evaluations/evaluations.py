@@ -61,9 +61,15 @@ class WithinSessionEvaluation(BaseEvaluation):
 
         le = LabelEncoder()
         y = le.fit_transform(y)
-        acc = cross_val_score(clf, X, y, cv=cv, scoring=scoring,
-                              n_jobs=self.n_jobs, error_score=self.error_score)
-        return acc.mean()
+        try:
+            acc = cross_val_score(clf, X, y, cv=cv, scoring=scoring,
+                                  n_jobs=self.n_jobs, error_score=self.error_score).mean()
+        except ValueError as e:
+            if self.error_score == 'raise':
+                raise e
+            elif self.error_score is np.nan:
+                acc = np.nan
+        return acc
 
     def is_valid(self, dataset):
         return True
