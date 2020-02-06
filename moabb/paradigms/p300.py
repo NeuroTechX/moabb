@@ -108,6 +108,14 @@ class BaseP300(BaseParadigm):
 
         # pick events, based on event_id
         try:
+            if type(event_id['Target']) == list:
+                if type(event_id['NonTarget']) == list:
+                    event_id_new = dict(Target=1, NonTarget=0)
+                    events = mne.merge_events(events, event_id['Target'], 1)
+                    events = mne.merge_events(events, event_id['NonTarget'], 0)
+                    event_id = event_id_new
+                else:
+                    raise ValueError('Please provide both Target/NonTarget event ids in lists or neither.')
             events = mne.pick_events(events, include=list(event_id.values()))
         except RuntimeError:
             # skip raw if no event found
