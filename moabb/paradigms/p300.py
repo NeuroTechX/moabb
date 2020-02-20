@@ -79,7 +79,7 @@ class BaseP300(BaseParadigm):
     def used_events(self, dataset):
         pass
 
-    def process_raw(self, raw, dataset):
+    def process_raw(self, raw, dataset, return_epochs=False):
         # find the events, first check stim_channels then annotations
         stim_channels = mne.utils._get_stim_channel(
             None, raw.info, raise_error=False)
@@ -126,7 +126,10 @@ class BaseP300(BaseParadigm):
             if self.resample is not None:
                 epochs = epochs.resample(self.resample)
             # rescale to work with uV
-            X.append(dataset.unit_factor * epochs.get_data())
+            if return_epochs:
+                X.append(epochs)
+            else:
+                X.append(dataset.unit_factor * epochs.get_data())
 
         inv_events = {k: v for v, k in event_id.items()}
         labels = np.array([inv_events[e] for e in epochs.events[:, -1]])
