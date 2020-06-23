@@ -299,9 +299,7 @@ def _load_data_003_2015(subject,
     ch_types = ['eeg'] * 8 + ['stim'] * 2
     montage = make_standard_montage('standard_1005')
 
-    info = create_info(
-        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
-
+    info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
     sessions = {}
     sessions['session_0'] = {}
     for ri, run in enumerate([data.train, data.test]):
@@ -325,6 +323,7 @@ def _load_data_003_2015(subject,
 
         eeg_data = np.r_[run[1:-2] * 1e-6, targets, flashs]
         raw = RawArray(data=eeg_data, info=info, verbose=verbose)
+        raw.set_montage(montage)
         sessions['session_0']['run_' + str(ri)] = raw
 
     return sessions
@@ -532,8 +531,9 @@ def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
     ch_types = ch_types + ['stim']
     event_id = {ev: (ii + 1) for ii, ev in enumerate(run.classes)}
     info = create_info(
-        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
+    raw.set_montage(montage)
     return raw, event_id
 
 
@@ -552,8 +552,9 @@ def _convert_run_p300_sl(run, verbose=None):
     event_id = {ev: (ii + 1) for ii, ev in enumerate(run.classes)}
     event_id.update({ev: (ii + 3) for ii, ev in enumerate(run.classes_stim)})
     info = create_info(
-        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
+    raw.set_montage(montage)
     return raw, event_id
 
 
@@ -596,9 +597,9 @@ def _convert_run_bbci(run, ch_types, verbose=None):
     ch_names = ch_names + ['Target', 'Flash']
     ch_types = ch_types + ['stim'] * 2
 
-    info = create_info(
-        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+    info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
+    raw.set_montage(montage)
     return raw, event_id
 
 
@@ -629,8 +630,9 @@ def _convert_run_epfl(run, verbose=None):
     event_id = {'correct': 1, 'error': 2}
 
     info = create_info(
-        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq, montage=montage)
+        ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
     raw = RawArray(data=eeg_data.T, info=info, verbose=verbose)
+    raw.set_montage(montage)
     return raw, event_id
 
 
