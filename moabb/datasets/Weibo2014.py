@@ -127,7 +127,7 @@ class Weibo2014(BaseDataset):
         ch_types[61] = 'misc'
         info = mne.create_info(ch_names=ch_names + ['STIM014'],
                                ch_types=ch_types + ['stim'],
-                               sfreq=200, montage=None)
+                               sfreq=200)
         # until we get the channel names montage is None
         event_ids = data['label'].ravel()
         raw_data = np.transpose(data['data'], axes=[2, 0, 1])
