@@ -33,7 +33,8 @@ class BaseEvaluation(ABC):
     '''
 
     def __init__(self, paradigm, datasets=None, random_state=None, n_jobs=1,
-                 overwrite=False, error_score='raise', suffix='', hdf5_path=None):
+                 overwrite=False, error_score='raise', suffix='', 
+                 hdf5_path=None):
         self.random_state = random_state
         self.n_jobs = n_jobs
         self.error_score = error_score
