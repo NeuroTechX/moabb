@@ -196,8 +196,8 @@ class Test_P300(unittest.TestCase):
         dataset = FakeDataset(event_list=['Target', 'NonTarget'],
                               paradigm='p300')
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
-        self.assertEquals(len(np.unique(labels)), 2)
-        self.assertEquals(list(np.unique(labels)),
+        self.assertEqual(len(np.unique(labels)), 2)
+        self.assertEqual(list(np.unique(labels)),
                           sorted(['Target', 'NonTarget']))
 
     def test_BaseImagery_noevent(self):
