@@ -48,8 +48,9 @@ class FakeDataset(BaseDataset):
         eeg_data = np.c_[eeg_data, y]
 
         info = create_info(ch_names=ch_names, ch_types=ch_types,
-                           sfreq=sfreq, montage=montage)
+                           sfreq=sfreq)
         raw = RawArray(data=eeg_data.T, info=info, verbose=False)
+        raw.set_montage(montage)
         return raw
 
     def data_path(self, subject, path=None, force_update=False,
