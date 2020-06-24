@@ -101,22 +101,22 @@ class BaseParadigm(metaclass=ABCMeta):
             A dataframe containing the metadata
 
         """
+        # get events id
+        event_id = self.used_events(dataset)
+
         # find the events, first check stim_channels then annotations
         stim_channels = mne.utils._get_stim_channel(
             None, raw.info, raise_error=False)
         if len(stim_channels) > 0:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
-            events, _ = mne.events_from_annotations(raw, verbose=False)
-
+            events, _ = mne.events_from_annotations(raw, event_id=event_id,
+                                                    verbose=False)
         channels = () if self.channels is None else self.channels
 
         # picks channels
         picks = mne.pick_types(raw.info, eeg=True, stim=False,
                                include=channels)
-
-        # get events id
-        event_id = self.used_events(dataset)
 
         # pick events, based on event_id
         try:

@@ -5,6 +5,7 @@ import numpy as np
 import datetime as dt
 from moabb.datasets.base import BaseDataset
 from moabb.datasets import download as dl
+from mne.channels import make_standard_montage
 from scipy.io import loadmat
 import zipfile
 
@@ -149,11 +150,13 @@ class EPFLP300(BaseDataset):
         signals = np.concatenate([signals, stim_channel[None, :]])
 
         # create info dictionary
-        info = mne.create_info(ch_names, sfreq, ch_types, montage='biosemi32')
+        info = mne.create_info(ch_names, sfreq, ch_types)
         info['description'] = 'EPFL P300 dataset'
 
         # create the Raw structure
         raw = mne.io.RawArray(signals, info, verbose=False)
+        montage = make_standard_montage('biosemi32')
+        raw.set_montage(montage)
 
         return raw
 

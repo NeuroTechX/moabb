@@ -33,10 +33,12 @@ class BaseEvaluation(ABC):
     '''
 
     def __init__(self, paradigm, datasets=None, random_state=None, n_jobs=1,
-                 overwrite=False, error_score='raise', suffix=''):
+                 overwrite=False, error_score='raise', suffix='',
+                 hdf5_path=None):
         self.random_state = random_state
         self.n_jobs = n_jobs
         self.error_score = error_score
+        self.hdf5_path = hdf5_path
 
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
@@ -82,7 +84,8 @@ class BaseEvaluation(ABC):
         self.results = Results(type(self),
                                type(self.paradigm),
                                overwrite=overwrite,
-                               suffix=suffix)
+                               suffix=suffix,
+                               hdf5_path=self.hdf5_path)
 
     def process(self, pipelines):
         '''Runs all pipelines on all datasets.
