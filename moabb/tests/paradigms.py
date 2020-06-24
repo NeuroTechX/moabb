@@ -198,7 +198,7 @@ class Test_P300(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
         self.assertEqual(len(np.unique(labels)), 2)
         self.assertEqual(list(np.unique(labels)),
-                          sorted(['Target', 'NonTarget']))
+                         sorted(['Target', 'NonTarget']))
 
     def test_BaseImagery_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap
