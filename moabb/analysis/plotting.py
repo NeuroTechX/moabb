@@ -46,7 +46,7 @@ def score_plot(data, pipelines=None):
     ax.axvline(0.5, linestyle='--', color='k', linewidth=2)
     ax.set_title('Scores per dataset and algorithm')
     handles, labels = ax.get_legend_handles_labels()
-    color_dict = {l: h.get_facecolor()[0] for l, h in zip(labels, handles)}
+    color_dict = {lb: h.get_facecolor()[0] for lb, h in zip(labels, handles)}
     plt.tight_layout()
     return fig, color_dict
 
@@ -105,8 +105,8 @@ def summary_plot(sig_df, effect_df, p_threshold=0.05, simplify=True):
                 fmt='', cmap=palette, linewidths=1,
                 linecolor='0.8', annot_kws={'size': 10}, cbar=False,
                 vmin=-np.log(0.05), vmax=-np.log(1e-100))
-    for l in ax.get_xticklabels():
-        l.set_rotation(45)
+    for lb in ax.get_xticklabels():
+        lb.set_rotation(45)
     ax.tick_params(axis='y', rotation=0.9)
     ax.set_title("Algorithm comparison")
     plt.tight_layout()
