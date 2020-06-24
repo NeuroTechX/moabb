@@ -39,7 +39,7 @@ class Results:
     '''
 
     def __init__(self, evaluation_class, paradigm_class, suffix='',
-                 overwrite=False):
+                 overwrite=False, hdf5_path=None):
         """
         class that will abstract result storage
         """
@@ -49,8 +49,11 @@ class Results:
         assert issubclass(evaluation_class, BaseEvaluation)
         assert issubclass(paradigm_class, BaseParadigm)
 
-        self.mod_dir = os.path.dirname(
-            os.path.abspath(inspect.getsourcefile(moabb)))
+        if hdf5_path is None:
+            self.mod_dir = os.path.dirname(
+                os.path.abspath(inspect.getsourcefile(moabb)))
+        else:
+            self.mod_dir = os.path.abspath(hdf5_path)
         self.filepath = os.path.join(self.mod_dir, 'results',
                                      paradigm_class.__name__,
                                      evaluation_class.__name__,
