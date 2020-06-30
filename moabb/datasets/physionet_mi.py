@@ -133,7 +133,6 @@ class PhysionetMI(BaseDataset):
                     description_new.append('right_hand')
             raw.annotations.description = np.array(description_new)
             data['run_%d' % run] = raw
-        
         # feet runss
         for run in self.feet_runs:
             raw = self._load_one_run(subject, run)
