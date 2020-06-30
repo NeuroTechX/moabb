@@ -8,6 +8,7 @@ import mne
 from mne.datasets import eegbci
 from mne import get_config, set_config
 import os.path as osp
+import numpy as np
 
 BASE_URL = 'http://archive.physionet.org/pn4/eegmmidb/'
 
@@ -120,17 +121,33 @@ class PhysionetMI(BaseDataset):
 
         # hand runs
         for run in self.hand_runs:
-            data['run_%d' % run] = self._load_one_run(subject, run)
+            raw = self._load_one_run(subject, run)
+            description_old = raw.annotations.description
+            description_new = []
+            for description in description_old:
+                if description == 'T0':
+                    description_new.append('rest')
+                elif description == 'T1':
+                    description_new.append('left_hand')
+                elif description == 'T2':
+                    description_new.append('right_hand')
+            raw.annotations.description = np.array(description_new)
+            data['run_%d' % run] = raw
+
 
         # feet runs
         for run in self.feet_runs:
             raw = self._load_one_run(subject, run)
-
-            # modify stim channels to match new event ids. for feets runs,
-            # hand = 2 modified to 4, and feet = 3, modified to 5
-            stim = raw._data[-1]
-            raw._data[-1, stim == 2] = 4
-            raw._data[-1, stim == 3] = 5
+            description_old = raw.annotations.description
+            description_new = []
+            for description in description_old:
+                if description == 'T0':
+                    description_new.append('rest')
+                elif description == 'T1':
+                    description_new.append('hands')
+                elif description == 'T2':
+                    description_new.append('feet')
+            raw.annotations.description = np.array(description_new)
             data['run_%d' % run] = raw
 
         return {"session_0": data}
