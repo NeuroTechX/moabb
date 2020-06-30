@@ -68,7 +68,6 @@ class PhysionetMI(BaseDataset):
            resource for complex physiologic signals Circulation 2000 Volume
            101 Issue 23 pp. E215–E220.
     """
-
     def __init__(self, imagined=True, executed=False):
         super().__init__(
             subjects=list(range(1, 110)),
@@ -96,15 +95,27 @@ class PhysionetMI(BaseDataset):
         if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
             set_config('MNE_DATASETS_EEGBCI_PATH',
                        osp.join(osp.expanduser("~"), "mne_data"))
-        raw_fname = eegbci.load_data(subject, runs=[run], verbose='ERROR',
+        raw_fname = eegbci.load_data(subject,
+                                     runs=[run],
+                                     verbose='ERROR',
                                      base_url=BASE_URL)[0]
         raw = read_raw_edf(raw_fname, preload=preload, verbose='ERROR')
         raw.rename_channels(lambda x: x.strip('.'))
         raw.rename_channels(lambda x: x.upper())
-        raw.rename_channels({'AFZ': 'AFz', 'PZ': 'Pz', 'FPZ': 'Fpz',
-                             'FCZ': 'FCz', 'FP1': 'Fp1', 'CZ': 'Cz',
-                             'OZ': 'Oz', 'POZ': 'POz', 'IZ': 'Iz',
-                             'CPZ': 'CPz', 'FP2': 'Fp2', 'FZ': 'Fz'})
+        raw.rename_channels({
+            'AFZ': 'AFz',
+            'PZ': 'Pz',
+            'FPZ': 'Fpz',
+            'FCZ': 'FCz',
+            'FP1': 'Fp1',
+            'CZ': 'Cz',
+            'OZ': 'Oz',
+            'POZ': 'POz',
+            'IZ': 'Iz',
+            'CPZ': 'CPz',
+            'FP2': 'Fp2',
+            'FZ': 'Fz'
+        })
         raw.set_montage(mne.channels.make_standard_montage('standard_1005'))
         return raw
 
@@ -134,8 +145,7 @@ class PhysionetMI(BaseDataset):
             raw.annotations.description = np.array(description_new)
             data['run_%d' % run] = raw
 
-
-        # feet runs
+        # feet runss
         for run in self.feet_runs:
             raw = self._load_one_run(subject, run)
             description_old = raw.annotations.description
@@ -152,10 +162,14 @@ class PhysionetMI(BaseDataset):
 
         return {"session_0": data}
 
-    def data_path(self, subject, path=None, force_update=False,
-                  update_path=None, verbose=None):
+    def data_path(self,
+                  subject,
+                  path=None,
+                  force_update=False,
+                  update_path=None,
+                  verbose=None):
         if subject not in self.subject_list:
-            raise(ValueError("Invalid subject number"))
+            raise (ValueError("Invalid subject number"))
 
         if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
             set_config('MNE_DATASETS_EEGBCI_PATH',
