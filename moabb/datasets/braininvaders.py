@@ -169,7 +169,7 @@ class bi2013a(BaseDataset):
         meta_file = os.path.join('subject{:d}'.format(subject), 'meta.yml')
         meta_path = path_folder + meta_file
         with open(meta_path, 'r') as stream:
-            meta = yaml.load(stream)
+            meta = yaml.load(stream, Loader=yaml.FullLoader)
         conditions = []
         if self.adaptive:
             conditions = conditions + ['adaptive']

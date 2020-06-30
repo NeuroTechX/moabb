@@ -112,7 +112,7 @@ def parse_pipelines_from_directory(d):
             content = _file.read()
 
             # load config
-            config_dict = yaml.load(content)
+            config_dict = yaml.load(content, Loader=yaml.FullLoader)
             ppl = create_pipeline_from_config(config_dict['pipeline'])
             pipeline_configs.append({'paradigms': config_dict['paradigms'],
                                      'pipeline': ppl,
@@ -187,7 +187,7 @@ if __name__ == '__main__':
     context_params = {}
     if options.context is not None:
         with open(options.context, 'r') as cfile:
-            context_params = yaml.load(cfile.read())
+            context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
     paradigms = generate_paradigms(pipeline_configs, context_params)
 
