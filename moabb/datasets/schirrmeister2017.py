@@ -198,8 +198,9 @@ class BBCIDataset(object):
         """
         with h5py.File(filename, 'r') as h5file:
             clab_set = h5file['nfo']['clab'][:].squeeze()
-            all_sensor_names = [''.join(chr(c.squeeze()) for c in h5file[obj_ref]) for
-                                obj_ref in clab_set]
+            all_sensor_names = [''.join(
+                chr(c.squeeze()) for c in h5file[obj_ref])
+                                for obj_ref in clab_set]
             if pattern is not None:
                 all_sensor_names = filter(
                     lambda sname: re.search(pattern, sname),
