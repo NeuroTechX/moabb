@@ -105,13 +105,12 @@ class BaseParadigm(metaclass=ABCMeta):
         event_id = self.used_events(dataset)
 
         # find the events, first check stim_channels then annotations
-        stim_channels = mne.utils._get_stim_channel(
-            None, raw.info, raise_error=False)
+        stim_channels = mne.utils._get_stim_channel(None, raw.info,
+                                                    raise_error=False)
         if len(stim_channels) > 0:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
-            events, _ = mne.events_from_annotations(raw, event_id=event_id,
-                                                    verbose=False)
+            events, _ = mne.events_from_annotations(raw, verbose=False)
         channels = () if self.channels is None else self.channels
 
         # picks channels
@@ -143,6 +142,7 @@ class BaseParadigm(metaclass=ABCMeta):
                                 tmin=tmin, tmax=tmax, proj=False,
                                 baseline=None, preload=True,
                                 verbose=False, picks=picks,
+                                event_repeated='drop',
                                 on_missing='ignore')
             if self.resample is not None:
                 epochs = epochs.resample(self.resample)
