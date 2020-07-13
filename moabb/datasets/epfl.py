@@ -116,6 +116,13 @@ class EPFLP300(BaseDataset):
             'MA2']
         ch_types = ['eeg'] * 32 + ['misc'] * 2
 
+        # The last X entries are 0 for all signals. This leads to
+        # artifacts when epoching and band-pass filtering the data.
+        # Correct the signals for this.
+        sig_i = np.where(
+            np.diff(np.all(signals == 0, axis=0).astype(int)) != 0)[0][0]
+        signals = signals[:, :sig_i]
+        signals *= 1e-6  # data is stored as uV, but MNE expects V
         # we have to re-reference the signals
         # the average signal on the mastoids electrodes is used as reference
         references = [32, 33]
