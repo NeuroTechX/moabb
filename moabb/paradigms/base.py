@@ -117,7 +117,6 @@ class BaseParadigm(metaclass=ABCMeta):
                                                         verbose=False)
             except ValueError:
                 events, _ = mne.events_from_annotations(raw, verbose=False)
-        channels = () if self.channels is None else self.channels
 
         # picks channels
         if self.channels is None:
