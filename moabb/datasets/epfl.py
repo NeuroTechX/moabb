@@ -5,6 +5,7 @@ import numpy as np
 import datetime as dt
 from moabb.datasets.base import BaseDataset
 from moabb.datasets import download as dl
+from mne.channels import make_standard_montage
 from scipy.io import loadmat
 import zipfile
 
@@ -115,6 +116,13 @@ class EPFLP300(BaseDataset):
             'MA2']
         ch_types = ['eeg'] * 32 + ['misc'] * 2
 
+        # The last X entries are 0 for all signals. This leads to
+        # artifacts when epoching and band-pass filtering the data.
+        # Correct the signals for this.
+        sig_i = np.where(
+            np.diff(np.all(signals == 0, axis=0).astype(int)) != 0)[0][0]
+        signals = signals[:, :sig_i]
+        signals *= 1e-6  # data is stored as uV, but MNE expects V
         # we have to re-reference the signals
         # the average signal on the mastoids electrodes is used as reference
         references = [32, 33]
@@ -149,11 +157,13 @@ class EPFLP300(BaseDataset):
         signals = np.concatenate([signals, stim_channel[None, :]])
 
         # create info dictionary
-        info = mne.create_info(ch_names, sfreq, ch_types, montage='biosemi32')
+        info = mne.create_info(ch_names, sfreq, ch_types)
         info['description'] = 'EPFL P300 dataset'
 
         # create the Raw structure
         raw = mne.io.RawArray(signals, info, verbose=False)
+        montage = make_standard_montage('biosemi32')
+        raw.set_montage(montage)
 
         return raw
 
