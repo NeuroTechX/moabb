@@ -110,7 +110,8 @@ class BaseParadigm(metaclass=ABCMeta):
         if len(stim_channels) > 0:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
-            events, _ = mne.events_from_annotations(raw, verbose=False)
+            events, _ = mne.events_from_annotations(raw, event_id=event_id,
+                                                    verbose=False)
 
         # picks channels
         if self.channels is None:
