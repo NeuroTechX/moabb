@@ -110,12 +110,19 @@ class BaseParadigm(metaclass=ABCMeta):
         if len(stim_channels) > 0:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
-            events, _ = mne.events_from_annotations(raw, verbose=False)
-        channels = () if self.channels is None else self.channels
+            ev_selected = {str(v): v for v in event_id.values()}
+            try:
+                events, _ = mne.events_from_annotations(raw,
+                                                        event_id=ev_selected,
+                                                        verbose=False)
+            except ValueError:
+                events, _ = mne.events_from_annotations(raw, verbose=False)
 
         # picks channels
-        picks = mne.pick_types(raw.info, eeg=True, stim=False,
-                               include=channels)
+        if self.channels is None:
+            picks = mne.pick_types(raw.info, eeg=True, stim=False)
+        else:
+            picks = mne.pick_types(raw.info, stim=False, include=self.channels)
 
         # pick events, based on event_id
         try:
