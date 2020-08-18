@@ -1,6 +1,6 @@
 from moabb.datasets.base import BaseDataset
 
-from mne.io import read_raw_edf
+from mne.io import read_raw_gdf
 from mne.channels import make_standard_montage
 import numpy as np
 
@@ -94,7 +94,7 @@ class Ofner2017(BaseDataset):
             montage = make_standard_montage('standard_1005')
             data = {}
             for ii, path in enumerate(paths):
-                raw = read_raw_edf(path, eog=eog, misc=range(64, 96),
+                raw = read_raw_gdf(path, eog=eog, misc=range(64, 96),
                                    preload=True, verbose='ERROR')
                 raw.set_montage(montage)
                 # there is nan in the data
