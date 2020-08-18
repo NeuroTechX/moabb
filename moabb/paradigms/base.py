@@ -110,10 +110,9 @@ class BaseParadigm(metaclass=ABCMeta):
         if len(stim_channels) > 0:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
-            ev_selected = {str(v): v for v in event_id.values()}
             try:
                 events, _ = mne.events_from_annotations(raw,
-                                                        event_id=ev_selected,
+                                                        event_id=event_id,
                                                         verbose=False)
             except ValueError:
                 events, _ = mne.events_from_annotations(raw, verbose=False)
