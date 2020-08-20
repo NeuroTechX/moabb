@@ -151,7 +151,7 @@ class BaseParadigm(metaclass=ABCMeta):
                 bmin = tmin
                 bmax = tmax
             epochs = mne.Epochs(raw_f, events, event_id=event_id, proj=False,
-                                tmin=baseline[0], tmax=dataset.interval[1],
+                                tmin=bmin, tmax=bmax,
                                 baseline=baseline, preload=True,
                                 verbose=False, picks=picks,
                                 event_repeated='drop',
