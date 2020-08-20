@@ -52,7 +52,7 @@ class BaseSSVEP(BaseParadigm):
     """
 
     def __init__(self, filters=[(7, 45)], events=None, n_classes=2, tmin=0.0,
-                 tmax=None, baseline= None, channels=None, resample=None):
+                 tmax=None, baseline=None, channels=None, resample=None):
         super().__init__()
         self.filters = filters
         self.events = events
