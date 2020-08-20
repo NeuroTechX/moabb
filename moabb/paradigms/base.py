@@ -148,8 +148,8 @@ class BaseParadigm(metaclass=ABCMeta):
             else:
                 bmin = tmin
                 bmax = tmax
-            epochs = mne.Epochs(raw_f, events, event_id=event_id, proj=False,
-                                tmin=bmin, tmax=bmax,
+            epochs = mne.Epochs(raw_f, events, event_id=event_id,
+                                tmin=bmin, tmax=bmax, proj=False,
                                 baseline=baseline, preload=True,
                                 verbose=False, picks=picks,
                                 event_repeated='drop',

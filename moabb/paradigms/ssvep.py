@@ -34,6 +34,14 @@ class BaseSSVEP(BaseParadigm):
         dataset specific task interval. tmax = 5 would mean the epoch will end
         5 second after the begining of the task as defined in the dataset. If
         None, use the dataset value.
+    
+    baseline: None | tuple of length 2
+            The time interval to consider as “baseline” when applying baseline
+            correction. If None, do not apply baseline correction.
+            If a tuple (a, b), the interval is between a and b (in seconds),
+            including the endpoints.
+            Correction is applied by computing the mean of the baseline period
+            and subtracting it from the data (see mne.Epochs)
 
     channels: list of str | None (default None)
         List of channel to select. If None, use all EEG channels available in
@@ -44,11 +52,12 @@ class BaseSSVEP(BaseParadigm):
     """
 
     def __init__(self, filters=[(7, 45)], events=None, n_classes=2, tmin=0.0,
-                 tmax=None, channels=None, resample=None):
+                 tmax=None, baseline= None, channels=None, resample=None):
         super().__init__()
         self.filters = filters
         self.events = events
         self.n_classes = n_classes
+        self.baseline = baseline
         self.channels = channels
         self.resample = resample
 
@@ -154,6 +163,14 @@ class SSVEP(BaseSSVEP):
         dataset specific task interval. tmax = 5 would mean the epoch will end
         5 second after the begining of the task as defined in the dataset. If
         None, use the dataset value.
+    
+    baseline: None | tuple of length 2
+            The time interval to consider as “baseline” when applying baseline
+            correction. If None, do not apply baseline correction.
+            If a tuple (a, b), the interval is between a and b (in seconds),
+            including the endpoints.
+            Correction is applied by computing the mean of the baseline period
+            and subtracting it from the data (see mne.Epochs)
 
     channels: list of str | None (default None)
         List of channel to select. If None, use all EEG channels available in
@@ -199,6 +216,14 @@ class FilterBankSSVEP(BaseSSVEP):
         dataset specific task interval. tmax = 5 would mean the epoch will end
         5 second after the begining of the task as defined in the dataset. If
         None, use the dataset value.
+    
+    baseline: None | tuple of length 2
+            The time interval to consider as “baseline” when applying baseline
+            correction. If None, do not apply baseline correction.
+            If a tuple (a, b), the interval is between a and b (in seconds),
+            including the endpoints.
+            Correction is applied by computing the mean of the baseline period
+            and subtracting it from the data (see mne.Epochs)
 
     channels: list of str | None (default None)
         List of channel to select. If None, use all EEG channels available in

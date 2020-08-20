@@ -129,6 +129,14 @@ class SinglePass(BaseMotorImagery):
         5 second after the begining of the task as defined in the dataset. If
         None, use the dataset value.
 
+    baseline: None | tuple of length 2
+            The time interval to consider as “baseline” when applying baseline
+            correction. If None, do not apply baseline correction.
+            If a tuple (a, b), the interval is between a and b (in seconds),
+            including the endpoints.
+            Correction is applied by computing the mean of the baseline period
+            and subtracting it from the data (see mne.Epochs)
+
     channels: list of str | None (default None)
         list of channel to select. If None, use all EEG channels available in
         the dataset.
@@ -306,6 +314,14 @@ class MotorImagery(SinglePass):
         dataset specific task interval. tmax = 5 would mean the epoch will end
         5 second after the begining of the task as defined in the dataset. If
         None, use the dataset value.
+
+    baseline: None | tuple of length 2
+            The time interval to consider as “baseline” when applying baseline
+            correction. If None, do not apply baseline correction.
+            If a tuple (a, b), the interval is between a and b (in seconds),
+            including the endpoints.
+            Correction is applied by computing the mean of the baseline period
+            and subtracting it from the data (see mne.Epochs)
 
     channels: list of str | None (default None)
         list of channel to select. If None, use all EEG channels available in
