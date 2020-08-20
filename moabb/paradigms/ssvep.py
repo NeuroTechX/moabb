@@ -34,7 +34,7 @@ class BaseSSVEP(BaseParadigm):
         dataset specific task interval. tmax = 5 would mean the epoch will end
         5 second after the begining of the task as defined in the dataset. If
         None, use the dataset value.
-    
+
     baseline: None | tuple of length 2
             The time interval to consider as “baseline” when applying baseline
             correction. If None, do not apply baseline correction.
@@ -163,7 +163,7 @@ class SSVEP(BaseSSVEP):
         dataset specific task interval. tmax = 5 would mean the epoch will end
         5 second after the begining of the task as defined in the dataset. If
         None, use the dataset value.
-    
+
     baseline: None | tuple of length 2
             The time interval to consider as “baseline” when applying baseline
             correction. If None, do not apply baseline correction.
@@ -216,7 +216,7 @@ class FilterBankSSVEP(BaseSSVEP):
         dataset specific task interval. tmax = 5 would mean the epoch will end
         5 second after the begining of the task as defined in the dataset. If
         None, use the dataset value.
-    
+
     baseline: None | tuple of length 2
             The time interval to consider as “baseline” when applying baseline
             correction. If None, do not apply baseline correction.
