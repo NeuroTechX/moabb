@@ -144,13 +144,20 @@ class BaseParadigm(metaclass=ABCMeta):
             raw_f = raw.copy().filter(fmin, fmax, method='iir',
                                       picks=picks, verbose=False)
             # epoch data
+            if baseline is not None:
+                bmin = baseline[0] if baseline[0] < tmin else tmin
+                bmax = baseline[1] if baseline[1] > tmax else tmax
+            else:
+                bmin = tmin
+                bmax = tmax
             epochs = mne.Epochs(raw_f, events, event_id=event_id, proj=False,
                                 tmin=baseline[0], tmax=dataset.interval[1],
                                 baseline=baseline, preload=True,
                                 verbose=False, picks=picks,
                                 event_repeated='drop',
                                 on_missing='ignore')
-            epochs.crop(tmin=tmin, tmax=tmax)
+            if bmin < tmin or bmax > tmax:
+                epochs.crop(tmin=tmin, tmax=tmax)
             if self.resample is not None:
                 epochs = epochs.resample(self.resample)
             # rescale to work with uV
