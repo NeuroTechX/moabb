@@ -62,7 +62,7 @@ class BaseParadigm(metaclass=ABCMeta):
         """
         pass
 
-    def process_raw(self, raw, dataset, return_epochs=False):
+    def process_raw(self, raw, dataset, baseline=None, return_epochs=False):
         """
         Process one raw data file.
 
@@ -75,14 +75,16 @@ class BaseParadigm(metaclass=ABCMeta):
 
         Parameters
         ----------
-
         raw: mne.Raw instance
             the raw EEG data.
-
         dataset : dataset instance
             The dataset corresponding to the raw file. mainly use to access
-            dataset specific information.
-
+            dataset specific information.          
+        baseline: None | tuple of length 2
+            The time interval to consider as “baseline” when applying baseline correction.
+            If None, do not apply baseline correction. 
+            If a tuple (a, b), the interval is between a and b (in seconds), including the endpoints.
+            Correction is applied by computing the mean of the baseline period and subtracting it from the data (see mne.Epochs)
         return_epochs: boolean
             This flag specifies whether to return only the data array or the
             complete processed mne.Epochs
@@ -93,10 +95,8 @@ class BaseParadigm(metaclass=ABCMeta):
             the data that will be used as features for the model
             Note: if return_epochs=True,  this is mne.Epochs
                   if return_epochs=False, this is np.ndarray
-
         labels: np.ndarray
             the labels for training / evaluating the model
-
         metadata: pd.DataFrame
             A dataframe containing the metadata
 
@@ -110,10 +110,9 @@ class BaseParadigm(metaclass=ABCMeta):
         if len(stim_channels) > 0:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
-            ev_selected = {str(v): v for v in event_id.values()}
             try:
                 events, _ = mne.events_from_annotations(raw,
-                                                        event_id=ev_selected,
+                                                        event_id=event_id,
                                                         verbose=False)
             except ValueError:
                 events, _ = mne.events_from_annotations(raw, verbose=False)
@@ -145,12 +144,13 @@ class BaseParadigm(metaclass=ABCMeta):
             raw_f = raw.copy().filter(fmin, fmax, method='iir',
                                       picks=picks, verbose=False)
             # epoch data
-            epochs = mne.Epochs(raw_f, events, event_id=event_id,
-                                tmin=tmin, tmax=tmax, proj=False,
-                                baseline=None, preload=True,
+            epochs = mne.Epochs(raw_f, events, event_id=event_id, proj=False,
+                                tmin=baseline[0], tmax=dataset.interval[1],
+                                baseline=baseline, preload=True,
                                 verbose=False, picks=picks,
                                 event_repeated='drop',
                                 on_missing='ignore')
+            epochs.crop(tmin=tmin, tmax=tmax)
             if self.resample is not None:
                 epochs = epochs.resample(self.resample)
             # rescale to work with uV
@@ -171,7 +171,8 @@ class BaseParadigm(metaclass=ABCMeta):
         metadata = pd.DataFrame(index=range(len(labels)))
         return X, labels, metadata
 
-    def get_data(self, dataset, subjects=None, return_epochs=False):
+    def get_data(self, dataset, subjects=None, baseline=None,
+                 return_epochs=False):
         """
         Return the data for a list of subject.
 
@@ -188,11 +189,21 @@ class BaseParadigm(metaclass=ABCMeta):
             A dataset instance.
         subjects: List of int
             List of subject number
+        baseline: None | tuple of length 2
+            The time interval to consider as “baseline” when applying baseline correction.
+            If None, do not apply baseline correction. 
+            If a tuple (a, b), the interval is between a and b (in seconds), including the endpoints.
+            Correction is applied by computing the mean of the baseline period and subtracting it from the data (see mne.Epochs)
+        return_epochs: boolean
+            This flag specifies whether to return only the data array or the
+            complete processed mne.Epochs
 
         returns
         -------
-        X : np.ndarray
+        X : Union[np.ndarray, mne.Epochs]
             the data that will be used as features for the model
+            Note: if return_epochs=True,  this is mne.Epochs
+                  if return_epochs=False, this is np.ndarray
         labels: np.ndarray
             the labels for training / evaluating the model
         metadata: pd.DataFrame
@@ -213,7 +224,7 @@ class BaseParadigm(metaclass=ABCMeta):
         for subject, sessions in data.items():
             for session, runs in sessions.items():
                 for run, raw in runs.items():
-                    proc = self.process_raw(raw, dataset,
+                    proc = self.process_raw(raw, dataset, baseline=baseline,
                                             return_epochs=return_epochs)
 
                     if proc is None:
