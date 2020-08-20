@@ -79,12 +79,14 @@ class BaseParadigm(metaclass=ABCMeta):
             the raw EEG data.
         dataset : dataset instance
             The dataset corresponding to the raw file. mainly use to access
-            dataset specific information.          
+            dataset specific information.
         baseline: None | tuple of length 2
-            The time interval to consider as “baseline” when applying baseline correction.
-            If None, do not apply baseline correction. 
-            If a tuple (a, b), the interval is between a and b (in seconds), including the endpoints.
-            Correction is applied by computing the mean of the baseline period and subtracting it from the data (see mne.Epochs)
+            The time interval to consider as “baseline” when applying baseline
+            correction. If None, do not apply baseline correction.
+            If a tuple (a, b), the interval is between a and b (in seconds),
+            including the endpoints.
+            Correction is applied by computing the mean of the baseline period
+            and subtracting it from the data (see mne.Epochs)
         return_epochs: boolean
             This flag specifies whether to return only the data array or the
             complete processed mne.Epochs
@@ -197,10 +199,12 @@ class BaseParadigm(metaclass=ABCMeta):
         subjects: List of int
             List of subject number
         baseline: None | tuple of length 2
-            The time interval to consider as “baseline” when applying baseline correction.
-            If None, do not apply baseline correction. 
-            If a tuple (a, b), the interval is between a and b (in seconds), including the endpoints.
-            Correction is applied by computing the mean of the baseline period and subtracting it from the data (see mne.Epochs)
+            The time interval to consider as “baseline” when applying baseline
+            correction. If None, do not apply baseline correction.
+            If a tuple (a, b), the interval is between a and b (in seconds),
+            including the endpoints.
+            Correction is applied by computing the mean of the baseline period
+            and subtracting it from the data (see mne.Epochs)
         return_epochs: boolean
             This flag specifies whether to return only the data array or the
             complete processed mne.Epochs
