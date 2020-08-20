@@ -62,7 +62,7 @@ class BaseParadigm(metaclass=ABCMeta):
         """
         pass
 
-    def process_raw(self, raw, dataset, baseline=None, return_epochs=False):
+    def process_raw(self, raw, dataset, return_epochs=False):
         """
         Process one raw data file.
 
@@ -80,13 +80,6 @@ class BaseParadigm(metaclass=ABCMeta):
         dataset : dataset instance
             The dataset corresponding to the raw file. mainly use to access
             dataset specific information.
-        baseline: None | tuple of length 2
-            The time interval to consider as “baseline” when applying baseline
-            correction. If None, do not apply baseline correction.
-            If a tuple (a, b), the interval is between a and b (in seconds),
-            including the endpoints.
-            Correction is applied by computing the mean of the baseline period
-            and subtracting it from the data (see mne.Epochs)
         return_epochs: boolean
             This flag specifies whether to return only the data array or the
             complete processed mne.Epochs
@@ -146,7 +139,10 @@ class BaseParadigm(metaclass=ABCMeta):
             raw_f = raw.copy().filter(fmin, fmax, method='iir',
                                       picks=picks, verbose=False)
             # epoch data
+            baseline = self.baseline
             if baseline is not None:
+                baseline = (self.baseline[0] + dataset.interval[0],
+                            self.baseline[1] + dataset.interval[0])
                 bmin = baseline[0] if baseline[0] < tmin else tmin
                 bmax = baseline[1] if baseline[1] > tmax else tmax
             else:
@@ -180,8 +176,7 @@ class BaseParadigm(metaclass=ABCMeta):
         metadata = pd.DataFrame(index=range(len(labels)))
         return X, labels, metadata
 
-    def get_data(self, dataset, subjects=None, baseline=None,
-                 return_epochs=False):
+    def get_data(self, dataset, subjects=None, return_epochs=False):
         """
         Return the data for a list of subject.
 
@@ -198,13 +193,6 @@ class BaseParadigm(metaclass=ABCMeta):
             A dataset instance.
         subjects: List of int
             List of subject number
-        baseline: None | tuple of length 2
-            The time interval to consider as “baseline” when applying baseline
-            correction. If None, do not apply baseline correction.
-            If a tuple (a, b), the interval is between a and b (in seconds),
-            including the endpoints.
-            Correction is applied by computing the mean of the baseline period
-            and subtracting it from the data (see mne.Epochs)
         return_epochs: boolean
             This flag specifies whether to return only the data array or the
             complete processed mne.Epochs
@@ -235,7 +223,7 @@ class BaseParadigm(metaclass=ABCMeta):
         for subject, sessions in data.items():
             for session, runs in sessions.items():
                 for run, raw in runs.items():
-                    proc = self.process_raw(raw, dataset, baseline=baseline,
+                    proc = self.process_raw(raw, dataset,
                                             return_epochs=return_epochs)
 
                     if proc is None:
