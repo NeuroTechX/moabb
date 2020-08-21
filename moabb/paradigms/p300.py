@@ -137,8 +137,8 @@ class BaseP300(BaseParadigm):
                 bmin = tmin
                 bmax = tmax
             epochs = mne.Epochs(raw_f, events, event_id=event_id,
-                                tmin=tmin, tmax=tmax, proj=False,
-                                baseline=None, preload=True,
+                                tmin=bmin, tmax=bmax, proj=False,
+                                baseline=baseline, preload=True,
                                 verbose=False, picks=picks,
                                 on_missing='ignore')
             if bmin < tmin or bmax > tmax:
