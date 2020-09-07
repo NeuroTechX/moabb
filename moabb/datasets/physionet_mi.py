@@ -4,12 +4,13 @@ Physionet Motor imagery dataset.
 
 from .base import BaseDataset
 from mne.io import read_raw_edf
+import numpy as np
 import mne
 from mne.datasets import eegbci
 from mne import get_config, set_config
 import os.path as osp
 
-BASE_URL = 'http://archive.physionet.org/pn4/eegmmidb/'
+BASE_URL = 'http://www.physionet.org/physiobank/database/eegmmidb/'
 
 
 class PhysionetMI(BaseDataset):
@@ -105,6 +106,16 @@ class PhysionetMI(BaseDataset):
                              'OZ': 'Oz', 'POZ': 'POz', 'IZ': 'Iz',
                              'CPZ': 'CPz', 'FP2': 'Fp2', 'FZ': 'Fz'})
         raw.set_montage(mne.channels.make_standard_montage('standard_1005'))
+        
+        # creat simulate stim channel
+        # mne >= 0.18
+        events, _ = mne.events_from_annotations(raw)
+        stim_channel = np.zeros((1, raw.n_times))
+        for event in events:
+            stim_channel[0, event[0]] = event[2]
+		
+        info = mne.create_info(['STI 014'], raw.info['sfreq'], ch_types=['stim'])
+        raw = raw.add_channels([mne.io.RawArray(stim_channel, info)], force_update_info=True)
         return raw
 
     def _get_single_subject_data(self, subject):
