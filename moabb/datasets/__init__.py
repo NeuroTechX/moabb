@@ -19,3 +19,5 @@ from .Weibo2014 import Weibo2014
 from .Zhou2016 import Zhou2016
 from .mpi_mi import MunichMI
 from .ssvep_exo import SSVEPExo
+from .ssvep_nakanishi import Nakanishi2015
+from .ssvep_wang import Wang2016

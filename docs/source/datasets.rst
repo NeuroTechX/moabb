@@ -29,7 +29,6 @@ Motor Imagery Datasets
     Shin2017B
     Weibo2014
     Zhou2016
-    SSVEPExo
 
 
 ------------
@@ -46,6 +45,7 @@ ERP Datasets
     BNCI2015003
     EPFLP300
 
+
 --------------
 SSVEP Datasets
 --------------
@@ -55,6 +55,9 @@ SSVEP Datasets
     :template: class.rst
 
     SSVEPExo
+	 Nakanishi2015
+	 Wang2016
+
 
 ------------
 Base & Utils
