@@ -75,14 +75,11 @@ class BaseParadigm(metaclass=ABCMeta):
 
         Parameters
         ----------
-
         raw: mne.Raw instance
             the raw EEG data.
-
         dataset : dataset instance
             The dataset corresponding to the raw file. mainly use to access
             dataset specific information.
-
         return_epochs: boolean
             This flag specifies whether to return only the data array or the
             complete processed mne.Epochs
@@ -93,10 +90,8 @@ class BaseParadigm(metaclass=ABCMeta):
             the data that will be used as features for the model
             Note: if return_epochs=True,  this is mne.Epochs
                   if return_epochs=False, this is np.ndarray
-
         labels: np.ndarray
             the labels for training / evaluating the model
-
         metadata: pd.DataFrame
             A dataframe containing the metadata
 
@@ -110,7 +105,12 @@ class BaseParadigm(metaclass=ABCMeta):
         if len(stim_channels) > 0:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
-            events, _ = mne.events_from_annotations(raw, verbose=False)
+            try:
+                events, _ = mne.events_from_annotations(raw,
+                                                        event_id=event_id,
+                                                        verbose=False)
+            except ValueError:
+                events, _ = mne.events_from_annotations(raw, verbose=False)
 
         # picks channels
         if self.channels is None:
@@ -139,12 +139,23 @@ class BaseParadigm(metaclass=ABCMeta):
             raw_f = raw.copy().filter(fmin, fmax, method='iir',
                                       picks=picks, verbose=False)
             # epoch data
+            baseline = self.baseline
+            if baseline is not None:
+                baseline = (self.baseline[0] + dataset.interval[0],
+                            self.baseline[1] + dataset.interval[0])
+                bmin = baseline[0] if baseline[0] < tmin else tmin
+                bmax = baseline[1] if baseline[1] > tmax else tmax
+            else:
+                bmin = tmin
+                bmax = tmax
             epochs = mne.Epochs(raw_f, events, event_id=event_id,
-                                tmin=tmin, tmax=tmax, proj=False,
-                                baseline=None, preload=True,
+                                tmin=bmin, tmax=bmax, proj=False,
+                                baseline=baseline, preload=True,
                                 verbose=False, picks=picks,
                                 event_repeated='drop',
                                 on_missing='ignore')
+            if bmin < tmin or bmax > tmax:
+                epochs.crop(tmin=tmin, tmax=tmax)
             if self.resample is not None:
                 epochs = epochs.resample(self.resample)
             # rescale to work with uV
@@ -182,11 +193,16 @@ class BaseParadigm(metaclass=ABCMeta):
             A dataset instance.
         subjects: List of int
             List of subject number
+        return_epochs: boolean
+            This flag specifies whether to return only the data array or the
+            complete processed mne.Epochs
 
         returns
         -------
-        X : np.ndarray
+        X : Union[np.ndarray, mne.Epochs]
             the data that will be used as features for the model
+            Note: if return_epochs=True,  this is mne.Epochs
+                  if return_epochs=False, this is np.ndarray
         labels: np.ndarray
             the labels for training / evaluating the model
         metadata: pd.DataFrame
