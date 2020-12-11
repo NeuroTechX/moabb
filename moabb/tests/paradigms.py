@@ -130,15 +130,15 @@ class Test_P300(unittest.TestCase):
 
     def test_BaseP300_paradigm(self):
         paradigm = SimpleP300()
-        dataset = FakeDataset(paradigm='p300')
+        dataset = FakeDataset(paradigm='p300', event_list=['Target', 'NonTarget'])
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # we should have all the same length
         self.assertEqual(len(X), len(labels), len(metadata))
         # X must be a 3D Array
         self.assertEqual(len(X.shape), 3)
-        # labels must contain 3 values
-        self.assertEqual(len(np.unique(labels)), 3)
+        # labels must contain 2 values (Target/NonTarget)
+        self.assertEqual(len(np.unique(labels)), 2)
 
         # metadata must have subjets, sessions, runs
         self.assertTrue('subject' in metadata.columns)
@@ -160,7 +160,7 @@ class Test_P300(unittest.TestCase):
     def test_BaseP300_filters(self):
         # can work with filter bank
         paradigm = SimpleP300(filters=[[1, 12], [12, 24]])
-        dataset = FakeDataset(paradigm='p300')
+        dataset = FakeDataset(paradigm='p300', event_list=['Target', 'NonTarget'])
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D Array
@@ -171,7 +171,7 @@ class Test_P300(unittest.TestCase):
         # test process_raw return empty list if raw does not contain any
         # selected event. cetain runs in dataset are event specific.
         paradigm = SimpleP300(filters=[[1, 12], [12, 24]])
-        dataset = FakeDataset(paradigm='p300')
+        dataset = FakeDataset(paradigm='p300', event_list=['Target', 'NonTarget'])
         raw = dataset.get_data([1])[1]['session_0']['run_0']
         # add something on the event channel
         raw._data[-1] *= 10
