@@ -55,8 +55,8 @@ SSVEP Datasets
     :template: class.rst
 
     SSVEPExo
-	 Nakanishi2015
-	 Wang2016
+    Nakanishi2015
+    Wang2016
 
 
 ------------

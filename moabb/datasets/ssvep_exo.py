@@ -2,10 +2,9 @@
 SSVEP Exoskeleton dataset.
 """
 
+from . import download as dl
 from .base import BaseDataset
 from mne.io import Raw
-
-from . import download as dl
 
 SSVEPEXO_URL = 'https://zenodo.org/record/2392979/files/'
 

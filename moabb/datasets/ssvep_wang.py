@@ -1,31 +1,22 @@
 """
-SSVEP Wang et al dataset.
+SSVEP Wang dataset.
 """
 
 from . import download as dl
-
 from .base import BaseDataset
 
 import logging
-
 from mne import create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
-
 import numpy as np
-
-try:
-    import py7zr
-except ImportError:
-    raise ImportError("Loading this dataset requires installing py7zr")
-
 from scipy.io import loadmat
-
 from os.path import dirname
 
 log = logging.getLogger()
 
-WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/'
+#WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
+WANG_URL = 'ftp://anonymous@sccn.ucsd.edu/pub/ssvep_benchmark_dataset/'
 
 
 class Wang2016(BaseDataset):
@@ -149,6 +140,6 @@ class Wang2016(BaseDataset):
                   update_path=None, verbose=None):
         if subject not in self.subject_list:
             raise(ValueError("Invalid subject number"))
-        url = '{:s}S{:d}.mat.7z'.format(WANG_URL, subject)
+        url = '{:s}S{:d}.mat'.format(WANG_URL, subject)
         return dl.data_path(url, 'WANG', path, force_update, update_path,
                             verbose)

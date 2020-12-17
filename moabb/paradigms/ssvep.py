@@ -1,4 +1,4 @@
-"""Steady-State Visually Evoked Paradigms"""
+"""Steady-State Visually Evoked Potentials Paradigms"""
 
 import logging
 
@@ -120,9 +120,9 @@ class BaseSSVEP(BaseParadigm):
             interval = self.tmax - self.tmin
         return utils.dataset_search(paradigm='ssvep',
                                     events=self.events,
-                                    total_classes=self.n_classes,
+                                    #total_classes=self.n_classes,
                                     interval=interval,
-                                    has_all_events=False)
+                                    has_all_events=True)
 
     @property
     def scoring(self):
@@ -182,7 +182,7 @@ class SSVEP(BaseSSVEP):
 
     def __init__(self, fmin=7, fmax=45, **kwargs):
         if 'filters' in kwargs.keys():
-            raise(ValueError("MotorImagery does not take argument filters"))
+            raise(ValueError("SSVEP does not take argument filters"))
         super().__init__(filters=[(fmin, fmax)], **kwargs)
 
 

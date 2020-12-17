@@ -3,17 +3,13 @@ SSVEP Nakanishi dataset.
 """
 
 from . import download as dl
-
 from .base import BaseDataset
 
 import logging
-
 from mne import create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
-
 import numpy as np
-
 from scipy.io import loadmat
 
 log = logging.getLogger()
