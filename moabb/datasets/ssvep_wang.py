@@ -12,11 +12,13 @@ from mne.io import RawArray
 import numpy as np
 from scipy.io import loadmat
 from os.path import dirname
+from pyunpack import Archive
 
 log = logging.getLogger()
 
 #WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
-WANG_URL = 'ftp://anonymous@sccn.ucsd.edu/pub/ssvep_benchmark_dataset/'
+#WANG_URL = 'ftp://anonymous@sccn.ucsd.edu/pub/ssvep_benchmark_dataset/'
+WANG_URL = 'http://www.thubci.com/uploads/down/'
 
 
 class Wang2016(BaseDataset):
@@ -101,9 +103,8 @@ class Wang2016(BaseDataset):
         n_classes = len(self.event_id)
 
         fname = self.data_path(subject)
-        with py7zr.SevenZipFile(fname, "r") as szf:
-            szf.extractall(path=dirname(fname))
-            mat = loadmat(fname[:-3])
+        Archive(fname).extractall(dirname(fname))
+        mat = loadmat(fname[:-4])
 
         data = np.transpose(mat['data'], axes=(2, 3, 0, 1))
         data = np.reshape(data, newshape=(-1, n_channels, n_samples))
@@ -140,6 +141,6 @@ class Wang2016(BaseDataset):
                   update_path=None, verbose=None):
         if subject not in self.subject_list:
             raise(ValueError("Invalid subject number"))
-        url = '{:s}S{:d}.mat'.format(WANG_URL, subject)
+        url = '{:s}s{:d}.rar'.format(WANG_URL, subject)
         return dl.data_path(url, 'WANG', path, force_update, update_path,
                             verbose)

@@ -21,8 +21,8 @@ class BaseSSVEP(BaseParadigm):
         List of stimulation frequencies. If None, use all stimulus
         found in the dataset.
 
-    n_classes: int or None (default 2)
-        Number of classes each dataset must have. All dataset classes if None
+    n_classes: int or None (default None)
+        Number of classes each dataset must have. All dataset classes if None.
 
     tmin: float (default 0.0)
         Start time (in second) of the epoch, relative to the dataset specific
@@ -51,7 +51,7 @@ class BaseSSVEP(BaseParadigm):
         If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, filters=[(7, 45)], events=None, n_classes=2, tmin=0.0,
+    def __init__(self, filters=[(7, 45)], events=None, n_classes=None, tmin=0.0,
                  tmax=None, baseline=None, channels=None, resample=None):
         super().__init__()
         self.filters = filters
