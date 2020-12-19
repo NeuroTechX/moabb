@@ -2,9 +2,10 @@
 SSVEP MAMEM1 dataset.
 """
 
-from . import download as dl
+# from . import download as dl
 
 from .base import BaseDataset
+
 # import zipfile as z
 # import pickle
 
@@ -17,16 +18,15 @@ except ImportError:
 # better to do pip install git+https://github.com/MIT-LCP/wfdb-python.git
 
 import glob
-
+import os
 import logging
 
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
+# from mne import create_info
+# from mne.channels import make_standard_montage
+# from mne.io import RawArray
 
-import numpy as np
+# import numpy as np
 
-from scipy.io import loadmat
 
 log = logging.getLogger()
 
@@ -34,7 +34,6 @@ log = logging.getLogger()
 # foldername = '2068677'
 
 MAMEM1_URL = 'https://archive.physionet.org/physiobank/database/mssvepdb/dataset1/'
-
 
 """ # This was using zip file at a different location, later found the physionet repo
 def local_data_path(base_path, subject):
@@ -51,6 +50,7 @@ def local_data_path(base_path, subject):
         datapath = os.path.join(base_path,foldername)
 
 """
+
 
 class MAMEM1(BaseDataset):
     """EEG signals with 256 channels captured from 11 subjects executing a
@@ -125,16 +125,18 @@ class MAMEM1(BaseDataset):
     be small enough for making a selection in the context
 
     [1] https://archive.physionet.org/physiobank/database/mssvepdb/
-    [2] DataAcquisitionDetails.pdf on https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738
+    [2] DataAcquisitionDetails.pdf on
+    https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738
+
     """
 
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),
-            sessions_per_subject=1, # Has to be set properly
+            sessions_per_subject=1,  # Has to be set properly
             events={'6.66': 1, '7.50': 2, '8.57': 3, '10.00': 4, '12.00': 5},
             code='SSVEP MAMEM1',
-            interval=[], # Has to set properly
+            interval=[],  # Has to set properly
             paradigm='ssvep',
             doi='https://arxiv.org/abs/1602.00904')
 
@@ -143,13 +145,24 @@ class MAMEM1(BaseDataset):
 
         fnames = self.data_path(subject)
 
-        # Yet to check if wfdb.record and rdann accept lists
+        record = []
+        for pt in fnames:
+            record.append(wfdb.rdrecord(pt))
 
-        record = wfdb.rdrecord(fnames)
+        # print(record[0].__dict__)
+        # print(record[0].__dict__["p_signal"])
+
         # do print(record.__dict__["p_signal"]) for the sig and print(record.__dict__) for all the contents
-        ann = wfdb.rdann(fnames, 'win')
-        # do print(ann.__dict__) for the contents
-        n_samples,n_channels,n_trials = record.__dict__["sig_len"],256,23
+        annots = []
+        for pt in fnames:
+            annots.append(wfdb.rdann(pt, 'win'))
+
+        # print(annots[0].__dict__)
+        # print(len(annots[0].__dict__["sample"]))
+        # The sample has the start and end of each trial and aux_note has the exact frequency
+
+        # the number of samples isn't exactly equal in all of the samples.. Following line to be changed
+        n_samples, n_channels, n_trials = record.__dict__["sig_len"], 256, 23
         n_classes = len(self.event_id)
 
         # Within each of the sessions there are 23 trials in total including 8 for adaptation period,
@@ -158,7 +171,7 @@ class MAMEM1(BaseDataset):
         # Generate the montage (not sure here since the channels are not standard)
         # to view the channels, do print(record.__dict__["sig_name"])
 
-        sessions={}
+        sessions = {}
         # for reference the braininvaders example also handles for varying number of sessions
 
         return sessions
@@ -166,14 +179,20 @@ class MAMEM1(BaseDataset):
     def data_path(self, subject, path=None, force_update=False,
                   update_path=None, verbose=None):
         if subject not in self.subject_list:
-            raise(ValueError("Invalid subject number"))
+            raise (ValueError("Invalid subject number"))
 
         # Check if the .dat, .hea and .win files are present
         # The .dat and .hea files give the main data
         # The .win file gives the event windows and the frequencies in the windows
         # .flash file can give the exact times of the flashes if necessary
         # Return the file paths depending on the number of sessions for each subject
-        s_paths = glob.glob(os.path.join(path, 'S0{}*.dat'.format(subject)))
+
+        if subject < 10:
+            sub = '0{}'.format(subject)
+        else:
+            sub = '{}'.format(subject)
+
+        s_paths = glob.glob(os.path.join(path, 'S0{}*.dat'.format(sub)))
         subject_paths = []
         for name in s_paths:
             subject_paths.append(os.path.splitext(name)[0])
@@ -185,13 +204,13 @@ class MAMEM1(BaseDataset):
             datarec = wfdb.get_record_list('mssvepdb')
             datalist = []
             for ele in datarec:
-                if "dataset1" in ele:
+                if "dataset1/S0{}".format(sub) in ele:
                     datalist.append(ele)
 
-            wfdb.io.dl_files('mssvepdb',path,datalist)
+            wfdb.io.dl_database('mssvepdb', path, datalist, annotators='win')
 
             # Return the file paths depending on the number of sessions for each subject
-            s_paths = glob.glob(os.path.join(path,'S0{}*.dat'.format(subject)))
+            s_paths = glob.glob(os.path.join(path, 'dataset1', 'S0{}*.dat'.format(sub)))
             subject_paths = []
             for name in s_paths:
                 subject_paths.append(os.path.splitext(name)[0])

@@ -14,3 +14,4 @@ pillow
 m2r
 patool
 pyunpack
+wfdb
