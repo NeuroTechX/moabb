@@ -40,6 +40,23 @@ class Test_WithinSess(unittest.TestCase):
         self.assertEqual(len(results), 4)
 
 
+class Test_AdditionalColumns(unittest.TestCase):
+
+    def setUp(self):
+        self.eval = ev.WithinSessionEvaluation(paradigm=FakeImageryParadigm(),
+                                               datasets=[dataset],
+                                               additional_columns=['one', 'two'])
+
+    def tearDown(self):
+        path = self.eval.results.filepath
+        if os.path.isfile(path):
+            os.remove(path)
+
+    def test_fails_if_nothing_returned(self):
+        self.assertRaises(ValueError, self.eval.process, pipelines)
+        # TODO Add custom evaluation that actually returns additional info
+
+
 class Test_CrossSubj(Test_WithinSess):
 
     def setUp(self):
