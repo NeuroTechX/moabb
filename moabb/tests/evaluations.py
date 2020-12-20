@@ -43,9 +43,9 @@ class Test_WithinSess(unittest.TestCase):
 class Test_AdditionalColumns(unittest.TestCase):
 
     def setUp(self):
-        self.eval = ev.WithinSessionEvaluation(paradigm=FakeImageryParadigm(),
-                                               datasets=[dataset],
-                                               additional_columns=['one', 'two'])
+        self.eval = ev.WithinSessionEvaluation(
+                paradigm=FakeImageryParadigm(), datasets=[dataset],
+                additional_columns=['one', 'two'])
 
     def tearDown(self):
         path = self.eval.results.filepath
