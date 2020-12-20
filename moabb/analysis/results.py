@@ -104,7 +104,6 @@ class Results:
                 n_add_cols = len(self.additional_columns)
                 if dname not in ppline_grp.keys():
                     # create dataset subgroup if nonexistant
-                    print(f"add cols: {n_add_cols}")
                     dset = ppline_grp.create_group(dname)
                     dset.attrs['n_subj'] = len(d1['dataset'].subject_list)
                     dset.attrs['n_sessions'] = d1['dataset'].n_sessions
