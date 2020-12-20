@@ -39,7 +39,7 @@ class Results:
     '''
 
     def __init__(self, evaluation_class, paradigm_class, suffix='',
-                 overwrite=False, hdf5_path=None):
+                 overwrite=False, hdf5_path=None, additional_columns=None):
         """
         class that will abstract result storage
         """
@@ -48,6 +48,12 @@ class Results:
         from moabb.evaluations.base import BaseEvaluation
         assert issubclass(evaluation_class, BaseEvaluation)
         assert issubclass(paradigm_class, BaseParadigm)
+
+        if additional_columns is None:
+            self.additional_columns = []
+        else:
+            assert all([isinstance(ac, str) for ac in additional_columns])
+            self.additional_columns = additional_columns
 
         if hdf5_path is None:
             self.mod_dir = os.path.dirname(
@@ -97,17 +103,18 @@ class Results:
                 dname = d1['dataset'].code
                 if dname not in ppline_grp.keys():
                     # create dataset subgroup if nonexistant
+                    n_add_cols = len(self.additional_columns)
                     dset = ppline_grp.create_group(dname)
                     dset.attrs['n_subj'] = len(d1['dataset'].subject_list)
                     dset.attrs['n_sessions'] = d1['dataset'].n_sessions
                     dt = h5py.special_dtype(vlen=str)
                     dset.create_dataset('id', (0, 2), dtype=dt,
                                         maxshape=(None, 2))
-                    dset.create_dataset('data', (0, 3),
-                                        maxshape=(None, 3))
+                    dset.create_dataset('data', (0, 3 + n_add_cols),
+                                        maxshape=(None, 3 + n_add_cols))
                     dset.attrs['channels'] = d1['n_channels']
                     dset.attrs.create('columns',
-                                      ['score', 'time', 'samples'],
+                                      ['score', 'time', 'samples', *self.additional_columns],
                                       dtype=dt)
                 dset = ppline_grp[dname]
                 for d in dlist:
@@ -117,9 +124,11 @@ class Results:
                     dset['data'].resize(length, 0)
                     dset['id'][-1, :] = np.asarray([str(d['subject']),
                                                     str(d['session'])])
+                    add_cols = [d[ac] for ac in self.additional_columns]
                     dset['data'][-1, :] = np.asarray([d['score'],
                                                       d['time'],
-                                                      d['n_samples']])
+                                                      d['n_samples'],
+                                                      *add_cols])
 
     def to_dataframe(self, pipelines=None):
         df_list = []
