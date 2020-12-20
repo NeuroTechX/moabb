@@ -101,9 +101,10 @@ class Results:
                 dlist = to_list(data_dict)
                 d1 = dlist[0]  # FIXME: handle multiple session ?
                 dname = d1['dataset'].code
+                n_add_cols = len(self.additional_columns)
                 if dname not in ppline_grp.keys():
                     # create dataset subgroup if nonexistant
-                    n_add_cols = len(self.additional_columns)
+                    print(f"add cols: {n_add_cols}")
                     dset = ppline_grp.create_group(dname)
                     dset.attrs['n_subj'] = len(d1['dataset'].subject_list)
                     dset.attrs['n_sessions'] = d1['dataset'].n_sessions
@@ -124,7 +125,12 @@ class Results:
                     dset['data'].resize(length, 0)
                     dset['id'][-1, :] = np.asarray([str(d['subject']),
                                                     str(d['session'])])
-                    add_cols = [d[ac] for ac in self.additional_columns]
+                    try:
+                        add_cols = [d[ac] for ac in self.additional_columns]
+                    except:
+                        raise ValueError(f'Additional columns {self.additional_columns} '
+                                         f'were specified in the evaluation, but results'
+                                         f' contain only these keys: {d.keys()}.')
                     dset['data'][-1, :] = np.asarray([d['score'],
                                                       d['time'],
                                                       d['n_samples'],
