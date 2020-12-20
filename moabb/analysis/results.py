@@ -115,7 +115,8 @@ class Results:
                                         maxshape=(None, 3 + n_add_cols))
                     dset.attrs['channels'] = d1['n_channels']
                     dset.attrs.create('columns',
-                                      ['score', 'time', 'samples', *self.additional_columns],
+                                      ['score', 'time', 'samples',
+                                          *self.additional_columns],
                                       dtype=dt)
                 dset = ppline_grp[dname]
                 for d in dlist:
@@ -127,10 +128,11 @@ class Results:
                                                     str(d['session'])])
                     try:
                         add_cols = [d[ac] for ac in self.additional_columns]
-                    except:
-                        raise ValueError(f'Additional columns {self.additional_columns} '
-                                         f'were specified in the evaluation, but results'
-                                         f' contain only these keys: {d.keys()}.')
+                    except KeyError:
+                        raise ValueError(
+                            f'Additional columns: {self.additional_columns} '
+                            f'were specified in the evaluation, but results'
+                            f' contain only these keys: {d.keys()}.')
                     dset['data'][-1, :] = np.asarray([d['score'],
                                                       d['time'],
                                                       d['n_samples'],
