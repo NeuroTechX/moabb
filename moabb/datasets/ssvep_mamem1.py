@@ -5,6 +5,9 @@ SSVEP MAMEM1 dataset.
 # from . import download as dl
 
 from .base import BaseDataset
+from mne import create_info
+from mne.channels import make_standard_montage
+from mne.io import RawArray
 
 # import zipfile as z
 # import pickle
@@ -144,35 +147,35 @@ class MAMEM1(BaseDataset):
         """return data for a single subject"""
 
         fnames = self.data_path(subject)
-
-        record = []
-        for pt in fnames:
-            record.append(wfdb.rdrecord(pt))
-
-        # print(record[0].__dict__)
-        # print(record[0].__dict__["p_signal"])
-
-        # do print(record.__dict__["p_signal"]) for the sig and print(record.__dict__) for all the contents
-        annots = []
-        for pt in fnames:
-            annots.append(wfdb.rdann(pt, 'win'))
-
-        # print(annots[0].__dict__)
-        # print(len(annots[0].__dict__["sample"]))
-        # The sample has the start and end of each trial and aux_note has the exact frequency
-
-        # the number of samples isn't exactly equal in all of the samples.. Following line to be changed
-        n_samples, n_channels, n_trials = record.__dict__["sig_len"], 256, 23
-        n_classes = len(self.event_id)
-
-        # Within each of the sessions there are 23 trials in total including 8 for adaptation period,
-        # see the exact thing under experimental procedures in the description above
-
-        # Generate the montage (not sure here since the channels are not standard)
-        # to view the channels, do print(record.__dict__["sig_name"])
-
         sessions = {}
-        # for reference the braininvaders example also handles for varying number of sessions
+
+        for fpath in fnames:
+
+            session_name = fpath[-1]
+            record = [wfdb.rdrecord(fpath)]
+            if session_name not in sessions.keys() :
+                sessions[session_name] = {}
+
+            # do print(record.__dict__["p_signal"]) for the sig and print(record.__dict__) for all the contents
+            data = (record.__dict__["p_signal"]).T
+            annots = [wfdb.rdann(fpath, 'win')]
+
+            # In annots.__dict__ the "sample" has the start and end of each trial and "aux_note" has the exact frequency
+            #
+            # the number of samples isn't exactly equal in all of the samples.. Following line to be changed
+            n_samples, n_channels, n_trials = record.__dict__["sig_len"], 256, 23
+            n_classes = len(self.event_id)
+            ch_names = record.__dict__["sig_name"]
+            ch_types = ['eeg']*256
+            sfreq = 250
+            info = create_info(ch_names, sfreq, ch_types)
+            raw = RawArray(data, info, verbose=False)
+
+            # Generate the montage
+            montage = make_standard_montage('GSN-HydroCel-256')
+            raw.set_montage(montage)
+
+            sessions[session_name] = raw
 
         return sessions
 
@@ -200,7 +203,7 @@ class MAMEM1(BaseDataset):
         # if files for the subject are not present
         if not subject_paths:
 
-            # if not downloaded, get the list of files to download (download all the subject files at once)
+            # if not downloaded, get the list of files to download (download all of the subject's files at once)
             datarec = wfdb.get_record_list('mssvepdb')
             datalist = []
             for ele in datarec:
