@@ -58,14 +58,13 @@ class Ofner2017(BaseDataset):
     def __init__(self, imagined=True, executed=False):
         self.imagined = imagined
         self.executed = executed
-        event_id = {"right_elbow_flexion": 1536,
-                    "right_elbow_extension": 1537,
-                    "right_supination": 1538,
-                    "right_pronation": 1539,
-                    "right_hand_close": 1540,
-                    "right_hand_open": 1541,
-                    "rest": 1542}
-
+        event_id = {'1536': 1,
+                    '1537': 2,
+                    '1538': 3,
+                    '1539': 4,
+                    '1540': 5,
+                    '1541': 6,
+                    '1542': 7}
         n_sessions = int(imagined) + int(executed)
         super().__init__(
             subjects=list(range(1, 16)),
