@@ -8,10 +8,11 @@ from .base import BaseDataset
 from mne import create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
-
-# import zipfile as z
-# import pickle
-
+from mne.datasets.utils import _get_path
+import glob
+import os
+import logging
+import numpy as np
 try:
     import wfdb
 except ImportError:
@@ -20,39 +21,13 @@ except ImportError:
 # and continues to have the problem, (Issue #254 on wfdb-python)
 # better to do pip install git+https://github.com/MIT-LCP/wfdb-python.git
 
-import glob
-import os
-import logging
-
-# from mne import create_info
-# from mne.channels import make_standard_montage
-# from mne.io import RawArray
-
-# import numpy as np
-
-
 log = logging.getLogger()
 
+# Alternate Download Location
 # MAMEM1_URL = 'https://ndownloader.figshare.com/articles/2068677/versions/5'
 # foldername = '2068677'
 
 MAMEM1_URL = 'https://archive.physionet.org/physiobank/database/mssvepdb/dataset1/'
-
-""" # This was using zip file at a different location, later found the physionet repo
-def local_data_path(base_path, subject):
-    #Check if the subject data is there
-    if not os.path.isdir(os.path.join(base_path,'subject_{}'.format(subject))):
-        #check if the unzipped folder is there
-        if not os.path.isdir(os.path.join(base_path,foldername)):
-            #download the data zip
-            dl.data_path(MAMEM1_URL,'MAMEM1',os.path.join(base_path,foldername,'.zip'))
-            #extract the zip and delete it
-            with z.ZipFile(os.path.join(base_path,foldername,'.zip'),'r') as f:
-                f.extractall(base_path)
-            os.remove(os.path.join(base_path,foldername,'.zip'))
-        datapath = os.path.join(base_path,foldername)
-
-"""
 
 
 class MAMEM1(BaseDataset):
@@ -139,7 +114,7 @@ class MAMEM1(BaseDataset):
             sessions_per_subject=1,  # Has to be set properly
             events={'6.66': 1, '7.50': 2, '8.57': 3, '10.00': 4, '12.00': 5},
             code='SSVEP MAMEM1',
-            interval=[],  # Has to set properly
+            interval=[1, 4],  # Some part is cut so that only the "good" signal is obtained
             paradigm='ssvep',
             doi='https://arxiv.org/abs/1602.00904')
 
@@ -153,20 +128,34 @@ class MAMEM1(BaseDataset):
 
             session_name = fpath[-1]
             record = [wfdb.rdrecord(fpath)]
-            if session_name not in sessions.keys() :
+            if session_name not in sessions.keys():
                 sessions[session_name] = {}
 
             # do print(record.__dict__["p_signal"]) for the sig and print(record.__dict__) for all the contents
             data = (record.__dict__["p_signal"]).T
             annots = [wfdb.rdann(fpath, 'win')]
 
-            # In annots.__dict__ the "sample" has the start and end of each trial and "aux_note" has the exact frequency
-            #
-            # the number of samples isn't exactly equal in all of the samples.. Following line to be changed
+            # the number of samples isn't exactly equal in all of the samples..
             n_samples, n_channels, n_trials = record.__dict__["sig_len"], 256, 23
-            n_classes = len(self.event_id)
+            # n_classes = len(self.event_id)
+
+            # In annots.__dict__ the "sample" has the start and end of each trial and "aux_note" has the exact frequency
+            stim_freq = np.array([float(e) for e in self.event_id.keys()])
+            # The annotations file has the exact frequencies of the stimuli, so the class is found here
+            events_label = [np.argmin(np.abs(stim_freq - float(f))) + 1 for f in annots.__dict__['aux_note']]
+            raw_events = np.zeros([1, n_samples])
+
+            # The events structure for ssvep is such that it has the class mentioned in the stim channel at the sample
+            # where the corresponding trial starts
+            for label, samploc in zip(events_label, annots.__dict__['samples']):
+                raw_events[0, samploc] = label
+
+            # append the data as another channel(stim) in the data
+            np.append(data, raw_events, axis=0)
+
             ch_names = record.__dict__["sig_name"]
-            ch_types = ['eeg']*256
+            ch_names.append('stim')
+            ch_types = ['eeg']*256 + ['stim']
             sfreq = 250
             info = create_info(ch_names, sfreq, ch_types)
             raw = RawArray(data, info, verbose=False)
@@ -181,8 +170,13 @@ class MAMEM1(BaseDataset):
 
     def data_path(self, subject, path=None, force_update=False,
                   update_path=None, verbose=None):
+
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
+
+        # Currently the entire check and download is being performed locally without
+        # calling the usual download function due to the wfdb functions being used for
+        # physionet. This can be changed by updating the download function in a later update
 
         # Check if the .dat, .hea and .win files are present
         # The .dat and .hea files give the main data
@@ -195,15 +189,21 @@ class MAMEM1(BaseDataset):
         else:
             sub = '{}'.format(subject)
 
+        sign = 'MAMEM1'
+        key = 'MNE_DATASETS_{:s}_PATH'.format(sign)
+        key_dest = 'MNE-{:s}-data'.format(sign.lower())
+        path = _get_path(path, key, sign)
+        path = os.path.join(path, key_dest)
+
         s_paths = glob.glob(os.path.join(path, 'S0{}*.dat'.format(sub)))
         subject_paths = []
         for name in s_paths:
             subject_paths.append(os.path.splitext(name)[0])
 
         # if files for the subject are not present
-        if not subject_paths:
+        if not subject_paths or force_update:
 
-            # if not downloaded, get the list of files to download (download all of the subject's files at once)
+            # if not downloaded, get the list of files to download
             datarec = wfdb.get_record_list('mssvepdb')
             datalist = []
             for ele in datarec:
