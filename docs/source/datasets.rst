@@ -57,6 +57,7 @@ SSVEP Datasets
     SSVEPExo
     Nakanishi2015
     Wang2016
+    MAMEM1
 
 
 ------------
