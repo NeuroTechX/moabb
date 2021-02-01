@@ -4,7 +4,7 @@ from time import time
 import numpy as np
 from copy import deepcopy
 from sklearn.model_selection import (cross_val_score, LeaveOneGroupOut,
-                                     StratifiedKFold)
+                                     StratifiedKFold, StratifiedShuffleSplit)
 from sklearn.preprocessing import LabelEncoder
 
 from moabb.evaluations.base import BaseEvaluation
@@ -14,6 +14,7 @@ from sklearn.metrics import get_scorer
 
 log = logging.getLogger()
 
+# TODO Base class for WithinSession/IncreasingData
 
 class WithinSessionEvaluationIncreasingData(BaseEvaluation):
     """Within session evaluation with increasing data
@@ -21,12 +22,19 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
     returns Score computed within each recording session with x-% of data
 
     """
-
-    def __init__(self, n_perms=20, datasize_ratios=None, k_folds=5, **kwargs):
+# n_perms = 1, datasize=1.0 -> should result in same results as WithinSession
+    def __init__(self, n_perms=20, datasize=None, **kwargs):
         self.n_perms = n_perms
-        self.k_folds = k_folds
-        if datasize_ratios is None:
-            self.datasize_ratios = np.geomspace(0.05, 1, 20)
+        self.k_folds = 5
+        if datasize is None:
+            # This is only training data ratio
+            # 100% of the training data are the (4 training folds) of 5-fold
+            self.datasize = dict(ratio=np.geomspace(0.05, 1, 20))
+            # TODO indicate how many samples per class, e.g. 20 left 20 right
+            # example:
+            #self.datasize = dict('per_class', np.round(np.geomspace(10, 100)))
+            # optionally / later
+            # self.datasize = dict('absolute', np.geomspace(10, 100))
         super().__init__(**kwargs)
 
     def evaluate(self, dataset, pipelines):
@@ -51,9 +59,17 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
                 y_sess = y_all[sess_idx]
                 # metadata_sess = metadata_all[sess_idx]
                 n_epochs = len(sess_idx)
+
+                # FIXME START Something like this
+                StratifiedShuffleSplit(n_splits=self.n_perms, train_size='5perc',
+                                       test_size=None)
+                # END
+
+                # TODO Split Train / validate here into 5 folds
                 for perm in range(self.n_perms):
                     if shuffle_data:
                         perm_idx = np.array(range(len(y_all)))
+                        # TODO Check if there is a scikit-learn implementation
                         for c in np.unique(y_all):
                             c_idx = np.where(y_all == c)[0]
                             perm_idx[c_idx[:]] = np.random.permutation(c_idx)
@@ -64,7 +80,7 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
                     # metadata_perm = metadata_sess.iloc[perm_idx]
 
                     data_size_steps = np.ceil(
-                        self.datasize_ratios * n_epochs
+                        self.datasize * n_epochs
                     ).astype(np.int)
                     check_for_enough_epochs = True
                     for data_size in data_size_steps:
@@ -93,12 +109,13 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
                                 )
                                 not_enough_data = True
                         for name, clf in run_pipes.items():
+                            # Store additionally: datasize, perm, fold
                             res = {
                                 "dataset": dataset,
                                 "subject": subject,
                                 # This session name is needed as long as
                                 # additional columns are not possible (PR #127)
-                                "session": f"{session}_p{perm}_d({data_size})",
+                                "session": f"{session}_p{perm}_d({data_size}_f({{fold}}))",
                                 "n_samples": len(y),  # not training sample
                                 "n_channels": X.shape[1],
                                 "pipeline": name,
@@ -118,9 +135,10 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
                             yield res
 
     def score(self, clf, X, y, scoring):
-        cv = StratifiedKFold(
-            self.k_folds, shuffle=True, random_state=self.random_state
-        )
+        # TODO change to _fit_and_score
+        # cv = StratifiedKFold(
+        #     self.k_folds, shuffle=True, random_state=self.random_state
+        # )
 
         le = LabelEncoder()
         y = le.fit_transform(y)
