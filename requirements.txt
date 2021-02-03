@@ -12,4 +12,6 @@ sphinx-bootstrap_theme
 numpydoc
 pillow
 m2r
+patool
+pyunpack
 wfdb
