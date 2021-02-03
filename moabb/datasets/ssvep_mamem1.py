@@ -84,8 +84,11 @@ class MAMEM1(BaseDataset):
     3. S008, during session 4 the Stim Tracker was detuned.
     Furthermore, we must also note that subject S001 participated in 3 sessions
     and subjects S003 and S004 participated in 4 sessions, compared to all
-    other subjects that participated in 5 sessions. As a result, the utilized
-    dataset consists of 1104 trials of 5 seconds each
+    other subjects that participated in 5 sessions (NB: in fact, there is only
+    3 sessions for subjects 1, 3 and 8, and 4 sessions for subject 4 available
+    to download). As a result, the utilized dataset consists of 1104 trials of
+    5 seconds each.
+
     Flickering frequencies: Usually the refresh rate for an LCD Screen is 60 Hz
     creating a restriction to the number of frequencies that can be selected.
     Specifically, only the frequencies that when divided with the refresh rate
@@ -120,7 +123,7 @@ class MAMEM1(BaseDataset):
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),
-            sessions_per_subject=5, # 3 for S001, 4 for S003 and S004
+            sessions_per_subject=3, # 3 for S001, S003, S008, 4 for S004
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             code="SSVEP MAMEM1",
             # Some part is cut so that only the "good" signal is obtained
