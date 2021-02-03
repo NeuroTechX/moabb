@@ -123,7 +123,7 @@ class MAMEM1(BaseDataset):
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),
-            sessions_per_subject=3, # 3 for S001, S003, S008, 4 for S004
+            sessions_per_subject=3,  # 3 for S001, S003, S008, 4 for S004
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             code="SSVEP MAMEM1",
             # Some part is cut so that only the "good" signal is obtained
@@ -138,7 +138,7 @@ class MAMEM1(BaseDataset):
         sessions = {}
 
         for fpath in fnames:
-            session_name = 'session_'+fpath[-1]
+            session_name = 'session_' + fpath[-1]
             record = wfdb.rdrecord(fpath)
             if session_name not in sessions.keys():
                 sessions[session_name] = {}

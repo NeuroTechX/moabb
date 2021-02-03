@@ -57,7 +57,7 @@ class Nakanishi2015(BaseDataset):
         data = np.reshape(data, newshape=(-1, n_channels, n_samples))
         data = data - data.mean(axis=2, keepdims=True)
         raw_events = np.zeros((data.shape[0], 1, n_samples))
-        raw_events[:, 0, 0] = np.array([n_trials*[i+1]
+        raw_events[:, 0, 0] = np.array([n_trials * [i + 1]
                                         for i in range(n_classes)]).flatten()
         data = np.concatenate([1e-6 * data, raw_events], axis=1)
         # add buffer in between trials
