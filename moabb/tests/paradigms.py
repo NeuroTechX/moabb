@@ -290,14 +290,13 @@ class Test_SSVEP(unittest.TestCase):
         self.assertEqual(X.shape[-1], 2)
 
     def test_BaseSSVEP_nclasses_default(self):
-        # Default is with 2 classes
+        # Default is with 3 classes
         paradigm = BaseSSVEP()
-        dataset = FakeDataset(event_list=['13', '15', '17', '19'],
-                              paradigm='ssvep')
+        dataset = FakeDataset(paradigm='ssvep')
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # labels must contain "None" values, as n_classes is "None" by default
-        self.assertEqual(len(np.unique(labels)), None)
+        self.assertEqual(len(np.unique(labels)), 3)
 
     def test_BaseSSVEP_specified_nclasses(self):
         # Set the number of classes
@@ -358,8 +357,9 @@ class Test_SSVEP(unittest.TestCase):
         self.assertEqual(len(X), len(labels), len(metadata))
         # X must be a 3D array
         self.assertEqual(len(X.shape), 3)
-        # labels must contain "None" values, as n_classes is "None" by default
-        self.assertEqual(len(np.unique(labels)), None)
+        # labels must contain all 3 classes of dataset,
+        # as n_classes is "None" by default (taking all classes)
+        self.assertEqual(len(np.unique(labels)), 3)
 
     def test_SSVEP_filter(self):
         # Do not accept multiple filters
