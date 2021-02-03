@@ -61,9 +61,15 @@ class WithinSessionEvaluation(BaseEvaluation):
 
         le = LabelEncoder()
         y = le.fit_transform(y)
-        acc = cross_val_score(clf, X, y, cv=cv, scoring=scoring,
-                              n_jobs=self.n_jobs, error_score=self.error_score)
-        return acc.mean()
+        try:
+            acc = cross_val_score(clf, X, y, cv=cv, scoring=scoring,
+                                  n_jobs=self.n_jobs, error_score=self.error_score).mean()
+        except ValueError as e:
+            if self.error_score == 'raise':
+                raise e
+            elif self.error_score is np.nan:
+                acc = np.nan
+        return acc
 
     def is_valid(self, dataset):
         return True
@@ -103,11 +109,17 @@ class CrossSessionEvaluation(BaseEvaluation):
                 cv = LeaveOneGroupOut()
                 for train, test in cv.split(X, y, groups):
                     t_start = time()
-                    score = _fit_and_score(clone(clf), X, y, scorer, train,
-                                           test, verbose=False,
-                                           parameters=None,
-                                           fit_params=None,
-                                           error_score=self.error_score)[0]
+                    try:
+                        score = _fit_and_score(clone(clf), X, y, scorer, train,
+                                               test, verbose=False,
+                                               parameters=None,
+                                               fit_params=None,
+                                               error_score=self.error_score)[0]
+                    except ValueError as e:
+                        if self.error_score == 'raise':
+                            raise e
+                        elif self.error_score is np.nan:
+                            score = np.nan
                     duration = time() - t_start
                     res = {'time': duration,
                            'dataset': dataset,
@@ -176,7 +188,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     # we eval on each session
                     for session in np.unique(sessions[test]):
                         ix = sessions[test] == session
-                        score = _score(model, X[test[ix]], y[test[ix]], scorer)
+                        try:
+                            score = _score(model, X[test[ix]], y[test[ix]], scorer)
+                        except ValueError as e:
+                            if self.error_score == 'raise':
+                                raise e
+                            elif self.error_score is np.nan:
+                                score = np.nan
 
                         res = {'time': duration,
                                'dataset': dataset,
