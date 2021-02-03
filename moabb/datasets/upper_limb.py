@@ -58,13 +58,14 @@ class Ofner2017(BaseDataset):
     def __init__(self, imagined=True, executed=False):
         self.imagined = imagined
         self.executed = executed
-        event_id = {'1536': 1,
-                    '1537': 2,
-                    '1538': 3,
-                    '1539': 4,
-                    '1540': 5,
-                    '1541': 6,
-                    '1542': 7}
+        event_id = {"right_elbow_flexion": 1536,
+                    "right_elbow_extension": 1537,
+                    "right_supination": 1538,
+                    "right_pronation": 1539,
+                    "right_hand_close": 1540,
+                    "right_hand_open": 1541,
+                    "rest": 1542}
+
         n_sessions = int(imagined) + int(executed)
         super().__init__(
             subjects=list(range(1, 16)),
@@ -98,6 +99,16 @@ class Ofner2017(BaseDataset):
                 raw.set_montage(montage)
                 # there is nan in the data
                 raw._data[np.isnan(raw._data)] = 0
+                # Modify the annotations to match the name of the command
+                stim = raw.annotations.description.astype(np.dtype('<21U'))
+                stim[stim == '1536'] = "right_elbow_flexion"
+                stim[stim == '1537'] = "right_elbow_extension"
+                stim[stim == '1538'] = "right_supination"
+                stim[stim == '1539'] = "right_pronation"
+                stim[stim == '1540'] = "right_hand_close"
+                stim[stim == '1541'] = "right_hand_open"
+                stim[stim == '1542'] = "rest"
+                raw.annotations.description = stim
                 data['run_%d' % ii] = raw
 
             out[session] = data
