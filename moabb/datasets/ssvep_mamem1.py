@@ -120,7 +120,7 @@ class MAMEM1(BaseDataset):
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),
-            sessions_per_subject=1,  # Has to be set properly
+            sessions_per_subject=5, # 3 for S001, 4 for S003 and S004
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             code="SSVEP MAMEM1",
             # Some part is cut so that only the "good" signal is obtained
@@ -135,7 +135,7 @@ class MAMEM1(BaseDataset):
         sessions = {}
 
         for fpath in fnames:
-            session_name = fpath[-1]
+            session_name = 'session_'+fpath[-1]
             record = wfdb.rdrecord(fpath)
             if session_name not in sessions.keys():
                 sessions[session_name] = {}
@@ -167,7 +167,7 @@ class MAMEM1(BaseDataset):
             raw = RawArray(data, info, verbose=False)
             montage = make_standard_montage("GSN-HydroCel-256")
             raw.set_montage(montage)
-            sessions[session_name] = raw
+            sessions[session_name] = {'run_0': raw}
         return sessions
 
     def data_path(self, subject, path=None, force_update=False,
