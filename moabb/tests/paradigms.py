@@ -295,7 +295,8 @@ class Test_SSVEP(unittest.TestCase):
         dataset = FakeDataset(paradigm='ssvep')
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
-        # labels must contain "None" values, as n_classes is "None" by default
+        # labels must contain all 3 classes of dataset,
+        # as n_classes is "None" by default (taking all classes)
         self.assertEqual(len(np.unique(labels)), 3)
 
     def test_BaseSSVEP_specified_nclasses(self):

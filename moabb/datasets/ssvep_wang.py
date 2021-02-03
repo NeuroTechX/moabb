@@ -16,8 +16,8 @@ from pyunpack import Archive
 
 log = logging.getLogger()
 
-#WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
-#WANG_URL = 'ftp://anonymous@sccn.ucsd.edu/pub/ssvep_benchmark_dataset/'
+# WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
+# WANG_URL = 'ftp://anonymous@sccn.ucsd.edu/pub/ssvep_benchmark_dataset/'
 WANG_URL = 'http://www.thubci.com/uploads/down/'
 
 
