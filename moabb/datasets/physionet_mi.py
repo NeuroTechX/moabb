@@ -115,7 +115,6 @@ class PhysionetMI(BaseDataset):
             set_config('MNE_DATASETS_EEGBCI_PATH',
                        osp.join(osp.expanduser("~"), "mne_data"))
 
-
         # hand runs
         for run in self.hand_runs:
             raw = self._load_one_run(subject, run)
@@ -143,7 +142,7 @@ class PhysionetMI(BaseDataset):
     def data_path(self, subject, path=None, force_update=False,
                   update_path=None, verbose=None):
         if subject not in self.subject_list:
-            raise(ValueError("Invalid subject number"))
+            raise (ValueError("Invalid subject number"))
 
         if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
             set_config('MNE_DATASETS_EEGBCI_PATH',
