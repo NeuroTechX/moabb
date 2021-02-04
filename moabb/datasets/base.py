@@ -89,8 +89,6 @@ class BaseDataset(metaclass=abc.ABCMeta):
         data: Dict
             dict containing the raw data
         """
-        data = []
-
         if subjects is None:
             subjects = self.subject_list
 

@@ -34,7 +34,7 @@ class BaseEvaluation(ABC):
 
     def __init__(self, paradigm, datasets=None, random_state=None, n_jobs=1,
                  overwrite=False, error_score='raise', suffix='',
-                 hdf5_path=None):
+                 hdf5_path=None, additional_columns=None):
         self.random_state = random_state
         self.n_jobs = n_jobs
         self.error_score = error_score
@@ -85,7 +85,8 @@ class BaseEvaluation(ABC):
                                type(self.paradigm),
                                overwrite=overwrite,
                                suffix=suffix,
-                               hdf5_path=self.hdf5_path)
+                               hdf5_path=self.hdf5_path,
+                               additional_columns=additional_columns)
 
     def process(self, pipelines):
         '''Runs all pipelines on all datasets.
