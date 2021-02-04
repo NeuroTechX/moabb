@@ -6,6 +6,7 @@ import logging
 
 log = logging.getLogger()
 
+
 class BaseParadigm(metaclass=ABCMeta):
     """Base Paradigm.
     """
@@ -112,7 +113,8 @@ class BaseParadigm(metaclass=ABCMeta):
                                                         event_id=event_id,
                                                         verbose=False)
             except ValueError:
-                log.warning("No matching annotations in {}".format(raw.filenames))
+                log.warning("No matching annotations in {}"
+                            .format(raw.filenames))
                 return
 
         # picks channels
