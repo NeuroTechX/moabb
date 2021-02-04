@@ -11,7 +11,6 @@ from mne.datasets.utils import _get_path, _do_path_update
 from mne.utils import _fetch_file
 import os
 import shutil
-import numpy as np
 
 DATA_PATH = 'https://ndownloader.figshare.com/files/3662952'
 
@@ -94,14 +93,8 @@ class Zhou2016(BaseDataset):
             out[sess_key] = {}
             for run_ind, fname in enumerate(runlist):
                 run_key = 'run_{}'.format(run_ind)
-                raw = read_raw_cnt(fname, preload=True,
+                out[sess_key][run_key] = read_raw_cnt(fname, preload=True,
                                                       eog=['VEOU', 'VEOL'])
-                stim = raw.annotations.description.astype(np.dtype('<10U'))
-                stim[stim == '1'] = 'left_hand'
-                stim[stim == '2'] = 'right_hand'
-                stim[stim == '3'] = 'feet'
-                raw.annotations.description = stim
-                out[sess_key][run_key] = raw
                 out[sess_key][run_key].set_montage(
                     make_standard_montage('standard_1005'))
         return out

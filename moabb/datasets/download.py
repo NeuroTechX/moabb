@@ -8,9 +8,6 @@ from mne.datasets.utils import _get_path, _do_path_update
 from mne.utils import _fetch_file, _url_to_local_path, verbose
 from mne import get_config, set_config
 import os.path as osp
-import logging
-
-log = logging.getLogger()
 
 
 @verbose
@@ -62,7 +59,6 @@ def data_path(url, sign, path=None, force_update=False, update_path=True,
             os.remove(destination)
         if not op.isdir(op.dirname(destination)):
             os.makedirs(op.dirname(destination))
-        log.info('Fetch files from {} to {}'.format(url, destination))
         _fetch_file(url, destination, print_destination=False)
 
     # Offer to update the path

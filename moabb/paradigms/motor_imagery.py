@@ -53,14 +53,13 @@ class BaseMotorImagery(BaseParadigm):
     """
 
     def __init__(self, filters=([7, 35],), events=None, tmin=0.0, tmax=None,
-                 baseline=None, channels=None, resample=None, prepro_fun=None):
+                 baseline=None, channels=None, resample=None):
         super().__init__()
         self.filters = filters
         self.events = events
         self.channels = channels
         self.baseline = baseline
         self.resample = resample
-        self.prepro_fun = prepro_fun
 
         if (tmax is not None):
             if tmin >= tmax:
