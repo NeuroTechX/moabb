@@ -16,26 +16,21 @@ log = logging.getLogger()
 
 # TODO Base class for WithinSession/IncreasingData
 
+
 class WithinSessionEvaluationIncreasingData(BaseEvaluation):
-    """Within session evaluation with increasing data
-
-    returns Score computed within each recording session with x-% of data
-
-    """
-# n_perms = 1, datasize=1.0 -> should result in same results as WithinSession
-    def __init__(self, n_perms=20, datasize=None, **kwargs):
+    def __init__(self, n_perms=20, data_size=None, **kwargs):
         self.n_perms = n_perms
         self.k_folds = 5
-        if datasize is None:
+        self.data_size = data_size
+        if self.data_size is None:
             # This is only training data ratio
-            # 100% of the training data are the (4 training folds) of 5-fold
-            self.datasize = dict(ratio=np.geomspace(0.05, 1, 20))
+            # 100% of the training data are the (4 training folds) of 5-fold CV
+            self.data_size = dict(policy='ratio', value=np.geomspace(0.05, 1, 20))
             # TODO indicate how many samples per class, e.g. 20 left 20 right
-            # example:
-            #self.datasize = dict('per_class', np.round(np.geomspace(10, 100)))
-            # optionally / later
+            # self.datasize = dict('per_class', np.round(np.geomspace(10, 100)))
             # self.datasize = dict('absolute', np.geomspace(10, 100))
-        super().__init__(**kwargs)
+        add_cols = ["data_size", "permutation"]
+        super().__init__(additional_columns=add_cols, **kwargs)
 
     def evaluate(self, dataset, pipelines):
         for subject in dataset.subject_list:
@@ -51,8 +46,10 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
             X_all, y_all, metadata_all = self.paradigm.get_data(
                 dataset, [subject]
             )
-            shuffle_data = True if self.n_perms > 1 else False
-
+            le = LabelEncoder()
+            y_all = le.fit_transform(y_all)
+            # shuffle_data = True if self.n_perms > 1 else False
+            scorer = get_scorer(self.paradigm.scoring)
             for session in np.unique(metadata_all.session):
                 sess_idx = metadata_all.session == session
                 X_sess = X_all[sess_idx]
@@ -61,45 +58,54 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
                 n_epochs = len(sess_idx)
 
                 # FIXME START Something like this
-                StratifiedShuffleSplit(n_splits=self.n_perms, train_size='5perc',
-                                       test_size=None)
+                sss = StratifiedShuffleSplit(n_splits=self.n_perms[0], test_size=1/self.k_folds)
+
                 # END
 
                 # TODO Split Train / validate here into 5 folds
-                for perm in range(self.n_perms):
-                    if shuffle_data:
-                        perm_idx = np.array(range(len(y_all)))
-                        # TODO Check if there is a scikit-learn implementation
-                        for c in np.unique(y_all):
-                            c_idx = np.where(y_all == c)[0]
-                            perm_idx[c_idx[:]] = np.random.permutation(c_idx)
-                    else:
-                        perm_idx = np.array(range(len(y_all)))
-                    X_perm = X_sess[perm_idx]
-                    y_perm = y_sess[perm_idx]
+                # for perm in range(self.n_perms):
+                for perm_i, idxs in enumerate(sss.split(X_sess, y_sess)):
+                    # if shuffle_data:
+                    #     perm_idx = np.array(range(len(y_all)))
+                    #     # TODO Check if there is a scikit-learn implementation
+                    #     for c in np.unique(y_all):
+                    #         c_idx = np.where(y_all == c)[0]
+                    #         perm_idx[c_idx[:]] = np.random.permutation(c_idx)
+                    # else:
+                    #     perm_idx = np.array(range(len(y_all)))
+                    #X_perm = X_sess[perm_idx]
+                    #y_perm = y_sess[perm_idx]
                     # metadata_perm = metadata_sess.iloc[perm_idx]
-
-                    data_size_steps = np.ceil(
-                        self.datasize * n_epochs
-                    ).astype(np.int)
+                    train_idx = idxs[0]
+                    test_idx = idxs[1]
+                    X_train_all = X_sess[train_idx]
+                    y_train_all = y_sess[train_idx]
+                    X_test = X_sess[test_idx]
+                    y_test = y_sess[test_idx]
+                    if self.data_size['policy'] == 'ratio':
+                        data_size_steps = np.ceil(
+                            self.data_size['value'] * n_epochs
+                        ).astype(np.int)
                     check_for_enough_epochs = True
-                    for data_size in data_size_steps:
+                    for di, data_size in enumerate(data_size_steps):
+                        if perm_i >= self.n_perms[di]:
+                            continue
                         not_enough_data = False
-                        log.info(f"Data size: {data_size}")
+                        log.info(f"Permutation: {perm_i+1}, Training samples: {data_size}")
                         if len(X_all) < data_size:
                             break
-                        X = X_perm[:data_size, :]
-                        y = y_perm[:data_size]
+                        X_train = X_train_all[:data_size, :]
+                        y_train = y_train_all[:data_size]
                         # metadata = metadata_perm[:data_size]
 
-                        if len(np.unique(y)) < 2:
+                        if len(np.unique(y_train)) < 2:
                             log.warning(
                                 "For current data size, only one class"
                                 "would remain."
                             )
                             not_enough_data = True
                         if check_for_enough_epochs:
-                            _, n_per_class = np.unique(y, return_counts=True)
+                            _, n_per_class = np.unique(y_train, return_counts=True)
                             if np.min(n_per_class) < self.k_folds:
                                 log.warning(
                                     f"For current data subset size, the"
@@ -113,51 +119,33 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
                             res = {
                                 "dataset": dataset,
                                 "subject": subject,
-                                # This session name is needed as long as
-                                # additional columns are not possible (PR #127)
-                                "session": f"{session}_p{perm}_d({data_size}_f({{fold}}))",
-                                "n_samples": len(y),  # not training sample
-                                "n_channels": X.shape[1],
+                                "session": session,
+                                "n_samples": len(y_train),  # not training sample
+                                "n_channels": X_train.shape[1],
                                 "pipeline": name,
+                                # Additional columns
+                                "data_size": data_size,
+                                "permutation": perm_i+1,
                             }
                             if not_enough_data:
                                 res["time"] = 0
                                 res["score"] = np.nan
                             else:
-                                t_start = time()
-                                score = self.score(
-                                    clf, X, y, self.paradigm.scoring
-                                )
-                                duration = time() - t_start
-                                res["time"] = duration / self.k_folds
-                                res["score"] = score
+                                try:
+                                    t_start = time()
+                                    model = deepcopy(clf).fit(X_train, y_train)
+                                    score = _score(model, X_test, y_test, scorer)
+                                    duration = time() - t_start
+                                    res["time"] = duration
+                                    res["score"] = score
+                                except ValueError as e:
+                                    if self.error_score == "raise":
+                                        raise e
+                                    else:
+                                        res["score"] = self.error_score
 
                             yield res
 
-    def score(self, clf, X, y, scoring):
-        # TODO change to _fit_and_score
-        # cv = StratifiedKFold(
-        #     self.k_folds, shuffle=True, random_state=self.random_state
-        # )
-
-        le = LabelEncoder()
-        y = le.fit_transform(y)
-        try:
-            acc = cross_val_score(
-                clf,
-                X,
-                y,
-                cv=cv,
-                scoring=scoring,
-                n_jobs=self.n_jobs,
-                error_score=self.error_score,
-            ).mean()
-        except ValueError as e:
-            if self.error_score == "raise":
-                raise e
-            elif self.error_score is np.nan:
-                acc = np.nan
-        return acc
 
     def is_valid(self, dataset):
         return True

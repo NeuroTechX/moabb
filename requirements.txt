@@ -12,3 +12,4 @@ sphinx-bootstrap_theme
 numpydoc
 pillow
 m2r
+-e git://github.com/jsosulski/tdlda#egg=tdlda
