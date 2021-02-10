@@ -31,10 +31,12 @@ import moabb
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import time
 import warnings
 from tdlda import Vectorizer as JumpingMeansVectorizer
 from tdlda import TimeDecoupledLda as TDLDA
 
+start_time = time.time()
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
 
@@ -117,6 +119,8 @@ overwrite = True  # set to True if we want to overwrite cached results
 data_size = dict(policy='ratio', value=np.geomspace(0.05, 1, 5))
 n_perms = np.floor(np.geomspace(50, 3, 5)).astype(np.int)
 print(n_perms)
+# Guarantee reproducibility
+np.random.seed(7536298)
 evaluation = WithinSessionEvaluationIncreasingData(paradigm=paradigm, datasets=datasets,
                                                    data_size=data_size, n_perms=n_perms,
                                                    suffix='examples_lr', overwrite=overwrite)
@@ -148,3 +152,5 @@ ax.set_ylabel('ROC AUC')
 ax.set_title(title_str)
 fig.tight_layout()
 plt.show()
+elapsed_time = time.time() - start_time
+print(f"Elapsed time: {elapsed_time/60} minutes.")

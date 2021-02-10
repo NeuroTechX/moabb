@@ -32,6 +32,9 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import warnings
+import time
+
+start_time = time.time()
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
 
@@ -124,3 +127,5 @@ ax.set_ylabel('ROC AUC')
 ax.set_ylim(0.5, 1)
 
 fig.show()
+elapsed_time = time.time() - start_time
+print(f"Elapsed time: {elapsed_time/60} minutes.")
