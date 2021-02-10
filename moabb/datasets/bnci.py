@@ -987,7 +987,7 @@ class BNCI2015001(MNEBNCI):
             sessions_per_subject=2,
             events={'right_hand': 1, 'feet': 2},
             code='001-2015',
-            interval=[3, 8],
+            interval=[0, 5],
             paradigm='imagery',
             doi='10.1109/tnsre.2012.2189584')
 

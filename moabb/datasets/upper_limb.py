@@ -72,7 +72,7 @@ class Ofner2017(BaseDataset):
             sessions_per_subject=n_sessions,
             events=event_id,
             code='Ofner2017',
-            interval=[2, 5],  # according to paper 2-5
+            interval=[0, 3],  # according to paper 2-5
             paradigm='imagery',
             doi='10.1371/journal.pone.0182578')
 
