@@ -113,7 +113,8 @@ class MAMEM3(BaseDataset):
         for fpath in fnames:
             fnamed = os.path.basename(fpath)
             session_name = 'session_' + fnamed[3]
-            # Since the data for each session is saved in 2 files, it is being saved in 2 runs
+            # Since the data for each session is saved in 2 files,
+            # it is being saved in 2 runs
             run_number = len(fnamed) - 6
             run_name = 'run_' + str(run_number)
             record = wfdb.rdrecord(fpath)
@@ -185,7 +186,8 @@ class MAMEM3(BaseDataset):
         subject_paths = []
         for name in s_paths:
             # The adaptation session has the letter x at the end
-            # So this is being done to remove the adaptation session from the file name to be returned
+            # So this is being done to remove the adaptation session
+            # from the file name to be returned
             if (os.path.splitext(name)[0][-1]) != 'x':
                 subject_paths.append(os.path.splitext(name)[0])
         return subject_paths

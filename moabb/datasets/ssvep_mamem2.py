@@ -174,7 +174,8 @@ class MAMEM2(BaseDataset):
         subject_paths = []
         for name in s_paths:
             # The adaptation session has the letter x at the end
-            # So this is being done to remove the adaptation session from the file name to be returned
+            # So this is being done to remove the adaptation
+            # session from the file name to be returned
             if (os.path.splitext(name)[0][-1]) != 'x':
                 subject_paths.append(os.path.splitext(name)[0])
         return subject_paths
