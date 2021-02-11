@@ -22,3 +22,5 @@ from .ssvep_exo import SSVEPExo
 from .ssvep_nakanishi import Nakanishi2015
 from .ssvep_wang import Wang2016
 from .ssvep_mamem1 import MAMEM1
+from .ssvep_mamem2 import MAMEM2
+from .ssvep_mamem3 import MAMEM3

@@ -181,7 +181,7 @@ class MAMEM1(BaseDataset):
         # The .dat and .hea files give the main data
         # .win file gives the event windows and the frequencies
         # .flash file can give the exact times of the flashes if necessary
-        # Return the file paths depending on the number of sessions foreach
+        # Return the file paths depending on the number of sessions for each
         # subject that are denoted a, b, c, ...
         sub = "{:02d}".format(subject)
         sign = "MAMEM1"

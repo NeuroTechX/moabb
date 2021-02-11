@@ -58,6 +58,8 @@ SSVEP Datasets
     Nakanishi2015
     Wang2016
     MAMEM1
+    MAMEM2
+    MAMEM3
 
 
 ------------
