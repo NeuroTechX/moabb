@@ -1,5 +1,6 @@
 import logging
 from time import time
+from typing import Union, Optional
 
 import numpy as np
 from copy import deepcopy
@@ -15,20 +16,34 @@ from sklearn.metrics import get_scorer
 log = logging.getLogger()
 
 # TODO Base class for WithinSession/IncreasingData
+# TODO implement per class sampling. Not yet clear -> how to sample test set?
 
 
 class WithinSessionEvaluationIncreasingData(BaseEvaluation):
-    def __init__(self, n_perms=20, data_size=None, **kwargs):
-        self.n_perms = n_perms
-        self.k_folds = 5
+    """Within Session evaluation for learning curve creation."""
+    def __init__(self, n_perms: Union[int, np.ndarray] = 20,
+                 data_size: Optional[dict] = None, **kwargs):
+        """
+        :param n_perms: Number of permutations to perform. If an array
+            is passed it has to be equal in size to the data_size array.
+        :param data_size: Contains the policy to pick the datasizes to
+            evaluate, as well as the actual values. The dict has the
+            key 'policy' with either 'ratio' or 'per_class', and the key
+            'value' with the actual values as an numpy array.
+        """
         self.data_size = data_size
         if self.data_size is None:
             # This is only training data ratio
-            # 100% of the training data are the (4 training folds) of 5-fold CV
-            self.data_size = dict(policy='ratio', value=np.geomspace(0.05, 1, 20))
-            # TODO indicate how many samples per class, e.g. 20 left 20 right
-            # self.datasize = dict('per_class', np.round(np.geomspace(10, 100)))
-            # self.datasize = dict('absolute', np.geomspace(10, 100))
+            self.data_size = dict(policy='ratio',
+                                  value=np.geomspace(0.05, 1, 20))
+        self.n_perms = n_perms
+        if type(n_perms) is int:
+            self.n_perms = np.full_like(
+                self.data_size['value'], n_perms, dtype=int)
+        if len(self.n_perms) != len(self.data_size['value']):
+            raise ValueError("Number of elements in n_perms must be equal "
+                             "to number of elements in data_size['value']")
+        self.test_size = 0.2
         add_cols = ["data_size", "permutation"]
         super().__init__(additional_columns=add_cols, **kwargs)
 
@@ -56,28 +71,10 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
                 y_sess = y_all[sess_idx]
                 # metadata_sess = metadata_all[sess_idx]
                 n_epochs = len(sess_idx)
-
-                # FIXME START Something like this
-                sss = StratifiedShuffleSplit(n_splits=self.n_perms[0], test_size=1/self.k_folds)
-
-                # END
-
-                # TODO Split Train / validate here into 5 folds
-                # for perm in range(self.n_perms):
-                for perm_i, idxs in enumerate(sss.split(X_sess, y_sess)):
-                    # if shuffle_data:
-                    #     perm_idx = np.array(range(len(y_all)))
-                    #     # TODO Check if there is a scikit-learn implementation
-                    #     for c in np.unique(y_all):
-                    #         c_idx = np.where(y_all == c)[0]
-                    #         perm_idx[c_idx[:]] = np.random.permutation(c_idx)
-                    # else:
-                    #     perm_idx = np.array(range(len(y_all)))
-                    #X_perm = X_sess[perm_idx]
-                    #y_perm = y_sess[perm_idx]
-                    # metadata_perm = metadata_sess.iloc[perm_idx]
-                    train_idx = idxs[0]
-                    test_idx = idxs[1]
+                sss = StratifiedShuffleSplit(n_splits=self.n_perms[0],
+                                             test_size=self.test_size)
+                for perm_i, (train_idx, test_idx) \
+                        in enumerate(sss.split(X_sess, y_sess)):
                     X_train_all = X_sess[train_idx]
                     y_train_all = y_sess[train_idx]
                     X_test = X_sess[test_idx]
@@ -86,14 +83,22 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
                         data_size_steps = np.ceil(
                             self.data_size['value'] * n_epochs
                         ).astype(np.int)
-                    check_for_enough_epochs = True
+                    elif self.data_size['policy'] == 'per_class':
+                        raise NotImplementedError
+                    else:
+                        raise ValueError(
+                            f"Unknown policy {self.data_size['policy']}")
                     for di, data_size in enumerate(data_size_steps):
                         if perm_i >= self.n_perms[di]:
                             continue
                         not_enough_data = False
-                        log.info(f"Permutation: {perm_i+1}, Training samples: {data_size}")
+                        log.info(
+                            f"Permutation: {perm_i+1},"
+                            f" Training samples: {data_size}")
+                        # FIXME, this check is too naive
                         if len(X_all) < data_size:
                             break
+
                         X_train = X_train_all[:data_size, :]
                         y_train = y_train_all[:data_size]
                         # metadata = metadata_perm[:data_size]
@@ -104,23 +109,12 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
                                 "would remain."
                             )
                             not_enough_data = True
-                        if check_for_enough_epochs:
-                            _, n_per_class = np.unique(y_train, return_counts=True)
-                            if np.min(n_per_class) < self.k_folds:
-                                log.warning(
-                                    f"For current data subset size, the"
-                                    f"smallest class has fewer entries"
-                                    f"({np.min(n_per_class)}) than folds"
-                                    f"({self.k_folds})."
-                                )
-                                not_enough_data = True
                         for name, clf in run_pipes.items():
-                            # Store additionally: datasize, perm, fold
                             res = {
                                 "dataset": dataset,
                                 "subject": subject,
                                 "session": session,
-                                "n_samples": len(y_train),  # not training sample
+                                "n_samples": len(y_train),
                                 "n_channels": X_train.shape[1],
                                 "pipeline": name,
                                 # Additional columns
@@ -134,7 +128,8 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
                                 try:
                                     t_start = time()
                                     model = deepcopy(clf).fit(X_train, y_train)
-                                    score = _score(model, X_test, y_test, scorer)
+                                    score = _score(
+                                        model, X_test, y_test, scorer)
                                     duration = time() - t_start
                                     res["time"] = duration
                                     res["score"] = score
@@ -145,7 +140,6 @@ class WithinSessionEvaluationIncreasingData(BaseEvaluation):
                                         res["score"] = self.error_score
 
                             yield res
-
 
     def is_valid(self, dataset):
         return True
