@@ -8,7 +8,8 @@ from mne import create_info
 from mne.io import RawArray
 from mne.channels import make_standard_montage
 
-Lee2019_URL = "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100542/"
+Lee2019_URL = \
+    "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100542/"
 
 
 class Lee2019_MI(BaseDataset):
@@ -19,7 +20,8 @@ class Lee2019_MI(BaseDataset):
     Germany). The channels were nasion-referenced and grounded
     to electrode AFz. Additionally, an EMG electrode recorded from
     each flexor digitorum profundus muscle with the olecranon
-    used as reference. The EEG/EMG channel configuration and indexing numbers are described in Fig. 1. The impedances of the
+    used as reference. The EEG/EMG channel configuration and
+    indexing numbers are described in Fig. 1. The impedances of the
     EEG electrodes were maintained below 10 k during the entire
     experiment.
 
@@ -68,8 +70,10 @@ class Lee2019_MI(BaseDataset):
             montage = make_standard_montage('standard_1005')
 
             # Create raw_data
-            raw_train_data = np.transpose(data['EEG_MI_train'][0, 0][0], (1, 2, 0))
-            raw_test_data = np.transpose(data['EEG_MI_test'][0, 0][0], (1, 2, 0))
+            raw_train_data = np.transpose(data['EEG_MI_train'][0, 0][0],
+                                          (1, 2, 0))
+            raw_test_data = np.transpose(data['EEG_MI_test'][0, 0][0],
+                                         (1, 2, 0))
             raw_data = np.concatenate([raw_train_data, raw_test_data], axis=0)
 
             # Create raw_event
@@ -104,10 +108,11 @@ class Lee2019_MI(BaseDataset):
 
         subject_paths = []
         for session in range(1, 3):
-            url = "{0}session{1}/s{2}/sess{1:02d}_subj{2:02d}_EEG_MI.mat".format(Lee2019_URL, session, subject)
+            url = "{0}session{1}/s{2}/sess{1:02d}_subj{2:02d}_EEG_MI.mat"\
+                .format(Lee2019_URL, session, subject)
 
-            data_path = dl.data_path(url, 'Lee2019_MI', path, force_update, update_path,
-                                     verbose)
+            data_path = dl.data_path(url, 'Lee2019_MI', path, force_update,
+                                     update_path, verbose)
             subject_paths.append(data_path)
 
         return subject_paths
