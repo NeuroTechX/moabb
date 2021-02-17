@@ -24,7 +24,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
 from moabb.evaluations import CrossSessionEvaluation
-from moabb.datasets import MAMEM1
+from moabb.datasets import MAMEM1, MAMEM2, MAMEM3
 from moabb.paradigms import SSVEP
 from moabb.pipelines import SSVEP_CCA
 
@@ -36,23 +36,25 @@ moabb.set_log_level('info')
 # Loading dataset
 # ---------------
 #
-# Load 2 subjects of MAMEM1 dataset, with 3 session each
+# Load 2 subjects of MAMEM1 2 and 3 datasets, with 5 session each
 
-subj = [1, 3]
+subj = [2, 5]
 for s in subj:
-    MAMEM1()._get_single_subject_data(s)
-dataset = MAMEM1()
-dataset.subject_list = subj
+    for d in [MAMEM1(), MAMEM2(), MAMEM3()]:
+        d._get_single_subject_data(s)
+datasets = [MAMEM1(), MAMEM2(), MAMEM3()]
+for d in datasets:
+    d.subject_list = subj
 
 ###############################################################################
 # Choose paradigm
 # ---------------
 #
 # We select the paradigm SSVEP, applying a bandpass filter (3-15 Hz) on
-# the data and we keep only the first 3 classes, that is stimulation
-# frequency of 6.66, 7.50 and 8.57 Hz.
+# the data and we keep all the 5 classes, that is stimulation
+# frequency of 6.66, 7.50 and 8.57, 10 and 12 Hz.
 
-paradigm = SSVEP(fmin=3, fmax=15, n_classes=3)
+paradigm = SSVEP(fmin=3, fmax=15, n_classes=None)
 
 ##############################################################################
 # Create pipelines
@@ -60,8 +62,8 @@ paradigm = SSVEP(fmin=3, fmax=15, n_classes=3)
 #
 # Use a Canonical Correlation Analysis classifier
 
-interval = dataset.interval
-freqs = paradigm.used_events(dataset)
+interval = datasets[0].interval
+freqs = paradigm.used_events(datasets[0])
 
 pipeline = {}
 pipeline["CCA"] = make_pipeline(
@@ -78,8 +80,13 @@ pipeline["CCA"] = make_pipeline(
 # allows to obtain the EEG data in scikit format, the labels and the meta
 # information.
 
-sessions = dataset._get_single_subject_data(3)
-X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[3])
+X_all, labels_all, meta_all = [], [], []
+for d in datasets:
+    # sessions = d._get_single_subject_data(2)
+    X, labels, meta = paradigm.get_data(dataset=d, subjects=[2])
+    X_all.append(X)
+    labels_all.append(labels)
+    meta_all.append(meta)
 
 ##############################################################################
 # Evaluation
@@ -90,7 +97,7 @@ X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[3])
 
 overwrite = True  # set to True if we want to overwrite cached results
 
-evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=dataset,
+evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=datasets,
                                     suffix='examples', overwrite=overwrite)
 results = evaluation.process(pipeline)
 
@@ -102,8 +109,6 @@ print(results.head())
 #
 # Here we plot the results, indicating the score for each session and subject
 
-plt.figure()
-sns.barplot(data=results, y='score', x='session',
-            hue='subject', palette='viridis')
-
+sns.catplot(data=results, x='session', y='score', hue='subject',
+            col='dataset', kind='bar', palette='viridis')
 plt.show()
