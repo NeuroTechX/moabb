@@ -50,6 +50,19 @@ for i in range(n_subject):
 dataset = SSVEPExo()
 dataset.subject_list = dataset.subject_list[:n_subject]
 interval = dataset.interval
+
+###############################################################################
+# Choose paradigm
+# ---------------
+#
+# We define the paradigms (SSVEP and FilterBankSSVEP) and use the dataset
+# SSVEPExo. The SSVEP paradigm applied a bandpass filter (10-25 Hz) on
+# the data while the FilterBankSSVEP paradigm uses as many bandpass filters as
+# there are stimulation frequencies (here 2). For each stimulation frequency
+# the EEG is filtered with a 1 Hz-wide bandpass filter centered on the
+# frequency. This results in n_classes copies of the signal, filtered for each
+# class, as used in filterbank motor imagery paradigms. 
+
 paradigm = SSVEP(fmin=10, fmax=25, n_classes=3)
 paradigm_fb = FilterBankSSVEP(filters=None, n_classes=3)
 
@@ -85,7 +98,6 @@ pipelines['CCA'] = make_pipeline(
 # Evaluation
 # ----------
 #
-# We define the paradigm (SSVEP) and use the dataset available for it.
 # The evaluation will return a dataframe containing a single AUC score for
 # each subject / session of the dataset, and for each pipeline.
 #

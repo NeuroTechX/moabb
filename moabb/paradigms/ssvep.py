@@ -1,4 +1,4 @@
-"""Steady-State Visually Evoked Paradigms"""
+"""Steady-State Visually Evoked Potentials Paradigms"""
 
 import logging
 
@@ -21,8 +21,8 @@ class BaseSSVEP(BaseParadigm):
         List of stimulation frequencies. If None, use all stimulus
         found in the dataset.
 
-    n_classes: int or None (default 2)
-        Number of classes each dataset must have. All dataset classes if None
+    n_classes: int or None (default None)
+        Number of classes each dataset must have. All dataset classes if None.
 
     tmin: float (default 0.0)
         Start time (in second) of the epoch, relative to the dataset specific
@@ -51,8 +51,9 @@ class BaseSSVEP(BaseParadigm):
         If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, filters=[(7, 45)], events=None, n_classes=2, tmin=0.0,
-                 tmax=None, baseline=None, channels=None, resample=None):
+    def __init__(self, filters=[(7, 45)], events=None, n_classes=None,
+                 tmin=0.0, tmax=None, baseline=None, channels=None,
+                 resample=None):
         super().__init__()
         self.filters = filters
         self.events = events
@@ -120,9 +121,9 @@ class BaseSSVEP(BaseParadigm):
             interval = self.tmax - self.tmin
         return utils.dataset_search(paradigm='ssvep',
                                     events=self.events,
-                                    total_classes=self.n_classes,
+                                    # total_classes=self.n_classes,
                                     interval=interval,
-                                    has_all_events=False)
+                                    has_all_events=True)
 
     @property
     def scoring(self):
@@ -150,7 +151,7 @@ class SSVEP(BaseSSVEP):
         List of stimulation frequencies. If None, use all stimulus
         found in the dataset.
 
-    n_classes: int or None (default 2)
+    n_classes: int or None (default None)
         Number of classes each dataset must have. All dataset classes if None
 
     tmin: float (default 0.0)
@@ -182,7 +183,7 @@ class SSVEP(BaseSSVEP):
 
     def __init__(self, fmin=7, fmax=45, **kwargs):
         if 'filters' in kwargs.keys():
-            raise(ValueError("MotorImagery does not take argument filters"))
+            raise(ValueError("SSVEP does not take argument filters"))
         super().__init__(filters=[(fmin, fmax)], **kwargs)
 
 
