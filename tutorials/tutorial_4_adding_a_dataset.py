@@ -155,3 +155,12 @@ pipelines['MDM'] = make_pipeline(Covariances('oas'), MDM(metric='riemann'))
 scores = evaluation.process(pipelines)
 
 print(scores)
+
+##############################################################################
+# Pushing on MOABB Github
+# -----------------------
+#
+# If you want to make your dataset available to everyone, you could upload 
+# your data on public server (like Zenodo or Figshare) and signal that you
+# want to add your dataset to MOABB in the [dedicated issue](https://github.com/NeuroTechX/moabb/issues/1).  # noqa: E501
+# You could then follow the instructions on [how to contribute](https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md)  # noqa: E501
