@@ -11,6 +11,7 @@
 **This is work in progress. API will change significantly (as well as the results of the benchmark).**
 
 [![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## Welcome!
 
