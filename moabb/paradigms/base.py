@@ -2,6 +2,9 @@ from abc import ABCMeta, abstractproperty, abstractmethod
 import numpy as np
 import pandas as pd
 import mne
+import logging
+
+log = logging.getLogger()
 
 
 class BaseParadigm(metaclass=ABCMeta):
@@ -110,7 +113,9 @@ class BaseParadigm(metaclass=ABCMeta):
                                                         event_id=event_id,
                                                         verbose=False)
             except ValueError:
-                events, _ = mne.events_from_annotations(raw, verbose=False)
+                log.warning("No matching annotations in {}"
+                            .format(raw.filenames))
+                return
 
         # picks channels
         if self.channels is None:

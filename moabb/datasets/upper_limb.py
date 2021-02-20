@@ -72,7 +72,7 @@ class Ofner2017(BaseDataset):
             sessions_per_subject=n_sessions,
             events=event_id,
             code='Ofner2017',
-            interval=[2, 5],  # according to paper 2-5
+            interval=[0, 3],  # according to paper 2-5
             paradigm='imagery',
             doi='10.1371/journal.pone.0182578')
 
@@ -99,6 +99,16 @@ class Ofner2017(BaseDataset):
                 raw.set_montage(montage)
                 # there is nan in the data
                 raw._data[np.isnan(raw._data)] = 0
+                # Modify the annotations to match the name of the command
+                stim = raw.annotations.description.astype(np.dtype('<21U'))
+                stim[stim == '1536'] = "right_elbow_flexion"
+                stim[stim == '1537'] = "right_elbow_extension"
+                stim[stim == '1538'] = "right_supination"
+                stim[stim == '1539'] = "right_pronation"
+                stim[stim == '1540'] = "right_hand_close"
+                stim[stim == '1541'] = "right_hand_open"
+                stim[stim == '1542'] = "rest"
+                raw.annotations.description = stim
                 data['run_%d' % ii] = raw
 
             out[session] = data
