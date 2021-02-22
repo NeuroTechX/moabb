@@ -11,4 +11,4 @@ sphinx-gallery
 sphinx-bootstrap_theme
 numpydoc
 pillow
-m2r
+m2r2

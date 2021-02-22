@@ -1,3 +1,7 @@
+"""
+BMI/OpenBMI dataset (Motor Imagery).
+"""
+
 from moabb.datasets.base import BaseDataset
 from moabb.datasets import download as dl
 
@@ -13,7 +17,12 @@ Lee2019_URL = \
 
 
 class Lee2019_MI(BaseDataset):
-    """
+    """Motor Imagery BMI/OpenBMI dataset from BMI/OpenBMI dataset.
+
+    Dataset from Lee et al 2019 [1]_.
+
+    **Dataset Description**
+
     EEG signals were recorded with a sampling rate of 1,000 Hz and
     collected with 62 Ag/AgCl electrodes. The EEG amplifier used
     in the experiment was a BrainAmp (Brain Products; Munich,
@@ -38,6 +47,14 @@ class Lee2019_MI(BaseDataset):
     During the online test phase, the fixation cross appeared at the
     center of the monitor and moved right or left, according to the
     real-time classifier output of the EEG signal.
+
+    References
+    ----------
+    .. [1] Lee, M. H., Kwon, O. Y., Kim, Y. J., Kim, H. K., Lee, Y. E.,
+           Williamson, J., … Lee, S. W. (2019). EEG dataset and OpenBMI
+           toolbox for three BCI paradigms: An investigation into BCI
+           illiteracy. GigaScience, 8(5), 1–16.
+           https://doi.org/10.1093/gigascience/giz002
     """
 
     def __init__(self):

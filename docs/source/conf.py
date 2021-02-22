@@ -54,7 +54,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
     'sphinx_gallery.gen_gallery',
-    'm2r',
+    'm2r2',
 ]
 
 napoleon_google_docstring = False
@@ -69,7 +69,7 @@ plot_html_show_source_link = False
 sphinx_gallery_conf = {
     'examples_dirs': ['../../examples', '../../tutorials'],
     'gallery_dirs': ['auto_examples', 'auto_tutorials'],
-    'backreferences_dir': False}
+    'backreferences_dir': None}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
