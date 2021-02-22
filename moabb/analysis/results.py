@@ -192,4 +192,4 @@ class Results:
                 else:
                     # if dataset, check for subject
                     dset = pipe_grp[dataset.code]
-                    return (str(subject) in dset['id'][:, 0])
+                    return (str(subject).encode('utf-8') in dset['id'][:, 0])
