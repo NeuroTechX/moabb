@@ -32,3 +32,4 @@ from .ssvep_wang import Wang2016
 from .upper_limb import Ofner2017
 from .Weibo2014 import Weibo2014
 from .Zhou2016 import Zhou2016
+from .neiry import DemonsP300
