@@ -7,7 +7,6 @@ force-exclude = '''
   /(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|\.svn|_build|buck-out|build|dist)/
 
   # moabb specific files
-  | setup.py
   | moabb/run.py
   | moabb/__init__.py
   | moabb/utils.py
