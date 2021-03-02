@@ -61,7 +61,7 @@ interval = dataset.interval
 # there are stimulation frequencies (here 2). For each stimulation frequency
 # the EEG is filtered with a 1 Hz-wide bandpass filter centered on the
 # frequency. This results in n_classes copies of the signal, filtered for each
-# class, as used in filterbank motor imagery paradigms. 
+# class, as used in filterbank motor imagery paradigms.
 
 paradigm = SSVEP(fmin=10, fmax=25, n_classes=3)
 paradigm_fb = FilterBankSSVEP(filters=None, n_classes=3)
