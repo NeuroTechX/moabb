@@ -132,7 +132,8 @@ def parse_pipelines_from_directory(d):
     return pipeline_configs
 
 
-def generate_paradigms(pipeline_configs, context={}):
+def generate_paradigms(pipeline_configs, context=None):
+    context = context or {}
     paradigms = OrderedDict()
     for config in pipeline_configs:
 

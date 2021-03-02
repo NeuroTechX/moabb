@@ -67,7 +67,7 @@ class BaseParadigm(metaclass=ABCMeta):
         """
         pass
 
-    def process_raw(self, raw, dataset, return_epochs=False):
+    def process_raw(self, raw, dataset, return_epochs=False):  # noqa: C901
         """
         Process one raw data file.
 

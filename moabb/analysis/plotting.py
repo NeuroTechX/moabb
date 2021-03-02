@@ -117,7 +117,7 @@ def summary_plot(sig_df, effect_df, p_threshold=0.05, simplify=True):
     return fig
 
 
-def meta_analysis_plot(stats_df, alg1, alg2):
+def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     '''A meta-analysis style plot that shows the standardized effect with
     confidence intervals over all datasets for two algorithms.
     Hypothesis is that alg1 is larger than alg2'''

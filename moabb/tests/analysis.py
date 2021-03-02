@@ -35,7 +35,7 @@ class DummyParadigm(BaseParadigm):
     def is_valid(self, dataset):
         pass
 
-    def process_raw(raw):
+    def process_raw(self, raw, dataset, return_epochs=False):
         raise NotImplementedError('dummy')
 
     @property

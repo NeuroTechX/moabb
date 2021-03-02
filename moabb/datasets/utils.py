@@ -14,7 +14,7 @@ for ds in inspect.getmembers(db, inspect.isclass):
         dataset_list.append(ds[1])
 
 
-def dataset_search(paradigm, multi_session=False, events=None,
+def dataset_search(paradigm, multi_session=False, events=None,  # noqa: C901
                    has_all_events=False, interval=None,
                    min_subjects=1, channels=()):
     '''

@@ -132,7 +132,7 @@ class bi2013a(BaseDataset):
         sessions = {}
         for file_path in file_path_list:
 
-            session_number = file_path.split(os.sep)[-2].strip('Session')
+            session_number = file_path.split(os.sep)[-2].replace('Session', '')
             session_name = 'session_' + session_number
             if session_name not in sessions.keys():
                 sessions[session_name] = {}

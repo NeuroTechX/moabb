@@ -43,17 +43,15 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
                 freq = float(f)
                 yf = []
                 for h in range(1, self.n_harmonics + 1):
-                    yf.append(np.sin(2 * np.pi * freq * h *
-                                     np.linspace(0, self.slen, n_times)))
-                    yf.append(np.cos(2 * np.pi * freq * h *
-                                     np.linspace(0, self.slen, n_times)))
+                    yf.append(np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times)))
+                    yf.append(np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times)))
                 self.Yf[f] = np.array(yf)
         return self
 
     def predict(self, X):
         """Predict is made by taking the maximum correlation coefficient"""
         y = []
-        for i, x in enumerate(X):
+        for x in X:
             corr_f = {}
             for f in self.freqs:
                 if f.replace('.', '', 1).isnumeric():

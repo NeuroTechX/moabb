@@ -110,8 +110,7 @@ class BaseP300(BaseParadigm):
 
         # pick events, based on event_id
         try:
-            if (type(event_id['Target']) is list and
-                    type(event_id['NonTarget']) == list):
+            if (type(event_id['Target']) is list and type(event_id['NonTarget']) == list):
                 event_id_new = dict(Target=1, NonTarget=0)
                 events = mne.merge_events(events, event_id['Target'], 1)
                 events = mne.merge_events(events, event_id['NonTarget'], 0)

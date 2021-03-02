@@ -52,7 +52,7 @@ class BaseSSVEP(BaseParadigm):
         If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, filters=[(7, 45)], events=None, n_classes=None,
+    def __init__(self, filters=((7, 45), ), events=None, n_classes=None,
                  tmin=0.0, tmax=None, baseline=None, channels=None,
                  resample=None):
         super().__init__()

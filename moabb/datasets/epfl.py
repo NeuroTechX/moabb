@@ -143,8 +143,7 @@ class EPFLP300(BaseDataset):
         n_trials = len(stimuli)
         for j in range(n_trials):
             delta_seconds = (
-                events_datetime[j] -
-                events_datetime[0]).total_seconds()
+                events_datetime[j] - events_datetime[0]).total_seconds()
             delta_indices = int(delta_seconds * sfreq)
             # has to add an offset
             pos.append(delta_indices + int(0.4 * sfreq))
@@ -179,7 +178,7 @@ class EPFLP300(BaseDataset):
         for file_path in sorted(file_path_list):
 
             session_name = 'session_' + \
-                file_path.split(os.sep)[-2].strip('session')
+                file_path.split(os.sep)[-2].replace('session', '')
 
             if session_name not in sessions.keys():
                 sessions[session_name] = {}
