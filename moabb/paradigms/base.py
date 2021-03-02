@@ -1,8 +1,10 @@
-from abc import ABCMeta, abstractproperty, abstractmethod
+import logging
+from abc import ABCMeta, abstractmethod, abstractproperty
+
+import mne
 import numpy as np
 import pandas as pd
-import mne
-import logging
+
 
 log = logging.getLogger()
 

@@ -1,10 +1,11 @@
+import numpy as np
+from mne.channels import make_standard_montage
+from mne.io import read_raw_gdf
+
 from moabb.datasets.base import BaseDataset
 
-from mne.io import read_raw_gdf
-from mne.channels import make_standard_montage
-import numpy as np
-
 from . import download as dl
+
 
 UPPER_LIMB_URL = 'https://zenodo.org/record/834976/files/'
 

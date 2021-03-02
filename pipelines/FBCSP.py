@@ -1,11 +1,13 @@
-from sklearn.svm import SVC
+import numpy as np
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
-from sklearn.model_selection import GridSearchCV
 from sklearn.feature_selection import SelectKBest, mutual_info_classif
-from moabb.pipelines.utils import FilterBank
+from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
-import numpy as np
+from sklearn.svm import SVC
+
+from moabb.pipelines.utils import FilterBank
+
 
 parameters = {'C': np.logspace(-2, 2, 10)}
 clf = GridSearchCV(SVC(kernel='linear'), parameters)

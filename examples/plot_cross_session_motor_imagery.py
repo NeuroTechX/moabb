@@ -23,22 +23,20 @@ session.
 #
 # License: BSD (3-clause)
 
-import moabb
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+from mne.decoding import CSP
+from pyriemann.estimation import Covariances
+from pyriemann.tangentspace import TangentSpace
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
-from mne.decoding import CSP
-
-from pyriemann.estimation import Covariances
-from pyriemann.tangentspace import TangentSpace
-
+import moabb
 from moabb.datasets import BNCI2014001
-from moabb.paradigms import LeftRightImagery
 from moabb.evaluations import CrossSessionEvaluation
+from moabb.paradigms import LeftRightImagery
+
 
 moabb.set_log_level('info')
 

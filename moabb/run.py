@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 
-import os
-import yaml
-import mne
-import logging
-import coloredlogs
 import importlib
-import pandas as pd
-
-from glob import glob
+import logging
+import os
 from argparse import ArgumentParser
 from collections import OrderedDict
-from sklearn.base import BaseEstimator
 from copy import deepcopy
+from glob import glob
+
+import coloredlogs
+import mne
+import pandas as pd
+import yaml
+from sklearn.base import BaseEstimator
+
+from moabb import paradigms as moabb_paradigms
+from moabb.analysis import analyze
+from moabb.analysis.results import get_string_rep
+from moabb.evaluations import WithinSessionEvaluation
 
 # moabb specific imports
 from moabb.pipelines.utils import create_pipeline_from_config
-from moabb import paradigms as moabb_paradigms
-from moabb.evaluations import WithinSessionEvaluation
-from moabb.analysis.results import get_string_rep
-from moabb.analysis import analyze
+
 
 log = logging.getLogger()
 

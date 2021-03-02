@@ -7,19 +7,17 @@ Creating a dataset class in MOABB
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019
 
-import numpy as np
-from scipy.io import savemat, loadmat
 import mne
-
-from moabb.datasets.base import BaseDataset
-from moabb.datasets import download as dl
-from moabb.paradigms import LeftRightImagery
-from moabb.evaluations import WithinSessionEvaluation
-
+import numpy as np
 from pyriemann.classification import MDM
 from pyriemann.estimation import Covariances
-
+from scipy.io import loadmat, savemat
 from sklearn.pipeline import make_pipeline
+
+from moabb.datasets import download as dl
+from moabb.datasets.base import BaseDataset
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import LeftRightImagery
 
 
 ##############################################################################

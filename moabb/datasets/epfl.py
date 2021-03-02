@@ -1,13 +1,16 @@
-import mne
-import os
-import glob
-import numpy as np
 import datetime as dt
-from moabb.datasets.base import BaseDataset
-from moabb.datasets import download as dl
+import glob
+import os
+import zipfile
+
+import mne
+import numpy as np
 from mne.channels import make_standard_montage
 from scipy.io import loadmat
-import zipfile
+
+from moabb.datasets import download as dl
+from moabb.datasets.base import BaseDataset
+
 
 EPFLP300_URL = 'http://documents.epfl.ch/groups/m/mm/mmspg/www/BCI/p300/'
 

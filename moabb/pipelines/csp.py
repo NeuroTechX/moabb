@@ -1,7 +1,7 @@
-from scipy import linalg
+import numpy as np
 from pyriemann.spatialfilters import CSP
 from pyriemann.utils.mean import mean_covariance
-import numpy as np
+from scipy import linalg
 
 
 class TRCSP(CSP):

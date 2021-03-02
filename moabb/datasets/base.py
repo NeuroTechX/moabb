@@ -4,6 +4,7 @@ Base class for a dataset
 import abc
 import logging
 
+
 log = logging.getLogger()
 
 

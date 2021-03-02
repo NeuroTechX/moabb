@@ -1,5 +1,6 @@
-from moabb.datasets import utils
 import unittest
+
+from moabb.datasets import utils
 
 
 class Test_Utils(unittest.TestCase):

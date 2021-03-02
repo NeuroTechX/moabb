@@ -7,6 +7,7 @@ from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
 from moabb.paradigms.base import BaseParadigm
 
+
 log = logging.getLogger()
 
 

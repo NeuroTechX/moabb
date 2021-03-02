@@ -1,11 +1,15 @@
-import os
 import logging
+import os
 import platform
 from datetime import datetime
+
 from moabb.analysis import plotting as plt
+from moabb.analysis.meta_analysis import (  # noqa: E501
+    compute_dataset_statistics,
+    find_significant_differences,
+)
 from moabb.analysis.results import Results  # noqa: F401
-from moabb.analysis.meta_analysis import (
-    find_significant_differences, compute_dataset_statistics)  # noqa: E501
+
 
 log = logging.getLogger()
 

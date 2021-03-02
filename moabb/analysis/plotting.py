@@ -1,13 +1,17 @@
 import logging
+
+import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
-import seaborn as sea
 import numpy as np
 import pandas as pd
-import matplotlib.gridspec as gridspec
+import seaborn as sea
 from scipy.stats import t
 
-from moabb.analysis.meta_analysis import collapse_session_scores
-from moabb.analysis.meta_analysis import combine_effects, combine_pvalues
+from moabb.analysis.meta_analysis import (
+    collapse_session_scores,
+    combine_effects,
+    combine_pvalues,
+)
 
 
 PIPELINE_PALETTE = sea.color_palette("husl", 6)

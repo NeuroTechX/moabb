@@ -1,6 +1,6 @@
+import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.cross_decomposition import CCA
-import numpy as np
 
 
 class SSVEP_CCA(BaseEstimator, ClassifierMixin):

@@ -1,9 +1,11 @@
+import itertools
+import logging
+
 import numpy as np
 import pandas as pd
-import itertools
 import scipy.stats as stats
 
-import logging
+
 log = logging.getLogger()
 
 

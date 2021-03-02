@@ -2,13 +2,16 @@
 Physionet Motor imagery dataset.
 """
 
-from .base import BaseDataset
-from mne.io import read_raw_edf
-import mne
-from mne.datasets import eegbci
-from mne import get_config, set_config
 import os.path as osp
+
+import mne
 import numpy as np
+from mne import get_config, set_config
+from mne.datasets import eegbci
+from mne.io import read_raw_edf
+
+from .base import BaseDataset
+
 
 BASE_URL = 'http://archive.physionet.org/pn4/eegmmidb/'
 

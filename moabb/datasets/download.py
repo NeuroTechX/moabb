@@ -2,12 +2,12 @@
 # License: BSD Style.
 
 import os
+import os.path as osp
 from os import path as op
 
-from mne.datasets.utils import _get_path, _do_path_update
-from mne.utils import _fetch_file, _url_to_local_path, verbose
 from mne import get_config, set_config
-import os.path as osp
+from mne.datasets.utils import _do_path_update, _get_path
+from mne.utils import _fetch_file, _url_to_local_path, verbose
 
 
 @verbose

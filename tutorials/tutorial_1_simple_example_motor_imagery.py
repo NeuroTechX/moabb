@@ -12,22 +12,21 @@ classify these signals.
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019
 
-import warnings
 import os
+import warnings
 
-import moabb
-from moabb.datasets import BNCI2014001
-from moabb.paradigms import LeftRightImagery
-from moabb.evaluations import WithinSessionEvaluation
-
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from mne.decoding import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
-from mne.decoding import CSP
+import moabb
+from moabb.datasets import BNCI2014001
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import LeftRightImagery
 
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 moabb.set_log_level('info')
 warnings.filterwarnings("ignore")

@@ -1,11 +1,14 @@
 import logging
-# import requests
-import numpy as np
 import re
-from moabb.datasets.base import BaseDataset
-from moabb.datasets import download as dl
+
 import h5py
 import mne
+
+# import requests
+import numpy as np
+
+from moabb.datasets import download as dl
+from moabb.datasets.base import BaseDataset
 
 
 log = logging.getLogger(__name__)

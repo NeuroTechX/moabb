@@ -3,8 +3,10 @@ Utils for easy database selection
 '''
 
 import inspect
+
 import moabb.datasets as db
 from moabb.datasets.base import BaseDataset
+
 
 dataset_list = []
 for ds in inspect.getmembers(db, inspect.isclass):

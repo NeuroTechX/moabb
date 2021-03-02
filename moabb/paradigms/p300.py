@@ -1,14 +1,16 @@
 """P300 Paradigms"""
 
 import abc
+import logging
+
 import mne
 import numpy as np
 import pandas as pd
-import logging
 
-from moabb.paradigms.base import BaseParadigm
 from moabb.datasets import utils
 from moabb.datasets.fake import FakeDataset
+from moabb.paradigms.base import BaseParadigm
+
 
 log = logging.getLogger()
 

@@ -3,15 +3,18 @@ Simple and compound motor imagery.
 https://doi.org/10.1371/journal.pone.0114853
 '''
 
-from .base import BaseDataset
-import zipfile as z
-from mne.io import read_raw_cnt
-from mne.channels import make_standard_montage
-from mne.datasets.utils import _get_path, _do_path_update
-from mne.utils import _fetch_file
 import os
 import shutil
+import zipfile as z
+
 import numpy as np
+from mne.channels import make_standard_montage
+from mne.datasets.utils import _do_path_update, _get_path
+from mne.io import read_raw_cnt
+from mne.utils import _fetch_file
+
+from .base import BaseDataset
+
 
 DATA_PATH = 'https://ndownloader.figshare.com/files/3662952'
 

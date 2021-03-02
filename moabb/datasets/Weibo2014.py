@@ -3,17 +3,20 @@ Simple and compound motor imagery
 https://doi.org/10.1371/journal.pone.0114853
 '''
 
-from .base import BaseDataset
-import zipfile as z
-from scipy.io import loadmat
-from mne.datasets.utils import _get_path, _do_path_update
-from mne.utils import _fetch_file
-import mne
-import numpy as np
+import logging
 import os
 import shutil
+import zipfile as z
 
-import logging
+import mne
+import numpy as np
+from mne.datasets.utils import _do_path_update, _get_path
+from mne.utils import _fetch_file
+from scipy.io import loadmat
+
+from .base import BaseDataset
+
+
 log = logging.getLogger()
 
 FILES = []

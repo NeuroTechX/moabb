@@ -1,11 +1,14 @@
-import mne
-from mne.channels import make_standard_montage
-from moabb.datasets.base import BaseDataset
-from moabb.datasets import download as dl
-import os
 import glob
+import os
 import zipfile
+
+import mne
 import yaml
+from mne.channels import make_standard_montage
+
+from moabb.datasets import download as dl
+from moabb.datasets.base import BaseDataset
+
 
 BI2013a_URL = 'https://zenodo.org/record/1494240/files/'
 

@@ -16,6 +16,7 @@ Tests to ensure that datasets download correctly
 # from moabb.datasets.ssvep_exo import SSVEPExo
 # from moabb.datasets.braininvaders import bi2013a
 import unittest
+
 import mne
 
 

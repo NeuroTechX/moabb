@@ -15,18 +15,19 @@ session.
 #
 # License: BSD (3-clause)
 
-import moabb
-import matplotlib.pyplot as plt
-import seaborn as sns
 import warnings
 
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
-from moabb.evaluations import CrossSessionEvaluation
+import moabb
 from moabb.datasets import MAMEM1
+from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import SSVEP
 from moabb.pipelines import SSVEP_CCA
+
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
