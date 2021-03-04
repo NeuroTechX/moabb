@@ -13,28 +13,36 @@ from .base import BaseDataset
 
 
 class DemonsP300(BaseDataset):
-    '''The dataset of visual P300 BCI performed in Virtual Reality (VR) game Raccoons versus Demons.
+    '''Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons versus Demons.
 
-    **Abstract**
+    **Dataset Description**
+
     We publish dataset of visual P300 BCI performed in Virtual Reality (VR) game Raccoons versus
     Demons (RvD). Data contains reach labels incorporating information about stimulus chosen enabling us
     to estimate model’s confidence at each stimulus prediction stage.
-    Data and experiments code are available at [3]_.
-    raccoons-vs-demons.
 
     **Participants**
-    61 healthy participants (23 males) naive to BCI with mean age 28 years from 19 to 45 y.o. took part in the study.
+
+    60 healthy participants (23 males) naive to BCI with mean age 28 years from 19 to 45 y.o. took part in the study.
     All subject signed informed consent and passed primary prerequisites on their health and condition.
 
     **Stimulation and EEG recording**
+
     The EEG was recorded with NVX-52 encephalograph (MCS, Zelenograd, Russia) at 500 Hz. We used 8 sponge
     electrodes (Cz, P3, P4, PO3, POz, PO4, O1, O2). Stimuli were presented with HTC Vive Pro VR headset with
     TTL hardware sync
 
     **Experimental procedure**
-    Participants were asked to play the P300 BCI game in virtual reality. BCI was embedded into a game plot with the
-    player posing as a forest warden. The player was supposed to feed animals and protect them from demons.
-    More info is here [1]_ [2]_.
+
+    Participants were asked to play the P300 BCI game in virtual reality.
+    BCI was embedded into a game plot with the player posing as a forest warden.
+    The player was supposed to feed animals and protect them from demons.
+    Game mechanics consisted in demons jumping (visually activating),
+    so player have to concentrate on one demon (chosen freely). That produced
+    P300 response in time of the deamon jump. That was the way to trigger fireball
+    torwards a deamon predicted by classifier from EEG data.
+
+    More info can be found in [1]_ [2]_.
 
     References
     ----------
@@ -59,7 +67,7 @@ class DemonsP300(BaseDataset):
 
     ch_names = ['Cz', 'P3', 'Pz', 'P4', 'PO3', 'PO4', 'O1', 'O2']
     sampling_rate = 500.0
-    url = f'FIXME'
+    url = f'https://gin.g-node.org/v-goncharenko/neiry-demons/raw/master/nery_demons_dataset.zip'
 
     hdf_path = 'p300dataset'
     ds_folder_name = 'demons'
