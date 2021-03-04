@@ -14,30 +14,47 @@ from .base import BaseDataset
 
 class DemonsP300(BaseDataset):
     '''The dataset of visual P300 BCI performed in Virtual Reality (VR) game Raccoons versus Demons.
+
     **Abstract**
     We publish dataset of visual P300 BCI performed in Virtual Reality (VR) game Raccoons versus
     Demons (RvD). Data contains reach labels incorporating information about stimulus chosen enabling us
     to estimate model’s confidence at each stimulus prediction stage.
     Data and experiments code are available at [3]_.
     raccoons-vs-demons.
+
     **Participants**
     61 healthy participants (23 males) naive to BCI with mean age 28 years from 19 to 45 y.o. took part in the study.
     All subject signed informed consent and passed primary prerequisites on their health and condition.
+
     **Stimulation and EEG recording**
     The EEG was recorded with NVX-52 encephalograph (MCS, Zelenograd, Russia) at 500 Hz. We used 8 sponge
     electrodes (Cz, P3, P4, PO3, POz, PO4, O1, O2). Stimuli were presented with HTC Vive Pro VR headset with
     TTL hardware sync
+
     **Experimental procedure**
     Participants were asked to play the P300 BCI game in virtual reality. BCI was embedded into a game plot with the
     player posing as a forest warden. The player was supposed to feed animals and protect them from demons.
     More info is here [1]_ [2]_.
+
     References
     ----------
+
     .. [1] Goncharenko V., Grigoryan R., and Samokhina A. (May 12, 2020),
-        Raccoons vs Demons: multiclass labeled P300 dataset
-        https://arxiv.org/abs/2005.02251
-    .. [2] Impulse Neiry website: https://impulse-neiry.com/
-    .. [3] Impulse Neiry repository https://gitlab.com/impulse-neiry_public/
+           Raccoons vs Demons: multiclass labeled P300 dataset,
+           https://arxiv.org/abs/2005.02251
+    .. [2] Goncharenko V., Grigoryan R., and Samokhina A.,
+           Approaches to multiclass classifcation of P300 potential datasets,
+           Intelligent Data Processing: Theory and Applications:Book of abstract of
+           the 13th International Conference, Moscow, 2020. — Moscow: Russian
+           Academy of Sciences, 2020. — 472 p.ISBN 978-5-907366-16-9
+           http://www.machinelearning.ru/wiki/images/3/31/Idp20.pdf
+    .. [3] Goncharenko V., Grigoryan R., and Samokhina A.,
+           P300 potentials dataset and approaches to its processing,
+           Труды 63-й Всероссийской научной конференции МФТИ. 23–29 ноября 2020
+           года. Прикладные математика и информатика. —  Москва : МФТИ, 2020. – 334 с.
+           ISBN 978-5-7417-0757-9
+           https://mipt.ru/science/5top100/education/courseproposal/%D0%A4%D0%9F%D0%9C%D0%98%20%D1%84%D0%B8%D0%BD%D0%B0%D0%BB-compressed2.pdf
+    .. [4] Impulse Neiry website: https://impulse-neiry.com/
     '''
 
     ch_names = ['Cz', 'P3', 'Pz', 'P4', 'PO3', 'PO4', 'O1', 'O2']
