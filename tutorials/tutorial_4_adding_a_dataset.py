@@ -7,19 +7,17 @@ Creating a dataset class in MOABB
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019
 
-import numpy as np
-from scipy.io import savemat, loadmat
 import mne
-
-from moabb.datasets.base import BaseDataset
-from moabb.datasets import download as dl
-from moabb.paradigms import LeftRightImagery
-from moabb.evaluations import WithinSessionEvaluation
-
+import numpy as np
 from pyriemann.classification import MDM
 from pyriemann.estimation import Covariances
-
+from scipy.io import loadmat, savemat
 from sklearn.pipeline import make_pipeline
+
+from moabb.datasets import download as dl
+from moabb.datasets.base import BaseDataset
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import LeftRightImagery
 
 
 ##############################################################################
@@ -160,7 +158,7 @@ print(scores)
 # Pushing on MOABB Github
 # -----------------------
 #
-# If you want to make your dataset available to everyone, you could upload 
+# If you want to make your dataset available to everyone, you could upload
 # your data on public server (like Zenodo or Figshare) and signal that you
 # want to add your dataset to MOABB in the [dedicated issue](https://github.com/NeuroTechX/moabb/issues/1).  # noqa: E501
 # You could then follow the instructions on [how to contribute](https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md)  # noqa: E501

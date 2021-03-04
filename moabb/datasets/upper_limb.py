@@ -1,10 +1,11 @@
+import numpy as np
+from mne.channels import make_standard_montage
+from mne.io import read_raw_gdf
+
 from moabb.datasets.base import BaseDataset
 
-from mne.io import read_raw_gdf
-from mne.channels import make_standard_montage
-import numpy as np
-
 from . import download as dl
+
 
 UPPER_LIMB_URL = 'https://zenodo.org/record/834976/files/'
 
@@ -134,8 +135,7 @@ class Ofner2017(BaseDataset):
         # FIXME check the value are in V and not uV.
         for session in sessions:
             for run in range(1, 11):
-                url = (f"{UPPER_LIMB_URL}motor{session}_subject{subject}" +
-                       f"_run{run}.gdf")
+                url = (f"{UPPER_LIMB_URL}motor{session}_subject{subject}" + f"_run{run}.gdf")
                 p = dl.data_path(url, 'UPPERLIMB', path, force_update,
                                  update_path, verbose)
                 paths.append(p)

@@ -1,14 +1,16 @@
 """P300 Paradigms"""
 
 import abc
+import logging
+
 import mne
 import numpy as np
 import pandas as pd
-import logging
 
-from moabb.paradigms.base import BaseParadigm
 from moabb.datasets import utils
 from moabb.datasets.fake import FakeDataset
+from moabb.paradigms.base import BaseParadigm
+
 
 log = logging.getLogger()
 
@@ -108,8 +110,7 @@ class BaseP300(BaseParadigm):
 
         # pick events, based on event_id
         try:
-            if (type(event_id['Target']) is list and
-                    type(event_id['NonTarget']) == list):
+            if (type(event_id['Target']) is list and type(event_id['NonTarget']) == list):
                 event_id_new = dict(Target=1, NonTarget=0)
                 events = mne.merge_events(events, event_id['Target'], 1)
                 events = mne.merge_events(events, event_id['NonTarget'], 0)

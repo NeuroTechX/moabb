@@ -1,9 +1,10 @@
-from sklearn.svm import SVC
-from sklearn.model_selection import GridSearchCV
+import numpy as np
 from pyriemann.estimation import Covariances
 from pyriemann.tangentspace import TangentSpace
+from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
-import numpy as np
+from sklearn.svm import SVC
+
 
 parameters = {'C': np.logspace(-2, 2, 10)}
 clf = GridSearchCV(SVC(kernel='linear'), parameters, cv=3)

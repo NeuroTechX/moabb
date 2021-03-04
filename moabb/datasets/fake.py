@@ -1,7 +1,7 @@
-from mne import create_info
-from mne.io import RawArray
-from mne.channels import make_standard_montage
 import numpy as np
+from mne import create_info
+from mne.channels import make_standard_montage
+from mne.io import RawArray
 
 from moabb.datasets.base import BaseDataset
 

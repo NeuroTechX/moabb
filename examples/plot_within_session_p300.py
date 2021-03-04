@@ -18,20 +18,25 @@ We will use the P300 paradigm, which uses the AUC as metric.
 #
 # License: BSD (3-clause)
 
-# getting rid of the warnings about the future (on s'en fout !)
-from sklearn.pipeline import make_pipeline
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-from sklearn.base import BaseEstimator, TransformerMixin
-from pyriemann.tangentspace import TangentSpace
-from pyriemann.estimation import XdawnCovariances, Xdawn
-from moabb.evaluations import WithinSessionEvaluation
-from moabb.paradigms import P300
-from moabb.datasets import EPFLP300
-import moabb
+import warnings
+
+import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-import matplotlib.pyplot as plt
-import warnings
+from pyriemann.estimation import Xdawn, XdawnCovariances
+from pyriemann.tangentspace import TangentSpace
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+
+# getting rid of the warnings about the future (on s'en fout !)
+from sklearn.pipeline import make_pipeline
+
+import moabb
+from moabb.datasets import EPFLP300
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import P300
+
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
 

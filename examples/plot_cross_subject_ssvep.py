@@ -12,22 +12,22 @@ We will use the SSVEP paradigm, which uses the AUC as metric.
 #
 # License: BSD (3-clause)
 
-from sklearn.pipeline import make_pipeline
-from sklearn.linear_model import LogisticRegression
+import warnings
 
-from pyriemann.tangentspace import TangentSpace
-from pyriemann.estimation import Covariances
-
-from moabb.evaluations import CrossSubjectEvaluation
-from moabb.paradigms import SSVEP, FilterBankSSVEP
-from moabb.datasets import SSVEPExo
-from moabb.pipelines import SSVEP_CCA, ExtendedSSVEPSignal
-import moabb
-
+import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
-import warnings
+from pyriemann.estimation import Covariances
+from pyriemann.tangentspace import TangentSpace
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+
+import moabb
+from moabb.datasets import SSVEPExo
+from moabb.evaluations import CrossSubjectEvaluation
+from moabb.paradigms import SSVEP, FilterBankSSVEP
+from moabb.pipelines import SSVEP_CCA, ExtendedSSVEPSignal
+
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
@@ -61,7 +61,7 @@ interval = dataset.interval
 # there are stimulation frequencies (here 2). For each stimulation frequency
 # the EEG is filtered with a 1 Hz-wide bandpass filter centered on the
 # frequency. This results in n_classes copies of the signal, filtered for each
-# class, as used in filterbank motor imagery paradigms. 
+# class, as used in filterbank motor imagery paradigms.
 
 paradigm = SSVEP(fmin=10, fmax=25, n_classes=3)
 paradigm_fb = FilterBankSSVEP(filters=None, n_classes=3)

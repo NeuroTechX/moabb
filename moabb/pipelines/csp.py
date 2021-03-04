@@ -1,7 +1,7 @@
-from scipy import linalg
+import numpy as np
 from pyriemann.spatialfilters import CSP
 from pyriemann.utils.mean import mean_covariance
-import numpy as np
+from scipy import linalg
 
 
 class TRCSP(CSP):
@@ -43,9 +43,9 @@ class TRCSP(CSP):
         # regularize CSP
         evals = [[], []]
         evecs = [[], []]
-        Creg = C[1] + np.eye(C[1].shape[0])*self.alpha
+        Creg = C[1] + np.eye(C[1].shape[0]) * self.alpha
         evals[1], evecs[1] = linalg.eigh(C[0], Creg)
-        Creg = C[0] + np.eye(C[0].shape[0])*self.alpha
+        Creg = C[0] + np.eye(C[0].shape[0]) * self.alpha
         evals[0], evecs[0] = linalg.eigh(C[1], Creg)
         # sort eigenvectors
         filters = []
@@ -56,8 +56,8 @@ class TRCSP(CSP):
             evecs[i] = evecs[i][:, ix]
             # spatial patterns
             A = np.linalg.pinv(evecs[i].T)
-            filters.append(evecs[i][:, :(self.nfilter//2)])
-            patterns.append(A[:, :(self.nfilter//2)])
+            filters.append(evecs[i][:, :(self.nfilter // 2)])
+            patterns.append(A[:, :(self.nfilter // 2)])
         self.filters_ = np.concatenate(filters, axis=1).T
         self.patterns_ = np.concatenate(patterns, axis=1).T
 

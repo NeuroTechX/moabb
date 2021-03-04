@@ -1,6 +1,7 @@
-import mne
 import logging
+
 import coloredlogs
+import mne
 
 
 def set_log_level(verbose='info'):

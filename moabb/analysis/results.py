@@ -1,13 +1,13 @@
-import os
-import h5py
-import re
 import hashlib
+import inspect
+import os
+import re
+from datetime import datetime
+
+import h5py
 import numpy as np
 import pandas as pd
-import inspect
 from sklearn.base import BaseEstimator
-
-from datetime import datetime
 
 
 def get_string_rep(obj):
@@ -44,8 +44,8 @@ class Results:
         class that will abstract result storage
         """
         import moabb
-        from moabb.paradigms.base import BaseParadigm
         from moabb.evaluations.base import BaseEvaluation
+        from moabb.paradigms.base import BaseParadigm
         assert issubclass(evaluation_class, BaseEvaluation)
         assert issubclass(paradigm_class, BaseParadigm)
 

@@ -1,6 +1,6 @@
-from sklearn.base import BaseEstimator, TransformerMixin
 import numpy as np
 import scipy.signal as signal
+from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class LogVariance(BaseEstimator, TransformerMixin):

@@ -1,14 +1,21 @@
+import logging
 import unittest
 
-from moabb.datasets.fake import FakeDataset
-from moabb.paradigms import (BaseSSVEP, FilterBankSSVEP, SSVEP,
-                             LeftRightImagery, BaseMotorImagery,
-                             FilterBankMotorImagery,
-                             FilterBankLeftRightImagery,
-                             BaseP300, P300)
-
 import numpy as np
-import logging
+
+from moabb.datasets.fake import FakeDataset
+from moabb.paradigms import (
+    P300,
+    SSVEP,
+    BaseMotorImagery,
+    BaseP300,
+    BaseSSVEP,
+    FilterBankLeftRightImagery,
+    FilterBankMotorImagery,
+    FilterBankSSVEP,
+    LeftRightImagery,
+)
+
 
 log = logging.getLogger()
 log.setLevel(logging.ERROR)

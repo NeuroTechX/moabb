@@ -1,16 +1,16 @@
 import logging
+from copy import deepcopy
 from time import time
 
 import numpy as np
-from copy import deepcopy
-from sklearn.model_selection import (cross_val_score, LeaveOneGroupOut,
-                                     StratifiedKFold)
+from sklearn.base import clone
+from sklearn.metrics import get_scorer
+from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold, cross_val_score
+from sklearn.model_selection._validation import _fit_and_score, _score
 from sklearn.preprocessing import LabelEncoder
 
 from moabb.evaluations.base import BaseEvaluation
-from sklearn.base import clone
-from sklearn.model_selection._validation import _fit_and_score, _score
-from sklearn.metrics import get_scorer
+
 
 log = logging.getLogger()
 

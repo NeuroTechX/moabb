@@ -13,20 +13,19 @@ we begin by importing all relevant libraries.
 import os
 import warnings
 
-import moabb
-from moabb.datasets import BNCI2014001, Weibo2014, Zhou2016
-from moabb.paradigms import LeftRightImagery
-from moabb.evaluations import WithinSessionEvaluation
-
+import matplotlib.pyplot as plt
+import mne
+import pandas as pd
+import seaborn as sns
+from mne.decoding import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
-import mne
-from mne.decoding import CSP
+import moabb
+from moabb.datasets import BNCI2014001, Weibo2014, Zhou2016
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import LeftRightImagery
 
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 moabb.set_log_level('info')
 mne.set_log_level('CRITICAL')

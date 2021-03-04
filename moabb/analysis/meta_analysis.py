@@ -1,9 +1,11 @@
+import itertools
+import logging
+
 import numpy as np
 import pandas as pd
-import itertools
 import scipy.stats as stats
 
-import logging
+
 log = logging.getLogger()
 
 
@@ -76,7 +78,7 @@ def _pairedttest_random(data, nperms):
     '''
     out = np.ones((data.shape[1], data.shape[1]))
     true = data.sum(axis=0)
-    for i in range(nperms):
+    for _ in range(nperms):
         perm = np.random.randint(2, size=(data.shape[0],))
         perm[perm == 0] = -1
         # multiply permutation by subject dimension and sum over subjects

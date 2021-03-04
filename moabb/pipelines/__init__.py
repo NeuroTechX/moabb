@@ -5,5 +5,5 @@ with an sklearn compatible estimator.
 """
 # flake8: noqa
 from .classification import SSVEP_CCA
-from .features import LogVariance, FM, ExtendedSSVEPSignal
-from .utils import create_pipeline_from_config, FilterBank
+from .features import FM, ExtendedSSVEPSignal, LogVariance
+from .utils import FilterBank, create_pipeline_from_config

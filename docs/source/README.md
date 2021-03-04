@@ -26,15 +26,15 @@ This document (the README file) is a hub to give you some information about the 
 * [Documentation](#docs)
 * [Architecture and main concepts](#architecture)
 
-We also have a recent [paper][link_paper] in JNE. 
+We also have a recent [paper][link_paper] in JNE.
 
 ## What are we doing?
 
 ### The problem
 
-* Reproducible Research in BCI has a long way to go. 
-* While many BCI datasets are made freely available, researchers do not publish code, and reproducing results required to benchmark new algorithms turns out to be more tricky than it should be. 
-* Performances can be significantly impacted by parameters of the preprocessing steps, toolboxes used and implementation “tricks” that are almost never reported in the literature. 
+* Reproducible Research in BCI has a long way to go.
+* While many BCI datasets are made freely available, researchers do not publish code, and reproducing results required to benchmark new algorithms turns out to be more tricky than it should be.
+* Performances can be significantly impacted by parameters of the preprocessing steps, toolboxes used and implementation “tricks” that are almost never reported in the literature.
 
 As a results, there is no comprehensive benchmark of BCI algorithm, and newcomers are spending a tremendous amount of time browsing literature to find out what algorithm works best and on which dataset.
 
@@ -42,7 +42,7 @@ As a results, there is no comprehensive benchmark of BCI algorithm, and newcomer
 
 The Mother of all BCI Benchmark will:
 
-* Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets. 
+* Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets.
 * The code will be made available on github, serving as a reference point for the future algorithmic developments.
 * Algorithms can be ranked and promoted on a website, providing a clear picture of the different solutions available in the field.
 
@@ -138,7 +138,7 @@ The list of supported dataset can be found here : http://moabb.neurotechx.com/do
 
 ### Submit a new dataset
 
-you can submit new dataset by filling this [form](https://docs.google.com/forms/d/e/1FAIpQLScxbpqK4omKsUs4tA2XpfeHJATo_SbYvT0hpxoeKDb5k_TZvQ/viewform). The datasets currently on our radar can be seen [here](https://docs.google.com/spreadsheets/d/1fQNFXGu1J1yJ9jFCer9EQQatjCPJWg7O-uCGF0Z4PiM/edit).  
+you can submit new dataset by filling this [form](https://docs.google.com/forms/d/e/1FAIpQLScxbpqK4omKsUs4tA2XpfeHJATo_SbYvT0hpxoeKDb5k_TZvQ/viewform). The datasets currently on our radar can be seen [here](https://docs.google.com/spreadsheets/d/1fQNFXGu1J1yJ9jFCer9EQQatjCPJWg7O-uCGF0Z4PiM/edit).
 
 ## <a name="architecture"></a> Architecture and main concepts:
 

@@ -1,15 +1,16 @@
-from moabb.evaluations import evaluations as ev
-from moabb.datasets.fake import FakeDataset
-from moabb.paradigms.motor_imagery import FakeImageryParadigm
-import unittest
 import os
+import unittest
+from collections import OrderedDict
 
-from pyriemann.spatialfilters import CSP
 from pyriemann.estimation import Covariances
+from pyriemann.spatialfilters import CSP
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
-from collections import OrderedDict
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from moabb.datasets.fake import FakeDataset
+from moabb.evaluations import evaluations as ev
+from moabb.paradigms.motor_imagery import FakeImageryParadigm
+
 
 pipelines = OrderedDict()
 pipelines['C'] = make_pipeline(Covariances('oas'), CSP(8), LDA())
@@ -44,8 +45,8 @@ class Test_AdditionalColumns(unittest.TestCase):
 
     def setUp(self):
         self.eval = ev.WithinSessionEvaluation(
-                paradigm=FakeImageryParadigm(), datasets=[dataset],
-                additional_columns=['one', 'two'])
+            paradigm=FakeImageryParadigm(), datasets=[dataset],
+            additional_columns=['one', 'two'])
 
     def tearDown(self):
         path = self.eval.results.filepath

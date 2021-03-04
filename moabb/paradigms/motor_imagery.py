@@ -3,9 +3,10 @@
 import abc
 import logging
 
-from moabb.paradigms.base import BaseParadigm
 from moabb.datasets import utils
 from moabb.datasets.fake import FakeDataset
+from moabb.paradigms.base import BaseParadigm
+
 
 log = logging.getLogger()
 

@@ -1,11 +1,14 @@
 import logging
-# import requests
-import numpy as np
 import re
-from moabb.datasets.base import BaseDataset
-from moabb.datasets import download as dl
+
 import h5py
 import mne
+
+# import requests
+import numpy as np
+
+from moabb.datasets import download as dl
+from moabb.datasets.base import BaseDataset
 
 
 log = logging.getLogger(__name__)
@@ -199,8 +202,7 @@ class BBCIDataset(object):
         with h5py.File(filename, 'r') as h5file:
             clab_set = h5file['nfo']['clab'][:].squeeze()
             all_sensor_names = [''.join(
-                chr(c.squeeze()) for c in h5file[obj_ref])
-                                for obj_ref in clab_set]
+                chr(c.squeeze()) for c in h5file[obj_ref]) for obj_ref in clab_set]
             if pattern is not None:
                 all_sensor_names = filter(
                     lambda sname: re.search(pattern, sname),
@@ -223,17 +225,14 @@ class BBCIDataset(object):
 
         # Check if there are markers at the same time
         previous_i_sample = -1
-        for i_event, (i_sample, id_class) in enumerate(
-                zip(event_times_in_samples, event_classes)):
+        for i_event, (i_sample, _) in enumerate(zip(event_times_in_samples, event_classes)):
             if i_sample == previous_i_sample:
                 info = "{:d}: ({:.0f} and {:.0f}).\n".format(i_sample,
                                                              event_classes[
                                                                  i_event - 1],
                                                              event_classes[
                                                                  i_event])
-                log.warning("Same sample has at least two markers.\n"
-                            + info +
-                            "Marker codes will be summed.")
+                log.warning(f"Same sample has at least two markers.\n{info}Marker codes will be summed.")
             previous_i_sample = i_sample
 
         # Now create stim chan

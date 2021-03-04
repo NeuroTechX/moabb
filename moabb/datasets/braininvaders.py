@@ -1,11 +1,14 @@
-import mne
-from mne.channels import make_standard_montage
-from moabb.datasets.base import BaseDataset
-from moabb.datasets import download as dl
-import os
 import glob
+import os
 import zipfile
+
+import mne
 import yaml
+from mne.channels import make_standard_montage
+
+from moabb.datasets import download as dl
+from moabb.datasets.base import BaseDataset
+
 
 BI2013a_URL = 'https://zenodo.org/record/1494240/files/'
 
@@ -129,7 +132,7 @@ class bi2013a(BaseDataset):
         sessions = {}
         for file_path in file_path_list:
 
-            session_number = file_path.split(os.sep)[-2].strip('Session')
+            session_number = file_path.split(os.sep)[-2].replace('Session', '')
             session_name = 'session_' + session_number
             if session_name not in sessions.keys():
                 sessions[session_name] = {}

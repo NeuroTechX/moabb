@@ -12,25 +12,22 @@ classification score of not one but three classification pipelines.
 import os
 import warnings
 
-import moabb
-from moabb.datasets import BNCI2014001, Weibo2014, Zhou2016
-from moabb.paradigms import LeftRightImagery
-from moabb.evaluations import WithinSessionEvaluation
-
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-from sklearn.pipeline import make_pipeline
-
+import matplotlib.pyplot as plt
 import mne
+import pandas as pd
+import seaborn as sns
 from mne.decoding import CSP
-
-from sklearn.svm import SVC
+from pyriemann.classification import MDM
 from pyriemann.estimation import Covariances
 from pyriemann.tangentspace import TangentSpace
-from pyriemann.classification import MDM
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.pipeline import make_pipeline
+from sklearn.svm import SVC
 
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import moabb
+from moabb.datasets import BNCI2014001, Weibo2014, Zhou2016
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import LeftRightImagery
 
 
 mne.set_log_level('CRITICAL')

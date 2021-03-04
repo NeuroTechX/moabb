@@ -24,9 +24,10 @@ This tutorial explore the paradigm object, with 3 examples of paradigm :
 # License: BSD (3-clause)
 
 import numpy as np
+
 from moabb.datasets import BNCI2014001
-from moabb.paradigms import (LeftRightImagery, MotorImagery,
-                             FilterBankMotorImagery)
+from moabb.paradigms import FilterBankMotorImagery, LeftRightImagery, MotorImagery
+
 
 print(__doc__)
 
