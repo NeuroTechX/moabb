@@ -30,9 +30,7 @@ force-exclude = '''
   | moabb/datasets/gigadb.py
   | moabb/datasets/utils.py
   | moabb/datasets/bnci.py
-  | moabb/datasets/braininvaders.py
   | moabb/datasets/schirrmeister2017.py
-  | moabb/datasets/epfl.py
   | moabb/datasets/upper_limb.py
   | moabb/datasets/Zhou2016.py
   | moabb/datasets/Weibo2014.py
