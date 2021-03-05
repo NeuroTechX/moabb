@@ -8,9 +8,6 @@ force-exclude = '''
 
   # moabb specific files
   | setup.py
-  | moabb/run.py
-  | moabb/__init__.py
-  | moabb/utils.py
   | moabb/analysis/results.py
   | moabb/analysis/plotting.py
   | moabb/analysis/__init__.py
