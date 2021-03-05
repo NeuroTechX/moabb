@@ -22,7 +22,6 @@ force-exclude = '''
   | moabb/datasets/ssvep_nakanishi.py
   | moabb/datasets/fake.py
   | moabb/datasets/download.py
-  | moabb/datasets/__init__.py
   | moabb/datasets/alex_mi.py
   | moabb/datasets/physionet_mi.py
   | moabb/datasets/mpi_mi.py
@@ -37,7 +36,6 @@ force-exclude = '''
   | moabb/datasets/Zhou2016.py
   | moabb/datasets/Weibo2014.py
   | moabb/datasets/ssvep_wang.py
-  | moabb/datasets/base.py
   | moabb/datasets/bbci_eeg_fnirs.py
   | moabb/tests/analysis.py
   | moabb/tests/download.py
