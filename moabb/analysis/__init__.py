@@ -15,7 +15,7 @@ log = logging.getLogger()
 
 
 def analyze(results, out_path, name='analysis', plot=False):
-    '''Analyze results.
+    """Analyze results.
 
     Given a results dataframe, generates a folder with
     results and a dataframe of the exact data used to generate those results,
@@ -33,7 +33,7 @@ def analyze(results, out_path, name='analysis', plot=False):
 
     Either path or results is necessary
 
-    '''
+    """
     # input checks #
     if not isinstance(out_path, str):
         raise ValueError('Given out_path argument is not string')
@@ -47,8 +47,7 @@ def analyze(results, out_path, name='analysis', plot=False):
     print(unique_ids)
     print(set(unique_ids))
     if len(unique_ids) != len(set(unique_ids)):
-        log.warning(
-            'Pipeline names are too similar, turning off name shortening')
+        log.warning('Pipeline names are too similar, turning off name shortening')
         simplify = False
 
     os.makedirs(analysis_path, exist_ok=True)

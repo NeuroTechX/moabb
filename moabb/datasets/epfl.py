@@ -69,7 +69,8 @@ class EPFLP300(BaseDataset):
             code='EPFL P300 dataset',
             interval=[0, 1],
             paradigm='p300',
-            doi='10.1016/j.jneumeth.2007.03.005')
+            doi='10.1016/j.jneumeth.2007.03.005',
+        )
 
     def _get_single_run_data(self, file_path):
 
@@ -116,14 +117,14 @@ class EPFLP300(BaseDataset):
             'Fz',
             'Cz',
             'MA1',
-            'MA2']
+            'MA2',
+        ]
         ch_types = ['eeg'] * 32 + ['misc'] * 2
 
         # The last X entries are 0 for all signals. This leads to
         # artifacts when epoching and band-pass filtering the data.
         # Correct the signals for this.
-        sig_i = np.where(
-            np.diff(np.all(signals == 0, axis=0).astype(int)) != 0)[0][0]
+        sig_i = np.where(np.diff(np.all(signals == 0, axis=0).astype(int)) != 0)[0][0]
         signals = signals[:, :sig_i]
         signals *= 1e-6  # data is stored as uV, but MNE expects V
         # we have to re-reference the signals
@@ -135,15 +136,15 @@ class EPFLP300(BaseDataset):
         # getting the event time in a Python standardized way
         events_datetime = []
         for eventi in events:
-            events_datetime.append(dt.datetime(
-                *eventi.astype(int), int(eventi[-1] * 1e3) % 1000 * 1000))
+            events_datetime.append(
+                dt.datetime(*eventi.astype(int), int(eventi[-1] * 1e3) % 1000 * 1000)
+            )
 
         # get the indices of the stimuli
         pos = []
         n_trials = len(stimuli)
         for j in range(n_trials):
-            delta_seconds = (
-                events_datetime[j] - events_datetime[0]).total_seconds()
+            delta_seconds = (events_datetime[j] - events_datetime[0]).total_seconds()
             delta_indices = int(delta_seconds * sfreq)
             # has to add an offset
             pos.append(delta_indices + int(0.4 * sfreq))
@@ -177,28 +178,22 @@ class EPFLP300(BaseDataset):
 
         for file_path in sorted(file_path_list):
 
-            session_name = 'session_' + \
-                file_path.split(os.sep)[-2].replace('session', '')
+            session_name = 'session_' + file_path.split(os.sep)[-2].replace('session', '')
 
             if session_name not in sessions.keys():
                 sessions[session_name] = {}
 
             run_name = 'run_' + str(len(sessions[session_name]) + 1)
-            sessions[session_name][run_name] = self._get_single_run_data(
-                file_path)
+            sessions[session_name][run_name] = self._get_single_run_data(file_path)
 
         return sessions
 
     def data_path(
-            self,
-            subject,
-            path=None,
-            force_update=False,
-            update_path=None,
-            verbose=None):
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
 
         if subject not in self.subject_list:
-            raise(ValueError("Invalid subject number"))
+            raise (ValueError("Invalid subject number"))
 
         # check if has the .zip
         url = '{:s}subject{:d}.zip'.format(EPFLP300_URL, subject)
@@ -206,14 +201,13 @@ class EPFLP300(BaseDataset):
         path_folder = path_zip.strip('subject{:d}.zip'.format(subject))
 
         # check if has to unzip
-        if not(os.path.isdir(path_folder + 'subject{:d}'.format(subject))):
+        if not (os.path.isdir(path_folder + 'subject{:d}'.format(subject))):
             print('unzip', path_zip)
             zip_ref = zipfile.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)
 
         # get the path to all files
         pattern = os.path.join('subject{:d}'.format(subject), '*', '*')
-        subject_paths = glob.glob(
-            path_folder + pattern)
+        subject_paths = glob.glob(path_folder + pattern)
 
         return subject_paths

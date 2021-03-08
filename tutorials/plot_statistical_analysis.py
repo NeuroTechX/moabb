@@ -58,11 +58,9 @@ pipelines = {}
 
 pipelines['CSP + LDA'] = make_pipeline(CSP(n_components=8), LDA())
 
-pipelines['RG + LR'] = make_pipeline(Covariances(), TangentSpace(),
-                                     LogisticRegression())
+pipelines['RG + LR'] = make_pipeline(Covariances(), TangentSpace(), LogisticRegression())
 
-pipelines['CSP + LR'] = make_pipeline(
-    CSP(n_components=8), LogisticRegression())
+pipelines['CSP + LR'] = make_pipeline(CSP(n_components=8), LogisticRegression())
 
 pipelines['RG + LDA'] = make_pipeline(Covariances(), TangentSpace(), LDA())
 
@@ -84,10 +82,8 @@ dataset.subject_list = dataset.subject_list[:4]
 datasets = [dataset]
 overwrite = False  # set to True if we want to overwrite cached results
 evaluation = CrossSessionEvaluation(
-    paradigm=paradigm,
-    datasets=datasets,
-    suffix='examples',
-    overwrite=overwrite)
+    paradigm=paradigm, datasets=datasets, suffix='examples', overwrite=overwrite
+)
 
 results = evaluation.process(pipelines)
 

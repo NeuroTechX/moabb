@@ -28,7 +28,7 @@ def get_digest(obj):
 
 
 class Results:
-    '''Class to hold results from the evaluation.evaluate method.
+    """Class to hold results from the evaluation.evaluate method.
 
     Appropriate test would be to ensure the result of 'evaluate' is
     consistent and can be accepted by 'results.add'
@@ -36,16 +36,24 @@ class Results:
     Saves dataframe per pipeline and can query to see if particular
     subject has already been run
 
-    '''
+    """
 
-    def __init__(self, evaluation_class, paradigm_class, suffix='',
-                 overwrite=False, hdf5_path=None, additional_columns=None):
+    def __init__(
+        self,
+        evaluation_class,
+        paradigm_class,
+        suffix='',
+        overwrite=False,
+        hdf5_path=None,
+        additional_columns=None,
+    ):
         """
         class that will abstract result storage
         """
         import moabb
         from moabb.evaluations.base import BaseEvaluation
         from moabb.paradigms.base import BaseParadigm
+
         assert issubclass(evaluation_class, BaseEvaluation)
         assert issubclass(paradigm_class, BaseParadigm)
 
@@ -56,14 +64,16 @@ class Results:
             self.additional_columns = additional_columns
 
         if hdf5_path is None:
-            self.mod_dir = os.path.dirname(
-                os.path.abspath(inspect.getsourcefile(moabb)))
+            self.mod_dir = os.path.dirname(os.path.abspath(inspect.getsourcefile(moabb)))
         else:
             self.mod_dir = os.path.abspath(hdf5_path)
-        self.filepath = os.path.join(self.mod_dir, 'results',
-                                     paradigm_class.__name__,
-                                     evaluation_class.__name__,
-                                     'results{}.hdf5'.format('_' + suffix))
+        self.filepath = os.path.join(
+            self.mod_dir,
+            'results',
+            paradigm_class.__name__,
+            evaluation_class.__name__,
+            'results{}.hdf5'.format('_' + suffix),
+        )
 
         os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
         self.filepath = self.filepath
@@ -74,16 +84,20 @@ class Results:
         if not os.path.isfile(self.filepath):
             with h5py.File(self.filepath, 'w') as f:
                 f.attrs['create_time'] = np.string_(
-                    '{:%Y-%m-%d, %H:%M}'.format(datetime.now()))
+                    '{:%Y-%m-%d, %H:%M}'.format(datetime.now())
+                )
 
     def add(self, results, pipelines):
         """add results"""
+
         def to_list(res):
             if type(res) is dict:
                 return [res]
             elif type(res) is not list:
-                raise ValueError("Results are given as neither dict nor"
-                                 "list but {}".format(type(res).__name__))
+                raise ValueError(
+                    "Results are given as neither dict nor"
+                    "list but {}".format(type(res).__name__)
+                )
             else:
                 return res
 
@@ -108,34 +122,34 @@ class Results:
                     dset.attrs['n_subj'] = len(d1['dataset'].subject_list)
                     dset.attrs['n_sessions'] = d1['dataset'].n_sessions
                     dt = h5py.special_dtype(vlen=str)
-                    dset.create_dataset('id', (0, 2), dtype=dt,
-                                        maxshape=(None, 2))
-                    dset.create_dataset('data', (0, 3 + n_add_cols),
-                                        maxshape=(None, 3 + n_add_cols))
+                    dset.create_dataset('id', (0, 2), dtype=dt, maxshape=(None, 2))
+                    dset.create_dataset(
+                        'data', (0, 3 + n_add_cols), maxshape=(None, 3 + n_add_cols)
+                    )
                     dset.attrs['channels'] = d1['n_channels']
-                    dset.attrs.create('columns',
-                                      ['score', 'time', 'samples',
-                                          *self.additional_columns],
-                                      dtype=dt)
+                    dset.attrs.create(
+                        'columns',
+                        ['score', 'time', 'samples', *self.additional_columns],
+                        dtype=dt,
+                    )
                 dset = ppline_grp[dname]
                 for d in dlist:
                     # add id and scores to group
                     length = len(dset['id']) + 1
                     dset['id'].resize(length, 0)
                     dset['data'].resize(length, 0)
-                    dset['id'][-1, :] = np.asarray([str(d['subject']),
-                                                    str(d['session'])])
+                    dset['id'][-1, :] = np.asarray([str(d['subject']), str(d['session'])])
                     try:
                         add_cols = [d[ac] for ac in self.additional_columns]
                     except KeyError:
                         raise ValueError(
                             f'Additional columns: {self.additional_columns} '
                             f'were specified in the evaluation, but results'
-                            f' contain only these keys: {d.keys()}.')
-                    dset['data'][-1, :] = np.asarray([d['score'],
-                                                      d['time'],
-                                                      d['n_samples'],
-                                                      *add_cols])
+                            f' contain only these keys: {d.keys()}.'
+                        )
+                    dset['data'][-1, :] = np.asarray(
+                        [d['score'], d['time'], d['n_samples'], *add_cols]
+                    )
 
     def to_dataframe(self, pipelines=None):
         df_list = []
@@ -156,8 +170,7 @@ class Results:
                 for dname, dset in p_group.items():
                     array = np.array(dset['data'])
                     ids = np.array(dset['id'])
-                    df = pd.DataFrame(array,
-                                      columns=dset.attrs['columns'])
+                    df = pd.DataFrame(array, columns=dset.attrs['columns'])
                     df['subject'] = ids[:, 0]
                     df['session'] = ids[:, 1]
                     df['channels'] = dset.attrs['channels']
@@ -169,8 +182,11 @@ class Results:
 
     def not_yet_computed(self, pipelines, dataset, subj):
         """Check if a results has already been computed."""
-        ret = {k: pipelines[k] for k in pipelines.keys()
-               if not self._already_computed(pipelines[k], dataset, subj)}
+        ret = {
+            k: pipelines[k]
+            for k in pipelines.keys()
+            if not self._already_computed(pipelines[k], dataset, subj)
+        }
         return ret
 
     def _already_computed(self, pipeline, dataset, subject, session=None):
@@ -192,4 +208,4 @@ class Results:
                 else:
                     # if dataset, check for subject
                     dset = pipe_grp[dataset.code]
-                    return (str(subject).encode('utf-8') in dset['id'][:, 0])
+                    return str(subject).encode('utf-8') in dset['id'][:, 0]

@@ -11,8 +11,6 @@ def set_log_level(verbose='info'):
     """
     mne.set_log_level(False)
 
-    level = {'debug': logging.DEBUG,
-             'info': logging.INFO,
-             'warning': logging.WARNING}
+    level = {'debug': logging.DEBUG, 'info': logging.INFO, 'warning': logging.WARNING}
 
     coloredlogs.install(level=level.get(verbose, logging.INFO))

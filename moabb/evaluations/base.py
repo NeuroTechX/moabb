@@ -12,7 +12,7 @@ log = logging.getLogger()
 
 
 class BaseEvaluation(ABC):
-    '''Base class that defines necessary operations for an evaluation.
+    """Base class that defines necessary operations for an evaluation.
     Evaluations determine what the train and test sets are and can implement
     additional data preprocessing steps for more complicated algorithms.
 
@@ -31,11 +31,20 @@ class BaseEvaluation(ABC):
         if true, overwrite the results.
     suffix: str
         suffix for the results file.
-    '''
+    """
 
-    def __init__(self, paradigm, datasets=None, random_state=None, n_jobs=1,
-                 overwrite=False, error_score='raise', suffix='',
-                 hdf5_path=None, additional_columns=None):
+    def __init__(
+        self,
+        paradigm,
+        datasets=None,
+        random_state=None,
+        n_jobs=1,
+        overwrite=False,
+        error_score='raise',
+        suffix='',
+        hdf5_path=None,
+        additional_columns=None,
+    ):
         self.random_state = random_state
         self.n_jobs = n_jobs
         self.error_score = error_score
@@ -43,7 +52,7 @@ class BaseEvaluation(ABC):
 
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
-            raise(ValueError("paradigm must be an Paradigm instance"))
+            raise (ValueError("paradigm must be an Paradigm instance"))
         self.paradigm = paradigm
 
         # if no dataset provided, then we get the list from the paradigm
@@ -54,43 +63,49 @@ class BaseEvaluation(ABC):
             if isinstance(datasets, BaseDataset):
                 datasets = [datasets]
             else:
-                raise(ValueError("datasets must be a list or a dataset "
-                                 "instance"))
+                raise (ValueError("datasets must be a list or a dataset " "instance"))
 
         for dataset in datasets:
-            if not(isinstance(dataset, BaseDataset)):
-                raise(ValueError("datasets must only contains dataset "
-                                 "instance"))
+            if not (isinstance(dataset, BaseDataset)):
+                raise (ValueError("datasets must only contains dataset " "instance"))
         rm = []
         for dataset in datasets:
             # fixme, we might want to drop dataset that are not compatible
             valid_for_paradigm = self.paradigm.is_valid(dataset)
             valid_for_eval = self.is_valid(dataset)
             if not valid_for_paradigm:
-                log.warning(f"{dataset} not compatible with "
-                            "paradigm. Removing this dataset from the list.")
+                log.warning(
+                    f"{dataset} not compatible with "
+                    "paradigm. Removing this dataset from the list."
+                )
                 rm.append(dataset)
             elif not valid_for_eval:
-                log.warning(f"{dataset} not compatible with evaluation. "
-                            "Removing this dataset from the list.")
+                log.warning(
+                    f"{dataset} not compatible with evaluation. "
+                    "Removing this dataset from the list."
+                )
                 rm.append(dataset)
 
         [datasets.remove(r) for r in rm]
         if len(datasets) > 0:
             self.datasets = datasets
         else:
-            raise Exception('''No datasets left after paradigm
-            and evaluation checks''')
+            raise Exception(
+                '''No datasets left after paradigm
+            and evaluation checks'''
+            )
 
-        self.results = Results(type(self),
-                               type(self.paradigm),
-                               overwrite=overwrite,
-                               suffix=suffix,
-                               hdf5_path=self.hdf5_path,
-                               additional_columns=additional_columns)
+        self.results = Results(
+            type(self),
+            type(self.paradigm),
+            overwrite=overwrite,
+            suffix=suffix,
+            hdf5_path=self.hdf5_path,
+            additional_columns=additional_columns,
+        )
 
     def process(self, pipelines):
-        '''Runs all pipelines on all datasets.
+        """Runs all pipelines on all datasets.
 
         This function will apply all provided pipelines and return a dataframe
         containing the results of the evaluation.
@@ -105,16 +120,15 @@ class BaseEvaluation(ABC):
         results: pd.DataFrame
             A dataframe containing the results.
 
-        '''
+        """
 
         # check pipelines
         if not isinstance(pipelines, dict):
-            raise(ValueError("pipelines must be a dict"))
+            raise (ValueError("pipelines must be a dict"))
 
         for _, pipeline in pipelines.items():
-            if not(isinstance(pipeline, BaseEstimator)):
-                raise(ValueError("pipelines must only contains Pipelines "
-                                 "instance"))
+            if not (isinstance(pipeline, BaseEstimator)):
+                raise (ValueError("pipelines must only contains Pipelines " "instance"))
 
         for dataset in self.datasets:
             log.info('Processing dataset: {}'.format(dataset.code))
@@ -126,8 +140,9 @@ class BaseEvaluation(ABC):
 
     def push_result(self, res, pipelines):
         message = '{} | '.format(res['pipeline'])
-        message += '{} | {} | {}'.format(res['dataset'].code,
-                                         res['subject'], res['session'])
+        message += '{} | {} | {}'.format(
+            res['dataset'].code, res['subject'], res['session']
+        )
         message += ': Score %.3f' % res['score']
         log.info(message)
         self.results.add({res['pipeline']: res}, pipelines=pipelines)
@@ -137,7 +152,7 @@ class BaseEvaluation(ABC):
 
     @abstractmethod
     def evaluate(self, dataset, pipelines):
-        '''Evaluate results on a single dataset.
+        """Evaluate results on a single dataset.
 
         This method return a generator. each results item is a dict with
         the following convension::
@@ -150,7 +165,7 @@ class BaseEvaluation(ABC):
                    'n_samples': number of training examples,
                    'n_channels': number of channel,
                    'pipeline': pipeline name}
-        '''
+        """
         pass
 
     @abstractmethod

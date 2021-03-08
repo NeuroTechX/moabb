@@ -57,8 +57,16 @@ class BaseP300(BaseParadigm):
         If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, filters=([1, 24],), events=None, tmin=0.0, tmax=None,
-                 baseline=None, channels=None, resample=None):
+    def __init__(
+        self,
+        filters=([1, 24],),
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+    ):
         super().__init__()
         self.filters = filters
         self.events = events
@@ -66,9 +74,9 @@ class BaseP300(BaseParadigm):
         self.baseline = baseline
         self.resample = resample
 
-        if (tmax is not None):
+        if tmax is not None:
             if tmin >= tmax:
-                raise(ValueError("tmax must be greater than tmin"))
+                raise (ValueError("tmax must be greater than tmin"))
 
         self.tmin = tmin
         self.tmax = tmax
@@ -92,8 +100,7 @@ class BaseP300(BaseParadigm):
 
     def process_raw(self, raw, dataset, return_epochs=False):
         # find the events, first check stim_channels then annotations
-        stim_channels = mne.utils._get_stim_channel(
-            None, raw.info, raise_error=False)
+        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) > 0:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
@@ -102,15 +109,14 @@ class BaseP300(BaseParadigm):
         channels = () if self.channels is None else self.channels
 
         # picks channels
-        picks = mne.pick_types(raw.info, eeg=True, stim=False,
-                               include=channels)
+        picks = mne.pick_types(raw.info, eeg=True, stim=False, include=channels)
 
         # get event id
         event_id = self.used_events(dataset)
 
         # pick events, based on event_id
         try:
-            if (type(event_id['Target']) is list and type(event_id['NonTarget']) == list):
+            if type(event_id['Target']) is list and type(event_id['NonTarget']) == list:
                 event_id_new = dict(Target=1, NonTarget=0)
                 events = mne.merge_events(events, event_id['Target'], 1)
                 events = mne.merge_events(events, event_id['NonTarget'], 0)
@@ -131,23 +137,34 @@ class BaseP300(BaseParadigm):
         for bandpass in self.filters:
             fmin, fmax = bandpass
             # filter data
-            raw_f = raw.copy().filter(fmin, fmax, method='iir',
-                                      picks=picks, verbose=False)
+            raw_f = raw.copy().filter(
+                fmin, fmax, method='iir', picks=picks, verbose=False
+            )
             # epoch data
             baseline = self.baseline
             if baseline is not None:
-                baseline = (self.baseline[0] + dataset.interval[0],
-                            self.baseline[1] + dataset.interval[0])
+                baseline = (
+                    self.baseline[0] + dataset.interval[0],
+                    self.baseline[1] + dataset.interval[0],
+                )
                 bmin = baseline[0] if baseline[0] < tmin else tmin
                 bmax = baseline[1] if baseline[1] > tmax else tmax
             else:
                 bmin = tmin
                 bmax = tmax
-            epochs = mne.Epochs(raw_f, events, event_id=event_id,
-                                tmin=bmin, tmax=bmax, proj=False,
-                                baseline=baseline, preload=True,
-                                verbose=False, picks=picks,
-                                on_missing='ignore')
+            epochs = mne.Epochs(
+                raw_f,
+                events,
+                event_id=event_id,
+                tmin=bmin,
+                tmax=bmax,
+                proj=False,
+                baseline=baseline,
+                preload=True,
+                verbose=False,
+                picks=picks,
+                on_missing='ignore',
+            )
             if bmin < tmin or bmax > tmax:
                 epochs.crop(tmin=tmin, tmax=tmax)
             if self.resample is not None:
@@ -176,10 +193,9 @@ class BaseP300(BaseParadigm):
             interval = None
         else:
             interval = self.tmax - self.tmin
-        return utils.dataset_search(paradigm='p300',
-                                    events=self.events,
-                                    interval=interval,
-                                    has_all_events=True)
+        return utils.dataset_search(
+            paradigm='p300', events=self.events, interval=interval, has_all_events=True
+        )
 
     @property
     def scoring(self):
@@ -230,9 +246,10 @@ class SinglePass(BaseP300):
         If not None, resample the eeg data with the sampling rate provided.
 
     """
+
     def __init__(self, fmin=1, fmax=24, **kwargs):
         if 'filters' in kwargs.keys():
-            raise(ValueError("P300 does not take argument filters"))
+            raise (ValueError("P300 does not take argument filters"))
         super().__init__(filters=[[fmin, fmax]], **kwargs)
 
 
@@ -245,7 +262,7 @@ class P300(SinglePass):
 
     def __init__(self, **kwargs):
         if 'events' in kwargs.keys():
-            raise(ValueError('P300 dont accept events'))
+            raise (ValueError('P300 dont accept events'))
         super().__init__(events=['Target', 'NonTarget'], **kwargs)
 
     def used_events(self, dataset):
@@ -257,8 +274,7 @@ class P300(SinglePass):
 
 
 class FakeP300Paradigm(P300):
-    """Fake P300 for Target/NonTarget classification.
-    """
+    """Fake P300 for Target/NonTarget classification."""
 
     @property
     def datasets(self):

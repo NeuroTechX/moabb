@@ -64,12 +64,14 @@ class MunichMI(BaseDataset):
             code='Grosse-Wentrup 2009',
             interval=[0, 7],
             paradigm='imagery',
-            doi='10.1109/TBME.2008.2009768')
+            doi='10.1109/TBME.2008.2009768',
+        )
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
-        raw = mne.io.read_raw_eeglab(self.data_path(subject), preload=True,
-                                     verbose='ERROR')
+        raw = mne.io.read_raw_eeglab(
+            self.data_path(subject), preload=True, verbose='ERROR'
+        )
         stim = raw.annotations.description.astype(np.dtype('<10U'))
 
         stim[stim == '20'] = 'right_hand'
@@ -77,17 +79,18 @@ class MunichMI(BaseDataset):
         raw.annotations.description = stim
         return {"session_0": {"run_0": raw}}
 
-    def data_path(self, subject, path=None, force_update=False,
-                  update_path=None, verbose=None):
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
         if subject not in self.subject_list:
-            raise(ValueError("Invalid subject number"))
+            raise (ValueError("Invalid subject number"))
 
         # download .set
         _set = '{:s}subject{:d}.set'.format(DOWNLOAD_URL, subject)
-        set_local = dl.data_path(_set, 'MUNICHMI', path, force_update,
-                                 update_path, verbose)
+        set_local = dl.data_path(
+            _set, 'MUNICHMI', path, force_update, update_path, verbose
+        )
         # download .fdt
         _fdt = '{:s}subject{:d}.fdt'.format(DOWNLOAD_URL, subject)
-        dl.data_path(_fdt, 'MUNICHMI', path, force_update,
-                     update_path, verbose)
+        dl.data_path(_fdt, 'MUNICHMI', path, force_update, update_path, verbose)
         return set_local

@@ -26,9 +26,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         for subject in dataset.subject_list:
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
-            run_pipes = self.results.not_yet_computed(pipelines,
-                                                      dataset,
-                                                      subject)
+            run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
             if len(run_pipes) == 0:
                 continue
 
@@ -42,17 +40,18 @@ class WithinSessionEvaluation(BaseEvaluation):
                 for name, clf in run_pipes.items():
 
                     t_start = time()
-                    score = self.score(clf, X[ix], y[ix],
-                                       self.paradigm.scoring)
+                    score = self.score(clf, X[ix], y[ix], self.paradigm.scoring)
                     duration = time() - t_start
-                    res = {'time': duration / 5.,  # 5 fold CV
-                           'dataset': dataset,
-                           'subject': subject,
-                           'session': session,
-                           'score': score,
-                           'n_samples': len(y[ix]),  # not training sample
-                           'n_channels': X.shape[1],
-                           'pipeline': name}
+                    res = {
+                        'time': duration / 5.0,  # 5 fold CV
+                        'dataset': dataset,
+                        'subject': subject,
+                        'session': session,
+                        'score': score,
+                        'n_samples': len(y[ix]),  # not training sample
+                        'n_channels': X.shape[1],
+                        'pipeline': name,
+                    }
 
                     yield res
 
@@ -61,8 +60,15 @@ class WithinSessionEvaluation(BaseEvaluation):
 
         le = LabelEncoder()
         y = le.fit_transform(y)
-        acc = cross_val_score(clf, X, y, cv=cv, scoring=scoring,
-                              n_jobs=self.n_jobs, error_score=self.error_score)
+        acc = cross_val_score(
+            clf,
+            X,
+            y,
+            cv=cv,
+            scoring=scoring,
+            n_jobs=self.n_jobs,
+            error_score=self.error_score,
+        )
         return acc.mean()
 
     def is_valid(self, dataset):
@@ -84,9 +90,7 @@ class CrossSessionEvaluation(BaseEvaluation):
         for subject in dataset.subject_list:
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
-            run_pipes = self.results.not_yet_computed(pipelines,
-                                                      dataset,
-                                                      subject)
+            run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
             if len(run_pipes) == 0:
                 continue
 
@@ -103,24 +107,33 @@ class CrossSessionEvaluation(BaseEvaluation):
                 cv = LeaveOneGroupOut()
                 for train, test in cv.split(X, y, groups):
                     t_start = time()
-                    score = _fit_and_score(clone(clf), X, y, scorer, train,
-                                           test, verbose=False,
-                                           parameters=None,
-                                           fit_params=None,
-                                           error_score=self.error_score)[0]
+                    score = _fit_and_score(
+                        clone(clf),
+                        X,
+                        y,
+                        scorer,
+                        train,
+                        test,
+                        verbose=False,
+                        parameters=None,
+                        fit_params=None,
+                        error_score=self.error_score,
+                    )[0]
                     duration = time() - t_start
-                    res = {'time': duration,
-                           'dataset': dataset,
-                           'subject': subject,
-                           'session': groups[test][0],
-                           'score': score,
-                           'n_samples': len(train),
-                           'n_channels': X.shape[1],
-                           'pipeline': name}
+                    res = {
+                        'time': duration,
+                        'dataset': dataset,
+                        'subject': subject,
+                        'session': groups[test][0],
+                        'score': score,
+                        'n_samples': len(train),
+                        'n_channels': X.shape[1],
+                        'pipeline': name,
+                    }
                     yield res
 
     def is_valid(self, dataset):
-        return (dataset.n_sessions > 1)
+        return dataset.n_sessions > 1
 
 
 class CrossSubjectEvaluation(BaseEvaluation):
@@ -140,9 +153,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         # we might need a better granularity, if we query the DB
         run_pipes = {}
         for subject in dataset.subject_list:
-            run_pipes.update(self.results.not_yet_computed(pipelines,
-                                                           dataset,
-                                                           subject))
+            run_pipes.update(self.results.not_yet_computed(pipelines, dataset, subject))
         if len(run_pipes) != 0:
 
             # get the data
@@ -164,8 +175,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                 subject = groups[test[0]]
                 # now we can check if this subject has results
-                run_pipes = self.results.not_yet_computed(pipelines, dataset,
-                                                          subject)
+                run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
 
                 # iterate over pipelines
                 for name, clf in run_pipes.items():
@@ -178,16 +188,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         ix = sessions[test] == session
                         score = _score(model, X[test[ix]], y[test[ix]], scorer)
 
-                        res = {'time': duration,
-                               'dataset': dataset,
-                               'subject': subject,
-                               'session': session,
-                               'score': score,
-                               'n_samples': len(train),
-                               'n_channels': X.shape[1],
-                               'pipeline': name}
+                        res = {
+                            'time': duration,
+                            'dataset': dataset,
+                            'subject': subject,
+                            'session': session,
+                            'score': score,
+                            'n_samples': len(train),
+                            'n_channels': X.shape[1],
+                            'pipeline': name,
+                        }
 
                         yield res
 
     def is_valid(self, dataset):
-        return (len(dataset.subject_list) > 1)
+        return len(dataset.subject_list) > 1

@@ -88,11 +88,11 @@ pipelines_fb['RG + LogReg'] = make_pipeline(
     ExtendedSSVEPSignal(),
     Covariances(estimator='lwf'),
     TangentSpace(),
-    LogisticRegression(solver='lbfgs', multi_class='auto'))
+    LogisticRegression(solver='lbfgs', multi_class='auto'),
+)
 
 pipelines = {}
-pipelines['CCA'] = make_pipeline(
-    SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
+pipelines['CCA'] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
 
 ##############################################################################
 # Evaluation
@@ -107,14 +107,16 @@ pipelines['CCA'] = make_pipeline(
 
 overwrite = False  # set to True if we want to overwrite cached results
 
-evaluation = CrossSubjectEvaluation(paradigm=paradigm,
-                                    datasets=dataset, overwrite=overwrite)
+evaluation = CrossSubjectEvaluation(
+    paradigm=paradigm, datasets=dataset, overwrite=overwrite
+)
 results = evaluation.process(pipelines)
 
 # Filter bank processing, determine automatically the filter from the
 # stimulation frequency values of events.
-evaluation_fb = CrossSubjectEvaluation(paradigm=paradigm_fb,
-                                       datasets=dataset, overwrite=overwrite)
+evaluation_fb = CrossSubjectEvaluation(
+    paradigm=paradigm_fb, datasets=dataset, overwrite=overwrite
+)
 results_fb = evaluation_fb.process(pipelines_fb)
 
 ###############################################################################
@@ -129,10 +131,17 @@ results = pd.concat([results, results_fb])
 # Here we plot the results.
 
 fig, ax = plt.subplots(facecolor='white', figsize=[8, 4])
-sns.stripplot(data=results, y='score', x='pipeline', ax=ax, jitter=True,
-              alpha=.5, zorder=1, palette="Set1")
-sns.pointplot(data=results, y='score', x='pipeline', ax=ax,
-              zorder=1, palette="Set1")
+sns.stripplot(
+    data=results,
+    y='score',
+    x='pipeline',
+    ax=ax,
+    jitter=True,
+    alpha=0.5,
+    zorder=1,
+    palette="Set1",
+)
+sns.pointplot(data=results, y='score', x='pipeline', ax=ax, zorder=1, palette="Set1")
 ax.set_ylabel('Accuracy')
 ax.set_ylim(0.1, 0.6)
 plt.savefig('ssvep.png')

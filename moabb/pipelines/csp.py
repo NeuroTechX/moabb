@@ -5,19 +5,19 @@ from scipy import linalg
 
 
 class TRCSP(CSP):
-    '''
+    """
     Weighted Tikhonov-regularized CSP as described in Lotte and Guan 2011
 
-    '''
+    """
 
     def __init__(self, nfilter=4, metric='euclid', log=True, alpha=1):
         super().__init__(nfilter, metric, log)
         self.alpha = alpha
 
     def fit(self, X, y):
-        '''
+        """
         Train spatial filters. Only deals with two class
-        '''
+        """
 
         if not isinstance(X, (np.ndarray, list)):
             raise TypeError('X must be an array.')
@@ -56,8 +56,8 @@ class TRCSP(CSP):
             evecs[i] = evecs[i][:, ix]
             # spatial patterns
             A = np.linalg.pinv(evecs[i].T)
-            filters.append(evecs[i][:, :(self.nfilter // 2)])
-            patterns.append(A[:, :(self.nfilter // 2)])
+            filters.append(evecs[i][:, : (self.nfilter // 2)])
+            patterns.append(A[:, : (self.nfilter // 2)])
         self.filters_ = np.concatenate(filters, axis=1).T
         self.patterns_ = np.concatenate(patterns, axis=1).T
 

@@ -14,10 +14,16 @@ for ds in inspect.getmembers(db, inspect.isclass):
         dataset_list.append(ds[1])
 
 
-def dataset_search(paradigm, multi_session=False, events=None,  # noqa: C901
-                   has_all_events=False, interval=None,
-                   min_subjects=1, channels=()):
-    '''
+def dataset_search(
+    paradigm,
+    multi_session=False,
+    events=None,  # noqa: C901
+    has_all_events=False,
+    interval=None,
+    min_subjects=1,
+    channels=(),
+):
+    """
     Function that returns a list of datasets that match given criteria. Valid
     criteria are:
 
@@ -46,7 +52,7 @@ def dataset_search(paradigm, multi_session=False, events=None,  # noqa: C901
     channels: list of str
         list or set of channels
 
-    '''
+    """
     channels = set(channels)
     out_data = []
     if events is not None and has_all_events:
@@ -97,13 +103,13 @@ def dataset_search(paradigm, multi_session=False, events=None,  # noqa: C901
 
 
 def find_intersecting_channels(datasets, verbose=False):
-    '''
+    """
     Given a list of dataset instances return a list of channels shared by all
     datasets.
     Skip datasets which have 0 overlap with the others
 
     returns: set of common channels, list of datasets with valid channels
-    '''
+    """
     allchans = set()
     dset_chans = []
     keep_datasets = []
@@ -126,8 +132,9 @@ def find_intersecting_channels(datasets, verbose=False):
             dset_chans.append(processed)
             keep_datasets.append(d)
         else:
-            print('Dataset {:s} has no recognizable EEG channels'.
-                  format(type(d).__name__))  # noqa
+            print(
+                'Dataset {:s} has no recognizable EEG channels'.format(type(d).__name__)
+            )  # noqa
     allchans.intersection_update(*dset_chans)
     allchans = [s.replace('Z', 'z') for s in allchans]
     return allchans, keep_datasets

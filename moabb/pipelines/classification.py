@@ -20,6 +20,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
            engineering, 6(4), 046002.
            https://doi.org/10.1088/1741-2560/6/4/046002
     """
+
     def __init__(self, interval, freqs, n_harmonics=3):
         self.Yf = dict()
         self.cca = CCA(n_components=1)
@@ -43,8 +44,12 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
                 freq = float(f)
                 yf = []
                 for h in range(1, self.n_harmonics + 1):
-                    yf.append(np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times)))
-                    yf.append(np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times)))
+                    yf.append(
+                        np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times))
+                    )
+                    yf.append(
+                        np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times))
+                    )
                 self.Yf[f] = np.array(yf)
         return self
 

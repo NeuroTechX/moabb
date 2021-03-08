@@ -27,7 +27,6 @@ class SimpleMotorImagery(BaseMotorImagery):  # Needed to assess BaseImagery
 
 
 class Test_MotorImagery(unittest.TestCase):
-
     def test_BaseImagery_paradigm(self):
         paradigm = SimpleMotorImagery()
         dataset = FakeDataset(paradigm='imagery')
@@ -86,8 +85,7 @@ class Test_MotorImagery(unittest.TestCase):
     def test_LeftRightImagery_paradigm(self):
         # with a good dataset
         paradigm = LeftRightImagery()
-        dataset = FakeDataset(event_list=['left_hand', 'right_hand'],
-                              paradigm='imagery')
+        dataset = FakeDataset(event_list=['left_hand', 'right_hand'], paradigm='imagery')
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
         self.assertEqual(len(np.unique(labels)), 2)
         self.assertEqual(list(np.unique(labels)), ['left_hand', 'right_hand'])
@@ -113,14 +111,14 @@ class Test_MotorImagery(unittest.TestCase):
         self.assertEqual(X.shape[-1], 6)
 
     def test_FilterBankMotorImagery_moreclassesthanevent(self):
-        self.assertRaises(AssertionError, FilterBankMotorImagery, n_classes=3,
-                          events=['hands', 'feet'])
+        self.assertRaises(
+            AssertionError, FilterBankMotorImagery, n_classes=3, events=['hands', 'feet']
+        )
 
     def test_FilterBankLeftRightImagery_paradigm(self):
         # can work with filter bank
         paradigm = FilterBankLeftRightImagery()
-        dataset = FakeDataset(event_list=['left_hand', 'right_hand'],
-                              paradigm='imagery')
+        dataset = FakeDataset(event_list=['left_hand', 'right_hand'], paradigm='imagery')
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D Array
@@ -134,11 +132,9 @@ class SimpleP300(BaseP300):  # Needed to assess BaseP300
 
 
 class Test_P300(unittest.TestCase):
-
     def test_BaseP300_paradigm(self):
         paradigm = SimpleP300()
-        dataset = FakeDataset(paradigm='p300',
-                              event_list=['Target', 'NonTarget'])
+        dataset = FakeDataset(paradigm='p300', event_list=['Target', 'NonTarget'])
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # we should have all the same length
@@ -168,8 +164,7 @@ class Test_P300(unittest.TestCase):
     def test_BaseP300_filters(self):
         # can work with filter bank
         paradigm = SimpleP300(filters=[[1, 12], [12, 24]])
-        dataset = FakeDataset(paradigm='p300',
-                              event_list=['Target', 'NonTarget'])
+        dataset = FakeDataset(paradigm='p300', event_list=['Target', 'NonTarget'])
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D Array
@@ -180,8 +175,7 @@ class Test_P300(unittest.TestCase):
         # test process_raw return empty list if raw does not contain any
         # selected event. cetain runs in dataset are event specific.
         paradigm = SimpleP300(filters=[[1, 12], [12, 24]])
-        dataset = FakeDataset(paradigm='p300',
-                              event_list=['Target', 'NonTarget'])
+        dataset = FakeDataset(paradigm='p300', event_list=['Target', 'NonTarget'])
         raw = dataset.get_data([1])[1]['session_0']['run_0']
         # add something on the event channel
         raw._data[-1] *= 10
@@ -203,12 +197,10 @@ class Test_P300(unittest.TestCase):
     def test_P300_paradigm(self):
         # with a good dataset
         paradigm = P300()
-        dataset = FakeDataset(event_list=['Target', 'NonTarget'],
-                              paradigm='p300')
+        dataset = FakeDataset(event_list=['Target', 'NonTarget'], paradigm='p300')
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
         self.assertEqual(len(np.unique(labels)), 2)
-        self.assertEqual(list(np.unique(labels)),
-                         sorted(['Target', 'NonTarget']))
+        self.assertEqual(list(np.unique(labels)), sorted(['Target', 'NonTarget']))
 
     def test_BaseImagery_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap
@@ -245,8 +237,9 @@ class Test_P300(unittest.TestCase):
         self.assertEqual(X.shape[-1], 6)
 
     def test_FilterBankMotorImagery_moreclassesthanevent(self):
-        self.assertRaises(AssertionError, FilterBankMotorImagery, n_classes=3,
-                          events=['hands', 'feet'])
+        self.assertRaises(
+            AssertionError, FilterBankMotorImagery, n_classes=3, events=['hands', 'feet']
+        )
 
     def test_FilterBankLeftRightImagery_paradigm(self):
         # can work with filter bank
@@ -260,7 +253,6 @@ class Test_P300(unittest.TestCase):
 
 
 class Test_SSVEP(unittest.TestCase):
-
     def test_BaseSSVEP_paradigm(self):
         paradigm = BaseSSVEP(n_classes=None)
         dataset = FakeDataset(paradigm='ssvep')
@@ -312,8 +304,7 @@ class Test_SSVEP(unittest.TestCase):
     def test_BaseSSVEP_specified_nclasses(self):
         # Set the number of classes
         paradigm = BaseSSVEP(n_classes=3)
-        dataset = FakeDataset(event_list=['13', '15', '17', '19'],
-                              paradigm='ssvep')
+        dataset = FakeDataset(event_list=['13', '15', '17', '19'], paradigm='ssvep')
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # labels must contain 3 values
@@ -325,8 +316,7 @@ class Test_SSVEP(unittest.TestCase):
         self.assertRaises(ValueError, paradigm.get_data, dataset)
 
     def test_BaseSSVEP_moreclassesthanevent(self):
-        self.assertRaises(AssertionError, BaseSSVEP, n_classes=3,
-                          events=['13.', '14.'])
+        self.assertRaises(AssertionError, BaseSSVEP, n_classes=3, events=['13.', '14.'])
 
     def test_SSVEP_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap
@@ -336,8 +326,7 @@ class Test_SSVEP(unittest.TestCase):
 
     def test_SSVEP_paradigm(self):
         paradigm = SSVEP(n_classes=None)
-        dataset = FakeDataset(event_list=['13', '15', '17', '19'],
-                              paradigm='ssvep')
+        dataset = FakeDataset(event_list=['13', '15', '17', '19'], paradigm='ssvep')
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # Verify that they have the same length
@@ -374,14 +363,12 @@ class Test_SSVEP(unittest.TestCase):
 
     def test_SSVEP_filter(self):
         # Do not accept multiple filters
-        self.assertRaises(ValueError, SSVEP,
-                          filters=[(10.5, 11.5), (12.5, 13.5)])
+        self.assertRaises(ValueError, SSVEP, filters=[(10.5, 11.5), (12.5, 13.5)])
 
     def test_FilterBankSSVEP_paradigm(self):
         # FilterBankSSVEP with all events
         paradigm = FilterBankSSVEP(n_classes=None)
-        dataset = FakeDataset(event_list=['13', '15', '17', '19'],
-                              paradigm='ssvep')
+        dataset = FakeDataset(event_list=['13', '15', '17', '19'], paradigm='ssvep')
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D array

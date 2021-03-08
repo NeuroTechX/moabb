@@ -52,9 +52,17 @@ class BaseSSVEP(BaseParadigm):
         If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, filters=((7, 45), ), events=None, n_classes=None,
-                 tmin=0.0, tmax=None, baseline=None, channels=None,
-                 resample=None):
+    def __init__(
+        self,
+        filters=((7, 45),),
+        events=None,
+        n_classes=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+    ):
         super().__init__()
         self.filters = filters
         self.events = events
@@ -64,16 +72,19 @@ class BaseSSVEP(BaseParadigm):
         self.resample = resample
 
         if tmax is not None and tmin >= tmax:
-            raise(ValueError("tmax must be greater than tmin"))
+            raise (ValueError("tmax must be greater than tmin"))
         self.tmin = tmin
         self.tmax = tmax
 
         if self.events is None:
-            log.warning("Choosing the first " + str(n_classes) + " classes"
-                        + " from all possible events")
+            log.warning(
+                "Choosing the first "
+                + str(n_classes)
+                + " classes"
+                + " from all possible events"
+            )
         else:
-            assert n_classes <= len(
-                self.events), 'More classes than events specified'
+            assert n_classes <= len(self.events), 'More classes than events specified'
 
     def is_valid(self, dataset):
         ret = True
@@ -101,8 +112,12 @@ class BaseSSVEP(BaseParadigm):
                 if self.n_classes and len(out) == self.n_classes:
                     break
         if self.n_classes and len(out) < self.n_classes:
-            raise(ValueError(f"Dataset {dataset.code} did not have enough "
-                             f"freqs in {self.events} to run analysis"))
+            raise (
+                ValueError(
+                    f"Dataset {dataset.code} did not have enough "
+                    f"freqs in {self.events} to run analysis"
+                )
+            )
         return out
 
     def prepare_process(self, dataset):
@@ -110,9 +125,11 @@ class BaseSSVEP(BaseParadigm):
 
         # get filters
         if self.filters is None:
-            self.filters = [[float(f) - 0.5, float(f) + 0.5]
-                            for f in event_id.keys()
-                            if f.replace('.', '', 1).isnumeric()]
+            self.filters = [
+                [float(f) - 0.5, float(f) + 0.5]
+                for f in event_id.keys()
+                if f.replace('.', '', 1).isnumeric()
+            ]
 
     @property
     def datasets(self):
@@ -120,11 +137,13 @@ class BaseSSVEP(BaseParadigm):
             interval = None
         else:
             interval = self.tmax - self.tmin
-        return utils.dataset_search(paradigm='ssvep',
-                                    events=self.events,
-                                    # total_classes=self.n_classes,
-                                    interval=interval,
-                                    has_all_events=True)
+        return utils.dataset_search(
+            paradigm='ssvep',
+            events=self.events,
+            # total_classes=self.n_classes,
+            interval=interval,
+            has_all_events=True,
+        )
 
     @property
     def scoring(self):
@@ -184,12 +203,12 @@ class SSVEP(BaseSSVEP):
 
     def __init__(self, fmin=7, fmax=45, **kwargs):
         if 'filters' in kwargs.keys():
-            raise(ValueError("SSVEP does not take argument filters"))
+            raise (ValueError("SSVEP does not take argument filters"))
         super().__init__(filters=[(fmin, fmax)], **kwargs)
 
 
 class FilterBankSSVEP(BaseSSVEP):
-    """ Filtered bank n-class SSVEP paradigm
+    """Filtered bank n-class SSVEP paradigm
 
     SSVEP paradigm with multiple narrow bandpass filters, centered around the
     frequencies of considered events.
@@ -240,8 +259,7 @@ class FilterBankSSVEP(BaseSSVEP):
 
 
 class FakeSSVEPParadigm(BaseSSVEP):
-    """Fake SSVEP classification.
-    """
+    """Fake SSVEP classification."""
 
     @property
     def datasets(self):

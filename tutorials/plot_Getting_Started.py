@@ -55,8 +55,7 @@ moabb.set_log_level('info')
 # is the name of the pipeline and the value is the Pipeline object
 
 pipelines = {}
-pipelines['AM + LDA'] = make_pipeline(LogVariance(),
-                                      LDA())
+pipelines['AM + LDA'] = make_pipeline(LogVariance(), LDA())
 parameters = {'C': np.logspace(-2, 2, 10)}
 clf = GridSearchCV(SVC(kernel='linear'), parameters)
 pipe = make_pipeline(LogVariance(), clf)
@@ -105,8 +104,9 @@ paradigm = LeftRightImagery(fmin=fmin, fmax=fmax)
 # be cross-validated within a single recording, or across days, or sessions, or
 # subjects. This also is the correct place to specify multiple threads.
 
-evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=datasets,
-                                    suffix='examples', overwrite=False)
+evaluation = CrossSessionEvaluation(
+    paradigm=paradigm, datasets=datasets, suffix='examples', overwrite=False
+)
 results = evaluation.process(pipelines)
 
 ##########################################################################

@@ -82,7 +82,8 @@ class PhysionetMI(BaseDataset):
             # interval between 2 trial is 4 second.
             interval=[0, 3],
             paradigm='imagery',
-            doi='10.1109/TBME.2004.827072')
+            doi='10.1109/TBME.2004.827072',
+        )
 
         self.feet_runs = []
         self.hand_runs = []
@@ -97,17 +98,21 @@ class PhysionetMI(BaseDataset):
 
     def _load_one_run(self, subject, run, preload=True):
         if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
-            set_config('MNE_DATASETS_EEGBCI_PATH',
-                       osp.join(osp.expanduser("~"), "mne_data"))
-        raw_fname = eegbci.load_data(subject, runs=[run], verbose='ERROR',
-                                     base_url=BASE_URL)[0]
+            set_config(
+                'MNE_DATASETS_EEGBCI_PATH', osp.join(osp.expanduser("~"), "mne_data")
+            )
+        raw_fname = eegbci.load_data(
+            subject, runs=[run], verbose='ERROR', base_url=BASE_URL
+        )[0]
         raw = read_raw_edf(raw_fname, preload=preload, verbose='ERROR')
         raw.rename_channels(lambda x: x.strip('.'))
         raw.rename_channels(lambda x: x.upper())
+        # fmt: off
         raw.rename_channels({'AFZ': 'AFz', 'PZ': 'Pz', 'FPZ': 'Fpz',
                              'FCZ': 'FCz', 'FP1': 'Fp1', 'CZ': 'Cz',
                              'OZ': 'Oz', 'POZ': 'POz', 'IZ': 'Iz',
                              'CPZ': 'CPz', 'FP2': 'Fp2', 'FZ': 'Fz'})
+        # fmt: on
         raw.set_montage(mne.channels.make_standard_montage('standard_1005'))
         return raw
 
@@ -115,8 +120,9 @@ class PhysionetMI(BaseDataset):
         """return data for a single subject"""
         data = {}
         if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
-            set_config('MNE_DATASETS_EEGBCI_PATH',
-                       osp.join(osp.expanduser("~"), "mne_data"))
+            set_config(
+                'MNE_DATASETS_EEGBCI_PATH', osp.join(osp.expanduser("~"), "mne_data")
+            )
 
         # hand runs
         for run in self.hand_runs:
@@ -142,15 +148,17 @@ class PhysionetMI(BaseDataset):
 
         return {"session_0": data}
 
-    def data_path(self, subject, path=None, force_update=False,
-                  update_path=None, verbose=None):
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
         if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
-            set_config('MNE_DATASETS_EEGBCI_PATH',
-                       osp.join(osp.expanduser("~"), "mne_data"))
-        paths = eegbci.load_data(subject,
-                                 runs=[1, 2] + self.hand_runs + self.feet_runs,
-                                 verbose=verbose)
+            set_config(
+                'MNE_DATASETS_EEGBCI_PATH', osp.join(osp.expanduser("~"), "mne_data")
+            )
+        paths = eegbci.load_data(
+            subject, runs=[1, 2] + self.hand_runs + self.feet_runs, verbose=verbose
+        )
         return paths

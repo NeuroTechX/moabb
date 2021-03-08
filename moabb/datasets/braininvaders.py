@@ -14,7 +14,7 @@ BI2013a_URL = 'https://zenodo.org/record/1494240/files/'
 
 
 class bi2013a(BaseDataset):
-    '''P300 dataset bi2013a from a "Brain Invaders" experiment (2013)
+    """P300 dataset bi2013a from a "Brain Invaders" experiment (2013)
     carried-out at University of Grenoble Alpes.
 
     Dataset following the setup from [1]_.
@@ -103,14 +103,9 @@ class bi2013a(BaseDataset):
            Design, Test and Use Brain-Computer Interfaces in Real and Virtual
            Environments. PRESENCE : Teleoperators and Virtual Environments
            19(1), 35-53.
-    '''
+    """
 
-    def __init__(
-            self,
-            NonAdaptive=True,
-            Adaptive=False,
-            Training=True,
-            Online=False):
+    def __init__(self, NonAdaptive=True, Adaptive=False, Training=True, Online=False):
         super().__init__(
             subjects=list(range(1, 24 + 1)),
             sessions_per_subject=1,
@@ -118,7 +113,8 @@ class bi2013a(BaseDataset):
             code='Brain Invaders 2013a',
             interval=[0, 1],
             paradigm='p300',
-            doi='')
+            doi='',
+        )
 
         self.adaptive = Adaptive
         self.nonadaptive = NonAdaptive
@@ -142,8 +138,7 @@ class bi2013a(BaseDataset):
             run_number = run_number.split('.gdf')[0]
             run_name = 'run_' + run_number
 
-            raw_original = mne.io.read_raw_gdf(file_path,
-                                               preload=True)
+            raw_original = mne.io.read_raw_gdf(file_path, preload=True)
             raw_original.rename_channels({'FP1': 'Fp1', 'FP2': 'Fp2'})
             raw_original.set_montage(make_standard_montage('standard_1020'))
 
@@ -151,11 +146,12 @@ class bi2013a(BaseDataset):
 
         return sessions
 
-    def data_path(self, subject, path=None, force_update=False,
-                  update_path=None, verbose=None):
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
 
         if subject not in self.subject_list:
-            raise(ValueError("Invalid subject number"))
+            raise (ValueError("Invalid subject number"))
 
         # check if has the .zip
         url = '{:s}subject{:d}.zip'.format(BI2013a_URL, subject)
@@ -163,7 +159,7 @@ class bi2013a(BaseDataset):
         path_folder = path_zip.strip('subject{:d}.zip'.format(subject))
 
         # check if has to unzip
-        if not(os.path.isdir(path_folder + 'subject{:d}'.format(subject))):
+        if not (os.path.isdir(path_folder + 'subject{:d}'.format(subject))):
             print('unzip', path_zip)
             zip_ref = zipfile.ZipFile(path_zip, "r")
             zip_ref.extractall(path_folder)
@@ -193,6 +189,9 @@ class bi2013a(BaseDataset):
         # list the filepaths for this subject
         subject_paths = []
         for filename in filenames:
-            subject_paths = subject_paths + \
-                glob.glob(os.path.join(path_folder, 'subject{:d}'.format(subject), 'Session*', filename)) # noqa
+            subject_paths = subject_paths + glob.glob(
+                os.path.join(
+                    path_folder, 'subject{:d}'.format(subject), 'Session*', filename
+                )
+            )  # noqa
         return subject_paths

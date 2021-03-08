@@ -12,10 +12,11 @@ from moabb.pipelines.utils import FilterBank
 parameters = {'C': np.logspace(-2, 2, 10)}
 clf = GridSearchCV(SVC(kernel='linear'), parameters)
 fb = FilterBank(make_pipeline(Covariances(estimator='oas'), CSP(nfilter=4)))
-pipe = make_pipeline(fb, SelectKBest(score_func=mutual_info_classif, k=10),
-                     clf)
+pipe = make_pipeline(fb, SelectKBest(score_func=mutual_info_classif, k=10), clf)
 
 # this is what will be loaded
-PIPELINE = {'name': 'FBCSP + optSVM',
-            'paradigms': ['FilterBankMotorImagery'],
-            'pipeline': pipe}
+PIPELINE = {
+    'name': 'FBCSP + optSVM',
+    'paradigms': ['FilterBankMotorImagery'],
+    'pipeline': pipe,
+}

@@ -31,6 +31,7 @@ from moabb.paradigms import LeftRightImagery
 # The fake dataset is available on the
 # [Zenodo website](https://sandbox.zenodo.org/record/369543)
 
+
 def create_example_dataset():
     """Create a fake example for a dataset"""
     sfreq = 256
@@ -51,7 +52,7 @@ def create_example_dataset():
         tn = int(t_offset * sfreq + n * (t_trial + intertrial) * sfreq)
         stim[tn] = label
         noise = 0.1 * np.random.randn(n_chan, len(signal))
-        x[:-1, tn:(tn + t_trial * sfreq)] = label * signal + noise
+        x[:-1, tn : (tn + t_trial * sfreq)] = label * signal + noise
     x[-1, :] = stim
     return x, sfreq
 
@@ -92,11 +93,12 @@ ExampleDataset_URL = 'https://sandbox.zenodo.org/record/369543/files/'
 
 
 class ExampleDataset(BaseDataset):
-    '''
+    """
     Dataset used to exemplify the creation of a dataset class in MOABB.
     The data samples have been simulated and has no physiological meaning
     whatsoever.
-    '''
+    """
+
     def __init__(self):
         super().__init__(
             subjects=[1, 2, 3],
@@ -105,7 +107,8 @@ class ExampleDataset(BaseDataset):
             code='Example dataset',
             interval=[0, 0.75],
             paradigm='imagery',
-            doi='')
+            doi='',
+        )
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
@@ -124,11 +127,12 @@ class ExampleDataset(BaseDataset):
         sessions['session_1']['run_1'] = raw
         return sessions
 
-    def data_path(self, subject, path=None, force_update=False,
-                  update_path=None, verbose=None):
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
         """Download the data from one subject"""
         if subject not in self.subject_list:
-            raise(ValueError("Invalid subject number"))
+            raise (ValueError("Invalid subject number"))
 
         url = '{:s}subject_0{:d}.mat'.format(ExampleDataset_URL, subject)
         path = dl.data_path(url, 'ExampleDataset')
@@ -146,8 +150,7 @@ dataset = ExampleDataset()
 paradigm = LeftRightImagery()
 X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[1])
 
-evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=dataset,
-                                     overwrite=True)
+evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=dataset, overwrite=True)
 pipelines = {}
 pipelines['MDM'] = make_pipeline(Covariances('oas'), MDM(metric='riemann'))
 scores = evaluation.process(pipelines)

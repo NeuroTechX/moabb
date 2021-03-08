@@ -120,8 +120,9 @@ pipeline = make_pipeline(CSP(n_components=8), LDA())
 # `BetweenSessionEvaluation`, which takes all but one session as training
 # partition and the remaining one as testing partition.
 
-evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=[dataset],
-                                     overwrite=True)
+evaluation = WithinSessionEvaluation(
+    paradigm=paradigm, datasets=[dataset], overwrite=True
+)
 
 # We obtain the results in the form of a pandas dataframe
 results = evaluation.process({'csp+lda': pipeline})
@@ -145,6 +146,7 @@ results = pd.read_csv('./results/results_part2-1.csv')
 
 fig, ax = plt.subplots(figsize=(8, 7))
 results["subj"] = results["subject"].apply(str)
-sns.barplot(x="score", y="subj", hue='session', data=results, orient='h',
-            palette='viridis', ax=ax)
+sns.barplot(
+    x="score", y="subj", hue='session', data=results, orient='h', palette='viridis', ax=ax
+)
 fig.show()

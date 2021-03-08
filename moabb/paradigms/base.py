@@ -10,26 +10,23 @@ log = logging.getLogger()
 
 
 class BaseParadigm(metaclass=ABCMeta):
-    """Base Paradigm.
-    """
+    """Base Paradigm."""
 
     def __init__(self):
         pass
 
     @abstractproperty
     def scoring(self):
-        '''Property that defines scoring metric (e.g. ROC-AUC or accuracy
+        """Property that defines scoring metric (e.g. ROC-AUC or accuracy
         or f-score), given as a sklearn-compatible string or a compatible
         sklearn scorer.
 
-        '''
+        """
         pass
 
     @abstractproperty
     def datasets(self):
-        '''Property that define the list of compatible datasets
-
-        '''
+        """Property that define the list of compatible datasets"""
         pass
 
     @abstractmethod
@@ -105,18 +102,16 @@ class BaseParadigm(metaclass=ABCMeta):
         event_id = self.used_events(dataset)
 
         # find the events, first check stim_channels then annotations
-        stim_channels = mne.utils._get_stim_channel(None, raw.info,
-                                                    raise_error=False)
+        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) > 0:
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
             try:
-                events, _ = mne.events_from_annotations(raw,
-                                                        event_id=event_id,
-                                                        verbose=False)
+                events, _ = mne.events_from_annotations(
+                    raw, event_id=event_id, verbose=False
+                )
             except ValueError:
-                log.warning("No matching annotations in {}"
-                            .format(raw.filenames))
+                log.warning("No matching annotations in {}".format(raw.filenames))
                 return
 
         # picks channels
@@ -143,24 +138,35 @@ class BaseParadigm(metaclass=ABCMeta):
         for bandpass in self.filters:
             fmin, fmax = bandpass
             # filter data
-            raw_f = raw.copy().filter(fmin, fmax, method='iir',
-                                      picks=picks, verbose=False)
+            raw_f = raw.copy().filter(
+                fmin, fmax, method='iir', picks=picks, verbose=False
+            )
             # epoch data
             baseline = self.baseline
             if baseline is not None:
-                baseline = (self.baseline[0] + dataset.interval[0],
-                            self.baseline[1] + dataset.interval[0])
+                baseline = (
+                    self.baseline[0] + dataset.interval[0],
+                    self.baseline[1] + dataset.interval[0],
+                )
                 bmin = baseline[0] if baseline[0] < tmin else tmin
                 bmax = baseline[1] if baseline[1] > tmax else tmax
             else:
                 bmin = tmin
                 bmax = tmax
-            epochs = mne.Epochs(raw_f, events, event_id=event_id,
-                                tmin=bmin, tmax=bmax, proj=False,
-                                baseline=baseline, preload=True,
-                                verbose=False, picks=picks,
-                                event_repeated='drop',
-                                on_missing='ignore')
+            epochs = mne.Epochs(
+                raw_f,
+                events,
+                event_id=event_id,
+                tmin=bmin,
+                tmax=bmax,
+                proj=False,
+                baseline=baseline,
+                preload=True,
+                verbose=False,
+                picks=picks,
+                event_repeated='drop',
+                on_missing='ignore',
+            )
             if bmin < tmin or bmax > tmax:
                 epochs.crop(tmin=tmin, tmax=tmax)
             if self.resample is not None:
@@ -217,8 +223,7 @@ class BaseParadigm(metaclass=ABCMeta):
         """
 
         if not self.is_valid(dataset):
-            message = "Dataset {} is not valid for paradigm".format(
-                dataset.code)
+            message = "Dataset {} is not valid for paradigm".format(dataset.code)
             raise AssertionError(message)
 
         data = dataset.get_data(subjects)
@@ -230,8 +235,7 @@ class BaseParadigm(metaclass=ABCMeta):
         for subject, sessions in data.items():
             for session, runs in sessions.items():
                 for run, raw in runs.items():
-                    proc = self.process_raw(raw, dataset,
-                                            return_epochs=return_epochs)
+                    proc = self.process_raw(raw, dataset, return_epochs=return_epochs)
 
                     if proc is None:
                         # this mean the run did not contain any selected event

@@ -47,8 +47,9 @@ datasets = [Zhou2016(), Weibo2014(), BNCI2014001()]
 # set `overwrite` to False to cache the results, avoiding to restart all the
 # evaluation from scratch if a problem occurs.
 paradigm = LeftRightImagery()
-evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=datasets,
-                                     overwrite=False)
+evaluation = WithinSessionEvaluation(
+    paradigm=paradigm, datasets=datasets, overwrite=False
+)
 pipeline = make_pipeline(CSP(n_components=8), LDA())
 results = evaluation.process({"csp+lda": pipeline})
 
@@ -68,6 +69,13 @@ results = pd.read_csv("./results/results_part2-2.csv")
 # is to plot the results from the three datasets with just one line.
 
 results["subj"] = [str(resi).zfill(2) for resi in results["subject"]]
-g = sns.catplot(kind='bar', x="score", y="subj", col="dataset",
-                data=results, orient='h', palette='viridis')
+g = sns.catplot(
+    kind='bar',
+    x="score",
+    y="subj",
+    col="dataset",
+    data=results,
+    orient='h',
+    palette='viridis',
+)
 plt.show()

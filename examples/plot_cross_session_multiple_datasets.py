@@ -66,8 +66,7 @@ interval = datasets[0].interval
 freqs = paradigm.used_events(datasets[0])
 
 pipeline = {}
-pipeline["CCA"] = make_pipeline(
-    SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
+pipeline["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
 
 ##############################################################################
 # Get data (optional)
@@ -97,8 +96,9 @@ for d in datasets:
 
 overwrite = True  # set to True if we want to overwrite cached results
 
-evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=datasets,
-                                    suffix='examples', overwrite=overwrite)
+evaluation = CrossSessionEvaluation(
+    paradigm=paradigm, datasets=datasets, suffix='examples', overwrite=overwrite
+)
 results = evaluation.process(pipeline)
 
 print(results.head())
@@ -109,6 +109,13 @@ print(results.head())
 #
 # Here we plot the results, indicating the score for each session and subject
 
-sns.catplot(data=results, x='session', y='score', hue='subject',
-            col='dataset', kind='bar', palette='viridis')
+sns.catplot(
+    data=results,
+    x='session',
+    y='score',
+    hue='subject',
+    col='dataset',
+    kind='bar',
+    palette='viridis',
+)
 plt.show()

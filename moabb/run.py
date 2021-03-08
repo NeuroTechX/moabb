@@ -34,54 +34,54 @@ def parser_init():
         dest="pipelines",
         type=str,
         default='./pipelines/',
-        help="Folder containing the pipelines to evaluates.")
+        help="Folder containing the pipelines to evaluates.",
+    )
     parser.add_argument(
         "-r",
         "--results",
         dest="results",
         type=str,
         default='./results/',
-        help="Folder to store the results.")
+        help="Folder to store the results.",
+    )
     parser.add_argument(
         "-f",
         "--force-update",
         dest="force",
         action="store_true",
         default=False,
-        help="Force evaluation of cached pipelines.")
+        help="Force evaluation of cached pipelines.",
+    )
 
     parser.add_argument(
-        "-v",
-        "--verbose",
-        dest="verbose",
-        action="store_true",
-        default=False)
+        "-v", "--verbose", dest="verbose", action="store_true", default=False
+    )
     parser.add_argument(
         "-d",
         "--debug",
         dest="debug",
         action="store_true",
         default=False,
-        help="Print debug level parse statements. Overrides verbose")
+        help="Print debug level parse statements. Overrides verbose",
+    )
     parser.add_argument(
         "-o",
         "--output",
         dest="output",
         type=str,
         default='./',
-        help="Folder to put analysis results")
+        help="Folder to put analysis results",
+    )
     parser.add_argument(
-        "--threads",
-        dest="threads",
-        type=int,
-        default=1,
-        help="Number of threads to run")
+        "--threads", dest="threads", type=int, default=1, help="Number of threads to run"
+    )
     parser.add_argument(
         "--plot",
         dest="plot",
         action="store_true",
         default=False,
-        help="Plot results after computing. Defaults false")
+        help="Plot results after computing. Defaults false",
+    )
     parser.add_argument(
         "-c",
         "--contexts",
@@ -90,20 +90,22 @@ def parser_init():
         default=None,
         help="File path to context.yml file that describes context parameters."
         "If none, assumes all defaults. Must contain an entry for all "
-        "paradigms described in the pipelines")
+        "paradigms described in the pipelines",
+    )
     return parser
 
 
 def parse_pipelines_from_directory(d):
-    '''
+    """
     Given directory, returns generated pipeline config dictionaries. Each entry
     has structure:
     'name': string
     'pipeline': sklearn.BaseEstimator
     'paradigms': list of class names that are compatible with said pipeline
-    '''
-    assert os.path.isdir(os.path.abspath(d)
-                         ), "Given pipeline path {} is not valid".format(d)
+    """
+    assert os.path.isdir(
+        os.path.abspath(d)
+    ), "Given pipeline path {} is not valid".format(d)
 
     # get list of config files
     yaml_files = glob(os.path.join(d, '*.yml'))
@@ -116,9 +118,13 @@ def parse_pipelines_from_directory(d):
             # load config
             config_dict = yaml.load(content, Loader=yaml.FullLoader)
             ppl = create_pipeline_from_config(config_dict['pipeline'])
-            pipeline_configs.append({'paradigms': config_dict['paradigms'],
-                                     'pipeline': ppl,
-                                     'name': config_dict['name']})
+            pipeline_configs.append(
+                {
+                    'paradigms': config_dict['paradigms'],
+                    'pipeline': ppl,
+                    'name': config_dict['name'],
+                }
+            )
 
     # we can do the same for python defined pipeline
     python_files = glob(os.path.join(d, '*.py'))
@@ -149,14 +155,17 @@ def generate_paradigms(pipeline_configs, context=None):
             if len(context) > 0:
                 if paradigm not in context.keys():
                     log.debug(context)
-                    log.warning("Paradigm {} not in context file {}".format(
-                        paradigm, context.keys()))
+                    log.warning(
+                        "Paradigm {} not in context file {}".format(
+                            paradigm, context.keys()
+                        )
+                    )
 
             if isinstance(config['pipeline'], BaseEstimator):
                 pipeline = deepcopy(config['pipeline'])
             else:
                 log.error(config['pipeline'])
-                raise(ValueError('pipeline must be a sklearn estimator'))
+                raise (ValueError('pipeline must be a sklearn estimator'))
 
             # append the pipeline in the paradigm list
             if paradigm not in paradigms.keys():
@@ -203,10 +212,9 @@ if __name__ == '__main__':
         # get the context
         log.debug('{}: {}'.format(paradigm, context_params[paradigm]))
         p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
-        context = WithinSessionEvaluation(paradigm=p, random_state=42,
-                                          n_jobs=options.threads,
-                                          overwrite=options.force)
+        context = WithinSessionEvaluation(
+            paradigm=p, random_state=42, n_jobs=options.threads, overwrite=options.force
+        )
         results = context.process(pipelines=paradigms[paradigm])
         all_results.append(results)
-    analyze(pd.concat(all_results, ignore_index=True), options.output,
-            plot=options.plot)
+    analyze(pd.concat(all_results, ignore_index=True), options.output, plot=options.plot)

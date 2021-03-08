@@ -21,11 +21,9 @@ import mne
 
 
 class Test_Downloads(unittest.TestCase):
-
     def run_dataset(self, dataset, subj=(0, 2)):
         def _get_events(raw):
-            stim_channels = mne.utils._get_stim_channel(
-                None, raw.info, raise_error=False)
+            stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
             if len(stim_channels) > 0:
                 events = mne.find_events(raw, shortest_event=0, verbose=False)
             else:
@@ -33,7 +31,7 @@ class Test_Downloads(unittest.TestCase):
             return events
 
         obj = dataset()
-        obj.subject_list = obj.subject_list[subj[0]:subj[1]]
+        obj.subject_list = obj.subject_list[subj[0] : subj[1]]
         data = obj.get_data(obj.subject_list)
 
         # get data return a dict

@@ -11,6 +11,4 @@ clf = GridSearchCV(SVC(kernel='linear'), parameters)
 pipe = make_pipeline(LogVariance(), clf)
 
 # this is what will be loaded
-PIPELINE = {'name': 'AM + optSVM',
-            'paradigms': ['MotorImagery'],
-            'pipeline': pipe}
+PIPELINE = {'name': 'AM + optSVM', 'paradigms': ['MotorImagery'], 'pipeline': pipe}

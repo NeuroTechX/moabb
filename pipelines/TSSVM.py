@@ -11,6 +11,4 @@ clf = GridSearchCV(SVC(kernel='linear'), parameters, cv=3)
 pipe = make_pipeline(Covariances('oas'), TangentSpace(metric='riemann'), clf)
 
 # this is what will be loaded
-PIPELINE = {'name': 'TS + optSVM',
-            'paradigms': ['MotorImagery'],
-            'pipeline': pipe}
+PIPELINE = {'name': 'TS + optSVM', 'paradigms': ['MotorImagery'], 'pipeline': pipe}

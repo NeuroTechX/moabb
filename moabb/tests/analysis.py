@@ -15,7 +15,6 @@ from moabb.paradigms.base import BaseParadigm
 
 
 class DummyEvaluation(BaseEvaluation):
-
     def evaluate(self, dataset, pipelines):
         raise NotImplementedError('dummy')
 
@@ -24,7 +23,6 @@ class DummyEvaluation(BaseEvaluation):
 
 
 class DummyParadigm(BaseParadigm):
-
     def __init__(self):
         pass
 
@@ -44,38 +42,46 @@ class DummyParadigm(BaseParadigm):
 
 
 # Create dummy data for tests
-d1 = {'time': 1,
-      'dataset': FakeDataset(['d1', 'd2']),
-      'subject': 1,
-      'session': 'session_0',
-      'score': 0.9,
-      'n_samples': 100,
-      'n_channels': 10}
+d1 = {
+    'time': 1,
+    'dataset': FakeDataset(['d1', 'd2']),
+    'subject': 1,
+    'session': 'session_0',
+    'score': 0.9,
+    'n_samples': 100,
+    'n_channels': 10,
+}
 
-d2 = {'time': 2,
-      'dataset': FakeDataset(['d1', 'd2']),
-      'subject': 2,
-      'session': 'session_0',
-      'score': 0.9,
-      'n_samples': 100,
-      'n_channels': 10}
+d2 = {
+    'time': 2,
+    'dataset': FakeDataset(['d1', 'd2']),
+    'subject': 2,
+    'session': 'session_0',
+    'score': 0.9,
+    'n_samples': 100,
+    'n_channels': 10,
+}
 
 
-d3 = {'time': 2,
-      'dataset': FakeDataset(['d1', 'd2']),
-      'subject': 2,
-      'session': 'session_0',
-      'score': 0.9,
-      'n_samples': 100,
-      'n_channels': 10}
+d3 = {
+    'time': 2,
+    'dataset': FakeDataset(['d1', 'd2']),
+    'subject': 2,
+    'session': 'session_0',
+    'score': 0.9,
+    'n_samples': 100,
+    'n_channels': 10,
+}
 
-d4 = {'time': 2,
-      'dataset': FakeDataset(['d1', 'd2']),
-      'subject': 1,
-      'session': 'session_0',
-      'score': 0.9,
-      'n_samples': 100,
-      'n_channels': 10}
+d4 = {
+    'time': 2,
+    'dataset': FakeDataset(['d1', 'd2']),
+    'subject': 1,
+    'session': 'session_0',
+    'score': 0.9,
+    'n_samples': 100,
+    'n_channels': 10,
+}
 
 
 def to_pipeline_dict(pnames):
@@ -87,7 +93,6 @@ def to_result_input(pnames, dsets):
 
 
 class Test_Stats(unittest.TestCase):
-
     def return_df(self, shape):
         size = shape[0] * shape[1]
         data = np.arange(size).reshape(*shape)
@@ -109,11 +114,10 @@ class Test_Stats(unittest.TestCase):
 
 
 class Test_Integration(unittest.TestCase):
-
     def setUp(self):
-        self.obj = Results(evaluation_class=DummyEvaluation,
-                           paradigm_class=DummyParadigm,
-                           suffix='test')
+        self.obj = Results(
+            evaluation_class=DummyEvaluation, paradigm_class=DummyParadigm, suffix='test'
+        )
 
     def tearDown(self):
         path = self.obj.filepath
@@ -122,11 +126,10 @@ class Test_Integration(unittest.TestCase):
 
 
 class Test_Results(unittest.TestCase):
-
     def setUp(self):
-        self.obj = Results(evaluation_class=DummyEvaluation,
-                           paradigm_class=DummyParadigm,
-                           suffix='test')
+        self.obj = Results(
+            evaluation_class=DummyEvaluation, paradigm_class=DummyParadigm, suffix='test'
+        )
 
     def tearDown(self):
         path = self.obj.filepath
@@ -140,7 +143,8 @@ class Test_Results(unittest.TestCase):
         _in = to_result_input(['a'], [d1])
         self.obj.add(_in, to_pipeline_dict(['a']))
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(['a']), d1['dataset'], d1['subject'])
+            to_pipeline_dict(['a']), d1['dataset'], d1['subject']
+        )
         self.assertTrue(len(not_yet_computed) == 0)
 
     def testCanAddMultiplePipelines(self):
@@ -151,13 +155,16 @@ class Test_Results(unittest.TestCase):
         _in = to_result_input(['a', 'b'], [[d1, d2], [d2, d1]])
         self.obj.add(_in, to_pipeline_dict(['a', 'b']))
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(['a']), d1['dataset'], d1['subject'])
+            to_pipeline_dict(['a']), d1['dataset'], d1['subject']
+        )
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(['b']), d2['dataset'], d2['subject'])
+            to_pipeline_dict(['b']), d2['dataset'], d2['subject']
+        )
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(['b']), d1['dataset'], d1['subject'])
+            to_pipeline_dict(['b']), d1['dataset'], d1['subject']
+        )
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
 
     def testCanExportToDataframe(self):
@@ -166,8 +173,10 @@ class Test_Results(unittest.TestCase):
         _in = to_result_input(['a', 'b', 'c'], [d2, d2, d3])
         self.obj.add(_in, to_pipeline_dict(['a', 'b', 'c']))
         df = self.obj.to_dataframe()
-        self.assertTrue(set(np.unique(df['pipeline'])) == set(
-            ('a', 'b', 'c')), np.unique(df['pipeline']))
+        self.assertTrue(
+            set(np.unique(df['pipeline'])) == set(('a', 'b', 'c')),
+            np.unique(df['pipeline']),
+        )
         self.assertTrue(df.shape[0] == 6, df.shape[0])
 
 
