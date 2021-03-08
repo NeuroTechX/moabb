@@ -14,10 +14,10 @@ for ds in inspect.getmembers(db, inspect.isclass):
         dataset_list.append(ds[1])
 
 
-def dataset_search(
+def dataset_search(  # noqa: C901
     paradigm,
     multi_session=False,
-    events=None,  # noqa: C901
+    events=None,
     has_all_events=False,
     interval=None,
     min_subjects=1,
@@ -70,35 +70,37 @@ def dataset_search(
         if len(d.subject_list) < min_subjects:
             continue
 
-        if paradigm == d.paradigm:
-            if interval is not None:
-                if d.interval[1] - d.interval[0] < interval:
-                    continue
-            keep_event_dict = {}
-            if events is None:
-                keep_event_dict = d.event_id.copy()
-            else:
-                n_events = 0
-                for e in events:
-                    if n_classes is not None:
-                        if n_events == n_classes:
-                            break
-                    if e in d.event_id.keys():
-                        keep_event_dict[e] = d.event_id[e]
-                        n_events += 1
-                    else:
-                        if has_all_events:
-                            skip_dataset = True
-            if keep_event_dict and not skip_dataset:
-                if len(channels) > 0:
-                    s1 = d.get_data([1])[1]
-                    sess1 = s1[list(s1.keys())[0]]
-                    raw = sess1[list(sess1.keys())[0]]
-                    raw.pick_types(eeg=True)
-                    if channels <= set(raw.info['ch_names']):
-                        out_data.append(d)
+        if paradigm != d.paradigm:
+            continue
+
+        if interval is not None and d.interval[1] - d.interval[0] < interval:
+            continue
+
+        keep_event_dict = {}
+        if events is None:
+            keep_event_dict = d.event_id.copy()
+        else:
+            n_events = 0
+            for e in events:
+                if n_classes is not None:
+                    if n_events == n_classes:
+                        break
+                if e in d.event_id.keys():
+                    keep_event_dict[e] = d.event_id[e]
+                    n_events += 1
                 else:
+                    if has_all_events:
+                        skip_dataset = True
+        if keep_event_dict and not skip_dataset:
+            if len(channels) > 0:
+                s1 = d.get_data([1])[1]
+                sess1 = s1[list(s1.keys())[0]]
+                raw = sess1[list(sess1.keys())[0]]
+                raw.pick_types(eeg=True)
+                if channels <= set(raw.info['ch_names']):
                     out_data.append(d)
+            else:
+                out_data.append(d)
     return out_data
 
 
