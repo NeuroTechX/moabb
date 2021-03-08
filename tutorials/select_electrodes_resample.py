@@ -8,24 +8,24 @@ electrodes and to resample to a specific sampling rate. There is also a
 utility function to select common electrodes shared between datasets.
 This tutorial demonstrates how to use this functionality.
 """
+import matplotlib.pyplot as plt
+from mne.decoding import CSP
+from pyriemann.estimation import Covariances
+from pyriemann.tangentspace import TangentSpace
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.linear_model import LogisticRegression as LR
+from sklearn.pipeline import make_pipeline
+
+import moabb.analysis.plotting as moabb_plt
+
 # Authors: Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
 #
 # License: BSD (3-clause)
 from moabb.datasets import BNCI2014001, Zhou2016
-from moabb.paradigms import LeftRightImagery
-from moabb.evaluations import WithinSessionEvaluation
 from moabb.datasets.utils import find_intersecting_channels
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import LeftRightImagery
 
-from sklearn.pipeline import make_pipeline
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-from sklearn.linear_model import LogisticRegression as LR
-
-from mne.decoding import CSP
-from pyriemann.estimation import Covariances
-from pyriemann.tangentspace import TangentSpace
-
-import matplotlib.pyplot as plt
-import moabb.analysis.plotting as moabb_plt
 
 ##############################################################################
 # Datasets

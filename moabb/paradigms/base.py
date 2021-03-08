@@ -1,7 +1,12 @@
-from abc import ABCMeta, abstractproperty, abstractmethod
+import logging
+from abc import ABCMeta, abstractmethod, abstractproperty
+
+import mne
 import numpy as np
 import pandas as pd
-import mne
+
+
+log = logging.getLogger()
 
 
 class BaseParadigm(metaclass=ABCMeta):
@@ -62,7 +67,7 @@ class BaseParadigm(metaclass=ABCMeta):
         """
         pass
 
-    def process_raw(self, raw, dataset, return_epochs=False):
+    def process_raw(self, raw, dataset, return_epochs=False):  # noqa: C901
         """
         Process one raw data file.
 
@@ -110,7 +115,9 @@ class BaseParadigm(metaclass=ABCMeta):
                                                         event_id=event_id,
                                                         verbose=False)
             except ValueError:
-                events, _ = mne.events_from_annotations(raw, verbose=False)
+                log.warning("No matching annotations in {}"
+                            .format(raw.filenames))
+                return
 
         # picks channels
         if self.channels is None:

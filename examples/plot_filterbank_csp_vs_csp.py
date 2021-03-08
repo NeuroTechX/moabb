@@ -10,20 +10,19 @@ very popular dataset 2a from the BCI competition IV.
 #
 # License: BSD (3-clause)
 
-import moabb
 import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
-
+import seaborn as sns
+from mne.decoding import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
-from mne.decoding import CSP
-
+import moabb
 from moabb.datasets import BNCI2014001
-from moabb.paradigms import LeftRightImagery, FilterBankLeftRightImagery
 from moabb.evaluations import CrossSessionEvaluation
+from moabb.paradigms import FilterBankLeftRightImagery, LeftRightImagery
 from moabb.pipelines.utils import FilterBank
+
 
 moabb.set_log_level('info')
 

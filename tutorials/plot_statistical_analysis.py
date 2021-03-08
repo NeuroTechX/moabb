@@ -11,24 +11,24 @@ they can be used.
 #
 # License: BSD (3-clause)
 
-import moabb
 import matplotlib.pyplot as plt
-import moabb.analysis.plotting as moabb_plt
-from moabb.analysis.meta_analysis import (
-    find_significant_differences, compute_dataset_statistics)  # noqa: E501
-
+from mne.decoding import CSP
+from pyriemann.estimation import Covariances
+from pyriemann.tangentspace import TangentSpace
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
-from mne.decoding import CSP
-
-from pyriemann.estimation import Covariances
-from pyriemann.tangentspace import TangentSpace
-
+import moabb
+import moabb.analysis.plotting as moabb_plt
+from moabb.analysis.meta_analysis import (  # noqa: E501
+    compute_dataset_statistics,
+    find_significant_differences,
+)
 from moabb.datasets import BNCI2014001
-from moabb.paradigms import LeftRightImagery
 from moabb.evaluations import CrossSessionEvaluation
+from moabb.paradigms import LeftRightImagery
+
 
 moabb.set_log_level('info')
 

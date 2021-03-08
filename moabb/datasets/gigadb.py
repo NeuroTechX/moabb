@@ -2,16 +2,17 @@
 GigaDb Motor imagery dataset.
 """
 
+import logging
+
+import numpy as np
+from mne import create_info
+from mne.channels import make_standard_montage
+from mne.io import RawArray
+from scipy.io import loadmat
+
+from . import download as dl
 from .base import BaseDataset
 
-from scipy.io import loadmat
-import numpy as np
-
-from mne import create_info
-from mne.io import RawArray
-from mne.channels import make_standard_montage
-from . import download as dl
-import logging
 
 log = logging.getLogger()
 GIGA_URL = 'ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100295/mat_data/'  # noqa

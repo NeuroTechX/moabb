@@ -1,10 +1,11 @@
+import numpy as np
+from mne.channels import make_standard_montage
+from mne.io import read_raw_gdf
+
 from moabb.datasets.base import BaseDataset
 
-from mne.io import read_raw_gdf
-from mne.channels import make_standard_montage
-import numpy as np
-
 from . import download as dl
+
 
 UPPER_LIMB_URL = 'https://zenodo.org/record/834976/files/'
 
@@ -72,7 +73,7 @@ class Ofner2017(BaseDataset):
             sessions_per_subject=n_sessions,
             events=event_id,
             code='Ofner2017',
-            interval=[2, 5],  # according to paper 2-5
+            interval=[0, 3],  # according to paper 2-5
             paradigm='imagery',
             doi='10.1371/journal.pone.0182578')
 
@@ -99,6 +100,16 @@ class Ofner2017(BaseDataset):
                 raw.set_montage(montage)
                 # there is nan in the data
                 raw._data[np.isnan(raw._data)] = 0
+                # Modify the annotations to match the name of the command
+                stim = raw.annotations.description.astype(np.dtype('<21U'))
+                stim[stim == '1536'] = "right_elbow_flexion"
+                stim[stim == '1537'] = "right_elbow_extension"
+                stim[stim == '1538'] = "right_supination"
+                stim[stim == '1539'] = "right_pronation"
+                stim[stim == '1540'] = "right_hand_close"
+                stim[stim == '1541'] = "right_hand_open"
+                stim[stim == '1542'] = "rest"
+                raw.annotations.description = stim
                 data['run_%d' % ii] = raw
 
             out[session] = data
@@ -124,8 +135,7 @@ class Ofner2017(BaseDataset):
         # FIXME check the value are in V and not uV.
         for session in sessions:
             for run in range(1, 11):
-                url = (f"{UPPER_LIMB_URL}motor{session}_subject{subject}" +
-                       f"_run{run}.gdf")
+                url = (f"{UPPER_LIMB_URL}motor{session}_subject{subject}" + f"_run{run}.gdf")
                 p = dl.data_path(url, 'UPPERLIMB', path, force_update,
                                  update_path, verbose)
                 paths.append(p)

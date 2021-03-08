@@ -1,13 +1,16 @@
-import mne
-import os
-import glob
-import numpy as np
 import datetime as dt
-from moabb.datasets.base import BaseDataset
-from moabb.datasets import download as dl
+import glob
+import os
+import zipfile
+
+import mne
+import numpy as np
 from mne.channels import make_standard_montage
 from scipy.io import loadmat
-import zipfile
+
+from moabb.datasets import download as dl
+from moabb.datasets.base import BaseDataset
+
 
 EPFLP300_URL = 'http://documents.epfl.ch/groups/m/mm/mmspg/www/BCI/p300/'
 
@@ -140,8 +143,7 @@ class EPFLP300(BaseDataset):
         n_trials = len(stimuli)
         for j in range(n_trials):
             delta_seconds = (
-                events_datetime[j] -
-                events_datetime[0]).total_seconds()
+                events_datetime[j] - events_datetime[0]).total_seconds()
             delta_indices = int(delta_seconds * sfreq)
             # has to add an offset
             pos.append(delta_indices + int(0.4 * sfreq))
@@ -176,7 +178,7 @@ class EPFLP300(BaseDataset):
         for file_path in sorted(file_path_list):
 
             session_name = 'session_' + \
-                file_path.split(os.sep)[-2].strip('session')
+                file_path.split(os.sep)[-2].replace('session', '')
 
             if session_name not in sessions.keys():
                 sessions[session_name] = {}

@@ -2,12 +2,16 @@
 Physionet Motor imagery dataset.
 """
 
-from .base import BaseDataset
-from mne.io import read_raw_edf
-import mne
-from mne.datasets import eegbci
-from mne import get_config, set_config
 import os.path as osp
+
+import mne
+import numpy as np
+from mne import get_config, set_config
+from mne.datasets import eegbci
+from mne.io import read_raw_edf
+
+from .base import BaseDataset
+
 
 BASE_URL = 'http://archive.physionet.org/pn4/eegmmidb/'
 
@@ -114,23 +118,26 @@ class PhysionetMI(BaseDataset):
             set_config('MNE_DATASETS_EEGBCI_PATH',
                        osp.join(osp.expanduser("~"), "mne_data"))
 
-        # baseline runs
-        data['baseline_eye_open'] = self._load_one_run(subject, 1)
-        data['baseline_eye_closed'] = self._load_one_run(subject, 2)
-
         # hand runs
         for run in self.hand_runs:
-            data['run_%d' % run] = self._load_one_run(subject, run)
+            raw = self._load_one_run(subject, run)
+            stim = raw.annotations.description.astype(np.dtype('<U10'))
+            stim[stim == 'T0'] = 'rest'
+            stim[stim == 'T1'] = 'left_hand'
+            stim[stim == 'T2'] = 'right_hand'
+            raw.annotations.description = stim
+            data['run_%d' % run] = raw
 
         # feet runs
         for run in self.feet_runs:
             raw = self._load_one_run(subject, run)
-
             # modify stim channels to match new event ids. for feets runs,
             # hand = 2 modified to 4, and feet = 3, modified to 5
-            stim = raw._data[-1]
-            raw._data[-1, stim == 2] = 4
-            raw._data[-1, stim == 3] = 5
+            stim = raw.annotations.description.astype(np.dtype('<U10'))
+            stim[stim == 'T0'] = 'rest'
+            stim[stim == 'T1'] = 'hands'
+            stim[stim == 'T2'] = 'feet'
+            raw.annotations.description = stim
             data['run_%d' % run] = raw
 
         return {"session_0": data}
@@ -138,7 +145,7 @@ class PhysionetMI(BaseDataset):
     def data_path(self, subject, path=None, force_update=False,
                   update_path=None, verbose=None):
         if subject not in self.subject_list:
-            raise(ValueError("Invalid subject number"))
+            raise (ValueError("Invalid subject number"))
 
         if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
             set_config('MNE_DATASETS_EEGBCI_PATH',

@@ -1,7 +1,9 @@
 import unittest
 
 import mne
+
 from moabb.datasets.fake import FakeDataset
+
 
 _ = mne.set_log_level('CRITICAL')
 

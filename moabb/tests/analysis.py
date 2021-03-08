@@ -1,12 +1,16 @@
+import os
 import unittest
+
 import numpy as np
 import pandas as pd
+
 import moabb.analysis.meta_analysis as ma
 from moabb.analysis import Results
-import os
+from moabb.datasets.fake import FakeDataset
 from moabb.evaluations.base import BaseEvaluation
 from moabb.paradigms.base import BaseParadigm
-from moabb.datasets.fake import FakeDataset
+
+
 # dummy evaluation
 
 
@@ -31,7 +35,7 @@ class DummyParadigm(BaseParadigm):
     def is_valid(self, dataset):
         pass
 
-    def process_raw(raw):
+    def process_raw(self, raw, dataset, return_epochs=False):
         raise NotImplementedError('dummy')
 
     @property

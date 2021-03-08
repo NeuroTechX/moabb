@@ -1,4 +1,4 @@
-name: SSVEP Tangent Space LR 
+name: SSVEP Tangent Space LR
 
 paradigms:
   - FilterBankSSVEP

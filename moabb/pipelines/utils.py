@@ -1,7 +1,8 @@
-from sklearn.pipeline import make_pipeline
+from copy import deepcopy
+
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-from copy import deepcopy
+from sklearn.pipeline import make_pipeline
 
 
 def create_pipeline_from_config(config):

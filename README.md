@@ -11,6 +11,7 @@
 **This is work in progress. API will change significantly (as well as the results of the benchmark).**
 
 [![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## Welcome!
 
@@ -144,7 +145,7 @@ The list of supported dataset can be found here : http://moabb.neurotechx.com/do
 
 ### Submit a new dataset
 
-you can submit new dataset by filling this [form](https://docs.google.com/forms/d/e/1FAIpQLScxbpqK4omKsUs4tA2XpfeHJATo_SbYvT0hpxoeKDb5k_TZvQ/viewform). The datasets currently on our radar can be seen [here](https://docs.google.com/spreadsheets/d/1fQNFXGu1J1yJ9jFCer9EQQatjCPJWg7O-uCGF0Z4PiM/edit).  
+you can submit new dataset by filling this [form](https://docs.google.com/forms/d/e/1FAIpQLScxbpqK4omKsUs4tA2XpfeHJATo_SbYvT0hpxoeKDb5k_TZvQ/viewform). The datasets currently on our radar can be seen [here](https://docs.google.com/spreadsheets/d/1fQNFXGu1J1yJ9jFCer9EQQatjCPJWg7O-uCGF0Z4PiM/edit).
 
 ## <a name="architecture"></a> Architecture and main concepts:
 

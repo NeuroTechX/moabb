@@ -2,10 +2,11 @@
 Alex Motor imagery dataset.
 """
 
-from .base import BaseDataset
 from mne.io import Raw
 
 from . import download as dl
+from .base import BaseDataset
+
 
 ALEX_URL = 'https://zenodo.org/record/806023/files/'
 

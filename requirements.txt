@@ -3,7 +3,7 @@ mne >= 0.19
 pyriemann
 matplotlib >= 2.2
 seaborn >= 0.9.0
-h5py==2.10  # locked due to https://github.com/NeuroTechX/moabb/issues/122
+h5py
 pandas
 pyyaml
 coloredlogs

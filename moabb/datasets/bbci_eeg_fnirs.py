@@ -2,18 +2,20 @@
 BBCI EEG fNIRS Motor imagery dataset.
 """
 
-from .base import BaseDataset
+import os
+import os.path as op
+import zipfile as z
 
 import numpy as np
-from scipy.io import loadmat
 from mne import create_info
-from mne.io import RawArray
 from mne.channels import make_standard_montage
-import os.path as op
-import os
-import zipfile as z
-from mne.datasets.utils import _get_path, _do_path_update
+from mne.datasets.utils import _do_path_update, _get_path
+from mne.io import RawArray
 from mne.utils import _fetch_file
+from scipy.io import loadmat
+
+from .base import BaseDataset
+
 
 SHIN_URL = 'http://doc.ml.tu-berlin.de/hBCI'
 

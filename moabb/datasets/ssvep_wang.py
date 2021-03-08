@@ -2,17 +2,19 @@
 SSVEP Wang dataset.
 """
 
-from . import download as dl
-from .base import BaseDataset
-
 import logging
+from os.path import dirname
+
+import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
-import numpy as np
-from scipy.io import loadmat
-from os.path import dirname
 from pyunpack import Archive
+from scipy.io import loadmat
+
+from . import download as dl
+from .base import BaseDataset
+
 
 log = logging.getLogger()
 

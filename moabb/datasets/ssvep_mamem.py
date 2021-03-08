@@ -2,15 +2,18 @@
 SSVEP MAMEM1 dataset.
 """
 
-from .base import BaseDataset
+import glob
+import logging
+import os
+
+import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
-from mne.io import RawArray
 from mne.datasets.utils import _get_path
-import glob
-import os
-import logging
-import numpy as np
+from mne.io import RawArray
+
+from .base import BaseDataset
+
 
 try:
     import wfdb

@@ -2,14 +2,15 @@
 BNCI 2014-001 Motor imagery dataset.
 """
 
-from moabb.datasets.base import BaseDataset
-from moabb.datasets import download as dl
-
-from mne import create_info
-from mne.io import RawArray
-from mne.channels import make_standard_montage
-from mne.utils import verbose
 import numpy as np
+from mne import create_info
+from mne.channels import make_standard_montage
+from mne.io import RawArray
+from mne.utils import verbose
+
+from moabb.datasets import download as dl
+from moabb.datasets.base import BaseDataset
+
 
 BNCI_URL = 'http://bnci-horizon-2020.eu/database/data-sets/'
 BBCI_URL = 'http://doc.ml.tu-berlin.de/bbci/'
@@ -987,7 +988,7 @@ class BNCI2015001(MNEBNCI):
             sessions_per_subject=2,
             events={'right_hand': 1, 'feet': 2},
             code='001-2015',
-            interval=[3, 8],
+            interval=[0, 5],
             paradigm='imagery',
             doi='10.1109/tnsre.2012.2189584')
 

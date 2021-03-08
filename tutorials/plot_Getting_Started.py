@@ -20,27 +20,28 @@ next tutorial.
 # and a list of datasets to run it all on. You can find those in the following
 # submodules; detailed tutorials are given for each of them.
 
-from moabb.datasets import BNCI2014001
-from moabb.paradigms import LeftRightImagery
+import numpy as np
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import make_pipeline
+from sklearn.svm import SVC
+
+##########################################################################
+# If you would like to specify the logging level when it is running, you can
+# use the standard python logging commands through the top-level moabb module
+import moabb
+from moabb.datasets import BNCI2014001, utils
 from moabb.evaluations import CrossSessionEvaluation
-from moabb.datasets import utils
+from moabb.paradigms import LeftRightImagery
+from moabb.pipelines.features import LogVariance
+
 
 ##########################################################################
 # In order to create pipelines within a script, you will likely need at least
 # the make_pipeline function. They can also be specified via a .yml file. Here
 # we will make a couple pipelines just for convenience
 
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-from sklearn.pipeline import make_pipeline
-from sklearn.svm import SVC
-from sklearn.model_selection import GridSearchCV
-from moabb.pipelines.features import LogVariance
-import numpy as np
 
-##########################################################################
-# If you would like to specify the logging level when it is running, you can
-# use the standard python logging commands through the top-level moabb module
-import moabb
 moabb.set_log_level('info')
 
 ##############################################################################

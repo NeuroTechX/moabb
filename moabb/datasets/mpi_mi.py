@@ -2,10 +2,12 @@
 Munich MI dataset
 """
 
-from moabb.datasets.base import BaseDataset
 import mne
+import numpy as np
 
 from moabb.datasets import download as dl
+from moabb.datasets.base import BaseDataset
+
 
 DOWNLOAD_URL = 'https://zenodo.org/record/1217449/files/'
 
@@ -60,7 +62,7 @@ class MunichMI(BaseDataset):
             sessions_per_subject=1,
             events=dict(right_hand=2, left_hand=1),
             code='Grosse-Wentrup 2009',
-            interval=[3, 10],
+            interval=[0, 7],
             paradigm='imagery',
             doi='10.1109/TBME.2008.2009768')
 
@@ -68,6 +70,11 @@ class MunichMI(BaseDataset):
         """return data for a single subject"""
         raw = mne.io.read_raw_eeglab(self.data_path(subject), preload=True,
                                      verbose='ERROR')
+        stim = raw.annotations.description.astype(np.dtype('<10U'))
+
+        stim[stim == '20'] = 'right_hand'
+        stim[stim == '10'] = 'left_hand'
+        raw.annotations.description = stim
         return {"session_0": {"run_0": raw}}
 
     def data_path(self, subject, path=None, force_update=False,
