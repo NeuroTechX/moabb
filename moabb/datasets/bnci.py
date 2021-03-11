@@ -274,7 +274,7 @@ def _load_data_001_2015(
     # fmt: off
     ch_names = [
         "FC3", "FCz", "FC4", "C5", "C3", "C1", "Cz",
-        "C2", "C4", "C6", "CP3","CPz", "CP4",
+        "C2", "C4", "C6", "CP3", "CPz", "CP4",
     ]
     # fmt: on
     ch_types = ['eeg'] * 13
