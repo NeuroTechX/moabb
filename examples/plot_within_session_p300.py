@@ -37,11 +37,11 @@ from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
 
 
-warnings.simplefilter(action='ignore', category=FutureWarning)
-warnings.simplefilter(action='ignore', category=RuntimeWarning)
+warnings.simplefilter(action="ignore", category=FutureWarning)
+warnings.simplefilter(action="ignore", category=RuntimeWarning)
 
 
-moabb.set_log_level('info')
+moabb.set_log_level("info")
 
 # This is an auxiliary transformer that allows one to vectorize data
 # structures in a pipeline For instance, in the case of a X with dimensions
@@ -50,7 +50,6 @@ moabb.set_log_level('info')
 
 
 class Vectorizer(BaseEstimator, TransformerMixin):
-
     def __init__(self):
         pass
 
@@ -61,6 +60,7 @@ class Vectorizer(BaseEstimator, TransformerMixin):
     def transform(self, X):
         """transform. """
         return np.reshape(X, (X.shape[0], -1))
+
 
 ##############################################################################
 # Create pipelines
@@ -74,21 +74,19 @@ pipelines = {}
 # we have to do this because the classes are called 'Target' and 'NonTarget'
 # but the evaluation function uses a LabelEncoder, transforming them
 # to 0 and 1
-labels_dict = {'Target': 1, 'NonTarget': 0}
+labels_dict = {"Target": 1, "NonTarget": 0}
 
-pipelines['RG + LDA'] = make_pipeline(
+pipelines["RG + LDA"] = make_pipeline(
     XdawnCovariances(
-        nfilter=2,
-        classes=[
-            labels_dict['Target']],
-        estimator='lwf',
-        xdawn_estimator='lwf'),
+        nfilter=2, classes=[labels_dict["Target"]], estimator="lwf", xdawn_estimator="lwf"
+    ),
     TangentSpace(),
-    LDA(solver='lsqr', shrinkage='auto'))
+    LDA(solver="lsqr", shrinkage="auto"),
+)
 
-pipelines['Xdw + LDA'] = make_pipeline(Xdawn(nfilter=2, estimator='lwf'),
-                                       Vectorizer(), LDA(solver='lsqr',
-                                                         shrinkage='auto'))
+pipelines["Xdw + LDA"] = make_pipeline(
+    Xdawn(nfilter=2, estimator="lwf"), Vectorizer(), LDA(solver="lsqr", shrinkage="auto")
+)
 
 ##############################################################################
 # Evaluation
@@ -107,9 +105,9 @@ dataset = EPFLP300()
 dataset.subject_list = dataset.subject_list[:2]
 datasets = [dataset]
 overwrite = True  # set to True if we want to overwrite cached results
-evaluation = WithinSessionEvaluation(paradigm=paradigm,
-                                     datasets=datasets,
-                                     suffix='examples', overwrite=overwrite)
+evaluation = WithinSessionEvaluation(
+    paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite
+)
 results = evaluation.process(pipelines)
 
 ##############################################################################
@@ -118,14 +116,21 @@ results = evaluation.process(pipelines)
 #
 # Here we plot the results.
 
-fig, ax = plt.subplots(facecolor='white', figsize=[8, 4])
+fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
 
-sns.stripplot(data=results, y='score', x='pipeline', ax=ax, jitter=True,
-              alpha=.5, zorder=1, palette="Set1")
-sns.pointplot(data=results, y='score', x='pipeline', ax=ax,
-              zorder=1, palette="Set1")
+sns.stripplot(
+    data=results,
+    y="score",
+    x="pipeline",
+    ax=ax,
+    jitter=True,
+    alpha=0.5,
+    zorder=1,
+    palette="Set1",
+)
+sns.pointplot(data=results, y="score", x="pipeline", ax=ax, zorder=1, palette="Set1")
 
-ax.set_ylabel('ROC AUC')
+ax.set_ylabel("ROC AUC")
 ax.set_ylim(0.5, 1)
 
 fig.show()

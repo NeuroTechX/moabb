@@ -30,9 +30,9 @@ from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
 
-mne.set_log_level('CRITICAL')
-moabb.set_log_level('info')
-warnings.filterwarnings('ignore')
+mne.set_log_level("CRITICAL")
+moabb.set_log_level("info")
+warnings.filterwarnings("ignore")
 
 
 ##############################################################################
@@ -47,22 +47,21 @@ warnings.filterwarnings('ignore')
 # MDM classifier that works directly on covariance matrices.
 pipelines = {}
 pipelines["csp+lda"] = make_pipeline(CSP(n_components=8), LDA())
-pipelines["tgsp+svm"] = make_pipeline(Covariances('oas'),
-                                      TangentSpace(metric='riemann'),
-                                      SVC(kernel='linear'))
-pipelines["MDM"] = make_pipeline(Covariances('oas'), MDM(metric='riemann'))
+pipelines["tgsp+svm"] = make_pipeline(
+    Covariances("oas"), TangentSpace(metric="riemann"), SVC(kernel="linear")
+)
+pipelines["MDM"] = make_pipeline(Covariances("oas"), MDM(metric="riemann"))
 
 # The following lines go exactly as in the previous example, where we end up
 # obtaining a pandas dataframe containing the results of the evaluation.
 datasets = [BNCI2014001(), Weibo2014(), Zhou2016()]
 paradigm = LeftRightImagery()
-evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=datasets,
-                                     overwrite=True)
+evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=datasets, overwrite=True)
 results = evaluation.process(pipelines)
 if not os.path.exists("./results"):
     os.mkdir("./results")
 results.to_csv("./results/results_part2-3.csv")
-results = pd.read_csv('./results/results_part2-3.csv')
+results = pd.read_csv("./results/results_part2-3.csv")
 
 ##############################################################################
 # Plotting Results
@@ -72,7 +71,16 @@ results = pd.read_csv('./results/results_part2-3.csv')
 # for each subject of each dataset.
 
 results["subj"] = [str(resi).zfill(2) for resi in results["subject"]]
-g = sns.catplot(kind='bar', x="score", y="subj", hue="pipeline",
-                col="dataset", height=12, aspect=0.5, data=results,
-                orient='h', palette='viridis')
+g = sns.catplot(
+    kind="bar",
+    x="score",
+    y="subj",
+    hue="pipeline",
+    col="dataset",
+    height=12,
+    aspect=0.5,
+    data=results,
+    orient="h",
+    palette="viridis",
+)
 plt.show()

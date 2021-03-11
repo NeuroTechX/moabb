@@ -53,8 +53,16 @@ class BaseMotorImagery(BaseParadigm):
         If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, filters=([7, 35],), events=None, tmin=0.0, tmax=None,
-                 baseline=None, channels=None, resample=None):
+    def __init__(
+        self,
+        filters=([7, 35],),
+        events=None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+    ):
         super().__init__()
         self.filters = filters
         self.events = events
@@ -62,16 +70,16 @@ class BaseMotorImagery(BaseParadigm):
         self.baseline = baseline
         self.resample = resample
 
-        if (tmax is not None):
+        if tmax is not None:
             if tmin >= tmax:
-                raise(ValueError("tmax must be greater than tmin"))
+                raise (ValueError("tmax must be greater than tmin"))
 
         self.tmin = tmin
         self.tmax = tmax
 
     def is_valid(self, dataset):
         ret = True
-        if not (dataset.paradigm == 'imagery'):
+        if not (dataset.paradigm == "imagery"):
             ret = False
 
         # check if dataset has required events
@@ -92,14 +100,13 @@ class BaseMotorImagery(BaseParadigm):
             interval = None
         else:
             interval = self.tmax - self.tmin
-        return utils.dataset_search(paradigm='imagery',
-                                    events=self.events,
-                                    interval=interval,
-                                    has_all_events=True)
+        return utils.dataset_search(
+            paradigm="imagery", events=self.events, interval=interval, has_all_events=True
+        )
 
     @property
     def scoring(self):
-        return 'accuracy'
+        return "accuracy"
 
 
 class SinglePass(BaseMotorImagery):
@@ -148,16 +155,19 @@ class SinglePass(BaseMotorImagery):
     """
 
     def __init__(self, fmin=8, fmax=32, **kwargs):
-        if 'filters' in kwargs.keys():
-            raise(ValueError("MotorImagery does not take argument filters"))
+        if "filters" in kwargs.keys():
+            raise (ValueError("MotorImagery does not take argument filters"))
         super().__init__(filters=[[fmin, fmax]], **kwargs)
 
 
 class FilterBank(BaseMotorImagery):
     """Filter Bank MI."""
 
-    def __init__(self, filters=([8, 12], [12, 16], [16, 20], [20, 24],
-                                [24, 28], [28, 32]), **kwargs):
+    def __init__(
+        self,
+        filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
+        **kwargs,
+    ):
         """init"""
         super().__init__(filters=filters, **kwargs)
 
@@ -170,16 +180,16 @@ class LeftRightImagery(SinglePass):
     """
 
     def __init__(self, **kwargs):
-        if 'events' in kwargs.keys():
-            raise(ValueError('LeftRightImagery dont accept events'))
-        super().__init__(events=['left_hand', 'right_hand'], **kwargs)
+        if "events" in kwargs.keys():
+            raise (ValueError("LeftRightImagery dont accept events"))
+        super().__init__(events=["left_hand", "right_hand"], **kwargs)
 
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
 
     @property
     def scoring(self):
-        return 'roc_auc'
+        return "roc_auc"
 
 
 class FilterBankLeftRightImagery(FilterBank):
@@ -190,16 +200,16 @@ class FilterBankLeftRightImagery(FilterBank):
     """
 
     def __init__(self, **kwargs):
-        if 'events' in kwargs.keys():
-            raise(ValueError('LeftRightImagery dont accept events'))
-        super().__init__(events=['left_hand', 'right_hand'], **kwargs)
+        if "events" in kwargs.keys():
+            raise (ValueError("LeftRightImagery dont accept events"))
+        super().__init__(events=["left_hand", "right_hand"], **kwargs)
 
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
 
     @property
     def scoring(self):
-        return 'roc_auc'
+        return "roc_auc"
 
 
 class FilterBankMotorImagery(FilterBank):
@@ -228,12 +238,11 @@ class FilterBankMotorImagery(FilterBank):
         if self.events is None:
             log.warning("Choosing from all possible events")
         else:
-            assert n_classes <= len(
-                self.events), 'More classes than events specified'
+            assert n_classes <= len(self.events), "More classes than events specified"
 
     def is_valid(self, dataset):
         ret = True
-        if not dataset.paradigm == 'imagery':
+        if not dataset.paradigm == "imagery":
             ret = False
         if self.events is None:
             if not len(dataset.event_id) >= self.n_classes:
@@ -258,8 +267,12 @@ class FilterBankMotorImagery(FilterBank):
                 if len(out) == self.n_classes:
                     break
         if len(out) < self.n_classes:
-            raise(ValueError(f"Dataset {dataset.code} did not have enough "
-                             f"events in {self.events} to run analysis"))
+            raise (
+                ValueError(
+                    f"Dataset {dataset.code} did not have enough "
+                    f"events in {self.events} to run analysis"
+                )
+            )
         return out
 
     @property
@@ -268,18 +281,20 @@ class FilterBankMotorImagery(FilterBank):
             interval = None
         else:
             interval = self.tmax - self.tmin
-        return utils.dataset_search(paradigm='imagery',
-                                    events=self.events,
-                                    total_classes=self.n_classes,
-                                    interval=interval,
-                                    has_all_events=False)
+        return utils.dataset_search(
+            paradigm="imagery",
+            events=self.events,
+            total_classes=self.n_classes,
+            interval=interval,
+            has_all_events=False,
+        )
 
     @property
     def scoring(self):
         if self.n_classes == 2:
-            return 'roc_auc'
+            return "roc_auc"
         else:
-            return 'accuracy'
+            return "accuracy"
 
 
 class MotorImagery(SinglePass):
@@ -339,12 +354,11 @@ class MotorImagery(SinglePass):
         if self.events is None:
             log.warning("Choosing from all possible events")
         else:
-            assert n_classes <= len(
-                self.events), 'More classes than events specified'
+            assert n_classes <= len(self.events), "More classes than events specified"
 
     def is_valid(self, dataset):
         ret = True
-        if not dataset.paradigm == 'imagery':
+        if not dataset.paradigm == "imagery":
             ret = False
         if self.events is None:
             if not len(dataset.event_id) >= self.n_classes:
@@ -369,8 +383,12 @@ class MotorImagery(SinglePass):
                 if len(out) == self.n_classes:
                     break
         if len(out) < self.n_classes:
-            raise(ValueError(f"Dataset {dataset.code} did not have enough "
-                             f"events in {self.events} to run analysis"))
+            raise (
+                ValueError(
+                    f"Dataset {dataset.code} did not have enough "
+                    f"events in {self.events} to run analysis"
+                )
+            )
         return out
 
     @property
@@ -379,23 +397,24 @@ class MotorImagery(SinglePass):
             interval = None
         else:
             interval = self.tmax - self.tmin
-        return utils.dataset_search(paradigm='imagery',
-                                    events=self.events,
-                                    interval=interval,
-                                    has_all_events=False)
+        return utils.dataset_search(
+            paradigm="imagery",
+            events=self.events,
+            interval=interval,
+            has_all_events=False,
+        )
 
     @property
     def scoring(self):
         if self.n_classes == 2:
-            return 'roc_auc'
+            return "roc_auc"
         else:
-            return 'accuracy'
+            return "accuracy"
 
 
 class FakeImageryParadigm(LeftRightImagery):
-    """Fake Imagery for left hand/right hand classification.
-    """
+    """Fake Imagery for left hand/right hand classification."""
 
     @property
     def datasets(self):
-        return [FakeDataset(['left_hand', 'right_hand'], paradigm='imagery')]
+        return [FakeDataset(["left_hand", "right_hand"], paradigm="imagery")]

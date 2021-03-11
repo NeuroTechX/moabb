@@ -31,22 +31,23 @@ log = logging.getLogger()
 # MAMEM2_URL = 'https://ndownloader.figshare.com/articles/3153409/versions/2'
 # MAMEM3_URL = 'https://ndownloader.figshare.com/articles/3413851/versions/1'
 
-MAMEM1_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset1/"  # noqa: E501
-MAMEM2_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset2/"  # noqa: E501
-MAMEM3_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset3/"  # noqa: E501
+MAMEM1_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset1/"
+MAMEM2_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset2/"
+MAMEM3_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset3/"
 
 
 class BaseMAMEM(BaseDataset):
     """Base class for MAMEM datasets"""
+
     def __init__(self, sessions_per_subject, code, doi):
         super().__init__(
             subjects=list(range(1, 11)),
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             interval=[1, 4],
-            paradigm='ssvep',
+            paradigm="ssvep",
             sessions_per_subject=sessions_per_subject,
             code=code,
-            doi=doi
+            doi=doi,
         )
 
     def _get_single_subject_data(self, subject):
@@ -68,13 +69,14 @@ class BaseMAMEM(BaseDataset):
 
             record = wfdb.rdrecord(fpath)
             data = record.p_signal.T
-            annots = wfdb.rdann(fpath, 'win')
+            annots = wfdb.rdann(fpath, "win")
             # the number of samples isn't exactly equal in all the trials
             n_samples = record.sig_len
             stim_freq = np.array([float(e) for e in self.event_id.keys()])
             # aux_note are the exact frequencies, matched to nearest class
-            events_label = [np.argmin(np.abs(stim_freq - float(f))) + 1
-                            for f in annots.aux_note]
+            events_label = [
+                np.argmin(np.abs(stim_freq - float(f))) + 1 for f in annots.aux_note
+            ]
             raw_events = np.zeros([1, n_samples])
             #  annots.sample indicates the start of the trial
             # of class "events_label"
@@ -85,15 +87,15 @@ class BaseMAMEM(BaseDataset):
             if self.code == "SSVEP MAMEM3":
                 ch_names = record.sig_name
                 sfreq = 128
-                montage = make_standard_montage('standard_1020')
+                montage = make_standard_montage("standard_1020")
             else:
                 ch_names = ["E{}".format(i + 1) for i in range(0, 256)]
                 # ch_names = ["{}-{}".format(s, i) if s == "EEG" else s
                 #             for i, s in enumerate(record.sig_name)]
                 sfreq = 250
-                montage = make_standard_montage('GSN-HydroCel-256')
-            ch_types = ['eeg'] * len(ch_names) + ['stim']
-            ch_names.append('stim')
+                montage = make_standard_montage("GSN-HydroCel-256")
+            ch_types = ["eeg"] * len(ch_names) + ["stim"]
+            ch_names.append("stim")
 
             info = create_info(ch_names, sfreq, ch_types)
             raw = RawArray(data, info, verbose=False)
@@ -106,8 +108,9 @@ class BaseMAMEM(BaseDataset):
                 sessions[session_name][run_name] = raw
         return sessions
 
-    def data_path(self, subject, path=None, force_update=False,
-                  update_path=None, verbose=None):
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
         # Check if the .dat, .hea and .win files are present
@@ -129,8 +132,7 @@ class BaseMAMEM(BaseDataset):
         key_dest = "MNE-{:s}-data".format(sign.lower())
         path = _get_path(path, key, sign)
         path = os.path.join(path, key_dest)
-        s_paths = glob.glob(os.path.join(
-            path, fn.format(sub)))
+        s_paths = glob.glob(os.path.join(path, fn.format(sub)))
         subject_paths = []
         for name in s_paths:
             subject_paths.append(os.path.splitext(name)[0])
@@ -142,15 +144,16 @@ class BaseMAMEM(BaseDataset):
             for ele in datarec:
                 if fn.format(sub) in ele:
                     datalist.append(ele)
-            wfdb.io.dl_database("mssvepdb", path, datalist,
-                                annotators="win", overwrite=force_update)
+            wfdb.io.dl_database(
+                "mssvepdb", path, datalist, annotators="win", overwrite=force_update
+            )
         # Return the file paths depending on the number of sessions
         s_paths = glob.glob(os.path.join(path, fn.format(sub)))
         subject_paths = []
         for name in s_paths:
             # The adaptation session has the letter x at the end in MAMEM2
             # It should be removed from the returned file names
-            if (os.path.splitext(name)[0][-1]) != 'x':
+            if (os.path.splitext(name)[0][-1]) != "x":
                 subject_paths.append(os.path.splitext(name)[0])
         return subject_paths
 
@@ -245,11 +248,14 @@ class MAMEM1(BaseMAMEM):
     [2] DataAcquisitionDetails.pdf on
     https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738  # noqa: E501
     """
+
     def __init__(self):
-        super().__init__(sessions_per_subject=3,
-                         # 3 for S001, S003, S008, 4 for S004
-                         code="SSVEP MAMEM1",
-                         doi="https://arxiv.org/abs/1602.00904")
+        super().__init__(
+            sessions_per_subject=3,
+            # 3 for S001, S003, S008, 4 for S004
+            code="SSVEP MAMEM1",
+            doi="https://arxiv.org/abs/1602.00904",
+        )
 
 
 class MAMEM2(BaseMAMEM):
@@ -319,10 +325,13 @@ class MAMEM2(BaseMAMEM):
     [2] DataAcquisitionDetails.pdf on
     https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_II_256_channels_11_subjects_5_frequencies_presented_simultaneously_/3153409?file=4911931  # noqa: E501
     """
+
     def __init__(self):
-        super().__init__(sessions_per_subject=5,
-                         code="SSVEP MAMEM2",
-                         doi="https://arxiv.org/abs/1602.00904")
+        super().__init__(
+            sessions_per_subject=5,
+            code="SSVEP MAMEM2",
+            doi="https://arxiv.org/abs/1602.00904",
+        )
 
 
 class MAMEM3(BaseMAMEM):
@@ -401,7 +410,10 @@ class MAMEM3(BaseMAMEM):
     [2] DataAcquisitionDetails.pdf on
     https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_III_14_channels_11_subjects_5_frequencies_presented_simultaneously_/3413851  # noqa: E501
     """
+
     def __init__(self):
-        super().__init__(sessions_per_subject=5,
-                         code="SSVEP MAMEM3",
-                         doi="https://arxiv.org/abs/1602.00904")
+        super().__init__(
+            sessions_per_subject=5,
+            code="SSVEP MAMEM3",
+            doi="https://arxiv.org/abs/1602.00904",
+        )

@@ -11,8 +11,7 @@ from mne.utils import _fetch_file, _url_to_local_path, verbose
 
 
 @verbose
-def data_path(url, sign, path=None, force_update=False, update_path=True,
-              verbose=None):
+def data_path(url, sign, path=None, force_update=False, update_path=True, verbose=None):
     """Get path to local copy of given dataset URL.
 
     This is a low-level function useful for getting a local copy of a
@@ -47,8 +46,8 @@ def data_path(url, sign, path=None, force_update=False, update_path=True,
 
     """  # noqa: E501
     sign = sign.upper()
-    key = 'MNE_DATASETS_{:s}_PATH'.format(sign)
-    key_dest = 'MNE-{:s}-data'.format(sign.lower())
+    key = "MNE_DATASETS_{:s}_PATH".format(sign)
+    key_dest = "MNE-{:s}-data".format(sign.lower())
     if get_config(key) is None:
         set_config(key, osp.join(osp.expanduser("~"), "mne_data"))
     path = _get_path(path, key, sign)

@@ -20,6 +20,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
            engineering, 6(4), 046002.
            https://doi.org/10.1088/1741-2560/6/4/046002
     """
+
     def __init__(self, interval, freqs, n_harmonics=3):
         self.Yf = dict()
         self.cca = CCA(n_components=1)
@@ -39,12 +40,16 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         n_times = X.shape[2]
 
         for f in self.freqs:
-            if f.replace('.', '', 1).isnumeric():
+            if f.replace(".", "", 1).isnumeric():
                 freq = float(f)
                 yf = []
                 for h in range(1, self.n_harmonics + 1):
-                    yf.append(np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times)))
-                    yf.append(np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times)))
+                    yf.append(
+                        np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times))
+                    )
+                    yf.append(
+                        np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times))
+                    )
                 self.Yf[f] = np.array(yf)
         return self
 
@@ -54,7 +59,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         for x in X:
             corr_f = {}
             for f in self.freqs:
-                if f.replace('.', '', 1).isnumeric():
+                if f.replace(".", "", 1).isnumeric():
                     S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
                     corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0, 1]
             y.append(self.one_hot[max(corr_f, key=lambda k: corr_f[k])])
@@ -65,7 +70,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         P = np.zeros(shape=(len(X), len(self.freqs)))
         for i, x in enumerate(X):
             for j, f in enumerate(self.freqs):
-                if f.replace('.', '', 1).isnumeric():
+                if f.replace(".", "", 1).isnumeric():
                     S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
                     P[i, j] = np.corrcoef(S_x.T, S_y.T)[0, 1]
         return P / np.resize(P.sum(axis=1), P.T.shape).T

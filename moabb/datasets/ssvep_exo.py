@@ -8,7 +8,7 @@ from . import download as dl
 from .base import BaseDataset
 
 
-SSVEPEXO_URL = 'https://zenodo.org/record/2392979/files/'
+SSVEPEXO_URL = "https://zenodo.org/record/2392979/files/"
 
 
 class SSVEPExo(BaseDataset):
@@ -52,11 +52,12 @@ class SSVEPExo(BaseDataset):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=1,
-            events={'13': 2, '17': 3, '21': 4, 'rest': 1},
-            code='SSVEP Exoskeleton',
+            events={"13": 2, "17": 3, "21": 4, "rest": 1},
+            code="SSVEP Exoskeleton",
             interval=[2, 4],
-            paradigm='ssvep',
-            doi='10.1016/j.neucom.2016.01.007')
+            paradigm="ssvep",
+            doi="10.1016/j.neucom.2016.01.007",
+        )
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject"""
@@ -64,24 +65,24 @@ class SSVEPExo(BaseDataset):
         out = {}
         paths = self.data_path(subject, update_path=True, verbose=False)
         for ii, path in enumerate(paths):
-            raw = Raw(path, preload=True, verbose='ERROR')
-            out['run_%d' % ii] = raw
+            raw = Raw(path, preload=True, verbose="ERROR")
+            out["run_%d" % ii] = raw
         return {"session_0": out}
 
-    def data_path(self, subject, path=None, force_update=False,
-                  update_path=None, verbose=None):
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
 
-        runs = {s + 1: n for s,
-                n in enumerate([2] * 6 + [3] + [2] * 2 + [4, 2, 5])}
+        runs = {s + 1: n for s, n in enumerate([2] * 6 + [3] + [2] * 2 + [4, 2, 5])}
 
         if subject not in self.subject_list:
-            raise(ValueError("Invalid subject number"))
+            raise (ValueError("Invalid subject number"))
 
         paths = []
         for run in range(runs[subject]):
-            url = '{:s}subject{:02d}_run{:d}_raw.fif'.format(SSVEPEXO_URL,
-                                                             subject, run + 1)
-            p = dl.data_path(url, 'SSVEPEXO', path, force_update, update_path,
-                             verbose)
+            url = "{:s}subject{:02d}_run{:d}_raw.fif".format(
+                SSVEPEXO_URL, subject, run + 1
+            )
+            p = dl.data_path(url, "SSVEPEXO", path, force_update, update_path, verbose)
             paths.append(p)
         return paths

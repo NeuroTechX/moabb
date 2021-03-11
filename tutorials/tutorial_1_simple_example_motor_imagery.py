@@ -28,7 +28,7 @@ from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
 
-moabb.set_log_level('info')
+moabb.set_log_level("info")
 warnings.filterwarnings("ignore")
 
 ##############################################################################
@@ -60,8 +60,8 @@ sessions = dataset._get_single_subject_data(subject=1)
 # for some users, since the pre-processing and epoching steps can be easily
 # done via MNE. However, to conduct an assessment of several classifiers on
 # multiple subjects, MOABB ends up being a more appropriate option.
-session_name = 'session_T'
-run_name = 'run_1'
+session_name = "session_T"
+run_name = "run_1"
 raw = sessions[session_name][run_name]
 
 
@@ -120,19 +120,20 @@ pipeline = make_pipeline(CSP(n_components=8), LDA())
 # `BetweenSessionEvaluation`, which takes all but one session as training
 # partition and the remaining one as testing partition.
 
-evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=[dataset],
-                                     overwrite=True)
+evaluation = WithinSessionEvaluation(
+    paradigm=paradigm, datasets=[dataset], overwrite=True
+)
 
 # We obtain the results in the form of a pandas dataframe
-results = evaluation.process({'csp+lda': pipeline})
+results = evaluation.process({"csp+lda": pipeline})
 
 # To export the results in CSV within a directory:
-if not os.path.exists('./results'):
-    os.mkdir('./results')
-results.to_csv('./results/results_part2-1.csv')
+if not os.path.exists("./results"):
+    os.mkdir("./results")
+results.to_csv("./results/results_part2-1.csv")
 
 # To load previously obtained results saved in CSV
-results = pd.read_csv('./results/results_part2-1.csv')
+results = pd.read_csv("./results/results_part2-1.csv")
 
 ##############################################################################
 # Plotting Results
@@ -145,6 +146,7 @@ results = pd.read_csv('./results/results_part2-1.csv')
 
 fig, ax = plt.subplots(figsize=(8, 7))
 results["subj"] = results["subject"].apply(str)
-sns.barplot(x="score", y="subj", hue='session', data=results, orient='h',
-            palette='viridis', ax=ax)
+sns.barplot(
+    x="score", y="subj", hue="session", data=results, orient="h", palette="viridis", ax=ax
+)
 fig.show()

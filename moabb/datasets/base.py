@@ -49,10 +49,19 @@ class BaseDataset(metaclass=abc.ABCMeta):
     doi: DOI for dataset, optional (for now)
     """
 
-    def __init__(self, subjects, sessions_per_subject, events,
-                 code, interval, paradigm, doi=None, unit_factor=1e6):
+    def __init__(
+        self,
+        subjects,
+        sessions_per_subject,
+        events,
+        code,
+        interval,
+        paradigm,
+        doi=None,
+        unit_factor=1e6,
+    ):
         if not isinstance(subjects, list):
-            raise(ValueError("subjects must be a list"))
+            raise (ValueError("subjects must be a list"))
 
         self.subject_list = subjects
         self.n_sessions = sessions_per_subject
@@ -94,18 +103,24 @@ class BaseDataset(metaclass=abc.ABCMeta):
             subjects = self.subject_list
 
         if not isinstance(subjects, list):
-            raise(ValueError('subjects must be a list'))
+            raise (ValueError("subjects must be a list"))
 
         data = dict()
         for subject in subjects:
             if subject not in self.subject_list:
-                raise ValueError('Invalid subject {:d} given'.format(subject))
+                raise ValueError("Invalid subject {:d} given".format(subject))
             data[subject] = self._get_single_subject_data(subject)
 
         return data
 
-    def download(self, subject_list=None, path=None, force_update=False,
-                 update_path=None, verbose=None):
+    def download(
+        self,
+        subject_list=None,
+        path=None,
+        force_update=False,
+        update_path=None,
+        verbose=None,
+    ):
         """Download all data from the dataset.
 
         This function is only usefull to download all the dataset at once.
@@ -135,9 +150,13 @@ class BaseDataset(metaclass=abc.ABCMeta):
         if subject_list is None:
             subject_list = self.subject_list
         for subject in subject_list:
-            self.data_path(subject=subject, path=path,
-                           force_update=force_update,
-                           update_path=update_path, verbose=verbose)
+            self.data_path(
+                subject=subject,
+                path=path,
+                force_update=force_update,
+                update_path=update_path,
+                verbose=verbose,
+            )
 
     @abc.abstractmethod
     def _get_single_subject_data(self, subject):
@@ -162,8 +181,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def data_path(self, subject, path=None, force_update=False,
-                  update_path=None, verbose=None):
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
         """Get path to local copy of a subject data.
 
         Parameters
