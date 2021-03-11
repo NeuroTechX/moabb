@@ -8,18 +8,10 @@ class Test_Utils(unittest.TestCase):
         print(utils.find_intersecting_channels([d() for d in utils.dataset_list])[0])
 
     def test_dataset_search_fun(self):
-        print(
-            [
-                type(i).__name__
-                for i in utils.dataset_search('imagery', multi_session=True)
-            ]
-        )
-        print(
-            [
-                type(i).__name__
-                for i in utils.dataset_search('imagery', multi_session=False)
-            ]
-        )
+        found = utils.dataset_search('imagery', multi_session=True)
+        print([type(dataset).__name__ for dataset in found])
+        found = utils.dataset_search('imagery', multi_session=False)
+        print([type(dataset).__name__ for dataset in found])
         res = utils.dataset_search(
             'imagery', events=['right_hand', 'left_hand', 'feet', 'tongue', 'rest']
         )
