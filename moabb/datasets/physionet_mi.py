@@ -109,9 +109,8 @@ class PhysionetMI(BaseDataset):
         raw.rename_channels(lambda x: x.upper())
         # fmt: off
         renames = {
-            "AFZ": "AFz", "PZ": "Pz", "FPZ": "Fpz", "FCZ": "FCz", "FP1": "Fp1",
-            "CZ": "Cz", "OZ": "Oz", "POZ": "POz", "IZ": "Iz", "CPZ": "CPz",
-            "FP2": "Fp2", "FZ": "Fz",
+            "AFZ": "AFz", "PZ": "Pz", "FPZ": "Fpz", "FCZ": "FCz", "FP1": "Fp1", "CZ": "Cz",
+            "OZ": "Oz", "POZ": "POz", "IZ": "Iz", "CPZ": "CPz", "FP2": "Fp2", "FZ": "Fz",
         }
         # fmt: on
         raw.rename_channels(renames)
