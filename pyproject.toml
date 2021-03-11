@@ -1,3 +1,24 @@
+[tool.poetry]
+name = "moabb"
+version = "0.2.1"
+description = "Mother of All BCI Benchmarks"
+authors = ["Alexandre Barachant", "Vinay Jayaram"]
+maintainers = ["Sylvain Chevallier <sylvain.chevallier@uvsq.fr>"]
+readme = "README.md"
+repository = "https://github.com/NeuroTechX/moabb"
+documentation = "http://moabb.neurotechx.com/docs/index.html"
+keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
+license = "BSD-3-Clause"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.black]
 line-length = 90
 target-version = ["py36"]
