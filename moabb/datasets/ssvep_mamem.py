@@ -32,9 +32,9 @@ log = logging.getLogger()
 # MAMEM3_URL = 'https://ndownloader.figshare.com/articles/3413851/versions/1'
 
 # fmt: off
-MAMEM1_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset1/"  # noqa: E501
-MAMEM2_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset2/"  # noqa: E501
-MAMEM3_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset3/"  # noqa: E501
+MAMEM1_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset1/"
+MAMEM2_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset2/"
+MAMEM3_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset3/"
 # fmt: on
 
 
