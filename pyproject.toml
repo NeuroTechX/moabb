@@ -11,9 +11,23 @@ keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
 license = "BSD-3-Clause"
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.6.1"
+mne = ">=0.19"
+pandas = "^1.0.0"
+h5py = "^3.0.0"
+scikit-learn = "^0.23"  # 0.24.0 breaks pyriemann, requires https://github.com/alexandrebarachant/pyRiemann/pull/93
+pyriemann = ">=0.2.6"
+matplotlib = "^3.0.0"
+seaborn = ">=0.9.0"
+PyYAML = "^5.0.0"
+coloredlogs = "^15.0"
+pyunpack = "^0.2.2"  # used only once, could be replaced with standard library call
+wfdb = {version = "^3.3.0", optional = true}  # used only in ssvep_mammem.py, maybe needs replacement
 
 [tool.poetry.dev-dependencies]
+sphinx-gallery = "^0.8.2"
+sphinx-bootstrap-theme = "^0.7.1"
+numpydoc = "^1.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
