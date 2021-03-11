@@ -121,9 +121,9 @@ def _load_data_001_2014(
 
     # fmt: off
     ch_names = [
-        'Fz', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2',
-        'C4', 'C6', 'CP3', 'CP1', 'CPz', 'CP2', 'CP4', 'P1', 'Pz', 'P2', 'POz',
-        'EOG1', 'EOG2', 'EOG3'
+        "Fz", "FC3", "FC1", "FCz", "FC2", "FC4", "C5", "C3", "C1", "Cz", "C2",
+        "C4", "C6", "CP3", "CP1", "CPz", "CP2", "CP4", "P1", "Pz", "P2", "POz",
+        "EOG1", "EOG2", "EOG3",
     ]
     # fmt: on
     ch_types = ['eeg'] * 22 + ['eog'] * 3
@@ -178,7 +178,7 @@ def _load_data_004_2014(
         raise ValueError("Subject must be between 1 and 9. Got %d." % subject)
 
     # fmt: off
-    ch_names = ['C3', 'Cz', 'C4', 'EOG1', 'EOG2', 'EOG3']
+    ch_names = ["C3", "Cz", "C4", "EOG1", "EOG2", "EOG3", ]
     # fmt: on
     ch_types = ['eeg'] * 3 + ['eog'] * 3
 
@@ -267,25 +267,16 @@ def _load_data_001_2015(
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
 
     if subject in [8, 9, 10, 11]:
-        ses = ['A', 'B', 'C']  # 3 sessions for those subjects
+        ses = ["A", "B", "C"]  # 3 sessions for those subjects
     else:
-        ses = ['A', 'B']
+        ses = ["A", "B"]
 
+    # fmt: off
     ch_names = [
-        'FC3',
-        'FCz',
-        'FC4',
-        'C5',
-        'C3',
-        'C1',
-        'Cz',
-        'C2',
-        'C4',
-        'C6',
-        'CP3',
-        'CPz',
-        'CP4',
+        "FC3", "FCz", "FC4", "C5", "C3", "C1", "Cz",
+        "C2", "C4", "C6", "CP3","CPz", "CP4",
     ]
+    # fmt: on
     ch_types = ['eeg'] * 13
 
     sessions = {}
@@ -321,7 +312,7 @@ def _load_data_003_2015(
 
     # fmt: off
     ch_names = [
-        'Fz', 'Cz', 'P3', 'Pz', 'P4', 'PO7', 'Oz', 'PO8', 'Target', 'Flash'
+        "Fz", "Cz", "P3", "Pz", "P4", "PO7", "Oz", "PO8", "Target", "Flash",
     ]
     # fmt: on
 
@@ -372,16 +363,16 @@ def _load_data_004_2015(
     if (subject < 1) or (subject > 9):
         raise ValueError("Subject must be between 1 and 9. Got %d." % subject)
 
-    subjects = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'L']
+    subjects = ["A", "C", "D", "E", "F", "G", "H", "J", "L"]
 
     url = '{u}004-2015/{s}.mat'.format(u=base_url, s=subjects[subject - 1])
     filename = data_path(url, path, force_update, update_path)[0]
 
     # fmt: off
     ch_names = [
-        'AFz', 'F7', 'F3', 'Fz', 'F4', 'F8', 'FC3', 'FCz', 'FC4', 'T3', 'C3',
-        'Cz', 'C4', 'T4', 'CP3', 'CPz', 'CP4', 'P7', 'P5', 'P3', 'P1', 'Pz',
-        'P2', 'P4', 'P6', 'P8', 'PO3', 'PO4', 'O1', 'O2'
+        "AFz", "F7", "F3", "Fz", "F4", "F8", "FC3", "FCz", "FC4", "T3", "C3",
+        "Cz", "C4", "T4", "CP3", "CPz", "CP4", "P7", "P5", "P3", "P1", "Pz",
+        "P2", "P4", "P6", "P8", "PO3", "PO4", "O1", "O2",
     ]
     # fmt: on
     ch_types = ['eeg'] * 30
@@ -405,9 +396,9 @@ def _load_data_009_2015(
 
     # fmt: off
     subjects = [
-        'fce', 'kw', 'faz', 'fcj', 'fcg', 'far', 'faw', 'fax', 'fcc', 'fcm',
-        'fas', 'fch', 'fcd', 'fca', 'fcb', 'fau', 'fci', 'fav', 'fat', 'fcl',
-        'fck'
+        "fce", "kw", "faz", "fcj", "fcg", "far", "faw", "fax", "fcc", "fcm",
+        "fas", "fch", "fcd", "fca", "fcb", "fau", "fci", "fav", "fat", "fcl",
+        "fck",
     ]
     # fmt: on
     s = subjects[subject - 1]
@@ -434,8 +425,8 @@ def _load_data_010_2015(
 
     # fmt: off
     subjects = [
-        'fat', 'gcb', 'gcc', 'gcd', 'gce', 'gcf', 'gcg', 'gch', 'iay', 'icn',
-        'icr', 'pia'
+        "fat", "gcb", "gcc", "gcd", "gce", "gcf",
+        "gcg", "gch", "iay", "icn", "icr", "pia",
     ]
     # fmt: on
 
@@ -463,7 +454,7 @@ def _load_data_012_2015(
 
     # fmt: off
     subjects = [
-        'nv', 'nw', 'nx', 'ny', 'nz', 'mg', 'oa', 'ob', 'oc', 'od', 'ja', 'oe'
+        "nv", "nw", "nx", "ny", "nz", "mg", "oa", "ob", "oc", "od", "ja", "oe"
     ]
     # fmt: on
 
