@@ -1,7 +1,7 @@
-'''
+"""
 Simple and compound motor imagery
 https://doi.org/10.1371/journal.pone.0114853
-'''
+"""
 
 import logging
 import os
@@ -20,25 +20,25 @@ from .base import BaseDataset
 log = logging.getLogger()
 
 FILES = []
-FILES.append('https://dataverse.harvard.edu/api/access/datafile/2499178')
-FILES.append('https://dataverse.harvard.edu/api/access/datafile/2499182')
-FILES.append('https://dataverse.harvard.edu/api/access/datafile/2499179')
+FILES.append("https://dataverse.harvard.edu/api/access/datafile/2499178")
+FILES.append("https://dataverse.harvard.edu/api/access/datafile/2499182")
+FILES.append("https://dataverse.harvard.edu/api/access/datafile/2499179")
 
 
 def eeg_data_path(base_path, subject):
-    file1_subj = ['cl', 'cyy', 'kyf', 'lnn']
-    file2_subj = ['ls', 'ry', 'wcf']
-    file3_subj = ['wx', 'yyx', 'zd']
+    file1_subj = ["cl", "cyy", "kyf", "lnn"]
+    file2_subj = ["ls", "ry", "wcf"]
+    file3_subj = ["wx", "yyx", "zd"]
 
     def get_subjects(sub_inds, sub_names, ind):
-        dataname = 'data{}'.format(ind)
-        if not os.path.isfile(os.path.join(base_path, dataname + '.zip')):
+        dataname = "data{}".format(ind)
+        if not os.path.isfile(os.path.join(base_path, dataname + ".zip")):
             _fetch_file(
                 FILES[ind],
-                os.path.join(base_path, dataname + '.zip'),
+                os.path.join(base_path, dataname + ".zip"),
                 print_destination=False,
             )
-        with z.ZipFile(os.path.join(base_path, dataname + '.zip'), 'r') as f:
+        with z.ZipFile(os.path.join(base_path, dataname + ".zip"), "r") as f:
             os.makedirs(os.path.join(base_path, dataname), exist_ok=True)
             f.extractall(os.path.join(base_path, dataname))
             for fname in os.listdir(os.path.join(base_path, dataname)):
@@ -46,19 +46,19 @@ def eeg_data_path(base_path, subject):
                     if fname.startswith(prefix):
                         os.rename(
                             os.path.join(base_path, dataname, fname),
-                            os.path.join(base_path, 'subject_{}.mat'.format(ind)),
+                            os.path.join(base_path, "subject_{}.mat".format(ind)),
                         )
-        os.remove(os.path.join(base_path, dataname + '.zip'))
+        os.remove(os.path.join(base_path, dataname + ".zip"))
         shutil.rmtree(os.path.join(base_path, dataname))
 
-    if not os.path.isfile(os.path.join(base_path, 'subject_{}.mat'.format(subject))):
+    if not os.path.isfile(os.path.join(base_path, "subject_{}.mat".format(subject))):
         if subject in range(1, 5):
             get_subjects(list(range(1, 5)), file1_subj, 0)
         elif subject in range(5, 8):
             get_subjects(list(range(5, 8)), file2_subj, 1)
         elif subject in range(8, 11):
             get_subjects(list(range(8, 11)), file3_subj, 2)
-    return os.path.join(base_path, 'subject_{}.mat'.format(subject))
+    return os.path.join(base_path, "subject_{}.mat".format(subject))
 
 
 class Weibo2014(BaseDataset):
@@ -111,11 +111,11 @@ class Weibo2014(BaseDataset):
                 right_hand_left_foot=6,
                 rest=7,
             ),
-            code='Weibo 2014',
+            code="Weibo 2014",
             # Full trial w/ rest is 0-8
             interval=[3, 7],
-            paradigm='imagery',
-            doi='10.1371/journal.pone.0114853',
+            paradigm="imagery",
+            doi="10.1371/journal.pone.0114853",
         )
 
     def _get_single_subject_data(self, subject):
@@ -128,7 +128,7 @@ class Weibo2014(BaseDataset):
             struct_as_record=False,
             verify_compressed_data_integrity=False,
         )
-        montage = mne.channels.make_standard_montage('standard_1005')
+        montage = mne.channels.make_standard_montage("standard_1005")
 
         # fmt: off
         ch_names = [
@@ -139,16 +139,16 @@ class Weibo2014(BaseDataset):
         ]
         # fmt: on
 
-        ch_types = ['eeg'] * 62 + ['eog'] * 2
+        ch_types = ["eeg"] * 62 + ["eog"] * 2
         # FIXME not sure what are those CB1 / CB2
-        ch_types[57] = 'misc'
-        ch_types[61] = 'misc'
+        ch_types[57] = "misc"
+        ch_types[61] = "misc"
         info = mne.create_info(
-            ch_names=ch_names + ['STIM014'], ch_types=ch_types + ['stim'], sfreq=200
+            ch_names=ch_names + ["STIM014"], ch_types=ch_types + ["stim"], sfreq=200
         )
         # until we get the channel names montage is None
-        event_ids = data['label'].ravel()
-        raw_data = np.transpose(data['data'], axes=[2, 0, 1])
+        event_ids = data["label"].ravel()
+        raw_data = np.transpose(data["data"], axes=[2, 0, 1])
         # de-mean each trial
         raw_data = raw_data - np.mean(raw_data, axis=2, keepdims=True)
         raw_events = np.zeros((raw_data.shape[0], 1, raw_data.shape[2]))
@@ -164,14 +164,14 @@ class Weibo2014(BaseDataset):
             data=np.concatenate(list(data), axis=1), info=info, verbose=False
         )
         raw.set_montage(montage)
-        return {'session_0': {'run_0': raw}}
+        return {"session_0": {"run_0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
-        key = 'MNE_DATASETS_WEIBO2014_PATH'
+        key = "MNE_DATASETS_WEIBO2014_PATH"
         path = _get_path(path, key, "Weibo 2014")
         _do_path_update(path, True, key, "Weibo 2014")
         basepath = os.path.join(path, "MNE-weibo-2014")

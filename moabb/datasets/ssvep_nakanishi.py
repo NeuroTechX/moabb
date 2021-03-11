@@ -16,7 +16,7 @@ from .base import BaseDataset
 
 log = logging.getLogger()
 
-NAKAHISHI_URL = 'https://github.com/mnakanishi/12JFPM_SSVEP/raw/master/data/'
+NAKAHISHI_URL = "https://github.com/mnakanishi/12JFPM_SSVEP/raw/master/data/"
 
 
 class Nakanishi2015(BaseDataset):
@@ -41,23 +41,23 @@ class Nakanishi2015(BaseDataset):
             subjects=list(range(1, 10)),
             sessions_per_subject=1,
             events={
-                '9.25': 1,
-                '11.25': 2,
-                '13.25': 3,
-                '9.75': 4,
-                '11.75': 5,
-                '13.75': 6,
-                '10.25': 7,
-                '12.25': 8,
-                '14.25': 9,
-                '10.75': 10,
-                '12.75': 11,
-                '14.75': 12,
+                "9.25": 1,
+                "11.25": 2,
+                "13.25": 3,
+                "9.75": 4,
+                "11.75": 5,
+                "13.75": 6,
+                "10.25": 7,
+                "12.25": 8,
+                "14.25": 9,
+                "10.75": 10,
+                "12.75": 11,
+                "14.75": 12,
             },
-            code='SSVEP Nakanishi',
+            code="SSVEP Nakanishi",
             interval=[0.15, 4.3],
-            paradigm='ssvep',
-            doi='doi.org/10.1371/journal.pone.0140703',
+            paradigm="ssvep",
+            doi="doi.org/10.1371/journal.pone.0140703",
         )
 
     def _get_single_subject_data(self, subject):
@@ -67,7 +67,7 @@ class Nakanishi2015(BaseDataset):
 
         fname = self.data_path(subject)
         mat = loadmat(fname, squeeze_me=True)
-        data = np.transpose(mat['eeg'], axes=(0, 3, 1, 2))
+        data = np.transpose(mat["eeg"], axes=(0, 3, 1, 2))
         data = np.reshape(data, newshape=(-1, n_channels, n_samples))
         data = data - data.mean(axis=2, keepdims=True)
         raw_events = np.zeros((data.shape[0], 1, n_samples))
@@ -82,19 +82,19 @@ class Nakanishi2015(BaseDataset):
         )
         buff = (data.shape[0], n_channels + 1, 50)
         data = np.concatenate([np.zeros(buff), data, np.zeros(buff)], axis=2)
-        ch_names = ['PO7', 'PO3', 'POz', 'PO4', 'PO8', 'O1', 'Oz', 'O2', 'stim']
-        ch_types = ['eeg'] * 8 + ['stim']
+        ch_names = ["PO7", "PO3", "POz", "PO4", "PO8", "O1", "Oz", "O2", "stim"]
+        ch_types = ["eeg"] * 8 + ["stim"]
         sfreq = 256
         info = create_info(ch_names, sfreq, ch_types)
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
-        montage = make_standard_montage('standard_1005')
+        montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
-        return {'session_0': {'run_0': raw}}
+        return {"session_0": {"run_0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
-        url = '{:s}s{:d}.mat'.format(NAKAHISHI_URL, subject)
-        return dl.data_path(url, 'NAKANISHI', path, force_update, update_path, verbose)
+        url = "{:s}s{:d}.mat".format(NAKAHISHI_URL, subject)
+        return dl.data_path(url, "NAKANISHI", path, force_update, update_path, verbose)

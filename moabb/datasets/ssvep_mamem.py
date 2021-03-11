@@ -46,7 +46,7 @@ class BaseMAMEM(BaseDataset):
             subjects=list(range(1, 11)),
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             interval=[1, 4],
-            paradigm='ssvep',
+            paradigm="ssvep",
             sessions_per_subject=sessions_per_subject,
             code=code,
             doi=doi,
@@ -71,7 +71,7 @@ class BaseMAMEM(BaseDataset):
 
             record = wfdb.rdrecord(fpath)
             data = record.p_signal.T
-            annots = wfdb.rdann(fpath, 'win')
+            annots = wfdb.rdann(fpath, "win")
             # the number of samples isn't exactly equal in all the trials
             n_samples = record.sig_len
             stim_freq = np.array([float(e) for e in self.event_id.keys()])
@@ -89,15 +89,15 @@ class BaseMAMEM(BaseDataset):
             if self.code == "SSVEP MAMEM3":
                 ch_names = record.sig_name
                 sfreq = 128
-                montage = make_standard_montage('standard_1020')
+                montage = make_standard_montage("standard_1020")
             else:
                 ch_names = ["E{}".format(i + 1) for i in range(0, 256)]
                 # ch_names = ["{}-{}".format(s, i) if s == "EEG" else s
                 #             for i, s in enumerate(record.sig_name)]
                 sfreq = 250
-                montage = make_standard_montage('GSN-HydroCel-256')
-            ch_types = ['eeg'] * len(ch_names) + ['stim']
-            ch_names.append('stim')
+                montage = make_standard_montage("GSN-HydroCel-256")
+            ch_types = ["eeg"] * len(ch_names) + ["stim"]
+            ch_names.append("stim")
 
             info = create_info(ch_names, sfreq, ch_types)
             raw = RawArray(data, info, verbose=False)
@@ -155,7 +155,7 @@ class BaseMAMEM(BaseDataset):
         for name in s_paths:
             # The adaptation session has the letter x at the end in MAMEM2
             # It should be removed from the returned file names
-            if (os.path.splitext(name)[0][-1]) != 'x':
+            if (os.path.splitext(name)[0][-1]) != "x":
                 subject_paths.append(os.path.splitext(name)[0])
         return subject_paths
 

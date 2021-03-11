@@ -46,8 +46,8 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
 
     """  # noqa: E501
     sign = sign.upper()
-    key = 'MNE_DATASETS_{:s}_PATH'.format(sign)
-    key_dest = 'MNE-{:s}-data'.format(sign.lower())
+    key = "MNE_DATASETS_{:s}_PATH".format(sign)
+    key_dest = "MNE-{:s}-data".format(sign.lower())
     if get_config(key) is None:
         set_config(key, osp.join(osp.expanduser("~"), "mne_data"))
     path = _get_path(path, key, sign)

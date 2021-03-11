@@ -5,7 +5,7 @@ import mne
 from moabb.datasets.fake import FakeDataset
 
 
-_ = mne.set_log_level('CRITICAL')
+_ = mne.set_log_level("CRITICAL")
 
 
 def _run_tests_on_dataset(d):
@@ -16,7 +16,7 @@ def _run_tests_on_dataset(d):
         assert isinstance(data, dict)
 
         # We should get a raw array at the end
-        rawdata = data[s]['session_0']['run_0']
+        rawdata = data[s]["session_0"]["run_0"]
         assert issubclass(type(rawdata), mne.io.BaseRaw), type(rawdata)
 
         # print events
@@ -31,7 +31,7 @@ class Test_Datasets(unittest.TestCase):
         n_sessions = 2
         n_runs = 2
 
-        for paradigm in ['imagery', 'p300']:
+        for paradigm in ["imagery", "p300"]:
 
             ds = FakeDataset(
                 n_sessions=n_sessions,
@@ -51,10 +51,10 @@ class Test_Datasets(unittest.TestCase):
             self.assertEqual(len(data[1]), n_sessions)
 
             # right number of run
-            self.assertEqual(len(data[1]['session_0']), n_runs)
+            self.assertEqual(len(data[1]["session_0"]), n_runs)
 
             # We should get a raw array at the end
-            self.assertEqual(type(data[1]['session_0']['run_0']), mne.io.RawArray)
+            self.assertEqual(type(data[1]["session_0"]["run_0"]), mne.io.RawArray)
 
             # bad subject id must raise error
             self.assertRaises(ValueError, ds.get_data, [1000])

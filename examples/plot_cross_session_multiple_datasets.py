@@ -28,9 +28,9 @@ from moabb.paradigms import SSVEP
 from moabb.pipelines import SSVEP_CCA
 
 
-warnings.simplefilter(action='ignore', category=FutureWarning)
-warnings.simplefilter(action='ignore', category=RuntimeWarning)
-moabb.set_log_level('info')
+warnings.simplefilter(action="ignore", category=FutureWarning)
+warnings.simplefilter(action="ignore", category=RuntimeWarning)
+moabb.set_log_level("info")
 
 ###############################################################################
 # Loading dataset
@@ -97,7 +97,7 @@ for d in datasets:
 overwrite = True  # set to True if we want to overwrite cached results
 
 evaluation = CrossSessionEvaluation(
-    paradigm=paradigm, datasets=datasets, suffix='examples', overwrite=overwrite
+    paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite
 )
 results = evaluation.process(pipeline)
 
@@ -111,11 +111,11 @@ print(results.head())
 
 sns.catplot(
     data=results,
-    x='session',
-    y='score',
-    hue='subject',
-    col='dataset',
-    kind='bar',
-    palette='viridis',
+    x="session",
+    y="score",
+    hue="subject",
+    col="dataset",
+    kind="bar",
+    palette="viridis",
 )
 plt.show()

@@ -13,8 +13,8 @@ from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
 pipelines = OrderedDict()
-pipelines['C'] = make_pipeline(Covariances('oas'), CSP(8), LDA())
-dataset = FakeDataset(['left_hand', 'right_hand'], n_subjects=2)
+pipelines["C"] = make_pipeline(Covariances("oas"), CSP(8), LDA())
+dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=2)
 
 
 class Test_WithinSess(unittest.TestCase):
@@ -47,7 +47,7 @@ class Test_AdditionalColumns(unittest.TestCase):
         self.eval = ev.WithinSessionEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
-            additional_columns=['one', 'two'],
+            additional_columns=["one", "two"],
         )
 
     def tearDown(self):
@@ -68,11 +68,11 @@ class Test_CrossSubj(Test_WithinSess):
 
     def test_compatible_dataset(self):
         # raise
-        ds = FakeDataset(['left_hand', 'right_hand'], n_subjects=1)
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=1)
         self.assertFalse(self.eval.is_valid(dataset=ds))
 
         # do not raise
-        ds = FakeDataset(['left_hand', 'right_hand'], n_subjects=2)
+        ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2)
         self.assertTrue(self.eval.is_valid(dataset=ds))
 
 
@@ -83,11 +83,11 @@ class Test_CrossSess(Test_WithinSess):
         )
 
     def test_compatible_dataset(self):
-        ds = FakeDataset(['left_hand', 'right_hand'], n_sessions=1)
+        ds = FakeDataset(["left_hand", "right_hand"], n_sessions=1)
         self.assertFalse(self.eval.is_valid(ds))
 
         # do not raise
-        ds = FakeDataset(['left_hand', 'right_hand'], n_sessions=2)
+        ds = FakeDataset(["left_hand", "right_hand"], n_sessions=2)
         self.assertTrue(self.eval.is_valid(dataset=ds))
 
 

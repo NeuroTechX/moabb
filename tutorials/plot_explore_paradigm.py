@@ -91,7 +91,7 @@ print(metadata.head())
 # For this data, we have one subjecy, 2 sessions (2 different recording day)
 # and 6 run per session.
 
-print(metadata.describe(include='all'))
+print(metadata.describe(include="all"))
 
 ###############################################################################
 # Paradigm object can also return the list of all dataset compatible. here

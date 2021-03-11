@@ -83,7 +83,7 @@ class BaseP300(BaseParadigm):
 
     def is_valid(self, dataset):
         ret = True
-        if not (dataset.paradigm == 'p300'):
+        if not (dataset.paradigm == "p300"):
             ret = False
 
         # check if dataset has required events
@@ -116,10 +116,10 @@ class BaseP300(BaseParadigm):
 
         # pick events, based on event_id
         try:
-            if type(event_id['Target']) is list and type(event_id['NonTarget']) == list:
+            if type(event_id["Target"]) is list and type(event_id["NonTarget"]) == list:
                 event_id_new = dict(Target=1, NonTarget=0)
-                events = mne.merge_events(events, event_id['Target'], 1)
-                events = mne.merge_events(events, event_id['NonTarget'], 0)
+                events = mne.merge_events(events, event_id["Target"], 1)
+                events = mne.merge_events(events, event_id["NonTarget"], 0)
                 event_id = event_id_new
             events = mne.pick_events(events, include=list(event_id.values()))
         except RuntimeError:
@@ -138,7 +138,7 @@ class BaseP300(BaseParadigm):
             fmin, fmax = bandpass
             # filter data
             raw_f = raw.copy().filter(
-                fmin, fmax, method='iir', picks=picks, verbose=False
+                fmin, fmax, method="iir", picks=picks, verbose=False
             )
             # epoch data
             baseline = self.baseline
@@ -163,7 +163,7 @@ class BaseP300(BaseParadigm):
                 preload=True,
                 verbose=False,
                 picks=picks,
-                on_missing='ignore',
+                on_missing="ignore",
             )
             if bmin < tmin or bmax > tmax:
                 epochs.crop(tmin=tmin, tmax=tmax)
@@ -194,12 +194,12 @@ class BaseP300(BaseParadigm):
         else:
             interval = self.tmax - self.tmin
         return utils.dataset_search(
-            paradigm='p300', events=self.events, interval=interval, has_all_events=True
+            paradigm="p300", events=self.events, interval=interval, has_all_events=True
         )
 
     @property
     def scoring(self):
-        return 'roc_auc'
+        return "roc_auc"
 
 
 class SinglePass(BaseP300):
@@ -248,7 +248,7 @@ class SinglePass(BaseP300):
     """
 
     def __init__(self, fmin=1, fmax=24, **kwargs):
-        if 'filters' in kwargs.keys():
+        if "filters" in kwargs.keys():
             raise (ValueError("P300 does not take argument filters"))
         super().__init__(filters=[[fmin, fmax]], **kwargs)
 
@@ -261,16 +261,16 @@ class P300(SinglePass):
     """
 
     def __init__(self, **kwargs):
-        if 'events' in kwargs.keys():
-            raise (ValueError('P300 dont accept events'))
-        super().__init__(events=['Target', 'NonTarget'], **kwargs)
+        if "events" in kwargs.keys():
+            raise (ValueError("P300 dont accept events"))
+        super().__init__(events=["Target", "NonTarget"], **kwargs)
 
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
 
     @property
     def scoring(self):
-        return 'roc_auc'
+        return "roc_auc"
 
 
 class FakeP300Paradigm(P300):
@@ -278,4 +278,4 @@ class FakeP300Paradigm(P300):
 
     @property
     def datasets(self):
-        return [FakeDataset(['Target', 'NonTarget'], paradigm='p300')]
+        return [FakeDataset(["Target", "NonTarget"], paradigm="p300")]

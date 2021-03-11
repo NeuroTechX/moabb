@@ -25,13 +25,13 @@ def create_pipeline_from_config(config):
 
     for component in config:
         # load the package
-        mod = __import__(component['from'], fromlist=[component['name']])
+        mod = __import__(component["from"], fromlist=[component["name"]])
         # create the instance
-        if 'parameters' in component.keys():
-            params = component['parameters']
+        if "parameters" in component.keys():
+            params = component["parameters"]
         else:
             params = {}
-        instance = getattr(mod, component['name'])(**params)
+        instance = getattr(mod, component["name"])(**params)
         components.append(instance)
 
     pipeline = make_pipeline(*components)
@@ -84,6 +84,6 @@ class FilterBank(BaseEstimator, TransformerMixin):
     def __repr__(self):
         estimator_name = type(self).__name__
         estimator_prms = self.estimator.get_params()
-        return '{}(estimator={}, flatten={})'.format(
+        return "{}(estimator={}, flatten={})".format(
             estimator_name, estimator_prms, self.flatten
         )

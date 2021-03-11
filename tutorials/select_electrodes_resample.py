@@ -43,7 +43,7 @@ datasets = [Zhou2016(), BNCI2014001()]
 # Also, use a specific resampling. In this example, all datasets are
 # set to 200 Hz.
 
-paradigm = LeftRightImagery(channels=['C3', 'C4', 'Cz'], resample=200.0)
+paradigm = LeftRightImagery(channels=["C3", "C4", "Cz"], resample=200.0)
 
 ##############################################################################
 # Evaluation
@@ -55,9 +55,9 @@ paradigm = LeftRightImagery(channels=['C3', 'C4', 'Cz'], resample=200.0)
 evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=datasets)
 csp_lda = make_pipeline(CSP(n_components=2), LDA())
 ts_lr = make_pipeline(
-    Covariances(estimator='oas'), TangentSpace(metric='riemann'), LR(C=1.0)
+    Covariances(estimator="oas"), TangentSpace(metric="riemann"), LR(C=1.0)
 )
-results = evaluation.process({'csp+lda': csp_lda, 'ts+lr': ts_lr})
+results = evaluation.process({"csp+lda": csp_lda, "ts+lr": ts_lr})
 print(results.head())
 
 ##############################################################################
@@ -71,7 +71,7 @@ print(results.head())
 
 electrodes, datasets = find_intersecting_channels(datasets)
 evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=datasets, overwrite=True)
-results = evaluation.process({'csp+lda': csp_lda, 'ts+lr': ts_lr})
+results = evaluation.process({"csp+lda": csp_lda, "ts+lr": ts_lr})
 print(results.head())
 
 ##############################################################################
@@ -81,5 +81,5 @@ print(results.head())
 # Compare the obtained results with the two pipelines, CSP+LDA and logistic
 # regression computed in the tangent space of the covariance matrices.
 
-fig = moabb_plt.paired_plot(results, 'csp+lda', 'ts+lr')
+fig = moabb_plt.paired_plot(results, "csp+lda", "ts+lr")
 plt.show()

@@ -33,7 +33,7 @@ def parser_init():
         "--pipelines",
         dest="pipelines",
         type=str,
-        default='./pipelines/',
+        default="./pipelines/",
         help="Folder containing the pipelines to evaluates.",
     )
     parser.add_argument(
@@ -41,7 +41,7 @@ def parser_init():
         "--results",
         dest="results",
         type=str,
-        default='./results/',
+        default="./results/",
         help="Folder to store the results.",
     )
     parser.add_argument(
@@ -69,7 +69,7 @@ def parser_init():
         "--output",
         dest="output",
         type=str,
-        default='./',
+        default="./",
         help="Folder to put analysis results",
     )
     parser.add_argument(
@@ -108,26 +108,26 @@ def parse_pipelines_from_directory(d):
     ), "Given pipeline path {} is not valid".format(d)
 
     # get list of config files
-    yaml_files = glob(os.path.join(d, '*.yml'))
+    yaml_files = glob(os.path.join(d, "*.yml"))
 
     pipeline_configs = []
     for yaml_file in yaml_files:
-        with open(yaml_file, 'r') as _file:
+        with open(yaml_file, "r") as _file:
             content = _file.read()
 
             # load config
             config_dict = yaml.load(content, Loader=yaml.FullLoader)
-            ppl = create_pipeline_from_config(config_dict['pipeline'])
+            ppl = create_pipeline_from_config(config_dict["pipeline"])
             pipeline_configs.append(
                 {
-                    'paradigms': config_dict['paradigms'],
-                    'pipeline': ppl,
-                    'name': config_dict['name'],
+                    "paradigms": config_dict["paradigms"],
+                    "pipeline": ppl,
+                    "name": config_dict["name"],
                 }
             )
 
     # we can do the same for python defined pipeline
-    python_files = glob(os.path.join(d, '*.py'))
+    python_files = glob(os.path.join(d, "*.py"))
 
     for python_file in python_files:
         spec = importlib.util.spec_from_file_location("custom", python_file)
@@ -143,13 +143,13 @@ def generate_paradigms(pipeline_configs, context=None):
     paradigms = OrderedDict()
     for config in pipeline_configs:
 
-        if 'paradigms' not in config.keys():
+        if "paradigms" not in config.keys():
             log.error("{} must have a 'paradigms' key.".format(config))
             continue
 
         # iterate over paradigms
 
-        for paradigm in config['paradigms']:
+        for paradigm in config["paradigms"]:
 
             # check if it is in the context parameters file
             if len(context) > 0:
@@ -161,24 +161,24 @@ def generate_paradigms(pipeline_configs, context=None):
                         )
                     )
 
-            if isinstance(config['pipeline'], BaseEstimator):
-                pipeline = deepcopy(config['pipeline'])
+            if isinstance(config["pipeline"], BaseEstimator):
+                pipeline = deepcopy(config["pipeline"])
             else:
-                log.error(config['pipeline'])
-                raise (ValueError('pipeline must be a sklearn estimator'))
+                log.error(config["pipeline"])
+                raise (ValueError("pipeline must be a sklearn estimator"))
 
             # append the pipeline in the paradigm list
             if paradigm not in paradigms.keys():
                 paradigms[paradigm] = {}
 
             # FIXME name are not unique
-            log.debug('Pipeline: \n\n {} \n'.format(get_string_rep(pipeline)))
-            paradigms[paradigm][config['name']] = pipeline
+            log.debug("Pipeline: \n\n {} \n".format(get_string_rep(pipeline)))
+            paradigms[paradigm][config["name"]] = pipeline
 
     return paradigms
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # set logs
     mne.set_log_level(False)
     # logging.basicConfig(level=logging.WARNING)
@@ -198,7 +198,7 @@ if __name__ == '__main__':
 
     context_params = {}
     if options.context is not None:
-        with open(options.context, 'r') as cfile:
+        with open(options.context, "r") as cfile:
             context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
     paradigms = generate_paradigms(pipeline_configs, context_params)
@@ -210,7 +210,7 @@ if __name__ == '__main__':
     all_results = []
     for paradigm in paradigms:
         # get the context
-        log.debug('{}: {}'.format(paradigm, context_params[paradigm]))
+        log.debug("{}: {}".format(paradigm, context_params[paradigm]))
         p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
         context = WithinSessionEvaluation(
             paradigm=p, random_state=42, n_jobs=options.threads, overwrite=options.force

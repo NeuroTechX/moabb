@@ -42,7 +42,7 @@ from moabb.pipelines.features import LogVariance
 # we will make a couple pipelines just for convenience
 
 
-moabb.set_log_level('info')
+moabb.set_log_level("info")
 
 ##############################################################################
 # Create pipelines
@@ -55,12 +55,12 @@ moabb.set_log_level('info')
 # is the name of the pipeline and the value is the Pipeline object
 
 pipelines = {}
-pipelines['AM + LDA'] = make_pipeline(LogVariance(), LDA())
-parameters = {'C': np.logspace(-2, 2, 10)}
-clf = GridSearchCV(SVC(kernel='linear'), parameters)
+pipelines["AM + LDA"] = make_pipeline(LogVariance(), LDA())
+parameters = {"C": np.logspace(-2, 2, 10)}
+clf = GridSearchCV(SVC(kernel="linear"), parameters)
 pipe = make_pipeline(LogVariance(), clf)
 
-pipelines['AM + SVM'] = pipe
+pipelines["AM + SVM"] = pipe
 
 ##############################################################################
 # Datasets
@@ -74,7 +74,7 @@ print(LeftRightImagery().datasets)
 
 ##########################################################################
 # Or you can run a search through the available datasets:
-print(utils.dataset_search(paradigm='imagery', min_subjects=6))
+print(utils.dataset_search(paradigm="imagery", min_subjects=6))
 
 ##########################################################################
 # Or you can simply make your own list (which we do here due to computational
@@ -105,7 +105,7 @@ paradigm = LeftRightImagery(fmin=fmin, fmax=fmax)
 # subjects. This also is the correct place to specify multiple threads.
 
 evaluation = CrossSessionEvaluation(
-    paradigm=paradigm, datasets=datasets, suffix='examples', overwrite=False
+    paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=False
 )
 results = evaluation.process(pipelines)
 

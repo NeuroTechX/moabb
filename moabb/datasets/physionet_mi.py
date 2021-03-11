@@ -13,7 +13,7 @@ from mne.io import read_raw_edf
 from .base import BaseDataset
 
 
-BASE_URL = 'http://archive.physionet.org/pn4/eegmmidb/'
+BASE_URL = "http://archive.physionet.org/pn4/eegmmidb/"
 
 
 class PhysionetMI(BaseDataset):
@@ -77,12 +77,12 @@ class PhysionetMI(BaseDataset):
             subjects=list(range(1, 110)),
             sessions_per_subject=1,
             events=dict(left_hand=2, right_hand=3, feet=5, hands=4, rest=1),
-            code='Physionet Motor Imagery',
+            code="Physionet Motor Imagery",
             # website does not specify how long the trials are, but the
             # interval between 2 trial is 4 second.
             interval=[0, 3],
-            paradigm='imagery',
-            doi='10.1109/TBME.2004.827072',
+            paradigm="imagery",
+            doi="10.1109/TBME.2004.827072",
         )
 
         self.feet_runs = []
@@ -97,15 +97,15 @@ class PhysionetMI(BaseDataset):
             self.hand_runs += [3, 7, 11]
 
     def _load_one_run(self, subject, run, preload=True):
-        if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
+        if get_config("MNE_DATASETS_EEGBCI_PATH") is None:
             set_config(
-                'MNE_DATASETS_EEGBCI_PATH', osp.join(osp.expanduser("~"), "mne_data")
+                "MNE_DATASETS_EEGBCI_PATH", osp.join(osp.expanduser("~"), "mne_data")
             )
         raw_fname = eegbci.load_data(
-            subject, runs=[run], verbose='ERROR', base_url=BASE_URL
+            subject, runs=[run], verbose="ERROR", base_url=BASE_URL
         )[0]
-        raw = read_raw_edf(raw_fname, preload=preload, verbose='ERROR')
-        raw.rename_channels(lambda x: x.strip('.'))
+        raw = read_raw_edf(raw_fname, preload=preload, verbose="ERROR")
+        raw.rename_channels(lambda x: x.strip("."))
         raw.rename_channels(lambda x: x.upper())
         # fmt: off
         renames = {
@@ -115,38 +115,38 @@ class PhysionetMI(BaseDataset):
         }
         # fmt: on
         raw.rename_channels(renames)
-        raw.set_montage(mne.channels.make_standard_montage('standard_1005'))
+        raw.set_montage(mne.channels.make_standard_montage("standard_1005"))
         return raw
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
         data = {}
-        if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
+        if get_config("MNE_DATASETS_EEGBCI_PATH") is None:
             set_config(
-                'MNE_DATASETS_EEGBCI_PATH', osp.join(osp.expanduser("~"), "mne_data")
+                "MNE_DATASETS_EEGBCI_PATH", osp.join(osp.expanduser("~"), "mne_data")
             )
 
         # hand runs
         for run in self.hand_runs:
             raw = self._load_one_run(subject, run)
-            stim = raw.annotations.description.astype(np.dtype('<U10'))
-            stim[stim == 'T0'] = 'rest'
-            stim[stim == 'T1'] = 'left_hand'
-            stim[stim == 'T2'] = 'right_hand'
+            stim = raw.annotations.description.astype(np.dtype("<U10"))
+            stim[stim == "T0"] = "rest"
+            stim[stim == "T1"] = "left_hand"
+            stim[stim == "T2"] = "right_hand"
             raw.annotations.description = stim
-            data['run_%d' % run] = raw
+            data["run_%d" % run] = raw
 
         # feet runs
         for run in self.feet_runs:
             raw = self._load_one_run(subject, run)
             # modify stim channels to match new event ids. for feets runs,
             # hand = 2 modified to 4, and feet = 3, modified to 5
-            stim = raw.annotations.description.astype(np.dtype('<U10'))
-            stim[stim == 'T0'] = 'rest'
-            stim[stim == 'T1'] = 'hands'
-            stim[stim == 'T2'] = 'feet'
+            stim = raw.annotations.description.astype(np.dtype("<U10"))
+            stim[stim == "T0"] = "rest"
+            stim[stim == "T1"] = "hands"
+            stim[stim == "T2"] = "feet"
             raw.annotations.description = stim
-            data['run_%d' % run] = raw
+            data["run_%d" % run] = raw
 
         return {"session_0": data}
 
@@ -156,9 +156,9 @@ class PhysionetMI(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
-        if get_config('MNE_DATASETS_EEGBCI_PATH') is None:
+        if get_config("MNE_DATASETS_EEGBCI_PATH") is None:
             set_config(
-                'MNE_DATASETS_EEGBCI_PATH', osp.join(osp.expanduser("~"), "mne_data")
+                "MNE_DATASETS_EEGBCI_PATH", osp.join(osp.expanduser("~"), "mne_data")
             )
         paths = eegbci.load_data(
             subject, runs=[1, 2] + self.hand_runs + self.feet_runs, verbose=verbose

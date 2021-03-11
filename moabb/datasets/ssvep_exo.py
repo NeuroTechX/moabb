@@ -8,7 +8,7 @@ from . import download as dl
 from .base import BaseDataset
 
 
-SSVEPEXO_URL = 'https://zenodo.org/record/2392979/files/'
+SSVEPEXO_URL = "https://zenodo.org/record/2392979/files/"
 
 
 class SSVEPExo(BaseDataset):
@@ -52,11 +52,11 @@ class SSVEPExo(BaseDataset):
         super().__init__(
             subjects=list(range(1, 13)),
             sessions_per_subject=1,
-            events={'13': 2, '17': 3, '21': 4, 'rest': 1},
-            code='SSVEP Exoskeleton',
+            events={"13": 2, "17": 3, "21": 4, "rest": 1},
+            code="SSVEP Exoskeleton",
             interval=[2, 4],
-            paradigm='ssvep',
-            doi='10.1016/j.neucom.2016.01.007',
+            paradigm="ssvep",
+            doi="10.1016/j.neucom.2016.01.007",
         )
 
     def _get_single_subject_data(self, subject):
@@ -65,8 +65,8 @@ class SSVEPExo(BaseDataset):
         out = {}
         paths = self.data_path(subject, update_path=True, verbose=False)
         for ii, path in enumerate(paths):
-            raw = Raw(path, preload=True, verbose='ERROR')
-            out['run_%d' % ii] = raw
+            raw = Raw(path, preload=True, verbose="ERROR")
+            out["run_%d" % ii] = raw
         return {"session_0": out}
 
     def data_path(
@@ -80,9 +80,9 @@ class SSVEPExo(BaseDataset):
 
         paths = []
         for run in range(runs[subject]):
-            url = '{:s}subject{:02d}_run{:d}_raw.fif'.format(
+            url = "{:s}subject{:02d}_run{:d}_raw.fif".format(
                 SSVEPEXO_URL, subject, run + 1
             )
-            p = dl.data_path(url, 'SSVEPEXO', path, force_update, update_path, verbose)
+            p = dl.data_path(url, "SSVEPEXO", path, force_update, update_path, verbose)
             paths.append(p)
         return paths

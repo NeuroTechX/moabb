@@ -1,6 +1,6 @@
-'''
+"""
 Tests to ensure that datasets download correctly
-'''
+"""
 # from moabb.datasets.gigadb import Cho2017
 # from moabb.datasets.alex_mi import AlexMI
 # from moabb.datasets.physionet_mi import PhysionetMI
@@ -115,5 +115,5 @@ class Test_Downloads(unittest.TestCase):
     #     self.run_dataset(bi2013a)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

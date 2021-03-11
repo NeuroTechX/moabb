@@ -7,7 +7,7 @@ from moabb.datasets.base import BaseDataset
 from . import download as dl
 
 
-UPPER_LIMB_URL = 'https://zenodo.org/record/834976/files/'
+UPPER_LIMB_URL = "https://zenodo.org/record/834976/files/"
 
 
 class Ofner2017(BaseDataset):
@@ -74,10 +74,10 @@ class Ofner2017(BaseDataset):
             subjects=list(range(1, 16)),
             sessions_per_subject=n_sessions,
             events=event_id,
-            code='Ofner2017',
+            code="Ofner2017",
             interval=[0, 3],  # according to paper 2-5
-            paradigm='imagery',
-            doi='10.1371/journal.pone.0182578',
+            paradigm="imagery",
+            doi="10.1371/journal.pone.0182578",
         )
 
     def _get_single_subject_data(self, subject):
@@ -85,36 +85,36 @@ class Ofner2017(BaseDataset):
 
         sessions = []
         if self.imagined:
-            sessions.append('imagination')
+            sessions.append("imagination")
 
         if self.executed:
-            sessions.append('execution')
+            sessions.append("execution")
 
         out = {}
         for session in sessions:
             paths = self.data_path(subject, session=session)
 
-            eog = ['eog-l', 'eog-m', 'eog-r']
-            montage = make_standard_montage('standard_1005')
+            eog = ["eog-l", "eog-m", "eog-r"]
+            montage = make_standard_montage("standard_1005")
             data = {}
             for ii, path in enumerate(paths):
                 raw = read_raw_gdf(
-                    path, eog=eog, misc=range(64, 96), preload=True, verbose='ERROR'
+                    path, eog=eog, misc=range(64, 96), preload=True, verbose="ERROR"
                 )
                 raw.set_montage(montage)
                 # there is nan in the data
                 raw._data[np.isnan(raw._data)] = 0
                 # Modify the annotations to match the name of the command
-                stim = raw.annotations.description.astype(np.dtype('<21U'))
-                stim[stim == '1536'] = "right_elbow_flexion"
-                stim[stim == '1537'] = "right_elbow_extension"
-                stim[stim == '1538'] = "right_supination"
-                stim[stim == '1539'] = "right_pronation"
-                stim[stim == '1540'] = "right_hand_close"
-                stim[stim == '1541'] = "right_hand_open"
-                stim[stim == '1542'] = "rest"
+                stim = raw.annotations.description.astype(np.dtype("<21U"))
+                stim[stim == "1536"] = "right_elbow_flexion"
+                stim[stim == "1537"] = "right_elbow_extension"
+                stim[stim == "1538"] = "right_supination"
+                stim[stim == "1539"] = "right_pronation"
+                stim[stim == "1540"] = "right_hand_close"
+                stim[stim == "1541"] = "right_hand_open"
+                stim[stim == "1542"] = "rest"
                 raw.annotations.description = stim
-                data['run_%d' % ii] = raw
+                data["run_%d" % ii] = raw
 
             out[session] = data
         return out
@@ -136,10 +136,10 @@ class Ofner2017(BaseDataset):
         if session is None:
             sessions = []
             if self.imagined:
-                sessions.append('imagination')
+                sessions.append("imagination")
 
             if self.executed:
-                sessions.append('execution')
+                sessions.append("execution")
         else:
             sessions = [session]
 
@@ -150,7 +150,7 @@ class Ofner2017(BaseDataset):
                     f"{UPPER_LIMB_URL}motor{session}_subject{subject}" + f"_run{run}.gdf"
                 )
                 p = dl.data_path(
-                    url, 'UPPERLIMB', path, force_update, update_path, verbose
+                    url, "UPPERLIMB", path, force_update, update_path, verbose
                 )
                 paths.append(p)
 

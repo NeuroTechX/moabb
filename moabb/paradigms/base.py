@@ -139,7 +139,7 @@ class BaseParadigm(metaclass=ABCMeta):
             fmin, fmax = bandpass
             # filter data
             raw_f = raw.copy().filter(
-                fmin, fmax, method='iir', picks=picks, verbose=False
+                fmin, fmax, method="iir", picks=picks, verbose=False
             )
             # epoch data
             baseline = self.baseline
@@ -164,8 +164,8 @@ class BaseParadigm(metaclass=ABCMeta):
                 preload=True,
                 verbose=False,
                 picks=picks,
-                event_repeated='drop',
-                on_missing='ignore',
+                event_repeated="drop",
+                on_missing="ignore",
             )
             if bmin < tmin or bmax > tmax:
                 epochs.crop(tmin=tmin, tmax=tmax)
@@ -243,9 +243,9 @@ class BaseParadigm(metaclass=ABCMeta):
                         continue
 
                     x, lbs, met = proc
-                    met['subject'] = subject
-                    met['session'] = session
-                    met['run'] = run
+                    met["subject"] = subject
+                    met["session"] = session
+                    met["run"] = run
                     metadata.append(met)
 
                     # grow X and labels in a memory efficient way. can be slow

@@ -1,6 +1,6 @@
-'''
+"""
 Utils for easy database selection
-'''
+"""
 
 import inspect
 
@@ -59,7 +59,7 @@ def dataset_search(  # noqa: C901
         n_classes = len(events)
     else:
         n_classes = None
-    assert paradigm in ['imagery', 'p300', 'ssvep']
+    assert paradigm in ["imagery", "p300", "ssvep"]
 
     for type_d in dataset_list:
         d = type_d()
@@ -97,7 +97,7 @@ def dataset_search(  # noqa: C901
                 sess1 = s1[list(s1.keys())[0]]
                 raw = sess1[list(sess1.keys())[0]]
                 raw.pick_types(eeg=True)
-                if channels <= set(raw.info['ch_names']):
+                if channels <= set(raw.info["ch_names"]):
                     out_data.append(d)
             else:
                 out_data.append(d)
@@ -116,29 +116,29 @@ def find_intersecting_channels(datasets, verbose=False):
     dset_chans = []
     keep_datasets = []
     for d in datasets:
-        print('Searching dataset: {:s}'.format(type(d).__name__))
+        print("Searching dataset: {:s}".format(type(d).__name__))
         s1 = d.get_data([1])[1]
         sess1 = s1[list(s1.keys())[0]]
         raw = sess1[list(sess1.keys())[0]]
         raw.pick_types(eeg=True)
         processed = []
-        for ch in raw.info['ch_names']:
+        for ch in raw.info["ch_names"]:
             ch = ch.upper()
-            if ch.find('EEG') == -1:
+            if ch.find("EEG") == -1:
                 # TODO: less hacky way of finding poorly labeled datasets
                 processed.append(ch)
         allchans.update(processed)
         if len(processed) > 0:
             if verbose:
-                print('Found EEG channels: {}'.format(processed))
+                print("Found EEG channels: {}".format(processed))
             dset_chans.append(processed)
             keep_datasets.append(d)
         else:
             print(
-                'Dataset {:s} has no recognizable EEG channels'.format(type(d).__name__)
+                "Dataset {:s} has no recognizable EEG channels".format(type(d).__name__)
             )  # noqa
     allchans.intersection_update(*dset_chans)
-    allchans = [s.replace('Z', 'z') for s in allchans]
+    allchans = [s.replace("Z", "z") for s in allchans]
     return allchans, keep_datasets
 
 

@@ -20,7 +20,7 @@ log = logging.getLogger()
 
 # WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
 # WANG_URL = 'ftp://anonymous@sccn.ucsd.edu/pub/ssvep_benchmark_dataset/'
-WANG_URL = 'http://www.thubci.com/uploads/down/'
+WANG_URL = "http://www.thubci.com/uploads/down/"
 
 
 class Wang2016(BaseDataset):
@@ -96,10 +96,10 @@ class Wang2016(BaseDataset):
                     '11.8': 36, '12.8': 37, '13.8': 38, '14.8': 39,
                     '15.8': 40},
             # fmt: on
-            code='SSVEP Wang',
+            code="SSVEP Wang",
             interval=[0.5, 5.5],
-            paradigm='ssvep',
-            doi='doi://10.1109/TNSRE.2016.2627556',
+            paradigm="ssvep",
+            doi="doi://10.1109/TNSRE.2016.2627556",
         )
 
     def _get_single_subject_data(self, subject):
@@ -111,7 +111,7 @@ class Wang2016(BaseDataset):
         Archive(fname).extractall(dirname(fname))
         mat = loadmat(fname[:-4])
 
-        data = np.transpose(mat['data'], axes=(2, 3, 0, 1))
+        data = np.transpose(mat["data"], axes=(2, 3, 0, 1))
         data = np.reshape(data, newshape=(-1, n_channels, n_samples))
         data = data - data.mean(axis=2, keepdims=True)
         raw_events = np.zeros((data.shape[0], 1, n_samples))
@@ -137,18 +137,18 @@ class Wang2016(BaseDataset):
                     'PO3', 'POz', 'PO4', 'PO6', 'PO8', 'CB1', 'O1', 'Oz', 'O2',
                     'CB2', 'stim']
         # fmt: on
-        ch_types = ['eeg'] * 59 + ['misc'] + 3 * ['eeg'] + ['misc', 'stim']
+        ch_types = ["eeg"] * 59 + ["misc"] + 3 * ["eeg"] + ["misc", "stim"]
         sfreq = 250
         info = create_info(ch_names, sfreq, ch_types)
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
-        montage = make_standard_montage('standard_1005')
+        montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
-        return {'session_0': {'run_0': raw}}
+        return {"session_0": {"run_0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
-        url = '{:s}s{:d}.rar'.format(WANG_URL, subject)
-        return dl.data_path(url, 'WANG', path, force_update, update_path, verbose)
+        url = "{:s}s{:d}.rar".format(WANG_URL, subject)
+        return dl.data_path(url, "WANG", path, force_update, update_path, verbose)

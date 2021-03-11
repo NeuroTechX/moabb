@@ -40,8 +40,8 @@ class BaseEvaluation(ABC):
         random_state=None,
         n_jobs=1,
         overwrite=False,
-        error_score='raise',
-        suffix='',
+        error_score="raise",
+        suffix="",
         hdf5_path=None,
         additional_columns=None,
     ):
@@ -91,8 +91,8 @@ class BaseEvaluation(ABC):
             self.datasets = datasets
         else:
             raise Exception(
-                '''No datasets left after paradigm
-            and evaluation checks'''
+                """No datasets left after paradigm
+            and evaluation checks"""
             )
 
         self.results = Results(
@@ -131,7 +131,7 @@ class BaseEvaluation(ABC):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
 
         for dataset in self.datasets:
-            log.info('Processing dataset: {}'.format(dataset.code))
+            log.info("Processing dataset: {}".format(dataset.code))
             results = self.evaluate(dataset, pipelines)
             for res in results:
                 self.push_result(res, pipelines)
@@ -139,13 +139,13 @@ class BaseEvaluation(ABC):
         return self.results.to_dataframe(pipelines=pipelines)
 
     def push_result(self, res, pipelines):
-        message = '{} | '.format(res['pipeline'])
-        message += '{} | {} | {}'.format(
-            res['dataset'].code, res['subject'], res['session']
+        message = "{} | ".format(res["pipeline"])
+        message += "{} | {} | {}".format(
+            res["dataset"].code, res["subject"], res["session"]
         )
-        message += ': Score %.3f' % res['score']
+        message += ": Score %.3f" % res["score"]
         log.info(message)
-        self.results.add({res['pipeline']: res}, pipelines=pipelines)
+        self.results.add({res["pipeline"]: res}, pipelines=pipelines)
 
     def get_results(self):
         return self.results.to_dataframe()

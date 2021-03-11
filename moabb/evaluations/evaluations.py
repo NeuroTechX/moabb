@@ -43,14 +43,14 @@ class WithinSessionEvaluation(BaseEvaluation):
                     score = self.score(clf, X[ix], y[ix], self.paradigm.scoring)
                     duration = time() - t_start
                     res = {
-                        'time': duration / 5.0,  # 5 fold CV
-                        'dataset': dataset,
-                        'subject': subject,
-                        'session': session,
-                        'score': score,
-                        'n_samples': len(y[ix]),  # not training sample
-                        'n_channels': X.shape[1],
-                        'pipeline': name,
+                        "time": duration / 5.0,  # 5 fold CV
+                        "dataset": dataset,
+                        "subject": subject,
+                        "session": session,
+                        "score": score,
+                        "n_samples": len(y[ix]),  # not training sample
+                        "n_channels": X.shape[1],
+                        "pipeline": name,
                     }
 
                     yield res
@@ -86,7 +86,7 @@ class CrossSessionEvaluation(BaseEvaluation):
 
     def evaluate(self, dataset, pipelines):
         if not self.is_valid(dataset):
-            raise AssertionError('Dataset is not appropriate for evaluation')
+            raise AssertionError("Dataset is not appropriate for evaluation")
         for subject in dataset.subject_list:
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
@@ -121,14 +121,14 @@ class CrossSessionEvaluation(BaseEvaluation):
                     )[0]
                     duration = time() - t_start
                     res = {
-                        'time': duration,
-                        'dataset': dataset,
-                        'subject': subject,
-                        'session': groups[test][0],
-                        'score': score,
-                        'n_samples': len(train),
-                        'n_channels': X.shape[1],
-                        'pipeline': name,
+                        "time": duration,
+                        "dataset": dataset,
+                        "subject": subject,
+                        "session": groups[test][0],
+                        "score": score,
+                        "n_samples": len(train),
+                        "n_channels": X.shape[1],
+                        "pipeline": name,
                     }
                     yield res
 
@@ -146,7 +146,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
     def evaluate(self, dataset, pipelines):
         if not self.is_valid(dataset):
-            raise AssertionError('Dataset is not appropriate for evaluation')
+            raise AssertionError("Dataset is not appropriate for evaluation")
         # this is a bit akward, but we need to check if at least one pipe
         # have to be run before loading the data. If at least one pipeline
         # need to be run, we have to load all the data.
@@ -189,14 +189,14 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         score = _score(model, X[test[ix]], y[test[ix]], scorer)
 
                         res = {
-                            'time': duration,
-                            'dataset': dataset,
-                            'subject': subject,
-                            'session': session,
-                            'score': score,
-                            'n_samples': len(train),
-                            'n_channels': X.shape[1],
-                            'pipeline': name,
+                            "time": duration,
+                            "dataset": dataset,
+                            "subject": subject,
+                            "session": session,
+                            "score": score,
+                            "n_samples": len(train),
+                            "n_channels": X.shape[1],
+                            "pipeline": name,
                         }
 
                         yield res

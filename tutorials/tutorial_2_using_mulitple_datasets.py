@@ -27,9 +27,9 @@ from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
 
-moabb.set_log_level('info')
-mne.set_log_level('CRITICAL')
-warnings.filterwarnings('ignore')
+moabb.set_log_level("info")
+mne.set_log_level("CRITICAL")
+warnings.filterwarnings("ignore")
 
 
 ##############################################################################
@@ -70,12 +70,12 @@ results = pd.read_csv("./results/results_part2-2.csv")
 
 results["subj"] = [str(resi).zfill(2) for resi in results["subject"]]
 g = sns.catplot(
-    kind='bar',
+    kind="bar",
     x="score",
     y="subj",
     col="dataset",
     data=results,
-    orient='h',
-    palette='viridis',
+    orient="h",
+    palette="viridis",
 )
 plt.show()

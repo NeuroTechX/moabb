@@ -38,7 +38,7 @@ from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
 
-moabb.set_log_level('info')
+moabb.set_log_level("info")
 
 ##############################################################################
 # Create pipelines
@@ -54,10 +54,10 @@ moabb.set_log_level('info')
 
 pipelines = {}
 
-pipelines['CSP + LDA'] = make_pipeline(CSP(n_components=8), LDA())
+pipelines["CSP + LDA"] = make_pipeline(CSP(n_components=8), LDA())
 
-pipelines['RG + LR'] = make_pipeline(
-    Covariances(), TangentSpace(), LogisticRegression(solver='lbfgs')
+pipelines["RG + LR"] = make_pipeline(
+    Covariances(), TangentSpace(), LogisticRegression(solver="lbfgs")
 )
 
 ##############################################################################
@@ -79,7 +79,7 @@ dataset.subject_list = dataset.subject_list[:2]
 datasets = [dataset]
 overwrite = False  # set to True if we want to overwrite cached results
 evaluation = CrossSessionEvaluation(
-    paradigm=paradigm, datasets=datasets, suffix='examples', overwrite=overwrite
+    paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite
 )
 
 results = evaluation.process(pipelines)
@@ -100,27 +100,27 @@ fig, axes = plt.subplots(1, 2, figsize=[8, 4], sharey=True)
 
 sns.stripplot(
     data=results,
-    y='score',
-    x='pipeline',
+    y="score",
+    x="pipeline",
     ax=axes[0],
     jitter=True,
     alpha=0.5,
     zorder=1,
     palette="Set1",
 )
-sns.pointplot(data=results, y='score', x='pipeline', ax=axes[0], zorder=1, palette="Set1")
+sns.pointplot(data=results, y="score", x="pipeline", ax=axes[0], zorder=1, palette="Set1")
 
-axes[0].set_ylabel('ROC AUC')
+axes[0].set_ylabel("ROC AUC")
 axes[0].set_ylim(0.5, 1)
 
 # paired plot
 paired = results.pivot_table(
-    values='score', columns='pipeline', index=['subject', 'session']
+    values="score", columns="pipeline", index=["subject", "session"]
 )
 paired = paired.reset_index()
 
-sns.regplot(data=paired, y='RG + LR', x='CSP + LDA', ax=axes[1], fit_reg=False)
-axes[1].plot([0, 1], [0, 1], ls='--', c='k')
+sns.regplot(data=paired, y="RG + LR", x="CSP + LDA", ax=axes[1], fit_reg=False)
+axes[1].plot([0, 1], [0, 1], ls="--", c="k")
 axes[1].set_xlim(0.5, 1)
 
 plt.show()

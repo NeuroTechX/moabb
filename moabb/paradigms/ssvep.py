@@ -84,11 +84,11 @@ class BaseSSVEP(BaseParadigm):
                 + " from all possible events"
             )
         else:
-            assert n_classes <= len(self.events), 'More classes than events specified'
+            assert n_classes <= len(self.events), "More classes than events specified"
 
     def is_valid(self, dataset):
         ret = True
-        if not (dataset.paradigm == 'ssvep'):
+        if not (dataset.paradigm == "ssvep"):
             ret = False
 
         # check if dataset has required events
@@ -128,7 +128,7 @@ class BaseSSVEP(BaseParadigm):
             self.filters = [
                 [float(f) - 0.5, float(f) + 0.5]
                 for f in event_id.keys()
-                if f.replace('.', '', 1).isnumeric()
+                if f.replace(".", "", 1).isnumeric()
             ]
 
     @property
@@ -138,7 +138,7 @@ class BaseSSVEP(BaseParadigm):
         else:
             interval = self.tmax - self.tmin
         return utils.dataset_search(
-            paradigm='ssvep',
+            paradigm="ssvep",
             events=self.events,
             # total_classes=self.n_classes,
             interval=interval,
@@ -148,9 +148,9 @@ class BaseSSVEP(BaseParadigm):
     @property
     def scoring(self):
         if self.n_classes == 2:
-            return 'roc_auc'
+            return "roc_auc"
         else:
-            return 'accuracy'
+            return "accuracy"
 
 
 class SSVEP(BaseSSVEP):
@@ -202,7 +202,7 @@ class SSVEP(BaseSSVEP):
     """
 
     def __init__(self, fmin=7, fmax=45, **kwargs):
-        if 'filters' in kwargs.keys():
+        if "filters" in kwargs.keys():
             raise (ValueError("SSVEP does not take argument filters"))
         super().__init__(filters=[(fmin, fmax)], **kwargs)
 
@@ -263,4 +263,4 @@ class FakeSSVEPParadigm(BaseSSVEP):
 
     @property
     def datasets(self):
-        return [FakeDataset(event_list=['13', '15'], paradigm='ssvep')]
+        return [FakeDataset(event_list=["13", "15"], paradigm="ssvep")]
