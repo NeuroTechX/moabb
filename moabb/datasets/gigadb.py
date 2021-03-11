@@ -15,9 +15,7 @@ from .base import BaseDataset
 
 
 log = logging.getLogger()
-GIGA_URL = (
-    "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100295/mat_data/"  # noqa
-)
+GIGA_URL = "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100295/mat_data/"
 
 
 class Cho2017(BaseDataset):
