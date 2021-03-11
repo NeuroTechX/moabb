@@ -112,7 +112,7 @@ class PhysionetMI(BaseDataset):
             "AFZ": "AFz", "PZ": "Pz", "FPZ": "Fpz", "FCZ": "FCz", "FP1": "Fp1",
             "CZ": "Cz", "OZ": "Oz", "POZ": "POz", "IZ": "Iz", "CPZ": "CPz",
             "FP2": "Fp2", "FZ": "Fz",
-       }
+        }
         # fmt: on
         raw.rename_channels(renames)
         raw.set_montage(mne.channels.make_standard_montage('standard_1005'))
