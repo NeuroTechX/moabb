@@ -59,7 +59,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
     "sphinx_gallery.gen_gallery",
-    "m2r",
+    "m2r2",
 ]
 
 napoleon_google_docstring = False

@@ -29,6 +29,7 @@ sphinx-gallery = "^0.8.2"
 sphinx-bootstrap-theme = "^0.7.1"
 numpydoc = "^1.1.0"
 pre-commit = "^2.11.1"
+m2r2 = "^0.2.7"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
