@@ -1,7 +1,6 @@
 [tool.black]
 line-length = 90
 target-version = ["py36"]
-skip-string-normalization = true  # useful for migrating codebases, but not respected in 20.8b1, see: https://github.com/psf/black/issues/1880
 
 [tool.isort]
 src_paths = ["moabb"]
