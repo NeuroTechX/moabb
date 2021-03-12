@@ -7,6 +7,7 @@ from mne import create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 from mne.utils import verbose
+from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -206,7 +207,6 @@ def _load_data_008_2014(
 
     url = "{u}008-2014/A{s:02d}.mat".format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
-    from scipy.io import loadmat
 
     run = loadmat(filename, struct_as_record=False, squeeze_me=True)["data"]
     raw, event_id = _convert_run_p300_sl(run, verbose=verbose)
@@ -233,7 +233,6 @@ def _load_data_009_2014(
     # we load only grid speller data
     url = "{u}009-2014/A{s:02d}S.mat".format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
-    from scipy.io import loadmat
 
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)["data"]
     raws = []
@@ -301,8 +300,6 @@ def _load_data_003_2015(
 
     url = "{u}003-2015/s{s:d}.mat".format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
-
-    from scipy.io import loadmat
 
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
     data = data["s%d" % subject]
@@ -476,7 +473,6 @@ def _load_data_013_2015(
 
     raws = []
     event_id = {}
-    from scipy.io import loadmat
 
     for filename in data_paths:
         data = loadmat(filename, struct_as_record=False, squeeze_me=True)
@@ -492,8 +488,6 @@ def _convert_mi(filename, ch_names, ch_types):
     Processes (Graz) motor imagery data from MAT files, returns list of
     recording runs.
     """
-    from scipy.io import loadmat
-
     runs = []
     event_id = {}
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
@@ -589,7 +583,6 @@ def _convert_bbci(filename, ch_types, verbose=None):
     """Convert one file in bbci format."""
     raws = []
     event_id = {}
-    from scipy.io import loadmat
 
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
     for run in data["data"]:
