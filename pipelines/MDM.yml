@@ -14,4 +14,4 @@ pipeline:
   - name: MDM
     from: pyriemann.classification
     parameters:
-      metric: 'riemann'
+      metric: "riemann"
