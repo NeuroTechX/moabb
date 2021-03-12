@@ -140,7 +140,7 @@ python setup.py develop    # because no stable release yet
 
 ### Requirements we use
 
-mne numpy scipy scikit-learn matplotlib seaborn pandas pyriemann h5py
+see `pyproject.toml` file for full list of dependencies
 
 ## <a name="running"></a> Running:
 
