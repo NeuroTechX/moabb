@@ -81,21 +81,30 @@ class Wang2016(BaseDataset):
     doi: 10.1109/TNSRE.2016.2627556.
     """
 
+    # fmt: off
+    _events = {
+        "8": 1, "9": 2, "10": 3, "11": 4, "12": 5, "13": 6, "14": 7, "15": 8, "8.2": 9,
+        "9.2": 10, "10.2": 11, "11.2": 12, "12.2": 13, "13.2": 14, "14.2": 15, "15.2": 16,
+        "8.4": 17, "9.4": 18, "10.4": 19, "11.4": 20, "12.4": 21, "13.4": 22, "14.4": 23,
+        "15.4": 24, "8.6": 25, "9.6": 26, "10.6": 27, "11.6": 28, "12.6": 29, "13.6": 30,
+        "14.6": 31, "15.6": 32, "8.8": 33, "9.8": 34, "10.8": 35, "11.8": 36, "12.8": 37,
+        "13.8": 38, "14.8": 39, "15.8": 40,
+    }
+    _ch_names = [
+        "Fp1", "Fpz", "Fp2", "AF3", "AF4", "F7", "F5", "F3", "F1", "Fz", "F2", "F4", "F6",
+        "F8", "FT7", "FC5", "FC3", "FC1", "FCz", "FC2", "FC4", "FC6", "FT8", "T7", "C5",
+        "C3", "C1", "Cz", "C2", "C4", "C6", "T8", "M1", "TP7", "CP5", "CP3", "CP1", "CPz",
+        "CP2", "CP4", "CP6", "TP8", "M2", "P7", "P5", "P3", "P1", "Pz", "P2", "P4", "P6",
+        "P8", "PO7", "PO5", "PO3", "POz", "PO4", "PO6", "PO8", "CB1", "O1", "Oz", "O2",
+        "CB2", "stim",
+    ]
+    # fmt: on
+
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 35)),
             sessions_per_subject=1,
-            # fmt: off
-            events={'8': 1, '9': 2, '10': 3, '11': 4, '12': 5, '13': 6,
-                    '14': 7, '15': 8, '8.2': 9, '9.2': 10, '10.2': 11,
-                    '11.2': 12, '12.2': 13, '13.2': 14, '14.2': 15, '15.2': 16,
-                    '8.4': 17, '9.4': 18, '10.4': 19, '11.4': 20, '12.4': 21,
-                    '13.4': 22, '14.4': 23, '15.4': 24, '8.6': 25, '9.6': 26,
-                    '10.6': 27, '11.6': 28, '12.6': 29, '13.6': 30,
-                    '14.6': 31, '15.6': 32, '8.8': 33, '9.8': 34, '10.8': 35,
-                    '11.8': 36, '12.8': 37, '13.8': 38, '14.8': 39,
-                    '15.8': 40},
-            # fmt: on
+            events=self._events,
             code="SSVEP Wang",
             interval=[0.5, 5.5],
             paradigm="ssvep",
@@ -127,19 +136,9 @@ class Wang2016(BaseDataset):
         buff = (data.shape[0], n_channels + 1, 50)
         data = np.concatenate([np.zeros(buff), data, np.zeros(buff)], axis=2)
 
-        # fmt: off
-        ch_names = ['Fp1', 'Fpz', 'Fp2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1',
-                    'Fz', 'F2', 'F4', 'F6', 'F8', 'FT7', 'FC5', 'FC3', 'FC1',
-                    'FCz', 'FC2', 'FC4', 'FC6', 'FT8', 'T7', 'C5', 'C3', 'C1',
-                    'Cz', 'C2', 'C4', 'C6', 'T8', 'M1', 'TP7', 'CP5', 'CP3',
-                    'CP1', 'CPz', 'CP2', 'CP4', 'CP6', 'TP8', 'M2', 'P7', 'P5',
-                    'P3', 'P1', 'Pz', 'P2', 'P4', 'P6', 'P8', 'PO7', 'PO5',
-                    'PO3', 'POz', 'PO4', 'PO6', 'PO8', 'CB1', 'O1', 'Oz', 'O2',
-                    'CB2', 'stim']
-        # fmt: on
         ch_types = ["eeg"] * 59 + ["misc"] + 3 * ["eeg"] + ["misc", "stim"]
         sfreq = 250
-        info = create_info(ch_names, sfreq, ch_types)
+        info = create_info(self._ch_names, sfreq, ch_types)
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
         montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
