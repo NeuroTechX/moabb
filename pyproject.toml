@@ -24,6 +24,7 @@ coloredlogs = "^15.0"
 pyunpack = "^0.2.2"  # used only once, could be replaced with standard library call
 wfdb = "^3.3.0"
 numpy = "^1.19.0"
+scipy = "^1.5"
 
 [tool.poetry.dev-dependencies]
 sphinx-gallery = "^0.8.2"
