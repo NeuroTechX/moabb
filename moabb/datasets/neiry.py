@@ -89,7 +89,7 @@ class DemonsP300(BaseDataset):
 
     def __init__(self):
         super().__init__(
-            subjects=range(60),
+            subjects=list(range(60)),
             sessions_per_subject=17,
             events={'Target': 1, 'NonTarget': 2},
             code='Demons P300',
@@ -129,6 +129,7 @@ class DemonsP300(BaseDataset):
         return record
 
     def convert_num_to_ms(self, starts):
+        # ms to num, if i'm not mistaken
         '''Convertation for RawArray
         For example lets convert record=600 to a position in a channel.
         Frequency of the EEG is 500Hz, so there are 500 records per second.
@@ -142,18 +143,19 @@ class DemonsP300(BaseDataset):
         record = self.read_hdf(self.data_path(subject)[0])
 
         info = create_info(
-            self.ch_names + ['stim', 'target'],
+            self.ch_names + ['target'],
             self.sampling_rate,
-            ['eeg'] * len(self.ch_names) + ['stim', 'stim'],
+            ['eeg'] * len(self.ch_names) + ['stim'],
         )
         montage = make_standard_montage('standard_1020')
 
         data = {}
+        runs_raw = {}
         for i, act in enumerate(record):
             # target and stims are increased by 1
             # because the channel is filled with zeros by default
             target = act['target'] + 1
-            runs = {}
+            runs = []
             for j, run in enumerate(act['sessions']):
                 eeg_data = run[0]
                 starts = run[1]
@@ -170,13 +172,15 @@ class DemonsP300(BaseDataset):
                     target_channel[start] = 1 if stimul == target else 2
 
                 eeg_data = np.vstack(
-                    (eeg_data, stims_channel[None, :], target_channel[None, :])
+                    (eeg_data,  target_channel[None, :])
                 )
-                raw = RawArray(eeg_data, info)
-                raw.set_montage(montage)
-                runs[f'run_{j}'] = raw
+                runs.append(eeg_data)
+            eeg_data = np.hstack(runs)
+            raw = RawArray(eeg_data, info)
+            raw.set_montage(montage)
+            runs_raw[f'run_{i}'] = raw             
 
-            data[f'session_{i}'] = runs
+        data[f'session_1'] = runs_raw
 
         return data
 
@@ -191,6 +195,8 @@ class DemonsP300(BaseDataset):
             zip_path = Path(zip_path)
             self.path = zip_path.with_name(self.ds_folder_name).resolve()
 
+            zip_name = self.url.split('/')[-1].split('.')[0]
+            self.path = self.path / zip_name            
             if not self.path.exists():
                 with zipfile.ZipFile(zip_path) as zip_file:
                     zip_file.extractall(self.path)
