@@ -128,14 +128,12 @@ class DemonsP300(BaseDataset):
                     record[i][name] = value
         return record
 
-    def convert_num_to_ms(self, starts):
-        # ms to num, if i'm not mistaken
+    def convert_ms_to num(self, starts):
         '''Convertation for RawArray
-        For example lets convert record=600 to a position in a channel.
-        Frequency of the EEG is 500Hz, so there are 500 records per second.
-        Start records are in ms, so 600ms = 600/1000 = 0.6 sec
-        To get position of current record
-            multiply 0.6 sec with frequency, 0.6sec x 500Hz = 300
+        Args:
+            starts: event starts in ms
+        Returns:
+            array of event starts in time points (event position in raw stim channnel)
         '''
         return starts * self.sampling_rate / 1000
 
@@ -165,7 +163,7 @@ class DemonsP300(BaseDataset):
                 stims_channel = np.zeros(eeg_len)
                 target_channel = np.zeros(eeg_len)
 
-                starts = self.convert_num_to_ms(starts)
+                starts = self.convert_ms_to num(starts)
 
                 for start, stimul in zip(starts.astype(int), stims):
                     stims_channel[start] = stimul
