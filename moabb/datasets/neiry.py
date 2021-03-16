@@ -143,9 +143,9 @@ class DemonsP300(BaseDataset):
         record = self.read_hdf(self.data_path(subject)[0])
 
         info = create_info(
-            self.ch_names + ['target'],
+            self.ch_names + ['stim', 'target'],
             self.sampling_rate,
-            ['eeg'] * len(self.ch_names) + ['stim'],
+            ['eeg'] * len(self.ch_names) + ['misc', 'stim'],
         )
         montage = make_standard_montage('standard_1020')
 
@@ -172,9 +172,10 @@ class DemonsP300(BaseDataset):
                     target_channel[start] = 1 if stimul == target else 2
 
                 eeg_data = np.vstack(
-                    (eeg_data,  target_channel[None, :])
+                    (eeg_data, stims_channel[None, :],  target_channel[None, :])
                 )
                 runs.append(eeg_data)
+                
             eeg_data = np.hstack(runs)
             raw = RawArray(eeg_data, info)
             raw.set_montage(montage)
