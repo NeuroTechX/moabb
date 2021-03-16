@@ -20,6 +20,8 @@ class DemonsP300(BaseDataset):
     We publish dataset of visual P300 BCI performed in Virtual Reality (VR) game Raccoons versus
     Demons (RvD). Data contains reach labels incorporating information about stimulus chosen enabling us
     to estimate model’s confidence at each stimulus prediction stage.
+    `target` channel contains standard P300 target/non-target labels,
+    while `stim` channel contains multiclass labels (numbers of activated stimuli).
 
     **Participants**
 
