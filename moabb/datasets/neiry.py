@@ -128,7 +128,7 @@ class DemonsP300(BaseDataset):
                     record[i][name] = value
         return record
 
-    def convert_ms_to num(self, starts):
+    def convert_ms_to_num(self, starts):
         '''Convertation for RawArray
         Args:
             starts: event starts in ms
@@ -163,7 +163,7 @@ class DemonsP300(BaseDataset):
                 stims_channel = np.zeros(eeg_len)
                 target_channel = np.zeros(eeg_len)
 
-                starts = self.convert_ms_to num(starts)
+                starts = self.convert_ms_to_num(starts)
 
                 for start, stimul in zip(starts.astype(int), stims):
                     stims_channel[start] = stimul
