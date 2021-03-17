@@ -41,6 +41,10 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
 
 
+warnings.simplefilter(action="ignore", category=FutureWarning)
+warnings.simplefilter(action="ignore", category=RuntimeWarning)
+
+
 moabb.set_log_level("info")
 
 # This is an auxiliary transformer that allows one to vectorize data
@@ -78,14 +82,14 @@ labels_dict = {"Target": 1, "NonTarget": 0}
 
 pipelines["RG + LDA"] = make_pipeline(
     XdawnCovariances(
-        nfilter=2, classes=[labels_dict["Target"]], estimator="lwf", xdawn_estimator="lwf"
+        nfilter=2, classes=[labels_dict["Target"]], estimator="lwf", xdawn_estimator="scm"
     ),
     TangentSpace(),
     LDA(solver="lsqr", shrinkage="auto"),
 )
 
 pipelines["Xdw + LDA"] = make_pipeline(
-    Xdawn(nfilter=2, estimator="lwf"), Vectorizer(), LDA(solver="lsqr", shrinkage="auto")
+    Xdawn(nfilter=2, estimator="scm"), Vectorizer(), LDA(solver="lsqr", shrinkage="auto")
 )
 
 ##############################################################################

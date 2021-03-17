@@ -1,11 +1,13 @@
 import logging
 from copy import deepcopy
 from time import time
+from typing import Optional, Union
 
 import numpy as np
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
-from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold, cross_val_score
+from sklearn.model_selection import (LeaveOneGroupOut, StratifiedKFold,
+                                     StratifiedShuffleSplit, cross_val_score)
 from sklearn.model_selection._validation import _fit_and_score, _score
 from sklearn.preprocessing import LabelEncoder
 
@@ -14,15 +16,46 @@ from moabb.evaluations.base import BaseEvaluation
 
 log = logging.getLogger()
 
+# TODO Base class for WithinSession/IncreasingData
+# TODO implement per class sampling. Not yet clear -> how to sample test set?
+
 
 class WithinSessionEvaluation(BaseEvaluation):
-    """Within session evaluation
+    """Within Session evaluation."""
 
-    returns Score computed within each recording session
+    def __init__(
+        self,
+        n_perms: Union[int, np.ndarray] = 1,
+        data_size: Optional[dict] = None,
+        **kwargs,
+    ):
+        """
+        :param n_perms: Number of permutations to perform. If an array
+            is passed it has to be equal in size to the data_size array.
+        :param data_size: Contains the policy to pick the datasizes to
+            evaluate, as well as the actual values. The dict has the
+            key 'policy' with either 'ratio' or 'per_class', and the key
+            'value' with the actual values as an numpy array.
+        """
+        self.data_size = data_size
+        self.n_perms = n_perms
+        self.calculate_learning_curve = self.data_size is not None
+        if self.calculate_learning_curve:
+            if type(n_perms) is int:
+                self.n_perms = np.full_like(self.data_size["value"], n_perms, dtype=int)
+            if len(self.n_perms) != len(self.data_size["value"]):
+                raise ValueError(
+                    "Number of elements in n_perms must be equal "
+                    "to number of elements in data_size['value']"
+                )
+            self.test_size = 0.2  # Roughly similar to 5-fold CV
+            add_cols = ["data_size", "permutation"]
+            super().__init__(additional_columns=add_cols, **kwargs)
+        else:
+            # Perform default within session evaluation
+            super().__init__(**kwargs)
 
-    """
-
-    def evaluate(self, dataset, pipelines):
+    def _evaluate(self, dataset, pipelines):
         for subject in dataset.subject_list:
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
@@ -40,7 +73,20 @@ class WithinSessionEvaluation(BaseEvaluation):
                 for name, clf in run_pipes.items():
 
                     t_start = time()
-                    score = self.score(clf, X[ix], y[ix], self.paradigm.scoring)
+                    cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
+
+                    le = LabelEncoder()
+                    y = le.fit_transform(y)
+                    acc = cross_val_score(
+                        clf,
+                        X[ix],
+                        y[ix],
+                        cv=cv,
+                        scoring=self.paradigm.scoring,
+                        n_jobs=self.n_jobs,
+                        error_score=self.error_score,
+                    )
+                    score = acc.mean()
                     duration = time() - t_start
                     res = {
                         "time": duration / 5.0,  # 5 fold CV
@@ -55,21 +101,97 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     yield res
 
-    def score(self, clf, X, y, scoring):
-        cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
+    def _evaluate_learning_curve(self, dataset, pipelines):
+        for subject in dataset.subject_list:
+            # check if we already have result for this subject/pipeline
+            # we might need a better granularity, if we query the DB
+            run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
+            if len(run_pipes) == 0:
+                continue
 
-        le = LabelEncoder()
-        y = le.fit_transform(y)
-        acc = cross_val_score(
-            clf,
-            X,
-            y,
-            cv=cv,
-            scoring=scoring,
-            n_jobs=self.n_jobs,
-            error_score=self.error_score,
-        )
-        return acc.mean()
+            # get the data
+            X_all, y_all, metadata_all = self.paradigm.get_data(dataset, [subject])
+            le = LabelEncoder()
+            y_all = le.fit_transform(y_all)
+            # shuffle_data = True if self.n_perms > 1 else False
+            scorer = get_scorer(self.paradigm.scoring)
+            for session in np.unique(metadata_all.session):
+                sess_idx = metadata_all.session == session
+                X_sess = X_all[sess_idx]
+                y_sess = y_all[sess_idx]
+                # metadata_sess = metadata_all[sess_idx]
+                n_epochs = len(sess_idx)
+                sss = StratifiedShuffleSplit(
+                    n_splits=self.n_perms[0], test_size=self.test_size
+                )
+                for perm_i, (train_idx, test_idx) in enumerate(sss.split(X_sess, y_sess)):
+                    X_train_all = X_sess[train_idx]
+                    y_train_all = y_sess[train_idx]
+                    X_test = X_sess[test_idx]
+                    y_test = y_sess[test_idx]
+                    if self.data_size["policy"] == "ratio":
+                        data_size_steps = np.ceil(
+                            self.data_size["value"] * n_epochs
+                        ).astype(int)
+                    elif self.data_size["policy"] == "per_class":
+                        raise NotImplementedError
+                    else:
+                        raise ValueError(f"Unknown policy {self.data_size['policy']}")
+                    for di, data_size in enumerate(data_size_steps):
+                        if perm_i >= self.n_perms[di]:
+                            continue
+                        not_enough_data = False
+                        log.info(
+                            f"Permutation: {perm_i+1}," f" Training samples: {data_size}"
+                        )
+                        # FIXME, this check is too naive
+                        if len(X_all) < data_size:
+                            break
+
+                        X_train = X_train_all[:data_size, :]
+                        y_train = y_train_all[:data_size]
+                        # metadata = metadata_perm[:data_size]
+
+                        if len(np.unique(y_train)) < 2:
+                            log.warning(
+                                "For current data size, only one class" "would remain."
+                            )
+                            not_enough_data = True
+                        for name, clf in run_pipes.items():
+                            res = {
+                                "dataset": dataset,
+                                "subject": subject,
+                                "session": session,
+                                "n_samples": len(y_train),
+                                "n_channels": X_train.shape[1],
+                                "pipeline": name,
+                                # Additional columns
+                                "data_size": data_size,
+                                "permutation": perm_i + 1,
+                            }
+                            if not_enough_data:
+                                res["time"] = 0
+                                res["score"] = np.nan
+                            else:
+                                try:
+                                    t_start = time()
+                                    model = deepcopy(clf).fit(X_train, y_train)
+                                    score = _score(model, X_test, y_test, scorer)
+                                    duration = time() - t_start
+                                    res["time"] = duration
+                                    res["score"] = score
+                                except ValueError as e:
+                                    if self.error_score == "raise":
+                                        raise e
+                                    else:
+                                        res["score"] = self.error_score
+                            yield res
+
+    def evaluate(self, dataset, pipelines):
+        if self.calculate_learning_curve:
+            yield from self._evaluate_learning_curve(dataset, pipelines)
+        else:
+            yield from self._evaluate(dataset, pipelines)
 
     def is_valid(self, dataset):
         return True
