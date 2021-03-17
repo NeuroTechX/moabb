@@ -21,10 +21,11 @@ matplotlib = "^3.0.0"
 seaborn = ">=0.9.0"
 PyYAML = "^5.0.0"
 coloredlogs = "^15.0"
-pyunpack = "^0.2.2"  # used only once, could be replaced with standard library call
 wfdb = "^3.3.0"
 numpy = "^1.19.0"
 scipy = "^1.5"
+pyunpack = "^0.2.2"  # used only once, could be replaced with standard library call
+patool = "^1.12"  # required as pyunpack's backend
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^3.3"
