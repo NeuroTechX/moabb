@@ -177,9 +177,7 @@ def _load_data_004_2014(
     if (subject < 1) or (subject > 9):
         raise ValueError("Subject must be between 1 and 9. Got %d." % subject)
 
-    # fmt: off
-    ch_names = ["C3", "Cz", "C4", "EOG1", "EOG2", "EOG3", ]
-    # fmt: on
+    ch_names = ["C3", "Cz", "C4", "EOG1", "EOG2", "EOG3"]
     ch_types = ["eeg"] * 3 + ["eog"] * 3
 
     sessions = []
@@ -310,11 +308,7 @@ def _load_data_003_2015(
     data = data["s%d" % subject]
     sfreq = 256.0
 
-    # fmt: off
-    ch_names = [
-        "Fz", "Cz", "P3", "Pz", "P4", "PO7", "Oz", "PO8", "Target", "Flash",
-    ]
-    # fmt: on
+    ch_names = ["Fz", "Cz", "P3", "Pz", "P4", "PO7", "Oz", "PO8", "Target", "Flash"]
 
     ch_types = ["eeg"] * 8 + ["stim"] * 2
     montage = make_standard_montage("standard_1005")
@@ -396,9 +390,8 @@ def _load_data_009_2015(
 
     # fmt: off
     subjects = [
-        "fce", "kw", "faz", "fcj", "fcg", "far", "faw", "fax", "fcc", "fcm",
-        "fas", "fch", "fcd", "fca", "fcb", "fau", "fci", "fav", "fat", "fcl",
-        "fck",
+        "fce", "kw", "faz", "fcj", "fcg", "far", "faw", "fax", "fcc", "fcm", "fas",
+        "fch", "fcd", "fca", "fcb", "fau", "fci", "fav", "fat", "fcl", "fck",
     ]
     # fmt: on
     s = subjects[subject - 1]
@@ -452,11 +445,7 @@ def _load_data_012_2015(
     if (subject < 1) or (subject > 12):
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
 
-    # fmt: off
-    subjects = [
-        "nv", "nw", "nx", "ny", "nz", "mg", "oa", "ob", "oc", "od", "ja", "oe"
-    ]
-    # fmt: on
+    subjects = ["nv", "nw", "nx", "ny", "nz", "mg", "oa", "ob", "oc", "od", "ja", "oe"]
 
     s = subjects[subject - 1]
     url = "{u}BNCIHorizon2020-PASS2D/PASS2D_VP{s}.mat".format(u=base_url, s=s)
