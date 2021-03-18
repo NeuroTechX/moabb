@@ -21,7 +21,7 @@ class DemonsP300(BaseDataset):
     Demons (RvD). Data contains reach labels incorporating information about stimulus chosen enabling us
     to estimate model’s confidence at each stimulus prediction stage.
     `target` channel contains standard P300 target/non-target labels,
-    while `stim` channel contains multiclass labels (numbers of activated stimuli).
+    while `mult_target` channel contains multiclass labels (numbers of activated stimuli).
 
     **Participants**
 
@@ -69,6 +69,7 @@ class DemonsP300(BaseDataset):
 
     ch_names = ['Cz', 'P3', 'Pz', 'P4', 'PO3', 'PO4', 'O1', 'O2']
     sampling_rate = 500.0
+    ms_in_sec = 1000
     url = f'https://gin.g-node.org/v-goncharenko/neiry-demons/raw/master/nery_demons_dataset.zip'
 
     hdf_path = 'p300dataset'
@@ -130,60 +131,41 @@ class DemonsP300(BaseDataset):
                     record[i][name] = value
         return record
 
-    def convert_ms_to_num(self, starts):
-        '''Convertation for RawArray
-        Args:
-            starts: event starts in ms
-        Returns:
-            array of event starts in time points (event position in raw stim channnel)
-        '''
-        return starts * self.sampling_rate / 1000
-
     def _get_single_subject_data(self, subject: int):
-        record = self.read_hdf(self.data_path(subject)[0])
+        record = self.read_hdf(self.data_path(subject))
 
         info = create_info(
-            self.ch_names + ['stim', 'target'],
+            self.ch_names + ['mult_target', 'target'],
             self.sampling_rate,
             ['eeg'] * len(self.ch_names) + ['misc', 'stim'],
         )
         montage = make_standard_montage('standard_1020')
 
-        data = {}
         runs_raw = {}
         for i, act in enumerate(record):
             # target and stims are increased by 1
             # because the channel is filled with zeros by default
             target = act['target'] + 1
-            runs = []
-            for j, run in enumerate(act['sessions']):
-                eeg_data = run[0]
-                starts = run[1]
-                stims = run[2] + 1
-
-                eeg_len = len(eeg_data[0])
-                stims_channel = np.zeros(eeg_len)
-                target_channel = np.zeros(eeg_len)
-
-                starts = self.convert_ms_to_num(starts)
+            run_data = []
+            for eeg, starts, stims in act['sessions']:
+                stims = stims + 1
+                stims_channel = np.zeros(eeg.shape[1])
+                target_channel = np.zeros(eeg.shape[1])
+                starts = starts * self.sampling_rate / self.ms_in_sec
 
                 for start, stimul in zip(starts.astype(int), stims):
                     stims_channel[start] = stimul
                     target_channel[start] = 1 if stimul == target else 2
 
-                eeg_data = np.vstack(
-                    (eeg_data, stims_channel[None, :],  target_channel[None, :])
+                round_data = np.vstack(
+                    (eeg, stims_channel[None, :],  target_channel[None, :])
                 )
-                runs.append(eeg_data)
+                run_data.append(round_data)
                 
-            eeg_data = np.hstack(runs)
-            raw = RawArray(eeg_data, info)
+            raw = RawArray(np.hstack(run_data), info)
             raw.set_montage(montage)
             runs_raw[f'run_{i}'] = raw             
-
-        data[f'session_1'] = runs_raw
-
-        return data
+        return {'session_1': runs_raw}
 
     def data_path(
         self, subject: int, path=None, force_update=False, update_path=None, verbose=None
@@ -191,17 +173,14 @@ class DemonsP300(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError('Invalid subject number'))
 
-        if self.subjects_filenames is None:
-            zip_path = dl.data_path(self.url, self.ds_folder_name)
-            zip_path = Path(zip_path)
-            self.path = zip_path.with_name(self.ds_folder_name).resolve()
+        zip_path = Path(dl.data_path(self.url, self.ds_folder_name))
+        zip_name = zip_path.stem
+        self.path = zip_path.parent / self.ds_folder_name / zip_name
+        
+        if not self.path.exists():
+            with zipfile.ZipFile(zip_path) as zip_file:
+                zip_file.extractall(self.path.parent)
 
-            zip_name = self.url.split('/')[-1].split('.')[0]
-            self.path = self.path / zip_name            
-            if not self.path.exists():
-                with zipfile.ZipFile(zip_path) as zip_file:
-                    zip_file.extractall(self.path)
+        self.subjects_filenames = sorted(self.path.glob('*.hdf5'))
 
-            self.subjects_filenames = sorted(self.path.glob('*.hdf5'))
-
-        return [self.subjects_filenames[subject].as_posix()]
+        return self.subjects_filenames[subject].as_posix()
