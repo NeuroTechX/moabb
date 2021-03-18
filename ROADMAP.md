@@ -2,7 +2,8 @@
 
 ## Mother of all BCI Benchmark
 
-Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets.
+Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of
+freely available EEG datasets.
 
 ## Short term - what we're working on now
 

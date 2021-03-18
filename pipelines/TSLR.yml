@@ -15,7 +15,7 @@ pipeline:
   - name: TangentSpace
     from: pyriemann.tangentspace
     parameters:
-      metric: 'riemann'
+      metric: "riemann"
 
   - name: LogisticRegression
     from: sklearn.linear_model
