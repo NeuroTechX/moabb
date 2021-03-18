@@ -50,7 +50,7 @@ moabb.set_log_level("info")
 
 pipelines = {}
 
-pipelines["CSP + LDA"] = make_pipeline(CSP(n_components=8), LDA())
+pipelines["CSP + LDA"] = make_pipeline(CSP(n_components=8), LDA(solver="lsqr", shrinkage="auto"))
 
 pipelines["RG + LR"] = make_pipeline(
     Covariances(), TangentSpace(), LogisticRegression(solver="lbfgs")
@@ -74,7 +74,7 @@ dataset.subject_list = dataset.subject_list[:1]
 datasets = [dataset]
 overwrite = True  # set to True if we want to overwrite cached results
 # Evaluate for a specific number of training samples per class
-data_size = dict(policy="per_class", value=np.array([5, 10, 40]))
+data_size = dict(policy="per_class", value=np.array([5, 10, 30, 50]))
 # When the training data is sparse, peform more permutations than when we have a lot of data
 n_perms = np.floor(np.geomspace(20, 2, len(data_size["value"]))).astype(int)
 evaluation = WithinSessionEvaluation(
