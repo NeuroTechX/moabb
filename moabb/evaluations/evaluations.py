@@ -80,11 +80,11 @@ class WithinSessionEvaluation(BaseEvaluation):
                     cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
 
                     le = LabelEncoder()
-                    y = le.fit_transform(y[ix])
+                    y_cv = le.fit_transform(y[ix])
                     acc = cross_val_score(
                         clf,
                         X[ix],
-                        y,
+                        y_cv,
                         cv=cv,
                         scoring=self.paradigm.scoring,
                         n_jobs=self.n_jobs,
@@ -98,7 +98,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                         "subject": subject,
                         "session": session,
                         "score": score,
-                        "n_samples": len(y[ix]),  # not training sample
+                        "n_samples": len(y_cv),  # not training sample
                         "n_channels": X.shape[1],
                         "pipeline": name,
                     }
