@@ -3,7 +3,6 @@ from pathlib import Path
 
 import h5py
 import numpy as np
-import pandas as pd
 from mne import create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
@@ -13,7 +12,7 @@ from .base import BaseDataset
 
 
 class DemonsP300(BaseDataset):
-    '''Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons versus Demons.
+    """Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons versus Demons.
 
     **Dataset Description**
 
@@ -65,49 +64,52 @@ class DemonsP300(BaseDataset):
            ISBN 978-5-7417-0757-9
            https://mipt.ru/science/5top100/education/courseproposal/%D0%A4%D0%9F%D0%9C%D0%98%20%D1%84%D0%B8%D0%BD%D0%B0%D0%BB-compressed2.pdf
     .. [4] Impulse Neiry website: https://impulse-neiry.com/
-    '''
+    """
 
-    ch_names = ['Cz', 'P3', 'Pz', 'P4', 'PO3', 'PO4', 'O1', 'O2']
+    ch_names = ["Cz", "P3", "Pz", "P4", "PO3", "PO4", "O1", "O2"]
     sampling_rate = 500.0
-    url = f'https://gin.g-node.org/v-goncharenko/neiry-demons/raw/master/nery_demons_dataset.zip'
+    url = "https://gin.g-node.org/v-goncharenko/neiry-demons/raw/master/nery_demons_dataset.zip"
 
     _ms_in_sec = 1000
-    _hdf_path = 'p300dataset'
-    _ds_folder_name = 'demons'
+    _hdf_path = "p300dataset"
+    _ds_folder_name = "demons"
 
-    _act_dtype = np.dtype([
-        ('id', np.int),
-        ('target', np.int),
-        ('is_train', np.bool),
-        ('prediction', np.int),
-        ('sessions', np.object),  # list of `_session_dtype`
-    ])
-    _session_dtype = np.dtype([
-        ('eeg', np.object),
-        ('starts', np.object),
-        ('stimuli', np.object),
-    ])
-
+    _act_dtype = np.dtype(
+        [
+            ("id", np.int),
+            ("target", np.int),
+            ("is_train", np.bool),
+            ("prediction", np.int),
+            ("sessions", np.object),  # list of `_session_dtype`
+        ]
+    )
+    _session_dtype = np.dtype(
+        [
+            ("eeg", np.object),
+            ("starts", np.object),
+            ("stimuli", np.object),
+        ]
+    )
 
     def __init__(self):
         super().__init__(
             subjects=list(range(60)),
             sessions_per_subject=17,
-            events={'Target': 1, 'NonTarget': 2},
-            code='Demons P300',
+            events={"Target": 1, "NonTarget": 2},
+            code="Demons P300",
             interval=[0, 1],
-            paradigm='p300',
+            paradigm="p300",
         )
         self.path = None
         self.subjects_filenames = None
 
     @staticmethod
     def _strip(session) -> tuple:
-        '''Strips nans (from right side of all channels) added during hdf5 packaging
+        """Strips nans (from right side of all channels) added during hdf5 packaging
 
         Returns:
             tuple ready to be converted to `_session_dtype`
-        '''
+        """
         eeg, *rest = session
         ind = -next(i for i, value in enumerate(eeg[0, ::-1]) if not np.isnan(value))
         if ind == 0:
@@ -116,16 +118,16 @@ class DemonsP300(BaseDataset):
 
     @classmethod
     def read_hdf(cls, filename) -> np.ndarray:
-        '''Reads data from HDF file
+        """Reads data from HDF file
 
         Returns:
             array of `_act_dtype`
-        '''
-        with h5py.File(filename, 'r') as hfile:
+        """
+        with h5py.File(filename, "r") as hfile:
             group = hfile[cls._hdf_path]
             record = np.empty(len(group), cls._act_dtype)
             for i, act in enumerate(group.values()):
-                record[i]['sessions'] = np.array(
+                record[i]["sessions"] = np.array(
                     [cls._strip(item) for item in act], cls._session_dtype
                 )
                 for name, value in act.attrs.items():
@@ -136,19 +138,19 @@ class DemonsP300(BaseDataset):
         record = self.read_hdf(self.data_path(subject))
 
         info = create_info(
-            self.ch_names + ['mult_target', 'target'],
+            self.ch_names + ["mult_target", "target"],
             self.sampling_rate,
-            ['eeg'] * len(self.ch_names) + ['misc', 'stim'],
+            ["eeg"] * len(self.ch_names) + ["misc", "stim"],
         )
-        montage = make_standard_montage('standard_1020')
+        montage = make_standard_montage("standard_1020")
 
         runs_raw = {}
         for i, act in enumerate(record):
             # target and stims are increased by 1
             # because the channel is filled with zeros by default
-            target = act['target'] + 1
+            target = act["target"] + 1
             run_data = []
-            for eeg, starts, stims in act['sessions']:
+            for eeg, starts, stims in act["sessions"]:
                 starts *= self.sampling_rate / self._ms_in_sec
                 stims = stims + 1
                 stims_channel = np.zeros(eeg.shape[1])
@@ -159,28 +161,28 @@ class DemonsP300(BaseDataset):
                     target_channel[start] = 1 if stimul == target else 2
 
                 round_data = np.vstack(
-                    (eeg, stims_channel[None, :],  target_channel[None, :])
+                    (eeg, stims_channel[None, :], target_channel[None, :])
                 )
                 run_data.append(round_data)
-                
+
             raw = RawArray(np.hstack(run_data), info)
             raw.set_montage(montage)
-            runs_raw[f'run_{i}'] = raw             
-        return {'session_1': runs_raw}
+            runs_raw[f"run_{i}"] = raw
+        return {"session_1": runs_raw}
 
     def data_path(
         self, subject: int, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
-            raise (ValueError('Invalid subject number'))
+            raise (ValueError("Invalid subject number"))
 
         zip_path = Path(dl.data_path(self.url, self._ds_folder_name))
         self.path = zip_path.parent / self._ds_folder_name / zip_path.stem
-        
+
         if not self.path.exists():
             with zipfile.ZipFile(zip_path) as zip_file:
                 zip_file.extractall(self.path.parent)
 
-        self.subjects_filenames = sorted(self.path.glob('*.hdf5'))
+        self.subjects_filenames = sorted(self.path.glob("*.hdf5"))
 
         return self.subjects_filenames[subject].as_posix()
