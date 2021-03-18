@@ -69,21 +69,20 @@ class DemonsP300(BaseDataset):
 
     ch_names = ['Cz', 'P3', 'Pz', 'P4', 'PO3', 'PO4', 'O1', 'O2']
     sampling_rate = 500.0
-    ms_in_sec = 1000
     url = f'https://gin.g-node.org/v-goncharenko/neiry-demons/raw/master/nery_demons_dataset.zip'
 
-    hdf_path = 'p300dataset'
-    ds_folder_name = 'demons'
+    _ms_in_sec = 1000
+    _hdf_path = 'p300dataset'
+    _ds_folder_name = 'demons'
 
-    act_dtype = np.dtype([
+    _act_dtype = np.dtype([
         ('id', np.int),
         ('target', np.int),
         ('is_train', np.bool),
         ('prediction', np.int),
-        ('sessions', np.object),  # list of `session_dtype`
+        ('sessions', np.object),  # list of `_session_dtype`
     ])
-
-    session_dtype = np.dtype([
+    _session_dtype = np.dtype([
         ('eeg', np.object),
         ('starts', np.object),
         ('stimuli', np.object),
@@ -105,8 +104,9 @@ class DemonsP300(BaseDataset):
     @staticmethod
     def _strip(session) -> tuple:
         '''Strips nans (from right side of all channels) added during hdf5 packaging
+
         Returns:
-            tuple ready to be converted to `session_dtype`
+            tuple ready to be converted to `_session_dtype`
         '''
         eeg, *rest = session
         ind = -next(i for i, value in enumerate(eeg[0, ::-1]) if not np.isnan(value))
@@ -117,15 +117,16 @@ class DemonsP300(BaseDataset):
     @classmethod
     def read_hdf(cls, filename) -> np.ndarray:
         '''Reads data from HDF file
+
         Returns:
-            array of act_dtype
+            array of `_act_dtype`
         '''
         with h5py.File(filename, 'r') as hfile:
-            group = hfile[cls.hdf_path]
-            record = np.empty(len(group), cls.act_dtype)
+            group = hfile[cls._hdf_path]
+            record = np.empty(len(group), cls._act_dtype)
             for i, act in enumerate(group.values()):
                 record[i]['sessions'] = np.array(
-                    [cls._strip(item) for item in act], cls.session_dtype
+                    [cls._strip(item) for item in act], cls._session_dtype
                 )
                 for name, value in act.attrs.items():
                     record[i][name] = value
@@ -148,12 +149,12 @@ class DemonsP300(BaseDataset):
             target = act['target'] + 1
             run_data = []
             for eeg, starts, stims in act['sessions']:
+                starts *= self.sampling_rate / self._ms_in_sec
                 stims = stims + 1
                 stims_channel = np.zeros(eeg.shape[1])
                 target_channel = np.zeros(eeg.shape[1])
-                starts = starts * self.sampling_rate / self.ms_in_sec
 
-                for start, stimul in zip(starts.astype(int), stims):
+                for start, stimul in zip(starts, stims):
                     stims_channel[start] = stimul
                     target_channel[start] = 1 if stimul == target else 2
 
@@ -173,9 +174,8 @@ class DemonsP300(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError('Invalid subject number'))
 
-        zip_path = Path(dl.data_path(self.url, self.ds_folder_name))
-        zip_name = zip_path.stem
-        self.path = zip_path.parent / self.ds_folder_name / zip_name
+        zip_path = Path(dl.data_path(self.url, self._ds_folder_name))
+        self.path = zip_path.parent / self._ds_folder_name / zip_path.stem
         
         if not self.path.exists():
             with zipfile.ZipFile(zip_path) as zip_file:
