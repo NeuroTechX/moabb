@@ -6,8 +6,12 @@ from typing import Optional, Union
 import numpy as np
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
-from sklearn.model_selection import (LeaveOneGroupOut, StratifiedKFold,
-                                     StratifiedShuffleSplit, cross_val_score)
+from sklearn.model_selection import (
+    LeaveOneGroupOut,
+    StratifiedKFold,
+    StratifiedShuffleSplit,
+    cross_val_score,
+)
 from sklearn.model_selection._validation import _fit_and_score, _score
 from sklearn.preprocessing import LabelEncoder
 
@@ -76,11 +80,11 @@ class WithinSessionEvaluation(BaseEvaluation):
                     cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
 
                     le = LabelEncoder()
-                    y = le.fit_transform(y)
+                    y = le.fit_transform(y[ix])
                     acc = cross_val_score(
                         clf,
                         X[ix],
-                        y[ix],
+                        y,
                         cv=cv,
                         scoring=self.paradigm.scoring,
                         n_jobs=self.n_jobs,
@@ -101,6 +105,29 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     yield res
 
+    def get_data_size_steps(self, n_epochs):
+        if self.data_size is None:
+            return None
+        if self.data_size["policy"] == "ratio":
+            return np.ceil(self.data_size["value"] * n_epochs).astype(int)
+        elif self.data_size["policy"] == "per_class":
+            raise NotImplementedError
+        else:
+            raise ValueError(f"Unknown policy {self.data_size['policy']}")
+
+    def score_explicit(self, clf, X_train, y_train, X_test, y_test):
+        scorer = get_scorer(self.paradigm.scoring)
+        t_start = time()
+        try:
+            model = clf.fit(X_train, y_train)
+            score = _score(model, X_test, y_test, scorer)
+        except ValueError as e:
+            if self.error_score == "raise":
+                raise e
+            score = self.error_score
+        duration = time() - t_start
+        return score, duration
+
     def _evaluate_learning_curve(self, dataset, pipelines):
         for subject in dataset.subject_list:
             # check if we already have result for this subject/pipeline
@@ -114,13 +141,12 @@ class WithinSessionEvaluation(BaseEvaluation):
             le = LabelEncoder()
             y_all = le.fit_transform(y_all)
             # shuffle_data = True if self.n_perms > 1 else False
-            scorer = get_scorer(self.paradigm.scoring)
             for session in np.unique(metadata_all.session):
                 sess_idx = metadata_all.session == session
                 X_sess = X_all[sess_idx]
                 y_sess = y_all[sess_idx]
                 # metadata_sess = metadata_all[sess_idx]
-                n_epochs = len(sess_idx)
+                n_epochs = np.sum(sess_idx)
                 sss = StratifiedShuffleSplit(
                     n_splits=self.n_perms[0], test_size=self.test_size
                 )
@@ -129,14 +155,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     y_train_all = y_sess[train_idx]
                     X_test = X_sess[test_idx]
                     y_test = y_sess[test_idx]
-                    if self.data_size["policy"] == "ratio":
-                        data_size_steps = np.ceil(
-                            self.data_size["value"] * n_epochs
-                        ).astype(int)
-                    elif self.data_size["policy"] == "per_class":
-                        raise NotImplementedError
-                    else:
-                        raise ValueError(f"Unknown policy {self.data_size['policy']}")
+                    data_size_steps = self.get_data_size_steps(n_epochs)
                     for di, data_size in enumerate(data_size_steps):
                         if perm_i >= self.n_perms[di]:
                             continue
@@ -144,9 +163,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                         log.info(
                             f"Permutation: {perm_i+1}," f" Training samples: {data_size}"
                         )
-                        # FIXME, this check is too naive
-                        if len(X_all) < data_size:
-                            break
 
                         X_train = X_train_all[:data_size, :]
                         y_train = y_train_all[:data_size]
@@ -173,18 +189,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 res["time"] = 0
                                 res["score"] = np.nan
                             else:
-                                try:
-                                    t_start = time()
-                                    model = deepcopy(clf).fit(X_train, y_train)
-                                    score = _score(model, X_test, y_test, scorer)
-                                    duration = time() - t_start
-                                    res["time"] = duration
-                                    res["score"] = score
-                                except ValueError as e:
-                                    if self.error_score == "raise":
-                                        raise e
-                                    else:
-                                        res["score"] = self.error_score
+                                res["score"], res["time"] = self.score_explicit(
+                                    deepcopy(clf), X_train, y_train, X_test, y_test
+                                )
                             yield res
 
     def evaluate(self, dataset, pipelines):
