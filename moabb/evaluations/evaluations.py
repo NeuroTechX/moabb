@@ -31,9 +31,14 @@ class WithinSessionEvaluation(BaseEvaluation):
         **kwargs,
     ):
         """
-        :param n_perms: Number of permutations to perform. If an array
+        Parameters
+        ----------
+        n_perms :
+            Number of permutations to perform. If an array
             is passed it has to be equal in size to the data_size array.
-        :param data_size: Contains the policy to pick the datasizes to
+        data_size :
+            If None is passed, it performs conventional WithinSession evaluation.
+            Contains the policy to pick the datasizes to
             evaluate, as well as the actual values. The dict has the
             key 'policy' with either 'ratio' or 'per_class', and the key
             'value' with the actual values as an numpy array.
