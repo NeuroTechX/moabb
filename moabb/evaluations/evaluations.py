@@ -20,9 +20,6 @@ from moabb.evaluations.base import BaseEvaluation
 
 log = logging.getLogger()
 
-# TODO Base class for WithinSession/IncreasingData
-# TODO implement per class sampling. Not yet clear -> how to sample test set?
-
 
 class WithinSessionEvaluation(BaseEvaluation):
     """Within Session evaluation."""
@@ -105,15 +102,38 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     yield res
 
-    def get_data_size_steps(self, n_epochs):
+    def get_data_size_subsets(self, y):
         if self.data_size is None:
-            return None
+            raise ValueError(
+                "Cannot create data subsets without valid policy for data_size."
+            )
         if self.data_size["policy"] == "ratio":
-            return np.ceil(self.data_size["value"] * n_epochs).astype(int)
+            upto = np.ceil(self.data_size["value"] * len(y)).astype(int)
+            indices = [np.array(range(i)) for i in upto]
         elif self.data_size["policy"] == "per_class":
-            raise NotImplementedError
+            classwise_indices = dict()
+            n_smallest_class = np.inf
+            for cl in np.unique(y):
+                cl_i = np.where(cl == y)[0]
+                classwise_indices[cl] = cl_i
+                n_smallest_class = (
+                    len(cl_i) if len(cl_i) < n_smallest_class else n_smallest_class
+                )
+            indices = []
+            for ds in self.data_size["value"].astype(int):
+                if ds > n_smallest_class:
+                    raise ValueError(
+                        f"Smallest class has {n_smallest_class} samples. "
+                        f"Desired samples per class {ds} is too large."
+                    )
+                indices.append(
+                    np.concatenate(
+                        [classwise_indices[cl][:ds] for cl in classwise_indices]
+                    )
+                )
         else:
             raise ValueError(f"Unknown policy {self.data_size['policy']}")
+        return indices
 
     def score_explicit(self, clf, X_train, y_train, X_test, y_test):
         scorer = get_scorer(self.paradigm.scoring)
@@ -146,7 +166,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                 X_sess = X_all[sess_idx]
                 y_sess = y_all[sess_idx]
                 # metadata_sess = metadata_all[sess_idx]
-                n_epochs = np.sum(sess_idx)
                 sss = StratifiedShuffleSplit(
                     n_splits=self.n_perms[0], test_size=self.test_size
                 )
@@ -155,18 +174,19 @@ class WithinSessionEvaluation(BaseEvaluation):
                     y_train_all = y_sess[train_idx]
                     X_test = X_sess[test_idx]
                     y_test = y_sess[test_idx]
-                    data_size_steps = self.get_data_size_steps(n_epochs)
-                    for di, data_size in enumerate(data_size_steps):
+                    data_size_steps = self.get_data_size_subsets(y_train_all)
+                    for di, subset_indices in enumerate(data_size_steps):
                         if perm_i >= self.n_perms[di]:
                             continue
                         not_enough_data = False
                         log.info(
-                            f"Permutation: {perm_i+1}," f" Training samples: {data_size}"
+                            f"Permutation: {perm_i+1},"
+                            f" Training samples: {len(subset_indices)}"
                         )
 
-                        X_train = X_train_all[:data_size, :]
-                        y_train = y_train_all[:data_size]
-                        # metadata = metadata_perm[:data_size]
+                        X_train = X_train_all[subset_indices, :]
+                        y_train = y_train_all[subset_indices]
+                        # metadata = metadata_perm[:subset_indices]
 
                         if len(np.unique(y_train)) < 2:
                             log.warning(
@@ -182,7 +202,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 "n_channels": X_train.shape[1],
                                 "pipeline": name,
                                 # Additional columns
-                                "data_size": data_size,
+                                "data_size": len(subset_indices),
                                 "permutation": perm_i + 1,
                             }
                             if not_enough_data:

@@ -36,14 +36,8 @@ from moabb.datasets import EPFLP300
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
 
-
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
-
-
-warnings.simplefilter(action="ignore", category=FutureWarning)
-warnings.simplefilter(action="ignore", category=RuntimeWarning)
-
 
 moabb.set_log_level("info")
 
