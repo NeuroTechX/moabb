@@ -25,13 +25,13 @@ def create_pipeline_from_config(config):
 
     for component in config:
         # load the package
-        mod = __import__(component['from'], fromlist=[component['name']])
+        mod = __import__(component["from"], fromlist=[component["name"]])
         # create the instance
-        if 'parameters' in component.keys():
-            params = component['parameters']
+        if "parameters" in component.keys():
+            params = component["parameters"]
         else:
             params = {}
-        instance = getattr(mod, component['name'])(**params)
+        instance = getattr(mod, component["name"])(**params)
         components.append(instance)
 
     pipeline = make_pipeline(*components)
@@ -65,16 +65,17 @@ class FilterBank(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         assert X.ndim == 4
         self.models = [
-            deepcopy(self.estimator).fit(X[..., i], y)
-            for i in range(X.shape[-1])
+            deepcopy(self.estimator).fit(X[..., i], y) for i in range(X.shape[-1])
         ]
         return self
 
     def transform(self, X):
         assert X.ndim == 4
         out = [self.models[i].transform(X[..., i]) for i in range(X.shape[-1])]
-        assert out[0].ndim == 2, ("Each band must return a two dimensional "
-                                  f" matrix, currently have {out[0].ndim}")
+        assert out[0].ndim == 2, (
+            "Each band must return a two dimensional "
+            f" matrix, currently have {out[0].ndim}"
+        )
         if self.flatten:
             return np.concatenate(out, axis=1)
         else:
@@ -83,5 +84,6 @@ class FilterBank(BaseEstimator, TransformerMixin):
     def __repr__(self):
         estimator_name = type(self).__name__
         estimator_prms = self.estimator.get_params()
-        return '{}(estimator={}, flatten={})'.format(
-            estimator_name, estimator_prms, self.flatten)
+        return "{}(estimator={}, flatten={})".format(
+            estimator_name, estimator_prms, self.flatten
+        )

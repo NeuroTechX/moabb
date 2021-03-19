@@ -31,6 +31,7 @@ from moabb.paradigms import LeftRightImagery
 # The fake dataset is available on the
 # [Zenodo website](https://sandbox.zenodo.org/record/369543)
 
+
 def create_example_dataset():
     """Create a fake example for a dataset"""
     sfreq = 256
@@ -51,7 +52,7 @@ def create_example_dataset():
         tn = int(t_offset * sfreq + n * (t_trial + intertrial) * sfreq)
         stim[tn] = label
         noise = 0.1 * np.random.randn(n_chan, len(signal))
-        x[:-1, tn:(tn + t_trial * sfreq)] = label * signal + noise
+        x[:-1, tn : (tn + t_trial * sfreq)] = label * signal + noise
     x[-1, :] = stim
     return x, sfreq
 
@@ -59,10 +60,10 @@ def create_example_dataset():
 # Create the fake data
 for subject in [1, 2, 3]:
     x, fs = create_example_dataset()
-    filename = 'subject_' + str(subject).zfill(2) + '.mat'
+    filename = "subject_" + str(subject).zfill(2) + ".mat"
     mdict = {}
-    mdict['x'] = x
-    mdict['fs'] = fs
+    mdict["x"] = x
+    mdict["fs"] = fs
     savemat(filename, mdict)
 
 
@@ -82,7 +83,7 @@ for subject in [1, 2, 3]:
 # The global variable with the dataset's URL should specify an online
 # repository where all the files are stored.
 
-ExampleDataset_URL = 'https://sandbox.zenodo.org/record/369543/files/'
+ExampleDataset_URL = "https://sandbox.zenodo.org/record/369543/files/"
 
 # The `ExampleDataset` needs to implement only 3 functions:
 # - `__init__` for indicating the parameter of the dataset
@@ -92,46 +93,49 @@ ExampleDataset_URL = 'https://sandbox.zenodo.org/record/369543/files/'
 
 
 class ExampleDataset(BaseDataset):
-    '''
+    """
     Dataset used to exemplify the creation of a dataset class in MOABB.
     The data samples have been simulated and has no physiological meaning
     whatsoever.
-    '''
+    """
+
     def __init__(self):
         super().__init__(
             subjects=[1, 2, 3],
             sessions_per_subject=1,
-            events={'left_hand': 1, 'right_hand': 2},
-            code='Example dataset',
+            events={"left_hand": 1, "right_hand": 2},
+            code="Example dataset",
             interval=[0, 0.75],
-            paradigm='imagery',
-            doi='')
+            paradigm="imagery",
+            doi="",
+        )
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
         file_path_list = self.data_path(subject)
 
         data = loadmat(file_path_list[0])
-        x = data['x']
-        fs = data['fs']
-        ch_names = ['ch' + str(i) for i in range(8)] + ['stim']
-        ch_types = ['eeg' for i in range(8)] + ['stim']
+        x = data["x"]
+        fs = data["fs"]
+        ch_names = ["ch" + str(i) for i in range(8)] + ["stim"]
+        ch_types = ["eeg" for i in range(8)] + ["stim"]
         info = mne.create_info(ch_names, fs, ch_types)
         raw = mne.io.RawArray(x, info)
 
         sessions = {}
-        sessions['session_1'] = {}
-        sessions['session_1']['run_1'] = raw
+        sessions["session_1"] = {}
+        sessions["session_1"]["run_1"] = raw
         return sessions
 
-    def data_path(self, subject, path=None, force_update=False,
-                  update_path=None, verbose=None):
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
         """Download the data from one subject"""
         if subject not in self.subject_list:
-            raise(ValueError("Invalid subject number"))
+            raise (ValueError("Invalid subject number"))
 
-        url = '{:s}subject_0{:d}.mat'.format(ExampleDataset_URL, subject)
-        path = dl.data_path(url, 'ExampleDataset')
+        url = "{:s}subject_0{:d}.mat".format(ExampleDataset_URL, subject)
+        path = dl.data_path(url, "ExampleDataset")
         return [path]  # it has to return a list
 
 
@@ -146,10 +150,9 @@ dataset = ExampleDataset()
 paradigm = LeftRightImagery()
 X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[1])
 
-evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=dataset,
-                                     overwrite=True)
+evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=dataset, overwrite=True)
 pipelines = {}
-pipelines['MDM'] = make_pipeline(Covariances('oas'), MDM(metric='riemann'))
+pipelines["MDM"] = make_pipeline(Covariances("oas"), MDM(metric="riemann"))
 scores = evaluation.process(pipelines)
 
 print(scores)

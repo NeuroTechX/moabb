@@ -20,4 +20,4 @@ pipeline:
   - name: SVC
     from: sklearn.svm
     parameters:
-      kernel: 'linear'
+      kernel: "linear"

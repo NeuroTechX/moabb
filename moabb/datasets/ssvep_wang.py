@@ -20,7 +20,7 @@ log = logging.getLogger()
 
 # WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
 # WANG_URL = 'ftp://anonymous@sccn.ucsd.edu/pub/ssvep_benchmark_dataset/'
-WANG_URL = 'http://www.thubci.com/uploads/down/'
+WANG_URL = "http://www.thubci.com/uploads/down/"
 
 
 class Wang2016(BaseDataset):
@@ -81,23 +81,35 @@ class Wang2016(BaseDataset):
     doi: 10.1109/TNSRE.2016.2627556.
     """
 
+    # fmt: off
+    _events = {
+        "8": 1, "9": 2, "10": 3, "11": 4, "12": 5, "13": 6, "14": 7, "15": 8, "8.2": 9,
+        "9.2": 10, "10.2": 11, "11.2": 12, "12.2": 13, "13.2": 14, "14.2": 15, "15.2": 16,
+        "8.4": 17, "9.4": 18, "10.4": 19, "11.4": 20, "12.4": 21, "13.4": 22, "14.4": 23,
+        "15.4": 24, "8.6": 25, "9.6": 26, "10.6": 27, "11.6": 28, "12.6": 29, "13.6": 30,
+        "14.6": 31, "15.6": 32, "8.8": 33, "9.8": 34, "10.8": 35, "11.8": 36, "12.8": 37,
+        "13.8": 38, "14.8": 39, "15.8": 40,
+    }
+    _ch_names = [
+        "Fp1", "Fpz", "Fp2", "AF3", "AF4", "F7", "F5", "F3", "F1", "Fz", "F2", "F4", "F6",
+        "F8", "FT7", "FC5", "FC3", "FC1", "FCz", "FC2", "FC4", "FC6", "FT8", "T7", "C5",
+        "C3", "C1", "Cz", "C2", "C4", "C6", "T8", "M1", "TP7", "CP5", "CP3", "CP1", "CPz",
+        "CP2", "CP4", "CP6", "TP8", "M2", "P7", "P5", "P3", "P1", "Pz", "P2", "P4", "P6",
+        "P8", "PO7", "PO5", "PO3", "POz", "PO4", "PO6", "PO8", "CB1", "O1", "Oz", "O2",
+        "CB2", "stim",
+    ]
+    # fmt: on
+
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 35)),
             sessions_per_subject=1,
-            events={'8': 1, '9': 2, '10': 3, '11': 4, '12': 5, '13': 6,
-                    '14': 7, '15': 8, '8.2': 9, '9.2': 10, '10.2': 11,
-                    '11.2': 12, '12.2': 13, '13.2': 14, '14.2': 15, '15.2': 16,
-                    '8.4': 17, '9.4': 18, '10.4': 19, '11.4': 20, '12.4': 21,
-                    '13.4': 22, '14.4': 23, '15.4': 24, '8.6': 25, '9.6': 26,
-                    '10.6': 27, '11.6': 28, '12.6': 29, '13.6': 30,
-                    '14.6': 31, '15.6': 32, '8.8': 33, '9.8': 34, '10.8': 35,
-                    '11.8': 36, '12.8': 37, '13.8': 38, '14.8': 39,
-                    '15.8': 40},
-            code='SSVEP Wang',
+            events=self._events,
+            code="SSVEP Wang",
             interval=[0.5, 5.5],
-            paradigm='ssvep',
-            doi='doi://10.1109/TNSRE.2016.2627556')
+            paradigm="ssvep",
+            doi="doi://10.1109/TNSRE.2016.2627556",
+        )
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject"""
@@ -108,41 +120,34 @@ class Wang2016(BaseDataset):
         Archive(fname).extractall(dirname(fname))
         mat = loadmat(fname[:-4])
 
-        data = np.transpose(mat['data'], axes=(2, 3, 0, 1))
+        data = np.transpose(mat["data"], axes=(2, 3, 0, 1))
         data = np.reshape(data, newshape=(-1, n_channels, n_samples))
         data = data - data.mean(axis=2, keepdims=True)
         raw_events = np.zeros((data.shape[0], 1, n_samples))
-        raw_events[:, 0, 0] = np.array([n_trials * [i + 1]
-                                        for i in range(n_classes)]).flatten()
+        raw_events[:, 0, 0] = np.array(
+            [n_trials * [i + 1] for i in range(n_classes)]
+        ).flatten()
         data = np.concatenate([1e-6 * data, raw_events], axis=1)
         # add buffer in between trials
-        log.warning("Trial data de-meaned and concatenated with a buffer"
-                    " to create continuous data")
+        log.warning(
+            "Trial data de-meaned and concatenated with a buffer"
+            " to create continuous data"
+        )
         buff = (data.shape[0], n_channels + 1, 50)
-        data = np.concatenate([np.zeros(buff), data,
-                               np.zeros(buff)], axis=2)
+        data = np.concatenate([np.zeros(buff), data, np.zeros(buff)], axis=2)
 
-        ch_names = ['Fp1', 'Fpz', 'Fp2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1',
-                    'Fz', 'F2', 'F4', 'F6', 'F8', 'FT7', 'FC5', 'FC3', 'FC1',
-                    'FCz', 'FC2', 'FC4', 'FC6', 'FT8', 'T7', 'C5', 'C3', 'C1',
-                    'Cz', 'C2', 'C4', 'C6', 'T8', 'M1', 'TP7', 'CP5', 'CP3',
-                    'CP1', 'CPz', 'CP2', 'CP4', 'CP6', 'TP8', 'M2', 'P7', 'P5',
-                    'P3', 'P1', 'Pz', 'P2', 'P4', 'P6', 'P8', 'PO7', 'PO5',
-                    'PO3', 'POz', 'PO4', 'PO6', 'PO8', 'CB1', 'O1', 'Oz', 'O2',
-                    'CB2', 'stim']
-        ch_types = ['eeg'] * 59 + ['misc'] + 3 * ['eeg'] + ['misc', 'stim']
+        ch_types = ["eeg"] * 59 + ["misc"] + 3 * ["eeg"] + ["misc", "stim"]
         sfreq = 250
-        info = create_info(ch_names, sfreq, ch_types)
-        raw = RawArray(data=np.concatenate(list(data), axis=1),
-                       info=info, verbose=False)
-        montage = make_standard_montage('standard_1005')
+        info = create_info(self._ch_names, sfreq, ch_types)
+        raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
+        montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
-        return {'session_0': {'run_0': raw}}
+        return {"session_0": {"run_0": raw}}
 
-    def data_path(self, subject, path=None, force_update=False,
-                  update_path=None, verbose=None):
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
         if subject not in self.subject_list:
-            raise(ValueError("Invalid subject number"))
-        url = '{:s}s{:d}.rar'.format(WANG_URL, subject)
-        return dl.data_path(url, 'WANG', path, force_update, update_path,
-                            verbose)
+            raise (ValueError("Invalid subject number"))
+        url = "{:s}s{:d}.rar".format(WANG_URL, subject)
+        return dl.data_path(url, "WANG", path, force_update, update_path, verbose)

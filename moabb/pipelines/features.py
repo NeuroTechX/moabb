@@ -4,7 +4,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class LogVariance(BaseEstimator, TransformerMixin):
-
     def fit(self, X, y):
         """fit."""
         return self
@@ -16,14 +15,13 @@ class LogVariance(BaseEstimator, TransformerMixin):
 
 
 class FM(BaseEstimator, TransformerMixin):
-
     def __init__(self, freq=128):
-        '''instantaneous frequencies require a sampling frequency to be properly
+        """instantaneous frequencies require a sampling frequency to be properly
         scaled,
         which is helpful for some algorithms. This assumes 128 if not told
         otherwise.
 
-        '''
+        """
         self.freq = freq
 
     def fit(self, X, y):
@@ -33,8 +31,7 @@ class FM(BaseEstimator, TransformerMixin):
     def transform(self, X):
         """transform. """
         xphase = np.unwrap(np.angle(signal.hilbert(X, axis=-1)))
-        return np.median(self.freq * np.diff(xphase, axis=-1) / (2 * np.pi),
-                         axis=-1)
+        return np.median(self.freq * np.diff(xphase, axis=-1) / (2 * np.pi), axis=-1)
 
 
 class ExtendedSSVEPSignal(BaseEstimator, TransformerMixin):
@@ -47,6 +44,7 @@ class ExtendedSSVEPSignal(BaseEstimator, TransformerMixin):
     and should be convert in (n_trials, n_channels*n_freqs, n_times) to
     estimate covariance matrices of (n_channels*n_freqs,  n_channels*n_freqs).
     """
+
     def __init__(self):
         """Empty init for ExtendedSSVEPSignal"""
         pass
@@ -56,8 +54,7 @@ class ExtendedSSVEPSignal(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        """Transpose and reshape EEG for extended covmat estimation
-        """
+        """Transpose and reshape EEG for extended covmat estimation"""
         out = X.transpose((0, 3, 1, 2))
         n_trials, n_freqs, n_channels, n_times = out.shape
         out = out.reshape((n_trials, n_channels * n_freqs, n_times))

@@ -24,7 +24,7 @@ from moabb.paradigms import FilterBankLeftRightImagery, LeftRightImagery
 from moabb.pipelines.utils import FilterBank
 
 
-moabb.set_log_level('info')
+moabb.set_log_level("info")
 
 ##############################################################################
 # Create pipelines
@@ -41,12 +41,10 @@ moabb.set_log_level('info')
 # their own dict.
 
 pipelines = {}
-pipelines['CSP + LDA'] = make_pipeline(CSP(n_components=8),
-                                       LDA())
+pipelines["CSP + LDA"] = make_pipeline(CSP(n_components=8), LDA())
 
 pipelines_fb = {}
-pipelines_fb['FBCSP + LDA'] = make_pipeline(FilterBank(CSP(n_components=4)),
-                                            LDA())
+pipelines_fb["FBCSP + LDA"] = make_pipeline(FilterBank(CSP(n_components=4)), LDA())
 
 ##############################################################################
 # Evaluation
@@ -72,15 +70,17 @@ overwrite = False  # set to True if we want to overwrite cached results
 fmin = 8
 fmax = 35
 paradigm = LeftRightImagery(fmin=fmin, fmax=fmax)
-evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=datasets,
-                                    suffix='examples', overwrite=overwrite)
+evaluation = CrossSessionEvaluation(
+    paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite
+)
 results = evaluation.process(pipelines)
 
 # bank of 6 filter, by 4 Hz increment
 filters = [[8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 35]]
 paradigm = FilterBankLeftRightImagery(filters=filters)
-evaluation = CrossSessionEvaluation(paradigm=paradigm, datasets=datasets,
-                                    suffix='examples', overwrite=overwrite)
+evaluation = CrossSessionEvaluation(
+    paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite
+)
 results_fb = evaluation.process(pipelines_fb)
 
 ###############################################################################
@@ -101,22 +101,29 @@ results = pd.concat([results, results_fb])
 
 fig, axes = plt.subplots(1, 2, figsize=[8, 4], sharey=True)
 
-sns.stripplot(data=results, y='score', x='pipeline', ax=axes[0], jitter=True,
-              alpha=.5, zorder=1, palette="Set1")
-sns.pointplot(data=results, y='score', x='pipeline', ax=axes[0],
-              zorder=1, palette="Set1")
+sns.stripplot(
+    data=results,
+    y="score",
+    x="pipeline",
+    ax=axes[0],
+    jitter=True,
+    alpha=0.5,
+    zorder=1,
+    palette="Set1",
+)
+sns.pointplot(data=results, y="score", x="pipeline", ax=axes[0], zorder=1, palette="Set1")
 
-axes[0].set_ylabel('ROC AUC')
+axes[0].set_ylabel("ROC AUC")
 axes[0].set_ylim(0.5, 1)
 
 # paired plot
-paired = results.pivot_table(values='score', columns='pipeline',
-                             index=['subject', 'session'])
+paired = results.pivot_table(
+    values="score", columns="pipeline", index=["subject", "session"]
+)
 paired = paired.reset_index()
 
-sns.regplot(data=paired, y='FBCSP + LDA', x='CSP + LDA', ax=axes[1],
-            fit_reg=False)
-axes[1].plot([0, 1], [0, 1], ls='--', c='k')
+sns.regplot(data=paired, y="FBCSP + LDA", x="CSP + LDA", ax=axes[1], fit_reg=False)
+axes[1].plot([0, 1], [0, 1], ls="--", c="k")
 axes[1].set_xlim(0.5, 1)
 
 plt.show()
