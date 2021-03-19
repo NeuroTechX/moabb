@@ -9,8 +9,7 @@
 
 ## Disclaimer
 
-**This is work in progress. API will change significantly (as well as the results of the
-benchmark).**
+**This is open science project that may evolve depending on the need of the community.**
 
 [![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -22,22 +21,18 @@ First and foremost, Welcome! :tada: Willkommen! :confetti_ball: Bienvenue!
 
 Thank you for visiting the Mother of all BCI Benchmark repository.
 
-This document (the README file) is a hub to give you some information about the project.
-Jump straight to one of the sections below, or just scroll down to find out more.
+This document is a hub to give you some information about the project. Jump straight to
+one of the sections below, or just scroll down to find out more.
 
 - [What are we doing? (And why?)](#what-are-we-doing)
 - [Who are we?](#who-are-we)
-- [What do we need?](#what-do-we-need)
-- [How can you get involved?](#get-involved)
 - [Get in touch](#contact-us)
-- [Find out more](#find-out-more)
 - [Installation](#install)
 - [Running](#running)
 - [Supported datasets](#datasets)
 - [Documentation](#docs)
 - [Architecture and main concepts](#architecture)
-
-We also have a recent [paper][link_jne] in JNE.
+- [Citing MOABB and related publications](#citing)
 
 ## What are we doing?
 
@@ -57,7 +52,7 @@ best and on which dataset.
 
 ### The solution
 
-The Mother of all BCI Benchmark will:
+The Mother of all BCI Benchmark allows to:
 
 - Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list
   of freely available EEG datasets.
@@ -72,12 +67,12 @@ state of the art by 5% ...”.
 
 ## Who are we?
 
-The founder of the Mother of all BCI Benchmark is [Alexander Barachant][link_alex_b]. He
-is currently working with [Vinay Jayaram][link_vinay] to update and maintain the codebase.
-This project is under the umbrella of [NeuroTechX][link_neurotechx], the international
-community for NeuroTech enthusiasts.
+The founders of the Mother of all BCI Benchmark are [Alexander Barachant][link_alex_b] and
+[Vinay Jayaram][link_vinay]. This project is under the umbrella of
+[NeuroTechX][link_neurotechx], the international community for NeuroTech enthusiasts. The
+project is currently maintenained by [Sylvain Chevallier][link_sylvain].
 
-## What do we need?
+### What do we need?
 
 **You**! In whatever way you can help.
 
@@ -92,7 +87,7 @@ professional development of any and all of our contributors. If you're looking t
 code, try out working collaboratively, or translate you skills to the digital domain,
 we're here to help.
 
-## Get involved
+### Get involved
 
 If you think you can help in any of the areas listed above (and we bet you can) or in any
 of the many areas that we haven't yet thought of (and here we're _sure_ you can) then
@@ -107,10 +102,19 @@ our [code of conduct](CODE_OF_CONDUCT.md) in all interactions both on and offlin
 
 If you want to report a problem or suggest an enhancement we'd love for you to
 [open an issue](../../issues) at this github repository because then we can get right on
-it. But you can also reach us on the [NeuroTechX slack #moabb
-channel][link_neurotechx_signup] where we are happy to help!
+it.
 
-## Find out more
+For a less formal discussion or exchanging ideas, you can also reach us on the [Gitter
+channel][link_gitter] or join our weekly office hours! This an open video meeting
+happening every Thursday at [18:30 GMT+1](https://time.is/en/Paris), please ask the link
+on the gitter channel. We are also on [NeuroTechX slack #moabb
+channel][link_neurotechx_signup].
+
+### Find out more
+
+First, you could take a look at our [tutorials](./tutorials), that cover the most
+important concepts and use cases. Also, we have a several [examples](./examples/)
+available.
 
 You might be interested in:
 
@@ -129,7 +133,7 @@ BCI algorithms applied on an extensive list of freely available EEG datasets.
 
 ## <a name="install"></a> Installation:
 
-**Must by running Python 3.6**
+**Python 3.6 is prefered (for now) if you want to contribute**
 
 To install, fork or clone the repository and go to the downloaded directory, then run
 
@@ -154,11 +158,10 @@ python -m unittest moabb.tests
 
 once it is installed.
 
-### Run the Moabb
+###Use Moabb
 
-```
-python -m moabb.run --verbose
-```
+You could check our [tutorials](./tutorials) and [examples](./examples/) to see how you
+could use MOABB in your project.
 
 ## <a name="docs"></a> Documentation:
 
@@ -171,10 +174,10 @@ http://moabb.neurotechx.com/docs/datasets.html
 
 ### Submit a new dataset
 
-you can submit new dataset by filling this
-[form](https://docs.google.com/forms/d/e/1FAIpQLScxbpqK4omKsUs4tA2XpfeHJATo_SbYvT0hpxoeKDb5k_TZvQ/viewform).
-The datasets currently on our radar can be seen
-[here](https://docs.google.com/spreadsheets/d/1fQNFXGu1J1yJ9jFCer9EQQatjCPJWg7O-uCGF0Z4PiM/edit).
+you can submit new dataset by mentioning it to this
+[issue](https://github.com/NeuroTechX/moabb/issues/1). The datasets The datasets currently
+on our radar can be seen [here]
+(https://github.com/NeuroTechX/moabb/wiki/Datasets-Support)
 
 ## <a name="architecture"></a> Architecture and main concepts:
 
@@ -234,11 +237,26 @@ cd docs
 make html
 ```
 
+## Citing MOABB and related publications
+
+To cite MOABB, you could use the following paper:
+
+> Vinay Jayaram and Alexandre Barachant.
+> ["MOABB: trustworthy algorithm benchmarking for BCIs."](http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta)
+> Journal of neural engineering 15.6 (2018): 066011.
+> [DOI](https://doi.org/10.1088/1741-2552/aadea0)
+
+If you publish a paper using MOABB, please contact us on [gitter][link_gitter] or open an
+issue, and we will add you paper to the
+[dedicated wiki page](https://github.com/NeuroTechX/moabb/wiki/MOABB-bibliography).
+
 [link_alex_b]: http://alexandre.barachant.org/
 [link_vinay]: https://ei.is.tuebingen.mpg.de/~vjayaram
 [link_neurotechx]: http://neurotechx.com/
+[link_sylvain]: https://sylvchev.github.io/
 [link_neurotechx_signup]:
   https://docs.google.com/forms/d/e/1FAIpQLSfZyzhVdOLU8_oQ4NylHL8EFoKLIVmryGXA4u7HDsZpkTryvg/viewform
+[link_gitter]: https://gitter.im/moabb_dev/community
 [link_moabb_docs]: http://moabb.neurotechx.com/docs/index.html
 [link_arxiv]: https://arxiv.org/abs/1805.06427
 [link_jne]: http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta
