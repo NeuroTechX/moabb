@@ -63,7 +63,6 @@ class DemonsP300(BaseDataset):
            года. Прикладные математика и информатика. —  Москва : МФТИ, 2020. – 334 с.
            ISBN 978-5-7417-0757-9
            https://mipt.ru/science/5top100/education/courseproposal/%D0%A4%D0%9F%D0%9C%D0%98%20%D1%84%D0%B8%D0%BD%D0%B0%D0%BB-compressed2.pdf
-    .. [4] Impulse Neiry website: https://impulse-neiry.com/
     """
 
     ch_names = ["Cz", "P3", "Pz", "P4", "PO3", "PO4", "O1", "O2"]
@@ -151,7 +150,8 @@ class DemonsP300(BaseDataset):
             target = act["target"] + 1
             run_data = []
             for eeg, starts, stims in act["sessions"]:
-                starts *= self.sampling_rate / self._ms_in_sec
+                starts = starts * self.sampling_rate / self._ms_in_sec
+                starts = starts.round().astype(np.int)
                 stims = stims + 1
                 stims_channel = np.zeros(eeg.shape[1])
                 target_channel = np.zeros(eeg.shape[1])
@@ -168,7 +168,7 @@ class DemonsP300(BaseDataset):
             raw = RawArray(np.hstack(run_data), info)
             raw.set_montage(montage)
             runs_raw[f"run_{i}"] = raw
-        return {"session_1": runs_raw}
+        return {"session_0": runs_raw}
 
     def data_path(
         self, subject: int, path=None, force_update=False, update_path=None, verbose=None
