@@ -55,7 +55,8 @@ pull request to the master branch referencing the specific issue you addressed.
 
 1. install `poetry` (only once per machine):\
    `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`\
-   or [checkout installation instruction](https://python-poetry.org/docs/#installation)
+   , [checkout installation instruction](https://python-poetry.org/docs/#installation), \
+   or use [conda forge version](https://anaconda.org/conda-forge/poetry)
 1. (Optional, skip if not sure) Disable automatical environment creation:\
    `poetry config virtualenvs.create false`
 1. install all dependencies in one command (have to be run in project directory):\
@@ -70,7 +71,7 @@ That's OK and it is intended behaviour. This will be done once per machine autom
 
 _Note 2:_\
 By default `poetry` creates separate Python virtual environment for every project ([more details in documentation](https://python-poetry.org/docs/managing-environments/)).
-If you use `conda` or any other way to manage different invironments by hand - you need to
+If you use `conda` or any other way to manage different environments by hand - you need to
 disable `poetry` environment creation. Also in this case be careful with version of Python
 in your environment - it has to satisfy requirement stated in `pyproject.toml`. In case you
 disable `poetry` you are in charge of this.
@@ -79,7 +80,7 @@ disable `poetry` you are in charge of this.
 
 MOABB uses [`poetry`](https://python-poetry.org/) for dependency management. This tool
 enables one to have a reproducible environment on all popular OS (Linux, MacOS and
-Windows) and provides easy publiching pipeline.
+Windows) and provides easy publishing pipeline.
 
 Another tool that makes development more stable is
 [`pre-commit`](https://pre-commit.com/). It automatically runs variety of Code Quality
