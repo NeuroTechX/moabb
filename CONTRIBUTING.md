@@ -55,8 +55,8 @@ pull request to the master branch referencing the specific issue you addressed.
 
 1. install `poetry` (only once per machine):\
    `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`\
-   , [checkout installation instruction](https://python-poetry.org/docs/#installation), \
-   or use [conda forge version](https://anaconda.org/conda-forge/poetry)
+   or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
+   use [conda forge version](https://anaconda.org/conda-forge/poetry)
 1. (Optional, skip if not sure) Disable automatical environment creation:\
    `poetry config virtualenvs.create false`
 1. install all dependencies in one command (have to be run in project directory):\
