@@ -1,15 +1,16 @@
-# Mother of all BCI Benchmark
+# Mother of all BCI Benchmarks
 
-<p align="center">
+<p align=center>
   <img alt="banner" src="/images/M.png/">
 </p>
-<p align="center" href="">
+<p align=center>
   Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets.
 </p>
 
 ## Disclaimer
 
-**This is open science project that may evolve depending on the need of the community.**
+**This is an open science project that may evolve depending on the need of the
+community.**
 
 [![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -27,12 +28,12 @@ one of the sections below, or just scroll down to find out more.
 - [What are we doing? (And why?)](#what-are-we-doing)
 - [Who are we?](#who-are-we)
 - [Get in touch](#contact-us)
-- [Installation](#install)
+- [Installation](#installation)
 - [Running](#running)
-- [Supported datasets](#datasets)
-- [Documentation](#docs)
-- [Architecture and main concepts](#architecture)
-- [Citing MOABB and related publications](#citing)
+- [Supported datasets](#supported-datasets)
+- [Documentation](#documentation)
+- [Architecture and main concepts](#architecture-and-main-concepts)
+- [Citing MOABB and related publications](#citing-moabb-and-related-publications)
 
 ## What are we doing?
 
@@ -67,10 +68,10 @@ state of the art by 5% ...”.
 
 ## Who are we?
 
-The founders of the Mother of all BCI Benchmark are [Alexander Barachant][link_alex_b] and
-[Vinay Jayaram][link_vinay]. This project is under the umbrella of
+The founders of the Mother of all BCI Benchmarks are [Alexander Barachant][link_alex_b]
+and [Vinay Jayaram][link_vinay]. This project is under the umbrella of
 [NeuroTechX][link_neurotechx], the international community for NeuroTech enthusiasts. The
-project is currently maintenained by [Sylvain Chevallier][link_sylvain].
+project is currently maintained by [Sylvain Chevallier][link_sylvain].
 
 ### What do we need?
 
@@ -131,7 +132,7 @@ Thank you so much (Danke schön! Merci beaucoup!) for visiting the project and w
 that you'll join us on this amazing journey to build a comprehensive benchmark of popular
 BCI algorithms applied on an extensive list of freely available EEG datasets.
 
-## <a name="install"></a> Installation:
+## Installation
 
 **Python 3.6 is prefered (for now) if you want to contribute**
 
@@ -146,7 +147,7 @@ python setup.py develop    # because no stable release yet
 
 see `pyproject.toml` file for full list of dependencies
 
-## <a name="running"></a> Running:
+## Running
 
 ### Verify Installation
 
@@ -158,16 +159,16 @@ python -m unittest moabb.tests
 
 once it is installed.
 
-###Use Moabb
+### Use Moabb
 
 You could check our [tutorials](./tutorials) and [examples](./examples/) to see how you
 could use MOABB in your project.
 
-## <a name="docs"></a> Documentation:
+## Documentation
 
 [http://moabb.neurotechx.com/docs/](http://moabb.neurotechx.com/docs/)
 
-## <a name="datasets"></a> Supported datasets:
+## Supported datasets
 
 The list of supported dataset can be found here :
 http://moabb.neurotechx.com/docs/datasets.html
@@ -175,11 +176,10 @@ http://moabb.neurotechx.com/docs/datasets.html
 ### Submit a new dataset
 
 you can submit new dataset by mentioning it to this
-[issue](https://github.com/NeuroTechX/moabb/issues/1). The datasets The datasets currently
-on our radar can be seen [here]
-(https://github.com/NeuroTechX/moabb/wiki/Datasets-Support)
+[issue](https://github.com/NeuroTechX/moabb/issues/1). The datasets currently on our radar
+can be seen [here] (https://github.com/NeuroTechX/moabb/wiki/Datasets-Support)
 
-## <a name="architecture"></a> Architecture and main concepts:
+## Architecture and main concepts
 
 <p align="center">
   <img alt="banner" src="/images/architecture.png/" width="400">
@@ -230,7 +230,7 @@ analyze(results)
 
 ## Generate the documentation
 
-To generate the documentation :
+To generate the documentation:
 
 ```
 cd docs
