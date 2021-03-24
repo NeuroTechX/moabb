@@ -1,3 +1,45 @@
+[tool.poetry]
+name = "moabb"
+version = "0.3.0"
+description = "Mother of All BCI Benchmarks"
+authors = ["Alexandre Barachant", "Vinay Jayaram"]
+maintainers = ["Sylvain Chevallier <sylvain.chevallier@uvsq.fr>"]
+readme = "README.md"
+repository = "https://github.com/NeuroTechX/moabb"
+documentation = "http://moabb.neurotechx.com/docs/index.html"
+keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
+license = "BSD-3-Clause"
+
+[tool.poetry.dependencies]
+python = "^3.6.1"
+numpy = "^1.19.0"
+scipy = "^1.5"
+mne = ">=0.19"
+pandas = "^1.0.0"
+h5py = "^3.0.0"
+scikit-learn = "^0.23"  # 0.24.0 breaks pyriemann, requires https://github.com/alexandrebarachant/pyRiemann/pull/93
+pyriemann = ">=0.2.6"
+matplotlib = "^3.0.0"
+seaborn = ">=0.9.0"
+PyYAML = "^5.0.0"
+
+coloredlogs = "^15.0"  # TODO: remove. As of https://github.com/NeuroTechX/moabb/issues/75
+wfdb = "^3.3.0"  # TODO: remove. Used only once, for downloading. Try to replace
+pyunpack = "^0.2.2"  # TODO: remove. used only once, could be replaced with standard library call
+patool = "^1.12"  #  TODO: remove. required as pyunpack's backend
+
+[tool.poetry.dev-dependencies]
+Sphinx = "^3.3"
+sphinx-gallery = "^0.8.2"
+sphinx-bootstrap-theme = "^0.7.1"
+numpydoc = "^1.1.0"
+m2r2 = "^0.2.7"
+pre-commit = "^2.11.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.black]
 line-length = 90
 target-version = ["py36"]

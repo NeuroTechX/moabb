@@ -15,9 +15,9 @@ pipeline:
   - name: TangentSpace
     from: pyriemann.tangentspace
     parameters:
-      metric: 'riemann'
+      metric: "riemann"
 
   - name: SVC
     from: sklearn.svm
     parameters:
-      kernel: 'linear'
+      kernel: "linear"

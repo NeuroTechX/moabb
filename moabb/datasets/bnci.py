@@ -7,6 +7,7 @@ from mne import create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 from mne.utils import verbose
+from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -177,9 +178,7 @@ def _load_data_004_2014(
     if (subject < 1) or (subject > 9):
         raise ValueError("Subject must be between 1 and 9. Got %d." % subject)
 
-    # fmt: off
-    ch_names = ["C3", "Cz", "C4", "EOG1", "EOG2", "EOG3", ]
-    # fmt: on
+    ch_names = ["C3", "Cz", "C4", "EOG1", "EOG2", "EOG3"]
     ch_types = ["eeg"] * 3 + ["eog"] * 3
 
     sessions = []
@@ -208,7 +207,6 @@ def _load_data_008_2014(
 
     url = "{u}008-2014/A{s:02d}.mat".format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
-    from scipy.io import loadmat
 
     run = loadmat(filename, struct_as_record=False, squeeze_me=True)["data"]
     raw, event_id = _convert_run_p300_sl(run, verbose=verbose)
@@ -235,7 +233,6 @@ def _load_data_009_2014(
     # we load only grid speller data
     url = "{u}009-2014/A{s:02d}S.mat".format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
-    from scipy.io import loadmat
 
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)["data"]
     raws = []
@@ -304,17 +301,11 @@ def _load_data_003_2015(
     url = "{u}003-2015/s{s:d}.mat".format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
 
-    from scipy.io import loadmat
-
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
     data = data["s%d" % subject]
     sfreq = 256.0
 
-    # fmt: off
-    ch_names = [
-        "Fz", "Cz", "P3", "Pz", "P4", "PO7", "Oz", "PO8", "Target", "Flash",
-    ]
-    # fmt: on
+    ch_names = ["Fz", "Cz", "P3", "Pz", "P4", "PO7", "Oz", "PO8", "Target", "Flash"]
 
     ch_types = ["eeg"] * 8 + ["stim"] * 2
     montage = make_standard_montage("standard_1005")
@@ -396,9 +387,8 @@ def _load_data_009_2015(
 
     # fmt: off
     subjects = [
-        "fce", "kw", "faz", "fcj", "fcg", "far", "faw", "fax", "fcc", "fcm",
-        "fas", "fch", "fcd", "fca", "fcb", "fau", "fci", "fav", "fat", "fcl",
-        "fck",
+        "fce", "kw", "faz", "fcj", "fcg", "far", "faw", "fax", "fcc", "fcm", "fas",
+        "fch", "fcd", "fca", "fcb", "fau", "fci", "fav", "fat", "fcl", "fck",
     ]
     # fmt: on
     s = subjects[subject - 1]
@@ -452,11 +442,7 @@ def _load_data_012_2015(
     if (subject < 1) or (subject > 12):
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
 
-    # fmt: off
-    subjects = [
-        "nv", "nw", "nx", "ny", "nz", "mg", "oa", "ob", "oc", "od", "ja", "oe"
-    ]
-    # fmt: on
+    subjects = ["nv", "nw", "nx", "ny", "nz", "mg", "oa", "ob", "oc", "od", "ja", "oe"]
 
     s = subjects[subject - 1]
     url = "{u}BNCIHorizon2020-PASS2D/PASS2D_VP{s}.mat".format(u=base_url, s=s)
@@ -487,7 +473,6 @@ def _load_data_013_2015(
 
     raws = []
     event_id = {}
-    from scipy.io import loadmat
 
     for filename in data_paths:
         data = loadmat(filename, struct_as_record=False, squeeze_me=True)
@@ -503,8 +488,6 @@ def _convert_mi(filename, ch_names, ch_types):
     Processes (Graz) motor imagery data from MAT files, returns list of
     recording runs.
     """
-    from scipy.io import loadmat
-
     runs = []
     event_id = {}
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
@@ -600,7 +583,6 @@ def _convert_bbci(filename, ch_types, verbose=None):
     """Convert one file in bbci format."""
     raws = []
     event_id = {}
-    from scipy.io import loadmat
 
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
     for run in data["data"]:
