@@ -12,28 +12,35 @@ We will compare three pipelines :
 
 - Riemannian Geometry
 - Jumping Means based Linear Discriminant Analysis
-- Time-Decoupled Linear Discriminant Analysis
 
 We will use the P300 paradigm, which uses the AUC as metric.
 """
+# Learning curve modification: Jan Sosulski
+#
+# License: BSD (3-clause)
+
+import warnings
+
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
 # Authors: Jan Sosulski
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.pipeline import make_pipeline
+
+import moabb
+from moabb.datasets import BNCI2014009
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import P300
+from pyriemann.estimation import XdawnCovariances
+
 #
 # License: BSD (3-clause)
 from pyriemann.spatialfilters import Xdawn
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.pipeline import make_pipeline
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from pyriemann.tangentspace import TangentSpace
-from pyriemann.estimation import XdawnCovariances
 
-from moabb.evaluations import WithinSessionEvaluation
-from moabb.paradigms import P300
-from moabb.datasets import BNCI2014009
-import moabb
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
-import warnings
 
 # getting rid of the warnings about the future (on s'en fout !)
 warnings.simplefilter(action="ignore", category=FutureWarning)

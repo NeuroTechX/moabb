@@ -14,24 +14,25 @@ We will compare two pipelines :
 We will use the LeftRightImagery paradigm. this will restrict the analysis
 to two classes (left hand versus righ hand) and use AUC as metric.
 """
-# Authors: Alexandre Barachant <alexandre.barachant@gmail.com>
+# Original author: Alexandre Barachant <alexandre.barachant@gmail.com>
+# Learning curve modification: Jan Sosulski
 #
 # License: BSD (3-clause)
 
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from mne.decoding import CSP
-from pyriemann.estimation import Covariances
-from pyriemann.tangentspace import TangentSpace
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
 import moabb
+from mne.decoding import CSP
 from moabb.datasets import BNCI2014001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
+from pyriemann.estimation import Covariances
+from pyriemann.tangentspace import TangentSpace
 
 
 moabb.set_log_level("info")
@@ -50,7 +51,9 @@ moabb.set_log_level("info")
 
 pipelines = {}
 
-pipelines["CSP + LDA"] = make_pipeline(CSP(n_components=8), LDA(solver="lsqr", shrinkage="auto"))
+pipelines["CSP + LDA"] = make_pipeline(
+    CSP(n_components=8), LDA(solver="lsqr", shrinkage="auto")
+)
 
 pipelines["RG + LR"] = make_pipeline(
     Covariances(), TangentSpace(), LogisticRegression(solver="lbfgs")

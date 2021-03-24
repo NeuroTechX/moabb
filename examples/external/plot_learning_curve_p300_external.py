@@ -20,20 +20,23 @@ We will use the P300 paradigm, which uses the AUC as metric.
 #
 # License: BSD (3-clause)
 
-from sklearn.pipeline import make_pipeline
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-from pyriemann.tangentspace import TangentSpace
-from pyriemann.estimation import XdawnCovariances
-from moabb.evaluations import WithinSessionEvaluation
-from moabb.paradigms import P300
-from moabb.datasets import BNCI2014009
-import moabb
+import warnings
+
+import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-import matplotlib.pyplot as plt
-import warnings
-from tdlda import Vectorizer as JumpingMeansVectorizer
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.pipeline import make_pipeline
+
+import moabb
+from moabb.datasets import BNCI2014009
+from moabb.evaluations import WithinSessionEvaluation
+from moabb.paradigms import P300
+from pyriemann.estimation import XdawnCovariances
+from pyriemann.tangentspace import TangentSpace
 from tdlda import TimeDecoupledLda
+from tdlda import Vectorizer as JumpingMeansVectorizer
+
 
 # getting rid of the warnings about the future (on s'en fout !)
 warnings.simplefilter(action="ignore", category=FutureWarning)

@@ -26,7 +26,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
     def __init__(
         self,
-        n_perms: Union[int, np.ndarray] = 1,
+        n_perms: Optional[Union[int, np.ndarray]] = None,
         data_size: Optional[dict] = None,
         **kwargs,
     ):
@@ -36,12 +36,17 @@ class WithinSessionEvaluation(BaseEvaluation):
         n_perms :
             Number of permutations to perform. If an array
             is passed it has to be equal in size to the data_size array.
+            Values in this array must be monotonically decreasing (performing
+            more permutations for more data is not useful to reduce standard
+            error of the mean).
+            Default: None
         data_size :
             If None is passed, it performs conventional WithinSession evaluation.
             Contains the policy to pick the datasizes to
             evaluate, as well as the actual values. The dict has the
             key 'policy' with either 'ratio' or 'per_class', and the key
             'value' with the actual values as an numpy array.
+            Default: None
         """
         self.data_size = data_size
         self.n_perms = n_perms
@@ -49,10 +54,14 @@ class WithinSessionEvaluation(BaseEvaluation):
         if self.calculate_learning_curve:
             if type(n_perms) is int:
                 self.n_perms = np.full_like(self.data_size["value"], n_perms, dtype=int)
-            if len(self.n_perms) != len(self.data_size["value"]):
+            elif len(self.n_perms) != len(self.data_size["value"]):
                 raise ValueError(
                     "Number of elements in n_perms must be equal "
                     "to number of elements in data_size['value']"
+                )
+            elif np.all(np.diff(n_perms) <= 0):
+                raise ValueError(
+                    "If n_perms is passed as an array, it has to be monotonically decreasing"
                 )
             self.test_size = 0.2  # Roughly similar to 5-fold CV
             add_cols = ["data_size", "permutation"]
