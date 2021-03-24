@@ -24,6 +24,12 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from pyriemann.estimation import XdawnCovariances
+
+#
+# License: BSD (3-clause)
+from pyriemann.spatialfilters import Xdawn
+from pyriemann.tangentspace import TangentSpace
 
 # Authors: Jan Sosulski
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -34,12 +40,6 @@ import moabb
 from moabb.datasets import BNCI2014009
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
-from pyriemann.estimation import XdawnCovariances
-
-#
-# License: BSD (3-clause)
-from pyriemann.spatialfilters import Xdawn
-from pyriemann.tangentspace import TangentSpace
 
 
 # getting rid of the warnings about the future (on s'en fout !)

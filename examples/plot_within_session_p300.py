@@ -23,6 +23,8 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from pyriemann.estimation import Xdawn, XdawnCovariances
+from pyriemann.tangentspace import TangentSpace
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 
@@ -33,8 +35,6 @@ import moabb
 from moabb.datasets import EPFLP300
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
-from pyriemann.estimation import Xdawn, XdawnCovariances
-from pyriemann.tangentspace import TangentSpace
 
 
 warnings.simplefilter(action="ignore", category=FutureWarning)

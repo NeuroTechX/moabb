@@ -25,17 +25,17 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from pyriemann.estimation import XdawnCovariances
+from pyriemann.tangentspace import TangentSpace
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
+from tdlda import TimeDecoupledLda
+from tdlda import Vectorizer as JumpingMeansVectorizer
 
 import moabb
 from moabb.datasets import BNCI2014009
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
-from pyriemann.estimation import XdawnCovariances
-from pyriemann.tangentspace import TangentSpace
-from tdlda import TimeDecoupledLda
-from tdlda import Vectorizer as JumpingMeansVectorizer
 
 
 # getting rid of the warnings about the future (on s'en fout !)

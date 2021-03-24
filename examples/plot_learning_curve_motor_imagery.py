@@ -22,17 +22,17 @@ to two classes (left hand versus righ hand) and use AUC as metric.
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from mne.decoding import CSP
+from pyriemann.estimation import Covariances
+from pyriemann.tangentspace import TangentSpace
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from mne.decoding import CSP
 from moabb.datasets import BNCI2014001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
-from pyriemann.estimation import Covariances
-from pyriemann.tangentspace import TangentSpace
 
 
 moabb.set_log_level("info")
