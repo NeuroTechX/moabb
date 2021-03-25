@@ -8,14 +8,14 @@ creating learning curves for a P300 dataset.
 Additionally, we will evaluate external code. Make sure to have tdlda installed, which
 can be found in requirements_external.txt
 
-We will compare three pipelines :
+We will compare two pipelines :
 
-- Riemannian Geometry
-- Jumping Means based Linear Discriminant Analysis
+- Riemannian Geometry with Linear Discriminant Analysis 
+- XDAWN and Linear Discriminant Analysis
 
 We will use the P300 paradigm, which uses the AUC as metric.
 """
-# Learning curve modification: Jan Sosulski
+# Authors: Jan Sosulski
 #
 # License: BSD (3-clause)
 
@@ -26,12 +26,9 @@ import numpy as np
 import seaborn as sns
 from pyriemann.estimation import XdawnCovariances
 
-#
-# License: BSD (3-clause)
 from pyriemann.spatialfilters import Xdawn
 from pyriemann.tangentspace import TangentSpace
 
-# Authors: Jan Sosulski
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
