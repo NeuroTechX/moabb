@@ -27,7 +27,6 @@ import seaborn as sns
 from pyriemann.estimation import XdawnCovariances
 from pyriemann.spatialfilters import Xdawn
 from pyriemann.tangentspace import TangentSpace
-
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
