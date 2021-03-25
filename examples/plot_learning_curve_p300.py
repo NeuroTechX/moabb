@@ -10,7 +10,7 @@ can be found in requirements_external.txt
 
 We will compare two pipelines :
 
-- Riemannian Geometry with Linear Discriminant Analysis 
+- Riemannian Geometry with Linear Discriminant Analysis
 - XDAWN and Linear Discriminant Analysis
 
 We will use the P300 paradigm, which uses the AUC as metric.
@@ -25,7 +25,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from pyriemann.estimation import XdawnCovariances
-
 from pyriemann.spatialfilters import Xdawn
 from pyriemann.tangentspace import TangentSpace
 
