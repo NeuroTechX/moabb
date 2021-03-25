@@ -63,7 +63,7 @@ The Mother of all BCI Benchmark allows to:
   different solutions available in the field.
 
 This project will be successful when we read in an abstract “ … the proposed method
-obtained a score of 89% on the MOABB (Mother of All BCI Benchmark), outperforming the
+obtained a score of 89% on the MOABB (Mother of All BCI Benchmarks), outperforming the
 state of the art by 5% ...”.
 
 ## Who are we?
@@ -111,21 +111,6 @@ happening every Thursday at [18:30 GMT+1](https://time.is/en/Paris), please ask 
 on the gitter channel. We are also on [NeuroTechX slack #moabb
 channel][link_neurotechx_signup].
 
-### Find out more
-
-First, you could take a look at our [tutorials](./tutorials), that cover the most
-important concepts and use cases. Also, we have a several [examples](./examples/)
-available.
-
-You might be interested in:
-
-- [MOABB documentation][link_moabb_docs]
-
-And of course, you'll want to know our:
-
-- [Contributors' guidelines](CONTRIBUTING.md)
-- [Roadmap](ROADMAP.md)
-
 ## Thank you
 
 Thank you so much (Danke schön! Merci beaucoup!) for visiting the project and we do hope
@@ -134,14 +119,17 @@ BCI algorithms applied on an extensive list of freely available EEG datasets.
 
 ## Installation
 
-**Python 3.6 is prefered (for now) if you want to contribute**
+A PyPi package will be available soon. For now, you need to fork or clone the repository
+and go to the downloaded directory, then run:
 
-To install, fork or clone the repository and go to the downloaded directory, then run
-
-```
-pip install -r requirements.txt
-python setup.py develop    # because no stable release yet
-```
+1. install `poetry` (only once per machine):\
+   `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`\
+   or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
+   use [conda forge version](https://anaconda.org/conda-forge/poetry)
+1. (Optional, skip if not sure) Disable automatical environment creation:\
+   `poetry config virtualenvs.create false`
+1. install all dependencies in one command (have to be run in project directory):\
+   `poetry install`
 
 ### Requirements we use
 
@@ -159,14 +147,13 @@ python -m unittest moabb.tests
 
 once it is installed.
 
-### Use Moabb
+### Use MOABB
 
-You could check our [tutorials](./tutorials) and [examples](./examples/) to see how you
-could use MOABB in your project.
+First, you could take a look at our [tutorials](./tutorials), that cover the most
+important concepts and use cases. Also, we have a several [examples](./examples/)
+available.
 
-## Documentation
-
-[http://moabb.neurotechx.com/docs/](http://moabb.neurotechx.com/docs/)
+You might be interested in [MOABB documentation][link_moabb_docs]
 
 ## Supported datasets
 
@@ -226,15 +213,6 @@ from moabb.analysis import analyze
 
 results = evaluation.process(pipeline_dict)
 analyze(results)
-```
-
-## Generate the documentation
-
-To generate the documentation:
-
-```
-cd docs
-make html
 ```
 
 ## Citing MOABB and related publications

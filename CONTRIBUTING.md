@@ -92,3 +92,12 @@ For Code Quality verification we use:
 - [`isort`](https://github.com/timothycrosley/isort) - imports sorting and grouping
 - [`flake8`](https://gitlab.com/pycqa/flake8) - code style checking
 - [`prettier`](https://github.com/prettier/prettier) - `.yml` and `.md` files formatting
+
+### Generate the documentation
+
+To generate a local version of the documentation:
+
+```
+cd docs
+make html
+```
