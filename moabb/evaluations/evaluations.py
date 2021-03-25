@@ -59,7 +59,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     "Number of elements in n_perms must be equal "
                     "to number of elements in data_size['value']"
                 )
-            elif np.all(np.diff(n_perms) <= 0):
+            elif not np.all(np.diff(n_perms) <= 0):
                 raise ValueError(
                     "If n_perms is passed as an array, it has to be monotonically decreasing"
                 )
