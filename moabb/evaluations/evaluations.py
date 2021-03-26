@@ -20,13 +20,18 @@ from moabb.evaluations.base import BaseEvaluation
 
 log = logging.getLogger()
 
+# Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
+Vector = Union[list, tuple, np.ndarray]
+
 
 class WithinSessionEvaluation(BaseEvaluation):
     """Within Session evaluation."""
 
+    VALID_POLICIES = ["per_class", "ratio"]
+
     def __init__(
         self,
-        n_perms: Optional[Union[int, np.ndarray]] = None,
+        n_perms: Optional[Union[int, Vector]] = None,
         data_size: Optional[dict] = None,
         **kwargs,
     ):
@@ -53,6 +58,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         self.n_perms = n_perms
         self.calculate_learning_curve = self.data_size is not None
         if self.calculate_learning_curve:
+            # Check correct n_perms parameter
             if self.n_perms is None:
                 raise ValueError(
                     "When passing data_size, please also indicate number of permutations"
@@ -68,9 +74,15 @@ class WithinSessionEvaluation(BaseEvaluation):
                 raise ValueError(
                     "If n_perms is passed as an array, it has to be monotonically decreasing"
                 )
+            # Check correct data size parameter
             if not np.all(np.diff(self.data_size["value"]) > 0):
                 raise ValueError(
                     "data_size['value'] must be sorted in strictly monotonically increasing order."
+                )
+            if data_size["policy"] not in WithinSessionEvaluation.VALID_POLICIES:
+                raise ValueError(
+                    f"{data_size['policy']} is not valid. Please use one of"
+                    f"{WithinSessionEvaluation.VALID_POLICIES}"
                 )
             self.test_size = 0.2  # Roughly similar to 5-fold CV
             add_cols = ["data_size", "permutation"]
@@ -131,7 +143,10 @@ class WithinSessionEvaluation(BaseEvaluation):
                 "Cannot create data subsets without valid policy for data_size."
             )
         if self.data_size["policy"] == "ratio":
-            upto = np.ceil(self.data_size["value"] * len(y)).astype(int)
+            vals = np.array(self.data_size["value"])
+            if np.any(vals < 0) or np.any(vals > 1):
+                raise ValueError("Data subset ratios must be in range [0, 1]")
+            upto = np.ceil(vals * len(y)).astype(int)
             indices = [np.array(range(i)) for i in upto]
         elif self.data_size["policy"] == "per_class":
             classwise_indices = dict()
@@ -143,7 +158,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     len(cl_i) if len(cl_i) < n_smallest_class else n_smallest_class
                 )
             indices = []
-            for ds in self.data_size["value"].astype(int):
+            for ds in self.data_size["value"]:
                 if ds > n_smallest_class:
                     raise ValueError(
                         f"Smallest class has {n_smallest_class} samples. "
