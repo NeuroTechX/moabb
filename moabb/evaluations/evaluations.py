@@ -45,13 +45,18 @@ class WithinSessionEvaluation(BaseEvaluation):
             Contains the policy to pick the datasizes to
             evaluate, as well as the actual values. The dict has the
             key 'policy' with either 'ratio' or 'per_class', and the key
-            'value' with the actual values as an numpy array.
+            'value' with the actual values as an numpy array. This array should be
+            sorted, such that values in data_size are strictly monotonically increasing.
             Default: None
         """
         self.data_size = data_size
         self.n_perms = n_perms
         self.calculate_learning_curve = self.data_size is not None
         if self.calculate_learning_curve:
+            if self.n_perms is None:
+                raise ValueError(
+                    "When passing data_size, please also indicate number of permutations"
+                )
             if type(n_perms) is int:
                 self.n_perms = np.full_like(self.data_size["value"], n_perms, dtype=int)
             elif len(self.n_perms) != len(self.data_size["value"]):
@@ -62,6 +67,10 @@ class WithinSessionEvaluation(BaseEvaluation):
             elif not np.all(np.diff(n_perms) <= 0):
                 raise ValueError(
                     "If n_perms is passed as an array, it has to be monotonically decreasing"
+                )
+            if not np.all(np.diff(self.data_size["value"]) > 0):
+                raise ValueError(
+                    "data_size['value'] must be sorted in strictly monotonically increasing order."
                 )
             self.test_size = 0.2  # Roughly similar to 5-fold CV
             add_cols = ["data_size", "permutation"]

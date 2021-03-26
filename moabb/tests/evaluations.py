@@ -42,6 +42,29 @@ class Test_WithinSess(unittest.TestCase):
         self.assertEqual(len(results), 4)
 
 
+class Test_WithinSessLearningCurve(unittest.TestCase):
+    """
+    Some unit test for the learning class evaluation.
+    """
+
+    def test_correct_number_of_columns(self):
+        # Should have 2 additional columns when learning curves are desired
+        pass
+
+    def test_all_policies_work(self):
+        # per_class
+        # ratio
+        pass
+
+    def test_data_sanity(self):
+        # E.g. if number of samples too high -> expect error
+        pass
+
+    def test_datasize_parameters(self):
+        # Fail if not decreasing/increasing etc.
+        pass
+
+
 class Test_AdditionalColumns(unittest.TestCase):
     def setUp(self):
         self.eval = ev.WithinSessionEvaluation(
