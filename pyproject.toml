@@ -32,6 +32,7 @@ patool = "^1.12"  #  TODO: remove. required as pyunpack's backend
 Sphinx = "^3.3"
 sphinx-gallery = "^0.8.2"
 sphinx-bootstrap-theme = "^0.7.1"
+matplotlib = "^3.0.0"
 numpydoc = "^1.1.0"
 m2r2 = "^0.2.7"
 pre-commit = "^2.11.1"

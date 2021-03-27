@@ -1,2 +1,0 @@
-matplotlib
-sphinx_bootstrap_theme
