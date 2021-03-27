@@ -36,3 +36,12 @@ jobs:
         shell: bash
         run: |
           python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
+      - uses: ammaraskar/sphinx-action@master
+        with:
+          docs-folder: "docs/"
+      # Create an artifact of the html output.
+      - uses: actions/upload-artifact@v2
+        with:
+          name: DocumentationHTML
+          path: docs/_build/html/
+      # ===============================
