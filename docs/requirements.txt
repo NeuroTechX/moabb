@@ -1,3 +1,4 @@
 matplotlib
 sphinx_bootstrap_theme
-moabb
+git
+git+https://github.com/NeuroTechX/moabb
