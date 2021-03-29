@@ -21,6 +21,7 @@ from .epfl import EPFLP300
 
 # flake8: noqa
 from .gigadb import Cho2017
+from .Lee2019 import Lee2019_MI
 from .mpi_mi import MunichMI
 from .physionet_mi import PhysionetMI
 from .schirrmeister2017 import Schirrmeister2017
