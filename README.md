@@ -1,16 +1,16 @@
-# Mother of all BCI Benchmark
+# Mother of all BCI Benchmarks
 
-<p align="center">
+<p align=center>
   <img alt="banner" src="/images/M.png/">
 </p>
-<p align="center" href="">
+<p align=center>
   Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets.
 </p>
 
 ## Disclaimer
 
-**This is work in progress. API will change significantly (as well as the results of the
-benchmark).**
+**This is an open science project that may evolve depending on the need of the
+community.**
 
 [![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -22,22 +22,18 @@ First and foremost, Welcome! :tada: Willkommen! :confetti_ball: Bienvenue!
 
 Thank you for visiting the Mother of all BCI Benchmark repository.
 
-This document (the README file) is a hub to give you some information about the project.
-Jump straight to one of the sections below, or just scroll down to find out more.
+This document is a hub to give you some information about the project. Jump straight to
+one of the sections below, or just scroll down to find out more.
 
 - [What are we doing? (And why?)](#what-are-we-doing)
 - [Who are we?](#who-are-we)
-- [What do we need?](#what-do-we-need)
-- [How can you get involved?](#get-involved)
 - [Get in touch](#contact-us)
-- [Find out more](#find-out-more)
-- [Installation](#install)
+- [Installation](#installation)
 - [Running](#running)
-- [Supported datasets](#datasets)
-- [Documentation](#docs)
-- [Architecture and main concepts](#architecture)
-
-We also have a recent [paper][link_jne] in JNE.
+- [Supported datasets](#supported-datasets)
+- [Documentation](#documentation)
+- [Architecture and main concepts](#architecture-and-main-concepts)
+- [Citing MOABB and related publications](#citing-moabb-and-related-publications)
 
 ## What are we doing?
 
@@ -57,7 +53,7 @@ best and on which dataset.
 
 ### The solution
 
-The Mother of all BCI Benchmark will:
+The Mother of all BCI Benchmark allows to:
 
 - Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list
   of freely available EEG datasets.
@@ -67,17 +63,17 @@ The Mother of all BCI Benchmark will:
   different solutions available in the field.
 
 This project will be successful when we read in an abstract “ … the proposed method
-obtained a score of 89% on the MOABB (Mother of All BCI Benchmark), outperforming the
+obtained a score of 89% on the MOABB (Mother of All BCI Benchmarks), outperforming the
 state of the art by 5% ...”.
 
 ## Who are we?
 
-The founder of the Mother of all BCI Benchmark is [Alexander Barachant][link_alex_b]. He
-is currently working with [Vinay Jayaram][link_vinay] to update and maintain the codebase.
-This project is under the umbrella of [NeuroTechX][link_neurotechx], the international
-community for NeuroTech enthusiasts.
+The founders of the Mother of all BCI Benchmarks are [Alexander Barachant][link_alex_b]
+and [Vinay Jayaram][link_vinay]. This project is under the umbrella of
+[NeuroTechX][link_neurotechx], the international community for NeuroTech enthusiasts. The
+project is currently maintained by [Sylvain Chevallier][link_sylvain].
 
-## What do we need?
+### What do we need?
 
 **You**! In whatever way you can help.
 
@@ -92,7 +88,7 @@ professional development of any and all of our contributors. If you're looking t
 code, try out working collaboratively, or translate you skills to the digital domain,
 we're here to help.
 
-## Get involved
+### Get involved
 
 If you think you can help in any of the areas listed above (and we bet you can) or in any
 of the many areas that we haven't yet thought of (and here we're _sure_ you can) then
@@ -107,19 +103,13 @@ our [code of conduct](CODE_OF_CONDUCT.md) in all interactions both on and offlin
 
 If you want to report a problem or suggest an enhancement we'd love for you to
 [open an issue](../../issues) at this github repository because then we can get right on
-it. But you can also reach us on the [NeuroTechX slack #moabb
-channel][link_neurotechx_signup] where we are happy to help!
+it.
 
-## Find out more
-
-You might be interested in:
-
-- [MOABB documentation][link_moabb_docs]
-
-And of course, you'll want to know our:
-
-- [Contributors' guidelines](CONTRIBUTING.md)
-- [Roadmap](ROADMAP.md)
+For a less formal discussion or exchanging ideas, you can also reach us on the [Gitter
+channel][link_gitter] or join our weekly office hours! This an open video meeting
+happening every Thursday at [18:30 GMT+1](https://time.is/en/Paris), please ask the link
+on the gitter channel. We are also on [NeuroTechX slack #moabb
+channel][link_neurotechx_signup].
 
 ## Thank you
 
@@ -127,22 +117,25 @@ Thank you so much (Danke schön! Merci beaucoup!) for visiting the project and w
 that you'll join us on this amazing journey to build a comprehensive benchmark of popular
 BCI algorithms applied on an extensive list of freely available EEG datasets.
 
-## <a name="install"></a> Installation:
+## Installation
 
-**Must by running Python 3.6**
+A PyPi package will be available soon. For now, you need to fork or clone the repository
+and go to the downloaded directory, then run:
 
-To install, fork or clone the repository and go to the downloaded directory, then run
-
-```
-pip install -r requirements.txt
-python setup.py develop    # because no stable release yet
-```
+1. install `poetry` (only once per machine):\
+   `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`\
+   or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
+   use [conda forge version](https://anaconda.org/conda-forge/poetry)
+1. (Optional, skip if not sure) Disable automatical environment creation:\
+   `poetry config virtualenvs.create false`
+1. install all dependencies in one command (have to be run in project directory):\
+   `poetry install`
 
 ### Requirements we use
 
 see `pyproject.toml` file for full list of dependencies
 
-## <a name="running"></a> Running:
+## Running
 
 ### Verify Installation
 
@@ -154,29 +147,26 @@ python -m unittest moabb.tests
 
 once it is installed.
 
-### Run the Moabb
+### Use MOABB
 
-```
-python -m moabb.run --verbose
-```
+First, you could take a look at our [tutorials](./tutorials), that cover the most
+important concepts and use cases. Also, we have a several [examples](./examples/)
+available.
 
-## <a name="docs"></a> Documentation:
+You might be interested in [MOABB documentation][link_moabb_docs]
 
-[http://moabb.neurotechx.com/docs/](http://moabb.neurotechx.com/docs/)
-
-## <a name="datasets"></a> Supported datasets:
+## Supported datasets
 
 The list of supported dataset can be found here :
 http://moabb.neurotechx.com/docs/datasets.html
 
 ### Submit a new dataset
 
-you can submit new dataset by filling this
-[form](https://docs.google.com/forms/d/e/1FAIpQLScxbpqK4omKsUs4tA2XpfeHJATo_SbYvT0hpxoeKDb5k_TZvQ/viewform).
-The datasets currently on our radar can be seen
-[here](https://docs.google.com/spreadsheets/d/1fQNFXGu1J1yJ9jFCer9EQQatjCPJWg7O-uCGF0Z4PiM/edit).
+you can submit new dataset by mentioning it to this
+[issue](https://github.com/NeuroTechX/moabb/issues/1). The datasets currently on our radar
+can be seen [here] (https://github.com/NeuroTechX/moabb/wiki/Datasets-Support)
 
-## <a name="architecture"></a> Architecture and main concepts:
+## Architecture and main concepts
 
 <p align="center">
   <img alt="banner" src="/images/architecture.png/" width="400">
@@ -225,20 +215,26 @@ results = evaluation.process(pipeline_dict)
 analyze(results)
 ```
 
-## Generate the documentation
+## Citing MOABB and related publications
 
-To generate the documentation :
+To cite MOABB, you could use the following paper:
 
-```
-cd docs
-make html
-```
+> Vinay Jayaram and Alexandre Barachant.
+> ["MOABB: trustworthy algorithm benchmarking for BCIs."](http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta)
+> Journal of neural engineering 15.6 (2018): 066011.
+> [DOI](https://doi.org/10.1088/1741-2552/aadea0)
+
+If you publish a paper using MOABB, please contact us on [gitter][link_gitter] or open an
+issue, and we will add you paper to the
+[dedicated wiki page](https://github.com/NeuroTechX/moabb/wiki/MOABB-bibliography).
 
 [link_alex_b]: http://alexandre.barachant.org/
 [link_vinay]: https://ei.is.tuebingen.mpg.de/~vjayaram
 [link_neurotechx]: http://neurotechx.com/
+[link_sylvain]: https://sylvchev.github.io/
 [link_neurotechx_signup]:
   https://docs.google.com/forms/d/e/1FAIpQLSfZyzhVdOLU8_oQ4NylHL8EFoKLIVmryGXA4u7HDsZpkTryvg/viewform
+[link_gitter]: https://gitter.im/moabb_dev/community
 [link_moabb_docs]: http://moabb.neurotechx.com/docs/index.html
 [link_arxiv]: https://arxiv.org/abs/1805.06427
 [link_jne]: http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta
