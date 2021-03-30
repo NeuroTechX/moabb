@@ -93,7 +93,7 @@ class DemonsP300(BaseDataset):
     def __init__(self):
         super().__init__(
             subjects=list(range(60)),
-            sessions_per_subject=17,
+            sessions_per_subject=1,
             events={"Target": 1, "NonTarget": 2},
             code="Demons P300",
             interval=[0, 1],
