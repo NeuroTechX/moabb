@@ -4,6 +4,7 @@ takes data stored locally, in the format in which they have been downloaded,
 and will convert them into a MNE raw object. There are options to pool all the
 different recording sessions per subject or to evaluate them separately.
 """
+# flake8: noqa
 from .alex_mi import AlexMI
 from .bbci_eeg_fnirs import Shin2017A, Shin2017B
 from .bnci import (
@@ -18,11 +19,10 @@ from .bnci import (
 )
 from .braininvaders import bi2013a
 from .epfl import EPFLP300
-
-# flake8: noqa
 from .gigadb import Cho2017
 from .Lee2019 import Lee2019_MI
 from .mpi_mi import MunichMI
+from .neiry import DemonsP300
 from .physionet_mi import PhysionetMI
 from .schirrmeister2017 import Schirrmeister2017
 from .ssvep_exo import SSVEPExo
