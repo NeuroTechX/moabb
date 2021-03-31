@@ -1,4 +1,0 @@
-matplotlib
-sphinx_bootstrap_theme
-git
-git+https://github.com/NeuroTechX/moabb
