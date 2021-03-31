@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import importlib
 import logging
 import os
@@ -8,7 +6,6 @@ from collections import OrderedDict
 from copy import deepcopy
 from glob import glob
 
-import coloredlogs
 import mne
 import pandas as pd
 import yaml
@@ -182,17 +179,9 @@ if __name__ == "__main__":
     # set logs
     mne.set_log_level(False)
     # logging.basicConfig(level=logging.WARNING)
-    # coloredlogs.install(level=logging.WARNING)
 
     parser = parser_init()
     options = parser.parse_args()
-
-    if options.debug:
-        coloredlogs.install(level=logging.DEBUG)
-    elif options.verbose:
-        coloredlogs.install(level=logging.INFO)
-    else:
-        coloredlogs.install(level=logging.WARNING)
 
     pipeline_configs = parse_pipelines_from_directory(options.pipelines)
 

@@ -83,42 +83,13 @@ class EPFLP300(BaseDataset):
 
         # meta-info from the readme.pdf
         sfreq = 2048
+        # fmt: off
         ch_names = [
-            "Fp1",
-            "AF3",
-            "F7",
-            "F3",
-            "FC1",
-            "FC5",
-            "T7",
-            "C3",
-            "CP1",
-            "CP5",
-            "P7",
-            "P3",
-            "Pz",
-            "PO3",
-            "O1",
-            "Oz",
-            "O2",
-            "PO4",
-            "P4",
-            "P8",
-            "CP6",
-            "CP2",
-            "C4",
-            "T8",
-            "FC6",
-            "FC2",
-            "F4",
-            "F8",
-            "AF4",
-            "Fp2",
-            "Fz",
-            "Cz",
-            "MA1",
-            "MA2",
+            "Fp1", "AF3", "F7", "F3", "FC1", "FC5", "T7", "C3", "CP1", "CP5", "P7", "P3",
+            "Pz", "PO3", "O1", "Oz", "O2", "PO4", "P4", "P8", "CP6", "CP2", "C4", "T8",
+            "FC6", "FC2", "F4", "F8", "AF4", "Fp2", "Fz", "Cz", "MA1", "MA2",
         ]
+        # fmt: on
         ch_types = ["eeg"] * 32 + ["misc"] * 2
 
         # The last X entries are 0 for all signals. This leads to
