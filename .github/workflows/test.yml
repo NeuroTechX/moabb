@@ -30,8 +30,8 @@ jobs:
       - name: Run tests
         shell: bash
         run: |
-          poetry run -m unittest moabb.tests
+          poetry run python -m unittest moabb.tests
       - name: Run pipelines
         shell: bash
         run: |
-          poetry run -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
+          poetry run python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
