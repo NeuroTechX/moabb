@@ -12,7 +12,7 @@ from sklearn.preprocessing import LabelEncoder
 from moabb.evaluations.base import BaseEvaluation
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 class WithinSessionEvaluation(BaseEvaluation):

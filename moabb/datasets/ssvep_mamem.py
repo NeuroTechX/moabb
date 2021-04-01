@@ -23,7 +23,7 @@ except ImportError:
 # and continues to have the problem, (Issue #254 on wfdb-python)
 # better to do pip install git+https://github.com/MIT-LCP/wfdb-python.git
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 # Alternate Download Location
 # MAMEM1_URL = 'https://ndownloader.figshare.com/articles/2068677/versions/5'
