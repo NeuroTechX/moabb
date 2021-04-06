@@ -26,6 +26,7 @@ PyYAML = "^5.0.0"
 wfdb = "^3.3.0"  # TODO: remove. Used only once, for downloading. Try to replace
 pyunpack = "^0.2.2"  # TODO: remove. used only once, could be replaced with standard library call
 patool = "^1.12"  #  TODO: remove. required as pyunpack's backend
+tdlda = {git = "https://github.com/jsosulski/tdlda.git", rev = "0.1.0", optional = true}
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^3.3"
@@ -34,6 +35,9 @@ sphinx-bootstrap-theme = "^0.7.1"
 numpydoc = "^1.1.0"
 m2r2 = "^0.2.7"
 pre-commit = "^2.11.1"
+
+[tool.poetry.extras]
+external = ["tdlda"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
