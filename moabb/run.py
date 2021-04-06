@@ -20,7 +20,7 @@ from moabb.evaluations import WithinSessionEvaluation
 from moabb.pipelines.utils import create_pipeline_from_config
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 def parser_init():

@@ -17,7 +17,7 @@ from moabb.analysis.meta_analysis import (
 PIPELINE_PALETTE = sea.color_palette("husl", 6)
 sea.set(font="serif", style="whitegrid", palette=PIPELINE_PALETTE, color_codes=False)
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 def _simplify_names(x):

@@ -11,7 +11,7 @@ from moabb.analysis.meta_analysis import (  # noqa: E501
 from moabb.analysis.results import Results  # noqa: F401
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 def analyze(results, out_path, name="analysis", plot=False):
