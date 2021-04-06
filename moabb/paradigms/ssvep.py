@@ -7,7 +7,7 @@ from moabb.datasets.fake import FakeDataset
 from moabb.paradigms.base import BaseParadigm
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 class BaseSSVEP(BaseParadigm):

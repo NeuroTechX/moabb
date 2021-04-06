@@ -17,7 +17,7 @@ from scipy.io import loadmat
 from .base import BaseDataset
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 FILES = []
 FILES.append("https://dataverse.harvard.edu/api/access/datafile/2499178")

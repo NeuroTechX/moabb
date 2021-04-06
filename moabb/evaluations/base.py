@@ -8,7 +8,7 @@ from moabb.datasets.base import BaseDataset
 from moabb.paradigms.base import BaseParadigm
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 class BaseEvaluation(ABC):
