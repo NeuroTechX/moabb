@@ -1,20 +1,21 @@
 """
 ===========================
-Within Session P300
+Within Session P300 with learning curve
 ===========================
 
-This Example shows how to perform a within session analysis on three different
-P300 datasets.
+This Example shows how to perform a within session analysis while also
+creating learning curves for a P300 dataset.
+Additionally, we will evaluate external code. Make sure to have tdlda installed, which
+can be found in requirements_external.txt
 
 We will compare two pipelines :
 
-- Riemannian Geometry
-- xDawn with Linear Discriminant Analysis
+- Riemannian Geometry with Linear Discriminant Analysis
+- XDAWN and Linear Discriminant Analysis
 
 We will use the P300 paradigm, which uses the AUC as metric.
-
 """
-# Authors: Pedro Rodrigues <pedro.rodrigues01@gmail.com>
+# Authors: Jan Sosulski
 #
 # License: BSD (3-clause)
 
@@ -23,22 +24,23 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from pyriemann.estimation import Xdawn, XdawnCovariances
+from pyriemann.estimation import XdawnCovariances
+from pyriemann.spatialfilters import Xdawn
 from pyriemann.tangentspace import TangentSpace
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-
-# getting rid of the warnings about the future (on s'en fout !)
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import EPFLP300
+from moabb.datasets import BNCI2014009
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
 
 
+# getting rid of the warnings about the future (on s'en fout !)
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
+
 
 moabb.set_log_level("info")
 
@@ -66,8 +68,7 @@ class Vectorizer(BaseEstimator, TransformerMixin):
 # ----------------
 #
 # Pipelines must be a dict of sklearn pipeline transformer.
-
-
+processing_sampling_rate = 128
 pipelines = {}
 
 # we have to do this because the classes are called 'Target' and 'NonTarget'
@@ -75,10 +76,9 @@ pipelines = {}
 # to 0 and 1
 labels_dict = {"Target": 1, "NonTarget": 0}
 
+# Riemannian geometry based classification
 pipelines["RG + LDA"] = make_pipeline(
-    XdawnCovariances(
-        nfilter=2, classes=[labels_dict["Target"]], estimator="lwf", xdawn_estimator="scm"
-    ),
+    XdawnCovariances(nfilter=5, estimator="lwf", xdawn_estimator="scm"),
     TangentSpace(),
     LDA(solver="lsqr", shrinkage="auto"),
 )
@@ -92,23 +92,32 @@ pipelines["Xdw + LDA"] = make_pipeline(
 # ----------
 #
 # We define the paradigm (P300) and use all three datasets available for it.
-# The evaluation will return a dataframe containing a single AUC score for
-# each subject / session of the dataset, and for each pipeline.
-#
-# Results are saved into the database, so that if you add a new pipeline, it
-# will not run again the evaluation unless a parameter has changed. Results can
-# be overwritten if necessary.
+# The evaluation will return a dataframe containing AUCs for each permutation
+# and dataset size.
 
-paradigm = P300(resample=128)
-dataset = EPFLP300()
-dataset.subject_list = dataset.subject_list[:2]
+paradigm = P300(resample=processing_sampling_rate)
+dataset = BNCI2014009()
+# Remove the slicing of the subject list to evaluate multiple subjects
+dataset.subject_list = dataset.subject_list[1:2]
 datasets = [dataset]
 overwrite = True  # set to True if we want to overwrite cached results
+data_size = dict(policy="ratio", value=np.geomspace(0.02, 1, 4))
+# When the training data is sparse, peform more permutations than when we have a lot of data
+n_perms = np.floor(np.geomspace(20, 2, len(data_size["value"]))).astype(int)
+# Guarantee reproducibility
+np.random.seed(7536298)
 evaluation = WithinSessionEvaluation(
-    paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite
+    paradigm=paradigm,
+    datasets=datasets,
+    data_size=data_size,
+    n_perms=n_perms,
+    suffix="examples_lr",
+    overwrite=overwrite,
 )
-results = evaluation.process(pipelines)
 
+
+results = evaluation.process(pipelines)
+# %%
 ##############################################################################
 # Plot Results
 # ----------------
@@ -117,19 +126,19 @@ results = evaluation.process(pipelines)
 
 fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
 
-sns.stripplot(
-    data=results,
-    y="score",
-    x="pipeline",
-    ax=ax,
-    jitter=True,
-    alpha=0.5,
-    zorder=1,
-    palette="Set1",
-)
-sns.pointplot(data=results, y="score", x="pipeline", ax=ax, zorder=1, palette="Set1")
+n_subs = len(dataset.subject_list)
 
+if n_subs > 1:
+    r = results.groupby(["pipeline", "subject", "data_size"]).mean().reset_index()
+else:
+    r = results
+
+sns.pointplot(data=r, x="data_size", y="score", hue="pipeline", ax=ax, palette="Set1")
+
+errbar_meaning = "subjects" if n_subs > 1 else "permutations"
+title_str = f"Errorbar shows Mean-CI across {errbar_meaning}"
+ax.set_xlabel("Amount of training samples")
 ax.set_ylabel("ROC AUC")
-ax.set_ylim(0.5, 1)
-
-fig.show()
+ax.set_title(title_str)
+fig.tight_layout()
+plt.show()
