@@ -6,7 +6,7 @@ import pandas as pd
 import scipy.stats as stats
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 def collapse_session_scores(df):

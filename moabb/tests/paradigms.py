@@ -17,7 +17,7 @@ from moabb.paradigms import (
 )
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 log.setLevel(logging.ERROR)
 
 

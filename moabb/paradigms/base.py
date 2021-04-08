@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 class BaseParadigm(metaclass=ABCMeta):

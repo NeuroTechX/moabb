@@ -14,7 +14,7 @@ from . import download as dl
 from .base import BaseDataset
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 NAKAHISHI_URL = "https://github.com/mnakanishi/12JFPM_SSVEP/raw/master/data/"
 
