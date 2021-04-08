@@ -19,6 +19,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Cache datasets
+        uses: actions/cache@v2
+        with:
+          path: ~/mne_data
+          key: ${{ runner.os }}-${{ hashFiles('moabb/datasets/**') }}
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
