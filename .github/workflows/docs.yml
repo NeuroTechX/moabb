@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install poetry
-          poetry install
+          poetry install -E external
 
       - name: Build docs
         run: |
