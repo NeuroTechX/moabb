@@ -2,26 +2,20 @@
 SSVEP MAMEM1 dataset.
 """
 
-import glob
 import logging
-import os
+import os.path as osp
 
 import numpy as np
-from mne import create_info
+import pooch
+from mne import create_info, get_config, set_config
 from mne.channels import make_standard_montage
 from mne.datasets.utils import _get_path
 from mne.io import RawArray
+from scipy.io import loadmat
 
 from .base import BaseDataset
+from .download import fs_get_file_hash, fs_get_file_id, fs_get_file_list, fs_get_file_name
 
-
-try:
-    import wfdb
-except ImportError:
-    raise ImportError("Loading this dataset requires installing wfdb")
-# Heads up on wfdb, has a problem in the latest release for windows
-# and continues to have the problem, (Issue #254 on wfdb-python)
-# better to do pip install git+https://github.com/MIT-LCP/wfdb-python.git
 
 log = logging.getLogger()
 
@@ -31,74 +25,115 @@ log = logging.getLogger()
 # MAMEM2_URL = 'https://ndownloader.figshare.com/articles/3153409/versions/2'
 # MAMEM3_URL = 'https://ndownloader.figshare.com/articles/3413851/versions/1'
 
-MAMEM1_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset1/"
-MAMEM2_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset2/"
-MAMEM3_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset3/"
+# MAMEM1_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset1/"
+# MAMEM2_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset2/"
+# MAMEM3_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset3/"
+
+MAMEM_URL = "https://ndownloader.figshare.com/files/"
+
+
+def mamem_event(eeg, dins, labels=None):
+    """Convert DIN field into events
+
+    Code adapted from https://github.com/MAMEM/eeg-processing-toolbox
+    """
+    thres_split = 2000
+    timestamps = dins[1, :]
+    samples = dins[3, :]
+    numDins = dins.shape[1]
+
+    sampleA = samples[0]
+    previous = timestamps[0]
+    t_start, freqs = [], []
+    s, c = 0, 0
+    for i in range(1, numDins):
+        current = timestamps[i]
+        if (current - previous) > thres_split:
+            sampleB = samples[i - 1]
+            freqs.append(s // c)
+            if (sampleB - sampleA) > 382:
+                t_start.append(sampleA)
+            sampleA = samples[i]
+            s = 0
+            c = 0
+        else:
+            s = s + (current - previous)
+            c = c + 1
+        previous = timestamps[i]
+    sampleB = samples[i - 1]
+    freqs.append(s // c)
+    t_start.append(sampleA)
+    freqs = np.array(freqs, dtype=np.int) * 2
+    freqs = 1000 // freqs
+    t_start = np.array(t_start)
+
+    if labels is None:
+        freqs_labels = {6: 1, 7: 2, 8: 3, 9: 4, 11: 5}
+        for f, t in zip(freqs, t_start):
+            eeg[-1, t] = freqs_labels[f]
+    else:
+        for f, t in zip(labels, t_start):
+            eeg[-1, t] = f
+    return eeg
 
 
 class BaseMAMEM(BaseDataset):
     """Base class for MAMEM datasets"""
 
-    def __init__(self, sessions_per_subject, code, doi):
+    def __init__(self, events, sessions_per_subject, code, doi, figshare_id):
         super().__init__(
             subjects=list(range(1, 11)),
-            events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
+            events=events,
             interval=[1, 4],
             paradigm="ssvep",
             sessions_per_subject=sessions_per_subject,
             code=code,
             doi=doi,
         )
+        self.figshare_id = figshare_id
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
         fnames = self.data_path(subject)
+        filelist = fs_get_file_list(self.figshare_id)
+        fsn = fs_get_file_name(filelist)
         sessions = {}
 
         for fpath in fnames:
+            fnamed = fsn[osp.basename(fpath)]
+            if fnamed[4] == "x":
+                continue
+            session_name = "session_" + fnamed[4]
             if self.code == "SSVEP MAMEM3":
-                fnamed = os.path.basename(fpath)
-                session_name = "session_" + fnamed[4]
                 # Since the data for each session is saved in 2 files,
                 # it is being saved in 2 runs
-                run_number = len(fnamed) - 6
+                run_number = len(fnamed) - 10
                 run_name = "run_" + str(run_number)
             else:
-                session_name = "session_" + fpath[-1]
                 run_name = "run_0"
 
-            record = wfdb.rdrecord(fpath)
-            data = record.p_signal.T
-            annots = wfdb.rdann(fpath, "win")
-            # the number of samples isn't exactly equal in all the trials
-            n_samples = record.sig_len
-            stim_freq = np.array([float(e) for e in self.event_id.keys()])
-            # aux_note are the exact frequencies, matched to nearest class
-            events_label = [
-                np.argmin(np.abs(stim_freq - float(f))) + 1 for f in annots.aux_note
-            ]
-            raw_events = np.zeros([1, n_samples])
-            #  annots.sample indicates the start of the trial
-            # of class "events_label"
-            for label, samploc in zip(events_label, annots.sample):
-                raw_events[0, samploc] = label
-            # append the data as another channel(stim) in the data
-            data = np.concatenate((data, raw_events), axis=0)
             if self.code == "SSVEP MAMEM3":
-                ch_names = record.sig_name
+                m = loadmat(fpath)
+                ch_names = [e[0] for e in m["info"][0, 0][9][0]]
                 sfreq = 128
                 montage = make_standard_montage("standard_1020")
+                eeg = m["eeg"]
             else:
+                m = loadmat(fpath, squeeze_me=True)
                 ch_names = ["E{}".format(i + 1) for i in range(0, 256)]
+                ch_names.append("stim")
                 # ch_names = ["{}-{}".format(s, i) if s == "EEG" else s
                 #             for i, s in enumerate(record.sig_name)]
                 sfreq = 250
+                if self.code == "SSVEP MAMEM2":
+                    labels = m["labels"]
+                else:
+                    labels = None
+                eeg = mamem_event(m["eeg"], m["DIN_1"], labels=labels)
                 montage = make_standard_montage("GSN-HydroCel-256")
-            ch_types = ["eeg"] * len(ch_names) + ["stim"]
-            ch_names.append("stim")
-
+            ch_types = ["eeg"] * (len(ch_names) - 1) + ["stim"]
             info = create_info(ch_names, sfreq, ch_types)
-            raw = RawArray(data, info, verbose=False)
+            raw = RawArray(eeg, info, verbose=False)
             raw.set_montage(montage)
             if session_name not in sessions.keys():
                 sessions[session_name] = {}
@@ -113,49 +148,27 @@ class BaseMAMEM(BaseDataset):
     ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
-        # Check if the .dat, .hea and .win files are present
-        # The .dat and .hea files give the main data
-        # .win file gives the event windows and the frequencies
-        # .flash file can give the exact times of the flashes if necessary
-        # Return the file paths depending on the number of sessions for each
-        # subject that are denoted a, b, c, ...
+
         sub = "{:02d}".format(subject)
         sign = self.code.split()[1]
-        if sign == "MAMEM1":
-            fn = "dataset1/S0{}*.dat"
-        elif sign == "MAMEM2":
-            fn = "dataset2/T0{}*.dat"
-        elif sign == "MAMEM3":
-            fn = "dataset3/U0{}*.dat"
-
         key = "MNE_DATASETS_{:s}_PATH".format(sign)
         key_dest = "MNE-{:s}-data".format(sign.lower())
-        path = _get_path(path, key, sign)
-        path = os.path.join(path, key_dest)
-        s_paths = glob.glob(os.path.join(path, fn.format(sub)))
-        subject_paths = []
-        for name in s_paths:
-            subject_paths.append(os.path.splitext(name)[0])
-        # if files for the subject are not present
-        if not subject_paths or force_update:
-            # if not downloaded, get the list of files to download
-            datarec = wfdb.get_record_list("mssvepdb")
-            datalist = []
-            for ele in datarec:
-                if fn.format(sub) in ele:
-                    datalist.append(ele)
-            wfdb.io.dl_database(
-                "mssvepdb", path, datalist, annotators="win", overwrite=force_update
-            )
-        # Return the file paths depending on the number of sessions
-        s_paths = glob.glob(os.path.join(path, fn.format(sub)))
-        subject_paths = []
-        for name in s_paths:
-            # The adaptation session has the letter x at the end in MAMEM2
-            # It should be removed from the returned file names
-            if (os.path.splitext(name)[0][-1]) != "x":
-                subject_paths.append(os.path.splitext(name)[0])
-        return subject_paths
+        if get_config(key) is None:
+            set_config(key, osp.join(osp.expanduser("~"), "mne_data"))
+        path = osp.join(_get_path(None, key, sign), key_dest)
+
+        filelist = fs_get_file_list(self.figshare_id)
+        reg = fs_get_file_hash(filelist)
+        fsn = fs_get_file_id(filelist)
+        gb = pooch.create(path=path, base_url=MAMEM_URL, registry=reg)
+
+        spath = []
+        for f in fsn.keys():
+            if f[2:4] == sub:
+                spath.append(gb.fetch(fsn[f]))
+
+        # _do_path_update(path, update_path, key, sign)
+        return spath
 
 
 class MAMEM1(BaseMAMEM):
@@ -251,10 +264,12 @@ class MAMEM1(BaseMAMEM):
 
     def __init__(self):
         super().__init__(
+            events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=3,
             # 3 for S001, S003, S008, 4 for S004
             code="SSVEP MAMEM1",
             doi="https://arxiv.org/abs/1602.00904",
+            figshare_id=2068677,
         )
 
 
@@ -328,9 +343,11 @@ class MAMEM2(BaseMAMEM):
 
     def __init__(self):
         super().__init__(
+            events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=5,
             code="SSVEP MAMEM2",
             doi="https://arxiv.org/abs/1602.00904",
+            figshare_id=3153409,
         )
 
 
@@ -413,7 +430,15 @@ class MAMEM3(BaseMAMEM):
 
     def __init__(self):
         super().__init__(
+            events={
+                "6.66": 33029,
+                "7.50": 33028,
+                "8.57": 33027,
+                "10.00": 33026,
+                "12.00": 33025,
+            },
             sessions_per_subject=5,
             code="SSVEP MAMEM3",
             doi="https://arxiv.org/abs/1602.00904",
+            figshare_id=3413851,
         )
