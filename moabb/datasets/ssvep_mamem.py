@@ -17,7 +17,7 @@ from .base import BaseDataset
 from .download import fs_get_file_hash, fs_get_file_id, fs_get_file_list, fs_get_file_name
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 # Alternate Download Location
 # MAMEM1_URL = 'https://ndownloader.figshare.com/articles/2068677/versions/5'

@@ -5,7 +5,7 @@ import abc
 import logging
 
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
