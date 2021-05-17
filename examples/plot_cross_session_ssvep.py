@@ -39,8 +39,6 @@ moabb.set_log_level("info")
 # Load 2 subjects of MAMEM3 dataset, with 3 session each
 
 subj = [1, 3]
-for s in subj:
-    MAMEM3()._get_single_subject_data(s)
 dataset = MAMEM3()
 dataset.subject_list = subj
 
@@ -71,14 +69,15 @@ pipeline["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harm
 # -------------------
 #
 # To get access to the EEG signals downloaded from the dataset, you could
-# use `dataset._get_single_subject_data(subject_id) to obtain the EEG under
-# an MNE format, stored in a dictionary of sessions and runs.
+# use `dataset.get_data(subjects=[subject_id])` to obtain the EEG under
+# MNE format, stored in a dictionary of sessions and runs.
 # Otherwise, `paradigm.get_data(dataset=dataset, subjects=[subject_id])`
 # allows to obtain the EEG data in scikit format, the labels and the meta
-# information.
+# information. In `paradigm.get_data`, the EEG are preprocessed according
+# to the paradigm requirement.
 
-sessions = dataset._get_single_subject_data(3)
-X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[3])
+# sessions = dataset.get_data(subjects=[3])
+# X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[3])
 
 ##############################################################################
 # Evaluation
