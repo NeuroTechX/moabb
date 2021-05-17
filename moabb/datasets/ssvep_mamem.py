@@ -19,17 +19,16 @@ from .download import fs_get_file_hash, fs_get_file_id, fs_get_file_list, fs_get
 
 log = logging.getLogger(__name__)
 
-# Alternate Download Location
-# MAMEM1_URL = 'https://ndownloader.figshare.com/articles/2068677/versions/5'
-# foldername = '2068677'
-# MAMEM2_URL = 'https://ndownloader.figshare.com/articles/3153409/versions/2'
-# MAMEM3_URL = 'https://ndownloader.figshare.com/articles/3413851/versions/1'
+MAMEM_URL = "https://ndownloader.figshare.com/files/"
+# Specific release
+# MAMEM1_URL = 'https://ndownloader.figshare.com/articles/2068677/versions/6'
+# MAMEM2_URL = 'https://ndownloader.figshare.com/articles/3153409/versions/4'
+# MAMEM3_URL = 'https://ndownloader.figshare.com/articles/3413851/versions/3'
 
+# Alternate Download Location
 # MAMEM1_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset1/"
 # MAMEM2_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset2/"
 # MAMEM3_URL = "https://archive.physionet.org/physiobank/database/mssvepdb/dataset3/"
-
-MAMEM_URL = "https://ndownloader.figshare.com/files/"
 
 
 def mamem_event(eeg, dins, labels=None):
