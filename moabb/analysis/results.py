@@ -171,8 +171,8 @@ class Results:
                     array = np.array(dset["data"])
                     ids = np.array(dset["id"])
                     df = pd.DataFrame(array, columns=dset.attrs["columns"])
-                    df["subject"] = ids[:, 0]
-                    df["session"] = ids[:, 1]
+                    df["subject"] = [s.decode() for s in ids[:, 0]]
+                    df["session"] = [s.decode() for s in ids[:, 1]]
                     df["channels"] = dset.attrs["channels"]
                     df["n_sessions"] = dset.attrs["n_sessions"]
                     df["dataset"] = dname
