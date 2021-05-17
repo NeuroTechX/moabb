@@ -4,7 +4,7 @@ Cross Session SSVEP
 ===================
 
 This Example show how to perform a cross-session SSVEP analysis on the
-MAMEM dataset 1, using a CCA pipeline.
+MAMEM dataset 3, using a CCA pipeline.
 
 The cross session evaluation context will evaluate performance using a leave
 one session out cross-validation. For each session in the dataset, a model
@@ -22,7 +22,7 @@ import seaborn as sns
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import MAMEM1
+from moabb.datasets import MAMEM3
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import SSVEP
 from moabb.pipelines import SSVEP_CCA
@@ -36,12 +36,12 @@ moabb.set_log_level("info")
 # Loading dataset
 # ---------------
 #
-# Load 2 subjects of MAMEM1 dataset, with 3 session each
+# Load 2 subjects of MAMEM3 dataset, with 3 session each
 
 subj = [1, 3]
 for s in subj:
-    MAMEM1()._get_single_subject_data(s)
-dataset = MAMEM1()
+    MAMEM3()._get_single_subject_data(s)
+dataset = MAMEM3()
 dataset.subject_list = subj
 
 ###############################################################################
