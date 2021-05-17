@@ -1,4 +1,5 @@
 import os
+import os.path as osp
 import unittest
 from collections import OrderedDict
 
@@ -16,6 +17,7 @@ from moabb.paradigms.motor_imagery import FakeImageryParadigm
 pipelines = OrderedDict()
 pipelines["C"] = make_pipeline(Covariances("oas"), CSP(8), LDA())
 dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=2)
+os.makedirs(osp.join(osp.expanduser("~"), "mne_data"))
 
 
 class Test_WithinSess(unittest.TestCase):
