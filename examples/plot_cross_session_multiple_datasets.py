@@ -19,13 +19,14 @@ import warnings
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+from mne.decoding import CSP
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import MAMEM1, MAMEM2, MAMEM3
+from moabb.datasets import BNCI2014001, Zhou2016
 from moabb.evaluations import CrossSessionEvaluation
-from moabb.paradigms import SSVEP
-from moabb.pipelines import SSVEP_CCA
+from moabb.paradigms import LeftRightImagery
 
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -36,13 +37,10 @@ moabb.set_log_level("info")
 # Loading dataset
 # ---------------
 #
-# Load 2 subjects of MAMEM1 2 and 3 datasets, with 5 session each
+# Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each
 
-subj = [2, 5]
-for s in subj:
-    for d in [MAMEM1(), MAMEM2(), MAMEM3()]:
-        d._get_single_subject_data(s)
-datasets = [MAMEM1(), MAMEM2(), MAMEM3()]
+subj = [1, 2]
+datasets = [Zhou2016(), BNCI2014001()]
 for d in datasets:
     d.subject_list = subj
 
@@ -50,42 +48,40 @@ for d in datasets:
 # Choose paradigm
 # ---------------
 #
-# We select the paradigm SSVEP, applying a bandpass filter (3-15 Hz) on
-# the data and we keep all the 5 classes, that is stimulation
-# frequency of 6.66, 7.50 and 8.57, 10 and 12 Hz.
+# We select the paradigm MI, applying a bandpass filter (8-35 Hz) on
+# the data and we will keep only left and right hand motor imagery
 
-paradigm = SSVEP(fmin=3, fmax=15, n_classes=None)
+paradigm = LeftRightImagery(fmin=8, fmax=35)
 
 ##############################################################################
 # Create pipelines
 # ----------------
 #
-# Use a Canonical Correlation Analysis classifier
-
-interval = datasets[0].interval
-freqs = paradigm.used_events(datasets[0])
+# Use the Common Spatial Patterns with 8 components and a Linear Discriminant
+# Analysis classifier.
 
 pipeline = {}
-pipeline["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
+pipeline["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 
 ##############################################################################
 # Get data (optional)
 # -------------------
 #
 # To get access to the EEG signals downloaded from the dataset, you could
-# use `dataset._get_single_subject_data(subject_id) to obtain the EEG under
+# use `dataset.get_data(subjects=[subject_id])` to obtain the EEG under
 # an MNE format, stored in a dictionary of sessions and runs.
 # Otherwise, `paradigm.get_data(dataset=dataset, subjects=[subject_id])`
 # allows to obtain the EEG data in scikit format, the labels and the meta
-# information.
+# information. The data are preprocessed according to the paradigm
+# requirements.
 
-X_all, labels_all, meta_all = [], [], []
-for d in datasets:
-    # sessions = d._get_single_subject_data(2)
-    X, labels, meta = paradigm.get_data(dataset=d, subjects=[2])
-    X_all.append(X)
-    labels_all.append(labels)
-    meta_all.append(meta)
+# X_all, labels_all, meta_all = [], [], []
+# for d in datasets:
+#     # sessions = d.get_data(subjects=[2])
+#     X, labels, meta = paradigm.get_data(dataset=d, subjects=[2])
+#     X_all.append(X)
+#     labels_all.append(labels)
+#     meta_all.append(meta)
 
 ##############################################################################
 # Evaluation
@@ -102,6 +98,7 @@ evaluation = CrossSessionEvaluation(
 results = evaluation.process(pipeline)
 
 print(results.head())
+results.replace(["session_E", "session_T"], ["session_0", "session_1"], inplace=True)
 
 ##############################################################################
 # Plot Results
