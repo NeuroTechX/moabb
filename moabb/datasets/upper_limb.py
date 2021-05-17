@@ -149,9 +149,7 @@ class Ofner2017(BaseDataset):
                 url = (
                     f"{UPPER_LIMB_URL}motor{session}_subject{subject}" + f"_run{run}.gdf"
                 )
-                p = dl.data_path(
-                    url, "UPPERLIMB", path, force_update, update_path, verbose
-                )
+                p = dl.data_dl(url, "UPPERLIMB", path, force_update, update_path, verbose)
                 paths.append(p)
 
         return paths

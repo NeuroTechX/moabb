@@ -19,8 +19,8 @@ from .base import BaseDataset
 log = logging.getLogger(__name__)
 
 # WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
-# WANG_URL = 'ftp://anonymous@sccn.ucsd.edu/pub/ssvep_benchmark_dataset/'
-WANG_URL = "http://www.thubci.com/uploads/down/"
+WANG_URL = "ftp://anonymous@sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
+# WANG_URL = "http://www.thubci.com/uploads/down/"
 
 
 class Wang2016(BaseDataset):
@@ -150,4 +150,4 @@ class Wang2016(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
         url = "{:s}s{:d}.rar".format(WANG_URL, subject)
-        return dl.data_path(url, "WANG", path, force_update, update_path, verbose)
+        return dl.data_dl(url, "WANG", path, force_update, update_path, verbose)
