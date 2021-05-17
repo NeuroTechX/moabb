@@ -15,10 +15,10 @@ from requests.exceptions import HTTPError
 
 @verbose
 def data_path(url, sign, path=None, force_update=False, update_path=True, verbose=None):
-    """Get path to local copy of given dataset URL.
+    """Get path to local copy of given dataset URL. **Deprecated**
 
     This is a low-level function useful for getting a local copy of a
-    remote dataset
+    remote dataset. It is deprecated in favor of data_dl.
 
     Parameters
     ----------
