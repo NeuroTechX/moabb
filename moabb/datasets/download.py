@@ -9,6 +9,7 @@ import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _do_path_update, _get_path
 from mne.utils import _fetch_file, _url_to_local_path, verbose
+from pooch import file_hash, retrieve
 from requests.exceptions import HTTPError
 
 
@@ -65,6 +66,69 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
     # Offer to update the path
     _do_path_update(path, update_path, key, sign)
     return destination
+
+
+@verbose
+def data_dl(url, sign, path=None, force_update=False, update_path=True, verbose=None):
+    """Download file from url to specified path
+
+    This function should replace data_path as the MNE will not support the download
+    of dataset anymore. This version is using Pooch.
+    Beware that now, all the file are stored directly in
+
+    Parameters
+    ----------
+    url : str
+        Path to remote location of data
+    sign : str
+        Signifier of dataset
+    path : None | str
+        Location of where to look for the BNCI data storing location.
+        If None, the environment variable or config parameter
+        ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
+        "~/mne_data" directory is used. If the dataset
+        is not found under the given path, the data
+        will be automatically downloaded to the specified folder.
+    force_update : bool
+        Force update of the dataset even if a local copy exists.
+    update_path : bool | None
+        If True, set the MNE_DATASETS_(signifier)_PATH in mne-python
+        config to the given path. If None, the user is prompted.
+    verbose : bool, str, int, or None
+        If not None, override default verbose level (see :func:`mne.verbose`).
+
+    Returns
+    -------
+    path : list of str
+        Local path to the given data file. This path is contained inside a list
+        of length one, for compatibility.
+    """
+    sign = sign.upper()
+    key = "MNE_DATASETS_{:s}_PATH".format(sign)
+    key_dest = "MNE-{:s}-data".format(sign.lower())
+    if get_config(key) is None:
+        set_config(key, osp.join(osp.expanduser("~"), "mne_data"))
+    path = _get_path(path, key, sign)
+    destination = _url_to_local_path(url, osp.join(path, key_dest))
+
+    # Fetch the file
+    if not osp.isfile(destination) or force_update:
+        if osp.isfile(destination):
+            os.remove(destination)
+        if not osp.isdir(osp.dirname(destination)):
+            os.makedirs(osp.dirname(destination))
+        known_hash = None
+    else:
+        known_hash = file_hash(destination)
+    dlpath = retrieve(
+        url, known_hash, fname=osp.basename(url), path=osp.dirname(destination)
+    )
+
+    # Offer to update the path
+    if update_path:
+        _do_path_update(path, update_path, key, sign)
+
+    return dlpath
 
 
 # This function is from https://github.com/cognoma/figshare (BSD-3-Clause)
