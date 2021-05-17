@@ -3,13 +3,11 @@ SSVEP Wang dataset.
 """
 
 import logging
-from os.path import dirname
 
 import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
-from pyunpack import Archive
 from scipy.io import loadmat
 
 from . import download as dl
@@ -19,7 +17,7 @@ from .base import BaseDataset
 log = logging.getLogger(__name__)
 
 # WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
-WANG_URL = "ftp://anonymous@sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
+WANG_URL = "ftp://sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
 # WANG_URL = "http://www.thubci.com/uploads/down/"
 
 
@@ -117,7 +115,6 @@ class Wang2016(BaseDataset):
         n_classes = len(self.event_id)
 
         fname = self.data_path(subject)
-        Archive(fname).extractall(dirname(fname))
         mat = loadmat(fname[:-4])
 
         data = np.transpose(mat["data"], axes=(2, 3, 0, 1))
@@ -149,5 +146,5 @@ class Wang2016(BaseDataset):
     ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
-        url = "{:s}s{:d}.rar".format(WANG_URL, subject)
+        url = "{:s}S{:d}.mat".format(WANG_URL, subject)
         return dl.data_dl(url, "WANG", path, force_update, update_path, verbose)

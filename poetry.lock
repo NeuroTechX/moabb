@@ -93,22 +93,6 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
-name = "easyprocess"
-version = "0.3"
-description = "Easy to use Python subprocess interface."
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
-name = "entrypoint2"
-version = "0.2.4"
-description = "easy to use command-line interface for python modules"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "filelock"
 version = "3.0.12"
 description = "A platform independent file lock."
@@ -336,14 +320,6 @@ pytz = ">=2017.2"
 test = ["pytest (>=4.0.2)", "pytest-xdist", "hypothesis (>=3.58)"]
 
 [[package]]
-name = "patool"
-version = "1.12"
-description = "portable archive file manager"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "pillow"
 version = "8.2.0"
 description = "Python Imaging Library (Fork)"
@@ -431,18 +407,6 @@ description = "World timezone definitions, modern and historical"
 category = "main"
 optional = false
 python-versions = "*"
-
-[[package]]
-name = "pyunpack"
-version = "0.2.2"
-description = "unpack archive files"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-easyprocess = "*"
-entrypoint2 = "*"
 
 [[package]]
 name = "pyyaml"
@@ -739,7 +703,7 @@ external = ["tdlda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.1"
-content-hash = "9d37615a89aa78bd84e575f99ad5f62b65ee79bab88c98a20743e2817f35ecd9"
+content-hash = "0d1367177b8ddf1957ecbadbb302e669d9076dea7d2a9fa84c7e3e559fe44047"
 
 [metadata.files]
 alabaster = [
@@ -785,14 +749,6 @@ distlib = [
 docutils = [
     {file = "docutils-0.16-py2.py3-none-any.whl", hash = "sha256:0c5b78adfbf7762415433f5515cd5c9e762339e23369dbe8000d84a4bf4ab3af"},
     {file = "docutils-0.16.tar.gz", hash = "sha256:c2de3a60e9e7d07be26b7f2b00ca0309c207e06c100f9cc2a94931fc75a478fc"},
-]
-easyprocess = [
-    {file = "EasyProcess-0.3-py2.py3-none-any.whl", hash = "sha256:fca26794d3ced044d0471bd4ed767d5c287391d8a1c5e9d106fc59478b732543"},
-    {file = "EasyProcess-0.3.tar.gz", hash = "sha256:fb948daac01f64c1e49750752711253614846c6fc7e5692a718a7408f2ffb984"},
-]
-entrypoint2 = [
-    {file = "entrypoint2-0.2.4-py3-none-any.whl", hash = "sha256:47a64379a9c5d9f0f3a3857a79f99c21809ce8d554704cb565a7c977b7d67ff7"},
-    {file = "entrypoint2-0.2.4.tar.gz", hash = "sha256:4770c3afcf3865c606a6e5f7cfcc5c59212f555fcee9b2540270399149c1dde3"},
 ]
 filelock = [
     {file = "filelock-3.0.12-py3-none-any.whl", hash = "sha256:929b7d63ec5b7d6b71b0fa5ac14e030b3f70b75747cef1b10da9b879fef15836"},
@@ -1024,10 +980,6 @@ pandas = [
     {file = "pandas-1.1.5-cp39-cp39-win_amd64.whl", hash = "sha256:edda9bacc3843dfbeebaf7a701763e68e741b08fccb889c003b0a52f0ee95782"},
     {file = "pandas-1.1.5.tar.gz", hash = "sha256:f10fc41ee3c75a474d3bdf68d396f10782d013d7f67db99c0efbfd0acb99701b"},
 ]
-patool = [
-    {file = "patool-1.12-py2.py3-none-any.whl", hash = "sha256:3f642549c9a78f5b8bef1af92df385b521d360520d1f34e4dba3fd1dee2a21bc"},
-    {file = "patool-1.12.tar.gz", hash = "sha256:e3180cf8bfe13bedbcf6f5628452fca0c2c84a3b5ae8c2d3f55720ea04cb1097"},
-]
 pillow = [
     {file = "Pillow-8.2.0-cp36-cp36m-macosx_10_10_x86_64.whl", hash = "sha256:dc38f57d8f20f06dd7c3161c59ca2c86893632623f33a42d592f097b00f720a9"},
     {file = "Pillow-8.2.0-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:a013cbe25d20c2e0c4e85a9daf438f85121a4d0344ddc76e33fd7e3965d9af4b"},
@@ -1090,10 +1042,6 @@ python-dateutil = [
 pytz = [
     {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},
     {file = "pytz-2021.1.tar.gz", hash = "sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da"},
-]
-pyunpack = [
-    {file = "pyunpack-0.2.2-py2.py3-none-any.whl", hash = "sha256:c5754ff2178951aacd554df7d8a128cb6fb2513a8fa46a7f184920faf7411e6a"},
-    {file = "pyunpack-0.2.2.tar.gz", hash = "sha256:8db8d350e3329ad06fa0aa00aa28295f5babf8c1249ce26292c026e875ba2436"},
 ]
 pyyaml = [
     {file = "PyYAML-5.4.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:3b2b1824fe7112845700f815ff6a489360226a5609b96ec2190a45e62a9fc922"},
