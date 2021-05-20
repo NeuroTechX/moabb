@@ -229,7 +229,7 @@ class BaseParadigm(metaclass=ABCMeta):
         data = dataset.get_data(subjects)
         self.prepare_process(dataset)
 
-        X = []
+        X = [] if return_epochs else np.array([])
         labels = []
         metadata = []
         for subject, sessions in data.items():
@@ -249,15 +249,13 @@ class BaseParadigm(metaclass=ABCMeta):
                     metadata.append(met)
 
                     # grow X and labels in a memory efficient way. can be slow
-                    if not return_epochs:
-                        if len(X) > 0:
-                            X = np.append(X, x, axis=0)
-                            labels = np.append(labels, lbs, axis=0)
-                        else:
-                            X = x
-                            labels = lbs
-                    else:
+                    if return_epochs:
                         X.append(x)
+                    else:
+                        X = np.append(X, x, axis=0) if len(X) else x
+                    labels = np.append(labels, lbs, axis=0)
 
         metadata = pd.concat(metadata, ignore_index=True)
+        if return_epochs:
+            X = mne.concatenate_epochs(X)
         return X, labels, metadata

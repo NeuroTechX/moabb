@@ -19,18 +19,27 @@ class BaseEvaluation(ABC):
     Parameters
     ----------
     paradigm : Paradigm instance
-        the paradigm to use.
-    datasets : List of Dataset Instance.
+        The paradigm to use.
+    datasets : List of Dataset instance
         The list of dataset to run the evaluation. If none, the list of
         compatible dataset will be retrieved from the paradigm instance.
-    random_state:
-        if not None, can guarantee same seed
-    n_jobs: 1;
-        number of jobs for fitting of pipeline
-    overwrite: bool (defaul False)
-        if true, overwrite the results.
+    random_state: int, RandomState instance, default=None
+        If not None, can guarantee same seed for shuffling examples.
+    n_jobs: int, default=1
+        Number of jobs for fitting of pipeline.
+    overwrite: bool, default=False
+        If true, overwrite the results.
+    error_score: "raise" or numeric, default="raise"
+        Value to assign to the score if an error occurs in estimator fitting. If set to
+        ‘raise’, the error is raised.
     suffix: str
-        suffix for the results file.
+        Suffix for the results file.
+    hdf5_path: str
+        Specific path for storing the results.
+    additional_columns: None
+        Adding information to results.
+    return_epochs: bool, default=False
+        use MNE epoch to train pipelines.
     """
 
     def __init__(
@@ -44,11 +53,13 @@ class BaseEvaluation(ABC):
         suffix="",
         hdf5_path=None,
         additional_columns=None,
+        return_epochs=False,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
         self.error_score = error_score
         self.hdf5_path = hdf5_path
+        self.return_epochs = return_epochs
 
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
