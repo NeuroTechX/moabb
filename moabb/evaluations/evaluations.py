@@ -186,6 +186,10 @@ class WithinSessionEvaluation(BaseEvaluation):
         return indices
 
     def score_explicit(self, clf, X_train, y_train, X_test, y_test):
+        if isinstance(X_train, np.ndarray):
+            # convert labels only if array, keep them if epochs
+            le = LabelEncoder()
+            y_train = le.fit_transform(y_train)
         scorer = get_scorer(self.paradigm.scoring)
         t_start = time()
         try:
@@ -207,9 +211,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                 continue
 
             # get the data
-            X_all, y_all, metadata_all = self.paradigm.get_data(dataset, [subject])
-            le = LabelEncoder()
-            y_all = le.fit_transform(y_all)
+            X_all, y_all, metadata_all = self.paradigm.get_data(
+                dataset, [subject], self.return_epochs
+            )
             # shuffle_data = True if self.n_perms > 1 else False
             for session in np.unique(metadata_all.session):
                 sess_idx = metadata_all.session == session
@@ -246,13 +250,18 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 "For current data size, only one class" "would remain."
                             )
                             not_enough_data = True
+                        nchan = (
+                            X_train.info["nchan"]
+                            if isinstance(X_train, BaseEpochs)
+                            else X_train.shape[1]
+                        )
                         for name, clf in run_pipes.items():
                             res = {
                                 "dataset": dataset,
                                 "subject": subject,
                                 "session": session,
                                 "n_samples": len(y_train),
-                                "n_channels": X_train.shape[1],
+                                "n_channels": nchan,
                                 "pipeline": name,
                                 # Additional columns
                                 "data_size": len(subset_indices),
@@ -297,7 +306,9 @@ class CrossSessionEvaluation(BaseEvaluation):
                 continue
 
             # get the data
-            X, y, metadata = self.paradigm.get_data(dataset, [subject])
+            X, y, metadata = self.paradigm.get_data(
+                dataset, [subject], self.return_epochs
+            )
             le = LabelEncoder()
             y = le.fit_transform(y)
             groups = metadata.session.values
@@ -309,18 +320,22 @@ class CrossSessionEvaluation(BaseEvaluation):
                 cv = LeaveOneGroupOut()
                 for train, test in cv.split(X, y, groups):
                     t_start = time()
-                    score = _fit_and_score(
-                        clone(clf),
-                        X,
-                        y,
-                        scorer,
-                        train,
-                        test,
-                        verbose=False,
-                        parameters=None,
-                        fit_params=None,
-                        error_score=self.error_score,
-                    )[0]
+                    if isinstance(X, BaseEpochs):
+                        clf.fit(X[train], y[train])
+                        score = scorer(clf, X[test], y[test])
+                    else:
+                        score = _fit_and_score(
+                            clone(clf),
+                            X,
+                            y,
+                            scorer,
+                            train,
+                            test,
+                            verbose=False,
+                            parameters=None,
+                            fit_params=None,
+                            error_score=self.error_score,
+                        )[0]
                     duration = time() - t_start
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -360,7 +375,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if len(run_pipes) != 0:
 
             # get the data
-            X, y, metadata = self.paradigm.get_data(dataset)
+            X, y, metadata = self.paradigm.get_data(
+                dataset, return_epochs=self.return_epochs
+            )
 
             # encode labels
             le = LabelEncoder()
