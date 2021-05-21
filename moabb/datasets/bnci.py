@@ -235,17 +235,16 @@ def _load_data_009_2014(
     filename = data_path(url, path, force_update, update_path)[0]
 
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)["data"]
-    raws = []
+    sess = []
     event_id = {}
     for run in data:
         raw, ev = _convert_run_p300_sl(run, verbose=verbose)
-        raws.append(raw)
+        sess.append(raw)
         event_id.update(ev)
 
     sessions = {}
-    sessions["session_0"] = {}
-    for i, rawi in enumerate(raws):
-        sessions["session_0"]["run_" + str(i)] = rawi
+    for i, sessi in enumerate(sess):
+        sessions["session_" + str(i)] = {"run_0": sessi}
 
     return sessions
 
@@ -967,7 +966,7 @@ class BNCI2014009(MNEBNCI):
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 11)),
-            sessions_per_subject=1,
+            sessions_per_subject=3,
             events={"Target": 2, "NonTarget": 1},
             code="009-2014",
             interval=[0, 0.8],
