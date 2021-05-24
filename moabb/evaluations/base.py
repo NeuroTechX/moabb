@@ -40,6 +40,8 @@ class BaseEvaluation(ABC):
         Adding information to results.
     return_epochs: bool, default=False
         use MNE epoch to train pipelines.
+    mne_labels: bool, default=False
+        if returning MNE epoch, use original dataset label if True
     """
 
     def __init__(
@@ -54,17 +56,23 @@ class BaseEvaluation(ABC):
         hdf5_path=None,
         additional_columns=None,
         return_epochs=False,
+        mne_labels=False,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
         self.error_score = error_score
         self.hdf5_path = hdf5_path
         self.return_epochs = return_epochs
+        self.mne_labels = mne_labels
 
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
         self.paradigm = paradigm
+
+        # check labels
+        if self.mne_labels and not self.return_epochs:
+            raise (ValueError("mne_labels could only be set with return_epochs"))
 
         # if no dataset provided, then we get the list from the paradigm
         if datasets is None:

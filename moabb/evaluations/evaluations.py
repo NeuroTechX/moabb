@@ -110,7 +110,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                 ix = metadata.session == session
 
                 for name, clf in run_pipes.items():
-
                     t_start = time()
                     cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
 
@@ -119,9 +118,11 @@ class WithinSessionEvaluation(BaseEvaluation):
                     if isinstance(X, BaseEpochs):
                         scorer = get_scorer(self.paradigm.scoring)
                         acc = list()
-                        for train, test in cv.split(X, y):
-                            clf.fit(X[train], y[train])
-                            acc.append(scorer(clf, X[test], y[test]))
+                        X_ = X[ix]
+                        y_ = y[ix] if self.mne_labels else y_cv
+                        for train, test in cv.split(X_, y_):
+                            clf.fit(X_[train], y_[train])
+                            acc.append(scorer(clf, X_[test], y_[test]))
                         acc = np.array(acc)
                     else:
                         acc = cross_val_score(
@@ -186,10 +187,11 @@ class WithinSessionEvaluation(BaseEvaluation):
         return indices
 
     def score_explicit(self, clf, X_train, y_train, X_test, y_test):
-        if isinstance(X_train, np.ndarray):
-            # convert labels only if array, keep them if epochs
+        if not self.mne_labels:
+            # convert labels if array, keep them if epochs and mne_labels is set
             le = LabelEncoder()
             y_train = le.fit_transform(y_train)
+            y_test = le.transform(y_test)
         scorer = get_scorer(self.paradigm.scoring)
         t_start = time()
         try:
@@ -310,12 +312,11 @@ class CrossSessionEvaluation(BaseEvaluation):
                 dataset, [subject], self.return_epochs
             )
             le = LabelEncoder()
-            y = le.fit_transform(y)
+            y = y if self.mne_labels else le.fit_transform(y)
             groups = metadata.session.values
             scorer = get_scorer(self.paradigm.scoring)
 
             for name, clf in run_pipes.items():
-
                 # we want to store a results per session
                 cv = LeaveOneGroupOut()
                 for train, test in cv.split(X, y, groups):
@@ -381,7 +382,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
             # encode labels
             le = LabelEncoder()
-            y = le.fit_transform(y)
+            y = y if self.mne_labels else le.fit_transform(y)
 
             # extract metadata
             groups = metadata.subject.values
