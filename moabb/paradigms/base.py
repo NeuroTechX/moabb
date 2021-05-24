@@ -180,10 +180,13 @@ class BaseParadigm(metaclass=ABCMeta):
         inv_events = {k: v for v, k in event_id.items()}
         labels = np.array([inv_events[e] for e in epochs.events[:, -1]])
 
-        # if only one band, return a 3D array, otherwise return a 4D
-        if len(self.filters) == 1:
+        if return_epochs:
+            X = mne.concatenate_epochs(X)
+        elif len(self.filters) == 1:
+            # if only one band, return a 3D array
             X = X[0]
         else:
+            # otherwise return a 4D
             X = np.array(X).transpose((1, 2, 3, 0))
 
         metadata = pd.DataFrame(index=range(len(labels)))
