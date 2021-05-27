@@ -155,6 +155,10 @@ available.
 
 You might be interested in [MOABB documentation][link_moabb_docs]
 
+### Troubleshooting
+
+Currently pip install moabb fails when pip version < 21, e.g. with 20.0.2 due to an `idna` package conflict. Newer pip versions resolve this conflict automatically. To fix this you can upgrade your pip version using: `pip install -U pip` before installing `moabb`.
+
 ## Supported datasets
 
 The list of supported dataset can be found here :
