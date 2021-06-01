@@ -74,7 +74,6 @@ def data_dl(url, sign, path=None, force_update=False, update_path=True, verbose=
 
     This function should replace data_path as the MNE will not support the download
     of dataset anymore. This version is using Pooch.
-    Beware that now, all the file are stored directly in
 
     Parameters
     ----------
@@ -132,7 +131,7 @@ def data_dl(url, sign, path=None, force_update=False, update_path=True, verbose=
 
 
 # This function is from https://github.com/cognoma/figshare (BSD-3-Clause)
-def issue_request(method, url, headers, data=None, binary=False):
+def fs_issue_request(method, url, headers, data=None, binary=False):
     """Wrapper for HTTP request
 
     Parameters
@@ -191,11 +190,11 @@ def fs_get_file_list(article_id, version=None):
     if version is None:
         url = fsurl + "/articles/{}/files".format(article_id)
         headers = {"Content-Type": "application/json"}
-        response = issue_request("GET", url, headers=headers)
+        response = fs_issue_request("GET", url, headers=headers)
         return response
     else:
         url = fsurl + "/articles/{}/versions/{}".format(article_id, version)
-        request = issue_request("GET", url, headers=headers)
+        request = fs_issue_request("GET", url, headers=headers)
         return request["files"]
 
 
