@@ -33,6 +33,11 @@ class Test_WithinSess(unittest.TestCase):
             paradigm=FakeImageryParadigm(), datasets=[dataset]
         )
 
+    def test_mne_labels(self):
+        kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset])
+        epochs = dict(return_epochs=False, mne_labels=True)
+        self.assertRaises(ValueError, ev.WithinSessionEvaluation, **epochs, **kwargs)
+
     def tearDown(self):
         path = self.eval.results.filepath
         if os.path.isfile(path):

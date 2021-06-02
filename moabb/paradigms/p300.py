@@ -98,7 +98,7 @@ class BaseP300(BaseParadigm):
     def used_events(self, dataset):
         pass
 
-    def process_raw(self, raw, dataset, return_epochs=False):
+    def process_raw(self, raw, dataset, return_epochs=False):  # noqa: C901
         # find the events, first check stim_channels then annotations
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) > 0:
@@ -178,10 +178,13 @@ class BaseP300(BaseParadigm):
         inv_events = {k: v for v, k in event_id.items()}
         labels = np.array([inv_events[e] for e in epochs.events[:, -1]])
 
-        # if only one band, return a 3D array, otherwise return a 4D
-        if len(self.filters) == 1:
+        if return_epochs:
+            X = mne.concatenate_epochs(X)
+        elif len(self.filters) == 1:
+            # if only one band, return a 3D array
             X = X[0]
         else:
+            # otherwise return a 4D
             X = np.array(X).transpose((1, 2, 3, 0))
 
         metadata = pd.DataFrame(index=range(len(labels)))

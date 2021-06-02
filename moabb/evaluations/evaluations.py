@@ -4,6 +4,7 @@ from time import time
 from typing import Optional, Union
 
 import numpy as np
+from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import (
@@ -100,30 +101,42 @@ class WithinSessionEvaluation(BaseEvaluation):
                 continue
 
             # get the data
-            X, y, metadata = self.paradigm.get_data(dataset, [subject])
+            X, y, metadata = self.paradigm.get_data(
+                dataset, [subject], self.return_epochs
+            )
 
             # iterate over sessions
             for session in np.unique(metadata.session):
                 ix = metadata.session == session
 
                 for name, clf in run_pipes.items():
-
                     t_start = time()
                     cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
 
                     le = LabelEncoder()
                     y_cv = le.fit_transform(y[ix])
-                    acc = cross_val_score(
-                        clf,
-                        X[ix],
-                        y_cv,
-                        cv=cv,
-                        scoring=self.paradigm.scoring,
-                        n_jobs=self.n_jobs,
-                        error_score=self.error_score,
-                    )
+                    if isinstance(X, BaseEpochs):
+                        scorer = get_scorer(self.paradigm.scoring)
+                        acc = list()
+                        X_ = X[ix]
+                        y_ = y[ix] if self.mne_labels else y_cv
+                        for train, test in cv.split(X_, y_):
+                            clf.fit(X_[train], y_[train])
+                            acc.append(scorer(clf, X_[test], y_[test]))
+                        acc = np.array(acc)
+                    else:
+                        acc = cross_val_score(
+                            clf,
+                            X[ix],
+                            y_cv,
+                            cv=cv,
+                            scoring=self.paradigm.scoring,
+                            n_jobs=self.n_jobs,
+                            error_score=self.error_score,
+                        )
                     score = acc.mean()
                     duration = time() - t_start
+                    nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
                         "time": duration / 5.0,  # 5 fold CV
                         "dataset": dataset,
@@ -131,7 +144,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                         "session": session,
                         "score": score,
                         "n_samples": len(y_cv),  # not training sample
-                        "n_channels": X.shape[1],
+                        "n_channels": nchan,
                         "pipeline": name,
                     }
 
@@ -174,6 +187,11 @@ class WithinSessionEvaluation(BaseEvaluation):
         return indices
 
     def score_explicit(self, clf, X_train, y_train, X_test, y_test):
+        if not self.mne_labels:
+            # convert labels if array, keep them if epochs and mne_labels is set
+            le = LabelEncoder()
+            y_train = le.fit_transform(y_train)
+            y_test = le.transform(y_test)
         scorer = get_scorer(self.paradigm.scoring)
         t_start = time()
         try:
@@ -195,9 +213,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                 continue
 
             # get the data
-            X_all, y_all, metadata_all = self.paradigm.get_data(dataset, [subject])
-            le = LabelEncoder()
-            y_all = le.fit_transform(y_all)
+            X_all, y_all, metadata_all = self.paradigm.get_data(
+                dataset, [subject], self.return_epochs
+            )
             # shuffle_data = True if self.n_perms > 1 else False
             for session in np.unique(metadata_all.session):
                 sess_idx = metadata_all.session == session
@@ -222,7 +240,10 @@ class WithinSessionEvaluation(BaseEvaluation):
                             f" Training samples: {len(subset_indices)}"
                         )
 
-                        X_train = X_train_all[subset_indices, :]
+                        if self.return_epochs:
+                            X_train = X_train_all[subset_indices]
+                        else:
+                            X_train = X_train_all[subset_indices, :]
                         y_train = y_train_all[subset_indices]
                         # metadata = metadata_perm[:subset_indices]
 
@@ -231,13 +252,18 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 "For current data size, only one class" "would remain."
                             )
                             not_enough_data = True
+                        nchan = (
+                            X_train.info["nchan"]
+                            if isinstance(X_train, BaseEpochs)
+                            else X_train.shape[1]
+                        )
                         for name, clf in run_pipes.items():
                             res = {
                                 "dataset": dataset,
                                 "subject": subject,
                                 "session": session,
                                 "n_samples": len(y_train),
-                                "n_channels": X_train.shape[1],
+                                "n_channels": nchan,
                                 "pipeline": name,
                                 # Additional columns
                                 "data_size": len(subset_indices),
@@ -282,31 +308,37 @@ class CrossSessionEvaluation(BaseEvaluation):
                 continue
 
             # get the data
-            X, y, metadata = self.paradigm.get_data(dataset, [subject])
+            X, y, metadata = self.paradigm.get_data(
+                dataset, [subject], self.return_epochs
+            )
             le = LabelEncoder()
-            y = le.fit_transform(y)
+            y = y if self.mne_labels else le.fit_transform(y)
             groups = metadata.session.values
             scorer = get_scorer(self.paradigm.scoring)
 
             for name, clf in run_pipes.items():
-
                 # we want to store a results per session
                 cv = LeaveOneGroupOut()
                 for train, test in cv.split(X, y, groups):
                     t_start = time()
-                    score = _fit_and_score(
-                        clone(clf),
-                        X,
-                        y,
-                        scorer,
-                        train,
-                        test,
-                        verbose=False,
-                        parameters=None,
-                        fit_params=None,
-                        error_score=self.error_score,
-                    )[0]
+                    if isinstance(X, BaseEpochs):
+                        clf.fit(X[train], y[train])
+                        score = scorer(clf, X[test], y[test])
+                    else:
+                        score = _fit_and_score(
+                            clone(clf),
+                            X,
+                            y,
+                            scorer,
+                            train,
+                            test,
+                            verbose=False,
+                            parameters=None,
+                            fit_params=None,
+                            error_score=self.error_score,
+                        )[0]
                     duration = time() - t_start
+                    nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
                         "time": duration,
                         "dataset": dataset,
@@ -314,7 +346,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                         "session": groups[test][0],
                         "score": score,
                         "n_samples": len(train),
-                        "n_channels": X.shape[1],
+                        "n_channels": nchan,
                         "pipeline": name,
                     }
                     yield res
@@ -344,11 +376,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if len(run_pipes) != 0:
 
             # get the data
-            X, y, metadata = self.paradigm.get_data(dataset)
+            X, y, metadata = self.paradigm.get_data(
+                dataset, return_epochs=self.return_epochs
+            )
 
             # encode labels
             le = LabelEncoder()
-            y = le.fit_transform(y)
+            y = y if self.mne_labels else le.fit_transform(y)
 
             # extract metadata
             groups = metadata.subject.values
@@ -375,6 +409,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         ix = sessions[test] == session
                         score = _score(model, X[test[ix]], y[test[ix]], scorer)
 
+                        nchan = (
+                            X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+                        )
                         res = {
                             "time": duration,
                             "dataset": dataset,
@@ -382,7 +419,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                             "session": session,
                             "score": score,
                             "n_samples": len(train),
-                            "n_channels": X.shape[1],
+                            "n_channels": nchan,
                             "pipeline": name,
                         }
 
