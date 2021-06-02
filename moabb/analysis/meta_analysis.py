@@ -103,7 +103,7 @@ def compute_pvals_perm(df, order=None):
     if order is None:
         order = df.columns
     else:
-        errormsg = "provided order does not have all columns of dataframe"
+        errormsg = "provided order does not have all columns of dataframe, order = {}, dfcols = {}".format(set(order),set(df.columns))
         assert set(order) == set(df.columns), errormsg
     # reshape df into matrix (sub, k, k) of differences
     data = np.zeros((df.shape[0], len(order), len(order)))
