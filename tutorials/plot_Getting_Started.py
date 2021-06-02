@@ -55,12 +55,12 @@ moabb.set_log_level("info")
 # is the name of the pipeline and the value is the Pipeline object
 
 pipelines = {}
-pipelines["AM + LDA"] = make_pipeline(LogVariance(), LDA())
+pipelines["AM+LDA"] = make_pipeline(LogVariance(), LDA())
 parameters = {"C": np.logspace(-2, 2, 10)}
 clf = GridSearchCV(SVC(kernel="linear"), parameters)
 pipe = make_pipeline(LogVariance(), clf)
 
-pipelines["AM + SVM"] = pipe
+pipelines["AM+SVM"] = pipe
 
 ##############################################################################
 # Datasets
@@ -80,7 +80,9 @@ print(utils.dataset_search(paradigm="imagery", min_subjects=6))
 # Or you can simply make your own list (which we do here due to computational
 # constraints)
 
-datasets = [BNCI2014001()]
+dataset = BNCI2014001()
+dataset.subject_list = dataset.subject_list[:2]
+datasets = [dataset]
 
 ##########################################################################
 # Paradigm
