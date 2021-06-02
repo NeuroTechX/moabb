@@ -78,7 +78,7 @@ class Schirrmeister2017(BaseDataset):
             return "/".join([GIN_URL, prefix, "{:d}.mat".format(subject)])
 
         return [
-            dl.data_path(
+            dl.data_dl(
                 _url(t), "SCHIRRMEISTER2017", path, force_update, update_path, verbose
             )
             for t in ["train", "test"]

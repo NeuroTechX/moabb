@@ -45,8 +45,6 @@ moabb.set_log_level("info")
 # frequency.
 
 n_subject = 2
-for i in range(n_subject):
-    SSVEPExo()._get_single_subject_data(i + 1)
 dataset = SSVEPExo()
 dataset.subject_list = dataset.subject_list[:n_subject]
 interval = dataset.interval

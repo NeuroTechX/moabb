@@ -1,6 +1,6 @@
 import logging
 
-import mne
+from mne import set_log_level as sll
 
 
 def set_log_level(level="INFO"):
@@ -14,7 +14,7 @@ def set_log_level(level="INFO"):
     level = level.upper()
     if level not in VALID_LEVELS:
         raise ValueError(f"Invalid level {level}. Choose one of {VALID_LEVELS}.")
-    mne.set_log_level(False)
+    sll(False)
     logging.basicConfig(
         level=level,
         format="%(asctime)s %(levelname)s %(threadName)s %(name)s %(message)s",

@@ -12,7 +12,6 @@ classify these signals.
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019
 
-import os
 import warnings
 
 import matplotlib.pyplot as plt
@@ -46,6 +45,7 @@ warnings.filterwarnings("ignore")
 # (like .mat, .gdf, etc.) and instantiate a Raw object from the MNE package
 
 dataset = BNCI2014001()
+dataset.subject_list = [1, 2, 3]
 
 ##############################################################################
 # Accessing EEG Recording
@@ -121,19 +121,21 @@ pipeline = make_pipeline(CSP(n_components=8), LDA())
 # partition and the remaining one as testing partition.
 
 evaluation = WithinSessionEvaluation(
-    paradigm=paradigm, datasets=[dataset], overwrite=True
+    paradigm=paradigm,
+    datasets=[dataset],
+    hdf5_path=None,
 )
 
 # We obtain the results in the form of a pandas dataframe
 results = evaluation.process({"csp+lda": pipeline})
 
-# To export the results in CSV within a directory:
-if not os.path.exists("./results"):
-    os.mkdir("./results")
-results.to_csv("./results/results_part2-1.csv")
+# The results are stored in locally, to avoid recomputing the results each time.
+# It is saved in `hdf5_path` if defined or in ~/mne_data/results  otherwise.
+# To export the results in CSV:
+results.to_csv("./results_part2-1.csv")
 
 # To load previously obtained results saved in CSV
-results = pd.read_csv("./results/results_part2-1.csv")
+results = pd.read_csv("./results_part2-1.csv")
 
 ##############################################################################
 # Plotting Results
