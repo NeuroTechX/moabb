@@ -117,8 +117,22 @@ plt.show()
 # other, the method find_significant_differences and the summary_plot are
 # possible.
 
-stats = compute_dataset_statistics(results)
-P, T = find_significant_differences(stats)
+try:
+    stats = compute_dataset_statistics(results)
+    P, T = find_significant_differences(stats)
+except AssertionError:
+    print(results)
+    df = results
+    algs = df.pipeline.unique()
+    print(algs)
+    from moabb.analysis.meta_analysis import collapse_session_scores
+
+    df = collapse_session_scores(df)
+    print(df)
+    d = "001-2014"
+    sd = df[df.dataset == d].pivot(index="subject", values="score", columns="pipeline")
+    print(sd)
+    raise
 
 ###############################################################################
 # The meta-analysis style plot shows the standardized mean difference within
