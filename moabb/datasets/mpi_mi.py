@@ -87,10 +87,8 @@ class MunichMI(BaseDataset):
 
         # download .set
         _set = "{:s}subject{:d}.set".format(DOWNLOAD_URL, subject)
-        set_local = dl.data_path(
-            _set, "MUNICHMI", path, force_update, update_path, verbose
-        )
+        set_local = dl.data_dl(_set, "MUNICHMI", path, force_update, update_path, verbose)
         # download .fdt
         _fdt = "{:s}subject{:d}.fdt".format(DOWNLOAD_URL, subject)
-        dl.data_path(_fdt, "MUNICHMI", path, force_update, update_path, verbose)
+        dl.data_dl(_fdt, "MUNICHMI", path, force_update, update_path, verbose)
         return set_local
