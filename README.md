@@ -15,7 +15,7 @@ community.**
 [![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![PyPI](https://img.shields.io/pypi/v/moabb?color=blue&style=plastic)](https://img.shields.io/pypi/v/moabb)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/moabb?style=plastic)](https://img.shields.io/pypi/dm/moabb)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/moabb??color=brightgreen&style=plastic)](https://img.shields.io/pypi/dm/moabb)
 
 ## Welcome!
 
