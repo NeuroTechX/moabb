@@ -82,7 +82,7 @@ freqs = paradigm.used_events(dataset)
 # The second pipeline relies on the above defined CCA classifier.
 
 pipelines_fb = {}
-pipelines_fb["RG + LogReg"] = make_pipeline(
+pipelines_fb["RG+LogReg"] = make_pipeline(
     ExtendedSSVEPSignal(),
     Covariances(estimator="lwf"),
     TangentSpace(),

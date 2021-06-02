@@ -51,11 +51,11 @@ moabb.set_log_level("info")
 
 pipelines = {}
 
-pipelines["CSP + LDA"] = make_pipeline(
+pipelines["CSP+LDA"] = make_pipeline(
     CSP(n_components=8), LDA(solver="lsqr", shrinkage="auto")
 )
 
-pipelines["RG + LR"] = make_pipeline(
+pipelines["RG+LR"] = make_pipeline(
     Covariances(), TangentSpace(), LogisticRegression(solver="lbfgs")
 )
 

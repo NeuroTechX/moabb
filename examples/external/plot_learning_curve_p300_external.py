@@ -59,7 +59,7 @@ pipelines = {}
 labels_dict = {"Target": 1, "NonTarget": 0}
 
 # Riemannian geometry based classification
-pipelines["RG + LDA"] = make_pipeline(
+pipelines["RG+LDA"] = make_pipeline(
     XdawnCovariances(nfilter=5, estimator="lwf", xdawn_estimator="scm"),
     TangentSpace(),
     LDA(solver="lsqr", shrinkage="auto"),
@@ -82,14 +82,14 @@ jmv = JumpingMeansVectorizer(
     fs=processing_sampling_rate, jumping_mean_ivals=jumping_mean_ivals
 )
 
-pipelines["JM + LDA"] = make_pipeline(jmv, LDA(solver="lsqr", shrinkage="auto"))
+pipelines["JM+LDA"] = make_pipeline(jmv, LDA(solver="lsqr", shrinkage="auto"))
 
 # Time-decoupled Covariance classifier, needs information about number of
 # channels and time intervals
 c = TimeDecoupledLda(N_channels=16, N_times=10)
 # TD-LDA needs to know about the used jumping means intervals
 c.preproc = jmv
-pipelines["JM + TD-LDA"] = make_pipeline(jmv, c)
+pipelines["JM+TD-LDA"] = make_pipeline(jmv, c)
 
 
 ##############################################################################

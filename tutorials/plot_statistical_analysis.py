@@ -56,13 +56,13 @@ print(__doc__)
 
 pipelines = {}
 
-pipelines["CSP + LDA"] = make_pipeline(CSP(n_components=8), LDA())
+pipelines["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 
-pipelines["RG + LR"] = make_pipeline(Covariances(), TangentSpace(), LogisticRegression())
+pipelines["RG+LR"] = make_pipeline(Covariances(), TangentSpace(), LogisticRegression())
 
-pipelines["CSP + LR"] = make_pipeline(CSP(n_components=8), LogisticRegression())
+pipelines["CSP+LR"] = make_pipeline(CSP(n_components=8), LogisticRegression())
 
-pipelines["RG + LDA"] = make_pipeline(Covariances(), TangentSpace(), LDA())
+pipelines["RG+LDA"] = make_pipeline(Covariances(), TangentSpace(), LDA())
 
 ##############################################################################
 # Evaluation
@@ -104,7 +104,7 @@ plt.show()
 # datasets. Note that there is only one score per subject, regardless of the
 # number of sessions.
 
-fig = moabb_plt.paired_plot(results, "CSP + LDA", "RG + LDA")
+fig = moabb_plt.paired_plot(results, "CSP+LDA", "RG+LDA")
 plt.show()
 
 ###############################################################################
@@ -124,7 +124,7 @@ P, T = find_significant_differences(stats)
 # The meta-analysis style plot shows the standardized mean difference within
 # each tested dataset for the two algorithms in question, in addition to a
 # meta-effect and significances both per-dataset and overall.
-fig = moabb_plt.meta_analysis_plot(stats, "CSP + LDA", "RG + LDA")
+fig = moabb_plt.meta_analysis_plot(stats, "CSP+LDA", "RG+LDA")
 plt.show()
 
 ###############################################################################

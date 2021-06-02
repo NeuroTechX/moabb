@@ -8,8 +8,8 @@ very popular dataset 2a from the BCI competition IV.
 
 We will compare two pipelines :
 
-- CSP + LDA
-- Riemannian Geometry + Logistic Regression
+- CSP+LDA
+- Riemannian Geometry+Logistic Regression
 
 We will use the LeftRightImagery paradigm. this will restrict the analysis
 to two classes (left hand versus righ hand) and use AUC as metric.
@@ -54,9 +54,9 @@ moabb.set_log_level("info")
 
 pipelines = {}
 
-pipelines["CSP + LDA"] = make_pipeline(CSP(n_components=8), LDA())
+pipelines["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 
-pipelines["RG + LR"] = make_pipeline(
+pipelines["RG+LR"] = make_pipeline(
     Covariances(), TangentSpace(), LogisticRegression(solver="lbfgs")
 )
 
@@ -119,7 +119,7 @@ paired = results.pivot_table(
 )
 paired = paired.reset_index()
 
-sns.regplot(data=paired, y="RG + LR", x="CSP + LDA", ax=axes[1], fit_reg=False)
+sns.regplot(data=paired, y="RG+LR", x="CSP+LDA", ax=axes[1], fit_reg=False)
 axes[1].plot([0, 1], [0, 1], ls="--", c="k")
 axes[1].set_xlim(0.5, 1)
 
