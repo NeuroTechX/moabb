@@ -5,4 +5,8 @@ either within-recording-session accuracy, across-session within-subject
 accuracy, across-subject accuracy, or other transfer learning settings.
 """
 # flake8: noqa
-from moabb.evaluations.evaluations import *
+from .evaluations import (
+    CrossSessionEvaluation,
+    CrossSubjectEvaluation,
+    WithinSessionEvaluation,
+)

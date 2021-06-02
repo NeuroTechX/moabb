@@ -176,7 +176,7 @@ class DemonsP300(BaseDataset):
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
-        zip_path = Path(dl.data_path(self.url, self._ds_folder_name))
+        zip_path = Path(dl.data_dl(self.url, self._ds_folder_name))
         self.path = zip_path.parent / self._ds_folder_name / zip_path.stem
 
         if not self.path.exists():

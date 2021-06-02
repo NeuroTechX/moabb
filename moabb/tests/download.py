@@ -15,6 +15,14 @@ Tests to ensure that datasets download correctly
 # from moabb.datasets.Zhou2016 import Zhou2016
 # from moabb.datasets.ssvep_exo import SSVEPExo
 # from moabb.datasets.braininvaders import bi2013a
+# from moabb.datasets.epfl import EPFLP300
+# from moabb.datasets.Lee2019 import Lee2019_MI
+# from moabb.datasets.neiry import DemonsP300
+# from moabb.datasets.physionet_mi import PhysionetMI
+# from moabb.datasets.ssvep_mamem import MAMEM1, MAMEM2, MAMEM3
+# from moabb.datasets.ssvep_nakanishi import Nakanishi2015
+# from moabb.datasets.ssvep_wang import Wang2016
+
 import unittest
 
 import mne
@@ -59,28 +67,14 @@ class Test_Downloads(unittest.TestCase):
     # def test_cho2017(self):
     #     self.run_dataset(Cho2017)
 
-    # def test_bnci_1401(self):
+    # def test_bnci(self):
     #     self.run_dataset(BNCI2014001)
-
-    # def test_bnci_1402(self):
     #     self.run_dataset(BNCI2014002)
-
-    # def test_bnci_1404(self):
     #     self.run_dataset(BNCI2014004)
-
-    # def test_bnci_1408(self):
     #     self.run_dataset(BNCI2014008)
-
-    # def test_bnci_1409(self):
     #     self.run_dataset(BNCI2014009)
-
-    # def test_bnci_1501(self):
     #     self.run_dataset(BNCI2015001)
-
-    # def test_bnci_1503(self):
     #     self.run_dataset(BNCI2015003)
-
-    # def test_bnci_1504(self):
     #     self.run_dataset(BNCI2015004)
 
     # def test_alexmi(self):
@@ -113,6 +107,29 @@ class Test_Downloads(unittest.TestCase):
 
     # def test_bi2013a(self):
     #     self.run_dataset(bi2013a)
+
+    # def test_epflp300(self):
+    #     self.run_dataset(EPFLP300)
+
+    # def test_lee2019_MI(self):
+    #     self.run_dataset(Lee2019_MI)
+
+    # def test_demonsp300(self):
+    #     self.run_dataset(DemonsP300)
+
+    # def test_physionetmi(self):
+    #     self.run_dataset(PhysionetMI)
+
+    # def test_mamem(self):
+    #     self.run_dataset(MAMEM1)
+    #     self.run_dataset(MAMEM2)
+    #     self.run_dataset(MAMEM3)
+
+    # def test_nakanishi2015(self):
+    #     self.run_dataset(Nakanishi2015)
+
+    # def test_wang2016(self):
+    #     self.run_dataset(Wang2016)
 
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ The following is a small set of guidelines for how to contribute to the project
 
 This project adheres to the Contributor Covenant [Code of Conduct](CODE_OF_CONDUCT.md). By
 participating you are expected to adhere to these expectations. Please report unacceptable
-behaviour to [hi@pushtheworld.us](mailto:hi@pushtheworld.us)
+behavior to [hi@pushtheworld.us](mailto:hi@pushtheworld.us)
 
 ### Contributing on Github
 
@@ -40,7 +40,7 @@ pull request to the master branch referencing the specific issue you addressed.
 1. Look for open issues or open one
 1. Discuss the problem and or propose a solution
 1. Fork it! (and clone fork locally)
-1. Branch off of `master`: `git checkout master`
+1. Branch from `master`: `git checkout master`
 1. [Setup development environment](#setup-development-environment)
 1. Create your feature branch: `git checkout -b my-new-feature`
 1. Make changes
@@ -48,8 +48,7 @@ pull request to the master branch referencing the specific issue you addressed.
 1. Don't forget to fix issues from `pre-commit` pipeline (either add changes made by hooks
    or fix them manually in case of `flake8`)
 1. Push to the branch: `git push origin my-new-feature`
-1. Submit a pull request. Make sure it is based off of the `master` branch when
-   submitting! :D
+1. Submit a pull request. Make sure it is based on the `master` branch when submitting! :D
 
 ## Setup development environment
 
@@ -57,9 +56,9 @@ pull request to the master branch referencing the specific issue you addressed.
    `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`\
    or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
    use [conda forge version](https://anaconda.org/conda-forge/poetry)
-1. (Optional, skip if not sure) Disable automatical environment creation:\
+1. (Optional, skip if not sure) Disable automatic environment creation:\
    `poetry config virtualenvs.create false`
-1. install all dependencies in one command (have to be run in project directory):\
+1. install all dependencies in one command (have to be run in thibe project directory):\
    `poetry install`
 1. install `pre-commit` hooks to git repo:\
    `pre-commit install`
@@ -67,13 +66,13 @@ pull request to the master branch referencing the specific issue you addressed.
 
 _Note 1:_\
 Your first commit will trigger `pre-commit` to download [Code Quality tools](#tools-used).
-That's OK and it is intended behaviour. This will be done once per machine automatically.
+That's OK and it is intended behavior. This will be done once per machine automatically.
 
 _Note 2:_\
 By default `poetry` creates separate Python virtual environment for every project ([more details in documentation](https://python-poetry.org/docs/managing-environments/)).
 If you use `conda` or any other way to manage different environments by hand - you need to
 disable `poetry` environment creation. Also in this case be careful with version of Python
-in your environment - it has to satisfy requirement stated in `pyproject.toml`. In case you
+in your environment - it has to satisfy requirements stated in `pyproject.toml`. In case you
 disable `poetry` you are in charge of this.
 
 ### Tools used
@@ -86,7 +85,7 @@ Another tool that makes development more stable is
 [`pre-commit`](https://pre-commit.com/). It automatically runs variety of Code Quality
 instruments against the code you produced.
 
-For Code Quality verification we use:
+For Code Quality verification, we use:
 
 - [`black`](https://github.com/psf/black) - Python code formatting
 - [`isort`](https://github.com/timothycrosley/isort) - imports sorting and grouping

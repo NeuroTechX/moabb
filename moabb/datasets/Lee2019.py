@@ -118,7 +118,6 @@ class Lee2019_MI(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
@@ -127,8 +126,7 @@ class Lee2019_MI(BaseDataset):
             url = "{0}session{1}/s{2}/sess{1:02d}_subj{2:02d}_EEG_MI.mat".format(
                 Lee2019_URL, session, subject
             )
-
-            data_path = dl.data_path(
+            data_path = dl.data_dl(
                 url, "Lee2019_MI", path, force_update, update_path, verbose
             )
             subject_paths.append(data_path)

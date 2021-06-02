@@ -180,10 +180,13 @@ class BaseParadigm(metaclass=ABCMeta):
         inv_events = {k: v for v, k in event_id.items()}
         labels = np.array([inv_events[e] for e in epochs.events[:, -1]])
 
-        # if only one band, return a 3D array, otherwise return a 4D
-        if len(self.filters) == 1:
+        if return_epochs:
+            X = mne.concatenate_epochs(X)
+        elif len(self.filters) == 1:
+            # if only one band, return a 3D array
             X = X[0]
         else:
+            # otherwise return a 4D
             X = np.array(X).transpose((1, 2, 3, 0))
 
         metadata = pd.DataFrame(index=range(len(labels)))
@@ -229,7 +232,7 @@ class BaseParadigm(metaclass=ABCMeta):
         data = dataset.get_data(subjects)
         self.prepare_process(dataset)
 
-        X = []
+        X = [] if return_epochs else np.array([])
         labels = []
         metadata = []
         for subject, sessions in data.items():
@@ -249,15 +252,13 @@ class BaseParadigm(metaclass=ABCMeta):
                     metadata.append(met)
 
                     # grow X and labels in a memory efficient way. can be slow
-                    if not return_epochs:
-                        if len(X) > 0:
-                            X = np.append(X, x, axis=0)
-                            labels = np.append(labels, lbs, axis=0)
-                        else:
-                            X = x
-                            labels = lbs
-                    else:
+                    if return_epochs:
                         X.append(x)
+                    else:
+                        X = np.append(X, x, axis=0) if len(X) else x
+                    labels = np.append(labels, lbs, axis=0)
 
         metadata = pd.concat(metadata, ignore_index=True)
+        if return_epochs:
+            X = mne.concatenate_epochs(X)
         return X, labels, metadata

@@ -155,7 +155,7 @@ class bi2013a(BaseDataset):
 
         # check if has the .zip
         url = "{:s}subject{:d}.zip".format(BI2013a_URL, subject)
-        path_zip = dl.data_path(url, "BRAININVADERS")
+        path_zip = dl.data_dl(url, "BRAININVADERS")
         path_folder = path_zip.strip("subject{:d}.zip".format(subject))
 
         # check if has to unzip

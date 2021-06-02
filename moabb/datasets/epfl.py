@@ -168,7 +168,7 @@ class EPFLP300(BaseDataset):
 
         # check if has the .zip
         url = "{:s}subject{:d}.zip".format(EPFLP300_URL, subject)
-        path_zip = dl.data_path(url, "EPFLP300")
+        path_zip = dl.data_dl(url, "EPFLP300")
         path_folder = path_zip.strip("subject{:d}.zip".format(subject))
 
         # check if has to unzip
