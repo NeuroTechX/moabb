@@ -11,7 +11,7 @@ import numpy as np
 from mne.channels import make_standard_montage
 from mne.datasets.utils import _do_path_update, _get_path
 from mne.io import read_raw_cnt
-from mne.utils import _fetch_file
+from pooch import retrieve
 
 from .base import BaseDataset
 
@@ -22,9 +22,7 @@ DATA_PATH = "https://ndownloader.figshare.com/files/3662952"
 def local_data_path(base_path, subject):
     if not os.path.isdir(os.path.join(base_path, "subject_{}".format(subject))):
         if not os.path.isdir(os.path.join(base_path, "data")):
-            _fetch_file(
-                DATA_PATH, os.path.join(base_path, "data.zip"), print_destination=False
-            )
+            retrieve(DATA_PATH, None, fname="data.zip", path=base_path)
             with z.ZipFile(os.path.join(base_path, "data.zip"), "r") as f:
                 f.extractall(base_path)
             os.remove(os.path.join(base_path, "data.zip"))

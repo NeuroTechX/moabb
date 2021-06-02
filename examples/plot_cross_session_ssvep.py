@@ -4,7 +4,7 @@ Cross Session SSVEP
 ===================
 
 This Example show how to perform a cross-session SSVEP analysis on the
-MAMEM dataset 1, using a CCA pipeline.
+MAMEM dataset 3, using a CCA pipeline.
 
 The cross session evaluation context will evaluate performance using a leave
 one session out cross-validation. For each session in the dataset, a model
@@ -22,7 +22,7 @@ import seaborn as sns
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import MAMEM1
+from moabb.datasets import MAMEM3
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import SSVEP
 from moabb.pipelines import SSVEP_CCA
@@ -36,12 +36,10 @@ moabb.set_log_level("info")
 # Loading dataset
 # ---------------
 #
-# Load 2 subjects of MAMEM1 dataset, with 3 session each
+# Load 2 subjects of MAMEM3 dataset, with 3 session each
 
 subj = [1, 3]
-for s in subj:
-    MAMEM1()._get_single_subject_data(s)
-dataset = MAMEM1()
+dataset = MAMEM3()
 dataset.subject_list = subj
 
 ###############################################################################
@@ -71,14 +69,15 @@ pipeline["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harm
 # -------------------
 #
 # To get access to the EEG signals downloaded from the dataset, you could
-# use `dataset._get_single_subject_data(subject_id) to obtain the EEG under
-# an MNE format, stored in a dictionary of sessions and runs.
+# use `dataset.get_data(subjects=[subject_id])` to obtain the EEG under
+# MNE format, stored in a dictionary of sessions and runs.
 # Otherwise, `paradigm.get_data(dataset=dataset, subjects=[subject_id])`
 # allows to obtain the EEG data in scikit format, the labels and the meta
-# information.
+# information. In `paradigm.get_data`, the EEG are preprocessed according
+# to the paradigm requirement.
 
-sessions = dataset._get_single_subject_data(3)
-X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[3])
+# sessions = dataset.get_data(subjects=[3])
+# X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[3])
 
 ##############################################################################
 # Evaluation

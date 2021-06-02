@@ -97,4 +97,4 @@ class Nakanishi2015(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
         url = "{:s}s{:d}.mat".format(NAKAHISHI_URL, subject)
-        return dl.data_path(url, "NAKANISHI", path, force_update, update_path, verbose)
+        return dl.data_dl(url, "NAKANISHI", path, force_update, update_path, verbose)
