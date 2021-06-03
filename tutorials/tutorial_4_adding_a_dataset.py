@@ -150,7 +150,9 @@ dataset = ExampleDataset()
 paradigm = LeftRightImagery()
 X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[1])
 
-evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=dataset, overwrite=True)
+evaluation = WithinSessionEvaluation(
+    paradigm=paradigm, datasets=dataset, overwrite=False, suffix="newdataset"
+)
 pipelines = {}
 pipelines["MDM"] = make_pipeline(Covariances("oas"), MDM(metric="riemann"))
 scores = evaluation.process(pipelines)

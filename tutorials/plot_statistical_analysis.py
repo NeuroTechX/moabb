@@ -80,9 +80,9 @@ paradigm = LeftRightImagery()
 dataset = BNCI2014001()
 dataset.subject_list = dataset.subject_list[:4]
 datasets = [dataset]
-overwrite = False  # set to True if we want to overwrite cached results
+overwrite = True  # set to False if we want to use cached results
 evaluation = CrossSessionEvaluation(
-    paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite
+    paradigm=paradigm, datasets=datasets, suffix="stats", overwrite=overwrite
 )
 
 results = evaluation.process(pipelines)

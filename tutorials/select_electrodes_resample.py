@@ -70,7 +70,9 @@ print(results.head())
 # as well as the list of datasets with valid channels.
 
 electrodes, datasets = find_intersecting_channels(datasets)
-evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=datasets, overwrite=True)
+evaluation = WithinSessionEvaluation(
+    paradigm=paradigm, datasets=datasets, overwrite=True, suffix="resample"
+)
 results = evaluation.process({"csp+lda": csp_lda, "ts+lr": ts_lr})
 print(results.head())
 

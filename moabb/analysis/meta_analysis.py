@@ -154,7 +154,6 @@ def compute_dataset_statistics(df, perm_cutoff=20):
     Returns dict of datasets to DataFrames with stats
 
     """
-    _to_remove = df.copy()
     df = collapse_session_scores(df)
     algs = df.pipeline.unique()
     dsets = df.dataset.unique()
@@ -164,10 +163,6 @@ def compute_dataset_statistics(df, perm_cutoff=20):
             index="subject", values="score", columns="pipeline"
         )
         if score_data.shape[0] < perm_cutoff:
-            errormsg = " results = {}\n algs = {}, df = {}\n score_data = {}".format(
-                _to_remove, algs, df, score_data
-            )
-            assert set(algs) == set(score_data.columns), errormsg
             p = compute_pvals_perm(score_data, algs)
         else:
             p = compute_pvals_wilcoxon(score_data, algs)
