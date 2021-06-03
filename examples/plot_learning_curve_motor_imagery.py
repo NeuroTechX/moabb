@@ -1,7 +1,7 @@
 """
-===========================
+================================================
 Within Session Motor Imagery with learning curve
-===========================
+================================================
 
 This Example show how to perform a within session motor imagery analysis on the
 very popular dataset 2a from the BCI competition IV.
@@ -95,7 +95,7 @@ print(results.head())
 # %%
 ##############################################################################
 # Plot Results
-# ----------------
+# ------------
 #
 # Here we plot the results.
 

@@ -1,7 +1,7 @@
 """
-===========================
+=======================================
 Within Session P300 with learning curve
-===========================
+=======================================
 
 This Example shows how to perform a within session analysis while also
 creating learning curves for a P300 dataset.
@@ -126,7 +126,7 @@ results = evaluation.process(pipelines)
 # %%
 ##############################################################################
 # Plot Results
-# ----------------
+# ------------
 #
 # Here we plot the results.
 
