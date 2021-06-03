@@ -47,13 +47,13 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: DocumentationHTML
-          path: docs/_build/html/
+          path: docs/build/html/
 
       # Since we want the URL to be neurotechx.github.io/docs/ the html output needs to be put in a ./docs subfolder of the publish_dir
       - name: Move docs into site folder
         run: |
           mkdir site
-          mv docs/_build/html site/docs
+          mv docs/build/html site/docs
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
