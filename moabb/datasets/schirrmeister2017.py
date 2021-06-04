@@ -19,7 +19,7 @@ GIN_URL = (
 
 
 class Schirrmeister2017(BaseDataset):
-    """High-gamma dataset discribed in Schirrmeister et al. 2017
+    """High-gamma dataset discribed in Schirrmeister et al. 2017, [1]_
 
     Our “High-Gamma Dataset” is a 128-electrode dataset (of which we later only use
     44 sensors covering the motor cortex, (see Section 2.7.1), obtained from 14
@@ -33,7 +33,7 @@ class Schirrmeister2017(BaseDataset):
     acquired in an EEG lab optimized for non-invasive detection of high- frequency
     movement-related EEG components (Ball et al., 2008; Darvas et al., 2010).
 
-      Depending on the direction of a gray arrow that was shown on black back-
+    Depending on the direction of a gray arrow that was shown on black back-
     ground, the subjects had to repetitively clench their toes (downward arrow),
     perform sequential finger-tapping of their left (leftward arrow) or right
     (rightward arrow) hand, or relax (upward arrow).  The movements were selected
@@ -52,8 +52,8 @@ class Schirrmeister2017(BaseDataset):
     ----------
 
     .. [1] Schirrmeister, Robin Tibor, et al. "Deep learning with convolutional
-    neural networks for EEG decoding and visualization." Human brain mapping 38.11
-    (2017): 5391-5420.
+           neural networks for EEG decoding and visualization." Human brain mapping 38.11
+           (2017): 5391-5420.
 
     """
 

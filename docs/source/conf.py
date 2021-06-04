@@ -31,12 +31,12 @@ matplotlib.use("Agg")
 
 project = "moabb"
 copyright = "2018, Alexandre Barachant"
-author = "Alexandre Barachant, Vinay Jayaram"
+author = "Alexandre Barachant, Vinay Jayaram, Sylvain Chevallier"
 
 # The short X.Y version
-version = ""
+version = "0.3.0"
 # The full version, including alpha/beta/rc tags
-release = ""
+release = "0.3.0"
 
 
 # -- General configuration ---------------------------------------------------

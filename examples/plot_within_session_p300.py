@@ -35,12 +35,14 @@ from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
 
 
+##############################################################################
 # getting rid of the warnings about the future
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
 
 moabb.set_log_level("info")
 
+##############################################################################
 # This is an auxiliary transformer that allows one to vectorize data
 # structures in a pipeline For instance, in the case of a X with dimensions
 # Nt x Nc x Ns, one might be interested in a new data structure with
@@ -69,6 +71,7 @@ class Vectorizer(BaseEstimator, TransformerMixin):
 
 pipelines = {}
 
+##############################################################################
 # we have to do this because the classes are called 'Target' and 'NonTarget'
 # but the evaluation function uses a LabelEncoder, transforming them
 # to 0 and 1

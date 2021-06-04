@@ -43,7 +43,7 @@ class DemonsP300(BaseDataset):
     P300 response in time of the deamon jump. That was the way to trigger fireball
     torwards a deamon predicted by classifier from EEG data.
 
-    More info can be found in [1]_ [2]_.
+    More info can be found in [1]_ [2]_ [3]_.
 
     References
     ----------

@@ -158,9 +158,7 @@ class Shin2017(BaseDataset):
 
 
 class Shin2017A(Shin2017):
-    """Motor Imagey Dataset from Shin et al 2017.
-
-    Dataset A from [1]_.
+    """Motor Imagey Dataset from Shin et al 2017, [1]_.
 
     **Data Acquisition**
 
@@ -244,25 +242,7 @@ class Shin2017A(Shin2017):
     subsequent blocks randomly consisting of one of two conditions: Either
     first left and then right hand motor imagery or vice versa.
 
-    **Mental Arithmetic (Dataset B)**
-
-    For the visual instruction of the MA task, an initial subtraction such as
-    'three-digit number minus one-digit number' (e.g., 384-8) appeared at the
-    center of the screen for 2 s. The subjects were instructed to memorize the
-    numbers while the initial subtraction was displayed on the screen. The
-    initial subtraction disappeared with a short beep sound and a black
-    fixation cross was displayed during the task period in which the subjects
-    were asked
-    to repeatedly perform to subtract the one-digit number from the result of
-    the previous subtraction. For the baseline task, no specific sign but the
-    black fixation cross was displayed on the screen, and the subjects were
-    instructed to take a rest. Note that there were other rest periods between
-    the MA and baseline task periods, as same with the MI paradigm. Both task
-    periods were finished with a short beep sound and a 'STOP' displayed for
-    1 s on the screen. The fixation cross was displayed again during the rest
-    period. MA and baseline trials were randomized in the same way as MI.
-
-    references
+    References
     ----------
 
     .. [1] Shin, J., von Lühmann, A., Blankertz, B., Kim, D.W., Jeong, J.,
@@ -278,9 +258,7 @@ class Shin2017A(Shin2017):
 
 
 class Shin2017B(Shin2017):
-    """Mental Arithmetic Dataset from Shin et al 2017.
-
-    Dataset B from [1]_.
+    """Mental Arithmetic Dataset from Shin et al 2017, [1]_.
 
     **Data Acquisition**
 
@@ -359,14 +337,12 @@ class Shin2017B(Shin2017):
     1 s on the screen. The fixation cross was displayed again during the rest
     period. MA and baseline trials were randomized in the same way as MI.
 
-    references
+    References
     ----------
-
     .. [1] Shin, J., von Lühmann, A., Blankertz, B., Kim, D.W., Jeong, J.,
            Hwang, H.J. and Müller, K.R., 2017. Open access dataset for EEG+NIRS
            single-trial classification. IEEE Transactions on Neural Systems
            and Rehabilitation Engineering, 25(10), pp.1735-1745.
-
     """
 
     def __init__(self):

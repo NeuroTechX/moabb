@@ -14,10 +14,10 @@ BI2013a_URL = "https://zenodo.org/record/1494240/files/"
 
 
 class bi2013a(BaseDataset):
-    """P300 dataset bi2013a from a "Brain Invaders" experiment (2013)
-    carried-out at University of Grenoble Alpes.
+    """P300 dataset bi2013a from a "Brain Invaders" experiment [1]_.
 
-    Dataset following the setup from [1]_.
+    Dataset following the setup from [1]_ carried-out at University of
+    Grenoble Alpes.
 
     **Dataset Description**
 
@@ -28,11 +28,11 @@ class bi2013a(BaseDataset):
     Technical Supervisor : Anton Andreev
 
     The experiment uses the Brain Invaders P300-based Brain-Computer Interface
-    [7], which uses the Open-ViBE platform for on-line EEG data acquisition and
-    processing [1, 9]. For classification purposes the Brain Invaders
-    implements on-line Riemannian MDM classifiers [2, 3, 4, 6]. This experiment
+    [7]_, which uses the Open-ViBE platform for on-line EEG data acquisition and
+    processing [1]_ [9]_. For classification purposes the Brain Invaders
+    implements on-line Riemannian MDM classifiers [2]_ [3]_ [4]_ [6]_. This experiment
     features both a training-test (classical) mode of operation and a
-    calibration-less mode of operation [4, 5, 6].
+    calibration-less mode of operation [4]_ [5]_ [6]_.
 
     The recordings concerned 24 subjects in total. Subjects 1 to 7 participated
     to eight sessions, run in different days, subject 8 to 24 participated to
@@ -42,33 +42,38 @@ class bi2013a(BaseDataset):
     was a Training (calibration) phase and an Online phase, always passed in
     this order. In the non-Adaptive run the data from the Training phase was
     used for classifying the trials on the Online phase using the training-test
-    version of the MDM algorithm [3, 4]. In the Adaptive run, the data from the
+    version of the MDM algorithm [3]_ [4]_. In the Adaptive run, the data from the
     training phase was not used at all, instead the classifier was initialized
     with generic class geometric means and continuously adapted to the incoming
-    data using the Riemannian method explained in [4]. Subjects were completely
+    data using the Riemannian method explained in [4]_. Subjects were completely
     blind to the mode of operation and the two runs appeared to them identical.
 
     In the Brain Invaders P300 paradigm, a repetition is composed of 12
     flashes, of which 2 include the Target symbol (Target flashes) and 10 do
-    not (non-Target flash). Please see [7] for a description of the paradigm.
+    not (non-Target flash). Please see [7]_ for a description of the paradigm.
     For this experiment, in the Training phases the number of flashes is fixed
     (80 Target flashes and 400 non-Target flashes). In the Online phases the
     number of Target and non-Target still are in a ratio 1/5, however their
     number is variable because the Brain Invaders works with a fixed number of
     game levels, however the number of repetitions needed to destroy the target
     (hence to proceed to the next level) depends on the user’s performance
-    [4, 5]. In any case, since the classes are unbalanced, an appropriate score
+    [4]_ [5]_. In any case, since the classes are unbalanced, an appropriate score
     must be used for quantifying the performance of classification methods
     (e.g., balanced accuracy, AUC methods, etc).
 
     Data were acquired with a Nexus (TMSi, The Netherlands) EEG amplifier:
-    - Sampling Frequency: 512 samples per second
-    - Digital Filter: no
-    - Electrodes:  16 wet Silver/Silver Chloride electrodes positioned at
-      FP1, FP2, F5, AFz, F6, T7, Cz, T8, P7, P3, Pz, P4, P8, O1, Oz, O2
-      according to the 10/20 international system.
-    - Reference: left ear-lobe.
-    - Ground: N/A.
+
+    * Sampling Frequency: 512 samples per second
+
+    * Digital Filter: no
+
+    * Electrodes:  16 wet Silver/Silver Chloride electrodes positioned at
+    FP1, FP2, F5, AFz, F6, T7, Cz, T8, P7, P3, Pz, P4, P8, O1, Oz, O2
+    according to the 10/20 international system.
+
+    * Reference: left ear-lobe.
+
+    * Ground: N/A.
 
     References
     ----------
