@@ -22,7 +22,9 @@ WANG_URL = "ftp://sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
 
 
 class Wang2016(BaseDataset):
-    """SSVEP Wang 2016 dataset [1]_
+    """SSVEP Wang 2016 dataset
+
+    Dataset from [1]_.
 
     This dataset gathered SSVEP-BCI recordings of 35 healthy subjects (17
     females, aged 17-34 years, mean age: 22 years) focusing on 40 characters

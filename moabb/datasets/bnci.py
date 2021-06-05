@@ -859,7 +859,9 @@ class BNCI2014004(MNEBNCI):
 
 
 class BNCI2014008(MNEBNCI):
-    """BNCI 2014-008 P300 dataset [1]_.
+    """BNCI 2014-008 P300 dataset
+
+    Dataset from [1]_.
 
     **Dataset description**
 

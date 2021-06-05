@@ -19,7 +19,9 @@ GIN_URL = (
 
 
 class Schirrmeister2017(BaseDataset):
-    """High-gamma dataset discribed in Schirrmeister et al. 2017, [1]_
+    """High-gamma dataset discribed in Schirrmeister et al. 2017
+
+    Dataset from [1]_
 
     Our “High-Gamma Dataset” is a 128-electrode dataset (of which we later only use
     44 sensors covering the motor cortex, (see Section 2.7.1), obtained from 14

@@ -45,7 +45,7 @@ class SSVEPExo(BaseDataset):
     ----------
     .. [1] Emmanuel K. Kalunga, Sylvain Chevallier, Quentin Barthelemy. "Online
            SSVEP-based BCI using Riemannian Geometry". Neurocomputing, 2016.
-           arXiv research report on arXiv:1501.03227.
+           arXiv report: https://arxiv.org/abs/1501.03227
     """
 
     def __init__(self):

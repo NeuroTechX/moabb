@@ -158,7 +158,9 @@ class Shin2017(BaseDataset):
 
 
 class Shin2017A(Shin2017):
-    """Motor Imagey Dataset from Shin et al 2017, [1]_.
+    """Motor Imagey Dataset from Shin et al 2017
+
+    Dataset from [1]_.
 
     **Data Acquisition**
 
@@ -258,7 +260,9 @@ class Shin2017A(Shin2017):
 
 
 class Shin2017B(Shin2017):
-    """Mental Arithmetic Dataset from Shin et al 2017, [1]_.
+    """Mental Arithmetic Dataset from Shin et al 2017
+
+    Dataset from [1]_.
 
     **Data Acquisition**
 

@@ -1,8 +1,7 @@
 # Mother of all BCI Benchmarks
 
-<p align=center>
-  <img alt="banner" src="/images/M.png/">
-</p>
+![banner](images/M.png)
+
 <p align=center>
   Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets.
 </p>
@@ -19,10 +18,8 @@ community.**
 
 ## Welcome!
 
-First and foremost, Welcome! :tada: Willkommen! :confetti_ball: Bienvenue!
-:balloon::balloon::balloon:
-
-Thank you for visiting the Mother of all BCI Benchmark repository.
+Thank you for visiting the Mother of all BCI Benchmark documentation and associated
+[GitHub repository](https://github.com/NeuroTechX/moabb)
 
 This document is a hub to give you some information about the project. Jump straight to
 one of the sections below, or just scroll down to find out more.
@@ -89,11 +86,13 @@ You could fork or clone the repository and go to the downloaded directory, then 
 1. install all dependencies in one command (have to be run in the project directory):\
    `poetry install`
 
-See [contributors' guidelines](CONTRIBUTING.md) for detailed explanation.
+See
+[contributors' guidelines](https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md)
+for detailed explanation.
 
 ### Requirements we use
 
-see `pyproject.toml` file for full list of dependencies
+See `pyproject.toml` file for full list of dependencies
 
 ## Running
 
@@ -109,10 +108,9 @@ once it is installed.
 
 ### Use MOABB
 
-First, you could take a look at our [tutorials](./tutorials) that cover the most important
-concepts and use cases. Also, we have a several [examples](./examples/) available.
-
-You might be interested in [MOABB documentation][link_moabb_docs]
+First, you could take a look at our [tutorials](./auto_tutorials/index.html) that cover
+the most important concepts and use cases. Also, we have a gallery of
+[examples](./auto_examples/index.html) available.
 
 ### Troubleshooting
 
@@ -157,31 +155,32 @@ we're here to help.
 
 If you think you can help in any of the areas listed above (and we bet you can) or in any
 of the many areas that we haven't yet thought of (and here we're _sure_ you can) then
-please check out our [contributors' guidelines](CONTRIBUTING.md) and our
-[roadmap](ROADMAP.md).
+please check out our
+[contributors' guidelines](https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md)
+and our [roadmap](https://github.com/NeuroTechX/moabb/blob/master/ROADMAP.md).
 
 Please note that it's very important to us that we maintain a positive and supportive
 environment for everyone who wants to participate. When you join us we ask that you follow
-our [code of conduct](CODE_OF_CONDUCT.md) in all interactions both on and offline.
+our [code of conduct](https://github.com/NeuroTechX/moabb/blob/master/CODE_OF_CONDUCT.md)
+in all interactions both on and offline.
 
 ## Contact us
 
 If you want to report a problem or suggest an enhancement, we'd love for you to
-[open an issue](../../issues) at this github repository because then we can get right on
-it.
+[open an issue](https://github.com/NeuroTechX/moabb/issues) at this github repository
+because then we can get right on it.
 
 For a less formal discussion or exchanging ideas, you can also reach us on the [Gitter
 channel][link_gitter] or join our weekly office hours! This an open video meeting
-happening every Thursday at [18:30 GMT+1](https://time.is/en/Paris), please ask the link
-on the gitter channel. We are also on [NeuroTechX slack #moabb
+happening on a [regular basis](https://github.com/NeuroTechX/moabb/issues/191), please ask
+the link on the gitter channel. We are also on [NeuroTechX slack #moabb
 channel][link_neurotechx_signup].
 
 ## Architecture and Main Concepts
 
-<p align="center">
-  <img alt="banner" src="/images/architecture.png/" width="400">
-</p>
-There are 4 main concepts in the MOABB: the datasets, the paradigm, the evaluation, and the pipelines. In addition, we offer statistical and visualization utilities to simplify the workflow.
+![architecture](images/architecture.png) There are 4 main concepts in the MOABB: the
+datasets, the paradigm, the evaluation, and the pipelines. In addition, we offer
+statistical and visualization utilities to simplify the workflow.
 
 ### Datasets
 

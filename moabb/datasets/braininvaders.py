@@ -14,10 +14,10 @@ BI2013a_URL = "https://zenodo.org/record/1494240/files/"
 
 
 class bi2013a(BaseDataset):
-    """P300 dataset bi2013a from a "Brain Invaders" experiment [1]_.
+    """P300 dataset bi2013a from a "Brain Invaders" experiment
 
     Dataset following the setup from [1]_ carried-out at University of
-    Grenoble Alpes.
+    Grenoble Alpes [1]_.
 
     **Dataset Description**
 
