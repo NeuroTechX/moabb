@@ -51,9 +51,9 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
     sign = sign.upper()
     key = "MNE_DATASETS_{:s}_PATH".format(sign)
     key_dest = "MNE-{:s}-data".format(sign.lower())
-    if get_config(key) is None:
-        set_config(key, osp.join(osp.expanduser("~"), "mne_data"))
     path = _get_path(path, key, sign)
+    if get_config(key) is None:
+        set_config(key, path)
     destination = _url_to_local_path(url, osp.join(path, key_dest))
     # Fetch the file
     if not osp.isfile(destination) or force_update:
@@ -105,9 +105,9 @@ def data_dl(url, sign, path=None, force_update=False, update_path=True, verbose=
     sign = sign.upper()
     key = "MNE_DATASETS_{:s}_PATH".format(sign)
     key_dest = "MNE-{:s}-data".format(sign.lower())
-    if get_config(key) is None:
-        set_config(key, osp.join(osp.expanduser("~"), "mne_data"))
     path = _get_path(path, key, sign)
+    if get_config(key) is None:
+        set_config(key, path)
     destination = _url_to_local_path(url, osp.join(path, key_dest))
 
     # Fetch the file

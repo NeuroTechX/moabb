@@ -152,8 +152,6 @@ class BaseMAMEM(BaseDataset):
         sign = self.code.split()[1]
         key = "MNE_DATASETS_{:s}_PATH".format(sign)
         key_dest = "MNE-{:s}-data".format(sign.lower())
-        if get_config(key) is None:
-            set_config(key, osp.join(osp.expanduser("~"), "mne_data"))
         path = osp.join(_get_path(None, key, sign), key_dest)
 
         filelist = fs_get_file_list(self.figshare_id)
