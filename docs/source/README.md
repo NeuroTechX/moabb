@@ -178,9 +178,11 @@ channel][link_neurotechx_signup].
 
 ## Architecture and Main Concepts
 
-![architecture](images/architecture.png) There are 4 main concepts in the MOABB: the
-datasets, the paradigm, the evaluation, and the pipelines. In addition, we offer
-statistical and visualization utilities to simplify the workflow.
+![architecture](images/architecture.png)
+
+There are 4 main concepts in the MOABB: the datasets, the paradigm, the evaluation, and
+the pipelines. In addition, we offer statistical and visualization utilities to simplify
+the workflow.
 
 ### Datasets
 

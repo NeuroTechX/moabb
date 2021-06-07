@@ -33,7 +33,7 @@ class Nakanishi2015(BaseDataset):
     "A Comparison Study of Canonical Correlation Analysis Based Methods for
     Detecting Steady-State Visual Evoked Potentials," PLoS One, vol.10, no.10,
     e140703, 2015.
-    http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0140703
+    `<http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0140703>`_
     """
 
     def __init__(self):

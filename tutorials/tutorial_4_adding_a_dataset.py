@@ -76,9 +76,9 @@ for subject in [1, 2, 3]:
 # MOABB:
 #
 # - ``dl`` is a very useful script that downloads automatically a dataset online
-# if it is not yet available in the user's computer. The script knows where
-# to download the files because we create a global variable telling the URL
-# where to fetch the data.
+#   if it is not yet available in the user's computer. The script knows where
+#   to download the files because we create a global variable telling the URL
+#   where to fetch the data.
 # - ``BaseDataset`` is the basic class that we overload to create our dataset.
 #
 # The global variable with the dataset's URL should specify an online
@@ -88,6 +88,7 @@ ExampleDataset_URL = "https://sandbox.zenodo.org/record/369543/files/"
 
 ##############################################################################
 # The ``ExampleDataset`` needs to implement only 3 functions:
+#
 # - ``__init__`` for indicating the parameter of the dataset
 # - ``_get_single_subject_data`` to define how to process the data once they
 #   have been downloaded

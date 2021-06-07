@@ -199,9 +199,10 @@ class MAMEM1(BaseMAMEM):
     3. 30 seconds of rest.
     4. For each of the frequencies from the above set in ascending order,
        also specified in FREQUENCIES1.txt under 'main trials':
-       a. Three 5 second windows of flickering at the chosen frequency,
+
+       1. Three 5 second windows of flickering at the chosen frequency,
            separated by 5 seconds of rest.
-       b. 30 seconds of rest.
+       2. 30 seconds of rest.
 
     This gives a total of 15 flickering windows, or 23 including the
     adaptation period.
@@ -261,12 +262,12 @@ class MAMEM1(BaseMAMEM):
     References
     ----------
     .. [1] MAMEM Steady State Visually Evoked Potential EEG Database
-           https://archive.physionet.org/physiobank/database/mssvepdb/
+           `<https://archive.physionet.org/physiobank/database/mssvepdb/>`_
     .. [2] V.P. Oikonomou et al, 2016, Comparative evaluation of state-of-the-art
            algorithms for SSVEP-based BCIs. arXiv.
-           http://arxiv.org/abs/1602.00904
+           `<http://arxiv.org/abs/1602.00904>`-
     .. [3] S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
-           https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738  # noqa: E501
+           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738>`_  # noqa: E501
     """
 
     def __init__(self):
@@ -349,9 +350,9 @@ class MAMEM2(BaseMAMEM):
     References
     ----------
     .. [1] MAMEM Steady State Visually Evoked Potential EEG Database
-           https://archive.physionet.org/physiobank/database/mssvepdb/
+           `<https://archive.physionet.org/physiobank/database/mssvepdb/>`_
     .. [2] S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
-           https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_II_256_channels_11_subjects_5_frequencies_presented_simultaneously_/3153409?file=4911931  # noqa: E501
+           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_II_256_channels_11_subjects_5_frequencies_presented_simultaneously_/3153409?file=4911931>`_  # noqa: E501
     """
 
     def __init__(self):
@@ -405,7 +406,7 @@ class MAMEM3(BaseMAMEM):
 
     **Note**: Each 'session' in experiment 1 includes an adaptation period, unlike
     experiment 2 and 3 where each subject undergoes only one adaptation period
-    before their first 'session'.
+    before their first 'session' [2]_.
 
     **Waveforms and Annotations**
     File names are in the form U0NNn, where NN is the subject number and n is
@@ -442,9 +443,9 @@ class MAMEM3(BaseMAMEM):
     References
     ----------
     .. [1] MAMEM Steady State Visually Evoked Potential EEG Database
-           https://archive.physionet.org/physiobank/database/mssvepdb/
+           `<https://archive.physionet.org/physiobank/database/mssvepdb/>`_
     .. [2] S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
-            https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_III_14_channels_11_subjects_5_frequencies_presented_simultaneously_/3413851  # noqa: E501
+           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_III_14_channels_11_subjects_5_frequencies_presented_simultaneously_/3413851>`_  # noqa: E501
     """
 
     def __init__(self):

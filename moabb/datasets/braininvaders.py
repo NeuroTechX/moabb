@@ -32,7 +32,7 @@ class bi2013a(BaseDataset):
     processing [1]_ [9]_. For classification purposes the Brain Invaders
     implements on-line Riemannian MDM classifiers [2]_ [3]_ [4]_ [6]_. This experiment
     features both a training-test (classical) mode of operation and a
-    calibration-less mode of operation [4]_ [5]_ [6]_.
+    calibration-less mode of operation [4]_ [5]_ [6]_ [8]_.
 
     The recordings concerned 24 subjects in total. Subjects 1 to 7 participated
     to eight sessions, run in different days, subject 8 to 24 participated to
@@ -64,15 +64,11 @@ class bi2013a(BaseDataset):
     Data were acquired with a Nexus (TMSi, The Netherlands) EEG amplifier:
 
     * Sampling Frequency: 512 samples per second
-
     * Digital Filter: no
-
     * Electrodes:  16 wet Silver/Silver Chloride electrodes positioned at
-    FP1, FP2, F5, AFz, F6, T7, Cz, T8, P7, P3, Pz, P4, P8, O1, Oz, O2
-    according to the 10/20 international system.
-
+      FP1, FP2, F5, AFz, F6, T7, Cz, T8, P7, P3, Pz, P4, P8, O1, Oz, O2
+      according to the 10/20 international system.
     * Reference: left ear-lobe.
-
     * Ground: N/A.
 
     References

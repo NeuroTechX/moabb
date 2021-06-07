@@ -44,7 +44,7 @@ warnings.filterwarnings("ignore")
 #
 # - downloading its files from some online source (e.g. Zenodo)
 # - importing the data from the files in whatever extension they might be
-# (like .mat, .gdf, etc.) and instantiate a Raw object from the MNE package
+#   (like .mat, .gdf, etc.) and instantiate a Raw object from the MNE package
 
 dataset = BNCI2014001()
 dataset.subject_list = [1, 2, 3]
@@ -56,7 +56,7 @@ dataset.subject_list = [1, 2, 3]
 # As an example, we may access the EEG recording from a given session and a
 # given run as follows:
 
-sessions = dataset._get_single_subject_data(subject=1)
+sessions = dataset.get_data(subjects=[1])
 
 ##############################################################################
 # This returns a MNE Raw object that can be manipulated. This might be enough
@@ -64,9 +64,10 @@ sessions = dataset._get_single_subject_data(subject=1)
 # done via MNE. However, to conduct an assessment of several classifiers on
 # multiple subjects, MOABB ends up being a more appropriate option.
 
+subject = 1
 session_name = "session_T"
 run_name = "run_1"
-raw = sessions[session_name][run_name]
+raw = sessions[subject][session_name][run_name]
 
 
 ##############################################################################
@@ -126,7 +127,7 @@ pipeline = make_pipeline(CSP(n_components=8), LDA())
 # example, we choose `WithinSessionEvaluation`, which consists of doing a
 # cross-validation procedure where the training and testing partitions are from
 # the same recording session of the dataset. We could have used
-# `BetweenSessionEvaluation`, which takes all but one session as training
+# `CrossSessionEvaluation`, which takes all but one session as training
 # partition and the remaining one as testing partition.
 
 evaluation = WithinSessionEvaluation(
