@@ -27,7 +27,7 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
     sign : str
         Signifier of dataset
     path : None | str
-        Location of where to look for the BNCI data storing location.
+        Location of where to look for the data storing location.
         If None, the environment variable or config parameter
         ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
         "~/mne_data" directory is used. If the dataset
@@ -48,12 +48,9 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
         of length one, for compatibility.
 
     """  # noqa: E501
-    sign = sign.upper()
-    key = "MNE_DATASETS_{:s}_PATH".format(sign)
+    path = get_dataset_path(sign, path)
+    key = "MNE_DATASETS_{:s}_PATH".format(sign.upper())
     key_dest = "MNE-{:s}-data".format(sign.lower())
-    path = _get_path(path, key, sign)
-    if get_config(key) is None:
-        set_config(key, path)
     destination = _url_to_local_path(url, osp.join(path, key_dest))
     # Fetch the file
     if not osp.isfile(destination) or force_update:
@@ -82,7 +79,7 @@ def data_dl(url, sign, path=None, force_update=False, update_path=True, verbose=
     sign : str
         Signifier of dataset
     path : None | str
-        Location of where to look for the BNCI data storing location.
+        Location of where to look for the data storing location.
         If None, the environment variable or config parameter
         ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
         "~/mne_data" directory is used. If the dataset
@@ -102,12 +99,9 @@ def data_dl(url, sign, path=None, force_update=False, update_path=True, verbose=
         Local path to the given data file. This path is contained inside a list
         of length one, for compatibility.
     """
-    sign = sign.upper()
-    key = "MNE_DATASETS_{:s}_PATH".format(sign)
+    path = get_dataset_path(sign, path)
+    key = "MNE_DATASETS_{:s}_PATH".format(sign.upper())
     key_dest = "MNE-{:s}-data".format(sign.lower())
-    path = _get_path(path, key, sign)
-    if get_config(key) is None:
-        set_config(key, path)
     destination = _url_to_local_path(url, osp.join(path, key_dest))
 
     # Fetch the file
@@ -244,3 +238,33 @@ def fs_get_file_name(filelist):
         keys are file_id and values are file name
     """
     return {str(f["id"]): f["name"] for f in filelist}
+
+
+def get_dataset_path(sign, path):
+    """Returns the dataset path allowing for changes in MNE_DATA
+     config
+
+    Parameters
+    ----------
+    sign : str
+        Signifier of dataset
+    path : None | str
+        Location of where to look for the data storing location.
+        If None, the environment variable or config parameter
+        ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
+        "~/mne_data" directory is used. If the dataset
+        is not found under the given path, the data
+        will be automatically downloaded to the specified folder.
+
+    Returns
+    -------
+        path : None | str
+        Location of where to look for the data storing location
+    """
+    sign = sign.upper()
+    key = "MNE_DATASETS_{:s}_PATH".format(sign)
+    if get_config(key) is None:
+        if get_config("MNE_DATA") is None:
+            set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
+        set_config(key, get_config("MNE_DATA"))
+    return _get_path(path, key, sign)
