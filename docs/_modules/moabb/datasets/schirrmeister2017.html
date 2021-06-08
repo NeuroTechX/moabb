@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>moabb.datasets.schirrmeister2017 &#8212; moabb 0.3.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-rendered-html.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          moabb</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.3.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../auto_examples/index.html">Gallery</a></li>
+                <li><a href="../../../auto_tutorials/index.html">Tutorials</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#erp-datasets">ERP Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#ssvep-datasets">SSVEP Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../evaluations.html">Evaluations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../evaluations.html#id1">Evaluations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../evaluations.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../paradigms.html">Paradigms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../paradigms.html#motor-imagery-paradigms">Motor Imagery Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../paradigms.html#p300-paradigms">P300 Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../paradigms.html#ssvep-paradigms">SSVEP Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../paradigms.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pipelines.html">Pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../pipelines.html#id1">Pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pipelines.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis.html#plotting">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis.html#statistics">Statistics</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for moabb.datasets.schirrmeister2017</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">mne</span>
+
+<span class="c1"># import requests</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">moabb.datasets</span> <span class="kn">import</span> <span class="n">download</span> <span class="k">as</span> <span class="n">dl</span>
+<span class="kn">from</span> <span class="nn">moabb.datasets.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">GIN_URL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;https://web.gin.g-node.org/robintibor/high-gamma-dataset/raw/master/data&quot;</span>  <span class="c1"># noqa</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="Schirrmeister2017"><a class="viewcode-back" href="../../../generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017">[docs]</a><span class="k">class</span> <span class="nc">Schirrmeister2017</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;High-gamma dataset discribed in Schirrmeister et al. 2017</span>
+
+<span class="sd">    Dataset from [1]_</span>
+
+<span class="sd">    Our “High-Gamma Dataset” is a 128-electrode dataset (of which we later only use</span>
+<span class="sd">    44 sensors covering the motor cortex, (see Section 2.7.1), obtained from 14</span>
+<span class="sd">    healthy subjects (6 female, 2 left-handed, age 27.2 ± 3.6 (mean ± std)) with</span>
+<span class="sd">    roughly 1000 (963.1 ± 150.9, mean ± std) four-second trials of executed</span>
+<span class="sd">    movements divided into 13 runs per subject.  The four classes of movements were</span>
+<span class="sd">    movements of either the left hand, the right hand, both feet, and rest (no</span>
+<span class="sd">    movement, but same type of visual cue as for the other classes).  The training</span>
+<span class="sd">    set consists of the approx.  880 trials of all runs except the last two runs,</span>
+<span class="sd">    the test set of the approx.  160 trials of the last 2 runs.  This dataset was</span>
+<span class="sd">    acquired in an EEG lab optimized for non-invasive detection of high- frequency</span>
+<span class="sd">    movement-related EEG components (Ball et al., 2008; Darvas et al., 2010).</span>
+
+<span class="sd">    Depending on the direction of a gray arrow that was shown on black back-</span>
+<span class="sd">    ground, the subjects had to repetitively clench their toes (downward arrow),</span>
+<span class="sd">    perform sequential finger-tapping of their left (leftward arrow) or right</span>
+<span class="sd">    (rightward arrow) hand, or relax (upward arrow).  The movements were selected</span>
+<span class="sd">    to require little proximal muscular activity while still being complex enough</span>
+<span class="sd">    to keep subjects in- volved.  Within the 4-s trials, the subjects performed the</span>
+<span class="sd">    repetitive movements at their own pace, which had to be maintained as long as</span>
+<span class="sd">    the arrow was showing.  Per run, 80 arrows were displayed for 4 s each, with 3</span>
+<span class="sd">    to 4 s of continuous random inter-trial interval.  The order of presentation</span>
+<span class="sd">    was pseudo-randomized, with all four arrows being shown every four trials.</span>
+<span class="sd">    Ideally 13 runs were performed to collect 260 trials of each movement and rest.</span>
+<span class="sd">    The stimuli were presented and the data recorded with BCI2000 (Schalk et al.,</span>
+<span class="sd">    2004).  The experiment was approved by the ethical committee of the University</span>
+<span class="sd">    of Freiburg.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    .. [1] Schirrmeister, Robin Tibor, et al. &quot;Deep learning with convolutional</span>
+<span class="sd">           neural networks for EEG decoding and visualization.&quot; Human brain mapping 38.11</span>
+<span class="sd">           (2017): 5391-5420.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Schirrmeister2017.__init__"><a class="viewcode-back" href="../../../generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">subjects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">)),</span>
+            <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">right_hand</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">left_hand</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">rest</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">feet</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;Schirrmeister2017&quot;</span><span class="p">,</span>
+            <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+            <span class="n">paradigm</span><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span>
+            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;10.1002/hbm.23730&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">data_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid subject number&quot;</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">_url</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">GIN_URL</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:d}</span><span class="s2">.mat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">)])</span>
+
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span><span class="p">(</span>
+                <span class="n">_url</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="s2">&quot;SCHIRRMEISTER2017&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">update_path</span><span class="p">,</span> <span class="n">verbose</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
+        <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="p">[</span><span class="n">BBCIDataset</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">(</span><span class="n">subject</span><span class="p">)]</span>
+        <span class="n">sessions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">sessions</span><span class="p">[</span><span class="s2">&quot;session_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">train</span><span class="o">.</span><span class="n">load</span><span class="p">(),</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">test</span><span class="o">.</span><span class="n">load</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">sessions</span></div>
+
+
+<span class="k">class</span> <span class="nc">BBCIDataset</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loader class for files created by saving BBCI files in matlab (make</span>
+<span class="sd">    sure to save with &#39;-v7.3&#39; in matlab, see</span>
+<span class="sd">    https://de.mathworks.com/help/matlab/import_export/mat-file-versions.html#buk6i87</span>
+<span class="sd">    )</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename: str</span>
+<span class="sd">    load_sensor_names: list of str, optional</span>
+<span class="sd">        Also speeds up loading if you only load some sensors.</span>
+<span class="sd">        None means load all sensors.</span>
+
+<span class="sd">    Copyright Robin Schirrmeister, 2017</span>
+<span class="sd">    Altered by Vinay Jayaram, 2018</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">load_sensor_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">self</span>
+
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_continuous_signal</span><span class="p">()</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_markers</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cnt</span>
+
+    <span class="k">def</span> <span class="nf">_load_continuous_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">wanted_chan_inds</span><span class="p">,</span> <span class="n">wanted_sensor_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_sensors</span><span class="p">()</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_samplingrate</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h5file</span><span class="p">[</span><span class="s2">&quot;nfo&quot;</span><span class="p">][</span><span class="s2">&quot;T&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">cnt_signal_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">wanted_chan_inds</span><span class="p">))</span>
+            <span class="n">continuous_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">cnt_signal_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">for</span> <span class="n">chan_ind_arr</span><span class="p">,</span> <span class="n">chan_ind_set</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wanted_chan_inds</span><span class="p">):</span>
+                <span class="c1"># + 1 because matlab/this hdf5-naming logic</span>
+                <span class="c1"># has 1-based indexing</span>
+                <span class="c1"># i.e ch1,ch2,....</span>
+                <span class="n">chan_set_name</span> <span class="o">=</span> <span class="s2">&quot;ch&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">chan_ind_set</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># first 0 to unpack into vector, before it is 1xN matrix</span>
+                <span class="n">chan_signal</span> <span class="o">=</span> <span class="n">h5file</span><span class="p">[</span><span class="n">chan_set_name</span><span class="p">][</span>
+                    <span class="p">:</span>
+                <span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>  <span class="c1"># already load into memory</span>
+                <span class="n">continuous_signal</span><span class="p">[:,</span> <span class="n">chan_ind_arr</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan_signal</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">continuous_signal</span><span class="p">)),</span> <span class="s2">&quot;No NaNs expected in signal&quot;</span>
+
+        <span class="c1"># Assume we cant know channel type here automatically</span>
+        <span class="n">ch_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">wanted_chan_inds</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">create_info</span><span class="p">(</span><span class="n">ch_names</span><span class="o">=</span><span class="n">wanted_sensor_names</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">ch_types</span><span class="o">=</span><span class="n">ch_types</span><span class="p">)</span>
+        <span class="c1"># Scale to volts from microvolts, (VJ 19.6.18)</span>
+        <span class="n">continuous_signal</span> <span class="o">=</span> <span class="n">continuous_signal</span> <span class="o">*</span> <span class="mf">1e-6</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span><span class="p">(</span><span class="n">continuous_signal</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cnt</span>
+
+    <span class="k">def</span> <span class="nf">_determine_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">all_sensor_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_sensors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_sensor_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="c1"># if no sensor names given, take all EEG-chans</span>
+            <span class="n">eeg_sensor_names</span> <span class="o">=</span> <span class="n">all_sensor_names</span>
+            <span class="n">eeg_sensor_names</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;BIP&quot;</span><span class="p">),</span> <span class="n">eeg_sensor_names</span><span class="p">)</span>
+            <span class="n">eeg_sensor_names</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">),</span> <span class="n">eeg_sensor_names</span><span class="p">)</span>
+            <span class="n">eeg_sensor_names</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Microphone&quot;</span><span class="p">),</span> <span class="n">eeg_sensor_names</span>
+            <span class="p">)</span>
+            <span class="n">eeg_sensor_names</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Breath&quot;</span><span class="p">),</span> <span class="n">eeg_sensor_names</span>
+            <span class="p">)</span>
+            <span class="n">eeg_sensor_names</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;GSR&quot;</span><span class="p">),</span> <span class="n">eeg_sensor_names</span><span class="p">)</span>
+            <span class="n">eeg_sensor_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">eeg_sensor_names</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">eeg_sensor_names</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span>
+                <span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">]</span>
+            <span class="p">),</span> <span class="s2">&quot;check this code if you have different sensors...&quot;</span>  <span class="c1"># noqa</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_sensor_names</span> <span class="o">=</span> <span class="n">eeg_sensor_names</span>
+        <span class="n">chan_inds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_chan_inds</span><span class="p">(</span><span class="n">all_sensor_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_sensor_names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">chan_inds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_sensor_names</span>
+
+    <span class="k">def</span> <span class="nf">_determine_samplingrate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+            <span class="n">fs</span> <span class="o">=</span> <span class="n">h5file</span><span class="p">[</span><span class="s2">&quot;nfo&quot;</span><span class="p">][</span><span class="s2">&quot;fs&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fs</span><span class="o">.</span><span class="n">is_integer</span><span class="p">()</span>
+            <span class="n">fs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fs</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_determine_chan_inds</span><span class="p">(</span><span class="n">all_sensor_names</span><span class="p">,</span> <span class="n">sensor_names</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">sensor_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">chan_inds</span> <span class="o">=</span> <span class="p">[</span><span class="n">all_sensor_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sensor_names</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">chan_inds</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">sensor_names</span><span class="p">),</span> <span class="s2">&quot;All&quot;</span> <span class="s2">&quot;sensors&quot;</span> <span class="s2">&quot;should be there.&quot;</span>
+        <span class="c1"># TODO: is it possible for this to fail? the list</span>
+        <span class="c1"># comp fails first right?</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">chan_inds</span><span class="p">))</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">chan_inds</span><span class="p">),</span> <span class="s2">&quot;No&quot;</span> <span class="s2">&quot;duplicated sensors&quot;</span> <span class="s2">&quot;wanted.&quot;</span>
+        <span class="k">return</span> <span class="n">chan_inds</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_sensors</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all sensors that exist in the given file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename: str</span>
+<span class="sd">        pattern: str, optional</span>
+<span class="sd">            Only return those sensor names that match the given pattern.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sensor_names: list of str</span>
+<span class="sd">            Sensor names that match the pattern or all</span>
+<span class="sd">            sensor names in the file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+            <span class="n">clab_set</span> <span class="o">=</span> <span class="n">h5file</span><span class="p">[</span><span class="s2">&quot;nfo&quot;</span><span class="p">][</span><span class="s2">&quot;clab&quot;</span><span class="p">][:]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+            <span class="n">all_sensor_names</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">h5file</span><span class="p">[</span><span class="n">obj_ref</span><span class="p">])</span> <span class="k">for</span> <span class="n">obj_ref</span> <span class="ow">in</span> <span class="n">clab_set</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">pattern</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">all_sensor_names</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">sname</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">sname</span><span class="p">),</span> <span class="n">all_sensor_names</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_sensor_names</span>
+
+    <span class="k">def</span> <span class="nf">_add_markers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cnt</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5file</span><span class="p">:</span>
+            <span class="n">event_times_in_ms</span> <span class="o">=</span> <span class="n">h5file</span><span class="p">[</span><span class="s2">&quot;mrk&quot;</span><span class="p">][</span><span class="s2">&quot;time&quot;</span><span class="p">][:]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+            <span class="n">event_classes</span> <span class="o">=</span> <span class="n">h5file</span><span class="p">[</span><span class="s2">&quot;mrk&quot;</span><span class="p">][</span><span class="s2">&quot;event&quot;</span><span class="p">][</span><span class="s2">&quot;desc&quot;</span><span class="p">][:]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+            <span class="c1"># Check whether class names known and correct order</span>
+            <span class="c1"># class_name_set = h5file[&#39;nfo&#39;][&#39;className&#39;][:].squeeze()</span>
+            <span class="c1"># all_class_names = [&#39;&#39;.join(chr(c) for c in h5file[obj_ref])</span>
+            <span class="c1">#                    for obj_ref in class_name_set]</span>
+
+        <span class="n">event_times_in_samples</span> <span class="o">=</span> <span class="n">event_times_in_ms</span> <span class="o">*</span> <span class="n">cnt</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1000.0</span>
+        <span class="n">event_times_in_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">event_times_in_samples</span><span class="p">))</span>
+
+        <span class="c1"># Check if there are markers at the same time</span>
+        <span class="n">previous_i_sample</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i_event</span><span class="p">,</span> <span class="p">(</span><span class="n">i_sample</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+            <span class="nb">zip</span><span class="p">(</span><span class="n">event_times_in_samples</span><span class="p">,</span> <span class="n">event_classes</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="n">i_sample</span> <span class="o">==</span> <span class="n">previous_i_sample</span><span class="p">:</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:d}</span><span class="s2">: (</span><span class="si">{:.0f}</span><span class="s2"> and </span><span class="si">{:.0f}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">i_sample</span><span class="p">,</span> <span class="n">event_classes</span><span class="p">[</span><span class="n">i_event</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">event_classes</span><span class="p">[</span><span class="n">i_event</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Same sample has at least two markers.</span><span class="se">\n</span><span class="si">{</span><span class="n">info</span><span class="si">}</span><span class="s2">Marker codes will be summed.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">previous_i_sample</span> <span class="o">=</span> <span class="n">i_sample</span>
+
+        <span class="c1"># Now create stim chan</span>
+        <span class="n">stim_chan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">cnt</span><span class="o">.</span><span class="n">get_data</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i_sample</span><span class="p">,</span> <span class="n">id_class</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">event_times_in_samples</span><span class="p">,</span> <span class="n">event_classes</span><span class="p">):</span>
+            <span class="n">stim_chan</span><span class="p">[</span><span class="n">i_sample</span><span class="p">]</span> <span class="o">+=</span> <span class="n">id_class</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">create_info</span><span class="p">(</span>
+            <span class="n">ch_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;STI 014&quot;</span><span class="p">],</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">cnt</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span> <span class="n">ch_types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;stim&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">stim_cnt</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span><span class="p">(</span><span class="n">stim_chan</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="n">info</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span><span class="p">)</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="n">cnt</span><span class="o">.</span><span class="n">add_channels</span><span class="p">([</span><span class="n">stim_cnt</span><span class="p">])</span>
+        <span class="n">event_arr</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">event_times_in_samples</span><span class="p">,</span>
+            <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_times_in_samples</span><span class="p">),</span>
+            <span class="n">event_classes</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">cnt</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;events&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">event_arr</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">return</span> <span class="n">cnt</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Alexandre Barachant.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

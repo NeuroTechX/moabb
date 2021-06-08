@@ -1,0 +1,10 @@
+﻿moabb.datasets.utils.find_intersecting_channels
+===============================================
+
+.. currentmodule:: moabb.datasets.utils
+
+.. autoclass:: find_intersecting_channels
+
+   
+   .. automethod:: __init__
+   

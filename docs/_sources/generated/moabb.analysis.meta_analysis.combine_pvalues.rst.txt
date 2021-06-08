@@ -1,0 +1,6 @@
+﻿moabb.analysis.meta_analysis.combine_pvalues
+============================================
+
+.. currentmodule:: moabb.analysis.meta_analysis
+
+.. autofunction:: combine_pvalues

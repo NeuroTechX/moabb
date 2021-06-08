@@ -1,0 +1,10 @@
+﻿moabb.evaluations.CrossSessionEvaluation
+========================================
+
+.. currentmodule:: moabb.evaluations
+
+.. autoclass:: CrossSessionEvaluation
+
+   
+   .. automethod:: __init__
+   

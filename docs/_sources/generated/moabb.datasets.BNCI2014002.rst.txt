@@ -1,0 +1,10 @@
+﻿moabb.datasets.BNCI2014002
+==========================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: BNCI2014002
+
+   
+   .. automethod:: __init__
+   

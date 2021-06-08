@@ -1,0 +1,10 @@
+﻿moabb.datasets.download.data_dl
+===============================
+
+.. currentmodule:: moabb.datasets.download
+
+.. autoclass:: data_dl
+
+   
+   .. automethod:: __init__
+   

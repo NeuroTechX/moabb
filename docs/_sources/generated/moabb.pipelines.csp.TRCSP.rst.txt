@@ -1,0 +1,10 @@
+﻿moabb.pipelines.csp.TRCSP
+=========================
+
+.. currentmodule:: moabb.pipelines.csp
+
+.. autoclass:: TRCSP
+
+   
+   .. automethod:: __init__
+   

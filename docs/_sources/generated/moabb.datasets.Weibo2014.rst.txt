@@ -1,0 +1,10 @@
+﻿moabb.datasets.Weibo2014
+========================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: Weibo2014
+
+   
+   .. automethod:: __init__
+   

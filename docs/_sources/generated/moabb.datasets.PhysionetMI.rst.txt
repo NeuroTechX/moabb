@@ -1,0 +1,10 @@
+﻿moabb.datasets.PhysionetMI
+==========================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: PhysionetMI
+
+   
+   .. automethod:: __init__
+   

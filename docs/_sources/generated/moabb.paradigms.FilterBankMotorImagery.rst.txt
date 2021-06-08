@@ -1,0 +1,10 @@
+﻿moabb.paradigms.FilterBankMotorImagery
+======================================
+
+.. currentmodule:: moabb.paradigms
+
+.. autoclass:: FilterBankMotorImagery
+
+   
+   .. automethod:: __init__
+   

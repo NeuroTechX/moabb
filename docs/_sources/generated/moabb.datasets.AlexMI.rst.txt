@@ -1,0 +1,10 @@
+﻿moabb.datasets.AlexMI
+=====================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: AlexMI
+
+   
+   .. automethod:: __init__
+   

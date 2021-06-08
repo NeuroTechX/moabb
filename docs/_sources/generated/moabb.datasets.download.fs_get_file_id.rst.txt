@@ -1,0 +1,10 @@
+﻿moabb.datasets.download.fs_get_file_id
+======================================
+
+.. currentmodule:: moabb.datasets.download
+
+.. autoclass:: fs_get_file_id
+
+   
+   .. automethod:: __init__
+   

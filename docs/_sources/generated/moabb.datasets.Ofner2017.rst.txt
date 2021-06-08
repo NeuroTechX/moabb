@@ -1,0 +1,10 @@
+﻿moabb.datasets.Ofner2017
+========================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: Ofner2017
+
+   
+   .. automethod:: __init__
+   

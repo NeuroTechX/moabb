@@ -1,0 +1,10 @@
+﻿moabb.datasets.Nakanishi2015
+============================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: Nakanishi2015
+
+   
+   .. automethod:: __init__
+   

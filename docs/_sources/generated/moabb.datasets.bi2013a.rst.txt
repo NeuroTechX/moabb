@@ -1,0 +1,10 @@
+﻿moabb.datasets.bi2013a
+======================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: bi2013a
+
+   
+   .. automethod:: __init__
+   

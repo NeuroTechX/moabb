@@ -1,0 +1,10 @@
+﻿moabb.datasets.Cho2017
+======================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: Cho2017
+
+   
+   .. automethod:: __init__
+   

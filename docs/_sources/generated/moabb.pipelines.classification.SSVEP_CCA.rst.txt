@@ -1,0 +1,10 @@
+﻿moabb.pipelines.classification.SSVEP_CCA
+========================================
+
+.. currentmodule:: moabb.pipelines.classification
+
+.. autoclass:: SSVEP_CCA
+
+   
+   .. automethod:: __init__
+   

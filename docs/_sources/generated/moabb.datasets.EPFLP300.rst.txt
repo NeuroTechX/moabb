@@ -1,0 +1,10 @@
+﻿moabb.datasets.EPFLP300
+=======================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: EPFLP300
+
+   
+   .. automethod:: __init__
+   

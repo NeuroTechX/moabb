@@ -1,0 +1,10 @@
+﻿moabb.evaluations.CrossSubjectEvaluation
+========================================
+
+.. currentmodule:: moabb.evaluations
+
+.. autoclass:: CrossSubjectEvaluation
+
+   
+   .. automethod:: __init__
+   

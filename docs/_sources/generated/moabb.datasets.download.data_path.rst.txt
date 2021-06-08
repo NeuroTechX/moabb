@@ -1,0 +1,10 @@
+﻿moabb.datasets.download.data_path
+=================================
+
+.. currentmodule:: moabb.datasets.download
+
+.. autoclass:: data_path
+
+   
+   .. automethod:: __init__
+   

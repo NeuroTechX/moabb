@@ -1,0 +1,10 @@
+﻿moabb.datasets.Wang2016
+=======================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: Wang2016
+
+   
+   .. automethod:: __init__
+   

@@ -1,0 +1,10 @@
+﻿moabb.evaluations.base.BaseEvaluation
+=====================================
+
+.. currentmodule:: moabb.evaluations.base
+
+.. autoclass:: BaseEvaluation
+
+   
+   .. automethod:: __init__
+   

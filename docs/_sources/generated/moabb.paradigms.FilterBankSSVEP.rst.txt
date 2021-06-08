@@ -1,0 +1,10 @@
+﻿moabb.paradigms.FilterBankSSVEP
+===============================
+
+.. currentmodule:: moabb.paradigms
+
+.. autoclass:: FilterBankSSVEP
+
+   
+   .. automethod:: __init__
+   

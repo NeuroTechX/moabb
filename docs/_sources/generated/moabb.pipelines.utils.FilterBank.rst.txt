@@ -1,0 +1,6 @@
+﻿moabb.pipelines.utils.FilterBank
+================================
+
+.. currentmodule:: moabb.pipelines.utils
+
+.. autofunction:: FilterBank

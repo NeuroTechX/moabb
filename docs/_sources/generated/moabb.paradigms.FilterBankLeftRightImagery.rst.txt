@@ -1,0 +1,10 @@
+﻿moabb.paradigms.FilterBankLeftRightImagery
+==========================================
+
+.. currentmodule:: moabb.paradigms
+
+.. autoclass:: FilterBankLeftRightImagery
+
+   
+   .. automethod:: __init__
+   

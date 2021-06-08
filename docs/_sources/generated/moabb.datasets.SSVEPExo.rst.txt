@@ -1,0 +1,10 @@
+﻿moabb.datasets.SSVEPExo
+=======================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: SSVEPExo
+
+   
+   .. automethod:: __init__
+   

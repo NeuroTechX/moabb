@@ -1,0 +1,10 @@
+﻿moabb.paradigms.p300.BaseP300
+=============================
+
+.. currentmodule:: moabb.paradigms.p300
+
+.. autoclass:: BaseP300
+
+   
+   .. automethod:: __init__
+   

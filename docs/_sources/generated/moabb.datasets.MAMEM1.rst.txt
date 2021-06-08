@@ -1,0 +1,10 @@
+﻿moabb.datasets.MAMEM1
+=====================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: MAMEM1
+
+   
+   .. automethod:: __init__
+   

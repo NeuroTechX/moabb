@@ -1,0 +1,10 @@
+﻿moabb.datasets.utils.dataset_search
+===================================
+
+.. currentmodule:: moabb.datasets.utils
+
+.. autoclass:: dataset_search
+
+   
+   .. automethod:: __init__
+   

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>moabb.datasets.MAMEM1 &#8212; moabb 0.3.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="moabb.datasets.MAMEM2" href="moabb.datasets.MAMEM2.html" />
+    <link rel="prev" title="moabb.datasets.Wang2016" href="moabb.datasets.Wang2016.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          moabb</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.3.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../auto_examples/index.html">Gallery</a></li>
+                <li><a href="../auto_tutorials/index.html">Tutorials</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../datasets.html">Datasets</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets.html#erp-datasets">ERP Datasets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../datasets.html#ssvep-datasets">SSVEP Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../evaluations.html">Evaluations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../evaluations.html#id1">Evaluations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../evaluations.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../paradigms.html">Paradigms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#motor-imagery-paradigms">Motor Imagery Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#p300-paradigms">P300 Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#ssvep-paradigms">SSVEP Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pipelines.html">Pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pipelines.html#id1">Pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pipelines.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../analysis.html#plotting">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../analysis.html#statistics">Statistics</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">moabb.datasets.MAMEM1</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="moabb-datasets-mamem1">
+<h1>moabb.datasets.MAMEM1<a class="headerlink" href="#moabb-datasets-mamem1" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="moabb.datasets.MAMEM1">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></code><code class="sig-name descname"><span class="pre">MAMEM1</span></code><a class="reference internal" href="../_modules/moabb/datasets/ssvep_mamem.html#MAMEM1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MAMEM1" title="Permalink to this definition">¶</a></dt>
+<dd><p>SSVEP MAMEM 1 dataset</p>
+<p>Dataset from <a class="footnote-reference brackets" href="#id5" id="id1">1</a>.</p>
+<p>EEG signals with 256 channels captured from 11 subjects executing a
+SSVEP-based experimental protocol. Five different frequencies
+(6.66, 7.50, 8.57, 10.00 and 12.00 Hz) have been used for the visual
+stimulation,and the EGI 300 Geodesic EEG System (GES 300), using a
+stimulation, HydroCel Geodesic Sensor Net (HCGSN) and a sampling rate of
+250 Hz has been used for capturing the signals.</p>
+<p>Check the technical report <a class="footnote-reference brackets" href="#id6" id="id2">2</a> for more detail.
+From <a class="footnote-reference brackets" href="#id5" id="id3">1</a>, subjects were exposed to non-overlapping flickering lights from five
+magenta boxes with frequencies [6.66Hz, 7.5Hz, 8.57Hz 10Hz and 12Hz].
+256 channel EEG recordings were captured.</p>
+<p>Each session of the experimental procedure consisted of the following:</p>
+<ol class="arabic simple">
+<li><p>100 seconds of rest.</p></li>
+<li><p>An adaptation period in which the subject is exposed to eight
+5 second windows of flickering from a magenta box. Each flickering
+window is of a single isolated frequency, randomly chosen from the
+above set, specified in the FREQUENCIES1.txt file under
+‘adaptation’. The individual flickering windows are separated by 5
+seconds of rest.</p></li>
+<li><p>30 seconds of rest.</p></li>
+<li><p>For each of the frequencies from the above set in ascending order,
+also specified in FREQUENCIES1.txt under ‘main trials’:</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>Three 5 second windows of flickering at the chosen frequency,</dt><dd><p>separated by 5 seconds of rest.</p>
+</dd>
+</dl>
+</li>
+<li><p>30 seconds of rest.</p></li>
+</ol>
+</li>
+</ol>
+<p>This gives a total of 15 flickering windows, or 23 including the
+adaptation period.</p>
+<p>The order of chosen frequencies is the same for each session, although
+there are small-moderate variations in the actual frequencies of each
+individual window. The .freq annotations list the different frequencies at
+a higher level of precision.</p>
+<p><strong>Note</strong>: Each ‘session’ in experiment 1 includes an adaptation period, unlike
+experiment 2 and 3 where each subject undergoes only one adaptation period
+before their first ‘session’.</p>
+<p>From <a class="footnote-reference brackets" href="#id7" id="id4">3</a>:</p>
+<p><strong>Eligible signals</strong>: The EEG signal is sensitive to external factors that have
+to do with the environment or the configuration of the acquisition setup
+The research stuff was responsible for the elimination of trials that were
+considered faulty. As a result the following sessions were noted and
+excluded from further analysis:
+1. S003, during session 4 the stimulation program crashed
+2. S004, during session 2 the stimulation program crashed, and
+3. S008, during session 4 the Stim Tracker was detuned.
+Furthermore, we must also note that subject S001 participated in 3 sessions
+and subjects S003 and S004 participated in 4 sessions, compared to all
+other subjects that participated in 5 sessions (NB: in fact, there is only
+3 sessions for subjects 1, 3 and 8, and 4 sessions for subject 4 available
+to download). As a result, the utilized dataset consists of 1104 trials of
+5 seconds each.</p>
+<p><strong>Flickering frequencies</strong>: Usually the refresh rate for an LCD Screen is 60 Hz
+creating a restriction to the number of frequencies that can be selected.
+Specifically, only the frequencies that when divided with the refresh rate
+of the screen result in an integer quotient could be selected. As a result,
+the frequendies that could be obtained were the following: 30.00. 20.00,
+15.00, 1200, 10.00, 857. 7.50 and 6.66 Hz. In addition, it is also
+important to avoid using frequencies that are multiples of another
+frequency, for example making the choice to use 10.00Hz prohibits the use
+of 20.00 and 30.00 Mhz. With the previously described limitations in mind,
+the selected frequencies for the experiment were: 12.00, 10.00, 8.57, 7.50
+and 6.66 Hz.</p>
+<p><strong>Stimuli Layout</strong>: In an effort to keep the experimental process as simple as
+possible, we used only one flickering box instead of more common choices,
+such as 4 or 5 boxes flickering simultaneously The fact that the subject
+could focus on one stimulus without having the distraction of other
+flickering sources allowed us to minimize the noise of our signals and
+verify the appropriateness of our acquisition setup Nevertheless, having
+concluded the optimal configuration for analyzing the EEG signals, the
+experiment will be repeated with more concurrent visual stimulus.</p>
+<p><strong>Trial duration</strong>: The duration of each trial was set to 5 seconds, as this
+time was considered adequate to allow the occipital part of the bran to
+mimic the stimulation frequency and still be small enough for making a
+selection in the context</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id5"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id3">2</a>)</span></dt>
+<dd><p>MAMEM Steady State Visually Evoked Potential EEG Database
+<a class="reference external" href="https://archive.physionet.org/physiobank/database/mssvepdb/">https://archive.physionet.org/physiobank/database/mssvepdb/</a></p>
+</dd>
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>V.P. Oikonomou et al, 2016, Comparative evaluation of state-of-the-art
+algorithms for SSVEP-based BCIs. arXiv.
+<cite>&lt;http://arxiv.org/abs/1602.00904&gt;</cite>-</p>
+</dd>
+<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id4">3</a></span></dt>
+<dd><p>S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
+<a class="reference external" href="https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738">https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738</a>  # noqa: E501</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="moabb.datasets.MAMEM1.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/moabb/datasets/ssvep_mamem.html#MAMEM1.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MAMEM1.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/generated/moabb.datasets.MAMEM1.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Alexandre Barachant.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

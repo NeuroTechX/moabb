@@ -1,0 +1,10 @@
+﻿moabb.datasets.Zhou2016
+=======================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: Zhou2016
+
+   
+   .. automethod:: __init__
+   

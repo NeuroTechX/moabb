@@ -1,0 +1,10 @@
+﻿moabb.datasets.Schirrmeister2017
+================================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: Schirrmeister2017
+
+   
+   .. automethod:: __init__
+   

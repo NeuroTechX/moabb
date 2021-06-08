@@ -1,0 +1,10 @@
+﻿moabb.paradigms.LeftRightImagery
+================================
+
+.. currentmodule:: moabb.paradigms
+
+.. autoclass:: LeftRightImagery
+
+   
+   .. automethod:: __init__
+   

@@ -1,0 +1,10 @@
+﻿moabb.datasets.Lee2019_MI
+=========================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: Lee2019_MI
+
+   
+   .. automethod:: __init__
+   

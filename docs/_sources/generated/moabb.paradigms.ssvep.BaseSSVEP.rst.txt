@@ -1,0 +1,10 @@
+﻿moabb.paradigms.ssvep.BaseSSVEP
+===============================
+
+.. currentmodule:: moabb.paradigms.ssvep
+
+.. autoclass:: BaseSSVEP
+
+   
+   .. automethod:: __init__
+   

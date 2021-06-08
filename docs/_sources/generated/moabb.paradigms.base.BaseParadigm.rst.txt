@@ -1,0 +1,10 @@
+﻿moabb.paradigms.base.BaseParadigm
+=================================
+
+.. currentmodule:: moabb.paradigms.base
+
+.. autoclass:: BaseParadigm
+
+   
+   .. automethod:: __init__
+   

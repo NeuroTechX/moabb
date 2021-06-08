@@ -1,0 +1,10 @@
+﻿moabb.datasets.download.fs_get_file_hash
+========================================
+
+.. currentmodule:: moabb.datasets.download
+
+.. autoclass:: fs_get_file_hash
+
+   
+   .. automethod:: __init__
+   

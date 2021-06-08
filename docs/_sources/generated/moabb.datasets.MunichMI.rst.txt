@@ -1,0 +1,10 @@
+﻿moabb.datasets.MunichMI
+=======================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: MunichMI
+
+   
+   .. automethod:: __init__
+   

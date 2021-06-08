@@ -1,0 +1,10 @@
+﻿moabb.datasets.DemonsP300
+=========================
+
+.. currentmodule:: moabb.datasets
+
+.. autoclass:: DemonsP300
+
+   
+   .. automethod:: __init__
+   

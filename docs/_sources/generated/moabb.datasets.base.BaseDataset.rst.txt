@@ -1,0 +1,10 @@
+﻿moabb.datasets.base.BaseDataset
+===============================
+
+.. currentmodule:: moabb.datasets.base
+
+.. autoclass:: BaseDataset
+
+   
+   .. automethod:: __init__
+   

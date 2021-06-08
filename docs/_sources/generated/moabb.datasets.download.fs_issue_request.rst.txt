@@ -1,0 +1,10 @@
+﻿moabb.datasets.download.fs_issue_request
+========================================
+
+.. currentmodule:: moabb.datasets.download
+
+.. autoclass:: fs_issue_request
+
+   
+   .. automethod:: __init__
+   

@@ -1,0 +1,10 @@
+﻿moabb.paradigms.SinglePass
+==========================
+
+.. currentmodule:: moabb.paradigms
+
+.. autoclass:: SinglePass
+
+   
+   .. automethod:: __init__
+   
