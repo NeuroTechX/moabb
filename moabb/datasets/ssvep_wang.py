@@ -24,6 +24,8 @@ WANG_URL = "ftp://sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
 class Wang2016(BaseDataset):
     """SSVEP Wang 2016 dataset
 
+    Dataset from [1]_.
+
     This dataset gathered SSVEP-BCI recordings of 35 healthy subjects (17
     females, aged 17-34 years, mean age: 22 years) focusing on 40 characters
     flickering at different frequencies (8-15.8 Hz with an interval of 0.2 Hz).
@@ -70,13 +72,12 @@ class Wang2016(BaseDataset):
     group (eight subjects, S01-S08) and a ‘naive’ group (27 subjects, S09-S35)
     according to their experience in SSVEP-based BCIs.
 
-    references
+    References
     ----------
-    .. [1] Y. Wang, X. Chen, X. Gao and S. Gao, "A Benchmark Dataset for
-    SSVEP-Based Brain–Computer Interfaces," in IEEE Transactions on Neural
-    Systems and Rehabilitation Engineering, vol. 25, no. 10, pp. 1746-1752,
-    Oct. 2017
-    doi: 10.1109/TNSRE.2016.2627556.
+    .. [1] Y. Wang, X. Chen, X. Gao and S. Gao, 2017, "A Benchmark Dataset for
+           SSVEP-Based Brain–Computer Interfaces," in IEEE Transactions on Neural
+           Systems and Rehabilitation Engineering, vol. 25, no. 10, pp. 1746-1752,
+           doi: 10.1109/TNSRE.2016.2627556.
     """
 
     # fmt: off

@@ -4,6 +4,8 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class LogVariance(BaseEstimator, TransformerMixin):
+    """LogVariance transformer"""
+
     def fit(self, X, y):
         """fit."""
         return self
@@ -15,12 +17,12 @@ class LogVariance(BaseEstimator, TransformerMixin):
 
 
 class FM(BaseEstimator, TransformerMixin):
-    def __init__(self, freq=128):
-        """instantaneous frequencies require a sampling frequency to be properly
-        scaled,
-        which is helpful for some algorithms. This assumes 128 if not told
-        otherwise.
+    """Transformer to scale sampling frequency"""
 
+    def __init__(self, freq=128):
+        """Instantaneous frequencies require a sampling frequency to be properly
+        scaled, which is helpful for some algorithms. This assumes 128 if not told
+        otherwise.
         """
         self.freq = freq
 

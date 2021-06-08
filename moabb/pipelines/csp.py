@@ -7,7 +7,6 @@ from scipy import linalg
 class TRCSP(CSP):
     """
     Weighted Tikhonov-regularized CSP as described in Lotte and Guan 2011
-
     """
 
     def __init__(self, nfilter=4, metric="euclid", log=True, alpha=1):

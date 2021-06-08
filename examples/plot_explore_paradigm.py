@@ -79,7 +79,7 @@ print(np.unique(y))
 #
 # - subject is the subject id of the corresponding trial
 # - session is the session id. A session is a all the data recorded without
-# removing the EEG cap.
+#   removing the EEG cap.
 # - run is the individual continuous recording made during a session. A Session
 # may or may not contain multiple run.
 #

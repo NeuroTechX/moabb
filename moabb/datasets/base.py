@@ -89,12 +89,12 @@ class BaseDataset(metaclass=abc.ABCMeta):
         EEG cap. A session is constitued of at least one run. A run is a single
         contigous recording. Some dataset break session in multiple runs.
 
-        parameters
+        Parameters
         ----------
         subjects: List of int
             List of subject number
 
-        returns
+        Returns
         -------
         data: Dict
             dict containing the raw data

@@ -16,6 +16,7 @@ We will compare compare different pipelines for P300:
 # Authors: Sylvain Chevallier
 #
 # License: BSD (3-clause)
+# sphinx_gallery_thumbnail_number = 2
 
 import warnings
 
@@ -61,11 +62,11 @@ paradigm = P300()
 # -------------------
 #
 # To get access to the EEG signals downloaded from the dataset, you could
-# use `dataset.get_data([subject_id) to obtain the EEG as MNE Epochs, stored
+# use ``dataset.get_data([subject_id)`` to obtain the EEG as MNE Epochs, stored
 # in a dictionary of sessions and runs.
-# The `paradigm.get_data(dataset=dataset, subjects=[subject_id])` allows to
+# The ``paradigm.get_data(dataset=dataset, subjects=[subject_id])`` allows to
 # obtain the preprocessed EEG data, the labels and the meta information. By
-# default, the EEG is return as a numpy array. With `return_epochs=True`, MNE
+# default, the EEG is return as a numpy array. With ``return_epochs=True``, MNE
 # Epochs are returned.
 
 subject_list = [1]
@@ -79,12 +80,12 @@ epochs, labels, meta = paradigm.get_data(
 # A simple MNE pipeline
 # ---------------------
 #
-# Using `return_epochs=True` in the evaluation, it is possible to design a
+# Using ``return_epochs=True`` in the evaluation, it is possible to design a
 # pipeline based on MNE Epochs input. Let's create a simple one, that
 # reshape the input data from epochs, rescale the data and uses a logistic
 # regression to classify the data. We will need to write a basic Transformer
 # estimator, that comply with
-# [sklearn convention](https://scikit-learn.org/stable/developers/develop.html).
+# `sklearn convention <https://scikit-learn.org/stable/developers/develop.html>`_.
 # This transformer will extract the data from an input Epoch, and reshapes into
 # 2D array.
 
@@ -103,6 +104,7 @@ class MyVectorizer(BaseEstimator, TransformerMixin):
         return arr.reshape(len(arr), -1)
 
 
+##############################################################################
 # We will define a pipeline that is based on this new class, using a scaler
 # and a logistic regression. This pipeline is evaluated across session using
 # ROC-AUC metric.
@@ -179,10 +181,12 @@ sk_res = sk_eval.process(sk_ppl)
 
 all_res = pd.concat([mne_res, adv_res, sk_res])
 
+##############################################################################
 # We could compare the Euclidean and Riemannian performance using a `paired_plot`
 
 paired_plot(all_res, "XDAWN LR", "RG LR")
 
+##############################################################################
 # All the results could be compared and statistical analysis could highlight the
 # differences between pipelines.
 

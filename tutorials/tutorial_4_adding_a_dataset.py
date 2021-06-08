@@ -1,7 +1,7 @@
 """
-=================================
-Creating a dataset class in MOABB
-=================================
+====================================
+Tutorial 4: Creating a dataset class
+====================================
 """
 # Authors: Pedro L. C. Rodrigues, Sylvain Chevallier
 #
@@ -29,7 +29,7 @@ from moabb.paradigms import LeftRightImagery
 # 8 channels lasting for 150 seconds (sampling frequency 256 Hz). We have
 # included the script that creates this dataset and have uploaded it online.
 # The fake dataset is available on the
-# [Zenodo website](https://sandbox.zenodo.org/record/369543)
+# `Zenodo website <https://sandbox.zenodo.org/record/369543>`_
 
 
 def create_example_dataset():
@@ -73,23 +73,26 @@ for subject in [1, 2, 3]:
 #
 # We will create now a dataset class using the fake data simulated with the
 # code from above. For this, we first need to import the right classes from
-# MOABB
-# - `dl` is a very useful script that downloads automatically a dataset online
+# MOABB:
+#
+# - ``dl`` is a very useful script that downloads automatically a dataset online
 #   if it is not yet available in the user's computer. The script knows where
 #   to download the files because we create a global variable telling the URL
 #   where to fetch the data.
-# - `BaseDataset` is the basic class that we overload to create our dataset.
+# - ``BaseDataset`` is the basic class that we overload to create our dataset.
 #
 # The global variable with the dataset's URL should specify an online
 # repository where all the files are stored.
 
 ExampleDataset_URL = "https://sandbox.zenodo.org/record/369543/files/"
 
-# The `ExampleDataset` needs to implement only 3 functions:
-# - `__init__` for indicating the parameter of the dataset
-# - `_get_single_subject_data` to define how to process the data once they
+##############################################################################
+# The ``ExampleDataset`` needs to implement only 3 functions:
+#
+# - ``__init__`` for indicating the parameter of the dataset
+# - ``_get_single_subject_data`` to define how to process the data once they
 #   have been downloaded
-# - `data_path` to define how the data are downloaded.
+# - ``data_path`` to define how the data are downloaded.
 
 
 class ExampleDataset(BaseDataset):
@@ -145,12 +148,15 @@ class ExampleDataset(BaseDataset):
 #
 # Now that the `ExampleDataset` is defined, it could be instanciated directly.
 # The rest of the code follows the steps described in the previous tutorials.
+
 dataset = ExampleDataset()
 
 paradigm = LeftRightImagery()
 X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[1])
 
-evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=dataset, overwrite=True)
+evaluation = WithinSessionEvaluation(
+    paradigm=paradigm, datasets=dataset, overwrite=False, suffix="newdataset"
+)
 pipelines = {}
 pipelines["MDM"] = make_pipeline(Covariances("oas"), MDM(metric="riemann"))
 scores = evaluation.process(pipelines)
@@ -163,5 +169,5 @@ print(scores)
 #
 # If you want to make your dataset available to everyone, you could upload
 # your data on public server (like Zenodo or Figshare) and signal that you
-# want to add your dataset to MOABB in the [dedicated issue](https://github.com/NeuroTechX/moabb/issues/1).  # noqa: E501
-# You could then follow the instructions on [how to contribute](https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md)  # noqa: E501
+# want to add your dataset to MOABB in the  `dedicated issue <https://github.com/NeuroTechX/moabb/issues/1>`_.  # noqa: E501
+# You could then follow the instructions on `how to contribute <https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md>`_  # noqa: E501

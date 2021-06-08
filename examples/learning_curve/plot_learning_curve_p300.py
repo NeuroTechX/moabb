@@ -1,7 +1,7 @@
 """
-===========================
+=======================================
 Within Session P300 with learning curve
-===========================
+=======================================
 
 This Example shows how to perform a within session analysis while also
 creating learning curves for a P300 dataset.
@@ -77,13 +77,13 @@ pipelines = {}
 labels_dict = {"Target": 1, "NonTarget": 0}
 
 # Riemannian geometry based classification
-pipelines["RG + LDA"] = make_pipeline(
+pipelines["RG+LDA"] = make_pipeline(
     XdawnCovariances(nfilter=5, estimator="lwf", xdawn_estimator="scm"),
     TangentSpace(),
     LDA(solver="lsqr", shrinkage="auto"),
 )
 
-pipelines["Xdw + LDA"] = make_pipeline(
+pipelines["Xdw+LDA"] = make_pipeline(
     Xdawn(nfilter=2, estimator="scm"), Vectorizer(), LDA(solver="lsqr", shrinkage="auto")
 )
 
@@ -117,10 +117,10 @@ evaluation = WithinSessionEvaluation(
 
 
 results = evaluation.process(pipelines)
-# %%
+
 ##############################################################################
 # Plot Results
-# ----------------
+# ------------
 #
 # Here we plot the results.
 

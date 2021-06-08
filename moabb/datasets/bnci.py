@@ -664,7 +664,6 @@ class MNEBNCI(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        print(f"warning - datapath not implemented correctly for {self.code}")
         return load_data(
             subject=subject,
             dataset=self.code,
@@ -859,14 +858,14 @@ class BNCI2014004(MNEBNCI):
 
 
 class BNCI2014008(MNEBNCI):
-    """BNCI 2014-008 P300 dataset.
+    """BNCI 2014-008 P300 dataset
 
     Dataset from [1]_.
 
     **Dataset description**
 
     This dataset represents a complete record of P300 evoked potentials
-    using a paradigm originally described by Farwell and Donchin [2].
+    using a paradigm originally described by Farwell and Donchin [2]_.
     In these sessions, 8 users with amyotrophic lateral sclerosis (ALS)
     focused on one out of 36 different characters. The objective in this
     contest is to predict the correct character in each of the provided
@@ -897,7 +896,6 @@ class BNCI2014008(MNEBNCI):
 
     References
     ----------
-
     .. [1] A. Riccio, L. Simione, F. Schettini, A. Pizzimenti, M. Inghilleri,
            M. O. Belardinelli, D. Mattia, and F. Cincotti (2013). Attention
            and P300-based BCI performance in people with amyotrophic lateral
@@ -1031,10 +1029,10 @@ class BNCI2015003(MNEBNCI):
     **Dataset description**
 
     This dataset contains recordings from 10 subjects performing a visual P300
-    task for spelling. Results were published in [1]. Sampling frequency was
+    task for spelling. Results were published in [1]_. Sampling frequency was
     256 Hz and there were 8 electrodes ('Fz', 'Cz', 'P3', 'Pz', 'P4', 'PO7',
     'Oz', 'PO8') which were referenced to the right earlobe. Each subject
-    participated in only one session. For more information, see [1].
+    participated in only one session. For more information, see [1]_.
 
     References
     ----------
