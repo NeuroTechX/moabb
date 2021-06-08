@@ -664,7 +664,6 @@ class MNEBNCI(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        print(f"warning - datapath not implemented correctly for {self.code}")
         return load_data(
             subject=subject,
             dataset=self.code,

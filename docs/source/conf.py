@@ -19,6 +19,9 @@ import matplotlib
 #
 import sphinx_bootstrap_theme
 
+# Sort tutorials and examples but filename
+from sphinx_gallery.sorting import FileNameSortKey
+
 import moabb  # noqa: F401
 
 
@@ -74,6 +77,9 @@ plot_html_show_source_link = False
 sphinx_gallery_conf = {
     "examples_dirs": ["../../examples", "../../tutorials"],
     "gallery_dirs": ["auto_examples", "auto_tutorials"],
+    "filename_pattern": "(/plot_|/tutorial_)",
+    "default_thumb_file": "../images/M.png",
+    "within_subsection_order": FileNameSortKey,
 }
 
 # Add any paths that contain templates here, relative to this directory.

@@ -173,8 +173,8 @@ because then we can get right on it.
 For a less formal discussion or exchanging ideas, you can also reach us on the [Gitter
 channel][link_gitter] or join our weekly office hours! This an open video meeting
 happening on a [regular basis](https://github.com/NeuroTechX/moabb/issues/191), please ask
-the link on the gitter channel. We are also on [NeuroTechX slack #moabb
-channel][link_neurotechx_signup].
+the link on the gitter channel. We are also on NeuroTechX slack channel
+[#moabb][link_neurotechx_signup].
 
 ## Architecture and Main Concepts
 
@@ -228,12 +228,13 @@ analyze(results)
 
 ## Citing MOABB and related publications
 
-To cite MOABB, you could use the following paper:
+<!-- prettier-ignore-start -->
+To cite MOABB [1]_, you could use the following paper:
 
-> Vinay Jayaram and Alexandre Barachant.
-> ["MOABB: trustworthy algorithm benchmarking for BCIs."](http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta)
-> Journal of neural engineering 15.6 (2018): 066011.
-> [DOI](https://doi.org/10.1088/1741-2552/aadea0)
+.. [1] Vinay Jayaram and Alexandre Barachant. MOABB: trustworthy algorithm benchmarking
+       for BCIs. Journal of neural engineering 15.6 (2018): 066011.
+       `DOI <https://doi.org/10.1088/1741-2552/aadea0>`_
+<!-- prettier-ignore-end -->
 
 If you publish a paper using MOABB, please contact us on [gitter][link_gitter] or open an
 issue, and we will add your paper to the

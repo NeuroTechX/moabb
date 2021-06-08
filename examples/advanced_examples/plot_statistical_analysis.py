@@ -10,6 +10,7 @@ they can be used.
 # Authors: Vinay Jayaram <vinayjayaram13@gmail.com>
 #
 # License: BSD (3-clause)
+# sphinx_gallery_thumbnail_number = -2
 
 import matplotlib.pyplot as plt
 from mne.decoding import CSP

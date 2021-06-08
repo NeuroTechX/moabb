@@ -16,6 +16,7 @@ We will compare compare different pipelines for P300:
 # Authors: Sylvain Chevallier
 #
 # License: BSD (3-clause)
+# sphinx_gallery_thumbnail_number = 2
 
 import warnings
 

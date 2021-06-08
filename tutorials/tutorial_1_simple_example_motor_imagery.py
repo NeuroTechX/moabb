@@ -133,6 +133,7 @@ pipeline = make_pipeline(CSP(n_components=8), LDA())
 evaluation = WithinSessionEvaluation(
     paradigm=paradigm,
     datasets=[dataset],
+    overwrite=True,
     hdf5_path=None,
 )
 
