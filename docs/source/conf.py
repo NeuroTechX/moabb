@@ -34,9 +34,9 @@ copyright = "2018, Alexandre Barachant"
 author = "Alexandre Barachant, Vinay Jayaram, Sylvain Chevallier"
 
 # The short X.Y version
-version = "0.3.0"
+version = moabb.__version__
 # The full version, including alpha/beta/rc tags
-release = "0.3.0"
+release = moabb.__version__
 
 
 # -- General configuration ---------------------------------------------------
