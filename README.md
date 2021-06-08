@@ -248,8 +248,7 @@ BCI algorithms applied on an extensive list of freely available EEG datasets.
 [link_vinay]: https://ei.is.tuebingen.mpg.de/~vjayaram
 [link_neurotechx]: http://neurotechx.com/
 [link_sylvain]: https://sylvchev.github.io/
-[link_neurotechx_signup]:
-  https://docs.google.com/forms/d/e/1FAIpQLSfZyzhVdOLU8_oQ4NylHL8EFoKLIVmryGXA4u7HDsZpkTryvg/viewform
+[link_neurotechx_signup]: https://neurotechx.com/
 [link_gitter]: https://gitter.im/moabb_dev/community
 [link_moabb_docs]: http://moabb.neurotechx.com/docs/index.html
 [link_arxiv]: https://arxiv.org/abs/1805.06427

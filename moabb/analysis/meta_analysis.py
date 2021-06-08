@@ -10,19 +10,40 @@ log = logging.getLogger(__name__)
 
 
 def collapse_session_scores(df):
+    """Prepare results dataframe for computing statistics
+
+    Parameters
+    ----------
+    df: DataFrame
+        results from evaluation
+
+    Returns
+    -------
+    df: DataFrame
+        Aggregated results, samples are index, columns are pipelines,
+        and values are scores
+    """
     return df.groupby(["pipeline", "dataset", "subject"]).mean().reset_index()
 
 
 def compute_pvals_wilcoxon(df, order=None):
-    """Returns kxk matrix of p-values computed via the Wilcoxon rank-sum test,
+    """Compute Wilcoxon rank-sum test on agregated results
+
+    Returns kxk matrix of p-values computed via the Wilcoxon rank-sum test,
     order defines the order of rows and columns
 
-    df: DataFrame, samples are index, columns are pipelines, and values are
-    scores
+    Parameters
+    ----------
+    df: DataFrame
+        Aggregated results, samples are index, columns are pipelines,
+        and values are scores
+    order: list
+        list of length (num algorithms) with names corresponding to df columns
 
-    order: list of length (num algorithms) with names corresponding to columns
-    of df
-
+    Returns
+    -------
+    pvals: ndarray of shape (n_pipelines, n_pipelines)
+        array of pvalues
     """
     if order is None:
         order = df.columns
@@ -47,12 +68,20 @@ def compute_pvals_wilcoxon(df, order=None):
 
 
 def _pairedttest_exhaustive(data):
-    """Returns p-values for exhaustive ttest that runs through all possible
+    """Exhaustive paired t-test for permutation tests
+
+    Returns p-values for exhaustive ttest that runs through all possible
     permutations of the first dimension. Very bad idea for size greater than 12
 
-    data is a (subj, alg, alg) matrix of differences between scores for each
-    pair of algorithms per subject
+    Parameters
+    ----------
+    data: ndarray of shape (n_subj, n_pipelines, n_pipelines)
+        Array of differences between scores for each pair of algorithms per subject
 
+    Returns
+    -------
+    pvals: ndarray of shape (n_pipelines, n_pipelines)
+        array of pvalues
     """
     out = np.ones((data.shape[1], data.shape[1]))
     true = data.sum(axis=0)
@@ -75,6 +104,16 @@ def _pairedttest_random(data, nperms):
 
     data is a (subj, alg, alg) matrix of differences between scores for each
     pair of algorithms per subject
+
+    Parameters
+    ----------
+    data: ndarray of shape (n_subj, n_pipelines, n_pipelines)
+        Array of differences between scores for each pair of algorithms per subject
+
+    Returns
+    -------
+    pvals: ndarray of shape (n_pipelines, n_pipelines)
+        array of pvalues
     """
     out = np.ones((data.shape[1], data.shape[1]))
     true = data.sum(axis=0)
@@ -90,22 +129,28 @@ def _pairedttest_random(data, nperms):
 
 
 def compute_pvals_perm(df, order=None):
-    """Returns kxk matrix of p-values computed via permutation test,
+    """Compute permutation test on agregated results
+
+    Returns kxk matrix of p-values computed via permutation test,
     order defines the order of rows and columns
 
-    df: DataFrame, samples are index, columns are pipelines, and values are
-    scores
+    Parameters
+    ----------
+    df: DataFrame
+        Aggregated results, samples are index, columns are pipelines,
+        and values are scores
+    order: list
+        list of length (num algorithms) with names corresponding to df columns
 
-    order: list of length (num algorithms) with names corresponding to columns
-    of df
-
+    Returns
+    -------
+    pvals: ndarray of shape (n_pipelines, n_pipelines)
+        array of pvalues
     """
     if order is None:
         order = df.columns
     else:
-        errormsg = "provided order does not have all columns of dataframe, order = {}, dfcols = {}".format(
-            set(order), set(df.columns)
-        )
+        errormsg = "provided order does not have all columns of dataframe"
         assert set(order) == set(df.columns), errormsg
     # reshape df into matrix (sub, k, k) of differences
     data = np.zeros((df.shape[0], len(order), len(order)))
@@ -123,14 +168,22 @@ def compute_pvals_perm(df, order=None):
 
 
 def compute_effect(df, order=None):
-    """Returns kxk matrix of effect sizes, order defines the order of rows/columns
+    """Compute effect size across datasets
 
-    df: DataFrame, samples are index, columns are pipelines, and values are
-    scores
+    Returns kxk matrix of effect sizes, order defines the order of rows/columns
 
-    order: list of length (num algorithms) with names corresponding to
-    columns of df
+    Parameters
+    ----------
+    df: DataFrame
+        Aggregated results, samples are index, columns are pipelines, and values are
+        scores
+    order: list
+        list of length (num algorithms) with names corresponding to df columns
 
+    Returns
+    -------
+    effect: ndarray of shape (n_pipelines, n_pipelines)
+        array of effect size
     """
     if order is None:
         order = df.columns
@@ -150,9 +203,19 @@ def compute_effect(df, order=None):
 
 
 def compute_dataset_statistics(df, perm_cutoff=20):
-    """
-    Returns dict of datasets to DataFrames with stats
+    """Compute meta-analysis statistics from results dataframe
 
+    Parameters
+    ----------
+    df: DataFrame
+        results obtained by an evaluation
+    perm_cutoff: int, default=20
+        threshold value for using permutation or Wilcoxon tests
+
+    Returns
+    -------
+    stats: DataFrame
+        Table of effect and p-values for each dataset and all pipelines
     """
     df = collapse_session_scores(df)
     algs = df.pipeline.unique()
@@ -178,9 +241,22 @@ def compute_dataset_statistics(df, perm_cutoff=20):
 
 
 def combine_effects(effects, nsubs):
-    """Function that takes effects from each experiments and number of subjects to
+    """Combining effects for meta-analysis statistics
+
+    Function that takes effects from each experiments and number of subjects to
     return meta-analysis effect
 
+    Parameters
+    ----------
+    p: DataFrame
+        effects for 2 pipelines computed on different datasets
+    nsubs: float
+        average number of subject per datasets
+
+    Returns
+    -------
+    effect: float
+        Estimatation of the combined p-value
     """
     W = np.sqrt(nsubs)
     W = W / W.sum()
@@ -188,9 +264,22 @@ def combine_effects(effects, nsubs):
 
 
 def combine_pvalues(p, nsubs):
-    """Function that takes pvals from each experiments and number of subjects to
-    return meta-analysis significance
+    """Combining p-values for meta-analysis statistics
 
+    Function that takes pvals from each experiments and number of subjects to
+    return meta-analysis significance using Stouffer's method
+
+    Parameters
+    ----------
+    p: DataFrame
+        p-values for 2 pipelines computed on different datasets
+    nsubs: float
+        average number of subject per datasets
+
+    Returns
+    -------
+    pval: float
+        Estimatation of the combined p-value
     """
     if len(p) == 1:
         return p.item()
@@ -201,20 +290,26 @@ def combine_pvalues(p, nsubs):
 
 
 def find_significant_differences(df, perm_cutoff=20):
-    """Compute matrix of p-values for all algorithms over all datasets via
+    """Compute differences between pipelines across datasets
+
+    Compute matrix of p-values for all algorithms over all datasets via
     combined p-values method
 
-    df: DataFrame, output of compute_dataset_statistics
+    Parameters
+    ----------
+    df: DataFrame
+        Table of effect and p-values for each dataset and all pipelines, returned by
+        compute_dataset_statistics
+    perm_cutoff: int, default=20
+        threshold value  to stop using permutation tests, which can be very expensive
+        computationally, using Wilcoxon rank-sum test instead
 
-    perm_cutoff: int, opt -- cutoff at which to stop using permutation tests,
-                 which can be very expensive computationally
-
-    Out:
-
-    P: matrix (k,k) of p-values per algorithm pair
-
-    T: matrix (k,k) of signed standardized mean difference
-
+    Returns
+    -------
+    dfP: DataFrame of shape (n_pipelines, n_pipelines)
+        p-values per algorithm pairs
+    dfT: DataFrame of shape (n_pipelines, n_pipelines)
+        signed standardized mean differences
     """
     dsets = df.dataset.unique()
     algs = df.pipe1.unique()
