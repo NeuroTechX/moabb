@@ -8,10 +8,48 @@ import os.path as osp
 
 import requests
 from mne import get_config, set_config
-from mne.datasets.utils import _do_path_update, _get_path
+from mne.datasets.utils import _get_path
 from mne.utils import _fetch_file, _url_to_local_path, verbose
 from pooch import file_hash, retrieve
 from requests.exceptions import HTTPError
+
+
+def get_dataset_path(sign, path):
+    """Returns the dataset path allowing for changes in MNE_DATA
+     config
+
+    Parameters
+    ----------
+    sign : str
+        Signifier of dataset
+    path : None | str
+        Location of where to look for the data storing location.
+        If None, the environment variable or config parameter
+        ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
+        "~/mne_data" directory is used. If the dataset
+        is not found under the given path, the data
+        will be automatically downloaded to the specified folder.
+
+    Returns
+    -------
+        path : None | str
+        Location of where to look for the data storing location
+    """
+    sign = sign.upper()
+    key = "MNE_DATASETS_{:s}_PATH".format(sign)
+    if get_config(key) is None:
+        if get_config("MNE_DATA") is None:
+            print(
+                "MNE_DATA is not already configured. It will be set to "
+                "default location in the home directory - "
+                + osp.join(osp.expanduser("~"), "mne_data")
+                + "All datasets will be downloaded to this location, if anything is "
+                "already downloaded, please move manually to this location"
+            )
+
+            set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
+        set_config(key, get_config("MNE_DATA"))
+    return _get_path(path, key, sign)
 
 
 @verbose
@@ -50,7 +88,6 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
 
     """  # noqa: E501
     path = get_dataset_path(sign, path)
-    key = "MNE_DATASETS_{:s}_PATH".format(sign.upper())
     key_dest = "MNE-{:s}-data".format(sign.lower())
     destination = _url_to_local_path(url, osp.join(path, key_dest))
     # Fetch the file
@@ -60,14 +97,11 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
         if not osp.isdir(osp.dirname(destination)):
             os.makedirs(osp.dirname(destination))
         _fetch_file(url, destination, print_destination=False)
-
-    # Offer to update the path
-    _do_path_update(path, update_path, key, sign)
     return destination
 
 
 @verbose
-def data_dl(url, sign, path=None, force_update=False, update_path=True, verbose=None):
+def data_dl(url, sign, path=None, force_update=False, verbose=None):
     """Download file from url to specified path
 
     This function should replace data_path as the MNE will not support the download
@@ -88,9 +122,6 @@ def data_dl(url, sign, path=None, force_update=False, update_path=True, verbose=
         will be automatically downloaded to the specified folder.
     force_update : bool
         Force update of the dataset even if a local copy exists.
-    update_path : bool | None
-        If True, set the MNE_DATASETS_(signifier)_PATH in mne-python
-        config to the given path. If None, the user is prompted.
     verbose : bool, str, int, or None
         If not None, override default verbose level (see :func:`mne.verbose`).
 
@@ -101,7 +132,6 @@ def data_dl(url, sign, path=None, force_update=False, update_path=True, verbose=
         of length one, for compatibility.
     """
     path = get_dataset_path(sign, path)
-    key = "MNE_DATASETS_{:s}_PATH".format(sign.upper())
     key_dest = "MNE-{:s}-data".format(sign.lower())
     destination = _url_to_local_path(url, osp.join(path, key_dest))
 
@@ -117,11 +147,6 @@ def data_dl(url, sign, path=None, force_update=False, update_path=True, verbose=
     dlpath = retrieve(
         url, known_hash, fname=osp.basename(url), path=osp.dirname(destination)
     )
-
-    # Offer to update the path
-    if update_path:
-        _do_path_update(path, update_path, key, sign)
-
     return dlpath
 
 
@@ -239,33 +264,3 @@ def fs_get_file_name(filelist):
         keys are file_id and values are file name
     """
     return {str(f["id"]): f["name"] for f in filelist}
-
-
-def get_dataset_path(sign, path):
-    """Returns the dataset path allowing for changes in MNE_DATA
-     config
-
-    Parameters
-    ----------
-    sign : str
-        Signifier of dataset
-    path : None | str
-        Location of where to look for the data storing location.
-        If None, the environment variable or config parameter
-        ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
-        "~/mne_data" directory is used. If the dataset
-        is not found under the given path, the data
-        will be automatically downloaded to the specified folder.
-
-    Returns
-    -------
-        path : None | str
-        Location of where to look for the data storing location
-    """
-    sign = sign.upper()
-    key = "MNE_DATASETS_{:s}_PATH".format(sign)
-    if get_config(key) is None:
-        if get_config("MNE_DATA") is None:
-            set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
-        set_config(key, get_config("MNE_DATA"))
-    return _get_path(path, key, sign)

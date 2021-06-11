@@ -1,6 +1,8 @@
 import logging
+import os
+import os.path as osp
 
-from mne import set_config
+from mne import get_config, set_config
 from mne import set_log_level as sll
 
 
@@ -27,8 +29,27 @@ def set_download_dir(path):
 
     Parameters
     ----------
-    path : str
-    The new storage location
+    path : None | str
+    The new storage location, if it does not exist, a warning is raised and the
+    path is created
+    If None, and MNE_DATA config does not exist, a warning is raised and the
+    storage location is set to the MNE default directory
 
     """
-    set_config("MNE_DATA", path)
+    if path is None:
+        if get_config("MNE_DATA") is None:
+            print(
+                "MNE_DATA is not already configured. It will be set to "
+                "default location in the home directory - "
+                + osp.join(osp.expanduser("~"), "mne_data")
+                + "All datasets will be downloaded to this location, if anything is "
+                "already downloaded, please move manually to this location"
+            )
+
+            set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
+    else:
+        # Check if the path exists, if not, create it
+        if not osp.isfile(path):
+            print("The path given does not exist, creating it..")
+            os.makedirs(path)
+        set_config("MNE_DATA", path)
