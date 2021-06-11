@@ -1,10 +1,10 @@
 """
-===================
-Cross Session SSVEP
-===================
+==================================
+Cross-Session on Multiple Datasets
+==================================
 
-This Example show how to perform a cross-session SSVEP analysis on the
-MAMEM dataset 1, using a CCA pipeline.
+This example shows how to perform a cross-session analysis on two MI datasets
+using a CSP+LDA pipeline
 
 The cross session evaluation context will evaluate performance using a leave
 one session out cross-validation. For each session in the dataset, a model

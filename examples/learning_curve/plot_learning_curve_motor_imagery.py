@@ -1,7 +1,7 @@
 """
-===========================
+================================================
 Within Session Motor Imagery with learning curve
-===========================
+================================================
 
 This Example show how to perform a within session motor imagery analysis on the
 very popular dataset 2a from the BCI competition IV.
@@ -51,11 +51,11 @@ moabb.set_log_level("info")
 
 pipelines = {}
 
-pipelines["CSP + LDA"] = make_pipeline(
+pipelines["CSP+LDA"] = make_pipeline(
     CSP(n_components=8), LDA(solver="lsqr", shrinkage="auto")
 )
 
-pipelines["RG + LR"] = make_pipeline(
+pipelines["RG+LR"] = make_pipeline(
     Covariances(), TangentSpace(), LogisticRegression(solver="lbfgs")
 )
 
@@ -92,10 +92,10 @@ evaluation = WithinSessionEvaluation(
 results = evaluation.process(pipelines)
 
 print(results.head())
-# %%
+
 ##############################################################################
 # Plot Results
-# ----------------
+# ------------
 #
 # Here we plot the results.
 

@@ -173,51 +173,54 @@ class BaseMAMEM(BaseDataset):
 
 
 class MAMEM1(BaseMAMEM):
-    """EEG signals with 256 channels captured from 11 subjects executing a
+    """SSVEP MAMEM 1 dataset
+
+    Dataset from [1]_.
+
+    EEG signals with 256 channels captured from 11 subjects executing a
     SSVEP-based experimental protocol. Five different frequencies
     (6.66, 7.50, 8.57, 10.00 and 12.00 Hz) have been used for the visual
     stimulation,and the EGI 300 Geodesic EEG System (GES 300), using a
     stimulation, HydroCel Geodesic Sensor Net (HCGSN) and a sampling rate of
     250 Hz has been used for capturing the signals.
 
-    Check http://arxiv.org/abs/1602.00904 for the technical report.
-    From [1]
-    The Experiment Details -
-    Subjects were exposed to non-overlapping flickering lights from five
+    Check the technical report [2]_ for more detail.
+    From [1]_, subjects were exposed to non-overlapping flickering lights from five
     magenta boxes with frequencies [6.66Hz, 7.5Hz, 8.57Hz 10Hz and 12Hz].
     256 channel EEG recordings were captured.
 
     Each session of the experimental procedure consisted of the following:
 
-        1. 100 seconds of rest.
-        2. An adaptation period in which the subject is exposed to eight
-           5 second windows of flickering from a magenta box. Each flickering
-           window is of a single isolated frequency, randomly chosen from the
-           above set, specified in the FREQUENCIES1.txt file under
-           'adaptation'. The individual flickering windows are separated by 5
-           seconds of rest.
-        3. 30 seconds of rest.
-        4. For each of the frequencies from the above set in ascending order,
-           also specified in FREQUENCIES1.txt under 'main trials':
-            a. Three 5 second windows of flickering at the chosen frequency,
-               separated by 5 seconds of rest.
-            b. 30 seconds of rest.
+    1. 100 seconds of rest.
+    2. An adaptation period in which the subject is exposed to eight
+       5 second windows of flickering from a magenta box. Each flickering
+       window is of a single isolated frequency, randomly chosen from the
+       above set, specified in the FREQUENCIES1.txt file under
+       'adaptation'. The individual flickering windows are separated by 5
+       seconds of rest.
+    3. 30 seconds of rest.
+    4. For each of the frequencies from the above set in ascending order,
+       also specified in FREQUENCIES1.txt under 'main trials':
 
-        This gives a total of 15 flickering windows, or 23 including the
-        adaptation period.
+       1. Three 5 second windows of flickering at the chosen frequency,
+           separated by 5 seconds of rest.
+       2. 30 seconds of rest.
+
+    This gives a total of 15 flickering windows, or 23 including the
+    adaptation period.
 
     The order of chosen frequencies is the same for each session, although
     there are small-moderate variations in the actual frequencies of each
     individual window. The .freq annotations list the different frequencies at
     a higher level of precision.
 
-    *Note: Each 'session' in experiment 1 includes an adaptation period, unlike
+    **Note**: Each 'session' in experiment 1 includes an adaptation period, unlike
     experiment 2 and 3 where each subject undergoes only one adaptation period
     before their first 'session'.
 
-    From [2]
-    Important Notes
-    Eligible signals: The EEG signal is sensitive to external factors that have
+    From [3]_:
+
+    **Eligible signals**: The EEG signal is sensitive to external factors that have
     to do with the environment or the configuration of the acquisition setup
     The research stuff was responsible for the elimination of trials that were
     considered faulty. As a result the following sessions were noted and
@@ -232,7 +235,7 @@ class MAMEM1(BaseMAMEM):
     to download). As a result, the utilized dataset consists of 1104 trials of
     5 seconds each.
 
-    Flickering frequencies: Usually the refresh rate for an LCD Screen is 60 Hz
+    **Flickering frequencies**: Usually the refresh rate for an LCD Screen is 60 Hz
     creating a restriction to the number of frequencies that can be selected.
     Specifically, only the frequencies that when divided with the refresh rate
     of the screen result in an integer quotient could be selected. As a result,
@@ -244,7 +247,7 @@ class MAMEM1(BaseMAMEM):
     the selected frequencies for the experiment were: 12.00, 10.00, 8.57, 7.50
     and 6.66 Hz.
 
-    Stimuli Layout: In an effort to keep the experimental process as simple as
+    **Stimuli Layout**: In an effort to keep the experimental process as simple as
     possible, we used only one flickering box instead of more common choices,
     such as 4 or 5 boxes flickering simultaneously The fact that the subject
     could focus on one stimulus without having the distraction of other
@@ -253,14 +256,20 @@ class MAMEM1(BaseMAMEM):
     concluded the optimal configuration for analyzing the EEG signals, the
     experiment will be repeated with more concurrent visual stimulus.
 
-    Trial duration: The duration of each trial was set to 5 seconds, as this
+    **Trial duration**: The duration of each trial was set to 5 seconds, as this
     time was considered adequate to allow the occipital part of the bran to
     mimic the stimulation frequency and still be small enough for making a
     selection in the context
 
-    [1] https://archive.physionet.org/physiobank/database/mssvepdb/
-    [2] DataAcquisitionDetails.pdf on
-    https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738  # noqa: E501
+    References
+    ----------
+    .. [1] MAMEM Steady State Visually Evoked Potential EEG Database
+           `<https://archive.physionet.org/physiobank/database/mssvepdb/>`_
+    .. [2] V.P. Oikonomou et al, 2016, Comparative evaluation of state-of-the-art
+           algorithms for SSVEP-based BCIs. arXiv.
+           `<http://arxiv.org/abs/1602.00904>`-
+    .. [3] S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
+           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_I_256_channels_11_subjects_5_frequencies_/2068677?file=3793738>`_  # noqa: E501
     """
 
     def __init__(self):
@@ -275,7 +284,11 @@ class MAMEM1(BaseMAMEM):
 
 
 class MAMEM2(BaseMAMEM):
-    """EEG signals with 256 channels captured from 11 subjects executing a
+    """SSVEP MAMEM 2 dataset
+
+    Dataset from [1]_.
+
+    EEG signals with 256 channels captured from 11 subjects executing a
     SSVEP-based experimental protocol. Five different frequencies
     (6.66, 7.50, 8.57, 10.00 and 12.00 Hz) have been used for the visual
     stimulation,and the EGI 300 Geodesic EEG System (GES 300), using a
@@ -288,8 +301,8 @@ class MAMEM2(BaseMAMEM):
     arrow indicating the box to be focused on by the subject. 256 channel EEG
     recordings were captured.
 
-    Each subject underwent a single adaptation period before the first of their
-    5 sessions (unlike experiment 1 in which each session began with its own
+    From [2]_, each subject underwent a single adaptation period before the first of
+    their 5 sessions (unlike experiment 1 in which each session began with its own
     adaptation period). In the adaptation period, the subject is exposed to ten
     5-second flickering windows from the five boxes simultaneously, with the
     target frequencies specified in the FREQUENCIES2.txt file under
@@ -299,20 +312,20 @@ class MAMEM2(BaseMAMEM):
     Each session consisted of the following:
     For the series of frequencies specified in the FREQUENCIES2.txt file under
     'sessions':
-        A 5 second window with all boxes flickering and the subject focusing
-        on the specified frequency's marked box, followed by 5 seconds of rest.
-        This gives a total of 25 flickering windows for each session (not
-        including the first adaptation period). Five minutes of rest before
-        the next session (not including the 5th session).
+    A 5 second window with all boxes flickering and the subject focusing
+    on the specified frequency's marked box, followed by 5 seconds of rest.
+    This gives a total of 25 flickering windows for each session (not
+    including the first adaptation period). Five minutes of rest before
+    the next session (not including the 5th session).
 
     The order of chosen frequencies is the same for each session, although
     there are small-moderate variations in the actual frequencies of each
     individual window.
-    *Note: Each 'session' in experiment 1 includes an adaptation period,
+    **Note**: Each 'session' in experiment 1 includes an adaptation period,
     unlike experiment 2 and 3 where each subject undergoes only one adaptation
     period before their first 'session'.
 
-    Waveforms and Annotations
+    **Waveforms and Annotations**
     File names are in the form T0NNn, where NN is the subject number and n is
     a - e for the session letter or x for the adaptation period. Each session
     lasts in the order of several minutes and is sampled at 250Hz. Each session
@@ -330,16 +343,18 @@ class MAMEM2(BaseMAMEM):
     the flickering windows, equal for each session, adaptation, and subject.
     These values are equal to those contained in the .win annotations.
 
-    Observed  artifacts:
+    **Observed  artifacts:**
     During the  stimulus  presentation  to  subject  S007  the  research stuff
     noted that the subject had a tendency to eye blink. As a result the
     interference, in matters of artifacts, on the recorded signal is expected
     to be high.
 
-    References -
-    [1] https://archive.physionet.org/physiobank/database/mssvepdb/
-    [2] DataAcquisitionDetails.pdf on
-    https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_II_256_channels_11_subjects_5_frequencies_presented_simultaneously_/3153409?file=4911931  # noqa: E501
+    References
+    ----------
+    .. [1] MAMEM Steady State Visually Evoked Potential EEG Database
+           `<https://archive.physionet.org/physiobank/database/mssvepdb/>`_
+    .. [2] S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
+           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_II_256_channels_11_subjects_5_frequencies_presented_simultaneously_/3153409?file=4911931>`_  # noqa: E501
     """
 
     def __init__(self):
@@ -353,7 +368,11 @@ class MAMEM2(BaseMAMEM):
 
 
 class MAMEM3(BaseMAMEM):
-    """EEG signals with 14 channels captured from 11 subjects executing a
+    """SSVEP MAMEM 3 dataset
+
+    Dataset from [1]_.
+
+    EEG signals with 14 channels captured from 11 subjects executing a
     SSVEP-based experimental protocol. Five different frequencies
     (6.66, 7.50, 8.57, 10.00 and 12.00 Hz) have been used for the visual
     stimulation, and the Emotiv EPOC, using 14 wireless channels has been used
@@ -376,22 +395,22 @@ class MAMEM3(BaseMAMEM):
     Each session consisted of the following:
     For the series of frequencies specified in the FREQUENCIES3.txt file under
     'sessions':
-        A 5 second window with all boxes flickering and the subject focusing on
-        the specified frequency's marked box, followed by 5 seconds of rest.
-        Between the 12th and 13th flickering window, there is a 30s resting
-        period. This gives a total of 25 flickering windows for each session
-        (not including the first adaptation period). Five minutes of rest
-        before the next session (not including the 5th session).
+    A 5 second window with all boxes flickering and the subject focusing on
+    the specified frequency's marked box, followed by 5 seconds of rest.
+    Between the 12th and 13th flickering window, there is a 30s resting
+    period. This gives a total of 25 flickering windows for each session
+    (not including the first adaptation period). Five minutes of rest
+    before the next session (not including the 5th session).
 
     The order of chosen frequencies is the same for each session, although
     there are small-moderate variations in the actual frequencies of each
     individual window.
 
-    *Note: Each 'session' in experiment 1 includes an adaptation period, unlike
+    **Note**: Each 'session' in experiment 1 includes an adaptation period, unlike
     experiment 2 and 3 where each subject undergoes only one adaptation period
-    before their first 'session'.
+    before their first 'session' [2]_.
 
-    Waveforms and Annotations
+    **Waveforms and Annotations**
     File names are in the form U0NNn, where NN is the subject number and n is
     a - e for the session letter or x for the adaptation period. In addition,
     session file names end with either i or ii, corresponding to the first 12
@@ -408,7 +427,7 @@ class MAMEM3(BaseMAMEM):
     the flickering windows, equal for each session, adaptation, and subject.
     These values are equal to those contained in the .win annotations.
 
-    Trial  manipulation:
+    **Trial  manipulation**:
     The  trial  initiation  is  defined by  an  event  code  (32779)  and  the
     end by another (32780). There are five different labels that indicate the
     box subjects were instructed to focus  on  (1, 2, 3, 4 and 5) and
@@ -417,16 +436,18 @@ class MAMEM3(BaseMAMEM):
     4 2 3 5 1 2 5 4 2 3 1 5 4 3 2 4 1 2 5 3 4 1 3 1 3 is the sequence for each
     session.
 
-    Observed  artifacts:
+    **Observed  artifacts**:
     During  the  stimulus  presentation to  subject  S007  the  research staff
     noted that the subject had a tendency to eye blink. As a result the
     interference, in matters of artifacts, on the recorded signal is expected
     to be high.
 
-    References -
-    [1] https://archive.physionet.org/physiobank/database/mssvepdb/
-    [2] DataAcquisitionDetails.pdf on
-    https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_III_14_channels_11_subjects_5_frequencies_presented_simultaneously_/3413851  # noqa: E501
+    References
+    ----------
+    .. [1] MAMEM Steady State Visually Evoked Potential EEG Database
+           `<https://archive.physionet.org/physiobank/database/mssvepdb/>`_
+    .. [2] S. Nikolopoulos, 2016, DataAcquisitionDetails.pdf
+           `<https://figshare.com/articles/dataset/MAMEM_EEG_SSVEP_Dataset_III_14_channels_11_subjects_5_frequencies_presented_simultaneously_/3413851>`_  # noqa: E501
     """
 
     def __init__(self):

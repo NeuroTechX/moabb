@@ -24,8 +24,7 @@ def dataset_search(  # noqa: C901
     channels=(),
 ):
     """
-    Function that returns a list of datasets that match given criteria. Valid
-    criteria are:
+    Returns a list of datasets that match a given criteria
 
     Parameters
     ----------
@@ -51,7 +50,6 @@ def dataset_search(  # noqa: C901
 
     channels: list of str
         list or set of channels
-
     """
     channels = set(channels)
     out_data = []

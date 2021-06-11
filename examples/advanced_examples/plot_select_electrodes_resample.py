@@ -8,6 +8,9 @@ electrodes and to resample to a specific sampling rate. There is also a
 utility function to select common electrodes shared between datasets.
 This tutorial demonstrates how to use this functionality.
 """
+# Authors: Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
+#
+# License: BSD (3-clause)
 import matplotlib.pyplot as plt
 from mne.decoding import CSP
 from pyriemann.estimation import Covariances
@@ -17,10 +20,6 @@ from sklearn.linear_model import LogisticRegression as LR
 from sklearn.pipeline import make_pipeline
 
 import moabb.analysis.plotting as moabb_plt
-
-# Authors: Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
-#
-# License: BSD (3-clause)
 from moabb.datasets import BNCI2014001, Zhou2016
 from moabb.datasets.utils import find_intersecting_channels
 from moabb.evaluations import WithinSessionEvaluation
@@ -31,9 +30,12 @@ from moabb.paradigms import LeftRightImagery
 # Datasets
 # --------
 #
-# Select datasets for motor imagery
+# Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each
 
+subj = [1, 2]
 datasets = [Zhou2016(), BNCI2014001()]
+for d in datasets:
+    d.subject_list = subj
 
 ##############################################################################
 # Paradigm
@@ -70,7 +72,9 @@ print(results.head())
 # as well as the list of datasets with valid channels.
 
 electrodes, datasets = find_intersecting_channels(datasets)
-evaluation = WithinSessionEvaluation(paradigm=paradigm, datasets=datasets, overwrite=True)
+evaluation = WithinSessionEvaluation(
+    paradigm=paradigm, datasets=datasets, overwrite=True, suffix="resample"
+)
 results = evaluation.process({"csp+lda": csp_lda, "ts+lr": ts_lr})
 print(results.head())
 

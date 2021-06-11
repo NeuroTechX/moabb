@@ -74,5 +74,11 @@ Base & Utils
 
     base.BaseDataset
     download.data_path
+	 download.data_dl
+	 download.fs_issue_request
+	 download.fs_get_file_list
+	 download.fs_get_file_hash
+	 download.fs_get_file_id
+	 download.fs_get_file_name
     utils.dataset_search
     utils.find_intersecting_channels

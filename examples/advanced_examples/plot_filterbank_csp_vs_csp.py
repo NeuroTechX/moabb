@@ -41,10 +41,10 @@ moabb.set_log_level("info")
 # their own dict.
 
 pipelines = {}
-pipelines["CSP + LDA"] = make_pipeline(CSP(n_components=8), LDA())
+pipelines["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 
 pipelines_fb = {}
-pipelines_fb["FBCSP + LDA"] = make_pipeline(FilterBank(CSP(n_components=4)), LDA())
+pipelines_fb["FBCSP+LDA"] = make_pipeline(FilterBank(CSP(n_components=4)), LDA())
 
 ##############################################################################
 # Evaluation
@@ -122,7 +122,7 @@ paired = results.pivot_table(
 )
 paired = paired.reset_index()
 
-sns.regplot(data=paired, y="FBCSP + LDA", x="CSP + LDA", ax=axes[1], fit_reg=False)
+sns.regplot(data=paired, y="FBCSP+LDA", x="CSP+LDA", ax=axes[1], fit_reg=False)
 axes[1].plot([0, 1], [0, 1], ls="--", c="k")
 axes[1].set_xlim(0.5, 1)
 

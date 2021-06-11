@@ -1,7 +1,8 @@
 """
-===============================================
-Motor Imagery CSP + LDA Classification (Part 2)
-===============================================
+===================================
+Tutorial 2: Using multiple datasets
+===================================
+
 We extend the previous example to a case where we want to analyze the score of
 a classifier with three different MI datasets instead of just one. As before,
 we begin by importing all relevant libraries.
@@ -44,6 +45,7 @@ for d in datasets:
     d.subject_list = subj
 
 
+##############################################################################
 # The following lines go exactly as in the previous example, where we end up
 # obtaining a pandas dataframe containing the results of the evaluation. We
 # could set `overwrite` to False to cache the results, avoiding to restart all

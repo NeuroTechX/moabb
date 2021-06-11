@@ -10,6 +10,7 @@ they can be used.
 # Authors: Vinay Jayaram <vinayjayaram13@gmail.com>
 #
 # License: BSD (3-clause)
+# sphinx_gallery_thumbnail_number = -2
 
 import matplotlib.pyplot as plt
 from mne.decoding import CSP
@@ -56,13 +57,13 @@ print(__doc__)
 
 pipelines = {}
 
-pipelines["CSP + LDA"] = make_pipeline(CSP(n_components=8), LDA())
+pipelines["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 
-pipelines["RG + LR"] = make_pipeline(Covariances(), TangentSpace(), LogisticRegression())
+pipelines["RG+LR"] = make_pipeline(Covariances(), TangentSpace(), LogisticRegression())
 
-pipelines["CSP + LR"] = make_pipeline(CSP(n_components=8), LogisticRegression())
+pipelines["CSP+LR"] = make_pipeline(CSP(n_components=8), LogisticRegression())
 
-pipelines["RG + LDA"] = make_pipeline(Covariances(), TangentSpace(), LDA())
+pipelines["RG+LDA"] = make_pipeline(Covariances(), TangentSpace(), LDA())
 
 ##############################################################################
 # Evaluation
@@ -80,9 +81,9 @@ paradigm = LeftRightImagery()
 dataset = BNCI2014001()
 dataset.subject_list = dataset.subject_list[:4]
 datasets = [dataset]
-overwrite = False  # set to True if we want to overwrite cached results
+overwrite = True  # set to False if we want to use cached results
 evaluation = CrossSessionEvaluation(
-    paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite
+    paradigm=paradigm, datasets=datasets, suffix="stats", overwrite=overwrite
 )
 
 results = evaluation.process(pipelines)
@@ -104,7 +105,7 @@ plt.show()
 # datasets. Note that there is only one score per subject, regardless of the
 # number of sessions.
 
-fig = moabb_plt.paired_plot(results, "CSP + LDA", "RG + LDA")
+fig = moabb_plt.paired_plot(results, "CSP+LDA", "RG+LDA")
 plt.show()
 
 ###############################################################################
@@ -124,7 +125,7 @@ P, T = find_significant_differences(stats)
 # The meta-analysis style plot shows the standardized mean difference within
 # each tested dataset for the two algorithms in question, in addition to a
 # meta-effect and significances both per-dataset and overall.
-fig = moabb_plt.meta_analysis_plot(stats, "CSP + LDA", "RG + LDA")
+fig = moabb_plt.meta_analysis_plot(stats, "CSP+LDA", "RG+LDA")
 plt.show()
 
 ###############################################################################

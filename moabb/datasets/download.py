@@ -1,4 +1,5 @@
 # Author: Alexandre Barachant <alexandre.barachant@gmail.com>
+#         Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
 # License: BSD Style.
 
 import json

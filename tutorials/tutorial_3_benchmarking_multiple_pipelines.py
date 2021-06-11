@@ -1,7 +1,8 @@
 """
-===============================================
-Motor Imagery CSP + LDA Classification (Part 3)
-===============================================
+===========================================
+Tutorial 3: Benchmarking mulitple pipelines
+===========================================
+
 In this last part, we extend the previous example by assessing the
 classification score of not one but three classification pipelines.
 """
@@ -43,6 +44,7 @@ warnings.filterwarnings("ignore")
 # other two pipelines rely on Riemannian geometry, using an SVM classification
 # in the tangent space of the covariance matrices estimated from the EEG or a
 # MDM classifier that works directly on covariance matrices.
+
 pipelines = {}
 pipelines["csp+lda"] = make_pipeline(CSP(n_components=8), LDA())
 pipelines["tgsp+svm"] = make_pipeline(
@@ -50,6 +52,7 @@ pipelines["tgsp+svm"] = make_pipeline(
 )
 pipelines["MDM"] = make_pipeline(Covariances("oas"), MDM(metric="riemann"))
 
+##############################################################################
 # The following lines go exactly as in the previous tutorial, where we end up
 # obtaining a pandas dataframe containing the results of the evaluation.
 datasets = [BNCI2014001(), Zhou2016()]
@@ -62,6 +65,7 @@ evaluation = WithinSessionEvaluation(
 )
 results = evaluation.process(pipelines)
 
+##############################################################################
 # As `overwrite` is set to False, the results from the previous tutorial are reused and
 # only the new pipelines are evaluated. The results from "csp+lda" are not recomputed.
 # The results are saved in ~/mne_data/results if the parameter `hdf5_path` is not set.

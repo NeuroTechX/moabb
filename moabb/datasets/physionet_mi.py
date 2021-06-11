@@ -22,10 +22,10 @@ class PhysionetMI(BaseDataset):
     Physionet MI dataset: https://physionet.org/pn4/eegmmidb/
 
     This data set consists of over 1500 one- and two-minute EEG recordings,
-    obtained from 109 volunteers.
+    obtained from 109 volunteers [2]_.
 
     Subjects performed different motor/imagery tasks while 64-channel EEG were
-    recorded using the BCI2000 system (http://www.bci2000.org).
+    recorded using the BCI2000 system (http://www.bci2000.org) [1]_.
     Each subject performed 14 experimental runs: two one-minute baseline runs
     (one with eyes open, one with eyes closed), and three two-minute runs of
     each of the four following tasks:
@@ -48,7 +48,7 @@ class PhysionetMI(BaseDataset):
        (if the target is on top) or both feet (if the target is on the bottom)
        until the target disappears. Then the subject relaxes.
 
-    parameters
+    Parameters
     ----------
 
     imagined: bool (default True)

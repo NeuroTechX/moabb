@@ -16,6 +16,9 @@ Pipelines
 
     features.LogVariance
     features.FM
+	 features.ExtendedSSVEPSignal
+	 csp.TRCSP
+	 classification.SSVEP_CCA
 
 ------------
 Base & Utils

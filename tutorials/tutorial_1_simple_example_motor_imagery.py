@@ -1,7 +1,8 @@
 """
-======================================
-Motor Imagery CSP + LDA Classification
-======================================
+================================
+Tutorial 1: Simple Motor Imagery
+================================
+
 In this example, we will go through all the steps to make a simple BCI
 classification task, downloading a dataset and using a standard classifier. We
 choose the dataset 2a from BCI Competition IV, a motor imagery task. We will
@@ -40,9 +41,10 @@ warnings.filterwarnings("ignore")
 # size of trials, names of classes, etc.
 #
 # The dataset class has methods for:
+#
 # - downloading its files from some online source (e.g. Zenodo)
 # - importing the data from the files in whatever extension they might be
-# (like .mat, .gdf, etc.) and instantiate a Raw object from the MNE package
+#   (like .mat, .gdf, etc.) and instantiate a Raw object from the MNE package
 
 dataset = BNCI2014001()
 dataset.subject_list = [1, 2, 3]
@@ -54,15 +56,18 @@ dataset.subject_list = [1, 2, 3]
 # As an example, we may access the EEG recording from a given session and a
 # given run as follows:
 
-sessions = dataset._get_single_subject_data(subject=1)
+sessions = dataset.get_data(subjects=[1])
 
+##############################################################################
 # This returns a MNE Raw object that can be manipulated. This might be enough
 # for some users, since the pre-processing and epoching steps can be easily
 # done via MNE. However, to conduct an assessment of several classifiers on
 # multiple subjects, MOABB ends up being a more appropriate option.
+
+subject = 1
 session_name = "session_T"
 run_name = "run_1"
-raw = sessions[session_name][run_name]
+raw = sessions[subject][session_name][run_name]
 
 
 ##############################################################################
@@ -77,15 +82,20 @@ raw = sessions[session_name][run_name]
 
 print(dataset.paradigm)
 
+##############################################################################
 # For the example below, we will consider the paradigm associated to
 # left-hand/right-hand motor imagery task, but there are other options in
 # MOABB for motor imagery, P300 or SSVEP.
+
 paradigm = LeftRightImagery()
 
+##############################################################################
 # We may check the list of all datasets available in MOABB for using with this
 # paradigm (note that BNCI2014001 is in it)
+
 print(paradigm.datasets)
 
+##############################################################################
 # The data from a list of subjects could be preprocessed and return as a 3D
 # numpy array `X`, follow a scikit-like format with the associated `labels`.
 # The `meta` object contains all information regarding the subject, the
@@ -117,24 +127,31 @@ pipeline = make_pipeline(CSP(n_components=8), LDA())
 # example, we choose `WithinSessionEvaluation`, which consists of doing a
 # cross-validation procedure where the training and testing partitions are from
 # the same recording session of the dataset. We could have used
-# `BetweenSessionEvaluation`, which takes all but one session as training
+# `CrossSessionEvaluation`, which takes all but one session as training
 # partition and the remaining one as testing partition.
 
 evaluation = WithinSessionEvaluation(
     paradigm=paradigm,
     datasets=[dataset],
+    overwrite=True,
     hdf5_path=None,
 )
 
+##############################################################################
 # We obtain the results in the form of a pandas dataframe
+
 results = evaluation.process({"csp+lda": pipeline})
 
+##############################################################################
 # The results are stored in locally, to avoid recomputing the results each time.
 # It is saved in `hdf5_path` if defined or in ~/mne_data/results  otherwise.
 # To export the results in CSV:
+
 results.to_csv("./results_part2-1.csv")
 
+##############################################################################
 # To load previously obtained results saved in CSV
+
 results = pd.read_csv("./results_part2-1.csv")
 
 ##############################################################################
