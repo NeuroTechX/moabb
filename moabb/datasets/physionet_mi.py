@@ -4,7 +4,6 @@ Physionet Motor imagery dataset.
 
 import mne
 import numpy as np
-
 from mne.datasets import eegbci
 from mne.io import read_raw_edf
 
