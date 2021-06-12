@@ -72,8 +72,10 @@ jobs:
           echo "Deploying dev docs."
           git config --global user.email "ci@neurotechx.com"
           git config --global user.name "Github Actions"
-          pushd moabb-ghio && git checkout master && git pull origin master && popd
-          pushd docs/build && rm -Rf ~/moabb/moabb/moabb-ghio/docs && cp -a html ~/moabb/moabb/moabb-ghio/docs && popd
+          pushd moabb-ghio && git checkout master && git pull origin master && rm -Rf docs && popd
+          pushd moabb-ghio && echo "ls moabb-ghio" && ls && echo && echo $(pwd) && popd
+          pushd docs/build && echo "ls docs/build" && ls && echo && echo $(pwd) &&  popd
+          pushd docs/build && cp -a html ~/moabb/moabb/moabb-ghio/docs && popd
           pushd moabb-ghio && git add -A && git commit -m "GH Actions update of docs ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)." && git push origin master && popd
 
       # - name: Deploy
