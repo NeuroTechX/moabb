@@ -139,14 +139,19 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pooch</span>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">create_info</span><span class="p">,</span> <span class="n">get_config</span><span class="p">,</span> <span class="n">set_config</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">create_info</span>
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">make_standard_montage</span>
-<span class="kn">from</span> <span class="nn">mne.datasets.utils</span> <span class="kn">import</span> <span class="n">_get_path</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">RawArray</span>
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span>
-<span class="kn">from</span> <span class="nn">.download</span> <span class="kn">import</span> <span class="n">fs_get_file_hash</span><span class="p">,</span> <span class="n">fs_get_file_id</span><span class="p">,</span> <span class="n">fs_get_file_list</span><span class="p">,</span> <span class="n">fs_get_file_name</span>
+<span class="kn">from</span> <span class="nn">.download</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">fs_get_file_hash</span><span class="p">,</span>
+    <span class="n">fs_get_file_id</span><span class="p">,</span>
+    <span class="n">fs_get_file_list</span><span class="p">,</span>
+    <span class="n">fs_get_file_name</span><span class="p">,</span>
+    <span class="n">get_dataset_path</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -282,11 +287,8 @@
 
         <span class="n">sub</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
         <span class="n">sign</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MNE_DATASETS_</span><span class="si">{:s}</span><span class="s2">_PATH&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span>
         <span class="n">key_dest</span> <span class="o">=</span> <span class="s2">&quot;MNE-</span><span class="si">{:s}</span><span class="s2">-data&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sign</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">get_config</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">set_config</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">),</span> <span class="s2">&quot;mne_data&quot;</span><span class="p">))</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_get_path</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">sign</span><span class="p">),</span> <span class="n">key_dest</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_dataset_path</span><span class="p">(</span><span class="n">sign</span><span class="p">,</span> <span class="n">path</span><span class="p">),</span> <span class="n">key_dest</span><span class="p">)</span>
 
         <span class="n">filelist</span> <span class="o">=</span> <span class="n">fs_get_file_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figshare_id</span><span class="p">)</span>
         <span class="n">reg</span> <span class="o">=</span> <span class="n">fs_get_file_hash</span><span class="p">(</span><span class="n">filelist</span><span class="p">)</span>

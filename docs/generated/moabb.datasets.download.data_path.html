@@ -147,15 +147,14 @@ remote dataset. It is deprecated in favor of data_dl.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> (<em>str</em>) – Path to remote location of data</p></li>
 <li><p><strong>sign</strong> (<em>str</em>) – Signifier of dataset</p></li>
-<li><p><strong>path</strong> (<em>None | str</em>) – Location of where to look for the BNCI data storing location.
+<li><p><strong>path</strong> (<em>None | str</em>) – Location of where to look for the data storing location.
 If None, the environment variable or config parameter
 <code class="docutils literal notranslate"><span class="pre">MNE_DATASETS_(signifier)_PATH</span></code> is used. If it doesn’t exist, the
 “~/mne_data” directory is used. If the dataset
 is not found under the given path, the data
 will be automatically downloaded to the specified folder.</p></li>
 <li><p><strong>force_update</strong> (<em>bool</em>) – Force update of the dataset even if a local copy exists.</p></li>
-<li><p><strong>update_path</strong> (<em>bool | None</em>) – If True, set the MNE_DATASETS_(signifier)_PATH in mne-python
-config to the given path. If None, the user is prompted.</p></li>
+<li><p><strong>update_path</strong> (<em>bool | None, **Deprecated**</em>) – Unused, kept for compatibility purpose.</p></li>
 <li><p><strong>verbose</strong> (<em>bool, str, int, or None</em>) – If not None, override default verbose level (see <code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code>).</p></li>
 </ul>
 </dd>

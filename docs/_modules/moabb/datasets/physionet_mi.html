@@ -134,15 +134,13 @@
 <span class="sd">Physionet Motor imagery dataset.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
-
 <span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">get_config</span><span class="p">,</span> <span class="n">set_config</span>
 <span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">eegbci</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">read_raw_edf</span>
 
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span>
+<span class="kn">from</span> <span class="nn">moabb.datasets.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span>
+<span class="kn">from</span> <span class="nn">moabb.datasets.download</span> <span class="kn">import</span> <span class="n">get_dataset_path</span>
 
 
 <span class="n">BASE_URL</span> <span class="o">=</span> <span class="s2">&quot;http://archive.physionet.org/pn4/eegmmidb/&quot;</span>
@@ -229,10 +227,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">hand_runs</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_load_one_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;MNE_DATASETS_EEGBCI_PATH&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">set_config</span><span class="p">(</span>
-                <span class="s2">&quot;MNE_DATASETS_EEGBCI_PATH&quot;</span><span class="p">,</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">),</span> <span class="s2">&quot;mne_data&quot;</span><span class="p">)</span>
-            <span class="p">)</span>
         <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
             <span class="n">subject</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="p">[</span><span class="n">run</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">BASE_URL</span>
         <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -252,10 +246,8 @@
     <span class="k">def</span> <span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;return data for a single subject&quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;MNE_DATASETS_EEGBCI_PATH&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">set_config</span><span class="p">(</span>
-                <span class="s2">&quot;MNE_DATASETS_EEGBCI_PATH&quot;</span><span class="p">,</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">),</span> <span class="s2">&quot;mne_data&quot;</span><span class="p">)</span>
-            <span class="p">)</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="s2">&quot;EEGBCI&quot;</span>
+        <span class="n">get_dataset_path</span><span class="p">(</span><span class="n">sign</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="c1"># hand runs</span>
         <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_runs</span><span class="p">:</span>
@@ -287,10 +279,8 @@
         <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
             <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid subject number&quot;</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="n">get_config</span><span class="p">(</span><span class="s2">&quot;MNE_DATASETS_EEGBCI_PATH&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">set_config</span><span class="p">(</span>
-                <span class="s2">&quot;MNE_DATASETS_EEGBCI_PATH&quot;</span><span class="p">,</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">),</span> <span class="s2">&quot;mne_data&quot;</span><span class="p">)</span>
-            <span class="p">)</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="s2">&quot;EEGBCI&quot;</span>
+        <span class="n">get_dataset_path</span><span class="p">(</span><span class="n">sign</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
             <span class="n">subject</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_runs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">feet_runs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
         <span class="p">)</span>

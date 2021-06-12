@@ -360,7 +360,7 @@ differences between pipelines.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  2.931 seconds)
+   **Total running time of the script:** ( 1 minutes  12.693 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_mne_and_scikit_estimators.py:
