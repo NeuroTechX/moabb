@@ -66,6 +66,8 @@ jobs:
         with:
           repository: "NeuroTechX/moabb.github.io"
           path: moabb-ghio
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Deploy on moabb.github.io
         run: |
