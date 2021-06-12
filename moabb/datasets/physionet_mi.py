@@ -2,15 +2,13 @@
 Physionet Motor imagery dataset.
 """
 
-import os.path as osp
-
 import mne
 import numpy as np
-from mne import get_config, set_config
 from mne.datasets import eegbci
 from mne.io import read_raw_edf
 
-from .base import BaseDataset
+from moabb.datasets.base import BaseDataset
+from moabb.datasets.download import get_dataset_path
 
 
 BASE_URL = "http://archive.physionet.org/pn4/eegmmidb/"
@@ -97,10 +95,6 @@ class PhysionetMI(BaseDataset):
             self.hand_runs += [3, 7, 11]
 
     def _load_one_run(self, subject, run, preload=True):
-        if get_config("MNE_DATASETS_EEGBCI_PATH") is None:
-            set_config(
-                "MNE_DATASETS_EEGBCI_PATH", osp.join(osp.expanduser("~"), "mne_data")
-            )
         raw_fname = eegbci.load_data(
             subject, runs=[run], verbose="ERROR", base_url=BASE_URL
         )[0]
@@ -120,10 +114,8 @@ class PhysionetMI(BaseDataset):
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
         data = {}
-        if get_config("MNE_DATASETS_EEGBCI_PATH") is None:
-            set_config(
-                "MNE_DATASETS_EEGBCI_PATH", osp.join(osp.expanduser("~"), "mne_data")
-            )
+        sign = "EEGBCI"
+        get_dataset_path(sign, None)
 
         # hand runs
         for run in self.hand_runs:
@@ -155,10 +147,8 @@ class PhysionetMI(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
-        if get_config("MNE_DATASETS_EEGBCI_PATH") is None:
-            set_config(
-                "MNE_DATASETS_EEGBCI_PATH", osp.join(osp.expanduser("~"), "mne_data")
-            )
+        sign = "EEGBCI"
+        get_dataset_path(sign, None)
         paths = eegbci.load_data(
             subject, runs=[1, 2] + self.hand_runs + self.feet_runs, verbose=verbose
         )

@@ -83,6 +83,6 @@ class SSVEPExo(BaseDataset):
             url = "{:s}subject{:02d}_run{:d}_raw.fif".format(
                 SSVEPEXO_URL, subject, run + 1
             )
-            p = dl.data_dl(url, "SSVEPEXO", path, force_update, update_path, verbose)
+            p = dl.data_dl(url, "SSVEPEXO", path, force_update, verbose)
             paths.append(p)
         return paths
