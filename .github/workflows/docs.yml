@@ -65,16 +65,16 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "NeuroTechX/moabb.github.io"
-          path: moabb.github.io
+          path: moabb-ghio
 
       - name: Deploy on moabb.github.io
         run: |
-          echo "Deploying dev docs.";
-          git config --global user.email "ci@neurotechx.com";
-          git config --global user.name "Github Actions";
-          pushd ~/moabb.github.io && git checkout master && git pull origin master && popd;
-          pushd docs/build && rm -Rf ~/moabb.github.io/docs && cp -a html ~/moabb.github.io/docs && popd;
-          pushd ~/moabb.github.io && git add -A && git commit -m "GH Actions update of docs ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)." && git push origin master && popd;
+          echo "Deploying dev docs."
+          git config --global user.email "ci@neurotechx.com"
+          git config --global user.name "Github Actions"
+          pushd moabb-ghio && git checkout master && git pull origin master && popd
+          pushd docs/build && rm -Rf ~/moabb/moabb/moabb-ghio/docs && cp -a html ~/moabb/moabb/moabb-ghio/docs && popd
+          pushd moabb-ghio && git add -A && git commit -m "GH Actions update of docs ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)." && git push origin master && popd
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
