@@ -61,22 +61,35 @@ jobs:
           key: ${{ secrets.MOABB_DOCS_SSH }}
           known_hosts: ${{ secrets.KNOWN_HOST_GH }}
 
-      - name: Checkout  moabb.github.io
-        uses: actions/checkout@v2
-        with:
-          repository: "NeuroTechX/moabb.github.io"
-          path: moabb-ghio
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
+      # - name: Checkout  moabb.github.io
+      #   uses: actions/checkout@v2
+      #   with:
+      #     repository: "NeuroTechX/moabb.github.io"
+      #     path: moabb-ghio
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     fetch-depth: 0
 
       - name: Deploy on moabb.github.io
         run: |
-          echo "Deploying dev docs."
+          cd ~/work
           git config --global user.email "ci@neurotechx.com"
           git config --global user.name "Github Actions"
-          pushd moabb-ghio && git checkout master && git pull origin master && rm -Rf docs && popd
-          pushd docs/build && cp -a html ~/work/moabb/moabb/moabb-ghio/docs && popd
-          pushd moabb-ghio && git add -A && git commit -m "GH Actions update of docs ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)." && git push origin master && popd
+          git clone git@github.com:NeuroTechX/moabb.github.io.git
+          cd moabb.github.io
+          rm -Rf docs
+          cp -a ~/work/moabb/moabb/docs/build/html ./docs
+          git add -A
+          git commit -m "GH Actions update of docs ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)"
+          git push origin master
+
+      # - name: Deploy on moabb.github.io
+      #   run: |
+      #     echo "Deploying dev docs."
+      #     git config --global user.email "ci@neurotechx.com"
+      #     git config --global user.name "Github Actions"
+      #     pushd moabb-ghio && git checkout master && git pull origin master && rm -Rf docs && popd
+      #     pushd docs/build && cp -a html ~/work/moabb/moabb/moabb-ghio/docs && popd
+      #     pushd moabb-ghio && git add -A && git commit -m "GH Actions update of docs ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)." && git push origin master && popd
 
       # - name: Deploy
       #   uses: peaceiris/actions-gh-pages@v3
