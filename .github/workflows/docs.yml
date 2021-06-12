@@ -50,10 +50,10 @@ jobs:
           path: docs/build/html/
 
       # Since we want the URL to be neurotechx.github.io/docs/ the html output needs to be put in a ./docs subfolder of the publish_dir
-      - name: Move docs into site folder
-        run: |
-          mkdir site
-          mv docs/build/html site/docs
+      # - name: Move docs into site folder
+      #   run: |
+      #     mkdir site
+      #     mv docs/build/html site/docs
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -76,9 +76,9 @@ jobs:
           pushd docs/build && rm -Rf ~/moabb/moabb/moabb-ghio/docs && cp -a html ~/moabb/moabb/moabb-ghio/docs && popd
           pushd moabb-ghio && git add -A && git commit -m "GH Actions update of docs ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)." && git push origin master && popd
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/master'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: site
+      # - name: Deploy
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   if: github.ref == 'refs/heads/master'
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: site
