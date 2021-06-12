@@ -148,7 +148,7 @@
 <span class="sd">    parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    subjects: List of int</span>
-<span class="sd">        List of subject number # TODO: make identifiers more general</span>
+<span class="sd">        List of subject number (or tuple or numpy array)</span>
 
 <span class="sd">    sessions_per_subject: int</span>
 <span class="sd">        Number of sessions per subject (if varying, take minimum)</span>
@@ -192,8 +192,10 @@
         <span class="n">doi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">unit_factor</span><span class="o">=</span><span class="mf">1e6</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subjects</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;subjects must be a list&quot;</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">subjects</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;subjects must be a iterable, like a list&quot;</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span> <span class="o">=</span> <span class="n">subjects</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_sessions</span> <span class="o">=</span> <span class="n">sessions_per_subject</span>
@@ -205,8 +207,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">unit_factor</span> <span class="o">=</span> <span class="n">unit_factor</span></div>
 
     <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the data correspoonding to a list of subjects.</span>
+        <span class="sd">&quot;&quot;&quot;Return the data correspoonding to a list of subjects.</span>
 
 <span class="sd">        The returned data is a dictionary with the folowing structure::</span>
 

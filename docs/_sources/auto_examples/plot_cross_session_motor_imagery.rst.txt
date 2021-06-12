@@ -147,24 +147,24 @@ be overwrited if necessary.
 
     /home/runner/work/moabb/moabb/moabb/analysis/results.py:69: RuntimeWarning: Setting non-standard config type: "MOABB_RESULTS"
       set_config("MOABB_RESULTS", osp.join(osp.expanduser("~"), "mne_data"))
-    2021-06-12 14:35:40,254 INFO MainThread moabb.evaluations.base Processing dataset: 001-2014
+    2021-06-12 15:02:42,441 INFO MainThread moabb.evaluations.base Processing dataset: 001-2014
     MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_dataAll datasets will be downloaded to this location, if anything is already downloaded, please move manually to this location
     /home/runner/work/moabb/moabb/moabb/datasets/download.py:51: RuntimeWarning: Setting non-standard config type: "MNE_DATASETS_BNCI_PATH"
       set_config(key, get_config("MNE_DATA"))
-    2021-06-12 14:36:01,762 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_E: Score 0.955
-    2021-06-12 14:36:02,254 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_T: Score 0.932
-    2021-06-12 14:36:02,796 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_E: Score 0.963
-    2021-06-12 14:36:03,316 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_T: Score 0.950
-    2021-06-12 14:36:23,304 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_E: Score 0.646
-    2021-06-12 14:36:23,710 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_T: Score 0.527
-    2021-06-12 14:36:24,210 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_E: Score 0.586
-    2021-06-12 14:36:24,702 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_T: Score 0.575
+    2021-06-12 15:03:06,113 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_E: Score 0.955
+    2021-06-12 15:03:06,509 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_T: Score 0.932
+    2021-06-12 15:03:06,939 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_E: Score 0.963
+    2021-06-12 15:03:07,378 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_T: Score 0.950
+    2021-06-12 15:03:30,401 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_E: Score 0.646
+    2021-06-12 15:03:30,831 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_T: Score 0.527
+    2021-06-12 15:03:31,316 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_E: Score 0.586
+    2021-06-12 15:03:31,783 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_T: Score 0.575
           score      time  samples subject  ... channels  n_sessions   dataset pipeline
-    0  0.962963  0.533916    144.0       1  ...       22           2  001-2014    RG+LR
-    1  0.950424  0.511938    144.0       1  ...       22           2  001-2014    RG+LR
-    2  0.585648  0.492227    144.0       2  ...       22           2  001-2014    RG+LR
-    3  0.574846  0.485270    144.0       2  ...       22           2  001-2014    RG+LR
-    4  0.955440  0.427398    144.0       1  ...       22           2  001-2014  CSP+LDA
+    0  0.962963  0.422961    144.0       1  ...       22           2  001-2014    RG+LR
+    1  0.950424  0.431346    144.0       1  ...       22           2  001-2014    RG+LR
+    2  0.585648  0.472985    144.0       2  ...       22           2  001-2014    RG+LR
+    3  0.574846  0.457674    144.0       2  ...       22           2  001-2014    RG+LR
+    4  0.955440  0.349475    144.0       1  ...       22           2  001-2014  CSP+LDA
 
     [5 rows x 9 columns]
 
@@ -229,7 +229,7 @@ points are in its quadrant.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  44.784 seconds)
+   **Total running time of the script:** ( 0 minutes  49.627 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_cross_session_motor_imagery.py:
