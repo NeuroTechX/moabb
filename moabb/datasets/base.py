@@ -16,7 +16,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
     parameters
     ----------
     subjects: List of int
-        List of subject number # TODO: make identifiers more general
+        List of subject number (or tuple or numpy array)
 
     sessions_per_subject: int
         Number of sessions per subject (if varying, take minimum)
@@ -60,8 +60,10 @@ class BaseDataset(metaclass=abc.ABCMeta):
         doi=None,
         unit_factor=1e6,
     ):
-        if not isinstance(subjects, list):
-            raise (ValueError("subjects must be a list"))
+        try:
+            _ = iter(subjects)
+        except TypeError:
+            raise (ValueError("subjects must be a iterable, like a list"))
 
         self.subject_list = subjects
         self.n_sessions = sessions_per_subject
@@ -73,8 +75,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self.unit_factor = unit_factor
 
     def get_data(self, subjects=None):
-        """
-        Return the data correspoonding to a list of subjects.
+        """Return the data correspoonding to a list of subjects.
 
         The returned data is a dictionary with the folowing structure::
 
