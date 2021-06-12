@@ -59,7 +59,7 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.MOABB_DOCS_SSH }}
-          name: id_rsa-moabb
+          known_hosts: ${{ secrets.KNOWN_HOST_GH }}
 
       - name: Checkout  moabb.github.io
         uses: actions/checkout@v2
