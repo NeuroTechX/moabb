@@ -7,14 +7,19 @@ import os.path as osp
 
 import numpy as np
 import pooch
-from mne import create_info, get_config, set_config
+from mne import create_info
 from mne.channels import make_standard_montage
-from mne.datasets.utils import _get_path
 from mne.io import RawArray
 from scipy.io import loadmat
 
 from .base import BaseDataset
-from .download import fs_get_file_hash, fs_get_file_id, fs_get_file_list, fs_get_file_name
+from .download import (
+    fs_get_file_hash,
+    fs_get_file_id,
+    fs_get_file_list,
+    fs_get_file_name,
+    get_dataset_path,
+)
 
 
 log = logging.getLogger(__name__)
@@ -150,11 +155,8 @@ class BaseMAMEM(BaseDataset):
 
         sub = "{:02d}".format(subject)
         sign = self.code.split()[1]
-        key = "MNE_DATASETS_{:s}_PATH".format(sign)
         key_dest = "MNE-{:s}-data".format(sign.lower())
-        if get_config(key) is None:
-            set_config(key, osp.join(osp.expanduser("~"), "mne_data"))
-        path = osp.join(_get_path(None, key, sign), key_dest)
+        path = osp.join(get_dataset_path(sign, path), key_dest)
 
         filelist = fs_get_file_list(self.figshare_id)
         reg = fs_get_file_hash(filelist)

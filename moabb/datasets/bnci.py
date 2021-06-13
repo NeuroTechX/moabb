@@ -18,7 +18,7 @@ BBCI_URL = "http://doc.ml.tu-berlin.de/bbci/"
 
 
 def data_path(url, path=None, force_update=False, update_path=None, verbose=None):
-    return [dl.data_dl(url, "BNCI", path, force_update, update_path, verbose)]
+    return [dl.data_dl(url, "BNCI", path, force_update, verbose)]
 
 
 @verbose
