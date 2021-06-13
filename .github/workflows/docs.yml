@@ -55,11 +55,11 @@ jobs:
       #     mkdir site
       #     mv docs/build/html site/docs
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.MOABB_DOCS_SSH }}
-          known_hosts: ${{ secrets.KNOWN_HOST_GH }}
+      # - name: Install SSH key
+      #   uses: shimataro/ssh-key-action@v2
+      #   with:
+      #     key: ${{ secrets.MOABB_DOCS_SSH }}
+      #     known_hosts: ${{ secrets.KNOWN_HOST_GH }}
 
       - name: Checkout moabb.github.io
         uses: actions/checkout@v2
