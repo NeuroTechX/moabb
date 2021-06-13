@@ -66,7 +66,6 @@ jobs:
         with:
           repository: "NeuroTechX/moabb.github.io"
           path: moabb-ghio
-          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -82,7 +81,7 @@ jobs:
       - name: Push
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.MOABB_DOC_TOKEN }}
+          github_token: ${{ secrets.MOABB_GHIO }}
           repository: "NeuroTechX/moabb.github.io"
 
       # - name: Deploy on moabb.github.io
