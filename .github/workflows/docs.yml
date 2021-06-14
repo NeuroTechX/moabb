@@ -8,10 +8,9 @@ on:
 
 jobs:
   build_docs:
-    name: ${{ matrix.os }}, py-${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os: [ubuntu-18.04]
         python-version: ["3.6"]
@@ -23,21 +22,34 @@ jobs:
         run: |
           mkdir ~/mne_data
 
-      - name: Cache datasets
-        uses: actions/cache@v2
-        with:
-          path: ~/mne_data
-          key: ${{ runner.os }}-${{ hashFiles('moabb/datasets/**') }}
-
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.6
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache poetry, datasets and docs
+        id: cached-poetry-dataset-docs
+        uses: actions/cache@v2
+        with:
+          key:
+            ${{ runner.os }}-${{ hashFiles('moabb/datasets/**', '**/poetry.lock') }}-doc
+          path: |
+            ~/mne_data
+            .venv
+            docs/build
+
       - name: Install dependencies
-        run: |
-          pip install poetry
-          poetry install -E external
+        if: steps.cached-poetry-dataset-docs.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root -E external
+
+      - name: Install library
+        run: poetry install --no-interaction -E external
 
       - name: Build docs
         run: |
@@ -59,6 +71,17 @@ jobs:
         os: [ubuntu-18.04]
 
     steps:
+      - name: Cache poetry, datasets and docs
+        id: cached-poetry-dataset-docs
+        uses: actions/cache@v2
+        with:
+          key:
+            ${{ runner.os }}-${{ hashFiles('moabb/datasets/**', '**/poetry.lock') }}-doc
+          path: |
+            ~/mne_data
+            .venv
+            docs/build
+
       - name: Checkout moabb.github.io
         uses: actions/checkout@v2
         with:

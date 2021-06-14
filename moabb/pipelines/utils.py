@@ -15,8 +15,8 @@ def create_pipeline_from_config(config):
     config : Dict.
         Dict containing the config parameters.
 
-    Return
-    ------
+    Returns
+    -------
     pipeline : Pipeline
         sklearn Pipeline
 

@@ -11,27 +11,54 @@ jobs:
     name: ${{ matrix.os }}, py-${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os: [ubuntu-18.04, windows-latest, macOS-latest]
         python-version: ["3.6", "3.7", "3.8", "3.9"]
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v2
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+
       - uses: pre-commit/action@v2.0.0
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.6
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv
+        if: runner.os != 'Windows'
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key:
+            venv-${{ matrix.os }}-py${{matrix.python-version}}-${{
+            hashFiles('**/poetry.lock') }}
+
       - name: Install dependencies
-        shell: bash
-        run: |
-          python -m pip install --upgrade pip poetry wheel
-          poetry install
+        if: |
+          (runner.os != 'Windows') &&
+          (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
+        run: poetry install --no-interaction --no-root
+
+      - name: Install library
+        run: poetry install --no-interaction
+
       - name: Run tests
-        shell: bash
         run: |
+          source $VENV
           poetry run python -m unittest moabb.tests
+
       - name: Run pipelines
-        shell: bash
         run: |
+          source $VENV
           poetry run python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
