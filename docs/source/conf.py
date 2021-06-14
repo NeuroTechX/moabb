@@ -8,7 +8,9 @@
 
 # -- Path setup --------------------------------------------------------------
 
+import inspect
 import os
+import os.path as op
 import sys
 
 import matplotlib
@@ -18,6 +20,7 @@ import matplotlib
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import sphinx_bootstrap_theme
+from numpydoc import docscrape, numpydoc  # noqa
 
 # Sort tutorials and examples but filename
 from sphinx_gallery.sorting import FileNameSortKey
@@ -33,7 +36,7 @@ matplotlib.use("Agg")
 # -- Project information -----------------------------------------------------
 
 project = "moabb"
-copyright = "2018, Alexandre Barachant"
+copyright = "2018-2021, Alexandre Barachant, Sylvain Chevallier"
 author = "Alexandre Barachant, Vinay Jayaram, Sylvain Chevallier"
 
 # The short X.Y version
@@ -48,26 +51,114 @@ release = moabb.__version__
 #
 # needs_sphinx = '1.0'
 
+curdir = os.path.dirname(__file__)
+sys.path.append(os.path.abspath(os.path.join(curdir, "sphinxext")))
+
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
-    "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinx.ext.coverage",
+    "sphinx.ext.githubpages",
+    "sphinx.ext.intersphinx",
     "sphinx.ext.imgmath",
-    "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
-    "sphinx.ext.autosummary",
+    "sphinx.ext.linkcode",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
+    "gh_substitutions",
     "m2r2",
+    "numpydoc",
 ]
+
+
+def linkcode_resolve(domain, info):  # noqa: C901
+    """Determine the URL corresponding to a Python object.
+    Parameters
+    ----------
+    domain : str
+        Only useful when 'py'.
+    info : dict
+        With keys "module" and "fullname".
+    Returns
+    -------
+    url : str
+        The code URL.
+    Notes
+    -----
+    This has been adapted to deal with our "verbose" decorator.
+    Adapted from SciPy (doc/source/conf.py).
+    """
+    import mne
+
+    if domain != "py":
+        return None
+
+    modname = info["module"]
+    fullname = info["fullname"]
+
+    submod = sys.modules.get(modname)
+    if submod is None:
+        return None
+
+    obj = submod
+    for part in fullname.split("."):
+        try:
+            obj = getattr(obj, part)
+        except Exception:
+            return None
+    # deal with our decorators properly
+    while hasattr(obj, "__wrapped__"):
+        obj = obj.__wrapped__
+
+    try:
+        fn = inspect.getsourcefile(obj)
+    except Exception:
+        fn = None
+    if not fn:
+        try:
+            fn = inspect.getsourcefile(sys.modules[obj.__module__])
+        except Exception:
+            fn = None
+    if not fn:
+        return None
+    fn = op.relpath(fn, start=op.dirname(mne.__file__))
+    fn = "/".join(op.normpath(fn).split(os.sep))  # in case on Windows
+
+    try:
+        source, lineno = inspect.getsourcelines(obj)
+    except Exception:
+        lineno = None
+
+    if lineno:
+        linespec = "#L%d-L%d" % (lineno, lineno + len(source) - 1)
+    else:
+        linespec = ""
+
+    if "dev" in moabb.__version__:
+        kind = "master"
+    else:
+        kind = "maint/%s" % (".".join(mne.__version__.split(".")[:2]))
+    return "http://github.com/NeuroTechX/moabb/blob/%s/moabb/%s%s" % (  # noqa
+        kind,
+        fn,
+        linespec,
+    )
+
 
 napoleon_google_docstring = False
 napoleon_use_param = False
 napoleon_use_ivar = True
+
+numpydoc_show_class_members = True
+numpydoc_class_members_toctree = False
+numpydoc_attributes_as_param_list = True
+numpydoc_xref_param_type = True
 
 plot_include_source = True
 plot_formats = [("png", 90)]
@@ -77,6 +168,8 @@ plot_html_show_source_link = False
 sphinx_gallery_conf = {
     "examples_dirs": ["../../examples", "../../tutorials"],
     "gallery_dirs": ["auto_examples", "auto_tutorials"],
+    "doc_module": ("moabb", "mne"),
+    "backreferences_dir": "generated",
     "filename_pattern": "(/plot_|/tutorial_)",
     "default_thumb_file": "../images/M.png",
     "within_subsection_order": FileNameSortKey,
@@ -85,9 +178,9 @@ sphinx_gallery_conf = {
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
-autodoc_default_flags = ["inherited-members"]
+autodoc_default_flags = {"inherited-members": None}
 autosummary_generate = True
-numpydoc_show_class_members = True
+
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
@@ -264,7 +357,14 @@ texinfo_documents = [
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {"https://docs.python.org/": None}
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/{.major}".format(sys.version_info), None),
+    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
+    "matplotlib": ("https://matplotlib.org/", None),
+    "sklearn": ("http://scikit-learn.org/stable", None),
+    "mne": ("http://mne.tools/stable", None),
+}
 
 # -- Options for todo extension ----------------------------------------------
 

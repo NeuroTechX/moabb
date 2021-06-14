@@ -1,3 +1,5 @@
+.. currentmodule:: moabb
+
 # Mother of all BCI Benchmarks
 
 ![banner](images/M.png)
