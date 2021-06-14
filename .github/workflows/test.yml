@@ -15,9 +15,9 @@ jobs:
       matrix:
         os: [ubuntu-18.04, windows-latest, macOS-latest]
         python-version: ["3.6", "3.7", "3.8", "3.9"]
-      defaults:
-        run:
-          shell: bash
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v2
 

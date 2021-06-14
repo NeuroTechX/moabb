@@ -49,7 +49,7 @@ jobs:
         run: poetry install --no-interaction --no-root -E external
 
       - name: Install library
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction -E external
 
       - name: Build docs
         run: |
