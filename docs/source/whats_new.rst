@@ -33,14 +33,16 @@ Enhancements
 - Use MNE epoch in evaluation (:gh:`192` by `Sylvain Chevallier`_)
 - Allow changing of storage location (:gh:`192` by `Divyesh Narayanan`_ and `Sylvain Chevallier`_)
 - Deploy docs on moabb.github.io (:gh:`196` by `Sylvain Chevallier`_)
-- Broadening subject_list type  (:gh:`198` by `Sylvain Chevallier`_)
-
+- Broadening subject_list type for :func:`moabb.datasets.BaseDataset` (:gh:`198` by `Sylvain Chevallier`_)
+- Adding this what's new (:gh:`200` by `Sylvain Chevallier`_)
+- Improving cache usage and save computation time in CI (:gh:`200` by `Sylvain Chevallier`_)
 
 
 Bugs
 ~~~~
 - Restore basic logging (:gh:`177` by `Jan Sosulski`_)
 - Correct wrong type of results dataframe columns (:gh:`188` by `Sylvain Chevallier`_)
+- Add ``accept`` arg to acknowledge licence for :func:`moabb.datasets.Shin2017A` and :func:`moabb.datasets.Shin2017B` (:gh:`201` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~

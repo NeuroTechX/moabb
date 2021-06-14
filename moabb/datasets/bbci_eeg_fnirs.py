@@ -20,7 +20,7 @@ from .base import BaseDataset
 SHIN_URL = "http://doc.ml.tu-berlin.de/hBCI"
 
 
-def eeg_data_path(base_path, subject):
+def eeg_data_path(base_path, subject, accept):
     datapath = op.join(
         base_path, "EEG", "subject {:02d}".format(subject), "with occular artifact"
     )
@@ -31,6 +31,11 @@ def eeg_data_path(base_path, subject):
         for low, high in intervals:
             if subject >= low and subject <= high:
                 if not op.isfile(op.join(base_path, "EEG.zip")):
+                    if not accept:
+                        raise AttributeError(
+                            "You must accept licence term to download this dataset,"
+                            "set accept=True when instanciating the dataset."
+                        )
                     _fetch_file(
                         "{}/EEG/EEG_{:02d}-{:02d}.zip".format(SHIN_URL, low, high),
                         op.join(base_path, "EEG.zip"),
@@ -44,11 +49,16 @@ def eeg_data_path(base_path, subject):
     return [op.join(datapath, fn) for fn in ["cnt.mat", "mrk.mat"]]
 
 
-def fnirs_data_path(path, subject):
+def fnirs_data_path(path, subject, accept):
     datapath = op.join(path, "NIRS", "subject {:02d}".format(subject))
     if not op.isfile(op.join(datapath, "mrk.mat")):
         # fNIRS
         if not op.isfile(op.join(path, "fNIRS.zip")):
+            if not accept:
+                raise AttributeError(
+                    "You must accept licence term to download this dataset,"
+                    "set accept=True when instanciating the dataset."
+                )
             _fetch_file(
                 "http://doc.ml.tu-berlin.de/hBCI/NIRS/NIRS_01-29.zip",
                 op.join(path, "fNIRS.zip"),
@@ -65,7 +75,9 @@ def fnirs_data_path(path, subject):
 class Shin2017(BaseDataset):
     """Not to be used."""
 
-    def __init__(self, fnirs=False, motor_imagery=True, mental_arithmetic=False):
+    def __init__(
+        self, fnirs=False, motor_imagery=True, mental_arithmetic=False, accept=False
+    ):
         if not any([motor_imagery, mental_arithmetic]):
             raise (
                 ValueError(
@@ -87,6 +99,7 @@ class Shin2017(BaseDataset):
 
         self.motor_imagery = motor_imagery
         self.mental_arithmetic = mental_arithmetic
+        self.accept = accept
 
         super().__init__(
             subjects=list(range(1, 30)),
@@ -140,10 +153,18 @@ class Shin2017(BaseDataset):
         return {"run_0": raw}
 
     def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
+        self,
+        subject,
+        path=None,
+        force_update=False,
+        update_path=None,
+        verbose=None,
+        accept=False,
     ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
+        if accept:
+            self.accept = True
 
         key = "MNE_DATASETS_BBCIFNIRS_PATH"
         path = _get_path(path, key, "BBCI EEG-fNIRS")
@@ -152,15 +173,20 @@ class Shin2017(BaseDataset):
         if not op.isdir(op.join(path, "MNE-eegfnirs-data")):
             os.makedirs(op.join(path, "MNE-eegfnirs-data"))
         if self.fnirs:
-            return fnirs_data_path(op.join(path, "MNE-eegfnirs-data"), subject)
+            return fnirs_data_path(
+                op.join(path, "MNE-eegfnirs-data"), subject, self.accept
+            )
         else:
-            return eeg_data_path(op.join(path, "MNE-eegfnirs-data"), subject)
+            return eeg_data_path(op.join(path, "MNE-eegfnirs-data"), subject, self.accept)
 
 
 class Shin2017A(Shin2017):
     """Motor Imagey Dataset from Shin et al 2017
 
     Dataset from [1]_.
+
+    You should accept the licence term [2]_ to download this dataset, using::
+        Shin2017A(accept=True)
 
     **Data Acquisition**
 
@@ -251,11 +277,14 @@ class Shin2017A(Shin2017):
            Hwang, H.J. and Müller, K.R., 2017. Open access dataset for EEG+NIRS
            single-trial classification. IEEE Transactions on Neural Systems
            and Rehabilitation Engineering, 25(10), pp.1735-1745.
-
+    .. [2] GNU General Public License, Version 3
+           `<https://www.gnu.org/licenses/gpl-3.0.txt>`_
     """
 
-    def __init__(self):
-        super().__init__(fnirs=False, motor_imagery=True, mental_arithmetic=False)
+    def __init__(self, accept=False):
+        super().__init__(
+            fnirs=False, motor_imagery=True, mental_arithmetic=False, accept=accept
+        )
         self.code = "Shin2017A"
 
 
@@ -263,6 +292,9 @@ class Shin2017B(Shin2017):
     """Mental Arithmetic Dataset from Shin et al 2017
 
     Dataset from [1]_.
+
+    You should accept the licence term [2]_ to download this dataset, using::
+        Shin2017A(accept=True)
 
     **Data Acquisition**
 
@@ -347,8 +379,12 @@ class Shin2017B(Shin2017):
            Hwang, H.J. and Müller, K.R., 2017. Open access dataset for EEG+NIRS
            single-trial classification. IEEE Transactions on Neural Systems
            and Rehabilitation Engineering, 25(10), pp.1735-1745.
+    .. [2] GNU General Public License, Version 3
+           `<https://www.gnu.org/licenses/gpl-3.0.txt>`_
     """
 
-    def __init__(self):
-        super().__init__(fnirs=False, motor_imagery=False, mental_arithmetic=True)
+    def __init__(self, accept=False):
+        super().__init__(
+            fnirs=False, motor_imagery=False, mental_arithmetic=True, accept=accept
+        )
         self.code = "Shin2017B"
