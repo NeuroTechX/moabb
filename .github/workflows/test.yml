@@ -15,6 +15,9 @@ jobs:
       matrix:
         os: [ubuntu-18.04, windows-latest, macOS-latest]
         python-version: ["3.6", "3.7", "3.8", "3.9"]
+      defaults:
+        run:
+          shell: bash
     steps:
       - uses: actions/checkout@v2
 
@@ -48,11 +51,11 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Run tests
-        shell: bash
         run: |
+          source $VENV
           poetry run python -m unittest moabb.tests
 
       - name: Run pipelines
-        shell: bash
         run: |
+          source $VENV
           poetry run python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
