@@ -89,6 +89,7 @@ class Shin2017(BaseDataset):
 
         self.motor_imagery = motor_imagery
         self.mental_arithmetic = mental_arithmetic
+        self.accept = accept
 
         super().__init__(
             subjects=list(range(1, 30)),
@@ -107,6 +108,11 @@ class Shin2017(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
+        if not self.accept:
+            raise AttributeError(
+                "You must accept licence term to download this dataset,"
+                "set accept=True when instanciating the dataset."
+            )
         fname, fname_mrk = self.data_path(subject)
         data = loadmat(fname, squeeze_me=True, struct_as_record=False)["cnt"]
         mrk = loadmat(fname_mrk, squeeze_me=True, struct_as_record=False)["mrk"]
