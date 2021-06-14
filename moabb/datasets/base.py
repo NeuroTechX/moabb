@@ -3,6 +3,7 @@ Base class for a dataset
 """
 import abc
 import logging
+from inspect import signature
 
 
 log = logging.getLogger(__name__)
@@ -120,6 +121,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         path=None,
         force_update=False,
         update_path=None,
+        accept=False,
         verbose=None,
     ):
         """Download all data from the dataset.
@@ -144,6 +146,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
         update_path : bool | None
             If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
             config to the given path. If None, the user is prompted.
+        accept: bool
+            Accept licence term to download the data, if any. Default: False
         verbose : bool, str, int, or None
             If not None, override default verbose level
             (see :func:`mne.verbose`).
@@ -151,13 +155,25 @@ class BaseDataset(metaclass=abc.ABCMeta):
         if subject_list is None:
             subject_list = self.subject_list
         for subject in subject_list:
-            self.data_path(
-                subject=subject,
-                path=path,
-                force_update=force_update,
-                update_path=update_path,
-                verbose=verbose,
-            )
+            # check if accept is needed
+            sig = signature(self.data_path)
+            if "accept" in [str(p) for p in sig.parameters]:
+                self.data_path(
+                    subject=subject,
+                    path=path,
+                    force_update=force_update,
+                    update_path=update_path,
+                    verbose=verbose,
+                    accept=accept,
+                )
+            else:
+                self.data_path(
+                    subject=subject,
+                    path=path,
+                    force_update=force_update,
+                    update_path=update_path,
+                    verbose=verbose,
+                )
 
     @abc.abstractmethod
     def _get_single_subject_data(self, subject):
