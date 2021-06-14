@@ -41,8 +41,8 @@ jobs:
             ${{ runner.os }}-${{ hashFiles('moabb/datasets/**', '**/poetry.lock') }}-doc
           path: |
             ~/mne_data
-            ~/.venv
-            ~/work/moabb/moabb/docs/build
+            .venv
+            docs/build
 
       - name: Install dependencies
         if: steps.cached-poetry-dataset-docs.outputs.cache-hit != 'true'
@@ -79,8 +79,8 @@ jobs:
             ${{ runner.os }}-${{ hashFiles('moabb/datasets/**', '**/poetry.lock') }}-doc
           path: |
             ~/mne_data
-            ~/.venv
-            ~/work/moabb/moabb/docs/build
+            .venv
+            docs/build
 
       - name: Checkout moabb.github.io
         uses: actions/checkout@v2

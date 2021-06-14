@@ -35,6 +35,7 @@ jobs:
           virtualenvs-in-project: true
 
       - name: Load cached venv
+        if: runner.os != 'Windows'
         id: cached-poetry-dependencies
         uses: actions/cache@v2
         with:
@@ -44,7 +45,9 @@ jobs:
             hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        if: |
+          (runner.os != 'Windows') &&
+          (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
         run: poetry install --no-interaction --no-root
 
       - name: Install library
