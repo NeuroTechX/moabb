@@ -2,10 +2,14 @@ import unittest
 
 import mne
 
+from moabb.datasets import Shin2017A, Shin2017B
 from moabb.datasets.fake import FakeDataset
 
 
 _ = mne.set_log_level("CRITICAL")
+
+# List of dataset that requires to accept licence term:
+dataset_w_accept = [Shin2017A(), Shin2017B()]
 
 
 def _run_tests_on_dataset(d):
@@ -58,3 +62,8 @@ class Test_Datasets(unittest.TestCase):
 
             # bad subject id must raise error
             self.assertRaises(ValueError, ds.get_data, [1000])
+
+    def test_dataset_accept(self):
+        """verify that accept licence is working"""
+        for ds in dataset_w_accept:
+            self.assertRaises(AttributeError, ds.get_data, [1])

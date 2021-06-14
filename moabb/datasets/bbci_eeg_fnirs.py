@@ -266,8 +266,10 @@ class Shin2017A(Shin2017):
            `<https://www.gnu.org/licenses/gpl-3.0.txt>`_
     """
 
-    def __init__(self):
-        super().__init__(fnirs=False, motor_imagery=True, mental_arithmetic=False)
+    def __init__(self, accept=False):
+        super().__init__(
+            fnirs=False, motor_imagery=True, mental_arithmetic=False, accept=accept
+        )
         self.code = "Shin2017A"
 
 
@@ -366,6 +368,8 @@ class Shin2017B(Shin2017):
            `<https://www.gnu.org/licenses/gpl-3.0.txt>`_
     """
 
-    def __init__(self):
-        super().__init__(fnirs=False, motor_imagery=False, mental_arithmetic=True)
+    def __init__(self, accept=False):
+        super().__init__(
+            fnirs=False, motor_imagery=False, mental_arithmetic=True, accept=accept
+        )
         self.code = "Shin2017B"
