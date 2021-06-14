@@ -81,7 +81,7 @@ print(np.unique(y))
 # - session is the session id. A session is a all the data recorded without
 #   removing the EEG cap.
 # - run is the individual continuous recording made during a session. A Session
-# may or may not contain multiple run.
+#   may or may not contain multiple run.
 #
 
 

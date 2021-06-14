@@ -134,8 +134,8 @@ class BaseEvaluation(ABC):
         pipelines : dict of pipeline instance.
             A dict containing the sklearn pipeline to evaluate.
 
-        Return
-        ------
+        Returns
+        -------
         results: pd.DataFrame
             A dataframe containing the results.
 
