@@ -618,7 +618,7 @@ name = "tdlda"
 version = "0.1.0"
 description = "Time-decoupled linear discriminant analysis."
 category = "dev"
-optional = true
+optional = false
 python-versions = ">=3.6.0"
 develop = false
 
@@ -697,13 +697,10 @@ python-versions = ">=3.6"
 docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
-[extras]
-external = []
-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.1"
-content-hash = "0de8dcfed2013b44c9706fd8a409ab6446d6ed20f1e73cd8a9d8584ecb1777e0"
+content-hash = "4fcd808b6bc5ef119e2b24f8ba257685630630510b5059f4ec18f9d42d6a02a4"
 
 [metadata.files]
 alabaster = [
