@@ -6,12 +6,11 @@ https://doi.org/10.1371/journal.pone.0114853
 import logging
 import os
 import shutil
-import zipfile as z
 
 import mne
 import numpy as np
-from mne.datasets.utils import _do_path_update, _get_path
-from mne.utils import _fetch_file
+from mne.datasets.utils import _get_path
+from pooch import Unzip, retrieve
 from scipy.io import loadmat
 
 from .base import BaseDataset
@@ -33,23 +32,17 @@ def eeg_data_path(base_path, subject):
     def get_subjects(sub_inds, sub_names, ind):
         dataname = "data{}".format(ind)
         if not os.path.isfile(os.path.join(base_path, dataname + ".zip")):
-            _fetch_file(
-                FILES[ind],
-                os.path.join(base_path, dataname + ".zip"),
-                print_destination=False,
-            )
-        with z.ZipFile(os.path.join(base_path, dataname + ".zip"), "r") as f:
-            os.makedirs(os.path.join(base_path, dataname), exist_ok=True)
-            f.extractall(os.path.join(base_path, dataname))
-            for fname in os.listdir(os.path.join(base_path, dataname)):
-                for ind, prefix in zip(sub_inds, sub_names):
-                    if fname.startswith(prefix):
-                        os.rename(
-                            os.path.join(base_path, dataname, fname),
-                            os.path.join(base_path, "subject_{}.mat".format(ind)),
-                        )
+            retrieve(FILES[ind], dataname + ".zip", base_path, processor=Unzip())
+
+        for fname in os.listdir(os.path.join(base_path, dataname + ".zip.unzip")):
+            for ind, prefix in zip(sub_inds, sub_names):
+                if fname.startswith(prefix):
+                    os.rename(
+                        os.path.join(base_path, dataname + ".zip.unzip", fname),
+                        os.path.join(base_path, "subject_{}.mat".format(ind)),
+                    )
         os.remove(os.path.join(base_path, dataname + ".zip"))
-        shutil.rmtree(os.path.join(base_path, dataname))
+        shutil.rmtree(os.path.join(base_path, dataname + ".zip.unzip"))
 
     if not os.path.isfile(os.path.join(base_path, "subject_{}.mat".format(subject))):
         if subject in range(1, 5):
@@ -174,7 +167,6 @@ class Weibo2014(BaseDataset):
             raise (ValueError("Invalid subject number"))
         key = "MNE_DATASETS_WEIBO2014_PATH"
         path = _get_path(path, key, "Weibo 2014")
-        _do_path_update(path, True, key, "Weibo 2014")
         basepath = os.path.join(path, "MNE-weibo-2014")
         if not os.path.isdir(basepath):
             os.makedirs(basepath)
