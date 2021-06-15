@@ -8,9 +8,6 @@ from moabb.datasets.fake import FakeDataset
 
 _ = mne.set_log_level("CRITICAL")
 
-# List of dataset that requires to accept licence term:
-dataset_w_accept = [Shin2017A(), Shin2017B()]
-
 
 def _run_tests_on_dataset(d):
     for s in d.subject_list:
@@ -65,5 +62,8 @@ class Test_Datasets(unittest.TestCase):
 
     def test_dataset_accept(self):
         """verify that accept licence is working"""
-        for ds in dataset_w_accept:
-            self.assertRaises(AttributeError, ds.get_data, [1])
+        # Only Shin2017 (bbci_eeg_fnirs) for now
+        for ds in [Shin2017A(), Shin2017B()]:
+            # if the data is already downloaded:
+            if mne.get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:
+                self.assertRaises(AttributeError, ds.get_data, [1])
