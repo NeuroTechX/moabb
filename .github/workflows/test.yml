@@ -48,7 +48,7 @@ jobs:
         if: |
           (runner.os != 'Windows') &&
           (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
-        run: poetry install --no-interaction --no-root
+        run: poetry install --no-interaction --no-root --no-dev
 
       - name: Install library
         run: poetry install --no-interaction

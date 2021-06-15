@@ -44,10 +44,10 @@ jobs:
 
       - name: Install dependencies
         if: steps.cached-dataset-docs.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root -E external
+        run: poetry install --no-interaction --no-root
 
       - name: Install library
-        run: poetry install --no-interaction -E external
+        run: poetry install --no-interaction
 
       - name: Build docs
         run: |
