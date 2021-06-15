@@ -39,14 +39,16 @@ def get_dataset_path(sign, path):
     key = "MNE_DATASETS_{:s}_PATH".format(sign)
     if get_config(key) is None:
         if get_config("MNE_DATA") is None:
+            path_def = osp.join(osp.expanduser("~"), "mne_data")
             print(
                 "MNE_DATA is not already configured. It will be set to "
                 "default location in the home directory - "
-                + osp.join(osp.expanduser("~"), "mne_data")
-                + "All datasets will be downloaded to this location, if anything is "
+                + path_def
+                + "\nAll datasets will be downloaded to this location, if anything is "
                 "already downloaded, please move manually to this location"
             )
-
+            if not osp.isdir(path_def):
+                os.makedirs(path_def)
             set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
         set_config(key, get_config("MNE_DATA"))
     return _get_path(path, key, sign)
