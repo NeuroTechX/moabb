@@ -127,4 +127,4 @@ class Cho2017(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         url = "{:s}s{:02d}.mat".format(GIGA_URL, subject)
-        return dl.data_dl(url, "GIGADB", path, force_update, update_path, verbose)
+        return dl.data_dl(url, "GIGADB", path, force_update, verbose)

@@ -59,4 +59,4 @@ class AlexMI(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
         url = "{:s}subject{:d}.raw.fif".format(ALEX_URL, subject)
-        return dl.data_dl(url, "ALEXEEG", path, force_update, update_path, verbose)
+        return dl.data_dl(url, "ALEXEEG", path, force_update, verbose)
