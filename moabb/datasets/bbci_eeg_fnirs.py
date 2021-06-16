@@ -9,7 +9,7 @@ import zipfile as z
 import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
-from mne.datasets.utils import _do_path_update, _get_path
+from mne.datasets.utils import _get_path
 from mne.io import RawArray
 from mne.utils import _fetch_file
 from scipy.io import loadmat
@@ -168,8 +168,6 @@ class Shin2017(BaseDataset):
 
         key = "MNE_DATASETS_BBCIFNIRS_PATH"
         path = _get_path(path, key, "BBCI EEG-fNIRS")
-        # FIXME: this always update the path
-        _do_path_update(path, True, key, "BBCI EEG-fNIRS")
         if not op.isdir(op.join(path, "MNE-eegfnirs-data")):
             os.makedirs(op.join(path, "MNE-eegfnirs-data"))
         if self.fnirs:

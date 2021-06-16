@@ -148,4 +148,4 @@ class Wang2016(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
         url = "{:s}S{:d}.mat".format(WANG_URL, subject)
-        return dl.data_dl(url, "WANG", path, force_update, update_path, verbose)
+        return dl.data_dl(url, "WANG", path, force_update, verbose)

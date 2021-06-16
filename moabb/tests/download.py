@@ -1,6 +1,13 @@
 """
 Tests to ensure that datasets download correctly
 """
+import unittest
+
+import mne
+
+from moabb.datasets.bbci_eeg_fnirs import Shin2017
+
+
 # from moabb.datasets.gigadb import Cho2017
 # from moabb.datasets.alex_mi import AlexMI
 # from moabb.datasets.physionet_mi import PhysionetMI
@@ -23,10 +30,6 @@ Tests to ensure that datasets download correctly
 # from moabb.datasets.ssvep_nakanishi import Nakanishi2015
 # from moabb.datasets.ssvep_wang import Wang2016
 
-import unittest
-
-import mne
-
 
 class Test_Downloads(unittest.TestCase):
     def run_dataset(self, dataset, subj=(0, 2)):
@@ -38,7 +41,10 @@ class Test_Downloads(unittest.TestCase):
                 events, _ = mne.events_from_annotations(raw, verbose=False)
             return events
 
-        obj = dataset()
+        if isinstance(dataset(), Shin2017):
+            obj = dataset(accept=True)
+        else:
+            obj = dataset()
         obj.subject_list = obj.subject_list[subj[0] : subj[1]]
         data = obj.get_data(obj.subject_list)
 

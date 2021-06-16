@@ -126,9 +126,7 @@ class Lee2019_MI(BaseDataset):
             url = "{0}session{1}/s{2}/sess{1:02d}_subj{2:02d}_EEG_MI.mat".format(
                 Lee2019_URL, session, subject
             )
-            data_path = dl.data_dl(
-                url, "Lee2019_MI", path, force_update, update_path, verbose
-            )
+            data_path = dl.data_dl(url, "Lee2019_MI", path, force_update, verbose)
             subject_paths.append(data_path)
 
         return subject_paths

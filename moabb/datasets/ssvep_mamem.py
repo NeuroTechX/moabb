@@ -167,8 +167,6 @@ class BaseMAMEM(BaseDataset):
         for f in fsn.keys():
             if f[2:4] == sub:
                 spath.append(gb.fetch(fsn[f]))
-
-        # _do_path_update(path, update_path, key, sign)
         return spath
 
 
