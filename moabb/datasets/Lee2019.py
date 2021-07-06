@@ -77,21 +77,21 @@ class Lee2019_MI(BaseDataset):
             data = loadmat(file_path_list[session - 1])
 
             # Create channel info and montage
-            eeg_ch_names = data["EEG_MI_train"][0, 0][8][0]
+            eeg_ch_names = data["EEG_MI_train"][0, 0]['chan'][0]
             ch_names = [elem[0] for elem in eeg_ch_names] + ["stim"]
             ch_types = ["eeg"] * 62 + ["stim"]
-            sfreq = data["EEG_MI_train"][0, 0][3][0, 0]
+            sfreq = data["EEG_MI_train"][0, 0]['fs'][0, 0]
             info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
             montage = make_standard_montage("standard_1005")
 
             # Create raw_data
-            raw_train_data = np.transpose(data["EEG_MI_train"][0, 0][0], (1, 2, 0))
-            raw_test_data = np.transpose(data["EEG_MI_test"][0, 0][0], (1, 2, 0))
+            raw_train_data = np.transpose(data["EEG_MI_train"][0, 0]['smt'], (1, 2, 0))
+            raw_test_data = np.transpose(data["EEG_MI_test"][0, 0]['smt'], (1, 2, 0))
             raw_data = np.concatenate([raw_train_data, raw_test_data], axis=0)
 
             # Create raw_event
-            train_event_id = data["EEG_MI_train"][0, 0][4].ravel()
-            test_event_id = data["EEG_MI_test"][0, 0][4].ravel()
+            train_event_id = data["EEG_MI_train"][0, 0]['y_dec'].ravel()
+            test_event_id = data["EEG_MI_test"][0, 0]['y_dec'].ravel()
             event_id = np.concatenate([train_event_id, test_event_id], axis=0)
             raw_events = np.zeros((raw_data.shape[0], 1, raw_data.shape[2]))
             raw_events[:, 0, 0] = event_id
