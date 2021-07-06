@@ -89,6 +89,12 @@ class Lee2019_MI(BaseDataset):
         montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
 
+        # Create EMG channels
+        ch_names = [c.item() for c in data['EMG_index'].squeeze()]
+        info = create_info(ch_names=ch_names, ch_types=['emg']*len(ch_names), sfreq=sfreq)
+        raw_data = data['EMG'].transpose(1,0)
+        emg_raw = RawArray(data=raw_data, info=info, verbose=False)
+
         # Now create stim chan
         event_times_in_samples = data['t'].squeeze()
         event_id = data['y_dec'].squeeze()
@@ -97,13 +103,17 @@ class Lee2019_MI(BaseDataset):
             stim_chan[i_sample] += id_class
         info = create_info(ch_names=["STI 014"], sfreq=sfreq, ch_types=["stim"])
         stim_raw = RawArray(stim_chan[None], info, verbose="WARNING")
-        raw = raw.add_channels([stim_raw])
+
+        # Add events
         event_arr = [
             event_times_in_samples,
             [0] * len(event_times_in_samples),
             event_id,
         ]
         raw.info["events"] = [dict(list=np.array(event_arr).T, channels=None), ]
+
+        # Add EMG and stim channels
+        raw = raw.add_channels([emg_raw, stim_raw])
         return raw
 
     def _get_single_subject_data(self, subject):
