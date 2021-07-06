@@ -79,34 +79,31 @@ class Lee2019_MI(BaseDataset):
         self.test_run  =  test_run
 
     def _get_single_run(self, data):
-        # Create channel info and montage
-        eeg_ch_names = data['chan'][0]
-        ch_names = [elem[0] for elem in eeg_ch_names] + ["stim"]
-        ch_types = ["eeg"] * 62 + ["stim"]
-        sfreq = data['fs'][0, 0]
-        info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
-        montage = make_standard_montage("standard_1005")
-
-        # Create raw_data
-        raw_data = np.transpose(data['smt'], (1, 2, 0))
-
-        # Create raw_event
-        event_id = data['y_dec'].ravel()
-        raw_events = np.zeros((raw_data.shape[0], 1, raw_data.shape[2]))
-        raw_events[:, 0, 0] = event_id
-
-        # Zero pad the data
-        data = np.concatenate([raw_data, raw_events], axis=1)
-        zeroshape = (data.shape[0], data.shape[1], 50)
-        data = np.concatenate(
-            [np.zeros(zeroshape), data, np.zeros(zeroshape)], axis=2
-        )
+        sfreq = data['fs'].item()
 
         # Create RawArray
-        raw = RawArray(
-            data=np.concatenate(list(data), axis=1), info=info, verbose=False
-        )
+        ch_names = [c.item() for c in data['chan'].squeeze()]
+        info = create_info(ch_names=ch_names, ch_types=['eeg']*len(ch_names), sfreq=sfreq)
+        raw_data = data['x'].transpose(1,0)
+        raw = RawArray(data=raw_data, info=info, verbose=False)
+        montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
+
+        # Now create stim chan
+        event_times_in_samples = data['t'].squeeze()
+        event_id = data['y_dec'].squeeze()
+        stim_chan = np.zeros(len(raw))
+        for i_sample, id_class in zip(event_times_in_samples, event_id):
+            stim_chan[i_sample] += id_class
+        info = create_info(ch_names=["STI 014"], sfreq=sfreq, ch_types=["stim"])
+        stim_raw = RawArray(stim_chan[None], info, verbose="WARNING")
+        raw = raw.add_channels([stim_raw])
+        event_arr = [
+            event_times_in_samples,
+            [0] * len(event_times_in_samples),
+            event_id,
+        ]
+        raw.info["events"] = [dict(list=np.array(event_arr).T, channels=None), ]
         return raw
 
     def _get_single_subject_data(self, subject):
