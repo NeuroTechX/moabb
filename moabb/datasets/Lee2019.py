@@ -80,12 +80,12 @@ class Lee2019(BaseDataset):
             paradigm = 'p300'
             code_suffix = 'ERP'
             interval = [-0.2, 0.8]
-            events = dict(Target=1, NonTarget=2) ## TODO: put real values and names
+            events = dict(Target=1, NonTarget=2)
         elif paradigm.lower() in ['ssvep',]:
             paradigm = 'ssvep'
             code_suffix = 'SSVEP'
             interval = [0., 4.]
-            events = dict(up=1, left=2, right=3, down=4) ## TODO: put real values and names
+            events = dict(up=1, left=2, right=3, down=4)
         else:
             raise ValueError('unknown paradigm "{}"'.format(paradigm))
         for s in sessions:
