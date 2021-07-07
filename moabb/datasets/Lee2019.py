@@ -58,6 +58,9 @@ class Lee2019(BaseDataset):
     test_run: bool (default False)
         if True, return runs corresponding to the test/online phase (see paper).
 
+    sessions: list of int (default [1,2])
+        the lsit of the sessions to load (2 available).
+
     References
     ----------
     .. [1] Lee, M. H., Kwon, O. Y., Kim, Y. J., Kim, H. K., Lee, Y. E.,
@@ -67,7 +70,7 @@ class Lee2019(BaseDataset):
            https://doi.org/10.1093/gigascience/giz002
     """
 
-    def __init__(self, paradigm, train_run=True, test_run=False):
+    def __init__(self, paradigm, train_run=True, test_run=False, sessions=[1, 2]):
         if paradigm.lower() in ['imagery', 'mi']:
             paradigm = 'imagery'
             code_suffix = 'MI'
@@ -85,6 +88,10 @@ class Lee2019(BaseDataset):
             events = dict(up=1, left=2, right=3, down=4) ## TODO: put real values and names
         else:
             raise ValueError('unknown paradigm "{}"'.format(paradigm))
+        for s in sessions:
+            if s not in [1,2]:
+                raise ValueError('inexistant session {}'.format(s))
+        self.sessions = sessions
 
         super().__init__(
             subjects=list(range(1, 55)),
@@ -166,9 +173,9 @@ class Lee2019(BaseDataset):
         sessions = {}
         file_path_list = self.data_path(subject)
 
-        for session in range(1, 3):
+        for session in self.sessions:
             if self.train_run or self.test_run:
-                mat = loadmat(file_path_list[session - 1])
+                mat = loadmat(file_path_list[self.sessions.index(session)])
 
             session_name = "session_{}".format(session)
             sessions[session_name] = {}
