@@ -58,6 +58,12 @@ class Lee2019(BaseDataset):
     test_run: bool (default False)
         if True, return runs corresponding to the test/online phase (see paper).
 
+    pre_rest_run: bool (default False)
+        if True, return runs corresponding to the resting phases before recordings (see paper).
+
+    post_rest_run: bool (default False)
+        if True, return runs corresponding to the resting phases after recordings (see paper).
+
     sessions: list of int (default [1,2])
         the lsit of the sessions to load (2 available).
 
@@ -70,7 +76,7 @@ class Lee2019(BaseDataset):
            https://doi.org/10.1093/gigascience/giz002
     """
 
-    def __init__(self, paradigm, train_run=True, test_run=False, sessions=[1, 2]):
+    def __init__(self, paradigm, train_run=True, test_run=False, pre_rest_run=False, post_rest_run=False, sessions=[1, 2]):
         if paradigm.lower() in ['imagery', 'mi']:
             paradigm = 'imagery'
             code_suffix = 'MI'
@@ -105,6 +111,8 @@ class Lee2019(BaseDataset):
         self.code_suffix = code_suffix
         self.train_run = train_run
         self.test_run  =  test_run
+        self. pre_rest_run =  pre_rest_run
+        self.post_rest_run = post_rest_run
 
     def _translate_class(self, c):
         if self.paradigm=='imagery':
@@ -179,6 +187,16 @@ class Lee2019(BaseDataset):
         raw = raw.add_channels([emg_raw, stim_raw])
         return raw
 
+    def _get_single_rest_run(self, data, prefix):
+        sfreq = data['fs'].item()
+        ch_names = [c.item() for c in data['chan'].squeeze()]
+        info = create_info(ch_names=ch_names, ch_types=['eeg']*len(ch_names), sfreq=sfreq)
+        raw_data = data['{}_rest'.format(prefix)].transpose(1,0)
+        raw = RawArray(data=raw_data, info=info, verbose=False)
+        montage = make_standard_montage("standard_1005")
+        raw.set_montage(montage)
+        return raw
+
     def _get_single_subject_data(self, subject):
         """return data for a single subejct"""
 
@@ -195,6 +213,14 @@ class Lee2019(BaseDataset):
                 sessions[session_name]['train'] = self._get_single_run(mat['EEG_{}_train'.format(self.code_suffix)][0,0])
             if self. test_run:
                 sessions[session_name]['test']  = self._get_single_run(mat['EEG_{}_test' .format(self.code_suffix)][0,0])
+            if self. pre_rest_run:
+                prefix = 'pre'
+                sessions[session_name][ 'test_{}_rest'.format(prefix)]  = self._get_single_rest_run(mat['EEG_{}_test' .format(self.code_suffix)][0,0], prefix)
+                sessions[session_name]['train_{}_rest'.format(prefix)]  = self._get_single_rest_run(mat['EEG_{}_train'.format(self.code_suffix)][0,0], prefix)
+            if self.post_rest_run:
+                prefix = 'post'
+                sessions[session_name][ 'test_{}_rest'.format(prefix)]  = self._get_single_rest_run(mat['EEG_{}_test' .format(self.code_suffix)][0,0], prefix)
+                sessions[session_name]['train_{}_rest'.format(prefix)]  = self._get_single_rest_run(mat['EEG_{}_train'.format(self.code_suffix)][0,0], prefix)
 
         return sessions
 
