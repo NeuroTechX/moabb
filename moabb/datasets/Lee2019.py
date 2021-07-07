@@ -129,8 +129,20 @@ class Lee2019(BaseDataset):
                 return k
         raise ValueError('unknown class "{}" for "{}" paradigm'.format(c, self.paradigm))
 
+    def _check_mapping(self, file_mapping):
+        def raise_error():
+            raise ValueError('file_mapping ({}) different than events ({})'.format(file_mapping, self.event_id))
+        if len(file_mapping)!=len(self.event_id):
+            raise_error()
+        for c,v in file_mapping.items():
+            v2 = self.event_id.get(self._translate_class(c), None)
+            if v!=v2 or v2 is None:
+                raise_error()
+
     def _get_single_run(self, data):
         sfreq = data['fs'].item()
+        file_mapping = {c.item(): int(v.item()) for v,c in data['class']}
+        self._check_mapping(file_mapping)
 
         # Create RawArray
         ch_names = [c.item() for c in data['chan'].squeeze()]
