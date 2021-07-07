@@ -75,7 +75,7 @@ class Lee2019(BaseDataset):
             paradigm = 'imagery'
             code_suffix = 'MI'
             interval = [1.0, 3.5]
-            events = dict(left_hand=2, right_hand=1),
+            events = dict(left_hand=2, right_hand=1)
         elif paradigm.lower() in ['p300', 'erp']:
             paradigm = 'p300'
             code_suffix = 'ERP'
