@@ -65,7 +65,7 @@ class Lee2019(BaseDataset):
         if True, return runs corresponding to the resting phases after recordings (see paper).
 
     sessions: list of int (default [1,2])
-        the lsit of the sessions to load (2 available).
+        the list of the sessions to load (2 available).
 
     References
     ----------
@@ -110,7 +110,7 @@ class Lee2019(BaseDataset):
         )
         self.code_suffix = code_suffix
         self.train_run = train_run
-        self.test_run  =  test_run
+        self .test_run =  test_run
         self. pre_rest_run =  pre_rest_run
         self.post_rest_run = post_rest_run
 
