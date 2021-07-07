@@ -1,6 +1,7 @@
 """
 BMI/OpenBMI dataset (Motor Imagery).
 """
+from functools import partial
 
 import numpy as np
 from mne import create_info
@@ -193,3 +194,7 @@ class Lee2019(BaseDataset):
             subject_paths.append(data_path)
 
         return subject_paths
+
+Lee2019_MI    = partial(Lee2019, paradigm='MI')
+Lee2019_ERP   = partial(Lee2019, paradigm='ERP')
+Lee2019_SSVEP = partial(Lee2019, paradigm='SSVEP')
