@@ -14,9 +14,8 @@ from moabb.datasets.base import BaseDataset
 
 Lee2019_URL = "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100542/"
 
-
-class Lee2019_MI(BaseDataset):
-    """Motor Imagery BMI/OpenBMI dataset from BMI/OpenBMI dataset.
+class Lee2019(BaseDataset):
+    """BMI/OpenBMI dataset.
 
     Dataset from Lee et al 2019 [1]_.
 
@@ -49,6 +48,8 @@ class Lee2019_MI(BaseDataset):
 
     Parameters
     ----------
+    paradigm: (['MI','ERP','SSVEP'])
+        the paradigm to load (see paper).
 
     train_run: bool (default True)
         if True, return runs corresponding to the training/offline phase (see paper).
@@ -65,18 +66,60 @@ class Lee2019_MI(BaseDataset):
            https://doi.org/10.1093/gigascience/giz002
     """
 
-    def __init__(self, train_run=True, test_run=False):
+    def __init__(self, paradigm, train_run=True, test_run=False):
+        if paradigm.lower() in ['imagery', 'mi']:
+            paradigm = 'imagery'
+            code_suffix = 'MI'
+            interval = [1.0, 3.5]
+            events = dict(left_hand=2, right_hand=1),
+        elif paradigm.lower() in ['p300', 'erp']:
+            paradigm = 'p300'
+            code_suffix = 'ERP'
+            interval = [-0.2, 0.8]
+            events = dict(Target=1, NonTarget=2) ## TODO: put real values and names
+        elif paradigm.lower() in ['ssvep',]:
+            paradigm = 'ssvep'
+            code_suffix = 'SSVEP'
+            interval = [0., 4.]
+            events = dict(up=1, left=2, right=3, down=4) ## TODO: put real values and names
+        else:
+            raise ValueError('unknown paradigm "{}"'.format(paradigm))
+
         super().__init__(
             subjects=list(range(1, 55)),
             sessions_per_subject=2,
-            events=dict(left_hand=2, right_hand=1),
-            code="Lee2019_MI",
-            interval=[0, 4],
-            paradigm="imagery",
+            events=events,
+            code='Lee2019_'+code_suffix,
+            interval=interval,
+            paradigm=paradigm,
             doi="10.5524/100542",
         )
+        self.code_suffix = code_suffix
         self.train_run = train_run
         self.test_run  =  test_run
+
+    def _translate_class(self, c):
+        if self.paradigm=='imagery':
+            dictionary = dict(
+                left_hand=['left'],
+                right_hand=['right'],
+            )
+        elif self.paradigm=='p300':
+            dictionary = dict(
+                Target=['target'],
+                NonTarget=['nontarget'],
+            )
+        elif self.paradigm=='ssvep':
+            dictionary = dict(
+                up=['up'],
+                left=['left'],
+                right=['right'],
+                down=['down'],
+            )
+        for k,v in dictionary.items():
+            if c.lower() in v:
+                return k
+        raise ValueError('unknown class "{}" for "{}" paradigm'.format(c, self.paradigm))
 
     def _get_single_run(self, data):
         sfreq = data['fs'].item()
@@ -129,9 +172,9 @@ class Lee2019_MI(BaseDataset):
             session_name = "session_{}".format(session)
             sessions[session_name] = {}
             if self.train_run:
-                sessions[session_name]['train'] = self._get_single_run(mat['EEG_MI_train'][0,0])
+                sessions[session_name]['train'] = self._get_single_run(mat['EEG_{}_train'.format(self.code_suffix)][0,0])
             if self. test_run:
-                sessions[session_name]['test']  = self._get_single_run(mat['EEG_MI_test' ][0,0])
+                sessions[session_name]['test']  = self._get_single_run(mat['EEG_{}_test' .format(self.code_suffix)][0,0])
 
         return sessions
 
@@ -142,11 +185,11 @@ class Lee2019_MI(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         subject_paths = []
-        for session in range(1, 3):
-            url = "{0}session{1}/s{2}/sess{1:02d}_subj{2:02d}_EEG_MI.mat".format(
-                Lee2019_URL, session, subject
+        for session in self.sessions:
+            url = "{0}session{1}/s{2}/sess{1:02d}_subj{2:02d}_EEG_{3}.mat".format(
+                Lee2019_URL, session, subject, self.code_suffix
             )
-            data_path = dl.data_dl(url, "Lee2019_MI", path, force_update, verbose)
+            data_path = dl.data_dl(url, self.code, path, force_update, verbose)
             subject_paths.append(data_path)
 
         return subject_paths
