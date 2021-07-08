@@ -47,6 +47,57 @@ class Lee2019(BaseDataset):
     center of the monitor and moved right or left, according to the
     real-time classifier output of the EEG signal.
 
+    ERP paradigm
+    The interface layout of the speller followed the typical design
+    of a row-column speller. The six rows and six columns were
+    configured with 36 symbols (A to Z, 1 to 9, and _). Each symbol
+    was presented equally spaced. To enhance the
+    signal quality, two additional settings were incorporated into
+    the original row-column speller design, namely, random-set
+    presentation and face stimuli. These additional settings
+    help to elicit stronger ERP responses by minimizing adjacency
+    distraction errors and by presenting a familiar face image. The
+    stimulus-time interval was set to 80 ms, and the inter-stimulus
+    interval (ISI) to 135 ms. A single iteration of stimulus presentation
+    in all rows and columns was considered a sequence. Therefore,
+    one sequence consisted of 12 stimulus flashes. A maximum
+    of five sequences (i.e., 60 flashes) was allotted without prolonged
+    inter-sequence intervals for each target character. After the end
+    of five sequences, 4.5 s were given to the user for identifying, locating,
+    and gazing at the next target character. The participant
+    was instructed to attend to the target symbol by counting the
+    number of times each target character had been flashed.
+        In the training session, subjects were asked to copy-spell
+    a given sentence, "NEURAL NETWORKS AND DEEP LEARNING"
+    (33 characters including spaces) by gazing at the target character
+    on the screen. The training session was performed in the offline
+    condition, and no feedback was provided to the subject during
+    the EEG recording. In the test session, subjects were instructed to
+    copy-spell "PATTERN RECOGNITION MACHINE LEARNING"
+    (36 characters including spaces), and the real-time EEG data were
+    analyzed based on the classifier that was calculated from the
+    training session data. The selected character from the subject’s
+    current EEG data was displayed in the top left area of the screen
+    at the end of the presentation (i.e., after five sequences).
+    Per participant, the collected EEG data for the ERP experiment consisted
+    of 1,980 and 2,160 trials (samples) for training and test phase, respectively.
+
+    SSVEP paradigm
+    Four target SSVEP stimuli were designed to flicker at 5.45, 6.67,
+    8.57, and 12 Hz and were presented in four positions (down,
+    right, left, and up, respectively) on a monitor. The designed
+    paradigm followed the conventional types of SSVEP-based BCI
+    systems that require four-direction movements. Partici-
+    pants were asked to fixate the center of a black screen and then
+    to gaze in the direction where the target stimulus was high-
+    lighted in a different color. Each SSVEP stimulus
+    was presented for 4 s with an ISI of 6 s. Each target frequency
+    was presented 25 times. Therefore, the corrected EEG data had
+    100 trials (4 classes x 25 trials) in the offline training phase and
+    another 100 trials in the online test phase. Visual feedback was
+    presented in the test phase; the estimated target frequency was
+    highlighted for 1 s with a red border at the end of each trial.
+
     Parameters
     ----------
     paradigm: (['MI','ERP','SSVEP'])
