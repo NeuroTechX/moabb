@@ -142,7 +142,7 @@ class Lee2019(BaseDataset):
             paradigm = 'ssvep'
             code_suffix = 'SSVEP'
             interval = [0., 4.]
-            events = dict(up=1, left=2, right=3, down=4)
+            events = {'12.0':1, '8.57':2, '6.67':3, '5.45':4} # dict(up=1, left=2, right=3, down=4)
         else:
             raise ValueError('unknown paradigm "{}"'.format(paradigm))
         for s in sessions:
