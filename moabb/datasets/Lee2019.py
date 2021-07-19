@@ -177,12 +177,12 @@ class Lee2019(BaseDataset):
                 NonTarget=['nontarget'],
             )
         elif self.paradigm=='ssvep':
-            dictionary = dict(
-                up=['up'],
-                left=['left'],
-                right=['right'],
-                down=['down'],
-            )
+            dictionary = {
+                '12.0':['up'],
+                '8.57':['left'],
+                '6.67':['right'],
+                '5.45':['down'],
+            }
         for k,v in dictionary.items():
             if c.lower() in v:
                 return k
