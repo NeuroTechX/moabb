@@ -131,12 +131,12 @@ class Lee2019(BaseDataset):
         if paradigm.lower() in ['imagery', 'mi']:
             paradigm = 'imagery'
             code_suffix = 'MI'
-            interval = [1.0, 3.5]
+            interval = [0., 4.] # [1.0, 3.5] is the interval used in paper for online prediction
             events = dict(left_hand=2, right_hand=1)
         elif paradigm.lower() in ['p300', 'erp']:
             paradigm = 'p300'
             code_suffix = 'ERP'
-            interval = [-0.2, 0.8]
+            interval = [0., 1.] # [-0.2, 0.8] is the interval used in paper for online prediction
             events = dict(Target=1, NonTarget=2)
         elif paradigm.lower() in ['ssvep',]:
             paradigm = 'ssvep'
