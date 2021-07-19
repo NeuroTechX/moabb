@@ -198,33 +198,36 @@ class Lee2019(BaseDataset):
             if v!=v2 or v2 is None:
                 raise_error()
 
+    _scalings = dict(eeg=1e-6, emg=1e-6, stim=1) # to load the signal in Volts
+    def _make_raw_array(self, signal, ch_names, ch_type, sfreq, verbose=False):
+        ch_names = [np.squeeze(c).item() for c in np.ravel(ch_names)]
+        if len(ch_names)!=signal.shape[1]:
+            raise ValueError
+        info = create_info(ch_names=ch_names, ch_types=[ch_type]*len(ch_names), sfreq=sfreq)
+        factor = self._scalings.get(ch_type)
+        raw = RawArray(data=signal.transpose(1,0)*factor, info=info, verbose=verbose)
+        return raw
+
     def _get_single_run(self, data):
         sfreq = data['fs'].item()
         file_mapping = {c.item(): int(v.item()) for v,c in data['class']}
         self._check_mapping(file_mapping)
 
         # Create RawArray
-        ch_names = [c.item() for c in data['chan'].squeeze()]
-        info = create_info(ch_names=ch_names, ch_types=['eeg']*len(ch_names), sfreq=sfreq)
-        raw_data = data['x'].transpose(1,0)
-        raw = RawArray(data=raw_data, info=info, verbose=False)
+        raw = self._make_raw_array(data['x'], data['chan'], 'eeg', sfreq)
         montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
 
         # Create EMG channels
-        ch_names = [c.item() for c in data['EMG_index'].squeeze()]
-        info = create_info(ch_names=ch_names, ch_types=['emg']*len(ch_names), sfreq=sfreq)
-        raw_data = data['EMG'].transpose(1,0)
-        emg_raw = RawArray(data=raw_data, info=info, verbose=False)
+        emg_raw = self._make_raw_array(data['EMG'], data['EMG_index'], 'emg', sfreq)
 
-        # Now create stim chan
+        # Create stim chan
         event_times_in_samples = data['t'].squeeze()
         event_id = data['y_dec'].squeeze()
         stim_chan = np.zeros(len(raw))
         for i_sample, id_class in zip(event_times_in_samples, event_id):
             stim_chan[i_sample] += id_class
-        info = create_info(ch_names=["STI 014"], sfreq=sfreq, ch_types=["stim"])
-        stim_raw = RawArray(stim_chan[None], info, verbose="WARNING")
+        stim_raw = self._make_raw_array(stim_chan[:,None], ['STI 014'], 'stim', sfreq, verbose='WARNING')
 
         # Add events
         event_arr = [
@@ -240,10 +243,7 @@ class Lee2019(BaseDataset):
 
     def _get_single_rest_run(self, data, prefix):
         sfreq = data['fs'].item()
-        ch_names = [c.item() for c in data['chan'].squeeze()]
-        info = create_info(ch_names=ch_names, ch_types=['eeg']*len(ch_names), sfreq=sfreq)
-        raw_data = data['{}_rest'.format(prefix)].transpose(1,0)
-        raw = RawArray(data=raw_data, info=info, verbose=False)
+        raw = self._make_raw_array(data['{}_rest'.format(prefix)], data['chan'], 'eeg', sfreq)
         montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
         return raw
