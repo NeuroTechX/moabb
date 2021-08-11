@@ -148,3 +148,4 @@ API changes
 .. _Pedro L. C. Rodrigues: https://github.com/plcrodrigues
 .. _Robin Schirrmeister: https://github.com/robintibor
 .. _Jan Sosulski: https://github.com/jsosulski
+.. _Pierre Guetschel: https://github.com/PierreGtch
