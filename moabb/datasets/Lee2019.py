@@ -110,11 +110,8 @@ class Lee2019(BaseDataset):
     test_run: bool (default False)
         if True, return runs corresponding to the test/online phase (see paper).
 
-    pre_rest_run: bool (default False)
-        if True, return runs corresponding to the resting phases before recordings (see paper).
-
-    post_rest_run: bool (default False)
-        if True, return runs corresponding to the resting phases after recordings (see paper).
+    resting_state: bool (default False)
+        if True, return runs corresponding to the resting phases before and after recordings (see paper).
 
     sessions: list of int (default [1,2])
         the list of the sessions to load (2 available).
@@ -133,8 +130,7 @@ class Lee2019(BaseDataset):
         paradigm,
         train_run=True,
         test_run=False,
-        pre_rest_run=False,
-        post_rest_run=False,
+        resting_state=False,
         sessions=[1, 2],
     ):
         if paradigm.lower() in ["imagery", "mi"]:
@@ -184,8 +180,7 @@ class Lee2019(BaseDataset):
         self.code_suffix = code_suffix
         self.train_run = train_run
         self.test_run = test_run
-        self.pre_rest_run = pre_rest_run
-        self.post_rest_run = post_rest_run
+        self.resting_state = resting_state
 
     def _translate_class(self, c):
         if self.paradigm == "imagery":
@@ -304,7 +299,7 @@ class Lee2019(BaseDataset):
                 sessions[session_name]["test"] = self._get_single_run(
                     mat["EEG_{}_test".format(self.code_suffix)][0, 0]
                 )
-            if self.pre_rest_run:
+            if self.resting_state:
                 prefix = "pre"
                 sessions[session_name][
                     "test_{}_rest".format(prefix)
@@ -316,7 +311,6 @@ class Lee2019(BaseDataset):
                 ] = self._get_single_rest_run(
                     mat["EEG_{}_train".format(self.code_suffix)][0, 0], prefix
                 )
-            if self.post_rest_run:
                 prefix = "post"
                 sessions[session_name][
                     "test_{}_rest".format(prefix)
