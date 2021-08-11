@@ -107,7 +107,7 @@ class Lee2019(BaseDataset):
     train_run: bool (default True)
         if True, return runs corresponding to the training/offline phase (see paper).
 
-    test_run: bool (default False)
+    test_run: bool (default: False for MI and SSVEP paradigms, True for ERP)
         if True, return runs corresponding to the test/online phase (see paper).
 
     resting_state: bool (default False)
@@ -129,7 +129,7 @@ class Lee2019(BaseDataset):
         self,
         paradigm,
         train_run=True,
-        test_run=False,
+        test_run=None,
         resting_state=False,
         sessions=[1, 2],
     ):
@@ -179,7 +179,7 @@ class Lee2019(BaseDataset):
         )
         self.code_suffix = code_suffix
         self.train_run = train_run
-        self.test_run = test_run
+        self.test_run = paradigm == "p300" if test_run is None else test_run
         self.resting_state = resting_state
 
     def _translate_class(self, c):
