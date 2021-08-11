@@ -49,6 +49,9 @@ pull request to the master branch referencing the specific issue you addressed.
    or fix them manually in case of `flake8`)
 1. Push to the branch: `git push origin my-new-feature`
 1. Submit a pull request. Make sure it is based on the `master` branch when submitting! :D
+1. Don't forget to update the
+   [what's new](http://moabb.neurotechx.com/docs/whats_new.html) and
+   [documentation](http://moabb.neurotechx.com/docs/index.html) pages if needed
 
 ## Setup development environment
 
