@@ -15,6 +15,7 @@ from moabb.datasets.base import BaseDataset
 
 Lee2019_URL = "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100542/"
 
+
 class Lee2019(BaseDataset):
     """BMI/OpenBMI dataset.
 
@@ -127,107 +128,138 @@ class Lee2019(BaseDataset):
            https://doi.org/10.1093/gigascience/giz002
     """
 
-    def __init__(self, paradigm, train_run=True, test_run=False, pre_rest_run=False, post_rest_run=False, sessions=[1, 2]):
-        if paradigm.lower() in ['imagery', 'mi']:
-            paradigm = 'imagery'
-            code_suffix = 'MI'
-            interval = [0., 4.] # [1.0, 3.5] is the interval used in paper for online prediction
+    def __init__(
+        self,
+        paradigm,
+        train_run=True,
+        test_run=False,
+        pre_rest_run=False,
+        post_rest_run=False,
+        sessions=[1, 2],
+    ):
+        if paradigm.lower() in ["imagery", "mi"]:
+            paradigm = "imagery"
+            code_suffix = "MI"
+            interval = [
+                0.0,
+                4.0,
+            ]  # [1.0, 3.5] is the interval used in paper for online prediction
             events = dict(left_hand=2, right_hand=1)
-        elif paradigm.lower() in ['p300', 'erp']:
-            paradigm = 'p300'
-            code_suffix = 'ERP'
-            interval = [0., 1.] # [-0.2, 0.8] is the interval used in paper for online prediction
+        elif paradigm.lower() in ["p300", "erp"]:
+            paradigm = "p300"
+            code_suffix = "ERP"
+            interval = [
+                0.0,
+                1.0,
+            ]  # [-0.2, 0.8] is the interval used in paper for online prediction
             events = dict(Target=1, NonTarget=2)
-        elif paradigm.lower() in ['ssvep',]:
-            paradigm = 'ssvep'
-            code_suffix = 'SSVEP'
-            interval = [0., 4.]
-            events = {'12.0':1, '8.57':2, '6.67':3, '5.45':4} # dict(up=1, left=2, right=3, down=4)
+        elif paradigm.lower() in [
+            "ssvep",
+        ]:
+            paradigm = "ssvep"
+            code_suffix = "SSVEP"
+            interval = [0.0, 4.0]
+            events = {
+                "12.0": 1,
+                "8.57": 2,
+                "6.67": 3,
+                "5.45": 4,
+            }  # dict(up=1, left=2, right=3, down=4)
         else:
             raise ValueError('unknown paradigm "{}"'.format(paradigm))
         for s in sessions:
-            if s not in [1,2]:
-                raise ValueError('inexistant session {}'.format(s))
+            if s not in [1, 2]:
+                raise ValueError("inexistant session {}".format(s))
         self.sessions = sessions
 
         super().__init__(
             subjects=list(range(1, 55)),
             sessions_per_subject=2,
             events=events,
-            code='Lee2019_'+code_suffix,
+            code="Lee2019_" + code_suffix,
             interval=interval,
             paradigm=paradigm,
             doi="10.5524/100542",
         )
         self.code_suffix = code_suffix
         self.train_run = train_run
-        self .test_run =  test_run
-        self. pre_rest_run =  pre_rest_run
+        self.test_run = test_run
+        self.pre_rest_run = pre_rest_run
         self.post_rest_run = post_rest_run
 
     def _translate_class(self, c):
-        if self.paradigm=='imagery':
+        if self.paradigm == "imagery":
             dictionary = dict(
-                left_hand=['left'],
-                right_hand=['right'],
+                left_hand=["left"],
+                right_hand=["right"],
             )
-        elif self.paradigm=='p300':
+        elif self.paradigm == "p300":
             dictionary = dict(
-                Target=['target'],
-                NonTarget=['nontarget'],
+                Target=["target"],
+                NonTarget=["nontarget"],
             )
-        elif self.paradigm=='ssvep':
+        elif self.paradigm == "ssvep":
             dictionary = {
-                '12.0':['up'],
-                '8.57':['left'],
-                '6.67':['right'],
-                '5.45':['down'],
+                "12.0": ["up"],
+                "8.57": ["left"],
+                "6.67": ["right"],
+                "5.45": ["down"],
             }
-        for k,v in dictionary.items():
+        for k, v in dictionary.items():
             if c.lower() in v:
                 return k
         raise ValueError('unknown class "{}" for "{}" paradigm'.format(c, self.paradigm))
 
     def _check_mapping(self, file_mapping):
         def raise_error():
-            raise ValueError('file_mapping ({}) different than events ({})'.format(file_mapping, self.event_id))
-        if len(file_mapping)!=len(self.event_id):
+            raise ValueError(
+                "file_mapping ({}) different than events ({})".format(
+                    file_mapping, self.event_id
+                )
+            )
+
+        if len(file_mapping) != len(self.event_id):
             raise_error()
-        for c,v in file_mapping.items():
+        for c, v in file_mapping.items():
             v2 = self.event_id.get(self._translate_class(c), None)
-            if v!=v2 or v2 is None:
+            if v != v2 or v2 is None:
                 raise_error()
 
-    _scalings = dict(eeg=1e-6, emg=1e-6, stim=1) # to load the signal in Volts
+    _scalings = dict(eeg=1e-6, emg=1e-6, stim=1)  # to load the signal in Volts
+
     def _make_raw_array(self, signal, ch_names, ch_type, sfreq, verbose=False):
         ch_names = [np.squeeze(c).item() for c in np.ravel(ch_names)]
-        if len(ch_names)!=signal.shape[1]:
+        if len(ch_names) != signal.shape[1]:
             raise ValueError
-        info = create_info(ch_names=ch_names, ch_types=[ch_type]*len(ch_names), sfreq=sfreq)
+        info = create_info(
+            ch_names=ch_names, ch_types=[ch_type] * len(ch_names), sfreq=sfreq
+        )
         factor = self._scalings.get(ch_type)
-        raw = RawArray(data=signal.transpose(1,0)*factor, info=info, verbose=verbose)
+        raw = RawArray(data=signal.transpose(1, 0) * factor, info=info, verbose=verbose)
         return raw
 
     def _get_single_run(self, data):
-        sfreq = data['fs'].item()
-        file_mapping = {c.item(): int(v.item()) for v,c in data['class']}
+        sfreq = data["fs"].item()
+        file_mapping = {c.item(): int(v.item()) for v, c in data["class"]}
         self._check_mapping(file_mapping)
 
         # Create RawArray
-        raw = self._make_raw_array(data['x'], data['chan'], 'eeg', sfreq)
+        raw = self._make_raw_array(data["x"], data["chan"], "eeg", sfreq)
         montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
 
         # Create EMG channels
-        emg_raw = self._make_raw_array(data['EMG'], data['EMG_index'], 'emg', sfreq)
+        emg_raw = self._make_raw_array(data["EMG"], data["EMG_index"], "emg", sfreq)
 
         # Create stim chan
-        event_times_in_samples = data['t'].squeeze()
-        event_id = data['y_dec'].squeeze()
+        event_times_in_samples = data["t"].squeeze()
+        event_id = data["y_dec"].squeeze()
         stim_chan = np.zeros(len(raw))
         for i_sample, id_class in zip(event_times_in_samples, event_id):
             stim_chan[i_sample] += id_class
-        stim_raw = self._make_raw_array(stim_chan[:,None], ['STI 014'], 'stim', sfreq, verbose='WARNING')
+        stim_raw = self._make_raw_array(
+            stim_chan[:, None], ["STI 014"], "stim", sfreq, verbose="WARNING"
+        )
 
         # Add events
         event_arr = [
@@ -235,15 +267,19 @@ class Lee2019(BaseDataset):
             [0] * len(event_times_in_samples),
             event_id,
         ]
-        raw.info["events"] = [dict(list=np.array(event_arr).T, channels=None), ]
+        raw.info["events"] = [
+            dict(list=np.array(event_arr).T, channels=None),
+        ]
 
         # Add EMG and stim channels
         raw = raw.add_channels([emg_raw, stim_raw])
         return raw
 
     def _get_single_rest_run(self, data, prefix):
-        sfreq = data['fs'].item()
-        raw = self._make_raw_array(data['{}_rest'.format(prefix)], data['chan'], 'eeg', sfreq)
+        sfreq = data["fs"].item()
+        raw = self._make_raw_array(
+            data["{}_rest".format(prefix)], data["chan"], "eeg", sfreq
+        )
         montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
         return raw
@@ -261,17 +297,37 @@ class Lee2019(BaseDataset):
             session_name = "session_{}".format(session)
             sessions[session_name] = {}
             if self.train_run:
-                sessions[session_name]['train'] = self._get_single_run(mat['EEG_{}_train'.format(self.code_suffix)][0,0])
-            if self. test_run:
-                sessions[session_name]['test']  = self._get_single_run(mat['EEG_{}_test' .format(self.code_suffix)][0,0])
-            if self. pre_rest_run:
-                prefix = 'pre'
-                sessions[session_name][ 'test_{}_rest'.format(prefix)]  = self._get_single_rest_run(mat['EEG_{}_test' .format(self.code_suffix)][0,0], prefix)
-                sessions[session_name]['train_{}_rest'.format(prefix)]  = self._get_single_rest_run(mat['EEG_{}_train'.format(self.code_suffix)][0,0], prefix)
+                sessions[session_name]["train"] = self._get_single_run(
+                    mat["EEG_{}_train".format(self.code_suffix)][0, 0]
+                )
+            if self.test_run:
+                sessions[session_name]["test"] = self._get_single_run(
+                    mat["EEG_{}_test".format(self.code_suffix)][0, 0]
+                )
+            if self.pre_rest_run:
+                prefix = "pre"
+                sessions[session_name][
+                    "test_{}_rest".format(prefix)
+                ] = self._get_single_rest_run(
+                    mat["EEG_{}_test".format(self.code_suffix)][0, 0], prefix
+                )
+                sessions[session_name][
+                    "train_{}_rest".format(prefix)
+                ] = self._get_single_rest_run(
+                    mat["EEG_{}_train".format(self.code_suffix)][0, 0], prefix
+                )
             if self.post_rest_run:
-                prefix = 'post'
-                sessions[session_name][ 'test_{}_rest'.format(prefix)]  = self._get_single_rest_run(mat['EEG_{}_test' .format(self.code_suffix)][0,0], prefix)
-                sessions[session_name]['train_{}_rest'.format(prefix)]  = self._get_single_rest_run(mat['EEG_{}_train'.format(self.code_suffix)][0,0], prefix)
+                prefix = "post"
+                sessions[session_name][
+                    "test_{}_rest".format(prefix)
+                ] = self._get_single_rest_run(
+                    mat["EEG_{}_test".format(self.code_suffix)][0, 0], prefix
+                )
+                sessions[session_name][
+                    "train_{}_rest".format(prefix)
+                ] = self._get_single_rest_run(
+                    mat["EEG_{}_train".format(self.code_suffix)][0, 0], prefix
+                )
 
         return sessions
 
@@ -291,9 +347,14 @@ class Lee2019(BaseDataset):
 
         return subject_paths
 
-class Lee2019_MI   (Lee2019):
-    __init__ = partialmethod(Lee2019.__init__, 'MI'   )
-class Lee2019_ERP  (Lee2019):
-    __init__ = partialmethod(Lee2019.__init__, 'ERP'  )
+
+class Lee2019_MI(Lee2019):
+    __init__ = partialmethod(Lee2019.__init__, "MI")
+
+
+class Lee2019_ERP(Lee2019):
+    __init__ = partialmethod(Lee2019.__init__, "ERP")
+
+
 class Lee2019_SSVEP(Lee2019):
-    __init__ = partialmethod(Lee2019.__init__, 'SSVEP')
+    __init__ = partialmethod(Lee2019.__init__, "SSVEP")
