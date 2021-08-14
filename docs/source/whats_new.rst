@@ -148,4 +148,4 @@ API changes
 .. _Pedro L. C. Rodrigues: https://github.com/plcrodrigues
 .. _Robin Schirrmeister: https://github.com/robintibor
 .. _Jan Sosulski: https://github.com/jsosulski
-.. _Pierre Guetschel: https://github.com/PierreGtch
+- Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetchel`_)
