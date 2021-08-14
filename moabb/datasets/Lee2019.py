@@ -133,7 +133,7 @@ class Lee2019(BaseDataset):
         train_run=True,
         test_run=None,
         resting_state=False,
-        sessions=[1, 2],
+        sessions=(1, 2),
     ):
         if paradigm.lower() in ["imagery", "mi"]:
             paradigm = "imagery"
