@@ -108,7 +108,9 @@ class Lee2019(BaseDataset):
         if True, return runs corresponding to the training/offline phase (see paper).
 
     test_run: bool (default: False for MI and SSVEP paradigms, True for ERP)
-        if True, return runs corresponding to the test/online phase (see paper).
+        if True, return runs corresponding to the test/online phase (see paper). Beware that test_run
+        for  MI and SSVEP do not have labels associated with trials: these runs could not be used in
+        classification tasks.
 
     resting_state: bool (default False)
         if True, return runs corresponding to the resting phases before and after recordings (see paper).
