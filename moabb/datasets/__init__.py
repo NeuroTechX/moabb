@@ -20,11 +20,7 @@ from .bnci import (
 from .braininvaders import bi2013a
 from .epfl import EPFLP300
 from .gigadb import Cho2017
-from .Lee2019 import (
-    Lee2019_MI,
-    Lee2019_ERP,
-    Lee2019_SSVEP,
-)
+from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .mpi_mi import MunichMI
 from .neiry import DemonsP300
 from .physionet_mi import PhysionetMI
