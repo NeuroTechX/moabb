@@ -46,6 +46,7 @@ ERP Datasets
     BNCI2015003
     DemonsP300
     EPFLP300
+    Lee2019_ERP
 
 
 --------------
@@ -62,6 +63,7 @@ SSVEP Datasets
     MAMEM1
     MAMEM2
     MAMEM3
+    Lee2019_SSVEP
 
 
 ------------

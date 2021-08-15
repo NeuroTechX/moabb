@@ -36,6 +36,7 @@ Enhancements
 - Broadening subject_list type for :func:`moabb.datasets.BaseDataset` (:gh:`198` by `Sylvain Chevallier`_)
 - Adding this what's new (:gh:`200` by `Sylvain Chevallier`_)
 - Improving cache usage and save computation time in CI (:gh:`200` by `Sylvain Chevallier`_)
+- Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetchel`_)
 
 
 Bugs
@@ -148,3 +149,4 @@ API changes
 .. _Pedro L. C. Rodrigues: https://github.com/plcrodrigues
 .. _Robin Schirrmeister: https://github.com/robintibor
 .. _Jan Sosulski: https://github.com/jsosulski
+.. _Pierre Guetschel: https://github.com/PierreGtch
