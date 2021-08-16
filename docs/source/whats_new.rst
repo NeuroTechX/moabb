@@ -11,7 +11,53 @@ What's new
    - "API changes" for backward-incompatible changes
 .. _current:
 
-Dev - 0.4.0dev
+Develop branch
+---------------
+
+Enhancements
+~~~~~~~~~~~~
+
+- Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetchel`_)
+
+  Bugs
+~~~~
+
+
+API changes
+~~~~~~~~~~~
+
+Version - 0.4.2 (Stable - PyPi)
+---------------
+
+Enhancements
+~~~~~~~~~~~~
+- None
+
+Bugs
+~~~~
+- Correct error when downloading Weibo dataset  (:gh:`212` by `Sylvain Chevallier`_)
+
+API changes
+~~~~~~~~~~~
+- None
+
+Version - 0.4.1
+---------------
+
+Enhancements
+~~~~~~~~~~~~
+- None
+
+Bugs
+~~~~
+- Correct path error for first time launch (:gh:`204` by `Sylvain Chevallier`_)
+- Fix optional dependencies issues for PyPi (:gh:`205` by `Sylvain Chevallier`_)
+
+API changes
+~~~~~~~~~~~
+- Remove update_path on all datasets, `update_path` parameter in `dataset.data_path()` is deprecated (:gh:`207` by `Sylvain Chevallier`_)
+
+Version - 0.4.0
 ---------------
 
 Enhancements
@@ -49,7 +95,7 @@ API changes
 - Drop `update_path` from moabb.download.data_path and moabb.download.data_dl
 
 
-Current - 0.3.0
+Version 0.3.0
 ----------------
 
 Enhancements
