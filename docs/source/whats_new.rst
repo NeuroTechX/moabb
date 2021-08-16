@@ -22,9 +22,12 @@ Enhancements
   Bugs
 ~~~~
 
+- Avoid information leakage for MNE Epochs pipelines in evaluation (:gh:`222` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
+
+- None
 
 Version - 0.4.2 (Stable - PyPi)
 ---------------

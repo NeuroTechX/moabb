@@ -121,8 +121,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                         X_ = X[ix]
                         y_ = y[ix] if self.mne_labels else y_cv
                         for train, test in cv.split(X_, y_):
-                            clf.fit(X_[train], y_[train])
-                            acc.append(scorer(clf, X_[test], y_[test]))
+                            cvclf = clone(clf)
+                            cvclf.fit(X_[train], y_[train])
+                            acc.append(scorer(cvclf, X_[test], y_[test]))
                         acc = np.array(acc)
                     else:
                         acc = cross_val_score(
@@ -322,8 +323,9 @@ class CrossSessionEvaluation(BaseEvaluation):
                 for train, test in cv.split(X, y, groups):
                     t_start = time()
                     if isinstance(X, BaseEpochs):
-                        clf.fit(X[train], y[train])
-                        score = scorer(clf, X[test], y[test])
+                        cvclf = clone(clf)
+                        cvclf.fit(X[train], y[train])
+                        score = scorer(cvclf, X[test], y[test])
                     else:
                         score = _fit_and_score(
                             clone(clf),
