@@ -21,7 +21,6 @@ Motor Imagery Datasets
     BNCI2015001
     BNCI2015004
     Cho2017
-    DemonsP300
     Lee2019_MI
     MunichMI
     Ofner2017
@@ -45,7 +44,9 @@ ERP Datasets
     BNCI2014008
     BNCI2014009
     BNCI2015003
+    DemonsP300
     EPFLP300
+    Lee2019_ERP
 
 
 --------------
@@ -62,6 +63,7 @@ SSVEP Datasets
     MAMEM1
     MAMEM2
     MAMEM3
+    Lee2019_SSVEP
 
 
 ------------
