@@ -58,7 +58,7 @@ jobs:
           source $VENV
           poetry run coverage run -m unittest moabb.tests
           pwd
-          ls
+          ls -la
 
       - name: Run pipelines
         run: |
