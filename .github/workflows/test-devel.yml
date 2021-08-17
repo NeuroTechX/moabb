@@ -69,3 +69,4 @@ jobs:
         with:
           verbose: true
           directory: /home/runner/work/moabb/moabb
+          files: ./.coverage
