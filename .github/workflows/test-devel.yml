@@ -56,9 +56,17 @@ jobs:
       - name: Run tests
         run: |
           source $VENV
-          poetry run python -m unittest moabb.tests
+          poetry run coverage run -m unittest moabb.tests
 
       - name: Run pipelines
         run: |
           source $VENV
           poetry run python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v2
+        if: success()
+        with:
+          verbose: true
+          directory: /home/runner/work/moabb/moabb
+          files: ./.coverage

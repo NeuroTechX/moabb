@@ -1,0 +1,14 @@
+[run]
+branch = True
+source = moabb
+include = */moabb/*
+omit =
+    */docs/*
+    */pipelines/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+    @abstractmethod
+    @abstractclassmethod
