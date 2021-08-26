@@ -49,7 +49,7 @@ def set_download_dir(path):
             set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
     else:
         # Check if the path exists, if not, create it
-        if not osp.isfile(path):
+        if not osp.isdir(path):
             print("The path given does not exist, creating it..")
             os.makedirs(path)
         set_config("MNE_DATA", path)
