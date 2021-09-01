@@ -23,6 +23,7 @@ Enhancements
 ~~~~
 
 - Avoid information leakage for MNE Epochs pipelines in evaluation (:gh:`222` by `Sylvain Chevallier`_)
+- Correct error in set_download_dir (:gh:`225` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
