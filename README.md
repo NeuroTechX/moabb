@@ -4,7 +4,7 @@
   <img alt="banner" src="/images/M.png/">
 </p>
 <p align=center>
-  Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets.
+  Build a comprehensive benchmark of popular Brain-Computer Interface ([BCI](https://en.wikipedia.org/wiki/Brain%E2%80%93computer_interface)) algorithms applied on an extensive list of freely available EEG datasets.
 </p>
 
 ## Disclaimer
@@ -40,6 +40,12 @@ one of the sections below, or just scroll down to find out more.
 ## What are we doing?
 
 ### The problem
+
+[Brain-Computer Interfaces](https://en.wikipedia.org/wiki/Brain%E2%80%93computer_interface)
+allow to interact with a computer using brain signals. In this project, we focus mostly on
+electroencephalographic signals
+([EEG](https://en.wikipedia.org/wiki/Electroencephalography)), that is a very active
+research domain, with worldwide scientific contributions. Still:
 
 - Reproducible Research in BCI has a long way to go.
 - While many BCI datasets are made freely available, researchers do not publish code, and
