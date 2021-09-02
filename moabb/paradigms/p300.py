@@ -106,10 +106,15 @@ class BaseP300(BaseParadigm):
         else:
             events, _ = mne.events_from_annotations(raw, verbose=False)
 
-        channels = () if self.channels is None else self.channels
-
         # picks channels
+        channels = () if self.channels is None else self.channels
         picks = mne.pick_types(raw.info, eeg=True, stim=False, include=channels)
+        if self.channels is None:
+            picks = mne.pick_types(raw.info, eeg=True, stim=False)
+        else:
+            picks = mne.pick_channels(
+                raw.info["ch_names"], include=channels, ordered=True
+            )
 
         # get event id
         event_id = self.used_events(dataset)
