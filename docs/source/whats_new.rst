@@ -24,11 +24,12 @@ Enhancements
 
 - Avoid information leakage for MNE Epochs pipelines in evaluation (:gh:`222` by `Sylvain Chevallier`_)
 - Correct error in set_download_dir (:gh:`225` by `Sylvain Chevallier`_)
+- Ensure that channel order is consistent across dataset when channel argument is specified in paradigm (:gh:`229` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
 
-- None
+- ch_names argument added to init of moabb.datasets.fake.FakeDataset (:gh:`229` by `Sylvain Chevallier`_)
 
 Version - 0.4.2 (Stable - PyPi)
 ---------------

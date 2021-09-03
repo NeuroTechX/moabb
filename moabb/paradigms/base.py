@@ -118,7 +118,9 @@ class BaseParadigm(metaclass=ABCMeta):
         if self.channels is None:
             picks = mne.pick_types(raw.info, eeg=True, stim=False)
         else:
-            picks = mne.pick_types(raw.info, stim=False, include=self.channels)
+            picks = mne.pick_channels(
+                raw.info["ch_names"], include=self.channels, ordered=True
+            )
 
         # pick events, based on event_id
         try:
