@@ -9,8 +9,24 @@ from moabb.datasets.base import BaseDataset
 class FakeDataset(BaseDataset):
     """Fake Dataset for test purpose.
 
-    The dataset has 2 sessions, 10 subjects, and 3 classes.
+    By default, the dataset has 2 sessions, 10 subjects, and 3 classes.
 
+    Parameters
+    ----------
+    event_list: list or tuple of str
+        List of event to generate, default: ("fake_c1", "fake_c2", "fake_c3")
+    n_sessions: int, default 2
+        Number of session to generate
+    n_runs: int, default 2
+        Number of runs to generate
+    n_subjects: int, default 10
+        Number of subject to generate
+    paradigm: ['p300','imagery', 'ssvep']
+        Defines what sort of dataset this is
+    channels: list or tuple of str
+        List of channels to generate, default ("C3", "Cz", "C4")
+
+        .. versionadded:: 0.4.3
     """
 
     def __init__(
