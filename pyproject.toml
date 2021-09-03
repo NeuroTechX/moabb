@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "moabb"
-version = "0.4.2"
+version = "0.4.3"
 description = "Mother of All BCI Benchmarks"
 authors = ["Alexandre Barachant", "Vinay Jayaram"]
 maintainers = ["Sylvain Chevallier <sylvain.chevallier@uvsq.fr>"]
@@ -17,7 +17,7 @@ scipy = "^1.5"
 mne = ">=0.19"
 pandas = "^1.0.0"
 h5py = "^3.0.0"
-scikit-learn = "^0.23"  # 0.24.0 breaks pyriemann, requires https://github.com/alexandrebarachant/pyRiemann/pull/93
+scikit-learn = "^0.23"
 pyriemann = ">=0.2.6"
 matplotlib = "^3.0.0"
 seaborn = ">=0.9.0"
