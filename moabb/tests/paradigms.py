@@ -51,6 +51,16 @@ class Test_MotorImagery(unittest.TestCase):
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         self.assertIsInstance(epochs, BaseEpochs)
 
+    def test_BaseImagery_channel_order(self):
+        """test if paradigm return correct channel order, see issue #227"""
+        datasetA = FakeDataset(paradigm="imagery", channels=["C3", "Cz", "C4"])
+        datasetB = FakeDataset(paradigm="imagery", channels=["Cz", "C4", "C3"])
+        paradigm = SimpleMotorImagery(channels=["C4", "C3", "Cz"])
+
+        ep1, _, _ = paradigm.get_data(datasetA, subjects=[1], return_epochs=True)
+        ep2, _, _ = paradigm.get_data(datasetB, subjects=[1], return_epochs=True)
+        self.assertEqual(ep1.info["ch_names"], ep2.info["ch_names"])
+
     def test_BaseImagery_tmintmax(self):
         self.assertRaises(ValueError, SimpleMotorImagery, tmin=1, tmax=0)
 
@@ -169,8 +179,23 @@ class Test_P300(unittest.TestCase):
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         self.assertIsInstance(epochs, BaseEpochs)
 
-    def test_BaseImagery_tmintmax(self):
-        self.assertRaises(ValueError, SimpleMotorImagery, tmin=1, tmax=0)
+    def test_BaseP300_channel_order(self):
+        """test if paradigm return correct channel order, see issue #227"""
+        datasetA = FakeDataset(
+            paradigm="p300",
+            channels=["C3", "Cz", "C4"],
+            event_list=["Target", "NonTarget"],
+        )
+        datasetB = FakeDataset(
+            paradigm="p300",
+            channels=["Cz", "C4", "C3"],
+            event_list=["Target", "NonTarget"],
+        )
+        paradigm = SimpleP300(channels=["C4", "C3", "Cz"])
+
+        ep1, _, _ = paradigm.get_data(datasetA, subjects=[1], return_epochs=True)
+        ep2, _, _ = paradigm.get_data(datasetB, subjects=[1], return_epochs=True)
+        self.assertEqual(ep1.info["ch_names"], ep2.info["ch_names"])
 
     def test_BaseP300_tmintmax(self):
         self.assertRaises(ValueError, SimpleP300, tmin=1, tmax=0)
@@ -246,6 +271,16 @@ class Test_SSVEP(unittest.TestCase):
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         self.assertIsInstance(epochs, BaseEpochs)
+
+    def test_BaseSSVEP_channel_order(self):
+        """test if paradigm return correct channel order, see issue #227"""
+        datasetA = FakeDataset(paradigm="ssvep", channels=["C3", "Cz", "C4"])
+        datasetB = FakeDataset(paradigm="ssvep", channels=["Cz", "C4", "C3"])
+        paradigm = BaseSSVEP(channels=["C4", "C3", "Cz"])
+
+        ep1, _, _ = paradigm.get_data(datasetA, subjects=[1], return_epochs=True)
+        ep2, _, _ = paradigm.get_data(datasetB, subjects=[1], return_epochs=True)
+        self.assertEqual(ep1.info["ch_names"], ep2.info["ch_names"])
 
     def test_baseSSVEP_tmintmax(self):
         # Verify that tmin < tmax

@@ -11,7 +11,27 @@ What's new
    - "API changes" for backward-incompatible changes
 .. _current:
 
+
 Develop branch
+---------------
+
+Enhancements
+~~~~~~~~~~~~
+
+- None
+
+Bugs
+~~~~
+
+- None
+
+API changes
+~~~~~~~~~~~
+
+- None
+
+
+Version - 0.4.3 (Stable - PyPi)
 ---------------
 
 Enhancements
@@ -19,14 +39,19 @@ Enhancements
 
 - Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetchel`_)
 
-  Bugs
+Bugs
 ~~~~
 
+- Avoid information leakage for MNE Epochs pipelines in evaluation (:gh:`222` by `Sylvain Chevallier`_)
+- Correct error in set_download_dir (:gh:`225` by `Sylvain Chevallier`_)
+- Ensure that channel order is consistent across dataset when channel argument is specified in paradigm (:gh:`229` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
 
-Version - 0.4.2 (Stable - PyPi)
+- ch_names argument added to init of moabb.datasets.fake.FakeDataset (:gh:`229` by `Sylvain Chevallier`_)
+
+Version - 0.4.2
 ---------------
 
 Enhancements

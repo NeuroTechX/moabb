@@ -44,8 +44,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         Imagery interval as defined in the dataset description
 
     paradigm: ['p300','imagery', 'ssvep']
-        Defines what sort of dataset this is (currently only imagery is
-        implemented)
+        Defines what sort of dataset this is
 
     doi: DOI for dataset, optional (for now)
     """

@@ -1,0 +1,72 @@
+name: Test-devel
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  test:
+    name: dev ${{ matrix.os }}, py-${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-18.04, windows-latest, macOS-latest]
+        python-version: ["3.6"]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - uses: pre-commit/action@v2.0.0
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.6
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv
+        if: runner.os != 'Windows'
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key:
+            testvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
+            hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        if: |
+          (runner.os != 'Windows') &&
+          (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
+        run: poetry install --no-interaction --no-root --no-dev
+
+      - name: Install library
+        run: poetry install --no-interaction --no-dev
+
+      - name: Run tests
+        run: |
+          source $VENV
+          poetry run coverage run -m unittest moabb.tests
+
+      - name: Run pipelines
+        run: |
+          source $VENV
+          poetry run python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v2
+        if: success()
+        with:
+          verbose: true
+          directory: /home/runner/work/moabb/moabb
+          files: ./.coverage

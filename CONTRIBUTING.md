@@ -40,7 +40,7 @@ pull request to the master branch referencing the specific issue you addressed.
 1. Look for open issues or open one
 1. Discuss the problem and or propose a solution
 1. Fork it! (and clone fork locally)
-1. Branch from `master`: `git checkout master`
+1. Branch from `develop`: `git checkout --track develop`
 1. [Setup development environment](#setup-development-environment)
 1. Create your feature branch: `git checkout -b my-new-feature`
 1. Make changes
@@ -48,7 +48,8 @@ pull request to the master branch referencing the specific issue you addressed.
 1. Don't forget to fix issues from `pre-commit` pipeline (either add changes made by hooks
    or fix them manually in case of `flake8`)
 1. Push to the branch: `git push origin my-new-feature`
-1. Submit a pull request. Make sure it is based on the `master` branch when submitting! :D
+1. Submit a pull request. Make sure it is based on the `develop` branch when submitting!
+   :D
 1. Don't forget to update the
    [what's new](http://moabb.neurotechx.com/docs/whats_new.html) and
    [documentation](http://moabb.neurotechx.com/docs/index.html) pages if needed

@@ -5,7 +5,7 @@
 ![banner](images/M.png)
 
 <p align=center>
-  Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list of freely available EEG datasets.
+  Build a comprehensive benchmark of popular Brain-Computer Interface ([BCI](https://en.wikipedia.org/wiki/Brain%E2%80%93computer_interface)) algorithms applied on an extensive list of freely available EEG datasets.
 </p>
 
 ## Disclaimer
@@ -16,7 +16,7 @@ community.**
 [![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![PyPI](https://img.shields.io/pypi/v/moabb?color=blue&style=plastic)](https://img.shields.io/pypi/v/moabb)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/moabb?color=brightgreen&style=plastic)](https://img.shields.io/pypi/dm/moabb)
+[![Downloads](https://pepy.tech/badge/moabb)](https://pepy.tech/project/moabb)
 
 ## Welcome!
 
@@ -39,6 +39,12 @@ one of the sections below, or just scroll down to find out more.
 ## What are we doing?
 
 ### The problem
+
+[Brain-Computer Interfaces](https://en.wikipedia.org/wiki/Brain%E2%80%93computer_interface)
+allow to interact with a computer using brain signals. In this project, we focus mostly on
+electroencephalographic signals
+([EEG](https://en.wikipedia.org/wiki/Electroencephalography)), that is a very active
+research domain, with worldwide scientific contributions. Still:
 
 - Reproducible Research in BCI has a long way to go.
 - While many BCI datasets are made freely available, researchers do not publish code, and
