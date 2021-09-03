@@ -233,7 +233,7 @@ html_theme_options = {
     # Note the "1" or "True" value above as the third argument to indicate
     # an arbitrary url.
     "navbar_links": [
-        ("API", "api"),
+        ("What's new", "whats_new")("API", "api"),
         ("Gallery", "auto_examples/index"),
         ("Tutorials", "auto_tutorials/index"),
     ],
