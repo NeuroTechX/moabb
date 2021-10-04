@@ -6,7 +6,7 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.cross_decomposition import CCA
 from sklearn.utils.validation import check_is_fitted
 
-from .utils import filterbank, schaefer_strimmer_cov
+from .utils import filterbank
 
 
 class SSVEP_CCA(BaseEstimator, ClassifierMixin):
@@ -175,10 +175,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         self.slen = interval[1] - interval[0]
         self.is_ensemble = is_ensemble
         self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
-        if regul == "schaefer":
-            self.regul = schaefer_strimmer_cov
-        else:
-            self.regul = regul
+        self.regul = regul
         self.method = method
 
     def Q_S_estim(self, data):

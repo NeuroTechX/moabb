@@ -90,36 +90,6 @@ class FilterBank(BaseEstimator, TransformerMixin):
         )
 
 
-def schaefer_strimmer_cov(X):
-    """Schaefer-Strimmer covariance estimator
-    Shrinkage estimator using method from [1]
-    Note that the optimal :math:gamma is estimate by the authors' method.
-    :param X: Signal matrix, Nchannels X Nsamples
-    :returns: Schaefer-Strimmer shrinkage covariance matrix, Nchannels X Nchannels
-    References
-    ----------
-    [1] Schafer, J., and K. Strimmer. 2005. A shrinkage approach to
-    large-scale covariance estimation and implications for functional
-    genomics. Statist. Appl. Genet. Mol. Biol. 4:32.
-    http://doi.org/10.2202/1544-6115.1175
-    """
-    _, Ns = X.shape[0], X.shape[1]
-    C_scm = np.cov(X, ddof=0)
-    X_c = X - np.tile(X.mean(axis=1), [Ns, 1]).T
-
-    # Compute optimal gamma, the weigthing between SCM and srinkage estimator
-    R = Ns / (Ns - 1.0) * np.corrcoef(X)
-    var_R = (X_c ** 2).dot((X_c ** 2).T) - 2 * C_scm * X_c.dot(X_c.T) + Ns * C_scm ** 2
-    var_R = Ns / ((Ns - 1) ** 3 * np.outer(X.var(axis=1), X.var(axis=1))) * var_R
-    R -= np.diag(np.diag(R))
-    var_R -= np.diag(np.diag(var_R))
-    gamma = max(0, min(1, var_R.sum() / (R ** 2).sum()))
-
-    return (1.0 - gamma) * (Ns / (Ns - 1.0)) * C_scm + gamma * (
-        Ns / (Ns - 1.0)
-    ) * np.diag(np.diag(C_scm))
-
-
 def filterbank(data, sfreq, idx_fb, peaks):
     """
     Filter bank design for decomposing EEG data into sub-band components [1]
