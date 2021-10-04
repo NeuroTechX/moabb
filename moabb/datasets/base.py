@@ -62,8 +62,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
     ):
         try:
             _ = iter(subjects)
-        except TypeError:
-            raise (ValueError("subjects must be a iterable, like a list"))
+        except TypeError as te:
+            raise (ValueError("subjects must be a iterable, like a list")) from te
 
         self.subject_list = subjects
         self.n_sessions = sessions_per_subject

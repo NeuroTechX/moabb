@@ -181,6 +181,108 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
             self.regul = regul
         self.method = method
 
+    def Q_S_estim(self, data):
+        # Check if X is a single trial (test data) or not
+        if data.ndim == 2:
+            data = data[np.newaxis, ...]
+
+        # Get data shape
+        n_trials, n_channels, n_samples = data.shape
+
+        X = np.concatenate((data, data), axis=1)
+
+        # Initialize S matrix
+        S = np.zeros((n_channels, n_channels))
+
+        # Estimate covariance between every trial and the rest of the trials (excluding itself)
+        for trial_i in range(n_trials - 1):
+            x1 = np.squeeze(data[trial_i, :, :])
+
+            # Mean centering for the selected trial
+            x1 -= np.mean(x1, 0)
+
+            # Select a second trial that is different
+            for trial_j in range(trial_i + 1, n_trials):
+                x2 = np.squeeze(data[trial_j, :, :])
+
+                # Mean centering for the selected trial
+                x2 -= np.mean(x2, 0)
+
+                # # Put the two trials together
+                X = np.concatenate((x1, x2))
+
+                if n_channels == 1:
+                    X = X.reshape((n_channels, len(X)))
+
+                # Regularized covariance estimate
+                cov = Covariances(estimator=self.regul).fit_transform(X[np.newaxis, ...])
+                cov = np.squeeze(cov)
+
+                # Compute empirical covariance betwwen the two selected trials and sum it
+                if n_channels > 1:
+                    S = S + cov[:n_channels, n_channels:] + cov[n_channels:, :n_channels]
+
+                else:
+                    S = S + cov + cov
+
+        # Concatenate all the trials
+        UX = np.zeros((n_channels, n_samples * n_trials))
+
+        for trial_n in range(n_trials):
+            UX[:, trial_n * n_samples : (trial_n + 1) * n_samples] = data[trial_n, :, :]
+
+        # Mean centering
+        UX -= np.mean(UX, 1)[:, None]
+        cov = Covariances(estimator=self.regul).fit_transform(UX[np.newaxis, ...])
+        Q = np.squeeze(cov)
+
+        return S, Q
+
+    def Q_S_estim_riemann(self, data):
+        # Check if X is a single trial (test data) or not
+        if data.ndim == 2:
+            data = data[np.newaxis, ...]
+
+        # Get data shape
+        n_trials, n_channels, n_samples = data.shape
+
+        X = np.concatenate((data, data), axis=1)
+
+        # Concatenate all the trials
+        UX = np.zeros((n_channels, n_samples * n_trials))
+
+        for trial_n in range(n_trials):
+            UX[:, trial_n * n_samples : (trial_n + 1) * n_samples] = data[trial_n, :, :]
+
+        # Mean centering
+        UX -= np.mean(UX, 1)[:, None]
+
+        # Compute empirical variance of all data (to be bounded)
+        cov = Covariances(estimator=self.regul).fit_transform(UX[np.newaxis, ...])
+        Q = np.squeeze(cov)
+
+        cov = Covariances(estimator=self.regul).fit_transform(X)
+        S = cov[:, :n_channels, n_channels:] + cov[:, n_channels:, :n_channels]
+        try:
+            S = mean_covariance(S, metric="riemann")
+        except Exception:
+            S = (
+                cov[:, :n_channels, n_channels:]
+                + cov[:, n_channels:, :n_channels]
+                + 1e-10 * np.identity(n_channels)
+            )  # Add more regul
+            try:
+                S = mean_covariance(S, metric="riemann")
+            except Exception:
+                S = (
+                    cov[:, :n_channels, n_channels:]
+                    + cov[:, n_channels:, :n_channels]
+                    + 1e-8 * np.identity(n_channels)
+                )
+                S = mean_covariance(S, metric="riemann")
+
+        return S, Q
+
     def _compute_trca(self, data):
         """Computation of TRCA spatial filters.
 
@@ -198,105 +300,10 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
             a spatial filter.
         """
 
-        # Check if X is a single trial (test data) or not
-        if data.ndim == 2:
-            data = data[np.newaxis, ...]
-
-        # Get data shape
-        n_trials, n_channels, n_samples = data.shape
-
-        X = np.concatenate((data, data), axis=1)
-
         if self.method == "original":
-            # Initialize S matrix
-            S = np.zeros((n_channels, n_channels))
-
-            # Estimate covariance between every trial and the rest of the trials (excluding itself)
-            for trial_i in range(n_trials - 1):
-                x1 = np.squeeze(data[trial_i, :, :])
-
-                # Mean centering for the selected trial
-                x1 -= np.mean(x1, 0)
-
-                # Select a second trial that is different
-                for trial_j in range(trial_i + 1, n_trials):
-                    x2 = np.squeeze(data[trial_j, :, :])
-
-                    # Mean centering for the selected trial
-                    x2 -= np.mean(x2, 0)
-
-                    # # Put the two trials together
-                    X = np.concatenate((x1, x2))
-
-                    if n_channels == 1:
-                        X = X.reshape((n_channels, len(X)))
-
-                    # Regularized covariance estimate
-                    cov = Covariances(estimator=self.regul).fit_transform(
-                        X[np.newaxis, ...]
-                    )
-                    cov = np.squeeze(cov)
-
-                    # Compute empirical covariance betwwen the two selected trials and sum it
-                    if n_channels > 1:
-                        S = (
-                            S
-                            + cov[:n_channels, n_channels:]
-                            + cov[n_channels:, :n_channels]
-                        )
-
-                    else:
-                        S = S + cov + cov
-
-            # Concatenate all the trials
-            UX = np.zeros((n_channels, n_samples * n_trials))
-
-            for trial_n in range(n_trials):
-                UX[:, trial_n * n_samples : (trial_n + 1) * n_samples] = data[
-                    trial_n, :, :
-                ]
-
-            # Mean centering
-            UX -= np.mean(UX, 1)[:, None]
-            cov = Covariances(estimator=self.regul).fit_transform(UX[np.newaxis, ...])
-            Q = np.squeeze(cov)
-
+            S, Q = self.Q_S_estim(self, data)
         elif self.method == "riemann":
-            # Concatenate all the trials
-            UX = np.zeros((n_channels, n_samples * n_trials))
-
-            for trial_n in range(n_trials):
-                UX[:, trial_n * n_samples : (trial_n + 1) * n_samples] = data[
-                    trial_n, :, :
-                ]
-
-            # Mean centering
-            UX -= np.mean(UX, 1)[:, None]
-
-            # Compute empirical variance of all data (to be bounded)
-            cov = Covariances(estimator=self.regul).fit_transform(UX[np.newaxis, ...])
-            Q = np.squeeze(cov)
-
-            cov = Covariances(estimator=self.regul).fit_transform(X)
-            S = cov[:, :n_channels, n_channels:] + cov[:, n_channels:, :n_channels]
-            try:
-                S = mean_covariance(S, metric="riemann")
-            except:
-                S = (
-                    cov[:, :n_channels, n_channels:]
-                    + cov[:, n_channels:, :n_channels]
-                    + 1e-10 * np.identity(n_channels)
-                )  # Add more regul
-                try:
-                    S = mean_covariance(S, metric="riemann")
-                except:
-                    S = (
-                        cov[:, :n_channels, n_channels:]
-                        + cov[:, n_channels:, :n_channels]
-                        + 1e-8 * np.identity(n_channels)
-                    )
-                    S = mean_covariance(S, metric="riemann")
-
+            S, Q = self.Q_S_estim_riemann(self, data)
         else:
             raise ValueError("Method should be either 'original' or 'riemann'.")
 

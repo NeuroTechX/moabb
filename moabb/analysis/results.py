@@ -146,8 +146,8 @@ class Results:
                     dset["id"][-1, :] = np.asarray([str(d["subject"]), str(d["session"])])
                     try:
                         add_cols = [d[ac] for ac in self.additional_columns]
-                    except KeyError:
-                        raise ValueError(
+                    except KeyError as ke:
+                        raise ValueError from ke(
                             f"Additional columns: {self.additional_columns} "
                             f"were specified in the evaluation, but results"
                             f" contain only these keys: {d.keys()}."

@@ -181,6 +181,7 @@ def filterbank(data, sfreq, idx_fb, peaks):
     diff = max_freq - min_freq
     # Lowcut frequencies for the pass band (depends on the frequencies of SSVEP)
     # No more than 3dB loss in the passband
+
     passband = [min_freq - 2 + x * diff for x in range(7)]
 
     # At least 40db attenuation in the stopband
@@ -197,7 +198,7 @@ def filterbank(data, sfreq, idx_fb, peaks):
 
     N, Wn = scp.cheb1ord(Wp, Ws, 3, 40)  # Chebyshev type I filter order selection.
 
-    B, A = scp.cheby1(N, 0.5, Wn, btype="bandpass")  #  Chebyshev type I filter design
+    B, A = scp.cheby1(N, 0.5, Wn, btype="bandpass")  # Chebyshev type I filter design
 
     y = np.zeros(data.shape)
     if num_trials == 1:  # For testdata
