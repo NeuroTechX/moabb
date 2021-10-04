@@ -175,7 +175,7 @@ def filterbank(data, sfreq, idx_fb, peaks):
     max_freq = np.max(peaks)
 
     if max_freq < 40:
-        top = 90
+        top = 100
     else:
         top = 115
     # Check for Nyquist
@@ -198,7 +198,7 @@ def filterbank(data, sfreq, idx_fb, peaks):
         stopband = [2 + x * (diff - 2) if x < 3 else 2 + x * diff for x in range(7)]
 
     Wp = [passband[idx_fb] / sfreq, top / sfreq]
-    Ws = [stopband[idx_fb] / sfreq, (top + 5) / sfreq]
+    Ws = [stopband[idx_fb] / sfreq, (top + 7) / sfreq]
 
     N, Wn = scp.cheb1ord(Wp, Ws, 3, 40)  # Chebyshev type I filter order selection.
 
