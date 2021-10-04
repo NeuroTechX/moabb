@@ -1,14 +1,12 @@
 import numpy as np
 import scipy.linalg as linalg
-
+from pyriemann.estimation import Covariances
+from pyriemann.utils.mean import mean_covariance
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.cross_decomposition import CCA
 from sklearn.utils.validation import check_is_fitted
 
-from pyriemann.estimation import Covariances
-from pyriemann.utils.mean import mean_covariance
-
-from .utils import schaefer_strimmer_cov, filterbank 
+from .utils import filterbank, schaefer_strimmer_cov
 
 
 class SSVEP_CCA(BaseEstimator, ClassifierMixin):
@@ -85,7 +83,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
 
 class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
-    """Classifier based on the Task-Related Component Analysis method [1] for SSVEP. 
+    """Classifier based on the Task-Related Component Analysis method [1] for SSVEP.
 
     Parameters
     ----------
@@ -150,12 +148,12 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     ----------
 
     [1] - M. Nakanishi, Y. Wang, X. Chen, Y. -T. Wang, X. Gao, and T.-P. Jung,
-          "Enhancing detection of SSVEPs for a high-speed brain speller using 
+          "Enhancing detection of SSVEPs for a high-speed brain speller using
           task-related component analysis",
           IEEE Trans. Biomed. Eng, 65(1):104-112, 2018.
-    
+
     Code based on the Matlab implementation from authors of [1]
-    (https://github.com/mnakanishi/TRCA-SSVEP). 
+    (https://github.com/mnakanishi/TRCA-SSVEP).
 
     """
 
@@ -168,7 +166,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         is_ensemble=True,
         method="original",
         regul="scm",
-        ):
+    ):
         self.freqs = freqs
         self.peaks = np.array([float(f) for f in freqs.keys()])
         self.n_fbands = n_fbands
@@ -182,7 +180,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         else:
             self.regul = regul
         self.method = method
-        
 
     def _compute_trca(self, data):
         """Computation of TRCA spatial filters.
@@ -363,8 +360,8 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         return self
 
     def predict(self, X):
-        """Make predictions on unseen data. 
-        
+        """Make predictions on unseen data.
+
         The new data observation X will be filtered
         with weights previously extracted and compared to the templates to assess
         similarity with each of them and select a class based on the maximal value.
@@ -444,10 +441,9 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         return y_pred
 
-
     def predict_proba(self, X):
-        """Make predictions on unseen data with the asociated probabilities. 
-        
+        """Make predictions on unseen data with the asociated probabilities.
+
         The new data observation X will be filtered
         with weights previously extracted and compared to the templates to assess
         similarity with each of them and select a class based on the maximal value.

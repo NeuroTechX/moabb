@@ -1,9 +1,9 @@
 from copy import deepcopy
 
 import numpy as np
+import scipy.signal as scp
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import make_pipeline
-import scipy.signal as scp
 
 
 def create_pipeline_from_config(config):
@@ -89,15 +89,11 @@ class FilterBank(BaseEstimator, TransformerMixin):
             estimator_name, estimator_prms, self.flatten
         )
 
+
 def schaefer_strimmer_cov(X):
     """Schaefer-Strimmer covariance estimator
-    Shrinkage estimator using method from [1]:
-    .. math::
-            \hat{\Sigma} = (1 - \gamma)\Sigma_{scm} + \gamma T
-    where :math:`T` is the diagonal target matrix:
-    .. math::
-            T_{i,j} = \{ \Sigma_{scm}^{ii} \text{if} i = j, 0 \text{otherwise} \}
-    Note that the optimal :math:`\gamma` is estimate by the authors' method.
+    Shrinkage estimator using method from [1]
+    Note that the optimal :math:gamma is estimate by the authors' method.
     :param X: Signal matrix, Nchannels X Nsamples
     :returns: Schaefer-Strimmer shrinkage covariance matrix, Nchannels X Nchannels
     References
@@ -187,7 +183,6 @@ def filterbank(data, sfreq, idx_fb, peaks):
     # No more than 3dB loss in the passband
     passband = [min_freq - 2 + x * diff for x in range(7)]
 
-
     # At least 40db attenuation in the stopband
     if min_freq - 4 > 0:
         stopband = [
@@ -218,7 +213,8 @@ def filterbank(data, sfreq, idx_fb, peaks):
                     padtype="odd",
                     padlen=3 * (max(len(B), len(A)) - 1),
                 )
-            except:
+            except Exception as e:
+                print(e)
                 print(num_chans)
     else:
         for trial_i in range(num_trials):  # Filter each trial sequentially

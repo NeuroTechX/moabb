@@ -57,7 +57,7 @@ interval = dataset.interval
 #
 # We define the paradigms (SSVEP, SSSVEP_TRCA and FilterBankSSVEP) and use the dataset
 # SSVEPExo. The SSVEP paradigm applied a bandpass filter (10-25 Hz) on
-# the data, SSVEP_TRCA applied a bandpass filter (1-110 Hz) which correspond to almost 
+# the data, SSVEP_TRCA applied a bandpass filter (1-110 Hz) which correspond to almost
 # no filtering, while the FilterBankSSVEP paradigm uses as many bandpass filters as
 # there are stimulation frequencies (here 2). For each stimulation frequency
 # the EEG is filtered with a 1 Hz-wide bandpass filter centered on the
@@ -99,7 +99,9 @@ pipelines = {}
 pipelines["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
 
 pipelines_TRCA = {}
-pipelines_TRCA["TRCA"] = make_pipeline(SSVEP_TRCA(interval=interval, freqs=freqs, n_fbands=5))
+pipelines_TRCA["TRCA"] = make_pipeline(
+    SSVEP_TRCA(interval=interval, freqs=freqs, n_fbands=5)
+)
 
 ##############################################################################
 # Evaluation
