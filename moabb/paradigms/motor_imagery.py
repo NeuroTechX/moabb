@@ -284,7 +284,7 @@ class FilterBankMotorImagery(FilterBank):
         return utils.dataset_search(
             paradigm="imagery",
             events=self.events,
-            total_classes=self.n_classes,
+            # total_classes=self.n_classes,
             interval=interval,
             has_all_events=False,
         )
