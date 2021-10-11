@@ -205,7 +205,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 # Mean centering for the selected trial
                 x2 -= np.mean(x2, 0)
 
-                # # Put the two trials together
+                # Put the two trials together
                 X = np.concatenate((x1, x2))
 
                 if n_channels == 1:
