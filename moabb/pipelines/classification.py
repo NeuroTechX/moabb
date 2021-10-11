@@ -87,7 +87,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
     Parameters
     ----------
-
     sfreq : float
         Sampling frequency of the data to be analyzed.
 
@@ -115,7 +114,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         'riemann' variation is then usefull when lots of noisy training data are
         available.
 
-    regul : str
+    estimator: str
         For both methods, regularization to use for covariance matrices estimations.
         Consider 'schaefer', 'lwf', 'oas' or 'scm' for no regularization.
         In the original implementation from TRCA paper [1], no regularization
@@ -126,21 +125,21 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     Attributes
     ----------
 
-    fb_coefs : list of len (n_fb)
+    fb_coefs : list of len (n_fbands)
         Alpha coefficients for the fusion of the filterbank sub-bands.
 
-    classes_ : ndarray of shape (n_class,)
+    classes_ : ndarray of shape (n_classes,)
         Array with the class labels extracted at fit time.
 
-    n_class : int
+    n_classes: int
         Number of unique labels/classes.
 
-    templates_ : ndarray of shape (n_class, n_bands, n_channels, n_samples)
+    templates_ : ndarray of shape (n_classes, n_bands, n_channels, n_samples)
         Template data obtained by averaging all training trials for a given
         class. Each class templates is divided in n_fbands sub-bands extracted
         from the filterbank approach.
 
-    weights_ : ndarray of shape (n_fbands, n_class, n_channels)
+    weights_ : ndarray of shape (n_fbands, n_classes, n_channels)
         Weight coefficients for the different electrodes which are used
         as spatial filters for the data.
 
@@ -165,7 +164,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         downsample=1,
         is_ensemble=True,
         method="original",
-        regul="scm",
+        estimator="scm",
     ):
         self.freqs = freqs
         self.peaks = np.array([float(f) for f in freqs.keys()])
@@ -175,10 +174,10 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         self.slen = interval[1] - interval[0]
         self.is_ensemble = is_ensemble
         self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
-        self.regul = regul
+        self.estimator = estimator
         self.method = method
 
-    def Q_S_estim(self, data):
+    def _Q_S_estim(self, data):
         # Check if X is a single trial (test data) or not
         if data.ndim == 2:
             data = data[np.newaxis, ...]
@@ -212,7 +211,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                     X = X.reshape((n_channels, len(X)))
 
                 # Regularized covariance estimate
-                cov = Covariances(estimator=self.regul).fit_transform(X[np.newaxis, ...])
+                cov = Covariances(estimator=self.estimator).fit_transform(X[np.newaxis, ...])
                 cov = np.squeeze(cov)
 
                 # Compute empirical covariance betwwen the two selected trials and sum it
@@ -223,19 +222,19 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                     S = S + cov + cov
 
         # Concatenate all the trials
-        UX = np.zeros((n_channels, n_samples * n_trials))
+        UX = np.empty((n_channels, n_samples * n_trials))
 
         for trial_n in range(n_trials):
             UX[:, trial_n * n_samples : (trial_n + 1) * n_samples] = data[trial_n, :, :]
 
         # Mean centering
         UX -= np.mean(UX, 1)[:, None]
-        cov = Covariances(estimator=self.regul).fit_transform(UX[np.newaxis, ...])
+        cov = Covariances(estimator=self.estimator).fit_transform(UX[np.newaxis, ...])
         Q = np.squeeze(cov)
 
         return S, Q
 
-    def Q_S_estim_riemann(self, data):
+    def _Q_S_estim_riemann(self, data):
         # Check if X is a single trial (test data) or not
         if data.ndim == 2:
             data = data[np.newaxis, ...]
@@ -246,7 +245,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         X = np.concatenate((data, data), axis=1)
 
         # Concatenate all the trials
-        UX = np.zeros((n_channels, n_samples * n_trials))
+        UX = np.empty((n_channels, n_samples * n_trials))
 
         for trial_n in range(n_trials):
             UX[:, trial_n * n_samples : (trial_n + 1) * n_samples] = data[trial_n, :, :]
@@ -255,10 +254,10 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         UX -= np.mean(UX, 1)[:, None]
 
         # Compute empirical variance of all data (to be bounded)
-        cov = Covariances(estimator=self.regul).fit_transform(UX[np.newaxis, ...])
+        cov = Covariances(estimator=self.estimator).fit_transform(UX[np.newaxis, ...])
         Q = np.squeeze(cov)
 
-        cov = Covariances(estimator=self.regul).fit_transform(X)
+        cov = Covariances(estimator=self.estimator).fit_transform(X)
         S = cov[:, :n_channels, n_channels:] + cov[:, n_channels:, :n_channels]
         try:
             S = mean_covariance(S, metric="riemann")
@@ -298,9 +297,9 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         """
 
         if self.method == "original":
-            S, Q = self.Q_S_estim(self, data)
+            S, Q = self._Q_S_estim(self, data)
         elif self.method == "riemann":
-            S, Q = self.Q_S_estim_riemann(self, data)
+            S, Q = self._Q_S_estim_riemann(self, data)
         else:
             raise ValueError("Method should be either 'original' or 'riemann'.")
 
@@ -343,11 +342,11 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         self.sfreq = self.sfreq / self.downsample
 
         self.classes_ = np.unique(y)
-        self.n_class = len(self.classes_)
+        self.n_classes = len(self.classes_)
 
         # Initialize the final arrays
-        self.templates_ = np.zeros((self.n_class, self.n_fbands, n_channels, n_samples))
-        self.weights_ = np.zeros((self.n_fbands, self.n_class, n_channels))
+        self.templates_ = np.zeros((self.n_classes, self.n_fbands, n_channels, n_samples))
+        self.weights_ = np.zeros((self.n_fbands, self.n_classes, n_channels))
 
         for class_idx in self.classes_:
             cal_data = X[y == class_idx]  # Select data with a specific label
@@ -409,7 +408,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
             test_data = X[trial_n, :, :]
 
             # Initialize correlations array
-            corr_array = np.zeros((self.n_fbands, self.n_class))
+            corr_array = np.zeros((self.n_fbands, self.n_classes))
 
             # Filter the data in the corresponding band
             for band_n in range(self.n_fbands):
@@ -491,14 +490,14 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
             test_data = X[trial_n, :, :]
 
             # Initialize correlations array
-            corr_array = np.zeros((self.n_fbands, self.n_class))
+            corr_array = np.zeros((self.n_fbands, self.n_classes))
 
             # Filter the data in the corresponding band
             for band_n in range(self.n_fbands):
                 filter_data = filterbank(test_data, self.sfreq, band_n, self.peaks)
 
                 # Compute correlation with all the templates and bands
-                for class_idx in range(self.n_class):
+                for class_idx in range(self.n_classes):
                     # Get the corresponding template
                     template = np.squeeze(self.templates_[class_idx, band_n, :, :])
 
