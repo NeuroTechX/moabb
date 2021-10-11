@@ -65,7 +65,6 @@ class BaseDataset(metaclass=abc.ABCMeta):
         except TypeError:
             raise ValueError("subjects must be a iterable, like a list") from None
 
-
         self.subject_list = subjects
         self.n_sessions = sessions_per_subject
         self.event_id = events
