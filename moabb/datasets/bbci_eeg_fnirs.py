@@ -11,7 +11,7 @@ from mne import create_info
 from mne.channels import make_standard_montage
 from mne.datasets.utils import _get_path
 from mne.io import RawArray
-from mne.utils import _fetch_file
+from pooch import retrieve
 from scipy.io import loadmat
 
 from .base import BaseDataset
@@ -36,10 +36,11 @@ def eeg_data_path(base_path, subject, accept):
                             "You must accept licence term to download this dataset,"
                             "set accept=True when instanciating the dataset."
                         )
-                    _fetch_file(
+                    retrieve(
                         "{}/EEG/EEG_{:02d}-{:02d}.zip".format(SHIN_URL, low, high),
-                        op.join(base_path, "EEG.zip"),
-                        print_destination=False,
+                        None,
+                        fname="EEG.zip",
+                        path=base_path,
                     )
                 with z.ZipFile(op.join(base_path, "EEG.zip"), "r") as f:
                     f.extractall(op.join(base_path, "EEG"))
@@ -59,10 +60,11 @@ def fnirs_data_path(path, subject, accept):
                     "You must accept licence term to download this dataset,"
                     "set accept=True when instanciating the dataset."
                 )
-            _fetch_file(
+            retrieve(
                 "http://doc.ml.tu-berlin.de/hBCI/NIRS/NIRS_01-29.zip",
-                op.join(path, "fNIRS.zip"),
-                print_destination=False,
+                None,
+                fname="fNIRS.zip",
+                path=path,
             )
         if not op.isdir(op.join(path, "NIRS")):
             os.makedirs(op.join(path, "NIRS"))

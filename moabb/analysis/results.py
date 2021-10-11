@@ -151,7 +151,7 @@ class Results:
                             f"Additional columns: {self.additional_columns} "
                             f"were specified in the evaluation, but results"
                             f" contain only these keys: {d.keys()}."
-                        )
+                        ) from None
                     dset["data"][-1, :] = np.asarray(
                         [d["score"], d["time"], d["n_samples"], *add_cols]
                     )

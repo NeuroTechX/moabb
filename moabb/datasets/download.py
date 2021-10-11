@@ -9,7 +9,7 @@ import os.path as osp
 import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
-from mne.utils import _fetch_file, _url_to_local_path, verbose
+from mne.utils import _url_to_local_path, verbose
 from pooch import file_hash, retrieve
 from requests.exceptions import HTTPError
 
@@ -97,7 +97,7 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
             os.remove(destination)
         if not osp.isdir(osp.dirname(destination)):
             os.makedirs(osp.dirname(destination))
-        _fetch_file(url, destination, print_destination=False)
+        retrieve(url, None, path=destination)
     return destination
 
 
