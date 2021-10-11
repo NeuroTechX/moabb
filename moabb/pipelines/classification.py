@@ -111,8 +111,12 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         'riemann' variation computes geodesic mean instead. This geodesic
         mean is more robust to outlier but negatively impacted by ill-conditioned
         matrices (when only few samples are availble for training for instance).
-        'riemann' variation is then usefull when lots of noisy training data are
-        available.
+        If the geodesic mean can't be estimated, please consider trying 'logeuclid'.
+        It computes log-euclidean mean instead of geodesic which is more robust
+        computationally.
+        'riemann' and 'logeuclid' variations are usefull when lots of noisy 
+        training data are available. With few training data 'original' is more
+        powerfull in general. 
 
     estimator: str
         For both methods, regularization to use for covariance matrices estimations.
@@ -120,6 +124,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         In the original implementation from TRCA paper [1], no regularization
         is used. So method='original' and regul='scm' is similar to original
         implementation.
+
 
 
     Attributes
@@ -259,24 +264,9 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         cov = Covariances(estimator=self.estimator).fit_transform(X)
         S = cov[:, :n_channels, n_channels:] + cov[:, n_channels:, :n_channels]
-        try:
-            S = mean_covariance(S, metric="riemann")
-        except Exception:
-            S = (
-                cov[:, :n_channels, n_channels:]
-                + cov[:, n_channels:, :n_channels]
-                + 1e-10 * np.identity(n_channels)
-            )  # Add more regul
-            try:
-                S = mean_covariance(S, metric="riemann")
-            except Exception:
-                S = (
-                    cov[:, :n_channels, n_channels:]
-                    + cov[:, n_channels:, :n_channels]
-                    + 1e-8 * np.identity(n_channels)
-                )
-                S = mean_covariance(S, metric="riemann")
 
+        S = mean_covariance(S, metric=self.method)
+      
         return S, Q
 
     def _compute_trca(self, data):
@@ -300,8 +290,10 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
             S, Q = self._Q_S_estim(self, data)
         elif self.method == "riemann":
             S, Q = self._Q_S_estim_riemann(self, data)
+        elif self.method == "logeuclid":
+            S, Q = self._Q_S_estim_riemann(self, data)
         else:
-            raise ValueError("Method should be either 'original' or 'riemann'.")
+            raise ValueError("Method should be either 'original', 'riemann' or 'logeuclid'.")
 
         # Compute eigenvalues and vectors
         lambdas, W = linalg.eig(S, Q, left=True, right=False)
