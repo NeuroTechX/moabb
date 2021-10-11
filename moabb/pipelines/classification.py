@@ -114,9 +114,9 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         If the geodesic mean can't be estimated, please consider trying 'logeuclid'.
         It computes log-euclidean mean instead of geodesic which is more robust
         computationally.
-        'riemann' and 'logeuclid' variations are usefull when lots of noisy 
+        'riemann' and 'logeuclid' variations are usefull when lots of noisy
         training data are available. With few training data 'original' is more
-        powerfull in general. 
+        powerfull in general.
 
     estimator: str
         For both methods, regularization to use for covariance matrices estimations.
@@ -216,7 +216,9 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                     X = X.reshape((n_channels, len(X)))
 
                 # Regularized covariance estimate
-                cov = Covariances(estimator=self.estimator).fit_transform(X[np.newaxis, ...])
+                cov = Covariances(estimator=self.estimator).fit_transform(
+                    X[np.newaxis, ...]
+                )
                 cov = np.squeeze(cov)
 
                 # Compute empirical covariance betwwen the two selected trials and sum it
@@ -266,7 +268,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         S = cov[:, :n_channels, n_channels:] + cov[:, n_channels:, :n_channels]
 
         S = mean_covariance(S, metric=self.method)
-      
+
         return S, Q
 
     def _compute_trca(self, data):
@@ -293,7 +295,9 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         elif self.method == "logeuclid":
             S, Q = self._Q_S_estim_riemann(self, data)
         else:
-            raise ValueError("Method should be either 'original', 'riemann' or 'logeuclid'.")
+            raise ValueError(
+                "Method should be either 'original', 'riemann' or 'logeuclid'."
+            )
 
         # Compute eigenvalues and vectors
         lambdas, W = linalg.eig(S, Q, left=True, right=False)
