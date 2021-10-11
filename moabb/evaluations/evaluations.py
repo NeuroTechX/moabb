@@ -327,7 +327,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                         cvclf.fit(X[train], y[train])
                         score = scorer(cvclf, X[test], y[test])
                     else:
-                        score = _fit_and_score(
+                        result = _fit_and_score(
                             clone(clf),
                             X,
                             y,
@@ -338,7 +338,8 @@ class CrossSessionEvaluation(BaseEvaluation):
                             parameters=None,
                             fit_params=None,
                             error_score=self.error_score,
-                        )[0]
+                        )
+                        score = result["test_scores"]
                     duration = time() - t_start
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
