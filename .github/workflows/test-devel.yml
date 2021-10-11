@@ -14,7 +14,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-18.04, windows-latest, macOS-latest]
-        python-version: ["3.6"]
+        python-version: ["3.7"]
     defaults:
       run:
         shell: bash
@@ -25,8 +25,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-
-      - uses: pre-commit/action@v2.0.0
 
       - name: Install Poetry
         uses: snok/install-poetry@v1.1.6
@@ -70,3 +68,21 @@ jobs:
           verbose: true
           directory: /home/runner/work/moabb/moabb
           files: ./.coverage
+
+  lint:
+    name: lint ${{ matrix.os }}, py-${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-18.04]
+        python-version: ["3.7"]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - uses: pre-commit/action@v2.0.0
