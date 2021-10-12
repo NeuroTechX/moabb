@@ -90,7 +90,7 @@ class FilterBank(BaseEstimator, TransformerMixin):
         )
 
 
-def filterbank(data, sfreq, idx_fb, peaks):
+def filterbank(X, sfreq, idx_fb, peaks):
     """
     Filter bank design for decomposing EEG data into sub-band components [1]_
 
