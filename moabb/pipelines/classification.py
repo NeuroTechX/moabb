@@ -270,7 +270,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         return S, Q
 
-    def _compute_trca(self, data):
+    def _compute_trca(self, X):
         """Computation of TRCA spatial filters.
 
         Parameters
@@ -343,7 +343,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
             for band_n in range(self.n_fbands):
                 # Filter the data and compute TRCA
                 X_filter = filterbank(X_cal, self.sfreq, band_n, self.peaks)
-                w_best, _ = self._compute_trca(filter_data)
+                w_best, _ = self._compute_trca(X_filter)
 
                 # Get template by averaging trials and take the best filter for this band
                 self.templates_[class_idx, band_n, :, :] = np.mean(X_filter, axis=0)
