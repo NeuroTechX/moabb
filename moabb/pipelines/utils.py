@@ -92,12 +92,11 @@ class FilterBank(BaseEstimator, TransformerMixin):
 
 def filterbank(data, sfreq, idx_fb, peaks):
     """
-    Filter bank design for decomposing EEG data into sub-band components [1]
+    Filter bank design for decomposing EEG data into sub-band components [1]_
 
     Parameters
     ----------
-
-    data: np.array, shape (trials, channels, samples) or (channels, samples)
+    X: ndarray of shape (n_trials, n_channels, n_samples) or (n_channels, n_samples)
         EEG data to be processed
 
     sfreq: int
@@ -111,28 +110,27 @@ def filterbank(data, sfreq, idx_fb, peaks):
 
     Returns
     -------
-
-    y: np.array, shape (trials, channels, samples)
+    y: ndarray of shape (n_trials, n_channels, n_samples)
         Sub-band components decomposed by a filter bank
 
     Reference:
-      [1] M. Nakanishi, Y. Wang, X. Chen, Y. -T. Wang, X. Gao, and T.-P. Jung,
+      .. [1] M. Nakanishi, Y. Wang, X. Chen, Y. -T. Wang, X. Gao, and T.-P. Jung,
           "Enhancing detection of SSVEPs for a high-speed brain speller using
            task-related component analysis",
           IEEE Trans. Biomed. Eng, 65(1):104-112, 2018.
 
-    Code based on the Matlab implementation from authors of [1]
+    Code based on the Matlab implementation from authors of [1]_
     (https://github.com/mnakanishi/TRCA-SSVEP).
     """
 
     # Calibration data comes in batches of trials
-    if data.ndim == 3:
-        num_chans = data.shape[1]
-        num_trials = data.shape[0]
+    if X.ndim == 3:
+        num_chans = X.shape[1]
+        num_trials = X.shape[0]
 
     # Testdata come with only one trial at the time
-    elif data.ndim == 2:
-        num_chans = data.shape[0]
+    elif X.ndim == 2:
+        num_chans = X.shape[0]
         num_trials = 1
 
     sfreq = sfreq / 2
@@ -170,7 +168,7 @@ def filterbank(data, sfreq, idx_fb, peaks):
 
     B, A = scp.cheby1(N, 0.5, Wn, btype="bandpass")  # Chebyshev type I filter design
 
-    y = np.zeros(data.shape)
+    y = np.zeros(X.shape)
     if num_trials == 1:  # For testdata
         for ch_i in range(num_chans):
             try:
@@ -179,7 +177,7 @@ def filterbank(data, sfreq, idx_fb, peaks):
                 y[ch_i, :] = scp.filtfilt(
                     B,
                     A,
-                    data[ch_i, :],
+                    X[ch_i, :],
                     axis=0,
                     padtype="odd",
                     padlen=3 * (max(len(B), len(A)) - 1),
@@ -193,7 +191,7 @@ def filterbank(data, sfreq, idx_fb, peaks):
                 y[trial_i, ch_i, :] = scp.filtfilt(
                     B,
                     A,
-                    data[trial_i, ch_i, :],
+                    X[trial_i, ch_i, :],
                     axis=0,
                     padtype="odd",
                     padlen=3 * (max(len(B), len(A)) - 1),
