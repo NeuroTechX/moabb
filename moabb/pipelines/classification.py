@@ -402,14 +402,14 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 X_filter = filterbank(X_test, self.sfreq, band_n, self.peaks)
 
                 # Compute correlation with all the templates and bands
-                for class_idx in range(self.n_class):
+                for class_idx in range(self.n_classes):
                     # Get the corresponding template
                     template = np.squeeze(self.templates_[class_idx, band_n, :, :])
 
                     if self.is_ensemble:
                         w = np.squeeze(
                             self.weights_[band_n, :, :]
-                        ).T  # (n_class, n_channel)
+                        ).T  # (n_classes, n_channel)
                     else:
                         w = np.squeeze(
                             self.weights_[band_n, class_idx, :]
