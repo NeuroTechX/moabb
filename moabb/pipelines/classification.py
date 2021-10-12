@@ -83,7 +83,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
 
 class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
-    """Classifier based on the Task-Related Component Analysis method [1] for SSVEP.
+    """Classifier based on the Task-Related Component Analysis method [1]_ for SSVEP.
 
     Parameters
     ----------
@@ -100,28 +100,28 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     downsample: int, default=1
         Factor by which downsample the data. A downsample value of N will result
         on a sampling frequency of (sfreq // N) by taking one sample every N of
-        the original data. In the original TRCA paper [1] data are at 250Hz.
+        the original data. In the original TRCA paper [1]_ data are at 250Hz.
 
     is_ensemble: bool, default=False
         If True, predict on new data using the Ensemble-TRCA method described
-        in [1].
+        in [1]_.
 
     method: str, default='original'
-        'original' computes euclidean mean for S as in the original paper [1].
+        'original' computes euclidean mean for S as in the original paper [1]_.
         'riemann' variation computes geodesic mean instead. This geodesic
         mean is more robust to outlier but negatively impacted by ill-conditioned
-        matrices (when only few samples are availble for training for instance).
-        If the geodesic mean can't be estimated, please consider trying 'logeuclid'.
-        It computes log-euclidean mean instead of geodesic which is more robust
+        matrices (when only few samples are available for training for instance).
+        If the geometric mean can't be estimated, please consider trying 'logeuclid'.
+        It computes log-euclidean mean instead of the affine-invariant one and is more robust
         computationally.
-        'riemann' and 'logeuclid' variations are usefull when lots of noisy
+        'riemann' and 'logeuclid' variations are useful when lots of noisy
         training data are available. With few training data 'original' is more
-        powerfull in general.
+        appropriate.
 
     estimator: str
         For both methods, regularization to use for covariance matrices estimations.
         Consider 'schaefer', 'lwf', 'oas' or 'scm' for no regularization.
-        In the original implementation from TRCA paper [1], no regularization
+        In the original implementation from TRCA paper [1]_, no regularization
         is used. So method='original' and regul='scm' is similar to original
         implementation.
 
@@ -129,7 +129,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
     Attributes
     ----------
-
     fb_coefs : list of len (n_fbands)
         Alpha coefficients for the fusion of the filterbank sub-bands.
 
@@ -151,12 +150,12 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     Reference
     ----------
 
-    [1] - M. Nakanishi, Y. Wang, X. Chen, Y. -T. Wang, X. Gao, and T.-P. Jung,
+    .. [1] M. Nakanishi, Y. Wang, X. Chen, Y. -T. Wang, X. Gao, and T.-P. Jung,
           "Enhancing detection of SSVEPs for a high-speed brain speller using
           task-related component analysis",
           IEEE Trans. Biomed. Eng, 65(1):104-112, 2018.
 
-    Code based on the Matlab implementation from authors of [1]
+    Code based on the Matlab implementation from authors of [1]_
     (https://github.com/mnakanishi/TRCA-SSVEP).
 
     """
@@ -276,24 +275,20 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         Parameters
         ----------
-
-        data: np.array, shape (trials, channels, samples)
+        X: ndarray of shape (n_trials, n_channels, n_samples)
             Training data
 
         Returns
         -------
-
-        W: np.array, shape (channels)
+        W: ndarray of shape (n_channels)
             Weight coefficients for electrodes which can be used as
             a spatial filter.
         """
 
         if self.method == "original":
-            S, Q = self._Q_S_estim(self, data)
-        elif self.method == "riemann":
-            S, Q = self._Q_S_estim_riemann(self, data)
-        elif self.method == "logeuclid":
-            S, Q = self._Q_S_estim_riemann(self, data)
+            S, Q = self._Q_S_estim(X)
+        elif self.method == "riemann" or self.method == "logeuclid":
+            S, Q = self._Q_S_estim_riemann(X)
         else:
             raise ValueError(
                 "Method should be either 'original', 'riemann' or 'logeuclid'."
@@ -313,7 +308,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         Parameters
         ----------
-
         X : ndarray of shape (n_trials, n_channels, n_samples)
             Training data. Trials are grouped by class, divided in n_fbands bands by
             the filterbank approach and then used to calculate weight vectors and
@@ -324,7 +318,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         Returns
         -------
-
         self: CCA object
             Instance of classifier.
         """
@@ -345,15 +338,15 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         self.weights_ = np.zeros((self.n_fbands, self.n_classes, n_channels))
 
         for class_idx in self.classes_:
-            cal_data = X[y == class_idx]  # Select data with a specific label
+            X_cal = X[y == class_idx]  # Select data with a specific label
             # Filterbank approach
             for band_n in range(self.n_fbands):
                 # Filter the data and compute TRCA
-                filter_data = filterbank(cal_data, self.sfreq, band_n, self.peaks)
+                X_filter = filterbank(X_cal, self.sfreq, band_n, self.peaks)
                 w_best, _ = self._compute_trca(filter_data)
 
                 # Get template by averaging trials and take the best filter for this band
-                self.templates_[class_idx, band_n, :, :] = np.mean(filter_data, axis=0)
+                self.templates_[class_idx, band_n, :, :] = np.mean(X_filter, axis=0)
                 self.weights_[band_n, class_idx, :] = w_best
 
         return self
@@ -367,7 +360,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         Parameters
         ----------
-
         X : ndarray of shape (n_trials, n_channels, n_samples)
             Testing data. This will be divided in self.n_fbands using the filter- bank approach,
             then it will be transformed by the different spatial filters and compared to the
@@ -378,7 +370,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         Returns
         -------
-
         y_pred : ndarray of shape (n_trials,)
             Prediction vector in respect to X.
         """
@@ -401,14 +392,14 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         for trial_n in range(n_trials):
             # Pick trial
-            test_data = X[trial_n, :, :]
+            X_test = X[trial_n, :, :]
 
             # Initialize correlations array
             corr_array = np.zeros((self.n_fbands, self.n_classes))
 
             # Filter the data in the corresponding band
             for band_n in range(self.n_fbands):
-                filter_data = filterbank(test_data, self.sfreq, band_n, self.peaks)
+                X_filter = filterbank(X_test, self.sfreq, band_n, self.peaks)
 
                 # Compute correlation with all the templates and bands
                 for class_idx in range(self.n_class):
@@ -426,7 +417,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
                     # Compute 2D correlation of spatially filtered testdata with ref
                     r = np.corrcoef(
-                        np.dot(filter_data.T, w).flatten(),
+                        np.dot(X_filter.T, w).flatten(),
                         np.dot(template.T, w).flatten(),
                     )
                     corr_array[band_n, class_idx] = r[0, 1]
@@ -449,9 +440,8 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         Parameters
         ----------
-
         X : ndarray of shape (n_trials, n_channels, n_samples)
-            Testing data. This will be divided in self.n_fbands using the filter- bank approach,
+            Testing data. This will be divided in self.n_fbands using the filter-bank approach,
             then it will be transformed by the different spatial filters and compared to the
             previously fit templates according to the selected method for analysis (ensemble or
             not). Finally, correlation scores for all sub-bands of each class will be combined,
@@ -460,7 +450,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         Returns
         -------
-
         y_pred : ndarray of shape (n_trials,)
             Prediction vector in respect to X.
         """
@@ -483,14 +472,14 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         for trial_n in range(n_trials):
             # Pick trial
-            test_data = X[trial_n, :, :]
+            X_test = X[trial_n, :, :]
 
             # Initialize correlations array
             corr_array = np.zeros((self.n_fbands, self.n_classes))
 
             # Filter the data in the corresponding band
             for band_n in range(self.n_fbands):
-                filter_data = filterbank(test_data, self.sfreq, band_n, self.peaks)
+                X_filter = filterbank(X_test, self.sfreq, band_n, self.peaks)
 
                 # Compute correlation with all the templates and bands
                 for class_idx in range(self.n_classes):
@@ -508,7 +497,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
                     # Compute 2D correlation of spatially filtered testdata with ref
                     r = np.corrcoef(
-                        np.dot(filter_data.T, w).flatten(),
+                        np.dot(X_filter.T, w).flatten(),
                         np.dot(template.T, w).flatten(),
                     )
                     corr_array[band_n, class_idx] = r[0, 1]
