@@ -28,7 +28,8 @@ Bugs
 API changes
 ~~~~~~~~~~~
 
-- None
+- Minimum supported Python version is now 3.7
+- We now use scikit-learn >= 1.0
 
 
 Version - 0.4.3 (Stable - PyPi)
