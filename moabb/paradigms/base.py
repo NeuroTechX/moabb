@@ -91,7 +91,7 @@ class BaseParadigm(metaclass=ABCMeta):
         X : Union[np.ndarray, mne.Epochs]
             the data that will be used as features for the model
             Note: if return_epochs=True,  this is mne.Epochs
-                  if return_epochs=False, this is np.ndarray
+            if return_epochs=False, this is np.ndarray
         labels: np.ndarray
             the labels for training / evaluating the model
         metadata: pd.DataFrame
@@ -220,7 +220,7 @@ class BaseParadigm(metaclass=ABCMeta):
         X : Union[np.ndarray, mne.Epochs]
             the data that will be used as features for the model
             Note: if return_epochs=True,  this is mne.Epochs
-                  if return_epochs=False, this is np.ndarray
+            if return_epochs=False, this is np.ndarray
         labels: np.ndarray
             the labels for training / evaluating the model
         metadata: pd.DataFrame
