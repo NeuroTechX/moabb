@@ -35,12 +35,12 @@ API changes
 
 
 Version - 0.4.3 (Stable - PyPi)
----------------
+--------------------------------
 
 Enhancements
 ~~~~~~~~~~~~
 
-- Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetchel`_)
+- Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
@@ -110,7 +110,7 @@ Enhancements
 - Broadening subject_list type for :func:`moabb.datasets.BaseDataset` (:gh:`198` by `Sylvain Chevallier`_)
 - Adding this what's new (:gh:`200` by `Sylvain Chevallier`_)
 - Improving cache usage and save computation time in CI (:gh:`200` by `Sylvain Chevallier`_)
-- Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetchel`_)
+- Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetschel`_)
 
 
 Bugs
