@@ -91,7 +91,7 @@ jobs:
           path: moabb-ghio
           token: ${{ secrets.MOABB_GHIO }}
 
-      - name: Deploy on moabb.github.io
+      - name: Deploy on moabb.neurotechx.com
         run: |
           git config --global user.email "ci@neurotechx.com"
           git config --global user.name "Github Actions"
@@ -101,6 +101,45 @@ jobs:
           git add -A
           git commit -m "GH Actions update of docs ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)"
           git push origin master
+
+  deploy_gh_pages:
+    needs: build_docs
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create local data folder
+        run: |
+          mkdir ~/mne_data
+
+      - name: Cache datasets and docs
+        id: cached-dataset-docs
+        uses: actions/cache@v2
+        with:
+          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
+          path: |
+            ~/mne_data
+            docs/build
+
+      - name: Checkout gh pages
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+          path: moabb-ghpages
+
+      - name: Deploy on gh-pages
+        run: |
+          cd ~/work/moabb/moabb/moabb-ghpages
+          rm -Rf docs
+          cp -a ~/work/moabb/moabb/docs/build/html ./docs
+          git add -A
+          git commit -m "GH Actions update of GH pages ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)"
+          git push origin gh-pages
 
       # Previous test with moabb GH pages, official docs point to moabb.github.io
       ###########################################################################
