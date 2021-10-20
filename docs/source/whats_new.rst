@@ -13,6 +13,25 @@ What's new
 
 
 Develop branch
+----------------
+
+Enhancements
+~~~~~~~~~~~~
+
+- None
+
+Bugs
+~~~~
+
+- None
+
+API changes
+~~~~~~~~~~~
+
+- None
+
+
+Version - 0.4.4  (Stable - PyPi)
 ---------------
 
 Enhancements
@@ -34,8 +53,8 @@ API changes
 - MOABB now depends on scikit-learn >= 1.0
 
 
-Version - 0.4.3 (Stable - PyPi)
---------------------------------
+Version - 0.4.3
+----------------
 
 Enhancements
 ~~~~~~~~~~~~
