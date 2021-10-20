@@ -5,6 +5,8 @@ on:
     branches: [master, develop]
   pull_request:
     branches: [master, develop]
+    paths:
+      - "docs/**"
 
 jobs:
   build_docs:
@@ -103,6 +105,7 @@ jobs:
           git push origin master
 
   deploy_gh_pages:
+    if: ${{ github.ref == 'refs/heads/develop' }}
     needs: build_docs
     runs-on: ${{ matrix.os }}
     strategy:
