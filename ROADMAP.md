@@ -15,7 +15,6 @@ are reported in the
 
 - Backend features for dev: pre-commit using black, isort and prettier, with an updating
   CONTRIBUTING section.
-- Droping requirement for Python 3.6, support for Python 3.7 and 3.8
 - Including support for more datasets
 - Add more classification pipelines
 

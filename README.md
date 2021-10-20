@@ -4,7 +4,7 @@
   <img alt="banner" src="/images/M.png/">
 </p>
 <p align=center>
-  Build a comprehensive benchmark of popular Brain-Computer Interface ([BCI](https://en.wikipedia.org/wiki/Brain%E2%80%93computer_interface)) algorithms applied on an extensive list of freely available EEG datasets.
+  Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
 </p>
 
 ## Disclaimer
@@ -31,7 +31,7 @@ one of the sections below, or just scroll down to find out more.
 - [Installation](#installation)
 - [Running](#running)
 - [Supported datasets](#supported-datasets)
-- [Who are we?](#who-are-we)
+- [Who are we? n](#who-are-we)
 - [Get in touch](#contact-us)
 - [Documentation](#documentation)
 - [Architecture and main concepts](#architecture-and-main-concepts)
