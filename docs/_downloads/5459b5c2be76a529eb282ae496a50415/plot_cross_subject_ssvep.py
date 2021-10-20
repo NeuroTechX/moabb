@@ -28,7 +28,7 @@ import moabb
 from moabb.datasets import SSVEPExo
 from moabb.evaluations import CrossSubjectEvaluation
 from moabb.paradigms import SSVEP, FilterBankSSVEP
-from moabb.pipelines import SSVEP_CCA, ExtendedSSVEPSignal
+from moabb.pipelines import SSVEP_CCA, SSVEP_TRCA, ExtendedSSVEPSignal
 
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -55,15 +55,17 @@ interval = dataset.interval
 # Choose paradigm
 # ---------------
 #
-# We define the paradigms (SSVEP and FilterBankSSVEP) and use the dataset
+# We define the paradigms (SSVEP, SSSVEP_TRCA and FilterBankSSVEP) and use the dataset
 # SSVEPExo. The SSVEP paradigm applied a bandpass filter (10-25 Hz) on
-# the data while the FilterBankSSVEP paradigm uses as many bandpass filters as
+# the data, SSVEP_TRCA applied a bandpass filter (1-110 Hz) which correspond to almost
+# no filtering, while the FilterBankSSVEP paradigm uses as many bandpass filters as
 # there are stimulation frequencies (here 2). For each stimulation frequency
 # the EEG is filtered with a 1 Hz-wide bandpass filter centered on the
 # frequency. This results in ``n_classes`` copies of the signal, filtered for each
 # class, as used in filterbank motor imagery paradigms.
 
 paradigm = SSVEP(fmin=10, fmax=25, n_classes=3)
+paradigm_TRCA = SSVEP(fmin=1, fmax=110, n_classes=3)
 paradigm_fb = FilterBankSSVEP(filters=None, n_classes=3)
 
 ###############################################################################
@@ -83,6 +85,7 @@ freqs = paradigm.used_events(dataset)
 # covariance matrices from the signal filtered around the considered
 # frequency and applying a logistic regression in the tangent plane.
 # The second pipeline relies on the above defined CCA classifier.
+# The third pipeline relies on TRCA algorithm.
 
 pipelines_fb = {}
 pipelines_fb["RG+LogReg"] = make_pipeline(
@@ -94,6 +97,11 @@ pipelines_fb["RG+LogReg"] = make_pipeline(
 
 pipelines = {}
 pipelines["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
+
+pipelines_TRCA = {}
+pipelines_TRCA["TRCA"] = make_pipeline(
+    SSVEP_TRCA(interval=interval, freqs=freqs, n_fbands=5)
+)
 
 ##############################################################################
 # Evaluation
@@ -123,9 +131,17 @@ evaluation_fb = CrossSubjectEvaluation(
 results_fb = evaluation_fb.process(pipelines_fb)
 
 ###############################################################################
-# After processing the two, we simply concatenate the results.
+# TRCA processing also relies on filter bank that is automatically designed.
 
-results = pd.concat([results, results_fb])
+evaluation_TRCA = CrossSubjectEvaluation(
+    paradigm=paradigm_TRCA, datasets=dataset, overwrite=overwrite
+)
+results_TRCA = evaluation_TRCA.process(pipelines_TRCA)
+
+###############################################################################
+# After processing the three, we simply concatenate the results.
+
+results = pd.concat([results, results_fb, results_TRCA])
 
 ##############################################################################
 # Plot Results

@@ -58,6 +58,37 @@ classify these signals.
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'rocket' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'rocket_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'mako' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'mako_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'icefire' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'icefire_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'vlag' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'vlag_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'flare' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'flare_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'crest' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'crest_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+
 
 
 
@@ -214,7 +245,7 @@ paradigm (note that BNCI2014001 is in it)
 
  .. code-block:: none
 
-    [<moabb.datasets.bnci.BNCI2014001 object at 0x7fb3982905c0>, <moabb.datasets.bnci.BNCI2014004 object at 0x7fb38e10ba20>, <moabb.datasets.gigadb.Cho2017 object at 0x7fb3982b6828>, <moabb.datasets.Lee2019.Lee2019_MI object at 0x7fb398290470>, <moabb.datasets.mpi_mi.MunichMI object at 0x7fb38e10bfd0>, <moabb.datasets.physionet_mi.PhysionetMI object at 0x7fb38e10bbe0>, <moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fb38e10bda0>, <moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fb38e10bf60>, <moabb.datasets.Weibo2014.Weibo2014 object at 0x7fb38e10beb8>, <moabb.datasets.Zhou2016.Zhou2016 object at 0x7fb38e10b8d0>]
+    [<moabb.datasets.bnci.BNCI2014001 object at 0x7f16bc46e340>, <moabb.datasets.bnci.BNCI2014004 object at 0x7f16b9f17040>, <moabb.datasets.gigadb.Cho2017 object at 0x7f16b9f17100>, <moabb.datasets.Lee2019.Lee2019_MI object at 0x7f16b9f17430>, <moabb.datasets.mpi_mi.MunichMI object at 0x7f16bc46ef40>, <moabb.datasets.physionet_mi.PhysionetMI object at 0x7f16b9f17f10>, <moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f16b9f17fa0>, <moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f16b9f172b0>, <moabb.datasets.Weibo2014.Weibo2014 object at 0x7f16b9f17fd0>, <moabb.datasets.Zhou2016.Zhou2016 object at 0x7f16b9f17490>]
 
 
 
@@ -391,7 +422,7 @@ strings for its labeling. This is why we create the field 'subj'.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  23.177 seconds)
+   **Total running time of the script:** ( 0 minutes  21.574 seconds)
 
 
 .. _sphx_glr_download_auto_tutorials_tutorial_1_simple_example_motor_imagery.py:

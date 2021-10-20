@@ -59,6 +59,37 @@ session.
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'rocket' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'rocket_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'mako' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'mako_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'icefire' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'icefire_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'vlag' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'vlag_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'flare' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'flare_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'crest' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'crest_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+
 
 
 
@@ -194,11 +225,11 @@ each subject / session of the dataset, and for each pipeline.
  .. code-block:: none
 
           score      time  samples  ... n_sessions       dataset  pipeline
-    0  0.777778  0.073507     36.0  ...          5  SSVEP MAMEM3       CCA
-    1  0.666667  0.053459     36.0  ...          5  SSVEP MAMEM3       CCA
-    2  1.000000  0.053621     36.0  ...          5  SSVEP MAMEM3       CCA
-    3  0.333333  0.053190     36.0  ...          5  SSVEP MAMEM3       CCA
-    4  0.666667  0.053349     36.0  ...          5  SSVEP MAMEM3       CCA
+    0  0.777778  0.050892     36.0  ...          5  SSVEP MAMEM3       CCA
+    1  0.666667  0.045181     36.0  ...          5  SSVEP MAMEM3       CCA
+    2  1.000000  0.044995     36.0  ...          5  SSVEP MAMEM3       CCA
+    3  0.333333  0.046815     36.0  ...          5  SSVEP MAMEM3       CCA
+    4  0.666667  0.043816     36.0  ...          5  SSVEP MAMEM3       CCA
 
     [5 rows x 9 columns]
 
@@ -235,7 +266,7 @@ Here we plot the results, indicating the score for each session and subject
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  28.328 seconds)
+   **Total running time of the script:** ( 0 minutes  39.121 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_cross_session_ssvep.py:

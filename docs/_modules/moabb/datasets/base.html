@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moabb.datasets.base &#8212; moabb 0.3.0 documentation</title>
+    <title>moabb.datasets.base &#8212; moabb 0.4.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
@@ -21,9 +21,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -39,12 +39,13 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
+                <li><a href="../../../whats_new.html">What's new</a></li>
                 <li><a href="../../../api.html">API</a></li>
                 <li><a href="../../../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../../../auto_tutorials/index.html">Tutorials</a></li>
@@ -58,7 +59,20 @@
      href="../../../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats_new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#develop-branch">Develop branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-3-0">Version 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-2-1">Version 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-2-0">Version 0.2.0</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -135,6 +149,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -175,13 +190,12 @@
 <span class="sd">        Imagery interval as defined in the dataset description</span>
 
 <span class="sd">    paradigm: [&#39;p300&#39;,&#39;imagery&#39;, &#39;ssvep&#39;]</span>
-<span class="sd">        Defines what sort of dataset this is (currently only imagery is</span>
-<span class="sd">        implemented)</span>
+<span class="sd">        Defines what sort of dataset this is</span>
 
 <span class="sd">    doi: DOI for dataset, optional (for now)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BaseDataset.__init__"><a class="viewcode-back" href="../../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">subjects</span><span class="p">,</span>
         <span class="n">sessions_per_subject</span><span class="p">,</span>
@@ -195,7 +209,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">_</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">subjects</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;subjects must be a iterable, like a list&quot;</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;subjects must be a iterable, like a list&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span> <span class="o">=</span> <span class="n">subjects</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_sessions</span> <span class="o">=</span> <span class="n">sessions_per_subject</span>
@@ -204,9 +218,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">paradigm</span> <span class="o">=</span> <span class="n">paradigm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">doi</span> <span class="o">=</span> <span class="n">doi</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">unit_factor</span> <span class="o">=</span> <span class="n">unit_factor</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unit_factor</span> <span class="o">=</span> <span class="n">unit_factor</span>
 
-    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseDataset.get_data"><a class="viewcode-back" href="../../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the data correspoonding to a list of subjects.</span>
 
 <span class="sd">        The returned data is a dictionary with the folowing structure::</span>
@@ -244,14 +258,15 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid subject </span><span class="si">{:d}</span><span class="s2"> given&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">))</span>
             <span class="n">data</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_single_subject_data</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">data</span>
+        <span class="k">return</span> <span class="n">data</span></div>
 
-    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span>
+<div class="viewcode-block" id="BaseDataset.download"><a class="viewcode-back" href="../../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">subject_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">accept</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Download all data from the dataset.</span>
@@ -276,6 +291,8 @@
 <span class="sd">        update_path : bool | None</span>
 <span class="sd">            If True, set the MNE_DATASETS_(dataset)_PATH in mne-python</span>
 <span class="sd">            config to the given path. If None, the user is prompted.</span>
+<span class="sd">        accept: bool</span>
+<span class="sd">            Accept licence term to download the data, if any. Default: False</span>
 <span class="sd">        verbose : bool, str, int, or None</span>
 <span class="sd">            If not None, override default verbose level</span>
 <span class="sd">            (see :func:`mne.verbose`).</span>
@@ -283,13 +300,25 @@
         <span class="k">if</span> <span class="n">subject_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">subject_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span>
         <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">subject_list</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">(</span>
-                <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span>
-                <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
-                <span class="n">force_update</span><span class="o">=</span><span class="n">force_update</span><span class="p">,</span>
-                <span class="n">update_path</span><span class="o">=</span><span class="n">update_path</span><span class="p">,</span>
-                <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="c1"># check if accept is needed</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="n">signature</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;accept&quot;</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">(</span>
+                    <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                    <span class="n">force_update</span><span class="o">=</span><span class="n">force_update</span><span class="p">,</span>
+                    <span class="n">update_path</span><span class="o">=</span><span class="n">update_path</span><span class="p">,</span>
+                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                    <span class="n">accept</span><span class="o">=</span><span class="n">accept</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">(</span>
+                    <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                    <span class="n">force_update</span><span class="o">=</span><span class="n">force_update</span><span class="p">,</span>
+                    <span class="n">update_path</span><span class="o">=</span><span class="n">update_path</span><span class="p">,</span>
+                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                <span class="p">)</span></div>
 
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
@@ -313,7 +342,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+<div class="viewcode-block" id="BaseDataset.data_path"><a class="viewcode-back" href="../../../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset.data_path">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">data_path</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
@@ -332,7 +361,7 @@
 <span class="sd">            will be automatically downloaded to the specified folder.</span>
 <span class="sd">        force_update : bool</span>
 <span class="sd">            Force update of the dataset even if a local copy exists.</span>
-<span class="sd">        update_path : bool | None</span>
+<span class="sd">        update_path : bool | None **Deprecated**</span>
 <span class="sd">            If True, set the MNE_DATASETS_(dataset)_PATH in mne-python</span>
 <span class="sd">            config to the given path. If None, the user is prompted.</span>
 <span class="sd">        verbose : bool, str, int, or None</span>
@@ -345,7 +374,7 @@
 <span class="sd">            Local path to the given data file. This path is contained inside a</span>
 <span class="sd">            list of length one, for compatibility.</span>
 <span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
-        <span class="k">pass</span></div>
+        <span class="k">pass</span></div></div>
 </pre></div>
 
     </div>
@@ -362,7 +391,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, Alexandre Barachant.<br/>
+        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>

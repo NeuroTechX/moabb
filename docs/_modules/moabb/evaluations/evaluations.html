@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moabb.evaluations.evaluations &#8212; moabb 0.3.0 documentation</title>
+    <title>moabb.evaluations.evaluations &#8212; moabb 0.4.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
@@ -21,9 +21,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -39,12 +39,13 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
+                <li><a href="../../../whats_new.html">What's new</a></li>
                 <li><a href="../../../api.html">API</a></li>
                 <li><a href="../../../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../../../auto_tutorials/index.html">Tutorials</a></li>
@@ -58,7 +59,20 @@
      href="../../../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats_new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#develop-branch">Develop branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-3-0">Version 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-2-1">Version 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-2-0">Version 0.2.0</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -162,7 +176,7 @@
 
     <span class="n">VALID_POLICIES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;per_class&quot;</span><span class="p">,</span> <span class="s2">&quot;ratio&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="WithinSessionEvaluation.__init__"><a class="viewcode-back" href="../../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_perms</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Vector</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">data_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -222,7 +236,7 @@
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">additional_columns</span><span class="o">=</span><span class="n">add_cols</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Perform default within session evaluation</span>
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
@@ -253,8 +267,9 @@
                         <span class="n">X_</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span>
                         <span class="n">y_</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mne_labels</span> <span class="k">else</span> <span class="n">y_cv</span>
                         <span class="k">for</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">y_</span><span class="p">):</span>
-                            <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_</span><span class="p">[</span><span class="n">train</span><span class="p">],</span> <span class="n">y_</span><span class="p">[</span><span class="n">train</span><span class="p">])</span>
-                            <span class="n">acc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scorer</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X_</span><span class="p">[</span><span class="n">test</span><span class="p">],</span> <span class="n">y_</span><span class="p">[</span><span class="n">test</span><span class="p">]))</span>
+                            <span class="n">cvclf</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span>
+                            <span class="n">cvclf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_</span><span class="p">[</span><span class="n">train</span><span class="p">],</span> <span class="n">y_</span><span class="p">[</span><span class="n">train</span><span class="p">])</span>
+                            <span class="n">acc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scorer</span><span class="p">(</span><span class="n">cvclf</span><span class="p">,</span> <span class="n">X_</span><span class="p">[</span><span class="n">test</span><span class="p">],</span> <span class="n">y_</span><span class="p">[</span><span class="n">test</span><span class="p">]))</span>
                         <span class="n">acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">acc</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span>
@@ -410,14 +425,14 @@
                                 <span class="p">)</span>
                             <span class="k">yield</span> <span class="n">res</span>
 
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>
+<div class="viewcode-block" id="WithinSessionEvaluation.evaluate"><a class="viewcode-back" href="../../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_learning_curve</span><span class="p">:</span>
             <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_learning_curve</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">)</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
+<div class="viewcode-block" id="WithinSessionEvaluation.is_valid"><a class="viewcode-back" href="../../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
 <div class="viewcode-block" id="CrossSessionEvaluation"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation">[docs]</a><span class="k">class</span> <span class="nc">CrossSessionEvaluation</span><span class="p">(</span><span class="n">BaseEvaluation</span><span class="p">):</span>
@@ -429,7 +444,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSessionEvaluation.evaluate"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Dataset is not appropriate for evaluation&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
@@ -454,10 +469,11 @@
                 <span class="k">for</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
                     <span class="n">t_start</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">):</span>
-                        <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">train</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">train</span><span class="p">])</span>
-                        <span class="n">score</span> <span class="o">=</span> <span class="n">scorer</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X</span><span class="p">[</span><span class="n">test</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">test</span><span class="p">])</span>
+                        <span class="n">cvclf</span> <span class="o">=</span> <span class="n">clone</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span>
+                        <span class="n">cvclf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">train</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">train</span><span class="p">])</span>
+                        <span class="n">score</span> <span class="o">=</span> <span class="n">scorer</span><span class="p">(</span><span class="n">cvclf</span><span class="p">,</span> <span class="n">X</span><span class="p">[</span><span class="n">test</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">test</span><span class="p">])</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">score</span> <span class="o">=</span> <span class="n">_fit_and_score</span><span class="p">(</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">_fit_and_score</span><span class="p">(</span>
                             <span class="n">clone</span><span class="p">(</span><span class="n">clf</span><span class="p">),</span>
                             <span class="n">X</span><span class="p">,</span>
                             <span class="n">y</span><span class="p">,</span>
@@ -468,7 +484,8 @@
                             <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                             <span class="n">fit_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                             <span class="n">error_score</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">error_score</span><span class="p">,</span>
-                        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="p">)</span>
+                        <span class="n">score</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;test_scores&quot;</span><span class="p">]</span>
                     <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start</span>
                     <span class="n">nchan</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;nchan&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">)</span> <span class="k">else</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                     <span class="n">res</span> <span class="o">=</span> <span class="p">{</span>
@@ -481,10 +498,10 @@
                         <span class="s2">&quot;n_channels&quot;</span><span class="p">:</span> <span class="n">nchan</span><span class="p">,</span>
                         <span class="s2">&quot;pipeline&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
                     <span class="p">}</span>
-                    <span class="k">yield</span> <span class="n">res</span>
+                    <span class="k">yield</span> <span class="n">res</span></div>
 
-    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dataset</span><span class="o">.</span><span class="n">n_sessions</span> <span class="o">&gt;</span> <span class="mi">1</span></div>
+<div class="viewcode-block" id="CrossSessionEvaluation.is_valid"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dataset</span><span class="o">.</span><span class="n">n_sessions</span> <span class="o">&gt;</span> <span class="mi">1</span></div></div>
 
 
 <div class="viewcode-block" id="CrossSubjectEvaluation"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation">[docs]</a><span class="k">class</span> <span class="nc">CrossSubjectEvaluation</span><span class="p">(</span><span class="n">BaseEvaluation</span><span class="p">):</span>
@@ -495,7 +512,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossSubjectEvaluation.evaluate"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Dataset is not appropriate for evaluation&quot;</span><span class="p">)</span>
         <span class="c1"># this is a bit akward, but we need to check if at least one pipe</span>
@@ -555,10 +572,10 @@
                             <span class="s2">&quot;pipeline&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
                         <span class="p">}</span>
 
-                        <span class="k">yield</span> <span class="n">res</span>
+                        <span class="k">yield</span> <span class="n">res</span></div>
 
-    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span></div>
+<div class="viewcode-block" id="CrossSubjectEvaluation.is_valid"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span></div></div>
 </pre></div>
 
     </div>
@@ -575,7 +592,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, Alexandre Barachant.<br/>
+        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>

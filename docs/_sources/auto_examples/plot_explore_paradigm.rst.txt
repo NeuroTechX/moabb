@@ -37,7 +37,6 @@ This tutorial explore the paradigm object, with 3 examples of paradigm :
      - FilterBankMotorImagery
      - LeftRightImagery
 
-
 .. GENERATED FROM PYTHON SOURCE LINES 22-34
 
 .. code-block:: default
@@ -187,7 +186,7 @@ preprocessed EEG data, the labels, and a dataframe with metadata.
             X : Union[np.ndarray, mne.Epochs]
                 the data that will be used as features for the model
                 Note: if return_epochs=True,  this is mne.Epochs
-                      if return_epochs=False, this is np.ndarray
+                if return_epochs=False, this is np.ndarray
             labels: np.ndarray
                 the labels for training / evaluating the model
             metadata: pd.DataFrame
@@ -286,7 +285,7 @@ metadata have at least 3 columns, subject, session and run.
 - session is the session id. A session is a all the data recorded without
   removing the EEG cap.
 - run is the individual continuous recording made during a session. A Session
-may or may not contain multiple run.
+  may or may not contain multiple run.
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 86-90
@@ -342,7 +341,7 @@ and 6 run per session.
             subject    session    run
     count     576.0        576    576
     unique      NaN          2      6
-    top         NaN  session_T  run_1
+    top         NaN  session_T  run_5
     freq        NaN        288     96
     mean        1.0        NaN    NaN
     std         0.0        NaN    NaN
@@ -554,7 +553,7 @@ corresponding to left and right hand motor imagination.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  14.551 seconds)
+   **Total running time of the script:** ( 0 minutes  14.453 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_explore_paradigm.py:

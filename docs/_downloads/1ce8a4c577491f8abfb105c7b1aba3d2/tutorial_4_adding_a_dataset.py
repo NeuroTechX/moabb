@@ -138,7 +138,7 @@ class ExampleDataset(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         url = "{:s}subject_0{:d}.mat".format(ExampleDataset_URL, subject)
-        path = dl.data_path(url, "ExampleDataset")
+        path = dl.data_dl(url, "ExampleDataset")
         return [path]  # it has to return a list
 
 

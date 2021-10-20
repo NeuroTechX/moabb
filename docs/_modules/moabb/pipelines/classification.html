@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moabb.pipelines.classification &#8212; moabb 0.3.0 documentation</title>
+    <title>moabb.pipelines.classification &#8212; moabb 0.4.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
@@ -21,9 +21,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -39,12 +39,13 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
+                <li><a href="../../../whats_new.html">What's new</a></li>
                 <li><a href="../../../api.html">API</a></li>
                 <li><a href="../../../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../../../auto_tutorials/index.html">Tutorials</a></li>
@@ -58,7 +59,20 @@
      href="../../../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats_new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#develop-branch">Develop branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-3-0">Version 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-2-1">Version 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-2-0">Version 0.2.0</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -131,8 +145,14 @@
       
   <h1>Source code for moabb.pipelines.classification</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.linalg</span> <span class="k">as</span> <span class="nn">linalg</span>
+<span class="kn">from</span> <span class="nn">pyriemann.estimation</span> <span class="kn">import</span> <span class="n">Covariances</span>
+<span class="kn">from</span> <span class="nn">pyriemann.utils.mean</span> <span class="kn">import</span> <span class="n">mean_covariance</span>
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClassifierMixin</span>
 <span class="kn">from</span> <span class="nn">sklearn.cross_decomposition</span> <span class="kn">import</span> <span class="n">CCA</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">check_is_fitted</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">filterbank</span>
 
 
 <div class="viewcode-block" id="SSVEP_CCA"><a class="viewcode-back" href="../../../generated/moabb.pipelines.classification.SSVEP_CCA.html#moabb.pipelines.classification.SSVEP_CCA">[docs]</a><span class="k">class</span> <span class="nc">SSVEP_CCA</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClassifierMixin</span><span class="p">):</span>
@@ -153,7 +173,7 @@
 <span class="sd">           https://doi.org/10.1088/1741-2560/6/4/046002</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="SSVEP_CCA.__init__"><a class="viewcode-back" href="../../../generated/moabb.pipelines.classification.SSVEP_CCA.html#moabb.pipelines.classification.SSVEP_CCA.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">n_harmonics</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">n_harmonics</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Yf</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cca</span> <span class="o">=</span> <span class="n">CCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
@@ -162,9 +182,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_harmonics</span> <span class="o">=</span> <span class="n">n_harmonics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">one_hot</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">freqs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">one_hot</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">one_hot</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
 
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SSVEP_CCA.fit"><a class="viewcode-back" href="../../../generated/moabb.pipelines.classification.SSVEP_CCA.html#moabb.pipelines.classification.SSVEP_CCA.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Compute reference sinusoid signal</span>
 
 <span class="sd">        These sinusoid are generated for each frequency in the dataset</span>
@@ -183,9 +203,9 @@
                         <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">freq</span> <span class="o">*</span> <span class="n">h</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slen</span><span class="p">,</span> <span class="n">n_times</span><span class="p">))</span>
                     <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">Yf</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">yf</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<div class="viewcode-block" id="SSVEP_CCA.predict"><a class="viewcode-back" href="../../../generated/moabb.pipelines.classification.SSVEP_CCA.html#moabb.pipelines.classification.SSVEP_CCA.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Predict is made by taking the maximum correlation coefficient&quot;&quot;&quot;</span>
         <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
@@ -195,9 +215,9 @@
                     <span class="n">S_x</span><span class="p">,</span> <span class="n">S_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Yf</span><span class="p">[</span><span class="n">f</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
                     <span class="n">corr_f</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">S_x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">S_y</span><span class="o">.</span><span class="n">T</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
             <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">one_hot</span><span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">corr_f</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">corr_f</span><span class="p">[</span><span class="n">k</span><span class="p">])])</span>
-        <span class="k">return</span> <span class="n">y</span>
+        <span class="k">return</span> <span class="n">y</span></div>
 
-    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<div class="viewcode-block" id="SSVEP_CCA.predict_proba"><a class="viewcode-back" href="../../../generated/moabb.pipelines.classification.SSVEP_CCA.html#moabb.pipelines.classification.SSVEP_CCA.predict_proba">[docs]</a>    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Probabilty could be computed from the correlation coefficient&quot;&quot;&quot;</span>
         <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">freqs</span><span class="p">)))</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
@@ -205,7 +225,437 @@
                 <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
                     <span class="n">S_x</span><span class="p">,</span> <span class="n">S_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Yf</span><span class="p">[</span><span class="n">f</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
                     <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">S_x</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">S_y</span><span class="o">.</span><span class="n">T</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">P</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">P</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div>
+        <span class="k">return</span> <span class="n">P</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">P</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">SSVEP_TRCA</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClassifierMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Classifier based on the Task-Related Component Analysis method [1]_ for SSVEP.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sfreq : float</span>
+<span class="sd">        Sampling frequency of the data to be analyzed.</span>
+
+<span class="sd">    freqs : dict with n_classes keys</span>
+<span class="sd">        Frequencies corresponding to the SSVEP components. These are</span>
+<span class="sd">        necessary to design the filterbank bands.</span>
+
+<span class="sd">    n_fbands : int, default=5</span>
+<span class="sd">        Number of sub-bands considered for filterbank analysis.</span>
+
+<span class="sd">    downsample: int, default=1</span>
+<span class="sd">        Factor by which downsample the data. A downsample value of N will result</span>
+<span class="sd">        on a sampling frequency of (sfreq // N) by taking one sample every N of</span>
+<span class="sd">        the original data. In the original TRCA paper [1]_ data are at 250Hz.</span>
+
+<span class="sd">    is_ensemble: bool, default=False</span>
+<span class="sd">        If True, predict on new data using the Ensemble-TRCA method described</span>
+<span class="sd">        in [1]_.</span>
+
+<span class="sd">    method: str, default=&#39;original&#39;</span>
+<span class="sd">        &#39;original&#39; computes euclidean mean for S as in the original paper [1]_.</span>
+<span class="sd">        &#39;riemann&#39; variation computes geodesic mean instead. This geodesic</span>
+<span class="sd">        mean is more robust to outlier but negatively impacted by ill-conditioned</span>
+<span class="sd">        matrices (when only few samples are available for training for instance).</span>
+<span class="sd">        If the geometric mean can&#39;t be estimated, please consider trying &#39;logeuclid&#39;.</span>
+<span class="sd">        It computes log-euclidean mean instead of the affine-invariant one and is more robust</span>
+<span class="sd">        computationally.</span>
+<span class="sd">        &#39;riemann&#39; and &#39;logeuclid&#39; variations are useful when lots of noisy</span>
+<span class="sd">        training data are available. With few training data &#39;original&#39; is more</span>
+<span class="sd">        appropriate.</span>
+
+<span class="sd">    estimator: str</span>
+<span class="sd">        For both methods, regularization to use for covariance matrices estimations.</span>
+<span class="sd">        Consider &#39;schaefer&#39;, &#39;lwf&#39;, &#39;oas&#39; or &#39;scm&#39; for no regularization.</span>
+<span class="sd">        In the original implementation from TRCA paper [1]_, no regularization</span>
+<span class="sd">        is used. So method=&#39;original&#39; and regul=&#39;scm&#39; is similar to original</span>
+<span class="sd">        implementation.</span>
+
+
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fb_coefs : list of len (n_fbands)</span>
+<span class="sd">        Alpha coefficients for the fusion of the filterbank sub-bands.</span>
+
+<span class="sd">    classes_ : ndarray of shape (n_classes,)</span>
+<span class="sd">        Array with the class labels extracted at fit time.</span>
+
+<span class="sd">    n_classes: int</span>
+<span class="sd">        Number of unique labels/classes.</span>
+
+<span class="sd">    templates_ : ndarray of shape (n_classes, n_bands, n_channels, n_samples)</span>
+<span class="sd">        Template data obtained by averaging all training trials for a given</span>
+<span class="sd">        class. Each class templates is divided in n_fbands sub-bands extracted</span>
+<span class="sd">        from the filterbank approach.</span>
+
+<span class="sd">    weights_ : ndarray of shape (n_fbands, n_classes, n_channels)</span>
+<span class="sd">        Weight coefficients for the different electrodes which are used</span>
+<span class="sd">        as spatial filters for the data.</span>
+
+<span class="sd">    Reference</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    .. [1] M. Nakanishi, Y. Wang, X. Chen, Y. -T. Wang, X. Gao, and T.-P. Jung,</span>
+<span class="sd">          &quot;Enhancing detection of SSVEPs for a high-speed brain speller using</span>
+<span class="sd">          task-related component analysis&quot;,</span>
+<span class="sd">          IEEE Trans. Biomed. Eng, 65(1):104-112, 2018.</span>
+
+<span class="sd">    Code based on the Matlab implementation from authors of [1]_</span>
+<span class="sd">    (https://github.com/mnakanishi/TRCA-SSVEP).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">interval</span><span class="p">,</span>
+        <span class="n">freqs</span><span class="p">,</span>
+        <span class="n">n_fbands</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">downsample</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">is_ensemble</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;original&quot;</span><span class="p">,</span>
+        <span class="n">estimator</span><span class="o">=</span><span class="s2">&quot;scm&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">freqs</span> <span class="o">=</span> <span class="n">freqs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">freqs</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_fbands</span> <span class="o">=</span> <span class="n">n_fbands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">downsample</span> <span class="o">=</span> <span class="n">downsample</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slen</span> <span class="o">=</span> <span class="n">interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">interval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ensemble</span> <span class="o">=</span> <span class="n">is_ensemble</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fb_coefs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.25</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.25</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_fbands</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">=</span> <span class="n">estimator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+
+    <span class="k">def</span> <span class="nf">_Q_S_estim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># Check if X is a single trial (test data) or not</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+        <span class="c1"># Get data shape</span>
+        <span class="n">n_trials</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Initialize S matrix</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">))</span>
+
+        <span class="c1"># Estimate covariance between every trial and the rest of the trials (excluding itself)</span>
+        <span class="k">for</span> <span class="n">trial_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">trial_i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+
+            <span class="c1"># Mean centering for the selected trial</span>
+            <span class="n">x1</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># Select a second trial that is different</span>
+            <span class="k">for</span> <span class="n">trial_j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">trial_i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_trials</span><span class="p">):</span>
+                <span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">trial_j</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+
+                <span class="c1"># Mean centering for the selected trial</span>
+                <span class="n">x2</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+                <span class="c1"># Put the two trials together</span>
+                <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">n_channels</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span>
+
+                <span class="c1"># Regularized covariance estimate</span>
+                <span class="n">cov</span> <span class="o">=</span> <span class="n">Covariances</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span>
+                    <span class="n">X</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
+
+                <span class="c1"># Compute empirical covariance betwwen the two selected trials and sum it</span>
+                <span class="k">if</span> <span class="n">n_channels</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">S</span> <span class="o">=</span> <span class="n">S</span> <span class="o">+</span> <span class="n">cov</span><span class="p">[:</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">:]</span> <span class="o">+</span> <span class="n">cov</span><span class="p">[</span><span class="n">n_channels</span><span class="p">:,</span> <span class="p">:</span><span class="n">n_channels</span><span class="p">]</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">S</span> <span class="o">=</span> <span class="n">S</span> <span class="o">+</span> <span class="n">cov</span> <span class="o">+</span> <span class="n">cov</span>
+
+        <span class="c1"># Concatenate all the trials</span>
+        <span class="n">UX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">*</span> <span class="n">n_trials</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">trial_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span><span class="p">):</span>
+            <span class="n">UX</span><span class="p">[:,</span> <span class="n">trial_n</span> <span class="o">*</span> <span class="n">n_samples</span> <span class="p">:</span> <span class="p">(</span><span class="n">trial_n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">trial_n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+        <span class="c1"># Mean centering</span>
+        <span class="n">UX</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">UX</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">cov</span> <span class="o">=</span> <span class="n">Covariances</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">UX</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">S</span><span class="p">,</span> <span class="n">Q</span>
+
+    <span class="k">def</span> <span class="nf">_Q_S_estim_riemann</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># Check if X is a single trial (test data) or not</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+        <span class="c1"># Get data shape</span>
+        <span class="n">n_trials</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Concatenate all the trials</span>
+        <span class="n">UX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">*</span> <span class="n">n_trials</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">trial_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span><span class="p">):</span>
+            <span class="n">UX</span><span class="p">[:,</span> <span class="n">trial_n</span> <span class="o">*</span> <span class="n">n_samples</span> <span class="p">:</span> <span class="p">(</span><span class="n">trial_n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">trial_n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+        <span class="c1"># Mean centering</span>
+        <span class="n">UX</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">UX</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
+
+        <span class="c1"># Compute empirical variance of all data (to be bounded)</span>
+        <span class="n">cov</span> <span class="o">=</span> <span class="n">Covariances</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">UX</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
+
+        <span class="n">cov</span> <span class="o">=</span> <span class="n">Covariances</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">cov</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">:]</span> <span class="o">+</span> <span class="n">cov</span><span class="p">[:,</span> <span class="n">n_channels</span><span class="p">:,</span> <span class="p">:</span><span class="n">n_channels</span><span class="p">]</span>
+
+        <span class="n">S</span> <span class="o">=</span> <span class="n">mean_covariance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">S</span><span class="p">,</span> <span class="n">Q</span>
+
+    <span class="k">def</span> <span class="nf">_compute_trca</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Computation of TRCA spatial filters.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: ndarray of shape (n_trials, n_channels, n_samples)</span>
+<span class="sd">            Training data</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        W: ndarray of shape (n_channels)</span>
+<span class="sd">            Weight coefficients for electrodes which can be used as</span>
+<span class="sd">            a spatial filter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;original&quot;</span><span class="p">:</span>
+            <span class="n">S</span><span class="p">,</span> <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Q_S_estim</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;riemann&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;logeuclid&quot;</span><span class="p">:</span>
+            <span class="n">S</span><span class="p">,</span> <span class="n">Q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Q_S_estim_riemann</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Method should be either &#39;original&#39;, &#39;riemann&#39; or &#39;logeuclid&#39;.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Compute eigenvalues and vectors</span>
+        <span class="n">lambdas</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Sort eigenvectors by eigenvalue</span>
+        <span class="n">arr1inds</span> <span class="o">=</span> <span class="n">lambdas</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="p">[:,</span> <span class="n">arr1inds</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+
+        <span class="k">return</span> <span class="n">W</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">W</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Extract spatial filters and templates from the given calibration data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : ndarray of shape (n_trials, n_channels, n_samples)</span>
+<span class="sd">            Training data. Trials are grouped by class, divided in n_fbands bands by</span>
+<span class="sd">            the filterbank approach and then used to calculate weight vectors and</span>
+<span class="sd">            templates for each class and band.</span>
+
+<span class="sd">        y : ndarray of shape (n_trials,)</span>
+<span class="sd">            Label vector in respect to X.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self: CCA object</span>
+<span class="sd">            Instance of classifier.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Downsample data</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">::</span> <span class="bp">self</span><span class="o">.</span><span class="n">downsample</span><span class="p">]</span>
+
+        <span class="c1"># Get shape of X and labels</span>
+        <span class="n">n_trials</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_samples</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">slen</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">downsample</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">classes_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
+
+        <span class="c1"># Initialize the final arrays</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">templates_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_fbands</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_fbands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">class_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes_</span><span class="p">:</span>
+            <span class="n">X_cal</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">y</span> <span class="o">==</span> <span class="n">class_idx</span><span class="p">]</span>  <span class="c1"># Select data with a specific label</span>
+            <span class="c1"># Filterbank approach</span>
+            <span class="k">for</span> <span class="n">band_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_fbands</span><span class="p">):</span>
+                <span class="c1"># Filter the data and compute TRCA</span>
+                <span class="n">X_filter</span> <span class="o">=</span> <span class="n">filterbank</span><span class="p">(</span><span class="n">X_cal</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">band_n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">)</span>
+                <span class="n">w_best</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_trca</span><span class="p">(</span><span class="n">X_filter</span><span class="p">)</span>
+
+                <span class="c1"># Get template by averaging trials and take the best filter for this band</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">templates_</span><span class="p">[</span><span class="n">class_idx</span><span class="p">,</span> <span class="n">band_n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X_filter</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">weights_</span><span class="p">[</span><span class="n">band_n</span><span class="p">,</span> <span class="n">class_idx</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">w_best</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make predictions on unseen data.</span>
+
+<span class="sd">        The new data observation X will be filtered</span>
+<span class="sd">        with weights previously extracted and compared to the templates to assess</span>
+<span class="sd">        similarity with each of them and select a class based on the maximal value.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : ndarray of shape (n_trials, n_channels, n_samples)</span>
+<span class="sd">            Testing data. This will be divided in self.n_fbands using the filter- bank approach,</span>
+<span class="sd">            then it will be transformed by the different spatial filters and compared to the</span>
+<span class="sd">            previously fit templates according to the selected method for analysis (ensemble or</span>
+<span class="sd">            not). Finally, correlation scores for all sub-bands of each class will be combined,</span>
+<span class="sd">            resulting on a single correlation score per class, from which the maximal one is</span>
+<span class="sd">            identified as the predicted class of the data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        y_pred : ndarray of shape (n_trials,)</span>
+<span class="sd">            Prediction vector in respect to X.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check is fit had been called</span>
+        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Check if X is a single trial or not</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+        <span class="c1"># Downsample data</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">::</span> <span class="bp">self</span><span class="o">.</span><span class="n">downsample</span><span class="p">]</span>
+
+        <span class="c1"># Get test data shape</span>
+        <span class="n">n_trials</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># Initialize pred array</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">trial_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span><span class="p">):</span>
+            <span class="c1"># Pick trial</span>
+            <span class="n">X_test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">trial_n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+            <span class="c1"># Initialize correlations array</span>
+            <span class="n">corr_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_fbands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">))</span>
+
+            <span class="c1"># Filter the data in the corresponding band</span>
+            <span class="k">for</span> <span class="n">band_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_fbands</span><span class="p">):</span>
+                <span class="n">X_filter</span> <span class="o">=</span> <span class="n">filterbank</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">band_n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">)</span>
+
+                <span class="c1"># Compute correlation with all the templates and bands</span>
+                <span class="k">for</span> <span class="n">class_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">):</span>
+                    <span class="c1"># Get the corresponding template</span>
+                    <span class="n">template</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">templates_</span><span class="p">[</span><span class="n">class_idx</span><span class="p">,</span> <span class="n">band_n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ensemble</span><span class="p">:</span>
+                        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">weights_</span><span class="p">[</span><span class="n">band_n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># (n_classes, n_channel)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">weights_</span><span class="p">[</span><span class="n">band_n</span><span class="p">,</span> <span class="n">class_idx</span><span class="p">,</span> <span class="p">:]</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># (n_channel,)</span>
+
+                    <span class="c1"># Compute 2D correlation of spatially filtered testdata with ref</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X_filter</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+                    <span class="p">)</span>
+                    <span class="n">corr_array</span><span class="p">[</span><span class="n">band_n</span><span class="p">,</span> <span class="n">class_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># Fusion for the filterbank analysis</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fb_coefs</span><span class="p">,</span> <span class="n">corr_array</span><span class="p">)</span>
+
+            <span class="c1"># Select the maximal value and append to preddictions</span>
+            <span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">rho</span><span class="p">)</span>
+            <span class="n">y_pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">y_pred</span>
+
+    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make predictions on unseen data with the asociated probabilities.</span>
+
+<span class="sd">        The new data observation X will be filtered</span>
+<span class="sd">        with weights previously extracted and compared to the templates to assess</span>
+<span class="sd">        similarity with each of them and select a class based on the maximal value.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X : ndarray of shape (n_trials, n_channels, n_samples)</span>
+<span class="sd">            Testing data. This will be divided in self.n_fbands using the filter-bank approach,</span>
+<span class="sd">            then it will be transformed by the different spatial filters and compared to the</span>
+<span class="sd">            previously fit templates according to the selected method for analysis (ensemble or</span>
+<span class="sd">            not). Finally, correlation scores for all sub-bands of each class will be combined,</span>
+<span class="sd">            resulting on a single correlation score per class, from which the maximal one is</span>
+<span class="sd">            identified as the predicted class of the data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        y_pred : ndarray of shape (n_trials,)</span>
+<span class="sd">            Prediction vector in respect to X.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check is fit had been called</span>
+        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Check if X is a single trial or not</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+        <span class="c1"># Downsample data</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">::</span> <span class="bp">self</span><span class="o">.</span><span class="n">downsample</span><span class="p">]</span>
+
+        <span class="c1"># Get test data shape</span>
+        <span class="n">n_trials</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># Initialize pred array</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_trials</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">)))</span>
+
+        <span class="k">for</span> <span class="n">trial_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span><span class="p">):</span>
+            <span class="c1"># Pick trial</span>
+            <span class="n">X_test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">trial_n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+            <span class="c1"># Initialize correlations array</span>
+            <span class="n">corr_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_fbands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">))</span>
+
+            <span class="c1"># Filter the data in the corresponding band</span>
+            <span class="k">for</span> <span class="n">band_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_fbands</span><span class="p">):</span>
+                <span class="n">X_filter</span> <span class="o">=</span> <span class="n">filterbank</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">band_n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">peaks</span><span class="p">)</span>
+
+                <span class="c1"># Compute correlation with all the templates and bands</span>
+                <span class="k">for</span> <span class="n">class_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">):</span>
+                    <span class="c1"># Get the corresponding template</span>
+                    <span class="n">template</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">templates_</span><span class="p">[</span><span class="n">class_idx</span><span class="p">,</span> <span class="n">band_n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ensemble</span><span class="p">:</span>
+                        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">weights_</span><span class="p">[</span><span class="n">band_n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># (n_class, n_channel)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">weights_</span><span class="p">[</span><span class="n">band_n</span><span class="p">,</span> <span class="n">class_idx</span><span class="p">,</span> <span class="p">:]</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># (n_channel,)</span>
+
+                    <span class="c1"># Compute 2D correlation of spatially filtered testdata with ref</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X_filter</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+                    <span class="p">)</span>
+                    <span class="n">corr_array</span><span class="p">[</span><span class="n">band_n</span><span class="p">,</span> <span class="n">class_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">normalized_coefs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fb_coefs</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fb_coefs</span><span class="p">))</span>
+            <span class="c1"># Fusion for the filterbank analysis</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">normalized_coefs</span><span class="p">,</span> <span class="n">corr_array</span><span class="p">)</span>
+
+            <span class="n">rho</span> <span class="o">/=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rho</span><span class="p">)</span>
+            <span class="n">y_pred</span><span class="p">[</span><span class="n">trial_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">rho</span>
+
+        <span class="k">return</span> <span class="n">y_pred</span>
 </pre></div>
 
     </div>
@@ -222,7 +672,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, Alexandre Barachant.<br/>
+        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moabb.evaluations.base.BaseEvaluation &#8212; moabb 0.3.0 documentation</title>
+    <title>moabb.evaluations.base.BaseEvaluation &#8212; moabb 0.4.3 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -23,9 +23,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -41,12 +41,13 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
+                <li><a href="../whats_new.html">What's new</a></li>
                 <li><a href="../api.html">API</a></li>
                 <li><a href="../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../auto_tutorials/index.html">Tutorials</a></li>
@@ -60,7 +61,20 @@
      href="../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#develop-branch">Develop branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-3-0">Version 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-2-1">Version 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-2-0">Version 0.2.0</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -104,7 +118,10 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">moabb.evaluations.base.BaseEvaluation</a></li>
+<li><a class="reference internal" href="#">moabb.evaluations.base.BaseEvaluation</a><ul>
+<li><a class="reference internal" href="#examples-using-moabb-evaluations-base-baseevaluation">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.evaluations.base.BaseEvaluation</span></code></a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -138,7 +155,7 @@
 <h1>moabb.evaluations.base.BaseEvaluation<a class="headerlink" href="#moabb-evaluations-base-baseevaluation" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="moabb.evaluations.base.BaseEvaluation">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.evaluations.base.</span></code><code class="sig-name descname"><span class="pre">BaseEvaluation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hdf5_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mne_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/moabb/evaluations/base.html#BaseEvaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.base.BaseEvaluation" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.evaluations.base.</span></code><code class="sig-name descname"><span class="pre">BaseEvaluation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hdf5_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mne_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/evaluations/base.py#L14-L205"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/evaluations/base.html#BaseEvaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.base.BaseEvaluation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class that defines necessary operations for an evaluation.
 Evaluations determine what the train and test sets are and can implement
 additional data preprocessing steps for more complicated algorithms.</p>
@@ -161,14 +178,164 @@ compatible dataset will be retrieved from the paradigm instance.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.evaluations.base.BaseEvaluation.evaluate" title="moabb.evaluations.base.BaseEvaluation.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(dataset, pipelines)</p></td>
+<td><p>Evaluate results on a single dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#moabb.evaluations.base.BaseEvaluation.is_valid" title="moabb.evaluations.base.BaseEvaluation.is_valid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_valid</span></code></a>(dataset)</p></td>
+<td><p>Verify the dataset is compatible with evaluation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process</span></code></a>(pipelines)</p></td>
+<td><p>Runs all pipelines on all datasets.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 60%" />
+<col style="width: 40%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>get_results</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>push_result</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <dl class="py method">
-<dt id="moabb.evaluations.base.BaseEvaluation.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hdf5_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mne_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/moabb/evaluations/base.html#BaseEvaluation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.base.BaseEvaluation.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dt id="moabb.evaluations.base.BaseEvaluation.evaluate">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">evaluate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipelines</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/evaluations/base.py#L171-L187"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/evaluations/base.html#BaseEvaluation.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.base.BaseEvaluation.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate results on a single dataset.</p>
+<p>This method return a generator. each results item is a dict with
+the following convension:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">Duration</span> <span class="n">of</span> <span class="n">the</span> <span class="n">training</span> <span class="p">,</span>
+       <span class="s1">&#39;dataset&#39;</span><span class="p">:</span> <span class="n">dataset</span> <span class="nb">id</span><span class="p">,</span>
+       <span class="s1">&#39;subject&#39;</span><span class="p">:</span> <span class="n">subject</span> <span class="nb">id</span><span class="p">,</span>
+       <span class="s1">&#39;session&#39;</span><span class="p">:</span> <span class="n">session</span> <span class="nb">id</span><span class="p">,</span>
+       <span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="n">score</span><span class="p">,</span>
+       <span class="s1">&#39;n_samples&#39;</span><span class="p">:</span> <span class="n">number</span> <span class="n">of</span> <span class="n">training</span> <span class="n">examples</span><span class="p">,</span>
+       <span class="s1">&#39;n_channels&#39;</span><span class="p">:</span> <span class="n">number</span> <span class="n">of</span> <span class="n">channel</span><span class="p">,</span>
+       <span class="s1">&#39;pipeline&#39;</span><span class="p">:</span> <span class="n">pipeline</span> <span class="n">name</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="moabb.evaluations.base.BaseEvaluation.is_valid">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">is_valid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/evaluations/base.py#L189-L205"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/evaluations/base.html#BaseEvaluation.is_valid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.base.BaseEvaluation.is_valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify the dataset is compatible with evaluation.</p>
+<p>This method is called to verify dataset given in the constructor
+are compatible with the evaluation context.</p>
+<p>This method should return false if the dataset does not match the
+evaluation. This is for example the case if the dataset does not
+contain enought session for a cross-session eval.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataset</strong> (<em>dataset instance</em>) – The dataset to verify.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="moabb.evaluations.base.BaseEvaluation.process">
+<code class="sig-name descname"><span class="pre">process</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipelines</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/evaluations/base.py#L125-L157"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/evaluations/base.html#BaseEvaluation.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.base.BaseEvaluation.process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs all pipelines on all datasets.</p>
+<p>This function will apply all provided pipelines and return a dataframe
+containing the results of the evaluation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pipelines</strong> (<em>dict of pipeline instance.</em>) – A dict containing the sklearn pipeline to evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>results</strong> – A dataframe containing the results.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
+<div class="section" id="examples-using-moabb-evaluations-base-baseevaluation">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.evaluations.base.BaseEvaluation</span></code><a class="headerlink" href="#examples-using-moabb-evaluations-base-baseevaluation" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="This Example show how to perform a cross session motor imagery analysis on the very popular dat..."><div class="figure align-default" id="id1">
+<img alt="Cross Session Motor Imagery" src="../_images/sphx_glr_plot_cross_session_motor_imagery_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_cross_session_motor_imagery.html#sphx-glr-auto-examples-plot-cross-session-motor-imagery-py"><span class="std std-ref">Cross Session Motor Imagery</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a cross-session analysis on two MI datasets using a CSP+LDA p..."><div class="figure align-default" id="id2">
+<img alt="Cross-Session on Multiple Datasets" src="../_images/sphx_glr_plot_cross_session_multiple_datasets_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_cross_session_multiple_datasets.html#sphx-glr-auto-examples-plot-cross-session-multiple-datasets-py"><span class="std std-ref">Cross-Session on Multiple Datasets</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This Example show how to perform a cross-session SSVEP analysis on the MAMEM dataset 3, using a..."><div class="figure align-default" id="id3">
+<img alt="Cross Session SSVEP" src="../_images/sphx_glr_plot_cross_session_ssvep_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_cross_session_ssvep.html#sphx-glr-auto-examples-plot-cross-session-ssvep-py"><span class="std std-ref">Cross Session SSVEP</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="- Riemannian Geometry - CCA"><div class="figure align-default" id="id4">
+<img alt="Cross Subject SSVEP" src="../_images/sphx_glr_plot_cross_subject_ssvep_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_cross_subject_ssvep.html#sphx-glr-auto-examples-plot-cross-subject-ssvep-py"><span class="std std-ref">Cross Subject SSVEP</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This Example shows how to perform a within session analysis on three different P300 datasets."><div class="figure align-default" id="id5">
+<img alt="Within Session P300" src="../_images/sphx_glr_plot_within_session_p300_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_within_session_p300.html#sphx-glr-auto-examples-plot-within-session-p300-py"><span class="std std-ref">Within Session P300</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This Example show a comparison of CSP versus FilterBank CSP on the very popular dataset 2a from..."><div class="figure align-default" id="id6">
+<img alt="FilterBank CSP versus CSP" src="../_images/sphx_glr_plot_filterbank_csp_vs_csp_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/advanced_examples/plot_filterbank_csp_vs_csp.html#sphx-glr-auto-examples-advanced-examples-plot-filterbank-csp-vs-csp-py"><span class="std std-ref">FilterBank CSP versus CSP</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use machine learning pipeline based on MNE Epochs instead of numpy ar..."><div class="figure align-default" id="id7">
+<img alt="MNE Epochs-based piplines" src="../_images/sphx_glr_plot_mne_and_scikit_estimators_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/advanced_examples/plot_mne_and_scikit_estimators.html#sphx-glr-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py"><span class="std std-ref">MNE Epochs-based piplines</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Within paradigm, it is possible to restrict analysis only to a subset of electrodes and to resa..."><div class="figure align-default" id="id8">
+<img alt="Select electrodes and resampling" src="../_images/sphx_glr_plot_select_electrodes_resample_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/advanced_examples/plot_select_electrodes_resample.html#sphx-glr-auto-examples-advanced-examples-plot-select-electrodes-resample-py"><span class="std std-ref">Select electrodes and resampling</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="The MOABB codebase comes with convenience plotting utilities and some statistical testing. This..."><div class="figure align-default" id="id9">
+<img alt="Statistical Analysis" src="../_images/sphx_glr_plot_statistical_analysis_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/advanced_examples/plot_statistical_analysis.html#sphx-glr-auto-examples-advanced-examples-plot-statistical-analysis-py"><span class="std std-ref">Statistical Analysis</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This Example shows how to perform a within session analysis while also creating learning curves..."><div class="figure align-default" id="id10">
+<img alt="Within Session P300 with learning curve" src="../_images/sphx_glr_plot_learning_curve_p300_external_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/external/plot_learning_curve_p300_external.html#sphx-glr-auto-examples-external-plot-learning-curve-p300-external-py"><span class="std std-ref">Within Session P300 with learning curve</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This Example show how to perform a within session motor imagery analysis on the very popular da..."><div class="figure align-default" id="id11">
+<img alt="Within Session Motor Imagery with learning curve" src="../_images/sphx_glr_plot_learning_curve_motor_imagery_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/learning_curve/plot_learning_curve_motor_imagery.html#sphx-glr-auto-examples-learning-curve-plot-learning-curve-motor-imagery-py"><span class="std std-ref">Within Session Motor Imagery with learning curve</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This Example shows how to perform a within session analysis while also creating learning curves..."><div class="figure align-default" id="id12">
+<img alt="Within Session P300 with learning curve" src="../_images/sphx_glr_plot_learning_curve_p300_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/learning_curve/plot_learning_curve_p300.html#sphx-glr-auto-examples-learning-curve-plot-learning-curve-p300-py"><span class="std std-ref">Within Session P300 with learning curve</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial takes you through a basic working example of how to use this codebase, including ..."><div class="figure align-default" id="id13">
+<img alt="Getting Started" src="../_images/sphx_glr_plot_Getting_Started_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html#sphx-glr-auto-tutorials-plot-getting-started-py"><span class="std std-ref">Getting Started</span></a></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we will go through all the steps to make a simple BCI classification task, dow..."><div class="figure align-default" id="id14">
+<img alt="Tutorial 1: Simple Motor Imagery" src="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html#sphx-glr-auto-tutorials-tutorial-1-simple-example-motor-imagery-py"><span class="std std-ref">Tutorial 1: Simple Motor Imagery</span></a></span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="We extend the previous example to a case where we want to analyze the score of a classifier wit..."><div class="figure align-default" id="id15">
+<img alt="Tutorial 2: Using multiple datasets" src="../_images/sphx_glr_tutorial_2_using_mulitple_datasets_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html#sphx-glr-auto-tutorials-tutorial-2-using-mulitple-datasets-py"><span class="std std-ref">Tutorial 2: Using multiple datasets</span></a></span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this last part, we extend the previous example by assessing the classification score of not ..."><div class="figure align-default" id="id16">
+<img alt="Tutorial 3: Benchmarking mulitple pipelines" src="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html#sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"><span class="std std-ref">Tutorial 3: Benchmarking mulitple pipelines</span></a></span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Tutorial 4: Creating a dataset class"><div class="figure align-default" id="id17">
+<img alt="Tutorial 4: Creating a dataset class" src="../_images/sphx_glr_tutorial_4_adding_a_dataset_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html#sphx-glr-auto-tutorials-tutorial-4-adding-a-dataset-py"><span class="std std-ref">Tutorial 4: Creating a dataset class</span></a></span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+</div>
+</div><div style='clear:both'></div></div>
 </div>
 
 
@@ -190,7 +357,7 @@ compatible dataset will be retrieved from the paradigm instance.</p></li>
       
     </p>
     <p>
-        &copy; Copyright 2018, Alexandre Barachant.<br/>
+        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>

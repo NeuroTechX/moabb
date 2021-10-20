@@ -4,3 +4,9 @@
 .. currentmodule:: moabb.pipelines.utils
 
 .. autofunction:: FilterBank
+
+.. include:: moabb.pipelines.utils.FilterBank.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>

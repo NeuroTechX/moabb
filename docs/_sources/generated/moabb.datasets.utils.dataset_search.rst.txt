@@ -3,8 +3,10 @@
 
 .. currentmodule:: moabb.datasets.utils
 
-.. autoclass:: dataset_search
+.. autofunction:: dataset_search
 
-   
-   .. automethod:: __init__
-   
+.. include:: moabb.datasets.utils.dataset_search.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>

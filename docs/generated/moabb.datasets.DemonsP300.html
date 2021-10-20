@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moabb.datasets.DemonsP300 &#8212; moabb 0.3.0 documentation</title>
+    <title>moabb.datasets.DemonsP300 &#8212; moabb 0.4.3 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -17,15 +17,15 @@
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.Lee2019_MI" href="moabb.datasets.Lee2019_MI.html" />
-    <link rel="prev" title="moabb.datasets.Cho2017" href="moabb.datasets.Cho2017.html" />
+    <link rel="next" title="moabb.datasets.EPFLP300" href="moabb.datasets.EPFLP300.html" />
+    <link rel="prev" title="moabb.datasets.BNCI2015003" href="moabb.datasets.BNCI2015003.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -41,12 +41,13 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
+                <li><a href="../whats_new.html">What's new</a></li>
                 <li><a href="../api.html">API</a></li>
                 <li><a href="../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../auto_tutorials/index.html">Tutorials</a></li>
@@ -60,11 +61,24 @@
      href="../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#develop-branch">Develop branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-3-0">Version 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-2-1">Version 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-2-0">Version 0.2.0</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../datasets.html">Datasets</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../datasets.html#erp-datasets">ERP Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../datasets.html#erp-datasets">ERP Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#ssvep-datasets">SSVEP Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#base-utils">Base &amp; Utils</a></li>
 </ul>
@@ -138,7 +152,7 @@
 <h1>moabb.datasets.DemonsP300<a class="headerlink" href="#moabb-datasets-demonsp300" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="moabb.datasets.DemonsP300">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></code><code class="sig-name descname"><span class="pre">DemonsP300</span></code><a class="reference internal" href="../_modules/moabb/datasets/neiry.html#DemonsP300"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.DemonsP300" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></code><code class="sig-name descname"><span class="pre">DemonsP300</span></code><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/datasets/neiry.py#L14-L188"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/neiry.html#DemonsP300"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.DemonsP300" title="Permalink to this definition">¶</a></dt>
 <dd><p>Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons versus Demons.</p>
 <p><strong>Dataset Description</strong></p>
 <p>We publish dataset of visual P300 BCI performed in Virtual Reality (VR) game Raccoons versus
@@ -161,15 +175,15 @@ Game mechanics consisted in demons jumping (visually activating),
 so player have to concentrate on one demon (chosen freely). That produced
 P300 response in time of the deamon jump. That was the way to trigger fireball
 torwards a deamon predicted by classifier from EEG data.</p>
-<p>More info can be found in <a class="footnote-reference brackets" href="#id4" id="id1">1</a> <a class="footnote-reference brackets" href="#id5" id="id2">2</a> <a class="footnote-reference brackets" href="#id6" id="id3">3</a>.</p>
+<p>More info can be found in <a class="reference internal" href="#r35e223bfd2b6-1" id="id1">[1]</a> <a class="reference internal" href="#r35e223bfd2b6-2" id="id2">[2]</a> <a class="reference internal" href="#r35e223bfd2b6-3" id="id3">[3]</a>.</p>
 <p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dl class="citation">
+<dt class="label" id="r35e223bfd2b6-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>Goncharenko V., Grigoryan R., and Samokhina A. (May 12, 2020),
 Raccoons vs Demons: multiclass labeled P300 dataset,
 <a class="reference external" href="https://arxiv.org/abs/2005.02251">https://arxiv.org/abs/2005.02251</a></p>
 </dd>
-<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dt class="label" id="r35e223bfd2b6-2"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
 <dd><p>Goncharenko V., Grigoryan R., and Samokhina A.,
 Approaches to multiclass classifcation of P300 potential datasets,
 Intelligent Data Processing: Theory and Applications:Book of abstract of
@@ -177,7 +191,7 @@ the 13th International Conference, Moscow, 2020. — Moscow: Russian
 Academy of Sciences, 2020. — 472 p.ISBN 978-5-907366-16-9
 http://www.machinelearning.ru/wiki/images/3/31/Idp20.pdf</p>
 </dd>
-<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
+<dt class="label" id="r35e223bfd2b6-3"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
 <dd><p>Goncharenko V., Grigoryan R., and Samokhina A.,
 P300 potentials dataset and approaches to its processing,
 Труды 63-й Всероссийской научной конференции МФТИ. 23–29 ноября 2020
@@ -186,15 +200,71 @@ ISBN 978-5-7417-0757-9
 <a class="reference external" href="https://mipt.ru/science/5top100/education/courseproposal/%D0%A4%D0%9F%D0%9C%D0%98%20%D1%84%D0%B8%D0%BD%D0%B0%D0%BB-compressed2.pdf">https://mipt.ru/science/5top100/education/courseproposal/%D0%A4%D0%9F%D0%9C%D0%98%20%D1%84%D0%B8%D0%BD%D0%B0%D0%BB-compressed2.pdf</a></p>
 </dd>
 </dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.datasets.DemonsP300.data_path" title="moabb.datasets.DemonsP300.data_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_path</span></code></a>(subject[, path, force_update, …])</p></td>
+<td><p>Get path to local copy of a subject data.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code>([subject_list, path, force_update, …])</p></td>
+<td><p>Download all data from the dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code>([subjects])</p></td>
+<td><p>Return the data correspoonding to a list of subjects.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#moabb.datasets.DemonsP300.read_hdf" title="moabb.datasets.DemonsP300.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(filename)</p></td>
+<td><p>Reads data from HDF file</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="py method">
-<dt id="moabb.datasets.DemonsP300.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/moabb/datasets/neiry.html#DemonsP300.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.DemonsP300.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dt id="moabb.datasets.DemonsP300.data_path">
+<code class="sig-name descname"><span class="pre">data_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/datasets/neiry.py#L173-L188"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/neiry.html#DemonsP300.data_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.DemonsP300.data_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get path to local copy of a subject data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> (<em>int</em>) – Number of subject to use</p></li>
+<li><p><strong>path</strong> (<em>None | str</em>) – Location of where to look for the data storing location.
+If None, the environment variable or config parameter
+<code class="docutils literal notranslate"><span class="pre">MNE_DATASETS_(dataset)_PATH</span></code> is used. If it doesn’t exist, the
+“~/mne_data” directory is used. If the dataset
+is not found under the given path, the data
+will be automatically downloaded to the specified folder.</p></li>
+<li><p><strong>force_update</strong> (<em>bool</em>) – Force update of the dataset even if a local copy exists.</p></li>
+<li><p><strong>update_path</strong> (<em>bool | None **Deprecated**</em>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
+config to the given path. If None, the user is prompted.</p></li>
+<li><p><strong>verbose</strong> (<em>bool, str, int, or None</em>) – If not None, override default verbose level
+(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.23)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>path</strong> – Local path to the given data file. This path is contained inside a
+list of length one, for compatibility.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="moabb.datasets.DemonsP300.read_hdf">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">read_hdf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/datasets/neiry.py#L118-L134"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/neiry.html#DemonsP300.read_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.DemonsP300.read_hdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads data from HDF file</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>array of <cite>_act_dtype</cite></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
+<div style='clear:both'></div></div>
 
 
     </div>
@@ -215,7 +285,7 @@ ISBN 978-5-7417-0757-9
       
     </p>
     <p>
-        &copy; Copyright 2018, Alexandre Barachant.<br/>
+        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moabb.datasets.bbci_eeg_fnirs &#8212; moabb 0.3.0 documentation</title>
+    <title>moabb.datasets.bbci_eeg_fnirs &#8212; moabb 0.4.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
@@ -21,9 +21,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -39,12 +39,13 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
+                <li><a href="../../../whats_new.html">What's new</a></li>
                 <li><a href="../../../api.html">API</a></li>
                 <li><a href="../../../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../../../auto_tutorials/index.html">Tutorials</a></li>
@@ -58,7 +59,20 @@
      href="../../../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats_new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#develop-branch">Develop branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-3-0">Version 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-2-1">Version 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-2-0">Version 0.2.0</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -141,9 +155,9 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">create_info</span>
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">make_standard_montage</span>
-<span class="kn">from</span> <span class="nn">mne.datasets.utils</span> <span class="kn">import</span> <span class="n">_do_path_update</span><span class="p">,</span> <span class="n">_get_path</span>
+<span class="kn">from</span> <span class="nn">mne.datasets.utils</span> <span class="kn">import</span> <span class="n">_get_path</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">RawArray</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_fetch_file</span>
+<span class="kn">from</span> <span class="nn">pooch</span> <span class="kn">import</span> <span class="n">retrieve</span>
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span>
@@ -152,7 +166,7 @@
 <span class="n">SHIN_URL</span> <span class="o">=</span> <span class="s2">&quot;http://doc.ml.tu-berlin.de/hBCI&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">eeg_data_path</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">eeg_data_path</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">accept</span><span class="p">):</span>
     <span class="n">datapath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="n">base_path</span><span class="p">,</span> <span class="s2">&quot;EEG&quot;</span><span class="p">,</span> <span class="s2">&quot;subject </span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">),</span> <span class="s2">&quot;with occular artifact&quot;</span>
     <span class="p">)</span>
@@ -163,10 +177,16 @@
         <span class="k">for</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="ow">in</span> <span class="n">intervals</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">subject</span> <span class="o">&gt;=</span> <span class="n">low</span> <span class="ow">and</span> <span class="n">subject</span> <span class="o">&lt;=</span> <span class="n">high</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="s2">&quot;EEG.zip&quot;</span><span class="p">)):</span>
-                    <span class="n">_fetch_file</span><span class="p">(</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">accept</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                            <span class="s2">&quot;You must accept licence term to download this dataset,&quot;</span>
+                            <span class="s2">&quot;set accept=True when instanciating the dataset.&quot;</span>
+                        <span class="p">)</span>
+                    <span class="n">retrieve</span><span class="p">(</span>
                         <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/EEG/EEG_</span><span class="si">{:02d}</span><span class="s2">-</span><span class="si">{:02d}</span><span class="s2">.zip&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SHIN_URL</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">),</span>
-                        <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="s2">&quot;EEG.zip&quot;</span><span class="p">),</span>
-                        <span class="n">print_destination</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;EEG.zip&quot;</span><span class="p">,</span>
+                        <span class="n">path</span><span class="o">=</span><span class="n">base_path</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">with</span> <span class="n">z</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="s2">&quot;EEG.zip&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="s2">&quot;EEG&quot;</span><span class="p">))</span>
@@ -176,15 +196,21 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datapath</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;cnt.mat&quot;</span><span class="p">,</span> <span class="s2">&quot;mrk.mat&quot;</span><span class="p">]]</span>
 
 
-<span class="k">def</span> <span class="nf">fnirs_data_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">fnirs_data_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">accept</span><span class="p">):</span>
     <span class="n">datapath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;NIRS&quot;</span><span class="p">,</span> <span class="s2">&quot;subject </span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datapath</span><span class="p">,</span> <span class="s2">&quot;mrk.mat&quot;</span><span class="p">)):</span>
         <span class="c1"># fNIRS</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;fNIRS.zip&quot;</span><span class="p">)):</span>
-            <span class="n">_fetch_file</span><span class="p">(</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">accept</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                    <span class="s2">&quot;You must accept licence term to download this dataset,&quot;</span>
+                    <span class="s2">&quot;set accept=True when instanciating the dataset.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">retrieve</span><span class="p">(</span>
                 <span class="s2">&quot;http://doc.ml.tu-berlin.de/hBCI/NIRS/NIRS_01-29.zip&quot;</span><span class="p">,</span>
-                <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;fNIRS.zip&quot;</span><span class="p">),</span>
-                <span class="n">print_destination</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
+                <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;fNIRS.zip&quot;</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;NIRS&quot;</span><span class="p">)):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;NIRS&quot;</span><span class="p">))</span>
@@ -197,7 +223,9 @@
 <span class="k">class</span> <span class="nc">Shin2017</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Not to be used.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fnirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">motor_imagery</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mental_arithmetic</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">fnirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">motor_imagery</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mental_arithmetic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">accept</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">motor_imagery</span><span class="p">,</span> <span class="n">mental_arithmetic</span><span class="p">]):</span>
             <span class="k">raise</span> <span class="p">(</span>
                 <span class="ne">ValueError</span><span class="p">(</span>
@@ -219,6 +247,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">motor_imagery</span> <span class="o">=</span> <span class="n">motor_imagery</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mental_arithmetic</span> <span class="o">=</span> <span class="n">mental_arithmetic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accept</span> <span class="o">=</span> <span class="n">accept</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">subjects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">)),</span>
@@ -272,27 +301,38 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;run_0&quot;</span><span class="p">:</span> <span class="n">raw</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">data_path</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">subject</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">accept</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
             <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid subject number&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">accept</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">accept</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;MNE_DATASETS_BBCIFNIRS_PATH&quot;</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">_get_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;BBCI EEG-fNIRS&quot;</span><span class="p">)</span>
-        <span class="c1"># FIXME: this always update the path</span>
-        <span class="n">_do_path_update</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;BBCI EEG-fNIRS&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;MNE-eegfnirs-data&quot;</span><span class="p">)):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;MNE-eegfnirs-data&quot;</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fnirs</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">fnirs_data_path</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;MNE-eegfnirs-data&quot;</span><span class="p">),</span> <span class="n">subject</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">fnirs_data_path</span><span class="p">(</span>
+                <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;MNE-eegfnirs-data&quot;</span><span class="p">),</span> <span class="n">subject</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">accept</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">eeg_data_path</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;MNE-eegfnirs-data&quot;</span><span class="p">),</span> <span class="n">subject</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">eeg_data_path</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;MNE-eegfnirs-data&quot;</span><span class="p">),</span> <span class="n">subject</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Shin2017A"><a class="viewcode-back" href="../../../generated/moabb.datasets.Shin2017A.html#moabb.datasets.Shin2017A">[docs]</a><span class="k">class</span> <span class="nc">Shin2017A</span><span class="p">(</span><span class="n">Shin2017</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Motor Imagey Dataset from Shin et al 2017</span>
 
 <span class="sd">    Dataset from [1]_.</span>
+
+<span class="sd">    You should accept the licence term [2]_ to download this dataset, using::</span>
+<span class="sd">        Shin2017A(accept=True)</span>
 
 <span class="sd">    **Data Acquisition**</span>
 
@@ -383,18 +423,24 @@
 <span class="sd">           Hwang, H.J. and Müller, K.R., 2017. Open access dataset for EEG+NIRS</span>
 <span class="sd">           single-trial classification. IEEE Transactions on Neural Systems</span>
 <span class="sd">           and Rehabilitation Engineering, 25(10), pp.1735-1745.</span>
-
+<span class="sd">    .. [2] GNU General Public License, Version 3</span>
+<span class="sd">           `&lt;https://www.gnu.org/licenses/gpl-3.0.txt&gt;`_</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Shin2017A.__init__"><a class="viewcode-back" href="../../../generated/moabb.datasets.Shin2017A.html#moabb.datasets.Shin2017A.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fnirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">motor_imagery</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mental_arithmetic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;Shin2017A&quot;</span></div></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accept</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">fnirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">motor_imagery</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mental_arithmetic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">accept</span><span class="o">=</span><span class="n">accept</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;Shin2017A&quot;</span></div>
 
 
 <div class="viewcode-block" id="Shin2017B"><a class="viewcode-back" href="../../../generated/moabb.datasets.Shin2017B.html#moabb.datasets.Shin2017B">[docs]</a><span class="k">class</span> <span class="nc">Shin2017B</span><span class="p">(</span><span class="n">Shin2017</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Mental Arithmetic Dataset from Shin et al 2017</span>
 
 <span class="sd">    Dataset from [1]_.</span>
+
+<span class="sd">    You should accept the licence term [2]_ to download this dataset, using::</span>
+<span class="sd">        Shin2017A(accept=True)</span>
 
 <span class="sd">    **Data Acquisition**</span>
 
@@ -479,11 +525,15 @@
 <span class="sd">           Hwang, H.J. and Müller, K.R., 2017. Open access dataset for EEG+NIRS</span>
 <span class="sd">           single-trial classification. IEEE Transactions on Neural Systems</span>
 <span class="sd">           and Rehabilitation Engineering, 25(10), pp.1735-1745.</span>
+<span class="sd">    .. [2] GNU General Public License, Version 3</span>
+<span class="sd">           `&lt;https://www.gnu.org/licenses/gpl-3.0.txt&gt;`_</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Shin2017B.__init__"><a class="viewcode-back" href="../../../generated/moabb.datasets.Shin2017B.html#moabb.datasets.Shin2017B.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fnirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">motor_imagery</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mental_arithmetic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;Shin2017B&quot;</span></div></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accept</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">fnirs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">motor_imagery</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mental_arithmetic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">accept</span><span class="o">=</span><span class="n">accept</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;Shin2017B&quot;</span></div>
 </pre></div>
 
     </div>
@@ -500,7 +550,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, Alexandre Barachant.<br/>
+        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>

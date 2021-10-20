@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moabb.paradigms.base.BaseParadigm &#8212; moabb 0.3.0 documentation</title>
+    <title>moabb.paradigms.base.BaseParadigm &#8212; moabb 0.4.3 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -23,9 +23,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -41,12 +41,13 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
+                <li><a href="../whats_new.html">What's new</a></li>
                 <li><a href="../api.html">API</a></li>
                 <li><a href="../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../auto_tutorials/index.html">Tutorials</a></li>
@@ -60,7 +61,20 @@
      href="../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#develop-branch">Develop branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-3-0">Version 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-2-1">Version 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-2-0">Version 0.2.0</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -138,17 +152,153 @@
 <h1>moabb.paradigms.base.BaseParadigm<a class="headerlink" href="#moabb-paradigms-base-baseparadigm" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="moabb.paradigms.base.BaseParadigm">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.paradigms.base.</span></code><code class="sig-name descname"><span class="pre">BaseParadigm</span></code><a class="reference internal" href="../_modules/moabb/paradigms/base.html#BaseParadigm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.paradigms.base.</span></code><code class="sig-name descname"><span class="pre">BaseParadigm</span></code><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/paradigms/base.py#L12-L266"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/paradigms/base.html#BaseParadigm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base Paradigm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.datasets" title="moabb.paradigms.base.BaseParadigm.datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets</span></code></a></dt><dd><p>Property that define the list of compatible datasets</p>
+</dd>
+<dt><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.scoring" title="moabb.paradigms.base.BaseParadigm.scoring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scoring</span></code></a></dt><dd><p>Property that defines scoring metric (e.g.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.get_data" title="moabb.paradigms.base.BaseParadigm.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>(dataset[, subjects, return_epochs])</p></td>
+<td><p>Return the data for a list of subject.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.is_valid" title="moabb.paradigms.base.BaseParadigm.is_valid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_valid</span></code></a>(dataset)</p></td>
+<td><p>Verify the dataset is compatible with the paradigm.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.prepare_process" title="moabb.paradigms.base.BaseParadigm.prepare_process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_process</span></code></a>(dataset)</p></td>
+<td><p>Prepare processing of raw files</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.process_raw" title="moabb.paradigms.base.BaseParadigm.process_raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_raw</span></code></a>(raw, dataset[, return_epochs])</p></td>
+<td><p>Process one raw data file.</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="py method">
-<dt id="moabb.paradigms.base.BaseParadigm.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/moabb/paradigms/base.html#BaseParadigm.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dt id="moabb.paradigms.base.BaseParadigm.datasets">
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">datasets</span></code><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../../../../../../opt/hostedtoolcache/Python/3.9.7/x64/lib/python3.9/abc.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.datasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property that define the list of compatible datasets</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="moabb.paradigms.base.BaseParadigm.get_data">
+<code class="sig-name descname"><span class="pre">get_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/paradigms/base.py#L197-L266"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/paradigms/base.html#BaseParadigm.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the data for a list of subject.</p>
+<p>return the data, labels and a dataframe with metadata. the dataframe
+will contain at least the following columns</p>
+<ul class="simple">
+<li><p>subject : the subject indice</p></li>
+<li><p>session : the session indice</p></li>
+<li><p>run : the run indice</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> – A dataset instance.</p></li>
+<li><p><strong>subjects</strong> (<em>List of int</em>) – List of subject number</p></li>
+<li><p><strong>return_epochs</strong> (<em>boolean</em>) – This flag specifies whether to return only the data array or the
+complete processed mne.Epochs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X</strong> (<em>Union[np.ndarray, mne.Epochs]</em>) – the data that will be used as features for the model
+Note: if return_epochs=True,  this is mne.Epochs
+if return_epochs=False, this is np.ndarray</p></li>
+<li><p><strong>labels</strong> (<em>np.ndarray</em>) – the labels for training / evaluating the model</p></li>
+<li><p><strong>metadata</strong> (<em>pd.DataFrame</em>) – A dataframe containing the metadata.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="moabb.paradigms.base.BaseParadigm.is_valid">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">is_valid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/paradigms/base.py#L32-L49"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/paradigms/base.html#BaseParadigm.is_valid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.is_valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify the dataset is compatible with the paradigm.</p>
+<p>This method is called to verify dataset is compatible with the
+paradigm.</p>
+<p>This method should raise an error if the dataset is not compatible
+with the paradigm. This is for example the case if the
+dataset is an ERP dataset for motor imagery paradigm, or if the
+dataset does not contain any of the required events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataset</strong> (<em>dataset instance</em>) – The dataset to verify.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="moabb.paradigms.base.BaseParadigm.prepare_process">
+<code class="sig-name descname"><span class="pre">prepare_process</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/paradigms/base.py#L51-L65"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/paradigms/base.html#BaseParadigm.prepare_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.prepare_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare processing of raw files</p>
+<p>This function allows to set parameter of the paradigm class prior to
+the preprocessing (process_raw). Does nothing by default and could be
+overloaded if needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataset</strong> (<em>dataset instance</em>) – The dataset corresponding to the raw file. mainly use to access
+dataset specific information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="moabb.paradigms.base.BaseParadigm.process_raw">
+<code class="sig-name descname"><span class="pre">process_raw</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/paradigms/base.py#L67-L195"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/paradigms/base.html#BaseParadigm.process_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.process_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process one raw data file.</p>
+<p>This function apply the preprocessing and eventual epoching on the
+individual run, and return the data, labels and a dataframe with
+metadata.</p>
+<p>metadata is a dataframe with as many row as the length of the data
+and labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raw</strong> (<em>mne.Raw instance</em>) – the raw EEG data.</p></li>
+<li><p><strong>dataset</strong> (<em>dataset instance</em>) – The dataset corresponding to the raw file. mainly use to access
+dataset specific information.</p></li>
+<li><p><strong>return_epochs</strong> (<em>boolean</em>) – This flag specifies whether to return only the data array or the
+complete processed mne.Epochs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X</strong> (<em>Union[np.ndarray, mne.Epochs]</em>) – the data that will be used as features for the model
+Note: if return_epochs=True,  this is mne.Epochs
+if return_epochs=False, this is np.ndarray</p></li>
+<li><p><strong>labels</strong> (<em>np.ndarray</em>) – the labels for training / evaluating the model</p></li>
+<li><p><strong>metadata</strong> (<em>pd.DataFrame</em>) – A dataframe containing the metadata</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="moabb.paradigms.base.BaseParadigm.scoring">
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">scoring</span></code><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../../../../../../opt/hostedtoolcache/Python/3.9.7/x64/lib/python3.9/abc.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.scoring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property that defines scoring metric (e.g. ROC-AUC or accuracy
+or f-score), given as a sklearn-compatible string or a compatible
+sklearn scorer.</p>
 </dd></dl>
 
 </dd></dl>
 
-</div>
+<div style='clear:both'></div></div>
 
 
     </div>
@@ -169,7 +319,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, Alexandre Barachant.<br/>
+        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>

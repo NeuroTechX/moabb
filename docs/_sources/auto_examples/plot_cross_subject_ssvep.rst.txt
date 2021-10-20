@@ -51,7 +51,7 @@ We will use the SSVEP paradigm, which uses the AUC as metric.
     from moabb.datasets import SSVEPExo
     from moabb.evaluations import CrossSubjectEvaluation
     from moabb.paradigms import SSVEP, FilterBankSSVEP
-    from moabb.pipelines import SSVEP_CCA, ExtendedSSVEPSignal
+    from moabb.pipelines import SSVEP_CCA, SSVEP_TRCA, ExtendedSSVEPSignal
 
 
     warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -61,6 +61,37 @@ We will use the SSVEP paradigm, which uses the AUC as metric.
 
 
 
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'rocket' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'rocket_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'mako' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'mako_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'icefire' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'icefire_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'vlag' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'vlag_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'flare' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'flare_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'crest' which already exists.
+      mpl_cm.register_cmap(_name, _cmap)
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'crest_r' which already exists.
+      mpl_cm.register_cmap(_name + "_r", _cmap_r)
 
 
 
@@ -94,25 +125,27 @@ frequency.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 55-65
+.. GENERATED FROM PYTHON SOURCE LINES 55-66
 
 Choose paradigm
 ---------------
 
-We define the paradigms (SSVEP and FilterBankSSVEP) and use the dataset
+We define the paradigms (SSVEP, SSSVEP_TRCA and FilterBankSSVEP) and use the dataset
 SSVEPExo. The SSVEP paradigm applied a bandpass filter (10-25 Hz) on
-the data while the FilterBankSSVEP paradigm uses as many bandpass filters as
+the data, SSVEP_TRCA applied a bandpass filter (1-110 Hz) which correspond to almost
+no filtering, while the FilterBankSSVEP paradigm uses as many bandpass filters as
 there are stimulation frequencies (here 2). For each stimulation frequency
 the EEG is filtered with a 1 Hz-wide bandpass filter centered on the
 frequency. This results in ``n_classes`` copies of the signal, filtered for each
 class, as used in filterbank motor imagery paradigms.
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-69
+.. GENERATED FROM PYTHON SOURCE LINES 66-71
 
 .. code-block:: default
 
 
     paradigm = SSVEP(fmin=10, fmax=25, n_classes=3)
+    paradigm_TRCA = SSVEP(fmin=1, fmax=110, n_classes=3)
     paradigm_fb = FilterBankSSVEP(filters=None, n_classes=3)
 
 
@@ -122,14 +155,14 @@ class, as used in filterbank motor imagery paradigms.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 70-74
+.. GENERATED FROM PYTHON SOURCE LINES 72-76
 
 Classes are defined by the frequency of the stimulation, here we use
 the first two frequencies of the dataset, 13 and 17 Hz.
 The evaluation function uses a LabelEncoder, transforming them
 to 0 and 1
 
-.. GENERATED FROM PYTHON SOURCE LINES 74-77
+.. GENERATED FROM PYTHON SOURCE LINES 76-79
 
 .. code-block:: default
 
@@ -143,7 +176,7 @@ to 0 and 1
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-86
+.. GENERATED FROM PYTHON SOURCE LINES 80-89
 
 Create pipelines
 ----------------
@@ -153,8 +186,9 @@ The first pipeline uses Riemannian geometry, by building an extended
 covariance matrices from the signal filtered around the considered
 frequency and applying a logistic regression in the tangent plane.
 The second pipeline relies on the above defined CCA classifier.
+The third pipeline relies on TRCA algorithm.
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-98
+.. GENERATED FROM PYTHON SOURCE LINES 89-106
 
 .. code-block:: default
 
@@ -170,6 +204,10 @@ The second pipeline relies on the above defined CCA classifier.
     pipelines = {}
     pipelines["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
 
+    pipelines_TRCA = {}
+    pipelines_TRCA["TRCA"] = make_pipeline(
+        SSVEP_TRCA(interval=interval, freqs=freqs, n_fbands=5)
+    )
 
 
 
@@ -177,7 +215,8 @@ The second pipeline relies on the above defined CCA classifier.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 99-108
+
+.. GENERATED FROM PYTHON SOURCE LINES 107-116
 
 Evaluation
 ----------
@@ -189,7 +228,7 @@ Results are saved into the database, so that if you add a new pipeline, it
 will not run again the evaluation unless a parameter has changed. Results can
 be overwritten if necessary.
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-116
+.. GENERATED FROM PYTHON SOURCE LINES 116-124
 
 .. code-block:: default
 
@@ -208,12 +247,12 @@ be overwritten if necessary.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-119
+.. GENERATED FROM PYTHON SOURCE LINES 125-127
 
 Filter bank processing, determine automatically the filter from the
 stimulation frequency values of events.
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-125
+.. GENERATED FROM PYTHON SOURCE LINES 127-133
 
 .. code-block:: default
 
@@ -230,16 +269,19 @@ stimulation frequency values of events.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-127
+.. GENERATED FROM PYTHON SOURCE LINES 134-135
 
-After processing the two, we simply concatenate the results.
+TRCA processing also relies on filter bank that is automatically designed.
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-130
+.. GENERATED FROM PYTHON SOURCE LINES 135-141
 
 .. code-block:: default
 
 
-    results = pd.concat([results, results_fb])
+    evaluation_TRCA = CrossSubjectEvaluation(
+        paradigm=paradigm_TRCA, datasets=dataset, overwrite=overwrite
+    )
+    results_TRCA = evaluation_TRCA.process(pipelines_TRCA)
 
 
 
@@ -248,14 +290,32 @@ After processing the two, we simply concatenate the results.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 131-135
+.. GENERATED FROM PYTHON SOURCE LINES 142-143
+
+After processing the three, we simply concatenate the results.
+
+.. GENERATED FROM PYTHON SOURCE LINES 143-146
+
+.. code-block:: default
+
+
+    results = pd.concat([results, results_fb, results_TRCA])
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 147-151
 
 Plot Results
 ----------------
 
 Here we plot the results.
 
-.. GENERATED FROM PYTHON SOURCE LINES 135-152
+.. GENERATED FROM PYTHON SOURCE LINES 151-168
 
 .. code-block:: default
 
@@ -290,7 +350,7 @@ Here we plot the results.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.611 seconds)
+   **Total running time of the script:** ( 0 minutes  11.825 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_cross_subject_ssvep.py:

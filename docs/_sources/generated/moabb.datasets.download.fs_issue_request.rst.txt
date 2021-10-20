@@ -3,8 +3,10 @@
 
 .. currentmodule:: moabb.datasets.download
 
-.. autoclass:: fs_issue_request
+.. autofunction:: fs_issue_request
 
-   
-   .. automethod:: __init__
-   
+.. include:: moabb.datasets.download.fs_issue_request.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>

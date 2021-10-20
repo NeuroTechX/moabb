@@ -3,8 +3,10 @@
 
 .. currentmodule:: moabb.datasets.download
 
-.. autoclass:: data_path
+.. autofunction:: data_path
 
-   
-   .. automethod:: __init__
-   
+.. include:: moabb.datasets.download.data_path.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moabb.datasets.Lee2019 &#8212; moabb 0.3.0 documentation</title>
+    <title>moabb.datasets.Lee2019 &#8212; moabb 0.4.3 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
@@ -21,9 +21,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -39,12 +39,13 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
+                <li><a href="../../../whats_new.html">What's new</a></li>
                 <li><a href="../../../api.html">API</a></li>
                 <li><a href="../../../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../../../auto_tutorials/index.html">Tutorials</a></li>
@@ -58,7 +59,20 @@
      href="../../../index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../whats_new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#develop-branch">Develop branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-3-0">Version 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-2-1">Version 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-2-0">Version 0.2.0</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -133,6 +147,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">BMI/OpenBMI dataset (Motor Imagery).</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">create_info</span>
@@ -147,8 +162,8 @@
 <span class="n">Lee2019_URL</span> <span class="o">=</span> <span class="s2">&quot;ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100542/&quot;</span>
 
 
-<div class="viewcode-block" id="Lee2019_MI"><a class="viewcode-back" href="../../../generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI">[docs]</a><span class="k">class</span> <span class="nc">Lee2019_MI</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Motor Imagery BMI/OpenBMI dataset from BMI/OpenBMI dataset.</span>
+<span class="k">class</span> <span class="nc">Lee2019</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;BMI/OpenBMI dataset.</span>
 
 <span class="sd">    Dataset from Lee et al 2019 [1]_.</span>
 
@@ -179,6 +194,76 @@
 <span class="sd">    center of the monitor and moved right or left, according to the</span>
 <span class="sd">    real-time classifier output of the EEG signal.</span>
 
+<span class="sd">    ERP paradigm</span>
+<span class="sd">    The interface layout of the speller followed the typical design</span>
+<span class="sd">    of a row-column speller. The six rows and six columns were</span>
+<span class="sd">    configured with 36 symbols (A to Z, 1 to 9, and _). Each symbol</span>
+<span class="sd">    was presented equally spaced. To enhance the</span>
+<span class="sd">    signal quality, two additional settings were incorporated into</span>
+<span class="sd">    the original row-column speller design, namely, random-set</span>
+<span class="sd">    presentation and face stimuli. These additional settings</span>
+<span class="sd">    help to elicit stronger ERP responses by minimizing adjacency</span>
+<span class="sd">    distraction errors and by presenting a familiar face image. The</span>
+<span class="sd">    stimulus-time interval was set to 80 ms, and the inter-stimulus</span>
+<span class="sd">    interval (ISI) to 135 ms. A single iteration of stimulus presentation</span>
+<span class="sd">    in all rows and columns was considered a sequence. Therefore,</span>
+<span class="sd">    one sequence consisted of 12 stimulus flashes. A maximum</span>
+<span class="sd">    of five sequences (i.e., 60 flashes) was allotted without prolonged</span>
+<span class="sd">    inter-sequence intervals for each target character. After the end</span>
+<span class="sd">    of five sequences, 4.5 s were given to the user for identifying, locating,</span>
+<span class="sd">    and gazing at the next target character. The participant</span>
+<span class="sd">    was instructed to attend to the target symbol by counting the</span>
+<span class="sd">    number of times each target character had been flashed.</span>
+<span class="sd">        In the training session, subjects were asked to copy-spell</span>
+<span class="sd">    a given sentence, &quot;NEURAL NETWORKS AND DEEP LEARNING&quot;</span>
+<span class="sd">    (33 characters including spaces) by gazing at the target character</span>
+<span class="sd">    on the screen. The training session was performed in the offline</span>
+<span class="sd">    condition, and no feedback was provided to the subject during</span>
+<span class="sd">    the EEG recording. In the test session, subjects were instructed to</span>
+<span class="sd">    copy-spell &quot;PATTERN RECOGNITION MACHINE LEARNING&quot;</span>
+<span class="sd">    (36 characters including spaces), and the real-time EEG data were</span>
+<span class="sd">    analyzed based on the classifier that was calculated from the</span>
+<span class="sd">    training session data. The selected character from the subject’s</span>
+<span class="sd">    current EEG data was displayed in the top left area of the screen</span>
+<span class="sd">    at the end of the presentation (i.e., after five sequences).</span>
+<span class="sd">    Per participant, the collected EEG data for the ERP experiment consisted</span>
+<span class="sd">    of 1,980 and 2,160 trials (samples) for training and test phase, respectively.</span>
+
+<span class="sd">    SSVEP paradigm</span>
+<span class="sd">    Four target SSVEP stimuli were designed to flicker at 5.45, 6.67,</span>
+<span class="sd">    8.57, and 12 Hz and were presented in four positions (down,</span>
+<span class="sd">    right, left, and up, respectively) on a monitor. The designed</span>
+<span class="sd">    paradigm followed the conventional types of SSVEP-based BCI</span>
+<span class="sd">    systems that require four-direction movements. Partici-</span>
+<span class="sd">    pants were asked to fixate the center of a black screen and then</span>
+<span class="sd">    to gaze in the direction where the target stimulus was high-</span>
+<span class="sd">    lighted in a different color. Each SSVEP stimulus</span>
+<span class="sd">    was presented for 4 s with an ISI of 6 s. Each target frequency</span>
+<span class="sd">    was presented 25 times. Therefore, the corrected EEG data had</span>
+<span class="sd">    100 trials (4 classes x 25 trials) in the offline training phase and</span>
+<span class="sd">    another 100 trials in the online test phase. Visual feedback was</span>
+<span class="sd">    presented in the test phase; the estimated target frequency was</span>
+<span class="sd">    highlighted for 1 s with a red border at the end of each trial.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    paradigm: ([&#39;MI&#39;,&#39;ERP&#39;,&#39;SSVEP&#39;])</span>
+<span class="sd">        the paradigm to load (see paper).</span>
+
+<span class="sd">    train_run: bool (default True)</span>
+<span class="sd">        if True, return runs corresponding to the training/offline phase (see paper).</span>
+
+<span class="sd">    test_run: bool (default: False for MI and SSVEP paradigms, True for ERP)</span>
+<span class="sd">        if True, return runs corresponding to the test/online phase (see paper). Beware that test_run</span>
+<span class="sd">        for  MI and SSVEP do not have labels associated with trials: these runs could not be used in</span>
+<span class="sd">        classification tasks.</span>
+
+<span class="sd">    resting_state: bool (default False)</span>
+<span class="sd">        if True, return runs corresponding to the resting phases before and after recordings (see paper).</span>
+
+<span class="sd">    sessions: list of int (default [1,2])</span>
+<span class="sd">        the list of the sessions to load (2 available).</span>
+
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Lee, M. H., Kwon, O. Y., Kim, Y. J., Kim, H. K., Lee, Y. E.,</span>
@@ -188,16 +273,159 @@
 <span class="sd">           https://doi.org/10.1093/gigascience/giz002</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Lee2019_MI.__init__"><a class="viewcode-back" href="../../../generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">paradigm</span><span class="p">,</span>
+        <span class="n">train_run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">test_run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">resting_state</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">sessions</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span> <span class="s2">&quot;mi&quot;</span><span class="p">]:</span>
+            <span class="n">paradigm</span> <span class="o">=</span> <span class="s2">&quot;imagery&quot;</span>
+            <span class="n">code_suffix</span> <span class="o">=</span> <span class="s2">&quot;MI&quot;</span>
+            <span class="n">interval</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="mf">0.0</span><span class="p">,</span>
+                <span class="mf">4.0</span><span class="p">,</span>
+            <span class="p">]</span>  <span class="c1"># [1.0, 3.5] is the interval used in paper for online prediction</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">left_hand</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">right_hand</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;p300&quot;</span><span class="p">,</span> <span class="s2">&quot;erp&quot;</span><span class="p">]:</span>
+            <span class="n">paradigm</span> <span class="o">=</span> <span class="s2">&quot;p300&quot;</span>
+            <span class="n">code_suffix</span> <span class="o">=</span> <span class="s2">&quot;ERP&quot;</span>
+            <span class="n">interval</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="mf">0.0</span><span class="p">,</span>
+                <span class="mf">1.0</span><span class="p">,</span>
+            <span class="p">]</span>  <span class="c1"># [-0.2, 0.8] is the interval used in paper for online prediction</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">Target</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">NonTarget</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;ssvep&quot;</span><span class="p">,</span>
+        <span class="p">]:</span>
+            <span class="n">paradigm</span> <span class="o">=</span> <span class="s2">&quot;ssvep&quot;</span>
+            <span class="n">code_suffix</span> <span class="o">=</span> <span class="s2">&quot;SSVEP&quot;</span>
+            <span class="n">interval</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;12.0&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;8.57&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s2">&quot;6.67&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="s2">&quot;5.45&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="p">}</span>  <span class="c1"># dict(up=1, left=2, right=3, down=4)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;unknown paradigm &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">paradigm</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sessions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;inexistant session </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span> <span class="o">=</span> <span class="n">sessions</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">subjects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">55</span><span class="p">)),</span>
             <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">events</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">left_hand</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">right_hand</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;Lee2019_MI&quot;</span><span class="p">,</span>
-            <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
-            <span class="n">paradigm</span><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;Lee2019_&quot;</span> <span class="o">+</span> <span class="n">code_suffix</span><span class="p">,</span>
+            <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
+            <span class="n">paradigm</span><span class="o">=</span><span class="n">paradigm</span><span class="p">,</span>
             <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;10.5524/100542&quot;</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code_suffix</span> <span class="o">=</span> <span class="n">code_suffix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_run</span> <span class="o">=</span> <span class="n">train_run</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_run</span> <span class="o">=</span> <span class="n">paradigm</span> <span class="o">==</span> <span class="s2">&quot;p300&quot;</span> <span class="k">if</span> <span class="n">test_run</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">test_run</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resting_state</span> <span class="o">=</span> <span class="n">resting_state</span>
+
+    <span class="k">def</span> <span class="nf">_translate_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paradigm</span> <span class="o">==</span> <span class="s2">&quot;imagery&quot;</span><span class="p">:</span>
+            <span class="n">dictionary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">left_hand</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">],</span>
+                <span class="n">right_hand</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">paradigm</span> <span class="o">==</span> <span class="s2">&quot;p300&quot;</span><span class="p">:</span>
+            <span class="n">dictionary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">Target</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">],</span>
+                <span class="n">NonTarget</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;nontarget&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">paradigm</span> <span class="o">==</span> <span class="s2">&quot;ssvep&quot;</span><span class="p">:</span>
+            <span class="n">dictionary</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;12.0&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;up&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;8.57&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;6.67&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;5.45&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;down&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">k</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;unknown class &quot;</span><span class="si">{}</span><span class="s1">&quot; for &quot;</span><span class="si">{}</span><span class="s1">&quot; paradigm&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">paradigm</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_check_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_mapping</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">raise_error</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;file_mapping (</span><span class="si">{}</span><span class="s2">) different than events (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">file_mapping</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_id</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_mapping</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">event_id</span><span class="p">):</span>
+            <span class="n">raise_error</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">file_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">v2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_translate_class</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="o">!=</span> <span class="n">v2</span> <span class="ow">or</span> <span class="n">v2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">raise_error</span><span class="p">()</span>
+
+    <span class="n">_scalings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">emg</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># to load the signal in Volts</span>
+
+    <span class="k">def</span> <span class="nf">_make_raw_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">ch_names</span><span class="p">,</span> <span class="n">ch_type</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">!=</span> <span class="n">signal</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">create_info</span><span class="p">(</span>
+            <span class="n">ch_names</span><span class="o">=</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">ch_types</span><span class="o">=</span><span class="p">[</span><span class="n">ch_type</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">),</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span>
+        <span class="p">)</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_type</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">RawArray</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">signal</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">raw</span>
+
+    <span class="k">def</span> <span class="nf">_get_single_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">sfreq</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">file_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">item</span><span class="p">():</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">item</span><span class="p">())</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_mapping</span><span class="p">(</span><span class="n">file_mapping</span><span class="p">)</span>
+
+        <span class="c1"># Create RawArray</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_raw_array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">],</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">)</span>
+        <span class="n">montage</span> <span class="o">=</span> <span class="n">make_standard_montage</span><span class="p">(</span><span class="s2">&quot;standard_1005&quot;</span><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><span class="n">montage</span><span class="p">)</span>
+
+        <span class="c1"># Create EMG channels</span>
+        <span class="n">emg_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_raw_array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;EMG&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;EMG_index&quot;</span><span class="p">],</span> <span class="s2">&quot;emg&quot;</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">)</span>
+
+        <span class="c1"># Create stim chan</span>
+        <span class="n">event_times_in_samples</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">event_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;y_dec&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">stim_chan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i_sample</span><span class="p">,</span> <span class="n">id_class</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">event_times_in_samples</span><span class="p">,</span> <span class="n">event_id</span><span class="p">):</span>
+            <span class="n">stim_chan</span><span class="p">[</span><span class="n">i_sample</span><span class="p">]</span> <span class="o">+=</span> <span class="n">id_class</span>
+        <span class="n">stim_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_raw_array</span><span class="p">(</span>
+            <span class="n">stim_chan</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;STI 014&quot;</span><span class="p">],</span> <span class="s2">&quot;stim&quot;</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add events</span>
+        <span class="n">event_arr</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">event_times_in_samples</span><span class="p">,</span>
+            <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_times_in_samples</span><span class="p">),</span>
+            <span class="n">event_id</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;events&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">event_arr</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Add EMG and stim channels</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">add_channels</span><span class="p">([</span><span class="n">emg_raw</span><span class="p">,</span> <span class="n">stim_raw</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">raw</span>
+
+    <span class="k">def</span> <span class="nf">_get_single_rest_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="n">sfreq</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_raw_array</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_rest&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">],</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="n">sfreq</span>
+        <span class="p">)</span>
+        <span class="n">montage</span> <span class="o">=</span> <span class="n">make_standard_montage</span><span class="p">(</span><span class="s2">&quot;standard_1005&quot;</span><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><span class="n">montage</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">raw</span>
 
     <span class="k">def</span> <span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;return data for a single subejct&quot;&quot;&quot;</span>
@@ -205,45 +433,43 @@
         <span class="n">sessions</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">file_path_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">file_path_list</span><span class="p">[</span><span class="n">session</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_run</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_run</span><span class="p">:</span>
+                <span class="n">mat</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">file_path_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">session</span><span class="p">)])</span>
 
-            <span class="c1"># Create channel info and montage</span>
-            <span class="n">eeg_ch_names</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;EEG_MI_train&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">8</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">elem</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">eeg_ch_names</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;stim&quot;</span><span class="p">]</span>
-            <span class="n">ch_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">62</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;stim&quot;</span><span class="p">]</span>
-            <span class="n">sfreq</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;EEG_MI_train&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-            <span class="n">info</span> <span class="o">=</span> <span class="n">create_info</span><span class="p">(</span><span class="n">ch_names</span><span class="o">=</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">ch_types</span><span class="o">=</span><span class="n">ch_types</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">)</span>
-            <span class="n">montage</span> <span class="o">=</span> <span class="n">make_standard_montage</span><span class="p">(</span><span class="s2">&quot;standard_1005&quot;</span><span class="p">)</span>
-
-            <span class="c1"># Create raw_data</span>
-            <span class="n">raw_train_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;EEG_MI_train&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-            <span class="n">raw_test_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;EEG_MI_test&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-            <span class="n">raw_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">raw_train_data</span><span class="p">,</span> <span class="n">raw_test_data</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-            <span class="c1"># Create raw_event</span>
-            <span class="n">train_event_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;EEG_MI_train&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
-            <span class="n">test_event_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;EEG_MI_test&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
-            <span class="n">event_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">train_event_id</span><span class="p">,</span> <span class="n">test_event_id</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">raw_events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
-            <span class="n">raw_events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">event_id</span>
-
-            <span class="c1"># Zero pad the data</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">raw_events</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">zeroshape</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">zeroshape</span><span class="p">),</span> <span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">zeroshape</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span>
-            <span class="p">)</span>
-
-            <span class="c1"># Create RawArray</span>
-            <span class="n">raw</span> <span class="o">=</span> <span class="n">RawArray</span><span class="p">(</span>
-                <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
-            <span class="n">raw</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><span class="n">montage</span><span class="p">)</span>
-
-            <span class="c1"># add the data to sessions</span>
             <span class="n">session_name</span> <span class="o">=</span> <span class="s2">&quot;session_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
-            <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;run_1&quot;</span><span class="p">:</span> <span class="n">raw</span><span class="p">}</span>
+            <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_run</span><span class="p">:</span>
+                <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">][</span><span class="s2">&quot;train&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_single_run</span><span class="p">(</span>
+                    <span class="n">mat</span><span class="p">[</span><span class="s2">&quot;EEG_</span><span class="si">{}</span><span class="s2">_train&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_suffix</span><span class="p">)][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_run</span><span class="p">:</span>
+                <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">][</span><span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_single_run</span><span class="p">(</span>
+                    <span class="n">mat</span><span class="p">[</span><span class="s2">&quot;EEG_</span><span class="si">{}</span><span class="s2">_test&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_suffix</span><span class="p">)][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resting_state</span><span class="p">:</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;pre&quot;</span>
+                <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">][</span>
+                    <span class="s2">&quot;test_</span><span class="si">{}</span><span class="s2">_rest&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_single_rest_run</span><span class="p">(</span>
+                    <span class="n">mat</span><span class="p">[</span><span class="s2">&quot;EEG_</span><span class="si">{}</span><span class="s2">_test&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_suffix</span><span class="p">)][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">prefix</span>
+                <span class="p">)</span>
+                <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">][</span>
+                    <span class="s2">&quot;train_</span><span class="si">{}</span><span class="s2">_rest&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_single_rest_run</span><span class="p">(</span>
+                    <span class="n">mat</span><span class="p">[</span><span class="s2">&quot;EEG_</span><span class="si">{}</span><span class="s2">_train&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_suffix</span><span class="p">)][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">prefix</span>
+                <span class="p">)</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;post&quot;</span>
+                <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">][</span>
+                    <span class="s2">&quot;test_</span><span class="si">{}</span><span class="s2">_rest&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_single_rest_run</span><span class="p">(</span>
+                    <span class="n">mat</span><span class="p">[</span><span class="s2">&quot;EEG_</span><span class="si">{}</span><span class="s2">_test&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_suffix</span><span class="p">)][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">prefix</span>
+                <span class="p">)</span>
+                <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">][</span>
+                    <span class="s2">&quot;train_</span><span class="si">{}</span><span class="s2">_rest&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_single_rest_run</span><span class="p">(</span>
+                    <span class="n">mat</span><span class="p">[</span><span class="s2">&quot;EEG_</span><span class="si">{}</span><span class="s2">_train&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_suffix</span><span class="p">)][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">prefix</span>
+                <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">sessions</span>
 
@@ -254,16 +480,26 @@
             <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid subject number&quot;</span><span class="p">))</span>
 
         <span class="n">subject_paths</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">session</span><span class="si">{1}</span><span class="s2">/s</span><span class="si">{2}</span><span class="s2">/sess</span><span class="si">{1:02d}</span><span class="s2">_subj</span><span class="si">{2:02d}</span><span class="s2">_EEG_MI.mat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">Lee2019_URL</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">subject</span>
+        <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">session</span><span class="si">{1}</span><span class="s2">/s</span><span class="si">{2}</span><span class="s2">/sess</span><span class="si">{1:02d}</span><span class="s2">_subj</span><span class="si">{2:02d}</span><span class="s2">_EEG_</span><span class="si">{3}</span><span class="s2">.mat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">Lee2019_URL</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_suffix</span>
             <span class="p">)</span>
-            <span class="n">data_path</span> <span class="o">=</span> <span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span><span class="p">(</span>
-                <span class="n">url</span><span class="p">,</span> <span class="s2">&quot;Lee2019_MI&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">update_path</span><span class="p">,</span> <span class="n">verbose</span>
-            <span class="p">)</span>
+            <span class="n">data_path</span> <span class="o">=</span> <span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
             <span class="n">subject_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">subject_paths</span></div>
+        <span class="k">return</span> <span class="n">subject_paths</span>
+
+
+<div class="viewcode-block" id="Lee2019_MI"><a class="viewcode-back" href="../../../generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI">[docs]</a><span class="k">class</span> <span class="nc">Lee2019_MI</span><span class="p">(</span><span class="n">Lee2019</span><span class="p">):</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">Lee2019</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span> <span class="s2">&quot;MI&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Lee2019_ERP"><a class="viewcode-back" href="../../../generated/moabb.datasets.Lee2019_ERP.html#moabb.datasets.Lee2019_ERP">[docs]</a><span class="k">class</span> <span class="nc">Lee2019_ERP</span><span class="p">(</span><span class="n">Lee2019</span><span class="p">):</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">Lee2019</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span> <span class="s2">&quot;ERP&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Lee2019_SSVEP"><a class="viewcode-back" href="../../../generated/moabb.datasets.Lee2019_SSVEP.html#moabb.datasets.Lee2019_SSVEP">[docs]</a><span class="k">class</span> <span class="nc">Lee2019_SSVEP</span><span class="p">(</span><span class="n">Lee2019</span><span class="p">):</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">Lee2019</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span> <span class="s2">&quot;SSVEP&quot;</span><span class="p">)</span></div>
 </pre></div>
 
     </div>
@@ -280,7 +516,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, Alexandre Barachant.<br/>
+        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>

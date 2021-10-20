@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What’s new &#8212; moabb 0.4.3 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Datasets" href="datasets.html" />
+    <link rel="prev" title="Mother of all BCI Benchmarks" href="index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          moabb</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.3</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="#">What's new</a></li>
+                <li><a href="api.html">API</a></li>
+                <li><a href="auto_examples/index.html">Gallery</a></li>
+                <li><a href="auto_tutorials/index.html">Tutorials</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#develop-branch">Develop branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-4-2">Version - 0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-4-1">Version - 0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-4-0">Version - 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-3-0">Version 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-2-1">Version 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-2-0">Version 0.2.0</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#erp-datasets">ERP Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#ssvep-datasets">SSVEP Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evaluations.html">Evaluations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evaluations.html#id1">Evaluations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evaluations.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="paradigms.html">Paradigms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="paradigms.html#motor-imagery-paradigms">Motor Imagery Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="paradigms.html#p300-paradigms">P300 Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="paradigms.html#ssvep-paradigms">SSVEP Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="paradigms.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pipelines.html">Pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pipelines.html#id1">Pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipelines.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#plotting">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#statistics">Statistics</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">What’s new</a><ul>
+<li><a class="reference internal" href="#develop-branch">Develop branch</a><ul>
+<li><a class="reference internal" href="#enhancements">Enhancements</a></li>
+<li><a class="reference internal" href="#bugs">Bugs</a></li>
+<li><a class="reference internal" href="#api-changes">API changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a><ul>
+<li><a class="reference internal" href="#id1">Enhancements</a></li>
+<li><a class="reference internal" href="#id2">Bugs</a></li>
+<li><a class="reference internal" href="#id3">API changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-0-4-2">Version - 0.4.2</a><ul>
+<li><a class="reference internal" href="#id4">Enhancements</a></li>
+<li><a class="reference internal" href="#id5">Bugs</a></li>
+<li><a class="reference internal" href="#id6">API changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-0-4-1">Version - 0.4.1</a><ul>
+<li><a class="reference internal" href="#id7">Enhancements</a></li>
+<li><a class="reference internal" href="#id8">Bugs</a></li>
+<li><a class="reference internal" href="#id9">API changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-0-4-0">Version - 0.4.0</a><ul>
+<li><a class="reference internal" href="#id10">Enhancements</a></li>
+<li><a class="reference internal" href="#id11">Bugs</a></li>
+<li><a class="reference internal" href="#id12">API changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-0-3-0">Version 0.3.0</a><ul>
+<li><a class="reference internal" href="#id13">Enhancements</a></li>
+<li><a class="reference internal" href="#id14">Bugs</a></li>
+<li><a class="reference internal" href="#id15">API changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-0-2-1">Version 0.2.1</a><ul>
+<li><a class="reference internal" href="#id16">Enhancements</a></li>
+<li><a class="reference internal" href="#id17">Bugs</a></li>
+<li><a class="reference internal" href="#id18">API changes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-0-2-0">Version 0.2.0</a><ul>
+<li><a class="reference internal" href="#id19">Enhancements</a></li>
+<li><a class="reference internal" href="#id20">Bugs</a></li>
+<li><a class="reference internal" href="#id21">API changes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="what-s-new">
+<span id="whats-new"></span><h1>What’s new<a class="headerlink" href="#what-s-new" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="develop-branch">
+<span id="current"></span><h2>Develop branch<a class="headerlink" href="#develop-branch" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="enhancements">
+<h3>Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add TRCA algorithm for SSVEP (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/238">#238</a> by <a class="reference external" href="https://github.com/ludovicdmt">Ludovic Darmet</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="bugs">
+<h3>Bugs<a class="headerlink" href="#bugs" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Remove unused argument from dataset_search (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/243">#243</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a>)</p></li>
+<li><p>Remove MNE call to <cite>_fetch_dataset</cite> and use MOABB <cite>_fetch_file</cite> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/235">#235</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Correct doc formatting (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/232">#232</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="api-changes">
+<h3>API changes<a class="headerlink" href="#api-changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Minimum supported Python version is now 3.7</p></li>
+<li><p>MOABB now depends on scikit-learn &gt;= 1.0</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-4-3-stable-pypi">
+<h2>Version - 0.4.3 (Stable - PyPi)<a class="headerlink" href="#version-0-4-3-stable-pypi" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Enhancements<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Rewrite Lee2019 to add P300 and SSVEP datasets (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/217">#217</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h3>Bugs<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Avoid information leakage for MNE Epochs pipelines in evaluation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/222">#222</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Correct error in set_download_dir (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/225">#225</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Ensure that channel order is consistent across dataset when channel argument is specified in paradigm (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/229">#229</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h3>API changes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>ch_names argument added to init of moabb.datasets.fake.FakeDataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/229">#229</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-4-2">
+<h2>Version - 0.4.2<a class="headerlink" href="#version-0-4-2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h3>Enhancements<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>None</p></li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h3>Bugs<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Correct error when downloading Weibo dataset  (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/212">#212</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h3>API changes<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>None</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-4-1">
+<h2>Version - 0.4.1<a class="headerlink" href="#version-0-4-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h3>Enhancements<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>None</p></li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h3>Bugs<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Correct path error for first time launch (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/204">#204</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Fix optional dependencies issues for PyPi (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/205">#205</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id9">
+<h3>API changes<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Remove update_path on all datasets, <cite>update_path</cite> parameter in <cite>dataset.data_path()</cite> is deprecated (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/207">#207</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-4-0">
+<h2>Version - 0.4.0<a class="headerlink" href="#version-0-4-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h3>Enhancements<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Implementation for learning curves (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/155">#155</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Adding Neiry Demons P300 dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/156">#156</a> by <a class="reference external" href="https://github.com/v-goncharenko">Vladislav Goncharenko</a>)</p></li>
+<li><p>Coloredlogs removal (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/163">#163</a> by <a class="reference external" href="https://github.com/v-goncharenko">Vladislav Goncharenko</a>)</p></li>
+<li><p>Update for README (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/164">#164</a> by <a class="reference external" href="https://github.com/v-goncharenko">Vladislav Goncharenko</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Test all relevant python versions in Github Actions CI (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/167">#167</a> by <a class="reference external" href="https://github.com/v-goncharenko">Vladislav Goncharenko</a>)</p></li>
+<li><p>Adding motor imagery part of the Lee2019 dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/170">#170</a> by <a class="reference external" href="https://github.com/AliAbdulHussain">Ali Abdul Hussain</a>)</p></li>
+<li><p>CI: deploy docs from CI pipeline  (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/124">#124</a> by <a class="reference external" href="https://github.com/ErikBjare">Erik Bjäreholt</a>, <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Remove dependencies: WFDB and pyunpack (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/180">#180</a> and <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/188">#188</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Add support for FigShare API (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/188">#188</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>New download backend function relying on Pooch, handling FTP, HTTP and HTTPS (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/188">#188</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Complete rework of examples and tutorial (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/188">#188</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Change default storage location for results: instead of moabb source code directory it is now stored in mne_data (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/188">#188</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Major update of test (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/188">#188</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Adding troubleshooting and badges in README (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/189">#189</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Use MNE epoch in evaluation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/192">#192</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Allow changing of storage location (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/192">#192</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Deploy docs on moabb.github.io (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/196">#196</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Broadening subject_list type for <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.BaseDataset()</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/198">#198</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Adding this what’s new (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/200">#200</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Improving cache usage and save computation time in CI (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/200">#200</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Rewrite Lee2019 to add P300 and SSVEP datasets (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/217">#217</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h3>Bugs<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Restore basic logging (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/177">#177</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Correct wrong type of results dataframe columns (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/188">#188</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">accept</span></code> arg to acknowledge licence for <a class="reference internal" href="generated/moabb.datasets.Shin2017A.html#moabb.datasets.Shin2017A" title="moabb.datasets.Shin2017A"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.Shin2017A()</span></code></a> and <a class="reference internal" href="generated/moabb.datasets.Shin2017B.html#moabb.datasets.Shin2017B" title="moabb.datasets.Shin2017B"><code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.datasets.Shin2017B()</span></code></a> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/201">#201</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id12">
+<h3>API changes<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Drop <cite>update_path</cite> from moabb.download.data_path and moabb.download.data_dl</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-3-0">
+<h2>Version 0.3.0<a class="headerlink" href="#version-0-3-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id13">
+<h3>Enhancements<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Expose sklearn error_score parameter (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/70">#70</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Adds a <code class="docutils literal notranslate"><span class="pre">unit_factor</span></code> attribute to base_paradigms (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/72">#72</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Allow event lists in P300 paradigm (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/83">#83</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Return epochs instead of np.ndarray in process_raw (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/86">#86</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Set path for hdf5 files (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/92">#92</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Update to MNE 0.21  (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/101">#101</a> by <a class="reference external" href="https://github.com/ragatti">Ramiro Gatti</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Adding a baseline correction (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/115">#115</a> by <a class="reference external" href="https://github.com/ragatti">Ramiro Gatti</a>)</p></li>
+<li><p>Adding SSVEP datasets: MAMEM1, MAMEM2, MAMEM3, Nakanishi2015, Wang2016, (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/118">#118</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>, <a class="reference external" href="https://github.com/qbarthelemy">Quentin Barthelemy</a>, and <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a>)</p></li>
+<li><p>Switch to GitHub Actions (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/124">#124</a> by <a class="reference external" href="https://github.com/ErikBjare">Erik Bjäreholt</a>)</p></li>
+<li><p>Allow recording of additional scores/parameters/metrics in evaluation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/127">#127</a> and <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/128">#128</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Fix Ofner2017 and PhysionetMI annotations (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/135">#135</a> by <a class="reference external" href="https://github.com/AliAbdulHussain">Ali Abdul Hussain</a>)</p></li>
+<li><p>Adding Graz workshop tutorials (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/130">#130</a> and <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/137">#137</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a> and <a class="reference external" href="https://github.com/lucascust">Lucas Custódio</a>)</p></li>
+<li><p>Adding pre-commit configuration using isort, black and flake8 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/140">#140</a> by <a class="reference external" href="https://github.com/v-goncharenko">Vladislav Goncharenko</a>)</p></li>
+<li><p>style: format Python code with black  (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/147">#147</a> by <a class="reference external" href="https://github.com/ErikBjare">Erik Bjäreholt</a>)</p></li>
+<li><p>Switching to Poetry dependency management (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/150">#150</a> by <a class="reference external" href="https://github.com/v-goncharenko">Vladislav Goncharenko</a>)</p></li>
+<li><p>Using Prettier to format md and yml files (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/151">#151</a> by <a class="reference external" href="https://github.com/v-goncharenko">Vladislav Goncharenko</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id14">
+<h3>Bugs<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Use stim_channels or check annotation when loading files in Paradigm  (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/72">#72</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Correct MNE issues (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/76">#76</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Fix capitalization in channel names of cho dataset  (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/90">#90</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Correct failling CI tests (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/100">#100</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Fix EPFL dataset flat signal sections and wrong scaling (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/104">#104</a> and <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/96">#96</a> by  <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Fix schirrmeister dataset for Python3.8 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/105">#105</a> by <a class="reference external" href="https://github.com/robintibor">Robin Schirrmeister</a>)</p></li>
+<li><p>Correct event detection problem and duplicate event error (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/106">#106</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Fix channel selection in paradigm (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/108">#108</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Fix upperlimb Ofner2017 error and gdf import problem (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/111">#111</a> and <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/110">#110</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Fix event_id in events_from_annotations missed (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/112">#112</a> by <a class="reference external" href="https://github.com/ragatti">Ramiro Gatti</a>)</p></li>
+<li><p>Fix h5py&gt;=3.0 compatibility issue (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/138">#138</a> by <a class="reference external" href="https://github.com/m2-farzan">Mohammad Mostafa Farzan</a>)</p></li>
+<li><p>Python 2 support removal (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/148">#148</a> by <a class="reference external" href="https://github.com/v-goncharenko">Vladislav Goncharenko</a>)</p></li>
+<li><p>Travis-ci config removal (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/149">#149</a> by <a class="reference external" href="https://github.com/v-goncharenko">Vladislav Goncharenko</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id15">
+<h3>API changes<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>None</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-2-1">
+<h2>Version 0.2.1<a class="headerlink" href="#version-0-2-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id16">
+<h3>Enhancements<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add Tikhonov regularized CSP in <code class="docutils literal notranslate"><span class="pre">moabb.pipelines.csp</span></code> from the paper (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/60">#60</a> by <a class="reference external" href="https://github.com/vinay-jayaram">Vinay Jayaram</a>)</p></li>
+<li><p>update to MNE version 0.19 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/73">#73</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Improve doc building in CI (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/60">#60</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id17">
+<h3>Bugs<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Update GigaDB Cho2017 URL (<a class="reference external" href="https://github.com/plcrodrigues">Pedro L. C. Rodrigues</a> and <a class="reference external" href="https://github.com/vinay-jayaram">Vinay Jayaram</a>)</p></li>
+<li><p>Fix braininvaders ERP data (<a class="reference external" href="https://github.com/plcrodrigues">Pedro L. C. Rodrigues</a>)</p></li>
+<li><p>Replace MNE <code class="docutils literal notranslate"><span class="pre">read_montage</span></code> with <code class="docutils literal notranslate"><span class="pre">make_standard_montage</span></code> (<a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
+<li><p>Correct Flake and PEP8 error (<a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id18">
+<h3>API changes<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>None</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-2-0">
+<h2>Version 0.2.0<a class="headerlink" href="#version-0-2-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id19">
+<h3>Enhancements<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>MOABB corresponding to the paper version by <a class="reference external" href="https://github.com/vinay-jayaram">Vinay Jayaram</a> and <a class="reference external" href="https://github.com/alexandrebarachant">Alexandre Barachant</a></p></li>
+<li><p>Creating P300 paradigm and BNCI datasets (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/53">#53</a> by <a class="reference external" href="https://github.com/plcrodrigues">Pedro L. C. Rodrigues</a>)</p></li>
+<li><p>Adding EPFL P300 dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/56">#56</a> by <a class="reference external" href="https://github.com/plcrodrigues">Pedro L. C. Rodrigues</a>)</p></li>
+<li><p>Adding BrainInvaders P300 dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/57">#57</a> by <a class="reference external" href="https://github.com/plcrodrigues">Pedro L. C. Rodrigues</a>)</p></li>
+<li><p>Creating SSVEP paradigm and SSVEPExo dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/59">#59</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="id20">
+<h3>Bugs<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>None</p></li>
+</ul>
+</div>
+<div class="section" id="id21">
+<h3>API changes<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>None</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="_sources/whats_new.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

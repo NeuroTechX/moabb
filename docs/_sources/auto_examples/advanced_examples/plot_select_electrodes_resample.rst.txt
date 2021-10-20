@@ -135,11 +135,11 @@ a sampling rate of 200 Hz.
  .. code-block:: none
 
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.862517  0.072928    144.0  ...          2   001-2014     ts+lr
-    1  0.847891  0.070864    144.0  ...          2   001-2014     ts+lr
-    2  0.505714  0.080307    144.0  ...          2   001-2014     ts+lr
-    3  0.561769  0.066694    144.0  ...          2   001-2014     ts+lr
-    4  0.852146  0.061581    119.0  ...          3  Zhou 2016     ts+lr
+    0  0.868299  0.019538    144.0  ...          2   001-2014   csp+lda
+    1  0.875102  0.018331    144.0  ...          2   001-2014   csp+lda
+    2  0.525850  0.018472    144.0  ...          2   001-2014   csp+lda
+    3  0.518435  0.018752    144.0  ...          2   001-2014   csp+lda
+    4  0.857323  0.019379    119.0  ...          3  Zhou 2016   csp+lda
 
     [5 rows x 9 columns]
 
@@ -181,11 +181,11 @@ as well as the list of datasets with valid channels.
     Searching dataset: Zhou2016
     Searching dataset: BNCI2014001
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.866531  0.076043    144.0  ...          2   001-2014     ts+lr
-    1  0.874490  0.069127    144.0  ...          2   001-2014     ts+lr
-    2  0.536259  0.080370    144.0  ...          2   001-2014     ts+lr
-    3  0.529320  0.071393    144.0  ...          2   001-2014     ts+lr
-    4  0.855051  0.066044    119.0  ...          3  Zhou 2016     ts+lr
+    0  0.852721  0.018471    144.0  ...          2   001-2014   csp+lda
+    1  0.853741  0.019003    144.0  ...          2   001-2014   csp+lda
+    2  0.458980  0.018534    144.0  ...          2   001-2014   csp+lda
+    3  0.541429  0.039888    144.0  ...          2   001-2014   csp+lda
+    4  0.846212  0.019723    119.0  ...          3  Zhou 2016   csp+lda
 
     [5 rows x 9 columns]
 
@@ -221,7 +221,7 @@ regression computed in the tangent space of the covariance matrices.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  32.840 seconds)
+   **Total running time of the script:** ( 0 minutes  31.051 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_select_electrodes_resample.py:

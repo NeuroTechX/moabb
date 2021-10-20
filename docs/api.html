@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Datasets &#8212; moabb 0.3.0 documentation</title>
+    <title>Datasets &#8212; moabb 0.4.3 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
@@ -21,9 +21,9 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js "></script>
 <script type="text/javascript" src="_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
 <script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
 
   </head><body>
@@ -39,12 +39,13 @@
         </button>
         <a class="navbar-brand" href="index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3.0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
+                <li><a href="whats_new.html">What's new</a></li>
                 <li><a href="#">API</a></li>
                 <li><a href="auto_examples/index.html">Gallery</a></li>
                 <li><a href="auto_tutorials/index.html">Tutorials</a></li>
@@ -58,7 +59,20 @@
      href="index.html">Site <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
-      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="whats_new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="whats_new.html#develop-branch">Develop branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whats_new.html#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whats_new.html#version-0-3-0">Version 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whats_new.html#version-0-2-1">Version 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whats_new.html#version-0-2-0">Version 0.2.0</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -106,7 +120,9 @@
 <li><a class="reference internal" href="#motor-imagery-datasets">Motor Imagery Datasets</a></li>
 <li><a class="reference internal" href="#erp-datasets">ERP Datasets</a></li>
 <li><a class="reference internal" href="#ssvep-datasets">SSVEP Datasets</a></li>
-<li><a class="reference internal" href="#base-utils">Base &amp; Utils</a></li>
+<li><a class="reference internal" href="#base-utils">Base &amp; Utils</a><ul>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-moabb.evaluations">Evaluations</a><ul>
@@ -195,34 +211,32 @@ different recording sessions per subject or to evaluate them separately.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Cho2017.html#moabb.datasets.Cho2017" title="moabb.datasets.Cho2017"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Cho2017</span></code></a>()</p></td>
 <td><p>Motor Imagery dataset from Cho et al 2017.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.DemonsP300.html#moabb.datasets.DemonsP300" title="moabb.datasets.DemonsP300"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DemonsP300</span></code></a>()</p></td>
-<td><p>Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons versus Demons.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI" title="moabb.datasets.Lee2019_MI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lee2019_MI</span></code></a>([train_run, test_run, …])</p></td>
+<td><p><p class="rubric">Methods</p>
+</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI" title="moabb.datasets.Lee2019_MI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lee2019_MI</span></code></a>()</p></td>
-<td><p>Motor Imagery BMI/OpenBMI dataset from BMI/OpenBMI dataset.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.MunichMI.html#moabb.datasets.MunichMI" title="moabb.datasets.MunichMI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MunichMI</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.MunichMI.html#moabb.datasets.MunichMI" title="moabb.datasets.MunichMI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MunichMI</span></code></a>()</p></td>
 <td><p>Munich Motor Imagery dataset.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Ofner2017.html#moabb.datasets.Ofner2017" title="moabb.datasets.Ofner2017"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ofner2017</span></code></a>([imagined, executed])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Ofner2017.html#moabb.datasets.Ofner2017" title="moabb.datasets.Ofner2017"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Ofner2017</span></code></a>([imagined, executed])</p></td>
 <td><p>Motor Imagery ataset from Ofner et al 2017.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a>([imagined, executed])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a>([imagined, executed])</p></td>
 <td><p>Physionet Motor Imagery dataset.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a>()</p></td>
 <td><p>High-gamma dataset discribed in Schirrmeister et al. 2017.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Shin2017A.html#moabb.datasets.Shin2017A" title="moabb.datasets.Shin2017A"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shin2017A</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Shin2017A.html#moabb.datasets.Shin2017A" title="moabb.datasets.Shin2017A"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shin2017A</span></code></a>([accept])</p></td>
 <td><p>Motor Imagey Dataset from Shin et al 2017</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Shin2017B.html#moabb.datasets.Shin2017B" title="moabb.datasets.Shin2017B"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shin2017B</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Shin2017B.html#moabb.datasets.Shin2017B" title="moabb.datasets.Shin2017B"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shin2017B</span></code></a>([accept])</p></td>
 <td><p>Mental Arithmetic Dataset from Shin et al 2017</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Weibo2014</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Weibo2014</span></code></a>()</p></td>
 <td><p>Motor Imagery dataset from Weibo et al 2014.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Zhou2016</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Zhou2016</span></code></a>()</p></td>
 <td><p>Motor Imagery dataset from Zhou et al 2016.</p></td>
 </tr>
 </tbody>
@@ -248,8 +262,15 @@ different recording sessions per subject or to evaluate them separately.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015003.html#moabb.datasets.BNCI2015003" title="moabb.datasets.BNCI2015003"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BNCI2015003</span></code></a>()</p></td>
 <td><p>BNCI 2015-003 P300 dataset.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.EPFLP300.html#moabb.datasets.EPFLP300" title="moabb.datasets.EPFLP300"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EPFLP300</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.DemonsP300.html#moabb.datasets.DemonsP300" title="moabb.datasets.DemonsP300"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DemonsP300</span></code></a>()</p></td>
+<td><p>Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons versus Demons.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.EPFLP300.html#moabb.datasets.EPFLP300" title="moabb.datasets.EPFLP300"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EPFLP300</span></code></a>()</p></td>
 <td><p>P300 dataset from Hoffmann et al 2008.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_ERP.html#moabb.datasets.Lee2019_ERP" title="moabb.datasets.Lee2019_ERP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lee2019_ERP</span></code></a>([train_run, test_run, …])</p></td>
+<td><p><p class="rubric">Methods</p>
+</p></td>
 </tr>
 </tbody>
 </table>
@@ -280,6 +301,10 @@ different recording sessions per subject or to evaluate them separately.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.MAMEM3.html#moabb.datasets.MAMEM3" title="moabb.datasets.MAMEM3"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAMEM3</span></code></a>()</p></td>
 <td><p>SSVEP MAMEM 3 dataset</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_SSVEP.html#moabb.datasets.Lee2019_SSVEP" title="moabb.datasets.Lee2019_SSVEP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lee2019_SSVEP</span></code></a>([train_run, test_run, …])</p></td>
+<td><p><p class="rubric">Methods</p>
+</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -294,31 +319,39 @@ different recording sessions per subject or to evaluate them separately.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">base.BaseDataset</span></code></a>(subjects, …[, doi, …])</p></td>
 <td><p>Parameters required for all datasets</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.download.data_path.html#moabb.datasets.download.data_path" title="moabb.datasets.download.data_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.data_path</span></code></a>(url, sign[, path, …])</p></td>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.download.data_path.html#moabb.datasets.download.data_path" title="moabb.datasets.download.data_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.data_path</span></code></a>(url, sign[, path, …])</p></td>
 <td><p>Get path to local copy of given dataset URL.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.download.data_dl.html#moabb.datasets.download.data_dl" title="moabb.datasets.download.data_dl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.data_dl</span></code></a>(url, sign[, path, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.download.data_dl.html#moabb.datasets.download.data_dl" title="moabb.datasets.download.data_dl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.data_dl</span></code></a>(url, sign[, path, …])</p></td>
 <td><p>Download file from url to specified path</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.download.fs_issue_request.html#moabb.datasets.download.fs_issue_request" title="moabb.datasets.download.fs_issue_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.fs_issue_request</span></code></a>(method, url, headers)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.download.fs_issue_request.html#moabb.datasets.download.fs_issue_request" title="moabb.datasets.download.fs_issue_request"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.fs_issue_request</span></code></a>(method, url, headers)</p></td>
 <td><p>Wrapper for HTTP request</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.download.fs_get_file_list.html#moabb.datasets.download.fs_get_file_list" title="moabb.datasets.download.fs_get_file_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.fs_get_file_list</span></code></a>(article_id[, version])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.download.fs_get_file_list.html#moabb.datasets.download.fs_get_file_list" title="moabb.datasets.download.fs_get_file_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.fs_get_file_list</span></code></a>(article_id[, version])</p></td>
 <td><p>List all the files associated with a given article.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.download.fs_get_file_hash.html#moabb.datasets.download.fs_get_file_hash" title="moabb.datasets.download.fs_get_file_hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.fs_get_file_hash</span></code></a>(filelist)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.download.fs_get_file_hash.html#moabb.datasets.download.fs_get_file_hash" title="moabb.datasets.download.fs_get_file_hash"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.fs_get_file_hash</span></code></a>(filelist)</p></td>
 <td><p>Returns a dict associating figshare file id to MD5 hash</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.download.fs_get_file_id.html#moabb.datasets.download.fs_get_file_id" title="moabb.datasets.download.fs_get_file_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.fs_get_file_id</span></code></a>(filelist)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.download.fs_get_file_id.html#moabb.datasets.download.fs_get_file_id" title="moabb.datasets.download.fs_get_file_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.fs_get_file_id</span></code></a>(filelist)</p></td>
 <td><p>Returns a dict associating filename to figshare file id</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.download.fs_get_file_name.html#moabb.datasets.download.fs_get_file_name" title="moabb.datasets.download.fs_get_file_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.fs_get_file_name</span></code></a>(filelist)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.download.fs_get_file_name.html#moabb.datasets.download.fs_get_file_name" title="moabb.datasets.download.fs_get_file_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.fs_get_file_name</span></code></a>(filelist)</p></td>
 <td><p>Returns a dict associating figshare file id to filename</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.utils.dataset_search.html#moabb.datasets.utils.dataset_search" title="moabb.datasets.utils.dataset_search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.dataset_search</span></code></a>(paradigm[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.utils.dataset_search.html#moabb.datasets.utils.dataset_search" title="moabb.datasets.utils.dataset_search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.dataset_search</span></code></a>(paradigm[, …])</p></td>
 <td><p>Returns a list of datasets that match a given criteria</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.utils.find_intersecting_channels.html#moabb.datasets.utils.find_intersecting_channels" title="moabb.datasets.utils.find_intersecting_channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.find_intersecting_channels</span></code></a>(datasets[, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.utils.find_intersecting_channels.html#moabb.datasets.utils.find_intersecting_channels" title="moabb.datasets.utils.find_intersecting_channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.find_intersecting_channels</span></code></a>(datasets[, …])</p></td>
 <td><p>Given a list of dataset instances return a list of channels shared by all datasets.</p></td>
 </tr>
 </tbody>
@@ -581,7 +614,7 @@ with an sklearn compatible estimator.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, Alexandre Barachant.<br/>
+        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>

@@ -200,7 +200,7 @@ The ``ExampleDataset`` needs to implement only 3 functions:
                 raise (ValueError("Invalid subject number"))
 
             url = "{:s}subject_0{:d}.mat".format(ExampleDataset_URL, subject)
-            path = dl.data_path(url, "ExampleDataset")
+            path = dl.data_dl(url, "ExampleDataset")
             return [path]  # it has to return a list
 
 
@@ -249,9 +249,9 @@ The rest of the code follows the steps described in the previous tutorials.
  .. code-block:: none
 
        score      time  samples  ... n_sessions          dataset  pipeline
-    0    1.0  0.031613     40.0  ...          1  Example dataset       MDM
-    1    1.0  0.036532     40.0  ...          1  Example dataset       MDM
-    2    1.0  0.031337     40.0  ...          1  Example dataset       MDM
+    0    1.0  0.030878     40.0  ...          1  Example dataset       MDM
+    1    1.0  0.031061     40.0  ...          1  Example dataset       MDM
+    2    1.0  0.029412     40.0  ...          1  Example dataset       MDM
 
     [3 rows x 9 columns]
 
@@ -271,7 +271,7 @@ You could then follow the instructions on `how to contribute <https://github.com
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.364 seconds)
+   **Total running time of the script:** ( 0 minutes  5.780 seconds)
 
 
 .. _sphx_glr_download_auto_tutorials_tutorial_4_adding_a_dataset.py:

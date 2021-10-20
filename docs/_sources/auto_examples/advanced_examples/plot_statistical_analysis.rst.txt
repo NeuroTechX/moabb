@@ -25,7 +25,6 @@ The MOABB codebase comes with convenience plotting utilities and some
 statistical testing. This tutorial focuses on what those exactly are and how
 they can be used.
 
-
 .. GENERATED FROM PYTHON SOURCE LINES 10-38
 
 .. code-block:: default
@@ -274,7 +273,7 @@ the x-axis over all datasets
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  5.867 seconds)
+   **Total running time of the script:** ( 1 minutes  2.622 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_statistical_analysis.py:
