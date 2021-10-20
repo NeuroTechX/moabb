@@ -158,6 +158,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     Code based on the Matlab implementation from authors of [1]_
     (https://github.com/mnakanishi/TRCA-SSVEP).
 
+        .. versionadded:: 0.4.4
     """
 
     def __init__(
