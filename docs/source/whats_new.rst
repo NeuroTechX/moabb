@@ -18,27 +18,29 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
-- None
+- Add TRCA algorithm for SSVEP (:gh:`238` by `Ludovic Darmet`_)
 
 Bugs
 ~~~~
 
-- None
+- Remove unused argument from dataset_search (:gh:`243` by `Divyesh Narayanan`_)
+- Remove MNE call to `_fetch_dataset` and use MOABB `_fetch_file` (:gh:`235` by `Jan Sosulski`_)
+- Correct doc formatting (:gh:`232` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
 
 - Minimum supported Python version is now 3.7
-- We now use scikit-learn >= 1.0
+- MOABB now depends on scikit-learn >= 1.0
 
 
 Version - 0.4.3 (Stable - PyPi)
----------------
+--------------------------------
 
 Enhancements
 ~~~~~~~~~~~~
 
-- Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetchel`_)
+- Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
@@ -108,7 +110,7 @@ Enhancements
 - Broadening subject_list type for :func:`moabb.datasets.BaseDataset` (:gh:`198` by `Sylvain Chevallier`_)
 - Adding this what's new (:gh:`200` by `Sylvain Chevallier`_)
 - Improving cache usage and save computation time in CI (:gh:`200` by `Sylvain Chevallier`_)
-- Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetchel`_)
+- Rewrite Lee2019 to add P300 and SSVEP datasets (:gh:`217` by `Pierre Guetschel`_)
 
 
 Bugs
@@ -222,3 +224,4 @@ API changes
 .. _Robin Schirrmeister: https://github.com/robintibor
 .. _Jan Sosulski: https://github.com/jsosulski
 .. _Pierre Guetschel: https://github.com/PierreGtch
+.. _Ludovic Darmet: https://github.com/ludovicdmt
