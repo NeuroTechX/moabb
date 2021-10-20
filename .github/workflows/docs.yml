@@ -134,6 +134,8 @@ jobs:
 
       - name: Deploy on gh-pages
         run: |
+          git config --global user.email "ci@neurotechx.com"
+          git config --global user.name "Github Actions"
           cd ~/work/moabb/moabb/moabb-ghpages
           rm -Rf docs
           cp -a ~/work/moabb/moabb/docs/build/html ./docs
