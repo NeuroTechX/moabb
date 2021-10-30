@@ -1,9 +1,10 @@
-import unittest
 import os.path as osp
+import unittest
+
+from mne import get_config
 
 from moabb.datasets import utils
 from moabb.utils import set_download_dir
-from mne import get_config
 
 
 class Test_Utils(unittest.TestCase):

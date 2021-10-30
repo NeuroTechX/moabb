@@ -11,8 +11,11 @@ path/location.
 # License: BSD (3-clause)
 
 import os.path as osp
-from moabb.utils import set_download_dir
+
 from mne import get_config
+
+from moabb.utils import set_download_dir
+
 
 # You can choose to change the download directory to any path of your choice.
 # If the path/folder doesn't exist, it will be created for you.
