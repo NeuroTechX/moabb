@@ -29,5 +29,5 @@ set_download_dir(new_path)
 check_path = get_config("MNE_DATA")
 print(f"Now the download directory has been changed to {check_path}")
 
-# Set back to usual
+# Set the directory back to default location
 set_download_dir(original_path)
