@@ -249,9 +249,9 @@ The rest of the code follows the steps described in the previous tutorials.
  .. code-block:: none
 
        score      time  samples  ... n_sessions          dataset  pipeline
-    0    1.0  0.050935     40.0  ...          1  Example dataset       MDM
-    1    1.0  0.047236     40.0  ...          1  Example dataset       MDM
-    2    1.0  0.045505     40.0  ...          1  Example dataset       MDM
+    0    1.0  0.039160     40.0  ...          1  Example dataset       MDM
+    1    1.0  0.040634     40.0  ...          1  Example dataset       MDM
+    2    1.0  0.040010     40.0  ...          1  Example dataset       MDM
 
     [3 rows x 9 columns]
 
@@ -271,7 +271,7 @@ You could then follow the instructions on `how to contribute <https://github.com
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.401 seconds)
+   **Total running time of the script:** ( 0 minutes  5.336 seconds)
 
 
 .. _sphx_glr_download_auto_tutorials_tutorial_4_adding_a_dataset.py:

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cross Session Motor Imagery &#8212; moabb 0.4.3 documentation</title>
+    <title>Cross Session Motor Imagery &#8212; moabb 0.4.4 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -39,7 +39,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4.3</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.4</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -62,7 +62,8 @@
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s new</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../whats_new.html#develop-branch">Develop branch</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-3-stable-pypi">Version - 0.4.3 (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-4-stable-pypi">Version - 0.4.4  (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-3">Version - 0.4.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
@@ -263,25 +264,25 @@ be overwrited if necessary.</p>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/results.py:69: RuntimeWarning: Setting non-standard config type: &quot;MOABB_RESULTS&quot;
   set_config(&quot;MOABB_RESULTS&quot;, osp.join(osp.expanduser(&quot;~&quot;), &quot;mne_data&quot;))
-2021-10-20 00:45:39,598 INFO MainThread moabb.evaluations.base Processing dataset: 001-2014
+2021-12-03 09:17:15,522 INFO MainThread moabb.evaluations.base Processing dataset: 001-2014
 MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_data
 All datasets will be downloaded to this location, if anything is already downloaded, please move manually to this location
 /home/runner/work/moabb/moabb/moabb/datasets/download.py:53: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_BNCI_PATH&quot;
   set_config(key, get_config(&quot;MNE_DATA&quot;))
-2021-10-20 00:46:00,051 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_E: Score 0.955
-2021-10-20 00:46:00,439 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_T: Score 0.932
-2021-10-20 00:46:00,976 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_E: Score 0.963
-2021-10-20 00:46:01,533 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_T: Score 0.950
-2021-10-20 00:46:21,592 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_E: Score 0.646
-2021-10-20 00:46:21,954 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_T: Score 0.527
-2021-10-20 00:46:22,486 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_E: Score 0.586
-2021-10-20 00:46:23,016 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_T: Score 0.575
+2021-12-03 09:17:38,498 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_E: Score 0.955
+2021-12-03 09:17:38,907 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_T: Score 0.932
+2021-12-03 09:17:39,391 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_E: Score 0.963
+2021-12-03 09:17:39,864 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_T: Score 0.950
+2021-12-03 09:18:07,898 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_E: Score 0.646
+2021-12-03 09:18:08,298 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_T: Score 0.527
+2021-12-03 09:18:08,785 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_E: Score 0.586
+2021-12-03 09:18:09,269 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_T: Score 0.575
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.962963  0.529941    144.0       1  ...       22           2  001-2014    RG+LR
-1  0.950424  0.549554    144.0       1  ...       22           2  001-2014    RG+LR
-2  0.585648  0.525853    144.0       2  ...       22           2  001-2014    RG+LR
-3  0.574846  0.523723    144.0       2  ...       22           2  001-2014    RG+LR
-4  0.955440  0.418229    144.0       1  ...       22           2  001-2014  CSP+LDA
+0  0.962963  0.476457    144.0       1  ...       22           2  001-2014    RG+LR
+1  0.950424  0.465913    144.0       1  ...       22           2  001-2014    RG+LR
+2  0.585648  0.480153    144.0       2  ...       22           2  001-2014    RG+LR
+3  0.574846  0.476666    144.0       2  ...       22           2  001-2014    RG+LR
+4  0.955440  0.452418    144.0       1  ...       22           2  001-2014  CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -325,7 +326,7 @@ points are in its quadrant.</p>
 </pre></div>
 </div>
 <img alt="plot cross session motor imagery" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  43.839 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  54.036 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/82e3e6cb009bb9a9c444c6cff254cea8/plot_cross_session_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_motor_imagery.py</span></code></a></p>

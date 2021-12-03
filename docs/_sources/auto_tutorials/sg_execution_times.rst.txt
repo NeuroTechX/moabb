@@ -5,16 +5,16 @@
 
 Computation times
 =================
-**01:43.733** total execution time for **auto_tutorials** files:
+**01:46.855** total execution time for **auto_tutorials** files:
 
 +----------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_tutorials_tutorial_3_benchmarking_multiple_pipelines.py` (``tutorial_3_benchmarking_multiple_pipelines.py``) | 00:56.466 | 0.0 MB |
+| :ref:`sphx_glr_auto_tutorials_tutorial_3_benchmarking_multiple_pipelines.py` (``tutorial_3_benchmarking_multiple_pipelines.py``) | 00:53.337 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_tutorials_tutorial_1_simple_example_motor_imagery.py` (``tutorial_1_simple_example_motor_imagery.py``)       | 00:21.597 | 0.0 MB |
+| :ref:`sphx_glr_auto_tutorials_tutorial_1_simple_example_motor_imagery.py` (``tutorial_1_simple_example_motor_imagery.py``)       | 00:24.856 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_tutorials_tutorial_2_using_mulitple_datasets.py` (``tutorial_2_using_mulitple_datasets.py``)                 | 00:13.267 | 0.0 MB |
+| :ref:`sphx_glr_auto_tutorials_tutorial_2_using_mulitple_datasets.py` (``tutorial_2_using_mulitple_datasets.py``)                 | 00:14.900 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_tutorials_plot_Getting_Started.py` (``plot_Getting_Started.py``)                                             | 00:07.002 | 0.0 MB |
+| :ref:`sphx_glr_auto_tutorials_plot_Getting_Started.py` (``plot_Getting_Started.py``)                                             | 00:08.426 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_tutorials_tutorial_4_adding_a_dataset.py` (``tutorial_4_adding_a_dataset.py``)                               | 00:05.401 | 0.0 MB |
+| :ref:`sphx_glr_auto_tutorials_tutorial_4_adding_a_dataset.py` (``tutorial_4_adding_a_dataset.py``)                               | 00:05.336 | 0.0 MB |
 +----------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
