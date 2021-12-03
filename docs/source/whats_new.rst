@@ -18,7 +18,7 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
-- None
+- Adding Test and Example for set_download_dir (:gh:`249` by `Divyesh Narayanan`_)
 
 Bugs
 ~~~~
