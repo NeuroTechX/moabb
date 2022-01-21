@@ -87,7 +87,7 @@ class Schirrmeister2017(BaseDataset):
     def _get_single_subject_data(self, subject):
         train, test = [BBCIDataset(path) for path in self.data_path(subject)]
         sessions = {}
-        sessions["session_1"] = {"train": train.load(), "test": test.load()}
+        sessions["session_0"] = {"run_0": train.load(), "run_1": test.load()}
         return sessions
 
 
@@ -252,5 +252,7 @@ class BBCIDataset(object):
             [0] * len(event_times_in_samples),
             event_classes,
         ]
-        cnt.info["events"] = np.array(event_arr).T
+        cnt.info["events"] = [
+            dict(list=np.array(event_arr).T, channels=None),
+        ]
         return cnt
