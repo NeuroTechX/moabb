@@ -245,7 +245,7 @@ paradigm (note that BNCI2014001 is in it)
 
  .. code-block:: none
 
-    [<moabb.datasets.bnci.BNCI2014001 object at 0x7eff971d3970>, <moabb.datasets.bnci.BNCI2014004 object at 0x7eff971d37f0>, <moabb.datasets.gigadb.Cho2017 object at 0x7eff971d3d00>, <moabb.datasets.Lee2019.Lee2019_MI object at 0x7eff971d32b0>, <moabb.datasets.mpi_mi.MunichMI object at 0x7eff971d3fd0>, <moabb.datasets.physionet_mi.PhysionetMI object at 0x7eff970a89a0>, <moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7eff970a8280>, <moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7eff970a8970>, <moabb.datasets.Weibo2014.Weibo2014 object at 0x7eff970a8310>, <moabb.datasets.Zhou2016.Zhou2016 object at 0x7eff970a8670>]
+    [<moabb.datasets.bnci.BNCI2014001 object at 0x7f415842c280>, <moabb.datasets.bnci.BNCI2014004 object at 0x7f415842c880>, <moabb.datasets.gigadb.Cho2017 object at 0x7f415842cc10>, <moabb.datasets.Lee2019.Lee2019_MI object at 0x7f415842c910>, <moabb.datasets.mpi_mi.MunichMI object at 0x7f415842c640>, <moabb.datasets.physionet_mi.PhysionetMI object at 0x7f415842c3a0>, <moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f415842cac0>, <moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f415842c400>, <moabb.datasets.Weibo2014.Weibo2014 object at 0x7f415842cfa0>, <moabb.datasets.Zhou2016.Zhou2016 object at 0x7f415842cb50>]
 
 
 
@@ -422,7 +422,7 @@ strings for its labeling. This is why we create the field 'subj'.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  21.700 seconds)
+   **Total running time of the script:** ( 0 minutes  21.599 seconds)
 
 
 .. _sphx_glr_download_auto_tutorials_tutorial_1_simple_example_motor_imagery.py:

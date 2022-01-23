@@ -234,7 +234,7 @@
     <span class="k">def</span> <span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
         <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="p">[</span><span class="n">BBCIDataset</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">(</span><span class="n">subject</span><span class="p">)]</span>
         <span class="n">sessions</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">sessions</span><span class="p">[</span><span class="s2">&quot;session_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">train</span><span class="o">.</span><span class="n">load</span><span class="p">(),</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">test</span><span class="o">.</span><span class="n">load</span><span class="p">()}</span>
+        <span class="n">sessions</span><span class="p">[</span><span class="s2">&quot;session_0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;run_0&quot;</span><span class="p">:</span> <span class="n">train</span><span class="o">.</span><span class="n">load</span><span class="p">(),</span> <span class="s2">&quot;run_1&quot;</span><span class="p">:</span> <span class="n">test</span><span class="o">.</span><span class="n">load</span><span class="p">()}</span>
         <span class="k">return</span> <span class="n">sessions</span></div>
 
 
@@ -399,7 +399,9 @@
             <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_times_in_samples</span><span class="p">),</span>
             <span class="n">event_classes</span><span class="p">,</span>
         <span class="p">]</span>
-        <span class="n">cnt</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;events&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">event_arr</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">cnt</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;events&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">event_arr</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+        <span class="p">]</span>
         <span class="k">return</span> <span class="n">cnt</span>
 </pre></div>
 
