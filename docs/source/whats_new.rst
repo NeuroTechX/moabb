@@ -23,7 +23,7 @@ Enhancements
 Bugs
 ~~~~
 
-- None
+- Correcting events management in Schirrmeister2017, renaming session and run (:gh:`255` by `Pierre Guetschel`_ and `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
