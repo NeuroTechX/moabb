@@ -115,6 +115,7 @@ class PhysionetMI(BaseDataset):
         get_dataset_path(sign, None)
 
         # hand runs
+        idx = 0
         for run in self.hand_runs:
             raw = self._load_one_run(subject, run)
             stim = raw.annotations.description.astype(np.dtype("<U10"))
@@ -122,7 +123,8 @@ class PhysionetMI(BaseDataset):
             stim[stim == "T1"] = "left_hand"
             stim[stim == "T2"] = "right_hand"
             raw.annotations.description = stim
-            data["run_%d" % run] = raw
+            data["run_%d" % idx] = raw
+            idx += 1
 
         # feet runs
         for run in self.feet_runs:
@@ -134,7 +136,8 @@ class PhysionetMI(BaseDataset):
             stim[stim == "T1"] = "hands"
             stim[stim == "T2"] = "feet"
             raw.annotations.description = stim
-            data["run_%d" % run] = raw
+            data["run_%d" % idx] = raw
+            idx += 1
 
         return {"session_0": data}
 
