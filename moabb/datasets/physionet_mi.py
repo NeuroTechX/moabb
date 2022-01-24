@@ -4,14 +4,13 @@ Physionet Motor imagery dataset.
 
 import mne
 import numpy as np
-from mne.datasets import eegbci
 from mne.io import read_raw_edf
 
 from moabb.datasets.base import BaseDataset
-from moabb.datasets.download import get_dataset_path
+from moabb.datasets.download import data_dl, get_dataset_path
 
 
-BASE_URL = "http://archive.physionet.org/pn4/eegmmidb/"
+BASE_URL = "https://physionet.org/files/eegmmidb/1.0.0/"
 
 
 class PhysionetMI(BaseDataset):
@@ -95,9 +94,7 @@ class PhysionetMI(BaseDataset):
             self.hand_runs += [3, 7, 11]
 
     def _load_one_run(self, subject, run, preload=True):
-        raw_fname = eegbci.load_data(
-            subject, runs=[run], verbose="ERROR", base_url=BASE_URL
-        )[0]
+        raw_fname = self._load_data(subject, runs=[run], verbose="ERROR")[0]
         raw = read_raw_edf(raw_fname, preload=preload, verbose="ERROR")
         raw.rename_channels(lambda x: x.strip("."))
         raw.rename_channels(lambda x: x.upper())
@@ -144,12 +141,30 @@ class PhysionetMI(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
+        runs = [1, 2] + self.hand_runs + self.feet_runs
+
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
         sign = "EEGBCI"
         get_dataset_path(sign, None)
-        paths = eegbci.load_data(
-            subject, runs=[1, 2] + self.hand_runs + self.feet_runs, verbose=verbose
-        )
+        paths = self._load_data(subject, runs=runs, verbose=verbose)
         return paths
+
+    def _load_data(self, subject, runs, path=None, force_update=False, verbose=None):
+        # Function to load the data run by run
+        if not hasattr(runs, "__iter__"):
+            runs = [runs]
+
+        # get local storage path
+        sign = "EEGBCI"
+        path = get_dataset_path(sign, path)
+
+        # fetch the file(s)
+        data_paths = []
+        for run in runs:
+            file_part = f"S{subject:03d}/S{subject:03d}R{run:02d}.edf"
+            url = BASE_URL + file_part
+            p = data_dl(url, sign, path, force_update, verbose)
+            data_paths.append(p)
+        return data_paths
