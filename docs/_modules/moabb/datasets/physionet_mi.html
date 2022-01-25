@@ -151,14 +151,13 @@
 
 <span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">eegbci</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">read_raw_edf</span>
 
 <span class="kn">from</span> <span class="nn">moabb.datasets.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span>
-<span class="kn">from</span> <span class="nn">moabb.datasets.download</span> <span class="kn">import</span> <span class="n">get_dataset_path</span>
+<span class="kn">from</span> <span class="nn">moabb.datasets.download</span> <span class="kn">import</span> <span class="n">data_dl</span><span class="p">,</span> <span class="n">get_dataset_path</span>
 
 
-<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s2">&quot;http://archive.physionet.org/pn4/eegmmidb/&quot;</span>
+<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s2">&quot;https://physionet.org/files/eegmmidb/1.0.0/&quot;</span>
 
 
 <div class="viewcode-block" id="PhysionetMI"><a class="viewcode-back" href="../../../generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI">[docs]</a><span class="k">class</span> <span class="nc">PhysionetMI</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
@@ -242,9 +241,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">hand_runs</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_load_one_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
-            <span class="n">subject</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="p">[</span><span class="n">run</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">BASE_URL</span>
-        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">raw_fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="p">[</span><span class="n">run</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;ERROR&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_edf</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="n">preload</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">rename_channels</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">rename_channels</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
@@ -265,6 +262,7 @@
         <span class="n">get_dataset_path</span><span class="p">(</span><span class="n">sign</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="c1"># hand runs</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_runs</span><span class="p">:</span>
             <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_one_run</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">run</span><span class="p">)</span>
             <span class="n">stim</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;&lt;U10&quot;</span><span class="p">))</span>
@@ -272,7 +270,8 @@
             <span class="n">stim</span><span class="p">[</span><span class="n">stim</span> <span class="o">==</span> <span class="s2">&quot;T1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;left_hand&quot;</span>
             <span class="n">stim</span><span class="p">[</span><span class="n">stim</span> <span class="o">==</span> <span class="s2">&quot;T2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;right_hand&quot;</span>
             <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">stim</span>
-            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;run_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">run</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;run_</span><span class="si">{idx}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
+            <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="c1"># feet runs</span>
         <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">feet_runs</span><span class="p">:</span>
@@ -284,22 +283,41 @@
             <span class="n">stim</span><span class="p">[</span><span class="n">stim</span> <span class="o">==</span> <span class="s2">&quot;T1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;hands&quot;</span>
             <span class="n">stim</span><span class="p">[</span><span class="n">stim</span> <span class="o">==</span> <span class="s2">&quot;T2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;feet&quot;</span>
             <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">stim</span>
-            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;run_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">run</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;run_</span><span class="si">{idx}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
+            <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;session_0&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
 
 <div class="viewcode-block" id="PhysionetMI.data_path"><a class="viewcode-back" href="../../../generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI.data_path">[docs]</a>    <span class="k">def</span> <span class="nf">data_path</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
+        <span class="n">runs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_runs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">feet_runs</span>
+
         <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
             <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid subject number&quot;</span><span class="p">))</span>
 
         <span class="n">sign</span> <span class="o">=</span> <span class="s2">&quot;EEGBCI&quot;</span>
         <span class="n">get_dataset_path</span><span class="p">(</span><span class="n">sign</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">paths</span> <span class="o">=</span> <span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span>
-            <span class="n">subject</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_runs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">feet_runs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">paths</span></div></div>
+        <span class="n">paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="n">runs</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">paths</span></div>
+
+    <span class="k">def</span> <span class="nf">_load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">runs</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Function to load the data run by run</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">runs</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">):</span>
+            <span class="n">runs</span> <span class="o">=</span> <span class="p">[</span><span class="n">runs</span><span class="p">]</span>
+
+        <span class="c1"># get local storage path</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="s2">&quot;EEGBCI&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">get_dataset_path</span><span class="p">(</span><span class="n">sign</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># fetch the file(s)</span>
+        <span class="n">data_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">:</span>
+            <span class="n">file_part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;S</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">03d</span><span class="si">}</span><span class="s2">/S</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">03d</span><span class="si">}</span><span class="s2">R</span><span class="si">{</span><span class="n">run</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.edf&quot;</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">BASE_URL</span> <span class="o">+</span> <span class="n">file_part</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">data_dl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">sign</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+            <span class="n">data_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data_paths</span></div>
 </pre></div>
 
     </div>

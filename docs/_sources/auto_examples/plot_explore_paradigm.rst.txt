@@ -341,7 +341,7 @@ and 6 run per session.
             subject    session    run
     count     576.0        576    576
     unique      NaN          2      6
-    top         NaN  session_E  run_2
+    top         NaN  session_T  run_3
     freq        NaN        288     96
     mean        1.0        NaN    NaN
     std         0.0        NaN    NaN
@@ -553,7 +553,7 @@ corresponding to left and right hand motor imagination.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  14.405 seconds)
+   **Total running time of the script:** ( 0 minutes  15.835 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_explore_paradigm.py:

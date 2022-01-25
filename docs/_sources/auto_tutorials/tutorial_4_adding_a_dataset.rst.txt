@@ -249,9 +249,9 @@ The rest of the code follows the steps described in the previous tutorials.
  .. code-block:: none
 
        score      time  samples  ... n_sessions          dataset  pipeline
-    0    1.0  0.032335     40.0  ...          1  Example dataset       MDM
-    1    1.0  0.031970     40.0  ...          1  Example dataset       MDM
-    2    1.0  0.030778     40.0  ...          1  Example dataset       MDM
+    0    1.0  0.036074     40.0  ...          1  Example dataset       MDM
+    1    1.0  0.034437     40.0  ...          1  Example dataset       MDM
+    2    1.0  0.034065     40.0  ...          1  Example dataset       MDM
 
     [3 rows x 9 columns]
 
