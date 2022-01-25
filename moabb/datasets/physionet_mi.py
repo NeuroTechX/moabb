@@ -123,7 +123,7 @@ class PhysionetMI(BaseDataset):
             stim[stim == "T1"] = "left_hand"
             stim[stim == "T2"] = "right_hand"
             raw.annotations.description = stim
-            data["run_%d" % idx] = raw
+            data["run_{idx}"] = raw
             idx += 1
 
         # feet runs
