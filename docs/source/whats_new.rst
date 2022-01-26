@@ -25,8 +25,8 @@ Bugs
 
 - Removing dependency on mne method for PhysionetMI data downloading, renaming runs (:gh:`257` by `Divyesh Narayanan`_)
 - Correcting events management in Schirrmeister2017, renaming session and run (:gh:`255` by `Pierre Guetschel`_ and `Sylvain Chevallier`_)
-- Switch session and runs in MAMEM1, 2 and 3 to avoid error in WithinSessionEvaluation (:gh:`256` by `Sylvain Chevallier`)
-- Correct doctstrings for the documentation, incuding Lee2017 (:gh:`256` by `Sylvain Chevallier`)
+- Switch session and runs in MAMEM1, 2 and 3 to avoid error in WithinSessionEvaluation (:gh:`256` by `Sylvain Chevallier`_)
+- Correct doctstrings for the documentation, incuding Lee2017 (:gh:`256` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~

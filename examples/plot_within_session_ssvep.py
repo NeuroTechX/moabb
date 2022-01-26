@@ -104,7 +104,7 @@ plt.figure()
 sns.barplot(data=results, y="score", x="session", hue="subject", palette="viridis")
 
 ##############################################################################
-# and the computation time in sec
+# and the computation time in seconds
 
 plt.figure()
 ax = sns.barplot(data=results, y="time", x="session", hue="subject", palette="Reds")
