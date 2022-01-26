@@ -6,7 +6,7 @@ Within Session SSVEP
 This Example show how to perform a within-session SSVEP analysis on the
 MAMEM dataset 3, using a CCA pipeline.
 
-The within-session evaluation assess the performance of a classification
+The within-session evaluation assesses the performance of a classification
 pipeline using a 5-fold cross-validation. The reported metric (here, accuracy)
 is the average of all fold.
 """
@@ -32,17 +32,17 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 moabb.set_log_level("info")
 
 ###############################################################################
-# Loading dataset
+# Loading Dataset
 # ---------------
 #
-# Load 2 subjects of MAMEM3 dataset, with 3 session each
+# Load 2 subjects of MAMEM3 dataset
 
 subj = [1, 3]
 dataset = MAMEM3()
 dataset.subject_list = subj
 
 ###############################################################################
-# Choose paradigm
+# Choose Paradigm
 # ---------------
 #
 # We select the paradigm SSVEP, applying a bandpass filter (3-15 Hz) on
@@ -52,7 +52,7 @@ dataset.subject_list = subj
 paradigm = SSVEP(fmin=3, fmax=15, n_classes=3)
 
 ##############################################################################
-# Create pipelines
+# Create Pipelines
 # ----------------
 #
 # Use a Canonical Correlation Analysis classifier
@@ -64,7 +64,7 @@ pipeline = {}
 pipeline["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
 
 ##############################################################################
-# Get data (optional)
+# Get Data (optional)
 # -------------------
 #
 # To get access to the EEG signals downloaded from the dataset, you could
@@ -82,8 +82,8 @@ pipeline["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harm
 # Evaluation
 # ----------
 #
-# The evaluation will return a dataframe containing a single AUC score for
-# each subject / session of the dataset, and for each pipeline.
+# The evaluation will return a DataFrame containing a single AUC score for
+# each subject and pipeline.
 
 overwrite = True  # set to True if we want to overwrite cached results
 
@@ -104,7 +104,7 @@ plt.figure()
 sns.barplot(data=results, y="score", x="session", hue="subject", palette="viridis")
 
 ##############################################################################
-# and the computation time in seconds
+# And the computation time in seconds
 
 plt.figure()
 ax = sns.barplot(data=results, y="time", x="session", hue="subject", palette="Reds")

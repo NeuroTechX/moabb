@@ -1,6 +1,6 @@
 """
 ================================
-Select electrodes and resampling
+Select Electrodes and Resampling
 ================================
 
 Within paradigm, it is possible to restrict analysis only to a subset of
@@ -30,7 +30,7 @@ from moabb.paradigms import LeftRightImagery
 # Datasets
 # --------
 #
-# Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each
+# Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 sessions each
 
 subj = [1, 2]
 datasets = [Zhou2016(), BNCI2014001()]
@@ -63,7 +63,7 @@ results = evaluation.process({"csp+lda": csp_lda, "ts+lr": ts_lr})
 print(results.head())
 
 ##############################################################################
-# Electrode selection
+# Electrode Selection
 # -------------------
 #
 # It is possible to select the electrodes that are shared by all datasets
@@ -79,7 +79,7 @@ results = evaluation.process({"csp+lda": csp_lda, "ts+lr": ts_lr})
 print(results.head())
 
 ##############################################################################
-# Plot results
+# Plot Results
 # ------------
 #
 # Compare the obtained results with the two pipelines, CSP+LDA and logistic

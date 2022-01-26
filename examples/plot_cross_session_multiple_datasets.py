@@ -34,7 +34,7 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 moabb.set_log_level("info")
 
 ###############################################################################
-# Loading dataset
+# Loading Dataset
 # ---------------
 #
 # Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each
@@ -45,16 +45,16 @@ for d in datasets:
     d.subject_list = subj
 
 ###############################################################################
-# Choose paradigm
+# Choose Paradigm
 # ---------------
 #
 # We select the paradigm MI, applying a bandpass filter (8-35 Hz) on
-# the data and we will keep only left and right hand motor imagery
+# the data and we will keep only left- and right-hand motor imagery
 
 paradigm = LeftRightImagery(fmin=8, fmax=35)
 
 ##############################################################################
-# Create pipelines
+# Create Pipelines
 # ----------------
 #
 # Use the Common Spatial Patterns with 8 components and a Linear Discriminant
@@ -64,14 +64,14 @@ pipeline = {}
 pipeline["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 
 ##############################################################################
-# Get data (optional)
+# Get Data (optional)
 # -------------------
 #
 # To get access to the EEG signals downloaded from the dataset, you could
 # use `dataset.get_data(subjects=[subject_id])` to obtain the EEG under
 # an MNE format, stored in a dictionary of sessions and runs.
 # Otherwise, `paradigm.get_data(dataset=dataset, subjects=[subject_id])`
-# allows to obtain the EEG data in scikit format, the labels and the meta
+# allows to obtain the EEG data in sklearn format, the labels and the meta
 # information. The data are preprocessed according to the paradigm
 # requirements.
 
@@ -87,7 +87,7 @@ pipeline["CSP+LDA"] = make_pipeline(CSP(n_components=8), LDA())
 # Evaluation
 # ----------
 #
-# The evaluation will return a dataframe containing a single AUC score for
+# The evaluation will return a DataFrame containing a single AUC score for
 # each subject / session of the dataset, and for each pipeline.
 
 overwrite = True  # set to True if we want to overwrite cached results
