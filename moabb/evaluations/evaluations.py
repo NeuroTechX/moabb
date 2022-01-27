@@ -26,7 +26,55 @@ Vector = Union[list, tuple, np.ndarray]
 
 
 class WithinSessionEvaluation(BaseEvaluation):
-    """Within Session evaluation."""
+    """Performance evaluation within session (k-fold cross-validation)
+
+    Within-session evaluation uses k-fold cross_validation to determine train
+    and test sets on separate session for each subject, it is possible to
+    estimate the performance on a subset of training examples to obtain
+    learning curves.
+
+    Parameters
+    ----------
+    n_perms :
+        Number of permutations to perform. If an array
+        is passed it has to be equal in size to the data_size array.
+        Values in this array must be monotonically decreasing (performing
+        more permutations for more data is not useful to reduce standard
+        error of the mean).
+        Default: None
+    data_size :
+        If None is passed, it performs conventional WithinSession evaluation.
+        Contains the policy to pick the datasizes to
+        evaluate, as well as the actual values. The dict has the
+        key 'policy' with either 'ratio' or 'per_class', and the key
+        'value' with the actual values as an numpy array. This array should be
+        sorted, such that values in data_size are strictly monotonically increasing.
+        Default: None
+    paradigm : Paradigm instance
+        The paradigm to use.
+    datasets : List of Dataset instance
+        The list of dataset to run the evaluation. If none, the list of
+        compatible dataset will be retrieved from the paradigm instance.
+    random_state: int, RandomState instance, default=None
+        If not None, can guarantee same seed for shuffling examples.
+    n_jobs: int, default=1
+        Number of jobs for fitting of pipeline.
+    overwrite: bool, default=False
+        If true, overwrite the results.
+    error_score: "raise" or numeric, default="raise"
+        Value to assign to the score if an error occurs in estimator fitting. If set to
+        'raise', the error is raised.
+    suffix: str
+        Suffix for the results file.
+    hdf5_path: str
+        Specific path for storing the results.
+    additional_columns: None
+        Adding information to results.
+    return_epochs: bool, default=False
+        use MNE epoch to train pipelines.
+    mne_labels: bool, default=False
+        if returning MNE epoch, use original dataset label if True
+    """
 
     VALID_POLICIES = ["per_class", "ratio"]
 
@@ -36,25 +84,6 @@ class WithinSessionEvaluation(BaseEvaluation):
         data_size: Optional[dict] = None,
         **kwargs,
     ):
-        """
-        Parameters
-        ----------
-        n_perms :
-            Number of permutations to perform. If an array
-            is passed it has to be equal in size to the data_size array.
-            Values in this array must be monotonically decreasing (performing
-            more permutations for more data is not useful to reduce standard
-            error of the mean).
-            Default: None
-        data_size :
-            If None is passed, it performs conventional WithinSession evaluation.
-            Contains the policy to pick the datasizes to
-            evaluate, as well as the actual values. The dict has the
-            key 'policy' with either 'ratio' or 'per_class', and the key
-            'value' with the actual values as an numpy array. This array should be
-            sorted, such that values in data_size are strictly monotonically increasing.
-            Default: None
-        """
         self.data_size = data_size
         self.n_perms = n_perms
         self.calculate_learning_curve = self.data_size is not None
@@ -290,12 +319,38 @@ class WithinSessionEvaluation(BaseEvaluation):
 
 
 class CrossSessionEvaluation(BaseEvaluation):
-    """Cross session Context.
+    """Cross-session performance evaluation.
 
     Evaluate performance of the pipeline across sessions but for a single
-    subject. Verifies that sufficient sessions are there for this to be
-    reasonable
+    subject. Verifies that there is at least two sessions before starting
+    the evaluation.
 
+    Parameters
+    ----------
+    paradigm : Paradigm instance
+        The paradigm to use.
+    datasets : List of Dataset instance
+        The list of dataset to run the evaluation. If none, the list of
+        compatible dataset will be retrieved from the paradigm instance.
+    random_state: int, RandomState instance, default=None
+        If not None, can guarantee same seed for shuffling examples.
+    n_jobs: int, default=1
+        Number of jobs for fitting of pipeline.
+    overwrite: bool, default=False
+        If true, overwrite the results.
+    error_score: "raise" or numeric, default="raise"
+        Value to assign to the score if an error occurs in estimator fitting. If set to
+        'raise', the error is raised.
+    suffix: str
+        Suffix for the results file.
+    hdf5_path: str
+        Specific path for storing the results.
+    additional_columns: None
+        Adding information to results.
+    return_epochs: bool, default=False
+        use MNE epoch to train pipelines.
+    mne_labels: bool, default=False
+        if returning MNE epoch, use original dataset label if True
     """
 
     def evaluate(self, dataset, pipelines):
@@ -359,11 +414,37 @@ class CrossSessionEvaluation(BaseEvaluation):
 
 
 class CrossSubjectEvaluation(BaseEvaluation):
-    """Cross Subject evaluation Context.
+    """Cross-subject evaluation performance.
 
     Evaluate performance of the pipeline trained on all subjects but one,
     concatenating sessions.
 
+    Parameters
+    ----------
+    paradigm : Paradigm instance
+        The paradigm to use.
+    datasets : List of Dataset instance
+        The list of dataset to run the evaluation. If none, the list of
+        compatible dataset will be retrieved from the paradigm instance.
+    random_state: int, RandomState instance, default=None
+        If not None, can guarantee same seed for shuffling examples.
+    n_jobs: int, default=1
+        Number of jobs for fitting of pipeline.
+    overwrite: bool, default=False
+        If true, overwrite the results.
+    error_score: "raise" or numeric, default="raise"
+        Value to assign to the score if an error occurs in estimator fitting. If set to
+        'raise', the error is raised.
+    suffix: str
+        Suffix for the results file.
+    hdf5_path: str
+        Specific path for storing the results.
+    additional_columns: None
+        Adding information to results.
+    return_epochs: bool, default=False
+        use MNE epoch to train pipelines.
+    mne_labels: bool, default=False
+        if returning MNE epoch, use original dataset label if True
     """
 
     def evaluate(self, dataset, pipelines):

@@ -3,7 +3,7 @@
 FilterBank CSP versus CSP
 =========================
 
-This Example show a comparison of CSP versus FilterBank CSP on the
+This example show a comparison of CSP versus FilterBank CSP on the
 very popular dataset 2a from the BCI competition IV.
 """
 # Authors: Alexandre Barachant <alexandre.barachant@gmail.com>
@@ -27,7 +27,7 @@ from moabb.pipelines.utils import FilterBank
 moabb.set_log_level("info")
 
 ##############################################################################
-# Create pipelines
+# Create Pipelines
 # ----------------
 #
 # The CSP implementation from MNE is used. We selected 8 CSP components, as
@@ -51,7 +51,7 @@ pipelines_fb["FBCSP+LDA"] = make_pipeline(FilterBank(CSP(n_components=4)), LDA()
 # ----------
 #
 # Since two different preprocessing will be applied, we have two different
-# paradigm objects. We have to make sure their filter matchs so the comparison
+# paradigm objects. We have to make sure their filter matches so the comparison
 # will be fair.
 #
 # The first one is a standard `LeftRightImagery` with a 8 to 35 Hz broadband
@@ -75,7 +75,7 @@ evaluation = CrossSessionEvaluation(
 )
 results = evaluation.process(pipelines)
 
-# bank of 6 filter, by 4 Hz increment
+# Bank of 6 filters, by 4 Hz increment
 filters = [[8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 35]]
 paradigm = FilterBankLeftRightImagery(filters=filters)
 evaluation = CrossSessionEvaluation(
@@ -93,10 +93,10 @@ results = pd.concat([results, results_fb])
 # Plot Results
 # ----------------
 #
-# Here we plot the results via normal methods. We the first plot is a pointplot
+# Here we plot the results via seaborn. We first display a pointplot
 # with the average performance of each pipeline across session and subjects.
 # The second plot is a paired scatter plot. Each point representing the score
-# of a single session. An algorithm will outperforms another is most of the
+# of a single session. An algorithm will outperform another is most of the
 # points are in its quadrant.
 
 fig, axes = plt.subplots(1, 2, figsize=[8, 4], sharey=True)

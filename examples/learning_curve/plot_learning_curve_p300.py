@@ -1,16 +1,16 @@
 """
 =======================================
-Within Session P300 with learning curve
+Within Session P300 with Learning Curve
 =======================================
 
-This Example shows how to perform a within session analysis while also
+This example shows how to perform a within session analysis while also
 creating learning curves for a P300 dataset.
 Additionally, we will evaluate external code. Make sure to have tdlda installed, which
 can be found in requirements_external.txt
 
 We will compare two pipelines :
 
-- Riemannian Geometry with Linear Discriminant Analysis
+- Riemannian geometry with Linear Discriminant Analysis
 - XDAWN and Linear Discriminant Analysis
 
 We will use the P300 paradigm, which uses the AUC as metric.
@@ -44,6 +44,7 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 
 moabb.set_log_level("info")
 
+##############################################################################
 # This is an auxiliary transformer that allows one to vectorize data
 # structures in a pipeline For instance, in the case of a X with dimensions
 # Nt x Nc x Ns, one might be interested in a new data structure with
@@ -64,14 +65,15 @@ class Vectorizer(BaseEstimator, TransformerMixin):
 
 
 ##############################################################################
-# Create pipelines
+# Create Pipelines
 # ----------------
 #
 # Pipelines must be a dict of sklearn pipeline transformer.
 processing_sampling_rate = 128
 pipelines = {}
 
-# we have to do this because the classes are called 'Target' and 'NonTarget'
+##############################################################################
+# We have to do this because the classes are called 'Target' and 'NonTarget'
 # but the evaluation function uses a LabelEncoder, transforming them
 # to 0 and 1
 labels_dict = {"Target": 1, "NonTarget": 0}
@@ -92,7 +94,7 @@ pipelines["Xdw+LDA"] = make_pipeline(
 # ----------
 #
 # We define the paradigm (P300) and use all three datasets available for it.
-# The evaluation will return a dataframe containing AUCs for each permutation
+# The evaluation will return a DataFrame containing AUCs for each permutation
 # and dataset size.
 
 paradigm = P300(resample=processing_sampling_rate)
@@ -102,7 +104,7 @@ dataset.subject_list = dataset.subject_list[1:2]
 datasets = [dataset]
 overwrite = True  # set to True if we want to overwrite cached results
 data_size = dict(policy="ratio", value=np.geomspace(0.02, 1, 4))
-# When the training data is sparse, peform more permutations than when we have a lot of data
+# When the training data is sparse, perform more permutations than when we have a lot of data
 n_perms = np.floor(np.geomspace(20, 2, len(data_size["value"]))).astype(int)
 # Guarantee reproducibility
 np.random.seed(7536298)
@@ -122,7 +124,8 @@ results = evaluation.process(pipelines)
 # Plot Results
 # ------------
 #
-# Here we plot the results.
+# We plot the accuracy as a function of the number of training samples, for
+# each pipeline
 
 fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
 
