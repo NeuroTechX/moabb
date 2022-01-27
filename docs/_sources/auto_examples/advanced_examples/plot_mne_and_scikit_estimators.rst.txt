@@ -18,18 +18,18 @@
 .. _sphx_glr_auto_examples_advanced_examples_plot_mne_and_scikit_estimators.py:
 
 
-=========================
-MNE Epochs-based piplines
-=========================
+==========================
+MNE Epochs-based pipelines
+==========================
 
 This example shows how to use machine learning pipeline based on MNE Epochs
-instead of numpy arrays. This is useful to make the most of the MNE code base
+instead of Numpy arrays. This is useful to make the most of the MNE code base
 and to embed EEG specific code inside sklearn pipelines.
 
-We will compare compare different pipelines for P300:
-- Logistic Regression, based on MNE Epochs
+We will compare different pipelines for P300:
+- Logistic regression, based on MNE Epochs
 - XDAWN and Logistic Regression (LR), based on MNE Epochs
-- XDAWN extended covariance and LR on tangent space, based on numpy
+- XDAWN extended covariance and LR on tangent space, based on Numpy
 
 .. GENERATED FROM PYTHON SOURCE LINES 16-49
 
@@ -77,7 +77,7 @@ We will compare compare different pipelines for P300:
 
 .. GENERATED FROM PYTHON SOURCE LINES 50-54
 
-Loading dataset
+Loading Dataset
 ---------------
 
 Load 2 subjects of BNCI 2014-009 dataset, with 3 session each
@@ -101,7 +101,7 @@ Load 2 subjects of BNCI 2014-009 dataset, with 3 session each
 
 .. GENERATED FROM PYTHON SOURCE LINES 61-71
 
-Get data (optional)
+Get Data (optional)
 -------------------
 
 To get access to the EEG signals downloaded from the dataset, you could
@@ -109,7 +109,7 @@ use ``dataset.get_data([subject_id)`` to obtain the EEG as MNE Epochs, stored
 in a dictionary of sessions and runs.
 The ``paradigm.get_data(dataset=dataset, subjects=[subject_id])`` allows to
 obtain the preprocessed EEG data, the labels and the meta information. By
-default, the EEG is return as a numpy array. With ``return_epochs=True``, MNE
+default, the EEG is return as a Numpy array. With ``return_epochs=True``, MNE
 Epochs are returned.
 
 .. GENERATED FROM PYTHON SOURCE LINES 71-79
@@ -133,14 +133,14 @@ Epochs are returned.
 
 .. GENERATED FROM PYTHON SOURCE LINES 80-91
 
-A simple MNE pipeline
+A Simple MNE Pipeline
 ---------------------
 
 Using ``return_epochs=True`` in the evaluation, it is possible to design a
 pipeline based on MNE Epochs input. Let's create a simple one, that
 reshape the input data from epochs, rescale the data and uses a logistic
 regression to classify the data. We will need to write a basic Transformer
-estimator, that comply with
+estimator, that complies with
 `sklearn convention <https://scikit-learn.org/stable/developers/develop.html>`_.
 This transformer will extract the data from an input Epoch, and reshapes into
 2D array.
@@ -206,13 +206,13 @@ ROC-AUC metric.
 
 .. GENERATED FROM PYTHON SOURCE LINES 127-135
 
-Advanced MNE pipeline
+Advanced MNE Pipeline
 ---------------------
 
 In some case, the MNE pipeline should have access to the original labels from
 the dataset. This is the case for the XDAWN code of MNE. One could pass
 `mne_labels` to evaluation in order to keep this label.
-As an example, we will define a pipeline that compute an XDAWN filter, rescale,
+As an example, we will define a pipeline that computes an XDAWN filter, rescale,
 then apply a logistic regression.
 
 .. GENERATED FROM PYTHON SOURCE LINES 135-153
@@ -361,10 +361,10 @@ then apply a logistic regression.
 
 .. GENERATED FROM PYTHON SOURCE LINES 154-160
 
-Numpy-based pipeline
+Numpy-based Pipeline
 --------------------
 
-For the comparison, we will define a numpy-based pipeline that relies on
+For the comparison, we will define a Numpy-based pipeline that relies on
 pyriemann to estimate XDAWN-extended covariance matrices that are projected
 on the tangent space and classified with a logistic regression.
 
@@ -394,15 +394,16 @@ on the tangent space and classified with a logistic regression.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 176-181
+.. GENERATED FROM PYTHON SOURCE LINES 176-182
 
-Combining results
+Combining Results
 -----------------
 
 Even if the results have been obtained by different evaluation processes, it
-possible to combine the resulting dataframes to analyze and plot the results.
+is possible to combine the resulting DataFrames to analyze and plot the
+results.
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-184
+.. GENERATED FROM PYTHON SOURCE LINES 182-185
 
 .. code-block:: default
 
@@ -416,11 +417,11 @@ possible to combine the resulting dataframes to analyze and plot the results.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 185-186
+.. GENERATED FROM PYTHON SOURCE LINES 186-187
 
 We could compare the Euclidean and Riemannian performance using a `paired_plot`
 
-.. GENERATED FROM PYTHON SOURCE LINES 186-189
+.. GENERATED FROM PYTHON SOURCE LINES 187-190
 
 .. code-block:: default
 
@@ -446,12 +447,12 @@ We could compare the Euclidean and Riemannian performance using a `paired_plot`
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 190-192
+.. GENERATED FROM PYTHON SOURCE LINES 191-193
 
 All the results could be compared and statistical analysis could highlight the
 differences between pipelines.
 
-.. GENERATED FROM PYTHON SOURCE LINES 192-197
+.. GENERATED FROM PYTHON SOURCE LINES 193-198
 
 .. code-block:: default
 
@@ -474,7 +475,7 @@ differences between pipelines.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  7.315 seconds)
+   **Total running time of the script:** ( 1 minutes  1.547 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_mne_and_scikit_estimators.py:

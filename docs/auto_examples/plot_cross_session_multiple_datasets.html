@@ -118,10 +118,10 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Cross-Session on Multiple Datasets</a><ul>
-<li><a class="reference internal" href="#loading-dataset">Loading dataset</a></li>
-<li><a class="reference internal" href="#choose-paradigm">Choose paradigm</a></li>
-<li><a class="reference internal" href="#create-pipelines">Create pipelines</a></li>
-<li><a class="reference internal" href="#get-data-optional">Get data (optional)</a></li>
+<li><a class="reference internal" href="#loading-dataset">Loading Dataset</a></li>
+<li><a class="reference internal" href="#choose-paradigm">Choose Paradigm</a></li>
+<li><a class="reference internal" href="#create-pipelines">Create Pipelines</a></li>
+<li><a class="reference internal" href="#get-data-optional">Get Data (optional)</a></li>
 <li><a class="reference internal" href="#evaluation">Evaluation</a></li>
 <li><a class="reference internal" href="#plot-results">Plot Results</a></li>
 </ul>
@@ -219,7 +219,7 @@ session.</p>
 </pre></div>
 </div>
 <div class="section" id="loading-dataset">
-<h2>Loading dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this headline">¶</a></h2>
+<h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this headline">¶</a></h2>
 <p>Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">Zhou2016</span><span class="p">(),</span> <span class="n">BNCI2014001</span><span class="p">()]</span>
@@ -229,15 +229,15 @@ session.</p>
 </div>
 </div>
 <div class="section" id="choose-paradigm">
-<h2>Choose paradigm<a class="headerlink" href="#choose-paradigm" title="Permalink to this headline">¶</a></h2>
+<h2>Choose Paradigm<a class="headerlink" href="#choose-paradigm" title="Permalink to this headline">¶</a></h2>
 <p>We select the paradigm MI, applying a bandpass filter (8-35 Hz) on
-the data and we will keep only left and right hand motor imagery</p>
+the data and we will keep only left- and right-hand motor imagery</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paradigm</span> <span class="o">=</span> <span class="n">LeftRightImagery</span><span class="p">(</span><span class="n">fmin</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="create-pipelines">
-<h2>Create pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this headline">¶</a></h2>
+<h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this headline">¶</a></h2>
 <p>Use the Common Spatial Patterns with 8 components and a Linear Discriminant
 Analysis classifier.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a> <span class="o">=</span> <span class="p">{}</span>
@@ -246,12 +246,12 @@ Analysis classifier.</p>
 </div>
 </div>
 <div class="section" id="get-data-optional">
-<h2>Get data (optional)<a class="headerlink" href="#get-data-optional" title="Permalink to this headline">¶</a></h2>
+<h2>Get Data (optional)<a class="headerlink" href="#get-data-optional" title="Permalink to this headline">¶</a></h2>
 <p>To get access to the EEG signals downloaded from the dataset, you could
 use <cite>dataset.get_data(subjects=[subject_id])</cite> to obtain the EEG under
 an MNE format, stored in a dictionary of sessions and runs.
 Otherwise, <cite>paradigm.get_data(dataset=dataset, subjects=[subject_id])</cite>
-allows to obtain the EEG data in scikit format, the labels and the meta
+allows to obtain the EEG data in sklearn format, the labels and the meta
 information. The data are preprocessed according to the paradigm
 requirements.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># X_all, labels_all, meta_all = [], [], []</span>
@@ -266,7 +266,7 @@ requirements.</p>
 </div>
 <div class="section" id="evaluation">
 <h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h2>
-<p>The evaluation will return a dataframe containing a single AUC score for
+<p>The evaluation will return a DataFrame containing a single AUC score for
 each subject / session of the dataset, and for each pipeline.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">overwrite</span></a> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># set to True if we want to overwrite cached results</span>
 
@@ -361,11 +361,11 @@ each subject / session of the dataset, and for each pipeline.</p>
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
       score      time  samples  ... n_sessions    dataset  pipeline
-0  0.956597  0.296426    144.0  ...          2   001-2014   CSP+LDA
-1  0.930941  0.437505    144.0  ...          2   001-2014   CSP+LDA
-2  0.649691  0.293826    144.0  ...          2   001-2014   CSP+LDA
-3  0.526813  0.360576    144.0  ...          2   001-2014   CSP+LDA
-4  0.851412  0.305293    200.0  ...          3  Zhou 2016   CSP+LDA
+0  0.956597  0.246996    144.0  ...          2   001-2014   CSP+LDA
+1  0.930941  0.272067    144.0  ...          2   001-2014   CSP+LDA
+2  0.649691  0.239590    144.0  ...          2   001-2014   CSP+LDA
+3  0.526813  0.306479    144.0  ...          2   001-2014   CSP+LDA
+4  0.851412  0.292224    200.0  ...          3  Zhou 2016   CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -387,7 +387,7 @@ each subject / session of the dataset, and for each pipeline.</p>
 </pre></div>
 </div>
 <img alt="dataset = 001-2014, dataset = Zhou 2016" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  24.309 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  21.184 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fa1ca889a5b6c6678d3af932651fcf7f/plot_cross_session_multiple_datasets.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_multiple_datasets.py</span></code></a></p>

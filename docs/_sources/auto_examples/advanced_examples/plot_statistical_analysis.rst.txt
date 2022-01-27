@@ -17,6 +17,7 @@
 
 .. _sphx_glr_auto_examples_advanced_examples_plot_statistical_analysis.py:
 
+
 =======================
 Statistical Analysis
 =======================
@@ -25,7 +26,7 @@ The MOABB codebase comes with convenience plotting utilities and some
 statistical testing. This tutorial focuses on what those exactly are and how
 they can be used.
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-38
+.. GENERATED FROM PYTHON SOURCE LINES 11-39
 
 .. code-block:: default
 
@@ -64,28 +65,28 @@ they can be used.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-57
+.. GENERATED FROM PYTHON SOURCE LINES 40-58
 
 Results Generation
 ---------------------
 
 First we need to set up a paradigm, dataset list, and some pipelines to
-test. This is explored more in the examples -- we choose a left vs right
+test. This is explored more in the examples -- we choose left vs right
 imagery paradigm with a single bandpass. There is only one dataset here but
 any number can be added without changing this workflow.
 
-Create pipelines
+Create Pipelines
 ----------------
 
 Pipelines must be a dict of sklearn pipeline transformer.
 
-The csp implementation from MNE is used. We selected 8 CSP components, as
-usually done in the litterature.
+The CSP implementation from MNE is used. We selected 8 CSP components, as
+usually done in the literature.
 
-The riemannian geometry pipeline consists in covariance estimation, tangent
-space mapping and finaly a logistic regression for the classification.
+The Riemannian geometry pipeline consists in covariance estimation, tangent
+space mapping and finally a logistic regression for the classification.
 
-.. GENERATED FROM PYTHON SOURCE LINES 57-68
+.. GENERATED FROM PYTHON SOURCE LINES 58-69
 
 .. code-block:: default
 
@@ -107,20 +108,20 @@ space mapping and finaly a logistic regression for the classification.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-79
+.. GENERATED FROM PYTHON SOURCE LINES 70-80
 
 Evaluation
 ----------
 
 We define the paradigm (LeftRightImagery) and the dataset (BNCI2014001).
-The evaluation will return a dataframe containing a single AUC score for
+The evaluation will return a DataFrame containing a single AUC score for
 each subject / session of the dataset, and for each pipeline.
 
 Results are saved into the database, so that if you add a new pipeline, it
 will not run again the evaluation unless a parameter has changed. Results can
 be overwritten if necessary.
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-91
+.. GENERATED FROM PYTHON SOURCE LINES 80-92
 
 .. code-block:: default
 
@@ -278,16 +279,16 @@ be overwritten if necessary.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 92-98
+.. GENERATED FROM PYTHON SOURCE LINES 93-99
 
-MOABB plotting
+MOABB Plotting
 ----------------
 
 Here we plot the results using some of the convenience methods within the
 toolkit.  The score_plot visualizes all the data with one score per subject
 for every dataset and pipeline.
 
-.. GENERATED FROM PYTHON SOURCE LINES 98-102
+.. GENERATED FROM PYTHON SOURCE LINES 99-103
 
 .. code-block:: default
 
@@ -306,14 +307,14 @@ for every dataset and pipeline.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 103-107
+.. GENERATED FROM PYTHON SOURCE LINES 104-108
 
 For a comparison of two algorithms, there is the paired_plot, which plots
 performance in one versus the performance in the other over all chosen
 datasets. Note that there is only one score per subject, regardless of the
 number of sessions.
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-111
+.. GENERATED FROM PYTHON SOURCE LINES 108-112
 
 .. code-block:: default
 
@@ -332,9 +333,9 @@ number of sessions.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-120
+.. GENERATED FROM PYTHON SOURCE LINES 113-121
 
-Statistical testing and further plots
+Statistical Testing and Further Plots
 ----------------------------------------
 
 If the statistical significance of results is of interest, the method
@@ -343,7 +344,7 @@ well. For an overview of how all algorithms perform in comparison with each
 other, the method find_significant_differences and the summary_plot are
 possible.
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-124
+.. GENERATED FROM PYTHON SOURCE LINES 121-125
 
 .. code-block:: default
 
@@ -358,13 +359,13 @@ possible.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 125-128
+.. GENERATED FROM PYTHON SOURCE LINES 126-129
 
 The meta-analysis style plot shows the standardized mean difference within
 each tested dataset for the two algorithms in question, in addition to a
-meta-effect and significances both per-dataset and overall.
+meta-effect and significance both per-dataset and overall.
 
-.. GENERATED FROM PYTHON SOURCE LINES 128-131
+.. GENERATED FROM PYTHON SOURCE LINES 129-132
 
 .. code-block:: default
 
@@ -382,13 +383,13 @@ meta-effect and significances both per-dataset and overall.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 132-135
+.. GENERATED FROM PYTHON SOURCE LINES 133-136
 
 The summary plot shows the effect and significance related to the hypothesis
-that the algorithm on the y-axis significantly out-performed the algorithm on
+that the algorithm on the y-axis significantly outperformed the algorithm on
 the x-axis over all datasets
 
-.. GENERATED FROM PYTHON SOURCE LINES 135-137
+.. GENERATED FROM PYTHON SOURCE LINES 136-138
 
 .. code-block:: default
 
@@ -408,7 +409,7 @@ the x-axis over all datasets
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  1.268 seconds)
+   **Total running time of the script:** ( 1 minutes  1.912 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_statistical_analysis.py:

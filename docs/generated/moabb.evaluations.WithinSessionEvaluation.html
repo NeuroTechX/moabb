@@ -156,8 +156,44 @@
 <h1>moabb.evaluations.WithinSessionEvaluation<a class="headerlink" href="#moabb-evaluations-withinsessionevaluation" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="moabb.evaluations.WithinSessionEvaluation">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.evaluations.</span></code><code class="sig-name descname"><span class="pre">WithinSessionEvaluation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_perms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><span class="pre">tuple</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><span class="pre">dict</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/evaluations/evaluations.py#L28-L289"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/evaluations/evaluations.html#WithinSessionEvaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSessionEvaluation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Within Session evaluation.</p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.evaluations.</span></code><code class="sig-name descname"><span class="pre">WithinSessionEvaluation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_perms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><span class="pre">tuple</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><span class="pre">dict</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/evaluations/evaluations.py#L28-L318"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/evaluations/evaluations.html#WithinSessionEvaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSessionEvaluation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performance evaluation within session (k-fold cross-validation)</p>
+<p>Within-session evaluation uses k-fold cross_validation to determine train
+and test sets on separate session for each subject, it is possible to
+estimate the performance on a subset of training examples to obtain
+learning curves.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_perms</strong> – Number of permutations to perform. If an array
+is passed it has to be equal in size to the data_size array.
+Values in this array must be monotonically decreasing (performing
+more permutations for more data is not useful to reduce standard
+error of the mean).
+Default: None</p></li>
+<li><p><strong>data_size</strong> – If None is passed, it performs conventional WithinSession evaluation.
+Contains the policy to pick the datasizes to
+evaluate, as well as the actual values. The dict has the
+key ‘policy’ with either ‘ratio’ or ‘per_class’, and the key
+‘value’ with the actual values as an numpy array. This array should be
+sorted, such that values in data_size are strictly monotonically increasing.
+Default: None</p></li>
+<li><p><strong>paradigm</strong> (<em>Paradigm instance</em>) – The paradigm to use.</p></li>
+<li><p><strong>datasets</strong> (<em>List of Dataset instance</em>) – The list of dataset to run the evaluation. If none, the list of
+compatible dataset will be retrieved from the paradigm instance.</p></li>
+<li><p><strong>random_state</strong> (<em>int, RandomState instance, default=None</em>) – If not None, can guarantee same seed for shuffling examples.</p></li>
+<li><p><strong>n_jobs</strong> (<em>int, default=1</em>) – Number of jobs for fitting of pipeline.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool, default=False</em>) – If true, overwrite the results.</p></li>
+<li><p><strong>error_score</strong> (<em>“raise” or numeric, default=”raise”</em>) – Value to assign to the score if an error occurs in estimator fitting. If set to
+‘raise’, the error is raised.</p></li>
+<li><p><strong>suffix</strong> (<em>str</em>) – Suffix for the results file.</p></li>
+<li><p><strong>hdf5_path</strong> (<em>str</em>) – Specific path for storing the results.</p></li>
+<li><p><strong>additional_columns</strong> (<em>None</em>) – Adding information to results.</p></li>
+<li><p><strong>return_epochs</strong> (<em>bool, default=False</em>) – use MNE epoch to train pipelines.</p></li>
+<li><p><strong>mne_labels</strong> (<em>bool, default=False</em>) – if returning MNE epoch, use original dataset label if True</p></li>
+</ul>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -198,7 +234,7 @@
 </table>
 <dl class="py method">
 <dt id="moabb.evaluations.WithinSessionEvaluation.evaluate">
-<code class="sig-name descname"><span class="pre">evaluate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipelines</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/evaluations/evaluations.py#L282-L286"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/evaluations/evaluations.html#WithinSessionEvaluation.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSessionEvaluation.evaluate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">evaluate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipelines</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/evaluations/evaluations.py#L311-L315"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/evaluations/evaluations.html#WithinSessionEvaluation.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSessionEvaluation.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate results on a single dataset.</p>
 <p>This method return a generator. each results item is a dict with
 the following convension:</p>
@@ -216,7 +252,7 @@ the following convension:</p>
 
 <dl class="py method">
 <dt id="moabb.evaluations.WithinSessionEvaluation.is_valid">
-<code class="sig-name descname"><span class="pre">is_valid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/evaluations/evaluations.py#L288-L289"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/evaluations/evaluations.html#WithinSessionEvaluation.is_valid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSessionEvaluation.is_valid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">is_valid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/evaluations/evaluations.py#L317-L318"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/evaluations/evaluations.html#WithinSessionEvaluation.is_valid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.WithinSessionEvaluation.is_valid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verify the dataset is compatible with evaluation.</p>
 <p>This method is called to verify dataset given in the constructor
 are compatible with the evaluation context.</p>
@@ -234,41 +270,45 @@ contain enought session for a cross-session eval.</p>
 
 <div class="section" id="examples-using-moabb-evaluations-withinsessionevaluation">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.evaluations.WithinSessionEvaluation</span></code><a class="headerlink" href="#examples-using-moabb-evaluations-withinsessionevaluation" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="This Example shows how to perform a within session analysis on three different P300 datasets."><div class="figure align-default" id="id1">
+<div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis on three different P300 datasets."><div class="figure align-default" id="id1">
 <img alt="Within Session P300" src="../_images/sphx_glr_plot_within_session_p300_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_within_session_p300.html#sphx-glr-auto-examples-plot-within-session-p300-py"><span class="std std-ref">Within Session P300</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Within paradigm, it is possible to restrict analysis only to a subset of electrodes and to resa..."><div class="figure align-default" id="id2">
-<img alt="Select electrodes and resampling" src="../_images/sphx_glr_plot_select_electrodes_resample_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/advanced_examples/plot_select_electrodes_resample.html#sphx-glr-auto-examples-advanced-examples-plot-select-electrodes-resample-py"><span class="std std-ref">Select electrodes and resampling</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This Example show how to perform a within-session SSVEP analysis on the MAMEM dataset 3, using ..."><div class="figure align-default" id="id2">
+<img alt="Within Session SSVEP" src="../_images/sphx_glr_plot_within_session_ssvep_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_within_session_ssvep.html#sphx-glr-auto-examples-plot-within-session-ssvep-py"><span class="std std-ref">Within Session SSVEP</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This Example shows how to perform a within session analysis while also creating learning curves..."><div class="figure align-default" id="id3">
-<img alt="Within Session P300 with learning curve" src="../_images/sphx_glr_plot_learning_curve_p300_external_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/external/plot_learning_curve_p300_external.html#sphx-glr-auto-examples-external-plot-learning-curve-p300-external-py"><span class="std std-ref">Within Session P300 with learning curve</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Within paradigm, it is possible to restrict analysis only to a subset of electrodes and to resa..."><div class="figure align-default" id="id3">
+<img alt="Select Electrodes and Resampling" src="../_images/sphx_glr_plot_select_electrodes_resample_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/advanced_examples/plot_select_electrodes_resample.html#sphx-glr-auto-examples-advanced-examples-plot-select-electrodes-resample-py"><span class="std std-ref">Select Electrodes and Resampling</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This Example show how to perform a within session motor imagery analysis on the very popular da..."><div class="figure align-default" id="id4">
-<img alt="Within Session Motor Imagery with learning curve" src="../_images/sphx_glr_plot_learning_curve_motor_imagery_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/learning_curve/plot_learning_curve_motor_imagery.html#sphx-glr-auto-examples-learning-curve-plot-learning-curve-motor-imagery-py"><span class="std std-ref">Within Session Motor Imagery with learning curve</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves..."><div class="figure align-default" id="id4">
+<img alt="Within Session P300 with Learning Curve" src="../_images/sphx_glr_plot_learning_curve_p300_external_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/external/plot_learning_curve_p300_external.html#sphx-glr-auto-examples-external-plot-learning-curve-p300-external-py"><span class="std std-ref">Within Session P300 with Learning Curve</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This Example shows how to perform a within session analysis while also creating learning curves..."><div class="figure align-default" id="id5">
-<img alt="Within Session P300 with learning curve" src="../_images/sphx_glr_plot_learning_curve_p300_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/learning_curve/plot_learning_curve_p300.html#sphx-glr-auto-examples-learning-curve-plot-learning-curve-p300-py"><span class="std std-ref">Within Session P300 with learning curve</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session motor imagery analysis on the very popular d..."><div class="figure align-default" id="id5">
+<img alt="Within Session Motor Imagery with Learning Curve" src="../_images/sphx_glr_plot_learning_curve_motor_imagery_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/learning_curve/plot_learning_curve_motor_imagery.html#sphx-glr-auto-examples-learning-curve-plot-learning-curve-motor-imagery-py"><span class="std std-ref">Within Session Motor Imagery with Learning Curve</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we will go through all the steps to make a simple BCI classification task, dow..."><div class="figure align-default" id="id6">
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves..."><div class="figure align-default" id="id6">
+<img alt="Within Session P300 with Learning Curve" src="../_images/sphx_glr_plot_learning_curve_p300_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/learning_curve/plot_learning_curve_p300.html#sphx-glr-auto-examples-learning-curve-plot-learning-curve-p300-py"><span class="std std-ref">Within Session P300 with Learning Curve</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we will go through all the steps to make a simple BCI classification task, dow..."><div class="figure align-default" id="id7">
 <img alt="Tutorial 1: Simple Motor Imagery" src="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html#sphx-glr-auto-tutorials-tutorial-1-simple-example-motor-imagery-py"><span class="std std-ref">Tutorial 1: Simple Motor Imagery</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html#sphx-glr-auto-tutorials-tutorial-1-simple-example-motor-imagery-py"><span class="std std-ref">Tutorial 1: Simple Motor Imagery</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="We extend the previous example to a case where we want to analyze the score of a classifier wit..."><div class="figure align-default" id="id7">
+</div><div class="sphx-glr-thumbcontainer" tooltip="We extend the previous example to a case where we want to analyze the score of a classifier wit..."><div class="figure align-default" id="id8">
 <img alt="Tutorial 2: Using multiple datasets" src="../_images/sphx_glr_tutorial_2_using_mulitple_datasets_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html#sphx-glr-auto-tutorials-tutorial-2-using-mulitple-datasets-py"><span class="std std-ref">Tutorial 2: Using multiple datasets</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html#sphx-glr-auto-tutorials-tutorial-2-using-mulitple-datasets-py"><span class="std std-ref">Tutorial 2: Using multiple datasets</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this last part, we extend the previous example by assessing the classification score of not ..."><div class="figure align-default" id="id8">
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this last part, we extend the previous example by assessing the classification score of not ..."><div class="figure align-default" id="id9">
 <img alt="Tutorial 3: Benchmarking mulitple pipelines" src="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html#sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"><span class="std std-ref">Tutorial 3: Benchmarking mulitple pipelines</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html#sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"><span class="std std-ref">Tutorial 3: Benchmarking mulitple pipelines</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Tutorial 4: Creating a dataset class"><div class="figure align-default" id="id9">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Tutorial 4: Creating a dataset class"><div class="figure align-default" id="id10">
 <img alt="Tutorial 4: Creating a dataset class" src="../_images/sphx_glr_tutorial_4_adding_a_dataset_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html#sphx-glr-auto-tutorials-tutorial-4-adding-a-dataset-py"><span class="std std-ref">Tutorial 4: Creating a dataset class</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html#sphx-glr-auto-tutorials-tutorial-4-adding-a-dataset-py"><span class="std std-ref">Tutorial 4: Creating a dataset class</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
 </div>
 </div><div style='clear:both'></div></div>
 </div>

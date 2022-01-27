@@ -146,7 +146,7 @@
       
   <h1>Source code for moabb.datasets.Lee2019</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">BMI/OpenBMI dataset (Motor Imagery).</span>
+<span class="sd">BMI/OpenBMI dataset</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span>
 
@@ -164,115 +164,7 @@
 
 
 <span class="k">class</span> <span class="nc">Lee2019</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;BMI/OpenBMI dataset.</span>
-
-<span class="sd">    Dataset from Lee et al 2019 [1]_.</span>
-
-<span class="sd">    **Dataset Description**</span>
-
-<span class="sd">    EEG signals were recorded with a sampling rate of 1,000 Hz and</span>
-<span class="sd">    collected with 62 Ag/AgCl electrodes. The EEG amplifier used</span>
-<span class="sd">    in the experiment was a BrainAmp (Brain Products; Munich,</span>
-<span class="sd">    Germany). The channels were nasion-referenced and grounded</span>
-<span class="sd">    to electrode AFz. Additionally, an EMG electrode recorded from</span>
-<span class="sd">    each flexor digitorum profundus muscle with the olecranon</span>
-<span class="sd">    used as reference. The EEG/EMG channel configuration and</span>
-<span class="sd">    indexing numbers are described in Fig. 1. The impedances of the</span>
-<span class="sd">    EEG electrodes were maintained below 10 k during the entire</span>
-<span class="sd">    experiment.</span>
-
-<span class="sd">    MI paradigm</span>
-<span class="sd">    The MI paradigm was designed following a well-established system protocol.</span>
-<span class="sd">    For all blocks, the first 3 s of each trial began</span>
-<span class="sd">    with a black fixation cross that appeared at the center of the</span>
-<span class="sd">    monitor to prepare subjects for the MI task. Afterwards, the subject</span>
-<span class="sd">    performed the imagery task of grasping with the appropriate</span>
-<span class="sd">    hand for 4 s when the right or left arrow appeared as a visual cue.</span>
-<span class="sd">    After each task, the screen remained blank for 6 s (± 1.5 s). The</span>
-<span class="sd">    experiment consisted of training and test phases; each phase</span>
-<span class="sd">    had 100 trials with balanced right and left hand imagery tasks.</span>
-<span class="sd">    During the online test phase, the fixation cross appeared at the</span>
-<span class="sd">    center of the monitor and moved right or left, according to the</span>
-<span class="sd">    real-time classifier output of the EEG signal.</span>
-
-<span class="sd">    ERP paradigm</span>
-<span class="sd">    The interface layout of the speller followed the typical design</span>
-<span class="sd">    of a row-column speller. The six rows and six columns were</span>
-<span class="sd">    configured with 36 symbols (A to Z, 1 to 9, and _). Each symbol</span>
-<span class="sd">    was presented equally spaced. To enhance the</span>
-<span class="sd">    signal quality, two additional settings were incorporated into</span>
-<span class="sd">    the original row-column speller design, namely, random-set</span>
-<span class="sd">    presentation and face stimuli. These additional settings</span>
-<span class="sd">    help to elicit stronger ERP responses by minimizing adjacency</span>
-<span class="sd">    distraction errors and by presenting a familiar face image. The</span>
-<span class="sd">    stimulus-time interval was set to 80 ms, and the inter-stimulus</span>
-<span class="sd">    interval (ISI) to 135 ms. A single iteration of stimulus presentation</span>
-<span class="sd">    in all rows and columns was considered a sequence. Therefore,</span>
-<span class="sd">    one sequence consisted of 12 stimulus flashes. A maximum</span>
-<span class="sd">    of five sequences (i.e., 60 flashes) was allotted without prolonged</span>
-<span class="sd">    inter-sequence intervals for each target character. After the end</span>
-<span class="sd">    of five sequences, 4.5 s were given to the user for identifying, locating,</span>
-<span class="sd">    and gazing at the next target character. The participant</span>
-<span class="sd">    was instructed to attend to the target symbol by counting the</span>
-<span class="sd">    number of times each target character had been flashed.</span>
-<span class="sd">        In the training session, subjects were asked to copy-spell</span>
-<span class="sd">    a given sentence, &quot;NEURAL NETWORKS AND DEEP LEARNING&quot;</span>
-<span class="sd">    (33 characters including spaces) by gazing at the target character</span>
-<span class="sd">    on the screen. The training session was performed in the offline</span>
-<span class="sd">    condition, and no feedback was provided to the subject during</span>
-<span class="sd">    the EEG recording. In the test session, subjects were instructed to</span>
-<span class="sd">    copy-spell &quot;PATTERN RECOGNITION MACHINE LEARNING&quot;</span>
-<span class="sd">    (36 characters including spaces), and the real-time EEG data were</span>
-<span class="sd">    analyzed based on the classifier that was calculated from the</span>
-<span class="sd">    training session data. The selected character from the subject’s</span>
-<span class="sd">    current EEG data was displayed in the top left area of the screen</span>
-<span class="sd">    at the end of the presentation (i.e., after five sequences).</span>
-<span class="sd">    Per participant, the collected EEG data for the ERP experiment consisted</span>
-<span class="sd">    of 1,980 and 2,160 trials (samples) for training and test phase, respectively.</span>
-
-<span class="sd">    SSVEP paradigm</span>
-<span class="sd">    Four target SSVEP stimuli were designed to flicker at 5.45, 6.67,</span>
-<span class="sd">    8.57, and 12 Hz and were presented in four positions (down,</span>
-<span class="sd">    right, left, and up, respectively) on a monitor. The designed</span>
-<span class="sd">    paradigm followed the conventional types of SSVEP-based BCI</span>
-<span class="sd">    systems that require four-direction movements. Partici-</span>
-<span class="sd">    pants were asked to fixate the center of a black screen and then</span>
-<span class="sd">    to gaze in the direction where the target stimulus was high-</span>
-<span class="sd">    lighted in a different color. Each SSVEP stimulus</span>
-<span class="sd">    was presented for 4 s with an ISI of 6 s. Each target frequency</span>
-<span class="sd">    was presented 25 times. Therefore, the corrected EEG data had</span>
-<span class="sd">    100 trials (4 classes x 25 trials) in the offline training phase and</span>
-<span class="sd">    another 100 trials in the online test phase. Visual feedback was</span>
-<span class="sd">    presented in the test phase; the estimated target frequency was</span>
-<span class="sd">    highlighted for 1 s with a red border at the end of each trial.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    paradigm: ([&#39;MI&#39;,&#39;ERP&#39;,&#39;SSVEP&#39;])</span>
-<span class="sd">        the paradigm to load (see paper).</span>
-
-<span class="sd">    train_run: bool (default True)</span>
-<span class="sd">        if True, return runs corresponding to the training/offline phase (see paper).</span>
-
-<span class="sd">    test_run: bool (default: False for MI and SSVEP paradigms, True for ERP)</span>
-<span class="sd">        if True, return runs corresponding to the test/online phase (see paper). Beware that test_run</span>
-<span class="sd">        for  MI and SSVEP do not have labels associated with trials: these runs could not be used in</span>
-<span class="sd">        classification tasks.</span>
-
-<span class="sd">    resting_state: bool (default False)</span>
-<span class="sd">        if True, return runs corresponding to the resting phases before and after recordings (see paper).</span>
-
-<span class="sd">    sessions: list of int (default [1,2])</span>
-<span class="sd">        the list of the sessions to load (2 available).</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    .. [1] Lee, M. H., Kwon, O. Y., Kim, Y. J., Kim, H. K., Lee, Y. E.,</span>
-<span class="sd">           Williamson, J., … Lee, S. W. (2019). EEG dataset and OpenBMI</span>
-<span class="sd">           toolbox for three BCI paradigms: An investigation into BCI</span>
-<span class="sd">           illiteracy. GigaScience, 8(5), 1–16.</span>
-<span class="sd">           https://doi.org/10.1093/gigascience/giz002</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Base dataset class for Lee2019&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -492,14 +384,206 @@
 
 
 <div class="viewcode-block" id="Lee2019_MI"><a class="viewcode-back" href="../../../generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI">[docs]</a><span class="k">class</span> <span class="nc">Lee2019_MI</span><span class="p">(</span><span class="n">Lee2019</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;BMI/OpenBMI dataset for MI.</span>
+
+<span class="sd">    Dataset from Lee et al 2019 [1]_.</span>
+
+<span class="sd">    **Dataset Description**</span>
+
+<span class="sd">    EEG signals were recorded with a sampling rate of 1,000 Hz and</span>
+<span class="sd">    collected with 62 Ag/AgCl electrodes. The EEG amplifier used</span>
+<span class="sd">    in the experiment was a BrainAmp (Brain Products; Munich,</span>
+<span class="sd">    Germany). The channels were nasion-referenced and grounded</span>
+<span class="sd">    to electrode AFz. Additionally, an EMG electrode recorded from</span>
+<span class="sd">    each flexor digitorum profundus muscle with the olecranon</span>
+<span class="sd">    used as reference. The EEG/EMG channel configuration and</span>
+<span class="sd">    indexing numbers are described in Fig. 1. The impedances of the</span>
+<span class="sd">    EEG electrodes were maintained below 10 k during the entire</span>
+<span class="sd">    experiment.</span>
+
+<span class="sd">    MI paradigm</span>
+<span class="sd">    The MI paradigm was designed following a well-established system protocol.</span>
+<span class="sd">    For all blocks, the first 3 s of each trial began</span>
+<span class="sd">    with a black fixation cross that appeared at the center of the</span>
+<span class="sd">    monitor to prepare subjects for the MI task. Afterwards, the subject</span>
+<span class="sd">    performed the imagery task of grasping with the appropriate</span>
+<span class="sd">    hand for 4 s when the right or left arrow appeared as a visual cue.</span>
+<span class="sd">    After each task, the screen remained blank for 6 s (± 1.5 s). The</span>
+<span class="sd">    experiment consisted of training and test phases; each phase</span>
+<span class="sd">    had 100 trials with balanced right and left hand imagery tasks.</span>
+<span class="sd">    During the online test phase, the fixation cross appeared at the</span>
+<span class="sd">    center of the monitor and moved right or left, according to the</span>
+<span class="sd">    real-time classifier output of the EEG signal.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    train_run: bool (default True)</span>
+<span class="sd">        if True, return runs corresponding to the training/offline phase (see paper).</span>
+
+<span class="sd">    test_run: bool (default: False for MI and SSVEP paradigms, True for ERP)</span>
+<span class="sd">        if True, return runs corresponding to the test/online phase (see paper). Beware that test_run</span>
+<span class="sd">        for  MI and SSVEP do not have labels associated with trials: these runs could not be used in</span>
+<span class="sd">        classification tasks.</span>
+
+<span class="sd">    resting_state: bool (default False)</span>
+<span class="sd">        if True, return runs corresponding to the resting phases before and after recordings (see paper).</span>
+
+<span class="sd">    sessions: list of int (default [1,2])</span>
+<span class="sd">        the list of the sessions to load (2 available).</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Lee, M. H., Kwon, O. Y., Kim, Y. J., Kim, H. K., Lee, Y. E.,</span>
+<span class="sd">           Williamson, J., … Lee, S. W. (2019). EEG dataset and OpenBMI</span>
+<span class="sd">           toolbox for three BCI paradigms: An investigation into BCI</span>
+<span class="sd">           illiteracy. GigaScience, 8(5), 1–16.</span>
+<span class="sd">           https://doi.org/10.1093/gigascience/giz002</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="fm">__init__</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">Lee2019</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span> <span class="s2">&quot;MI&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Lee2019_ERP"><a class="viewcode-back" href="../../../generated/moabb.datasets.Lee2019_ERP.html#moabb.datasets.Lee2019_ERP">[docs]</a><span class="k">class</span> <span class="nc">Lee2019_ERP</span><span class="p">(</span><span class="n">Lee2019</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;BMI/OpenBMI dataset for P300.</span>
+
+<span class="sd">    Dataset from Lee et al 2019 [1]_.</span>
+
+<span class="sd">    **Dataset Description**</span>
+
+<span class="sd">    EEG signals were recorded with a sampling rate of 1,000 Hz and</span>
+<span class="sd">    collected with 62 Ag/AgCl electrodes. The EEG amplifier used</span>
+<span class="sd">    in the experiment was a BrainAmp (Brain Products; Munich,</span>
+<span class="sd">    Germany). The channels were nasion-referenced and grounded</span>
+<span class="sd">    to electrode AFz. Additionally, an EMG electrode recorded from</span>
+<span class="sd">    each flexor digitorum profundus muscle with the olecranon</span>
+<span class="sd">    used as reference. The EEG/EMG channel configuration and</span>
+<span class="sd">    indexing numbers are described in Fig. 1. The impedances of the</span>
+<span class="sd">    EEG electrodes were maintained below 10 k during the entire</span>
+<span class="sd">    experiment.</span>
+
+<span class="sd">    ERP paradigm</span>
+<span class="sd">    The interface layout of the speller followed the typical design</span>
+<span class="sd">    of a row-column speller. The six rows and six columns were</span>
+<span class="sd">    configured with 36 symbols (A to Z, 1 to 9, and _). Each symbol</span>
+<span class="sd">    was presented equally spaced. To enhance the</span>
+<span class="sd">    signal quality, two additional settings were incorporated into</span>
+<span class="sd">    the original row-column speller design, namely, random-set</span>
+<span class="sd">    presentation and face stimuli. These additional settings</span>
+<span class="sd">    help to elicit stronger ERP responses by minimizing adjacency</span>
+<span class="sd">    distraction errors and by presenting a familiar face image. The</span>
+<span class="sd">    stimulus-time interval was set to 80 ms, and the inter-stimulus</span>
+<span class="sd">    interval (ISI) to 135 ms. A single iteration of stimulus presentation</span>
+<span class="sd">    in all rows and columns was considered a sequence. Therefore,</span>
+<span class="sd">    one sequence consisted of 12 stimulus flashes. A maximum</span>
+<span class="sd">    of five sequences (i.e., 60 flashes) was allotted without prolonged</span>
+<span class="sd">    inter-sequence intervals for each target character. After the end</span>
+<span class="sd">    of five sequences, 4.5 s were given to the user for identifying, locating,</span>
+<span class="sd">    and gazing at the next target character. The participant</span>
+<span class="sd">    was instructed to attend to the target symbol by counting the</span>
+<span class="sd">    number of times each target character had been flashed.</span>
+<span class="sd">        In the training session, subjects were asked to copy-spell</span>
+<span class="sd">    a given sentence, &quot;NEURAL NETWORKS AND DEEP LEARNING&quot;</span>
+<span class="sd">    (33 characters including spaces) by gazing at the target character</span>
+<span class="sd">    on the screen. The training session was performed in the offline</span>
+<span class="sd">    condition, and no feedback was provided to the subject during</span>
+<span class="sd">    the EEG recording. In the test session, subjects were instructed to</span>
+<span class="sd">    copy-spell &quot;PATTERN RECOGNITION MACHINE LEARNING&quot;</span>
+<span class="sd">    (36 characters including spaces), and the real-time EEG data were</span>
+<span class="sd">    analyzed based on the classifier that was calculated from the</span>
+<span class="sd">    training session data. The selected character from the subject’s</span>
+<span class="sd">    current EEG data was displayed in the top left area of the screen</span>
+<span class="sd">    at the end of the presentation (i.e., after five sequences).</span>
+<span class="sd">    Per participant, the collected EEG data for the ERP experiment consisted</span>
+<span class="sd">    of 1,980 and 2,160 trials (samples) for training and test phase, respectively.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    train_run: bool (default True)</span>
+<span class="sd">        if True, return runs corresponding to the training/offline phase (see paper).</span>
+
+<span class="sd">    test_run: bool (default: False for MI and SSVEP paradigms, True for ERP)</span>
+<span class="sd">        if True, return runs corresponding to the test/online phase (see paper). Beware that test_run</span>
+<span class="sd">        for  MI and SSVEP do not have labels associated with trials: these runs could not be used in</span>
+<span class="sd">        classification tasks.</span>
+
+<span class="sd">    resting_state: bool (default False)</span>
+<span class="sd">        if True, return runs corresponding to the resting phases before and after recordings (see paper).</span>
+
+<span class="sd">    sessions: list of int (default [1,2])</span>
+<span class="sd">        the list of the sessions to load (2 available).</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Lee, M. H., Kwon, O. Y., Kim, Y. J., Kim, H. K., Lee, Y. E.,</span>
+<span class="sd">           Williamson, J., … Lee, S. W. (2019). EEG dataset and OpenBMI</span>
+<span class="sd">           toolbox for three BCI paradigms: An investigation into BCI</span>
+<span class="sd">           illiteracy. GigaScience, 8(5), 1–16.</span>
+<span class="sd">           https://doi.org/10.1093/gigascience/giz002</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="fm">__init__</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">Lee2019</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span> <span class="s2">&quot;ERP&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Lee2019_SSVEP"><a class="viewcode-back" href="../../../generated/moabb.datasets.Lee2019_SSVEP.html#moabb.datasets.Lee2019_SSVEP">[docs]</a><span class="k">class</span> <span class="nc">Lee2019_SSVEP</span><span class="p">(</span><span class="n">Lee2019</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;BMI/OpenBMI dataset for SSVEP.</span>
+
+<span class="sd">    Dataset from Lee et al 2019 [1]_.</span>
+
+<span class="sd">    **Dataset Description**</span>
+
+<span class="sd">    EEG signals were recorded with a sampling rate of 1,000 Hz and</span>
+<span class="sd">    collected with 62 Ag/AgCl electrodes. The EEG amplifier used</span>
+<span class="sd">    in the experiment was a BrainAmp (Brain Products; Munich,</span>
+<span class="sd">    Germany). The channels were nasion-referenced and grounded</span>
+<span class="sd">    to electrode AFz. Additionally, an EMG electrode recorded from</span>
+<span class="sd">    each flexor digitorum profundus muscle with the olecranon</span>
+<span class="sd">    used as reference. The EEG/EMG channel configuration and</span>
+<span class="sd">    indexing numbers are described in Fig. 1. The impedances of the</span>
+<span class="sd">    EEG electrodes were maintained below 10 k during the entire</span>
+<span class="sd">    experiment.</span>
+
+<span class="sd">    SSVEP paradigm</span>
+<span class="sd">    Four target SSVEP stimuli were designed to flicker at 5.45, 6.67,</span>
+<span class="sd">    8.57, and 12 Hz and were presented in four positions (down,</span>
+<span class="sd">    right, left, and up, respectively) on a monitor. The designed</span>
+<span class="sd">    paradigm followed the conventional types of SSVEP-based BCI</span>
+<span class="sd">    systems that require four-direction movements. Partici-</span>
+<span class="sd">    pants were asked to fixate the center of a black screen and then</span>
+<span class="sd">    to gaze in the direction where the target stimulus was high-</span>
+<span class="sd">    lighted in a different color. Each SSVEP stimulus</span>
+<span class="sd">    was presented for 4 s with an ISI of 6 s. Each target frequency</span>
+<span class="sd">    was presented 25 times. Therefore, the corrected EEG data had</span>
+<span class="sd">    100 trials (4 classes x 25 trials) in the offline training phase and</span>
+<span class="sd">    another 100 trials in the online test phase. Visual feedback was</span>
+<span class="sd">    presented in the test phase; the estimated target frequency was</span>
+<span class="sd">    highlighted for 1 s with a red border at the end of each trial.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    train_run: bool (default True)</span>
+<span class="sd">        if True, return runs corresponding to the training/offline phase (see paper).</span>
+
+<span class="sd">    test_run: bool (default: False for MI and SSVEP paradigms, True for ERP)</span>
+<span class="sd">        if True, return runs corresponding to the test/online phase (see paper). Beware that test_run</span>
+<span class="sd">        for  MI and SSVEP do not have labels associated with trials: these runs could not be used in</span>
+<span class="sd">        classification tasks.</span>
+
+<span class="sd">    resting_state: bool (default False)</span>
+<span class="sd">        if True, return runs corresponding to the resting phases before and after recordings (see paper).</span>
+
+<span class="sd">    sessions: list of int (default [1,2])</span>
+<span class="sd">        the list of the sessions to load (2 available).</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Lee, M. H., Kwon, O. Y., Kim, Y. J., Kim, H. K., Lee, Y. E.,</span>
+<span class="sd">           Williamson, J., … Lee, S. W. (2019). EEG dataset and OpenBMI</span>
+<span class="sd">           toolbox for three BCI paradigms: An investigation into BCI</span>
+<span class="sd">           illiteracy. GigaScience, 8(5), 1–16.</span>
+<span class="sd">           https://doi.org/10.1093/gigascience/giz002</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="fm">__init__</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">Lee2019</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span> <span class="s2">&quot;SSVEP&quot;</span><span class="p">)</span></div>
 </pre></div>
 

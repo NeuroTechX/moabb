@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cross Subject SSVEP &#8212; moabb 0.4.4 documentation</title>
+    <title>Cross-Subject SSVEP &#8212; moabb 0.4.4 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -117,10 +117,10 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Cross Subject SSVEP</a><ul>
-<li><a class="reference internal" href="#loading-dataset">Loading dataset</a></li>
-<li><a class="reference internal" href="#choose-paradigm">Choose paradigm</a></li>
-<li><a class="reference internal" href="#create-pipelines">Create pipelines</a></li>
+<li><a class="reference internal" href="#">Cross-Subject SSVEP</a><ul>
+<li><a class="reference internal" href="#loading-dataset">Loading Dataset</a></li>
+<li><a class="reference internal" href="#choose-paradigm">Choose Paradigm</a></li>
+<li><a class="reference internal" href="#create-pipelines">Create Pipelines</a></li>
 <li><a class="reference internal" href="#evaluation">Evaluation</a></li>
 <li><a class="reference internal" href="#plot-results">Plot Results</a></li>
 </ul>
@@ -160,8 +160,8 @@
 to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="cross-subject-ssvep">
-<span id="sphx-glr-auto-examples-plot-cross-subject-ssvep-py"></span><h1>Cross Subject SSVEP<a class="headerlink" href="#cross-subject-ssvep" title="Permalink to this headline">¶</a></h1>
-<p>This example shows how to perform a cross subject analysis on a SSVEP dataset.
+<span id="sphx-glr-auto-examples-plot-cross-subject-ssvep-py"></span><h1>Cross-Subject SSVEP<a class="headerlink" href="#cross-subject-ssvep" title="Permalink to this headline">¶</a></h1>
+<p>This example shows how to perform a cross-subject analysis on an SSVEP dataset.
 We will compare two pipelines :</p>
 <ul class="simple">
 <li><p>Riemannian Geometry</p></li>
@@ -222,9 +222,9 @@ We will compare two pipelines :</p>
 </pre></div>
 </div>
 <div class="section" id="loading-dataset">
-<h2>Loading dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this headline">¶</a></h2>
+<h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this headline">¶</a></h2>
 <p>We will load the data from the first 2 subjects of the <code class="docutils literal notranslate"><span class="pre">SSVEP_Exo</span></code> dataset
-and compare two algorithms on this set. One of the algorithm could only
+and compare two algorithms on this set. One of the algorithms could only
 process class associated with a stimulation frequency, we will thus drop
 the resting class. As the resting class is the last defined class, picking
 the first three classes (out of four) allows to focus only on the stimulation
@@ -237,7 +237,7 @@ frequency.</p>
 </div>
 </div>
 <div class="section" id="choose-paradigm">
-<h2>Choose paradigm<a class="headerlink" href="#choose-paradigm" title="Permalink to this headline">¶</a></h2>
+<h2>Choose Paradigm<a class="headerlink" href="#choose-paradigm" title="Permalink to this headline">¶</a></h2>
 <p>We define the paradigms (SSVEP, SSSVEP_TRCA and FilterBankSSVEP) and use the dataset
 SSVEPExo. The SSVEP paradigm applied a bandpass filter (10-25 Hz) on
 the data, SSVEP_TRCA applied a bandpass filter (1-110 Hz) which correspond to almost
@@ -245,7 +245,7 @@ no filtering, while the FilterBankSSVEP paradigm uses as many bandpass filters a
 there are stimulation frequencies (here 2). For each stimulation frequency
 the EEG is filtered with a 1 Hz-wide bandpass filter centered on the
 frequency. This results in <code class="docutils literal notranslate"><span class="pre">n_classes</span></code> copies of the signal, filtered for each
-class, as used in filterbank motor imagery paradigms.</p>
+class, as used in the filterbank motor imagery paradigms.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paradigm</span> <span class="o">=</span> <span class="n">SSVEP</span><span class="p">(</span><span class="n">fmin</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">paradigm_TRCA</span> <span class="o">=</span> <span class="n">SSVEP</span><span class="p">(</span><span class="n">fmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">110</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">paradigm_fb</span> <span class="o">=</span> <span class="n">FilterBankSSVEP</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -260,13 +260,13 @@ to 0 and 1</p>
 </div>
 </div>
 <div class="section" id="create-pipelines">
-<h2>Create pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this headline">¶</a></h2>
+<h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this headline">¶</a></h2>
 <p>Pipelines must be a dict of sklearn pipeline transformer.
 The first pipeline uses Riemannian geometry, by building an extended
 covariance matrices from the signal filtered around the considered
 frequency and applying a logistic regression in the tangent plane.
 The second pipeline relies on the above defined CCA classifier.
-The third pipeline relies on TRCA algorithm.</p>
+The third pipeline relies on the TRCA algorithm.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_fb</span></a> <span class="o">=</span> <span class="p">{}</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_fb</span></a><span class="p">[</span><span class="s2">&quot;RG+LogReg&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span>
     <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">ExtendedSSVEPSignal</span></a><span class="p">(),</span>
@@ -287,7 +287,7 @@ The third pipeline relies on TRCA algorithm.</p>
 </div>
 <div class="section" id="evaluation">
 <h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h2>
-<p>The evaluation will return a dataframe containing a single AUC score for
+<p>The evaluation will return a DataFrame containing an accuracy score for
 each subject / session of the dataset, and for each pipeline.</p>
 <p>Results are saved into the database, so that if you add a new pipeline, it
 will not run again the evaluation unless a parameter has changed. Results can
@@ -300,7 +300,7 @@ be overwritten if necessary.</p>
 <span class="n">results</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p>Filter bank processing, determine automatically the filter from the
+<p>Filter bank processing, determine the filter automatically from the
 stimulation frequency values of events.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evaluation_fb</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">CrossSubjectEvaluation</span></a><span class="p">(</span>
     <span class="n">paradigm</span><span class="o">=</span><span class="n">paradigm_fb</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">overwrite</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">overwrite</span></a>
@@ -322,7 +322,7 @@ stimulation frequency values of events.</p>
 </div>
 <div class="section" id="plot-results">
 <h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this headline">¶</a></h2>
-<p>Here we plot the results.</p>
+<p>Here we display the results as stripplot, with a pointplot for error bar.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
@@ -337,12 +337,11 @@ stimulation frequency values of events.</p>
 <span class="n">sns</span><span class="o">.</span><span class="n">pointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;pipeline&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_ylim.html#matplotlib.axes.Axes.set_ylim" title="matplotlib.axes.Axes.set_ylim" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span></a><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html#matplotlib.pyplot.savefig" title="matplotlib.pyplot.savefig" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">savefig</span></a><span class="p">(</span><span class="s2">&quot;ssvep.png&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure.show" title="matplotlib.figure.Figure.show" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
 <img alt="plot cross subject ssvep" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.581 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.224 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-subject-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5459b5c2be76a529eb282ae496a50415/plot_cross_subject_ssvep.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_subject_ssvep.py</span></code></a></p>

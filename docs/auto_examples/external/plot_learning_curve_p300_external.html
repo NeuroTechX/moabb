@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Within Session P300 with learning curve &#8212; moabb 0.4.4 documentation</title>
+    <title>Within Session P300 with Learning Curve &#8212; moabb 0.4.4 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
@@ -117,7 +117,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Within Session P300 with learning curve</a><ul>
+<li><a class="reference internal" href="#">Within Session P300 with Learning Curve</a><ul>
 <li><a class="reference internal" href="#create-pipelines">Create pipelines</a></li>
 <li><a class="reference internal" href="#evaluation">Evaluation</a></li>
 <li><a class="reference internal" href="#plot-results">Plot Results</a></li>
@@ -158,15 +158,15 @@
 to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="within-session-p300-with-learning-curve">
-<span id="sphx-glr-auto-examples-external-plot-learning-curve-p300-external-py"></span><h1>Within Session P300 with learning curve<a class="headerlink" href="#within-session-p300-with-learning-curve" title="Permalink to this headline">¶</a></h1>
-<p>This Example shows how to perform a within session analysis while also
+<span id="sphx-glr-auto-examples-external-plot-learning-curve-p300-external-py"></span><h1>Within Session P300 with Learning Curve<a class="headerlink" href="#within-session-p300-with-learning-curve" title="Permalink to this headline">¶</a></h1>
+<p>This example shows how to perform a within session analysis while also
 creating learning curves for a P300 dataset.
 Additionally, we will evaluate external code. Make sure to have tdlda installed, which
 can be found in requirements_external.txt</p>
 <p>We will compare three pipelines :</p>
 <ul class="simple">
-<li><p>Riemannian Geometry</p></li>
-<li><p>Jumping Means based Linear Discriminant Analysis</p></li>
+<li><p>Riemannian geometry</p></li>
+<li><p>Jumping Means-based Linear Discriminant Analysis</p></li>
 <li><p>Time-Decoupled Linear Discriminant Analysis</p></li>
 </ul>
 <p>We will use the P300 paradigm, which uses the AUC as metric.</p>
@@ -233,7 +233,7 @@ can be found in requirements_external.txt</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">processing_sampling_rate</span></a> <span class="o">=</span> <span class="mi">128</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="c1"># we have to do this because the classes are called &#39;Target&#39; and &#39;NonTarget&#39;</span>
+<span class="c1"># We have to do this because the classes are called &#39;Target&#39; and &#39;NonTarget&#39;</span>
 <span class="c1"># but the evaluation function uses a LabelEncoder, transforming them</span>
 <span class="c1"># to 0 and 1</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels_dict</span></a> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Target&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;NonTarget&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
@@ -275,7 +275,7 @@ can be found in requirements_external.txt</p>
 </div>
 <div class="section" id="evaluation">
 <h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h2>
-<p>We define the paradigm (P300) and use all three datasets available for it.
+<p>We define the paradigm (P300) and use the BNCI 2014-009 dataset for it.
 The evaluation will return a dataframe containing AUCs for each permutation
 and dataset size.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paradigm</span> <span class="o">=</span> <span class="n">P300</span><span class="p">(</span><span class="n">resample</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">processing_sampling_rate</span></a><span class="p">)</span>
@@ -516,7 +516,7 @@ and dataset size.</p>
 </pre></div>
 </div>
 <img alt="Errorbar shows Mean-CI across permutations" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_learning_curve_p300_external_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  48.784 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  47.433 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-external-plot-learning-curve-p300-external-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/1eb996e21dc5546952cdf5d77959e6ad/plot_learning_curve_p300_external.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_learning_curve_p300_external.py</span></code></a></p>

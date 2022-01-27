@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cross Session Motor Imagery &#8212; moabb 0.4.4 documentation</title>
+    <title>Cross-Session Motor Imagery &#8212; moabb 0.4.4 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -117,8 +117,8 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Cross Session Motor Imagery</a><ul>
-<li><a class="reference internal" href="#create-pipelines">Create pipelines</a></li>
+<li><a class="reference internal" href="#">Cross-Session Motor Imagery</a><ul>
+<li><a class="reference internal" href="#create-pipelines">Create Pipelines</a></li>
 <li><a class="reference internal" href="#evaluation">Evaluation</a></li>
 <li><a class="reference internal" href="#plot-results">Plot Results</a></li>
 </ul>
@@ -158,21 +158,22 @@
 to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="cross-session-motor-imagery">
-<span id="sphx-glr-auto-examples-plot-cross-session-motor-imagery-py"></span><h1>Cross Session Motor Imagery<a class="headerlink" href="#cross-session-motor-imagery" title="Permalink to this headline">¶</a></h1>
-<p>This Example show how to perform a cross session motor imagery analysis on the
+<span id="sphx-glr-auto-examples-plot-cross-session-motor-imagery-py"></span><h1>Cross-Session Motor Imagery<a class="headerlink" href="#cross-session-motor-imagery" title="Permalink to this headline">¶</a></h1>
+<p>This example show how to perform a cross session motor imagery analysis on the
 very popular dataset 2a from the BCI competition IV.</p>
 <p>We will compare two pipelines :</p>
 <ul class="simple">
 <li><p>CSP+LDA</p></li>
 <li><p>Riemannian Geometry+Logistic Regression</p></li>
 </ul>
-<p>We will use the LeftRightImagery paradigm. this will restrict the analysis
-to two classes (left hand versus righ hand) and use AUC as metric.</p>
+<p>We will use the LeftRightImagery paradigm. This will restrict the analysis
+to two classes (left hand versus right hand) and use AUC as metric.</p>
 <p>The cross session evaluation context will evaluate performance using a leave
 one session out cross-validation. For each session in the dataset, a model
 is trained on every other session and performance are evaluated on the current
 session.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Alexandre Barachant &lt;alexandre.barachant@gmail.com&gt;</span>
+<span class="c1">#          Sylvain Chevallier &lt;sylvain.chevallier@uvsq.fr&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
@@ -222,12 +223,12 @@ session.</p>
 </pre></div>
 </div>
 <div class="section" id="create-pipelines">
-<h2>Create pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this headline">¶</a></h2>
+<h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this headline">¶</a></h2>
 <p>Pipelines must be a dict of sklearn pipeline transformer.</p>
-<p>The csp implementation from MNE is used. We selected 8 CSP components, as
-usually done in the litterature.</p>
-<p>The riemannian geometry pipeline consists in covariance estimation, tangent
-space mapping and finaly a logistic regression for the classification.</p>
+<p>The CSP implementation is based on the MNE implementation. We selected 8 CSP
+components, as usually done in the literature.</p>
+<p>The Riemannian geometry pipeline consists in covariance estimation, tangent
+space mapping and finally a logistic regression for the classification.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a> <span class="o">=</span> <span class="p">{}</span>
 
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">[</span><span class="s2">&quot;CSP+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
@@ -241,11 +242,11 @@ space mapping and finaly a logistic regression for the classification.</p>
 <div class="section" id="evaluation">
 <h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h2>
 <p>We define the paradigm (LeftRightImagery) and the dataset (BNCI2014001).
-The evaluation will return a dataframe containing a single AUC score for
+The evaluation will return a DataFrame containing a single AUC score for
 each subject / session of the dataset, and for each pipeline.</p>
 <p>Results are saved into the database, so that if you add a new pipeline, it
 will not run again the evaluation unless a parameter has changed. Results can
-be overwrited if necessary.</p>
+be overwritten if necessary.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paradigm</span> <span class="o">=</span> <span class="n">LeftRightImagery</span><span class="p">()</span>
 <span class="c1"># Because this is being auto-generated we only use 2 subjects</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">BNCI2014001</span><span class="p">()</span>
@@ -264,7 +265,7 @@ be overwrited if necessary.</p>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/results.py:69: RuntimeWarning: Setting non-standard config type: &quot;MOABB_RESULTS&quot;
   set_config(&quot;MOABB_RESULTS&quot;, osp.join(osp.expanduser(&quot;~&quot;), &quot;mne_data&quot;))
-2022-01-25 17:49:56,273 INFO MainThread moabb.evaluations.base Processing dataset: 001-2014
+2022-01-27 08:04:07,393 INFO MainThread moabb.evaluations.base Processing dataset: 001-2014
 MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_data
 All datasets will be downloaded to this location, if anything is already downloaded, please move manually to this location
 /home/runner/work/moabb/moabb/moabb/datasets/download.py:53: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_BNCI_PATH&quot;
@@ -277,7 +278,7 @@ All datasets will be downloaded to this location, if anything is already downloa
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-2022-01-25 17:50:18,629 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_E: Score 0.955
+2022-01-27 08:04:27,652 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_E: Score 0.955
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
@@ -286,9 +287,9 @@ All datasets will be downloaded to this location, if anything is already downloa
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-2022-01-25 17:50:18,971 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_T: Score 0.932
-2022-01-25 17:50:19,423 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_E: Score 0.963
-2022-01-25 17:50:19,868 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_T: Score 0.950
+2022-01-27 08:04:27,977 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_T: Score 0.932
+2022-01-27 08:04:28,409 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_E: Score 0.963
+2022-01-27 08:04:28,846 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_T: Score 0.950
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
@@ -297,7 +298,7 @@ All datasets will be downloaded to this location, if anything is already downloa
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-2022-01-25 17:50:40,305 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_E: Score 0.646
+2022-01-27 08:04:47,908 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_E: Score 0.646
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
@@ -306,15 +307,15 @@ All datasets will be downloaded to this location, if anything is already downloa
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-2022-01-25 17:50:40,655 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_T: Score 0.527
-2022-01-25 17:50:41,167 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_E: Score 0.586
-2022-01-25 17:50:41,637 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_T: Score 0.575
+2022-01-27 08:04:48,233 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_T: Score 0.527
+2022-01-27 08:04:48,717 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_E: Score 0.586
+2022-01-27 08:04:49,232 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_T: Score 0.575
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.962963  0.444882    144.0       1  ...       22           2  001-2014    RG+LR
-1  0.950424  0.438195    144.0       1  ...       22           2  001-2014    RG+LR
-2  0.585648  0.505334    144.0       2  ...       22           2  001-2014    RG+LR
-3  0.574846  0.457678    144.0       2  ...       22           2  001-2014    RG+LR
-4  0.955440  0.391952    144.0       1  ...       22           2  001-2014  CSP+LDA
+0  0.962963  0.424553    144.0       1  ...       22           2  001-2014    RG+LR
+1  0.950424  0.430544    144.0       1  ...       22           2  001-2014    RG+LR
+2  0.585648  0.478181    144.0       2  ...       22           2  001-2014    RG+LR
+3  0.574846  0.509906    144.0       2  ...       22           2  001-2014    RG+LR
+4  0.955440  0.367977    144.0       1  ...       22           2  001-2014  CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -322,11 +323,8 @@ All datasets will be downloaded to this location, if anything is already downloa
 </div>
 <div class="section" id="plot-results">
 <h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this headline">¶</a></h2>
-<p>Here we plot the results. We the first plot is a pointplot with the average
-performance of each pipeline across session and subjects.
-The second plot is a paired scatter plot. Each point representing the score
-of a single session. An algorithm will outperforms another is most of the
-points are in its quadrant.</p>
+<p>Here we plot the results. We first make a pointplot with the average
+performance of each pipeline across session and subjects.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span>
@@ -343,9 +341,17 @@ points are in its quadrant.</p>
 
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;ROC AUC&quot;</span><span class="p">)</span>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="c1"># paired plot</span>
-<span class="n">paired</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span>
+</pre></div>
+</div>
+<img alt="plot cross session motor imagery" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(0.5, 1.0)
+</pre></div>
+</div>
+<p>The second plot is a paired scatter plot. Each point representing the score
+of a single session. An algorithm will outperform another is most of the
+points are in its quadrant.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paired</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span>
     <span class="n">values</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;pipeline&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="s2">&quot;session&quot;</span><span class="p">]</span>
 <span class="p">)</span>
 <span class="n">paired</span> <span class="o">=</span> <span class="n">paired</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
@@ -357,8 +363,7 @@ points are in its quadrant.</p>
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="plot cross session motor imagery" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  45.641 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  42.112 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/82e3e6cb009bb9a9c444c6cff254cea8/plot_cross_session_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_motor_imagery.py</span></code></a></p>

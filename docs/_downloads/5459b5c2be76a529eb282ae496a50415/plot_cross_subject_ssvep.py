@@ -1,8 +1,8 @@
 """
 ===========================
-Cross Subject SSVEP
+Cross-Subject SSVEP
 ===========================
-This example shows how to perform a cross subject analysis on a SSVEP dataset.
+This example shows how to perform a cross-subject analysis on an SSVEP dataset.
 We will compare two pipelines :
 
 - Riemannian Geometry
@@ -36,11 +36,11 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 moabb.set_log_level("info")
 
 ###############################################################################
-# Loading dataset
+# Loading Dataset
 # ---------------
 #
 # We will load the data from the first 2 subjects of the ``SSVEP_Exo`` dataset
-# and compare two algorithms on this set. One of the algorithm could only
+# and compare two algorithms on this set. One of the algorithms could only
 # process class associated with a stimulation frequency, we will thus drop
 # the resting class. As the resting class is the last defined class, picking
 # the first three classes (out of four) allows to focus only on the stimulation
@@ -52,7 +52,7 @@ dataset.subject_list = dataset.subject_list[:n_subject]
 interval = dataset.interval
 
 ###############################################################################
-# Choose paradigm
+# Choose Paradigm
 # ---------------
 #
 # We define the paradigms (SSVEP, SSSVEP_TRCA and FilterBankSSVEP) and use the dataset
@@ -62,7 +62,7 @@ interval = dataset.interval
 # there are stimulation frequencies (here 2). For each stimulation frequency
 # the EEG is filtered with a 1 Hz-wide bandpass filter centered on the
 # frequency. This results in ``n_classes`` copies of the signal, filtered for each
-# class, as used in filterbank motor imagery paradigms.
+# class, as used in the filterbank motor imagery paradigms.
 
 paradigm = SSVEP(fmin=10, fmax=25, n_classes=3)
 paradigm_TRCA = SSVEP(fmin=1, fmax=110, n_classes=3)
@@ -77,7 +77,7 @@ paradigm_fb = FilterBankSSVEP(filters=None, n_classes=3)
 freqs = paradigm.used_events(dataset)
 
 ##############################################################################
-# Create pipelines
+# Create Pipelines
 # ----------------
 #
 # Pipelines must be a dict of sklearn pipeline transformer.
@@ -85,7 +85,7 @@ freqs = paradigm.used_events(dataset)
 # covariance matrices from the signal filtered around the considered
 # frequency and applying a logistic regression in the tangent plane.
 # The second pipeline relies on the above defined CCA classifier.
-# The third pipeline relies on TRCA algorithm.
+# The third pipeline relies on the TRCA algorithm.
 
 pipelines_fb = {}
 pipelines_fb["RG+LogReg"] = make_pipeline(
@@ -107,7 +107,7 @@ pipelines_TRCA["TRCA"] = make_pipeline(
 # Evaluation
 # ----------
 #
-# The evaluation will return a dataframe containing a single AUC score for
+# The evaluation will return a DataFrame containing an accuracy score for
 # each subject / session of the dataset, and for each pipeline.
 #
 # Results are saved into the database, so that if you add a new pipeline, it
@@ -122,7 +122,7 @@ evaluation = CrossSubjectEvaluation(
 results = evaluation.process(pipelines)
 
 ###############################################################################
-# Filter bank processing, determine automatically the filter from the
+# Filter bank processing, determine the filter automatically from the
 # stimulation frequency values of events.
 
 evaluation_fb = CrossSubjectEvaluation(
@@ -147,7 +147,7 @@ results = pd.concat([results, results_fb, results_TRCA])
 # Plot Results
 # ----------------
 #
-# Here we plot the results.
+# Here we display the results as stripplot, with a pointplot for error bar.
 
 fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
 sns.stripplot(
@@ -163,5 +163,4 @@ sns.stripplot(
 sns.pointplot(data=results, y="score", x="pipeline", ax=ax, zorder=1, palette="Set1")
 ax.set_ylabel("Accuracy")
 ax.set_ylim(0.1, 0.6)
-plt.savefig("ssvep.png")
 fig.show()

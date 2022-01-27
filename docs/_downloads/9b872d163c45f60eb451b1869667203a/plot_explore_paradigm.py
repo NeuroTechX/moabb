@@ -10,16 +10,17 @@ or continuous paradigms; similarly, different preprocessing is necessary
 for ERP vs ERD paradigms.
 
 A paradigm also defines the appropriate evaluation metric, for example AUC
-for binary classification problem, accuracy for multiclass, or kappa
-coefficient for continuous paradigms.
+for binary classification problems, accuracy for multiclass, or kappa
+coefficients for continuous paradigms.
 
-This tutorial explore the paradigm object, with 3 examples of paradigm :
+This tutorial explores the paradigm object, with 3 examples of paradigm :
      - MotorImagery
      - FilterBankMotorImagery
      - LeftRightImagery
 
 """
 # Authors: Alexandre Barachant <alexandre.barachant@gmail.com>
+#          Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
 #
 # License: BSD (3-clause)
 
@@ -35,7 +36,7 @@ print(__doc__)
 # MotorImagery
 # -----------------
 #
-# First, lets take a example of the MotorImagery paradigm.
+# First, let's take an example of the MotorImagery paradigm.
 
 paradigm = MotorImagery(n_classes=4)
 
@@ -52,9 +53,9 @@ print(paradigm.get_data.__doc__)
 # Lets take the example of the BNCI2014001 dataset, known as the dataset IIa
 # from the BCI competition IV. We will load the data from the subject 1.
 # When calling `get_data`, the paradigm will retrieve the data from the
-# specified list of subject, apply preprocessing (by default, a bandpass
+# specified list of subjects, apply preprocessing (by default, a bandpass
 # between 7 and 35 Hz), epoch the data (with interval specified by the dataset,
-# unless superseeded by the paradigm) and return the corresponding objects.
+# unless superseded by the paradigm) and return the corresponding objects.
 
 dataset = BNCI2014001()
 subjects = [1]
@@ -70,32 +71,31 @@ print(X.shape)
 
 ###############################################################################
 # Labels contains the labels corresponding to each trial. in the case of this
-# dataset, we have the 4 type of motor imagery that was performed.
+# dataset, we have the 4 types of motor imagery that was performed.
 
 print(np.unique(y))
 
 ###############################################################################
-# metadata have at least 3 columns, subject, session and run.
+# Metadata have at least 3 columns: subject, session and run.
 #
 # - subject is the subject id of the corresponding trial
-# - session is the session id. A session is a all the data recorded without
+# - session is the session id. A session denotes a recording made without
 #   removing the EEG cap.
-# - run is the individual continuous recording made during a session. A Session
-#   may or may not contain multiple run.
+# - run is the individual continuous recording made during a session. A session
+#   may or may not contain multiple runs.
 #
-
 
 print(metadata.head())
 
 ###############################################################################
-# For this data, we have one subjecy, 2 sessions (2 different recording day)
-# and 6 run per session.
+# For this data, we have one subject, 2 sessions (2 different recording days)
+# and 6 runs per session.
 
 print(metadata.describe(include="all"))
 
 ###############################################################################
-# Paradigm object can also return the list of all dataset compatible. here
-# it will return the list all the imagery datasets from the moabb.
+# Paradigm objects can also return the list of all dataset compatible. Here
+# it will return the list all the imagery datasets from the MOABB.
 
 compatible_datasets = paradigm.datasets
 print([dataset.code for dataset in compatible_datasets])
@@ -105,7 +105,7 @@ print([dataset.code for dataset in compatible_datasets])
 # -----------------------
 #
 # FilterBankMotorImagery is the same paradigm, but with a different
-# preprocessing. In this case, it apply a bank of 6 bandpass filter on the data
+# preprocessing. In this case, it applies a bank of 6 bandpass filter on the data
 # before concatenating the output.
 
 paradigm = FilterBankMotorImagery()
@@ -113,7 +113,7 @@ paradigm = FilterBankMotorImagery()
 print(paradigm.__doc__)
 
 ###############################################################################
-# therefore, the output X is a 4D array, with trial x channel x time x filter
+# Therefore, the output X is a 4D array, with trial x channel x time x filter
 
 X, y, metadata = paradigm.get_data(dataset=dataset, subjects=subjects)
 
@@ -124,22 +124,22 @@ print(X.shape)
 # ----------------------
 #
 # LeftRightImagery is a variation over the BaseMotorImagery paradigm,
-# restricted to left and right hand events.
+# restricted to left- and right-hand events.
 
 paradigm = LeftRightImagery()
 
 print(paradigm.__doc__)
 
 ###############################################################################
-# the compatible dataset list is a subset of motor imagery dataset that
+# The compatible dataset list is a subset of motor imagery dataset that
 # contains at least left and right hand events.
 
 compatible_datasets = paradigm.datasets
 print([dataset.code for dataset in compatible_datasets])
 
 ###############################################################################
-# So if we apply this this to our original dataset, it will only return trials
-# corresponding to left and right hand motor imagination.
+# So if we apply this to our original dataset, it will only return trials
+# corresponding to left- and right-hand motor imagination.
 
 X, y, metadata = paradigm.get_data(dataset=dataset, subjects=subjects)
 

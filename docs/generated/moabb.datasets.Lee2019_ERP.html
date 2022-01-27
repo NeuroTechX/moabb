@@ -153,8 +153,79 @@
 <h1>moabb.datasets.Lee2019_ERP<a class="headerlink" href="#moabb-datasets-lee2019-erp" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="moabb.datasets.Lee2019_ERP">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></code><code class="sig-name descname"><span class="pre">Lee2019_ERP</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resting_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">2)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/datasets/Lee2019.py#L351-L352"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/Lee2019.html#Lee2019_ERP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Lee2019_ERP" title="Permalink to this definition">¶</a></dt>
-<dd><p class="rubric">Methods</p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></code><code class="sig-name descname"><span class="pre">Lee2019_ERP</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resting_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">2)</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.23/moabb/../../../../../moabb/datasets/Lee2019.py#L300-L378"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/Lee2019.html#Lee2019_ERP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Lee2019_ERP" title="Permalink to this definition">¶</a></dt>
+<dd><p>BMI/OpenBMI dataset for P300.</p>
+<p>Dataset from Lee et al 2019 <a class="reference internal" href="#r9dac553bbf55-1" id="id1">[1]</a>.</p>
+<p><strong>Dataset Description</strong></p>
+<p>EEG signals were recorded with a sampling rate of 1,000 Hz and
+collected with 62 Ag/AgCl electrodes. The EEG amplifier used
+in the experiment was a BrainAmp (Brain Products; Munich,
+Germany). The channels were nasion-referenced and grounded
+to electrode AFz. Additionally, an EMG electrode recorded from
+each flexor digitorum profundus muscle with the olecranon
+used as reference. The EEG/EMG channel configuration and
+indexing numbers are described in Fig. 1. The impedances of the
+EEG electrodes were maintained below 10 k during the entire
+experiment.</p>
+<p>ERP paradigm
+The interface layout of the speller followed the typical design
+of a row-column speller. The six rows and six columns were
+configured with 36 symbols (A to Z, 1 to 9, and _). Each symbol
+was presented equally spaced. To enhance the
+signal quality, two additional settings were incorporated into
+the original row-column speller design, namely, random-set
+presentation and face stimuli. These additional settings
+help to elicit stronger ERP responses by minimizing adjacency
+distraction errors and by presenting a familiar face image. The
+stimulus-time interval was set to 80 ms, and the inter-stimulus
+interval (ISI) to 135 ms. A single iteration of stimulus presentation
+in all rows and columns was considered a sequence. Therefore,
+one sequence consisted of 12 stimulus flashes. A maximum
+of five sequences (i.e., 60 flashes) was allotted without prolonged
+inter-sequence intervals for each target character. After the end
+of five sequences, 4.5 s were given to the user for identifying, locating,
+and gazing at the next target character. The participant
+was instructed to attend to the target symbol by counting the
+number of times each target character had been flashed.</p>
+<blockquote>
+<div><p>In the training session, subjects were asked to copy-spell</p>
+</div></blockquote>
+<p>a given sentence, “NEURAL NETWORKS AND DEEP LEARNING”
+(33 characters including spaces) by gazing at the target character
+on the screen. The training session was performed in the offline
+condition, and no feedback was provided to the subject during
+the EEG recording. In the test session, subjects were instructed to
+copy-spell “PATTERN RECOGNITION MACHINE LEARNING”
+(36 characters including spaces), and the real-time EEG data were
+analyzed based on the classifier that was calculated from the
+training session data. The selected character from the subject’s
+current EEG data was displayed in the top left area of the screen
+at the end of the presentation (i.e., after five sequences).
+Per participant, the collected EEG data for the ERP experiment consisted
+of 1,980 and 2,160 trials (samples) for training and test phase, respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_run</strong> (<em>bool (default True)</em>) – if True, return runs corresponding to the training/offline phase (see paper).</p></li>
+<li><p><strong>test_run</strong> (<em>bool (default: False for MI and SSVEP paradigms, True for ERP)</em>) – if True, return runs corresponding to the test/online phase (see paper). Beware that test_run
+for  MI and SSVEP do not have labels associated with trials: these runs could not be used in
+classification tasks.</p></li>
+<li><p><strong>resting_state</strong> (<em>bool (default False)</em>) – if True, return runs corresponding to the resting phases before and after recordings (see paper).</p></li>
+<li><p><strong>sessions</strong> (<em>list of int (default [1,2])</em>) – the list of the sessions to load (2 available).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r9dac553bbf55-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Lee, M. H., Kwon, O. Y., Kim, Y. J., Kim, H. K., Lee, Y. E.,
+Williamson, J., … Lee, S. W. (2019). EEG dataset and OpenBMI
+toolbox for three BCI paradigms: An investigation into BCI
+illiteracy. GigaScience, 8(5), 1–16.
+<a class="reference external" href="https://doi.org/10.1093/gigascience/giz002">https://doi.org/10.1093/gigascience/giz002</a></p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />

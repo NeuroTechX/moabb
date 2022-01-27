@@ -19,9 +19,9 @@
 
 
 ===========================
-Cross Subject SSVEP
+Cross-Subject SSVEP
 ===========================
-This example shows how to perform a cross subject analysis on a SSVEP dataset.
+This example shows how to perform a cross-subject analysis on an SSVEP dataset.
 We will compare two pipelines :
 
 - Riemannian Geometry
@@ -98,11 +98,11 @@ We will use the SSVEP paradigm, which uses the AUC as metric.
 
 .. GENERATED FROM PYTHON SOURCE LINES 39-48
 
-Loading dataset
+Loading Dataset
 ---------------
 
 We will load the data from the first 2 subjects of the ``SSVEP_Exo`` dataset
-and compare two algorithms on this set. One of the algorithm could only
+and compare two algorithms on this set. One of the algorithms could only
 process class associated with a stimulation frequency, we will thus drop
 the resting class. As the resting class is the last defined class, picking
 the first three classes (out of four) allows to focus only on the stimulation
@@ -127,7 +127,7 @@ frequency.
 
 .. GENERATED FROM PYTHON SOURCE LINES 55-66
 
-Choose paradigm
+Choose Paradigm
 ---------------
 
 We define the paradigms (SSVEP, SSSVEP_TRCA and FilterBankSSVEP) and use the dataset
@@ -137,7 +137,7 @@ no filtering, while the FilterBankSSVEP paradigm uses as many bandpass filters a
 there are stimulation frequencies (here 2). For each stimulation frequency
 the EEG is filtered with a 1 Hz-wide bandpass filter centered on the
 frequency. This results in ``n_classes`` copies of the signal, filtered for each
-class, as used in filterbank motor imagery paradigms.
+class, as used in the filterbank motor imagery paradigms.
 
 .. GENERATED FROM PYTHON SOURCE LINES 66-71
 
@@ -178,7 +178,7 @@ to 0 and 1
 
 .. GENERATED FROM PYTHON SOURCE LINES 80-89
 
-Create pipelines
+Create Pipelines
 ----------------
 
 Pipelines must be a dict of sklearn pipeline transformer.
@@ -186,7 +186,7 @@ The first pipeline uses Riemannian geometry, by building an extended
 covariance matrices from the signal filtered around the considered
 frequency and applying a logistic regression in the tangent plane.
 The second pipeline relies on the above defined CCA classifier.
-The third pipeline relies on TRCA algorithm.
+The third pipeline relies on the TRCA algorithm.
 
 .. GENERATED FROM PYTHON SOURCE LINES 89-106
 
@@ -221,7 +221,7 @@ The third pipeline relies on TRCA algorithm.
 Evaluation
 ----------
 
-The evaluation will return a dataframe containing a single AUC score for
+The evaluation will return a DataFrame containing an accuracy score for
 each subject / session of the dataset, and for each pipeline.
 
 Results are saved into the database, so that if you add a new pipeline, it
@@ -249,7 +249,7 @@ be overwritten if necessary.
 
 .. GENERATED FROM PYTHON SOURCE LINES 125-127
 
-Filter bank processing, determine automatically the filter from the
+Filter bank processing, determine the filter automatically from the
 stimulation frequency values of events.
 
 .. GENERATED FROM PYTHON SOURCE LINES 127-133
@@ -313,9 +313,9 @@ After processing the three, we simply concatenate the results.
 Plot Results
 ----------------
 
-Here we plot the results.
+Here we display the results as stripplot, with a pointplot for error bar.
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-168
+.. GENERATED FROM PYTHON SOURCE LINES 151-167
 
 .. code-block:: default
 
@@ -334,7 +334,6 @@ Here we plot the results.
     sns.pointplot(data=results, y="score", x="pipeline", ax=ax, zorder=1, palette="Set1")
     ax.set_ylabel("Accuracy")
     ax.set_ylim(0.1, 0.6)
-    plt.savefig("ssvep.png")
     fig.show()
 
 
@@ -350,7 +349,7 @@ Here we plot the results.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  12.581 seconds)
+   **Total running time of the script:** ( 0 minutes  12.224 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_cross_subject_ssvep.py:

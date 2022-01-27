@@ -30,12 +30,12 @@
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This Example show how to perform a cross session motor imagery analysis on the very popular dat...">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example show how to perform a cross session motor imagery analysis on the very popular dat...">
 
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_plot_cross_session_motor_imagery_thumb.png
-     :alt: Cross Session Motor Imagery
+     :alt: Cross-Session Motor Imagery
 
      :ref:`sphx_glr_auto_examples_plot_cross_session_motor_imagery.py`
 
@@ -72,33 +72,12 @@
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This Example show how to perform a cross-session SSVEP analysis on the MAMEM dataset 3, using a...">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_cross_session_ssvep_thumb.png
-     :alt: Cross Session SSVEP
-
-     :ref:`sphx_glr_auto_examples_plot_cross_session_ssvep.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_cross_session_ssvep
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="- Riemannian Geometry - CCA">
 
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_plot_cross_subject_ssvep_thumb.png
-     :alt: Cross Subject SSVEP
+     :alt: Cross-Subject SSVEP
 
      :ref:`sphx_glr_auto_examples_plot_cross_subject_ssvep.py`
 
@@ -135,7 +114,7 @@
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This Example shows how to perform a within session analysis on three different P300 datasets.">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis on three different P300 datasets.">
 
 .. only:: html
 
@@ -153,6 +132,27 @@
    :hidden:
 
    /auto_examples/plot_within_session_p300
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This Example show how to perform a within-session SSVEP analysis on the MAMEM dataset 3, using ...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_within_session_ssvep_thumb.png
+     :alt: Within Session SSVEP
+
+     :ref:`sphx_glr_auto_examples_plot_within_session_ssvep.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_within_session_ssvep
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>
@@ -175,7 +175,7 @@ These examples shows various advanced topics:
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This Example show a comparison of CSP versus FilterBank CSP on the very popular dataset 2a from...">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example show a comparison of CSP versus FilterBank CSP on the very popular dataset 2a from...">
 
 .. only:: html
 
@@ -196,12 +196,12 @@ These examples shows various advanced topics:
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use machine learning pipeline based on MNE Epochs instead of numpy ar...">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use machine learning pipeline based on MNE Epochs instead of Numpy ar...">
 
 .. only:: html
 
  .. figure:: /auto_examples/advanced_examples/images/thumb/sphx_glr_plot_mne_and_scikit_estimators_thumb.png
-     :alt: MNE Epochs-based piplines
+     :alt: MNE Epochs-based pipelines
 
      :ref:`sphx_glr_auto_examples_advanced_examples_plot_mne_and_scikit_estimators.py`
 
@@ -222,7 +222,7 @@ These examples shows various advanced topics:
 .. only:: html
 
  .. figure:: /auto_examples/advanced_examples/images/thumb/sphx_glr_plot_select_electrodes_resample_thumb.png
-     :alt: Select electrodes and resampling
+     :alt: Select Electrodes and Resampling
 
      :ref:`sphx_glr_auto_examples_advanced_examples_plot_select_electrodes_resample.py`
 
@@ -276,12 +276,12 @@ various classifier implementations. When using poetry, you can use
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This Example shows how to perform a within session analysis while also creating learning curves...">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves...">
 
 .. only:: html
 
  .. figure:: /auto_examples/external/images/thumb/sphx_glr_plot_learning_curve_p300_external_thumb.png
-     :alt: Within Session P300 with learning curve
+     :alt: Within Session P300 with Learning Curve
 
      :ref:`sphx_glr_auto_examples_external_plot_learning_curve_p300_external.py`
 
@@ -317,12 +317,12 @@ will be repeated 20 times with different trial subsets.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This Example show how to perform a within session motor imagery analysis on the very popular da...">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session motor imagery analysis on the very popular d...">
 
 .. only:: html
 
  .. figure:: /auto_examples/learning_curve/images/thumb/sphx_glr_plot_learning_curve_motor_imagery_thumb.png
-     :alt: Within Session Motor Imagery with learning curve
+     :alt: Within Session Motor Imagery with Learning Curve
 
      :ref:`sphx_glr_auto_examples_learning_curve_plot_learning_curve_motor_imagery.py`
 
@@ -338,12 +338,12 @@ will be repeated 20 times with different trial subsets.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This Example shows how to perform a within session analysis while also creating learning curves...">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves...">
 
 .. only:: html
 
  .. figure:: /auto_examples/learning_curve/images/thumb/sphx_glr_plot_learning_curve_p300_thumb.png
-     :alt: Within Session P300 with learning curve
+     :alt: Within Session P300 with Learning Curve
 
      :ref:`sphx_glr_auto_examples_learning_curve_plot_learning_curve_p300.py`
 

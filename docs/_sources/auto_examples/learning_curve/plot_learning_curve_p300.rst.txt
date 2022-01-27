@@ -19,22 +19,22 @@
 
 
 =======================================
-Within Session P300 with learning curve
+Within Session P300 with Learning Curve
 =======================================
 
-This Example shows how to perform a within session analysis while also
+This example shows how to perform a within session analysis while also
 creating learning curves for a P300 dataset.
 Additionally, we will evaluate external code. Make sure to have tdlda installed, which
 can be found in requirements_external.txt
 
 We will compare two pipelines :
 
-- Riemannian Geometry with Linear Discriminant Analysis
+- Riemannian geometry with Linear Discriminant Analysis
 - XDAWN and Linear Discriminant Analysis
 
 We will use the P300 paradigm, which uses the AUC as metric.
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-66
+.. GENERATED FROM PYTHON SOURCE LINES 18-47
 
 .. code-block:: default
 
@@ -66,25 +66,6 @@ We will use the P300 paradigm, which uses the AUC as metric.
 
 
     moabb.set_log_level("info")
-
-    # This is an auxiliary transformer that allows one to vectorize data
-    # structures in a pipeline For instance, in the case of a X with dimensions
-    # Nt x Nc x Ns, one might be interested in a new data structure with
-    # dimensions Nt x (Nc.Ns)
-
-
-    class Vectorizer(BaseEstimator, TransformerMixin):
-        def __init__(self):
-            pass
-
-        def fit(self, X, y):
-            """fit."""
-            return self
-
-        def transform(self, X):
-            """transform. """
-            return np.reshape(X, (X.shape[0], -1))
-
 
 
 
@@ -124,23 +105,70 @@ We will use the P300 paradigm, which uses the AUC as metric.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-71
+.. GENERATED FROM PYTHON SOURCE LINES 48-52
 
-Create pipelines
+This is an auxiliary transformer that allows one to vectorize data
+structures in a pipeline For instance, in the case of a X with dimensions
+Nt x Nc x Ns, one might be interested in a new data structure with
+dimensions Nt x (Nc.Ns)
+
+.. GENERATED FROM PYTHON SOURCE LINES 52-67
+
+.. code-block:: default
+
+
+
+    class Vectorizer(BaseEstimator, TransformerMixin):
+        def __init__(self):
+            pass
+
+        def fit(self, X, y):
+            """fit."""
+            return self
+
+        def transform(self, X):
+            """transform. """
+            return np.reshape(X, (X.shape[0], -1))
+
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 68-72
+
+Create Pipelines
 ----------------
 
 Pipelines must be a dict of sklearn pipeline transformer.
 
-.. GENERATED FROM PYTHON SOURCE LINES 71-90
+.. GENERATED FROM PYTHON SOURCE LINES 72-75
 
 .. code-block:: default
 
     processing_sampling_rate = 128
     pipelines = {}
 
-    # we have to do this because the classes are called 'Target' and 'NonTarget'
-    # but the evaluation function uses a LabelEncoder, transforming them
-    # to 0 and 1
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 76-79
+
+We have to do this because the classes are called 'Target' and 'NonTarget'
+but the evaluation function uses a LabelEncoder, transforming them
+to 0 and 1
+
+.. GENERATED FROM PYTHON SOURCE LINES 79-92
+
+.. code-block:: default
+
     labels_dict = {"Target": 1, "NonTarget": 0}
 
     # Riemannian geometry based classification
@@ -161,16 +189,16 @@ Pipelines must be a dict of sklearn pipeline transformer.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-97
+.. GENERATED FROM PYTHON SOURCE LINES 93-99
 
 Evaluation
 ----------
 
 We define the paradigm (P300) and use all three datasets available for it.
-The evaluation will return a dataframe containing AUCs for each permutation
+The evaluation will return a DataFrame containing AUCs for each permutation
 and dataset size.
 
-.. GENERATED FROM PYTHON SOURCE LINES 97-121
+.. GENERATED FROM PYTHON SOURCE LINES 99-123
 
 .. code-block:: default
 
@@ -182,7 +210,7 @@ and dataset size.
     datasets = [dataset]
     overwrite = True  # set to True if we want to overwrite cached results
     data_size = dict(policy="ratio", value=np.geomspace(0.02, 1, 4))
-    # When the training data is sparse, peform more permutations than when we have a lot of data
+    # When the training data is sparse, perform more permutations than when we have a lot of data
     n_perms = np.floor(np.geomspace(20, 2, len(data_size["value"]))).astype(int)
     # Guarantee reproducibility
     np.random.seed(7536298)
@@ -348,14 +376,15 @@ and dataset size.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 122-126
+.. GENERATED FROM PYTHON SOURCE LINES 124-129
 
 Plot Results
 ------------
 
-Here we plot the results.
+We plot the accuracy as a function of the number of training samples, for
+each pipeline
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-145
+.. GENERATED FROM PYTHON SOURCE LINES 129-148
 
 .. code-block:: default
 
@@ -392,7 +421,7 @@ Here we plot the results.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  36.507 seconds)
+   **Total running time of the script:** ( 0 minutes  34.590 seconds)
 
 
 .. _sphx_glr_download_auto_examples_learning_curve_plot_learning_curve_p300.py:

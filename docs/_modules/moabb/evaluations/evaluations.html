@@ -173,7 +173,55 @@
 
 
 <div class="viewcode-block" id="WithinSessionEvaluation"><a class="viewcode-back" href="../../../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation">[docs]</a><span class="k">class</span> <span class="nc">WithinSessionEvaluation</span><span class="p">(</span><span class="n">BaseEvaluation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Within Session evaluation.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Performance evaluation within session (k-fold cross-validation)</span>
+
+<span class="sd">    Within-session evaluation uses k-fold cross_validation to determine train</span>
+<span class="sd">    and test sets on separate session for each subject, it is possible to</span>
+<span class="sd">    estimate the performance on a subset of training examples to obtain</span>
+<span class="sd">    learning curves.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_perms :</span>
+<span class="sd">        Number of permutations to perform. If an array</span>
+<span class="sd">        is passed it has to be equal in size to the data_size array.</span>
+<span class="sd">        Values in this array must be monotonically decreasing (performing</span>
+<span class="sd">        more permutations for more data is not useful to reduce standard</span>
+<span class="sd">        error of the mean).</span>
+<span class="sd">        Default: None</span>
+<span class="sd">    data_size :</span>
+<span class="sd">        If None is passed, it performs conventional WithinSession evaluation.</span>
+<span class="sd">        Contains the policy to pick the datasizes to</span>
+<span class="sd">        evaluate, as well as the actual values. The dict has the</span>
+<span class="sd">        key &#39;policy&#39; with either &#39;ratio&#39; or &#39;per_class&#39;, and the key</span>
+<span class="sd">        &#39;value&#39; with the actual values as an numpy array. This array should be</span>
+<span class="sd">        sorted, such that values in data_size are strictly monotonically increasing.</span>
+<span class="sd">        Default: None</span>
+<span class="sd">    paradigm : Paradigm instance</span>
+<span class="sd">        The paradigm to use.</span>
+<span class="sd">    datasets : List of Dataset instance</span>
+<span class="sd">        The list of dataset to run the evaluation. If none, the list of</span>
+<span class="sd">        compatible dataset will be retrieved from the paradigm instance.</span>
+<span class="sd">    random_state: int, RandomState instance, default=None</span>
+<span class="sd">        If not None, can guarantee same seed for shuffling examples.</span>
+<span class="sd">    n_jobs: int, default=1</span>
+<span class="sd">        Number of jobs for fitting of pipeline.</span>
+<span class="sd">    overwrite: bool, default=False</span>
+<span class="sd">        If true, overwrite the results.</span>
+<span class="sd">    error_score: &quot;raise&quot; or numeric, default=&quot;raise&quot;</span>
+<span class="sd">        Value to assign to the score if an error occurs in estimator fitting. If set to</span>
+<span class="sd">        &#39;raise&#39;, the error is raised.</span>
+<span class="sd">    suffix: str</span>
+<span class="sd">        Suffix for the results file.</span>
+<span class="sd">    hdf5_path: str</span>
+<span class="sd">        Specific path for storing the results.</span>
+<span class="sd">    additional_columns: None</span>
+<span class="sd">        Adding information to results.</span>
+<span class="sd">    return_epochs: bool, default=False</span>
+<span class="sd">        use MNE epoch to train pipelines.</span>
+<span class="sd">    mne_labels: bool, default=False</span>
+<span class="sd">        if returning MNE epoch, use original dataset label if True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">VALID_POLICIES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;per_class&quot;</span><span class="p">,</span> <span class="s2">&quot;ratio&quot;</span><span class="p">]</span>
 
@@ -183,25 +231,6 @@
         <span class="n">data_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        n_perms :</span>
-<span class="sd">            Number of permutations to perform. If an array</span>
-<span class="sd">            is passed it has to be equal in size to the data_size array.</span>
-<span class="sd">            Values in this array must be monotonically decreasing (performing</span>
-<span class="sd">            more permutations for more data is not useful to reduce standard</span>
-<span class="sd">            error of the mean).</span>
-<span class="sd">            Default: None</span>
-<span class="sd">        data_size :</span>
-<span class="sd">            If None is passed, it performs conventional WithinSession evaluation.</span>
-<span class="sd">            Contains the policy to pick the datasizes to</span>
-<span class="sd">            evaluate, as well as the actual values. The dict has the</span>
-<span class="sd">            key &#39;policy&#39; with either &#39;ratio&#39; or &#39;per_class&#39;, and the key</span>
-<span class="sd">            &#39;value&#39; with the actual values as an numpy array. This array should be</span>
-<span class="sd">            sorted, such that values in data_size are strictly monotonically increasing.</span>
-<span class="sd">            Default: None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_size</span> <span class="o">=</span> <span class="n">data_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_perms</span> <span class="o">=</span> <span class="n">n_perms</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calculate_learning_curve</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -437,12 +466,38 @@
 
 
 <div class="viewcode-block" id="CrossSessionEvaluation"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation">[docs]</a><span class="k">class</span> <span class="nc">CrossSessionEvaluation</span><span class="p">(</span><span class="n">BaseEvaluation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Cross session Context.</span>
+    <span class="sd">&quot;&quot;&quot;Cross-session performance evaluation.</span>
 
 <span class="sd">    Evaluate performance of the pipeline across sessions but for a single</span>
-<span class="sd">    subject. Verifies that sufficient sessions are there for this to be</span>
-<span class="sd">    reasonable</span>
+<span class="sd">    subject. Verifies that there is at least two sessions before starting</span>
+<span class="sd">    the evaluation.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    paradigm : Paradigm instance</span>
+<span class="sd">        The paradigm to use.</span>
+<span class="sd">    datasets : List of Dataset instance</span>
+<span class="sd">        The list of dataset to run the evaluation. If none, the list of</span>
+<span class="sd">        compatible dataset will be retrieved from the paradigm instance.</span>
+<span class="sd">    random_state: int, RandomState instance, default=None</span>
+<span class="sd">        If not None, can guarantee same seed for shuffling examples.</span>
+<span class="sd">    n_jobs: int, default=1</span>
+<span class="sd">        Number of jobs for fitting of pipeline.</span>
+<span class="sd">    overwrite: bool, default=False</span>
+<span class="sd">        If true, overwrite the results.</span>
+<span class="sd">    error_score: &quot;raise&quot; or numeric, default=&quot;raise&quot;</span>
+<span class="sd">        Value to assign to the score if an error occurs in estimator fitting. If set to</span>
+<span class="sd">        &#39;raise&#39;, the error is raised.</span>
+<span class="sd">    suffix: str</span>
+<span class="sd">        Suffix for the results file.</span>
+<span class="sd">    hdf5_path: str</span>
+<span class="sd">        Specific path for storing the results.</span>
+<span class="sd">    additional_columns: None</span>
+<span class="sd">        Adding information to results.</span>
+<span class="sd">    return_epochs: bool, default=False</span>
+<span class="sd">        use MNE epoch to train pipelines.</span>
+<span class="sd">    mne_labels: bool, default=False</span>
+<span class="sd">        if returning MNE epoch, use original dataset label if True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="CrossSessionEvaluation.evaluate"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>
@@ -506,11 +561,37 @@
 
 
 <div class="viewcode-block" id="CrossSubjectEvaluation"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation">[docs]</a><span class="k">class</span> <span class="nc">CrossSubjectEvaluation</span><span class="p">(</span><span class="n">BaseEvaluation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Cross Subject evaluation Context.</span>
+    <span class="sd">&quot;&quot;&quot;Cross-subject evaluation performance.</span>
 
 <span class="sd">    Evaluate performance of the pipeline trained on all subjects but one,</span>
 <span class="sd">    concatenating sessions.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    paradigm : Paradigm instance</span>
+<span class="sd">        The paradigm to use.</span>
+<span class="sd">    datasets : List of Dataset instance</span>
+<span class="sd">        The list of dataset to run the evaluation. If none, the list of</span>
+<span class="sd">        compatible dataset will be retrieved from the paradigm instance.</span>
+<span class="sd">    random_state: int, RandomState instance, default=None</span>
+<span class="sd">        If not None, can guarantee same seed for shuffling examples.</span>
+<span class="sd">    n_jobs: int, default=1</span>
+<span class="sd">        Number of jobs for fitting of pipeline.</span>
+<span class="sd">    overwrite: bool, default=False</span>
+<span class="sd">        If true, overwrite the results.</span>
+<span class="sd">    error_score: &quot;raise&quot; or numeric, default=&quot;raise&quot;</span>
+<span class="sd">        Value to assign to the score if an error occurs in estimator fitting. If set to</span>
+<span class="sd">        &#39;raise&#39;, the error is raised.</span>
+<span class="sd">    suffix: str</span>
+<span class="sd">        Suffix for the results file.</span>
+<span class="sd">    hdf5_path: str</span>
+<span class="sd">        Specific path for storing the results.</span>
+<span class="sd">    additional_columns: None</span>
+<span class="sd">        Adding information to results.</span>
+<span class="sd">    return_epochs: bool, default=False</span>
+<span class="sd">        use MNE epoch to train pipelines.</span>
+<span class="sd">    mne_labels: bool, default=False</span>
+<span class="sd">        if returning MNE epoch, use original dataset label if True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="CrossSubjectEvaluation.evaluate"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>

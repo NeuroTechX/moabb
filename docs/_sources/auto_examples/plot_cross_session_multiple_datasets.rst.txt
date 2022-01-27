@@ -96,7 +96,7 @@ session.
 
 .. GENERATED FROM PYTHON SOURCE LINES 37-41
 
-Loading dataset
+Loading Dataset
 ---------------
 
 Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each
@@ -120,11 +120,11 @@ Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each
 
 .. GENERATED FROM PYTHON SOURCE LINES 48-53
 
-Choose paradigm
+Choose Paradigm
 ---------------
 
 We select the paradigm MI, applying a bandpass filter (8-35 Hz) on
-the data and we will keep only left and right hand motor imagery
+the data and we will keep only left- and right-hand motor imagery
 
 .. GENERATED FROM PYTHON SOURCE LINES 53-56
 
@@ -142,7 +142,7 @@ the data and we will keep only left and right hand motor imagery
 
 .. GENERATED FROM PYTHON SOURCE LINES 57-62
 
-Create pipelines
+Create Pipelines
 ----------------
 
 Use the Common Spatial Patterns with 8 components and a Linear Discriminant
@@ -165,14 +165,14 @@ Analysis classifier.
 
 .. GENERATED FROM PYTHON SOURCE LINES 67-77
 
-Get data (optional)
+Get Data (optional)
 -------------------
 
 To get access to the EEG signals downloaded from the dataset, you could
 use `dataset.get_data(subjects=[subject_id])` to obtain the EEG under
 an MNE format, stored in a dictionary of sessions and runs.
 Otherwise, `paradigm.get_data(dataset=dataset, subjects=[subject_id])`
-allows to obtain the EEG data in scikit format, the labels and the meta
+allows to obtain the EEG data in sklearn format, the labels and the meta
 information. The data are preprocessed according to the paradigm
 requirements.
 
@@ -201,7 +201,7 @@ requirements.
 Evaluation
 ----------
 
-The evaluation will return a dataframe containing a single AUC score for
+The evaluation will return a DataFrame containing a single AUC score for
 each subject / session of the dataset, and for each pipeline.
 
 .. GENERATED FROM PYTHON SOURCE LINES 92-103
@@ -310,11 +310,11 @@ each subject / session of the dataset, and for each pipeline.
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.956597  0.296426    144.0  ...          2   001-2014   CSP+LDA
-    1  0.930941  0.437505    144.0  ...          2   001-2014   CSP+LDA
-    2  0.649691  0.293826    144.0  ...          2   001-2014   CSP+LDA
-    3  0.526813  0.360576    144.0  ...          2   001-2014   CSP+LDA
-    4  0.851412  0.305293    200.0  ...          3  Zhou 2016   CSP+LDA
+    0  0.956597  0.246996    144.0  ...          2   001-2014   CSP+LDA
+    1  0.930941  0.272067    144.0  ...          2   001-2014   CSP+LDA
+    2  0.649691  0.239590    144.0  ...          2   001-2014   CSP+LDA
+    3  0.526813  0.306479    144.0  ...          2   001-2014   CSP+LDA
+    4  0.851412  0.292224    200.0  ...          3  Zhou 2016   CSP+LDA
 
     [5 rows x 9 columns]
 
@@ -357,7 +357,7 @@ Here we plot the results, indicating the score for each session and subject
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  24.309 seconds)
+   **Total running time of the script:** ( 0 minutes  21.184 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_cross_session_multiple_datasets.py:

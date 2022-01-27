@@ -22,13 +22,13 @@
 Within Session P300
 ===========================
 
-This Example shows how to perform a within session analysis on three different
+This example shows how to perform a within session analysis on three different
 P300 datasets.
 
 We will compare two pipelines :
 
-- Riemannian Geometry
-- xDawn with Linear Discriminant Analysis
+- Riemannian geometry
+- XDAWN with Linear Discriminant Analysis
 
 We will use the P300 paradigm, which uses the AUC as metric.
 
@@ -118,7 +118,7 @@ getting rid of the warnings about the future
 .. GENERATED FROM PYTHON SOURCE LINES 46-50
 
 This is an auxiliary transformer that allows one to vectorize data
-structures in a pipeline For instance, in the case of a X with dimensions
+structures in a pipeline For instance, in the case of an X with dimensions
 Nt x Nc x Ns, one might be interested in a new data structure with
 dimensions Nt x (Nc.Ns)
 
@@ -150,7 +150,7 @@ dimensions Nt x (Nc.Ns)
 
 .. GENERATED FROM PYTHON SOURCE LINES 66-70
 
-Create pipelines
+Create Pipelines
 ----------------
 
 Pipelines must be a dict of sklearn pipeline transformer.
@@ -172,7 +172,7 @@ Pipelines must be a dict of sklearn pipeline transformer.
 
 .. GENERATED FROM PYTHON SOURCE LINES 75-78
 
-we have to do this because the classes are called 'Target' and 'NonTarget'
+We have to do this because the classes are called 'Target' and 'NonTarget'
 but the evaluation function uses a LabelEncoder, transforming them
 to 0 and 1
 
@@ -207,7 +207,7 @@ Evaluation
 ----------
 
 We define the paradigm (P300) and use all three datasets available for it.
-The evaluation will return a dataframe containing a single AUC score for
+The evaluation will return a DataFrame containing a single AUC score for
 each subject / session of the dataset, and for each pipeline.
 
 Results are saved into the database, so that if you add a new pipeline, it
@@ -241,7 +241,7 @@ be overwritten if necessary.
 Plot Results
 ----------------
 
-Here we plot the results.
+Here we plot the results to compare the two pipelines
 
 .. GENERATED FROM PYTHON SOURCE LINES 119-138
 
@@ -280,7 +280,7 @@ Here we plot the results.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  36.491 seconds)
+   **Total running time of the script:** ( 0 minutes  32.013 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_within_session_p300.py:

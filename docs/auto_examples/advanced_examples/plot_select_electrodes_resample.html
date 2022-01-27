@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Select electrodes and resampling &#8212; moabb 0.4.4 documentation</title>
+    <title>Select Electrodes and Resampling &#8212; moabb 0.4.4 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
@@ -117,12 +117,12 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Select electrodes and resampling</a><ul>
+<li><a class="reference internal" href="#">Select Electrodes and Resampling</a><ul>
 <li><a class="reference internal" href="#datasets">Datasets</a></li>
 <li><a class="reference internal" href="#paradigm">Paradigm</a></li>
 <li><a class="reference internal" href="#evaluation">Evaluation</a></li>
-<li><a class="reference internal" href="#electrode-selection">Electrode selection</a></li>
-<li><a class="reference internal" href="#plot-results">Plot results</a></li>
+<li><a class="reference internal" href="#electrode-selection">Electrode Selection</a></li>
+<li><a class="reference internal" href="#plot-results">Plot Results</a></li>
 </ul>
 </li>
 </ul>
@@ -160,7 +160,7 @@
 to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="select-electrodes-and-resampling">
-<span id="sphx-glr-auto-examples-advanced-examples-plot-select-electrodes-resample-py"></span><h1>Select electrodes and resampling<a class="headerlink" href="#select-electrodes-and-resampling" title="Permalink to this headline">¶</a></h1>
+<span id="sphx-glr-auto-examples-advanced-examples-plot-select-electrodes-resample-py"></span><h1>Select Electrodes and Resampling<a class="headerlink" href="#select-electrodes-and-resampling" title="Permalink to this headline">¶</a></h1>
 <p>Within paradigm, it is possible to restrict analysis only to a subset of
 electrodes and to resample to a specific sampling rate. There is also a
 utility function to select common electrodes shared between datasets.
@@ -185,7 +185,7 @@ This tutorial demonstrates how to use this functionality.</p>
 </div>
 <div class="section" id="datasets">
 <h2>Datasets<a class="headerlink" href="#datasets" title="Permalink to this headline">¶</a></h2>
-<p>Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each</p>
+<p>Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 sessions each</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">Zhou2016</span><span class="p">(),</span> <span class="n">BNCI2014001</span><span class="p">()]</span>
 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="p">:</span>
@@ -617,18 +617,18 @@ a sampling rate of 200 Hz.</p>
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
       score      time  samples  ... n_sessions    dataset  pipeline
-0  0.866327  0.021656    144.0  ...          2   001-2014   csp+lda
-1  0.860476  0.022333    144.0  ...          2   001-2014   csp+lda
-2  0.534218  0.021061    144.0  ...          2   001-2014   csp+lda
-3  0.595170  0.021784    144.0  ...          2   001-2014   csp+lda
-4  0.848485  0.021490    119.0  ...          3  Zhou 2016   csp+lda
+0  0.872041  0.023254    144.0  ...          2   001-2014   csp+lda
+1  0.863605  0.046377    144.0  ...          2   001-2014   csp+lda
+2  0.536054  0.046553    144.0  ...          2   001-2014   csp+lda
+3  0.476667  0.030695    144.0  ...          2   001-2014   csp+lda
+4  0.855808  0.021727    119.0  ...          3  Zhou 2016   csp+lda
 
 [5 rows x 9 columns]
 </pre></div>
 </div>
 </div>
 <div class="section" id="electrode-selection">
-<h2>Electrode selection<a class="headerlink" href="#electrode-selection" title="Permalink to this headline">¶</a></h2>
+<h2>Electrode Selection<a class="headerlink" href="#electrode-selection" title="Permalink to this headline">¶</a></h2>
 <p>It is possible to select the electrodes that are shared by all datasets
 using the <cite>find_intersecting_channels</cite> function. Datasets that have 0
 overlap with others are discarded. It returns the set of common channels,
@@ -1045,18 +1045,18 @@ Searching dataset: BNCI2014001
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
   LooseVersion(library.__version__) &lt; LooseVersion(min_version):
       score      time  samples  ... n_sessions    dataset  pipeline
-0  0.869184  0.021394    144.0  ...          2   001-2014   csp+lda
-1  0.858775  0.020588    144.0  ...          2   001-2014   csp+lda
-2  0.381088  0.020784    144.0  ...          2   001-2014   csp+lda
-3  0.536054  0.020557    144.0  ...          2   001-2014   csp+lda
-4  0.846970  0.021885    119.0  ...          3  Zhou 2016   csp+lda
+0  0.872925  0.024343    144.0  ...          2   001-2014   csp+lda
+1  0.862449  0.023857    144.0  ...          2   001-2014   csp+lda
+2  0.500476  0.023108    144.0  ...          2   001-2014   csp+lda
+3  0.510476  0.047008    144.0  ...          2   001-2014   csp+lda
+4  0.847980  0.032518    119.0  ...          3  Zhou 2016   csp+lda
 
 [5 rows x 9 columns]
 </pre></div>
 </div>
 </div>
 <div class="section" id="plot-results">
-<h2>Plot results<a class="headerlink" href="#plot-results" title="Permalink to this headline">¶</a></h2>
+<h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this headline">¶</a></h2>
 <p>Compare the obtained results with the two pipelines, CSP+LDA and logistic
 regression computed in the tangent space of the covariance matrices.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a> <span class="o">=</span> <span class="n">moabb_plt</span><span class="o">.</span><span class="n">paired_plot</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="s2">&quot;csp+lda&quot;</span><span class="p">,</span> <span class="s2">&quot;ts+lr&quot;</span><span class="p">)</span>
@@ -1064,7 +1064,7 @@ regression computed in the tangent space of the covariance matrices.</p>
 </pre></div>
 </div>
 <img alt="plot select electrodes resample" class="sphx-glr-single-img" src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  34.052 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  36.128 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/83c876b60654b8a0b9ebaf6714ef3607/plot_select_electrodes_resample.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_select_electrodes_resample.py</span></code></a></p>

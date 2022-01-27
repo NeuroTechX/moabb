@@ -1,17 +1,17 @@
 """
 =======================================
-Within Session P300 with learning curve
+Within Session P300 with Learning Curve
 =======================================
 
-This Example shows how to perform a within session analysis while also
+This example shows how to perform a within session analysis while also
 creating learning curves for a P300 dataset.
 Additionally, we will evaluate external code. Make sure to have tdlda installed, which
 can be found in requirements_external.txt
 
 We will compare three pipelines :
 
-- Riemannian Geometry
-- Jumping Means based Linear Discriminant Analysis
+- Riemannian geometry
+- Jumping Means-based Linear Discriminant Analysis
 - Time-Decoupled Linear Discriminant Analysis
 
 We will use the P300 paradigm, which uses the AUC as metric.
@@ -53,7 +53,7 @@ moabb.set_log_level("info")
 processing_sampling_rate = 128
 pipelines = {}
 
-# we have to do this because the classes are called 'Target' and 'NonTarget'
+# We have to do this because the classes are called 'Target' and 'NonTarget'
 # but the evaluation function uses a LabelEncoder, transforming them
 # to 0 and 1
 labels_dict = {"Target": 1, "NonTarget": 0}
@@ -96,7 +96,7 @@ pipelines["JM+TD-LDA"] = make_pipeline(jmv, c)
 # Evaluation
 # ----------
 #
-# We define the paradigm (P300) and use all three datasets available for it.
+# We define the paradigm (P300) and use the BNCI 2014-009 dataset for it.
 # The evaluation will return a dataframe containing AUCs for each permutation
 # and dataset size.
 

@@ -165,22 +165,23 @@ path/location.</p>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">get_config</span></a>
 
 <span class="kn">from</span> <span class="nn">moabb.utils</span> <span class="kn">import</span> <span class="n">set_download_dir</span>
-
-
-<span class="c1"># You can choose to change the download directory to any path of your choice.</span>
-<span class="c1"># If the path/folder doesn&#39;t exist, it will be created for you.</span>
-
-<span class="n">original_path</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">get_config</span></a><span class="p">(</span><span class="s2">&quot;MNE_DATA&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can choose to change the download directory to any path of your choice.
+If the path/folder doesn’t exist, it will be created for you.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">original_path</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">get_config</span></a><span class="p">(</span><span class="s2">&quot;MNE_DATA&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The download directory is currently </span><span class="si">{</span><span class="n">original_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="n">new_path</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">osp</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/os.path.html#os.path.expanduser" title="os.path.expanduser" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">osp</span><span class="o">.</span><span class="n">expanduser</span></a><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">),</span> <span class="s2">&quot;mne_data_test&quot;</span><span class="p">)</span>
 <span class="n">set_download_dir</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
-
-<span class="c1"># To see if the mne config has been changed correctly</span>
-<span class="n">check_path</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">get_config</span></a><span class="p">(</span><span class="s2">&quot;MNE_DATA&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You could verify that the MNE config has been changed correctly</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">check_path</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">get_config</span></a><span class="p">(</span><span class="s2">&quot;MNE_DATA&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Now the download directory has been changed to </span><span class="si">{</span><span class="n">check_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># Set the directory back to default location</span>
-<span class="n">set_download_dir</span><span class="p">(</span><span class="n">original_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the directory back to default location</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">set_download_dir</span><span class="p">(</span><span class="n">original_path</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>

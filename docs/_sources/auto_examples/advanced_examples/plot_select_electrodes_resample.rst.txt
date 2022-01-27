@@ -19,7 +19,7 @@
 
 
 ================================
-Select electrodes and resampling
+Select Electrodes and Resampling
 ================================
 
 Within paradigm, it is possible to restrict analysis only to a subset of
@@ -61,7 +61,7 @@ This tutorial demonstrates how to use this functionality.
 Datasets
 --------
 
-Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each
+Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 sessions each
 
 .. GENERATED FROM PYTHON SOURCE LINES 34-40
 
@@ -535,11 +535,11 @@ a sampling rate of 200 Hz.
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.866327  0.021656    144.0  ...          2   001-2014   csp+lda
-    1  0.860476  0.022333    144.0  ...          2   001-2014   csp+lda
-    2  0.534218  0.021061    144.0  ...          2   001-2014   csp+lda
-    3  0.595170  0.021784    144.0  ...          2   001-2014   csp+lda
-    4  0.848485  0.021490    119.0  ...          3  Zhou 2016   csp+lda
+    0  0.872041  0.023254    144.0  ...          2   001-2014   csp+lda
+    1  0.863605  0.046377    144.0  ...          2   001-2014   csp+lda
+    2  0.536054  0.046553    144.0  ...          2   001-2014   csp+lda
+    3  0.476667  0.030695    144.0  ...          2   001-2014   csp+lda
+    4  0.855808  0.021727    119.0  ...          3  Zhou 2016   csp+lda
 
     [5 rows x 9 columns]
 
@@ -548,7 +548,7 @@ a sampling rate of 200 Hz.
 
 .. GENERATED FROM PYTHON SOURCE LINES 66-73
 
-Electrode selection
+Electrode Selection
 -------------------
 
 It is possible to select the electrodes that are shared by all datasets
@@ -981,11 +981,11 @@ as well as the list of datasets with valid channels.
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.869184  0.021394    144.0  ...          2   001-2014   csp+lda
-    1  0.858775  0.020588    144.0  ...          2   001-2014   csp+lda
-    2  0.381088  0.020784    144.0  ...          2   001-2014   csp+lda
-    3  0.536054  0.020557    144.0  ...          2   001-2014   csp+lda
-    4  0.846970  0.021885    119.0  ...          3  Zhou 2016   csp+lda
+    0  0.872925  0.024343    144.0  ...          2   001-2014   csp+lda
+    1  0.862449  0.023857    144.0  ...          2   001-2014   csp+lda
+    2  0.500476  0.023108    144.0  ...          2   001-2014   csp+lda
+    3  0.510476  0.047008    144.0  ...          2   001-2014   csp+lda
+    4  0.847980  0.032518    119.0  ...          3  Zhou 2016   csp+lda
 
     [5 rows x 9 columns]
 
@@ -994,7 +994,7 @@ as well as the list of datasets with valid channels.
 
 .. GENERATED FROM PYTHON SOURCE LINES 82-87
 
-Plot results
+Plot Results
 ------------
 
 Compare the obtained results with the two pipelines, CSP+LDA and logistic
@@ -1021,7 +1021,7 @@ regression computed in the tangent space of the covariance matrices.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  34.052 seconds)
+   **Total running time of the script:** ( 0 minutes  36.128 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_select_electrodes_resample.py:
