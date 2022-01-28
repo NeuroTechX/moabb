@@ -5,6 +5,7 @@ from typing import Optional, Union
 
 import numpy as np
 from mne.epochs import BaseEpochs
+from mne.utils import ProgressBar
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import (
@@ -122,7 +123,12 @@ class WithinSessionEvaluation(BaseEvaluation):
             super().__init__(**kwargs)
 
     def _evaluate(self, dataset, pipelines):
-        for subject in dataset.subject_list:
+        # Progress Bar at subject level
+        iter_subs = ProgressBar(
+            np.asarray(dataset.subject_list),
+            mesg=f"Subjects_of_" f"{dataset.code}" f"_WithinSessionEvaluation",
+        )
+        for subject in iter_subs:
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
             run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
@@ -235,7 +241,12 @@ class WithinSessionEvaluation(BaseEvaluation):
         return score, duration
 
     def _evaluate_learning_curve(self, dataset, pipelines):
-        for subject in dataset.subject_list:
+        # Progress Bar at subject level
+        iter_subs = ProgressBar(
+            np.asarray(dataset.subject_list),
+            mesg=f"Subjects_of_" f"{dataset.code}" f"_WithinSessionEvaluation",
+        )
+        for subject in iter_subs:
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
             run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
@@ -356,7 +367,12 @@ class CrossSessionEvaluation(BaseEvaluation):
     def evaluate(self, dataset, pipelines):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
-        for subject in dataset.subject_list:
+        # Progress Bar at subject level
+        iter_subs = ProgressBar(
+            np.asarray(dataset.subject_list),
+            mesg=f"Subjects_of_" f"{dataset.code}" f"_CrossSessionEvaluation",
+        )
+        for subject in iter_subs:
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
             run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
@@ -471,12 +487,19 @@ class CrossSubjectEvaluation(BaseEvaluation):
             # extract metadata
             groups = metadata.subject.values
             sessions = metadata.session.values
+            n_subjects = len(dataset.subject_list)
 
             scorer = get_scorer(self.paradigm.scoring)
 
             # perform leave one subject out CV
             cv = LeaveOneGroupOut()
-            for train, test in cv.split(X, y, groups):
+            # Progress Bar at CV subject level
+            iter_cv = ProgressBar(
+                cv.split(X, y, groups),
+                max_value=n_subjects,
+                mesg=f"Subjects_of_{dataset.code}_CrossSubjectEvaluation",
+            )
+            for train, test in iter_cv:
 
                 subject = groups[test[0]]
                 # now we can check if this subject has results
@@ -508,6 +531,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         }
 
                         yield res
+            # In case of subject skips since already calculated
+            iter_cv.update(n_subjects)
 
     def is_valid(self, dataset):
         return len(dataset.subject_list) > 1
