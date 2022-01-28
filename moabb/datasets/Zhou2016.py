@@ -22,7 +22,7 @@ DATA_PATH = "https://ndownloader.figshare.com/files/3662952"
 def local_data_path(base_path, subject):
     if not os.path.isdir(os.path.join(base_path, "subject_{}".format(subject))):
         if not os.path.isdir(os.path.join(base_path, "data")):
-            retrieve(DATA_PATH, None, fname="data.zip", path=base_path)
+            retrieve(DATA_PATH, None, fname="data.zip", path=base_path, progressbar=True)
             with z.ZipFile(os.path.join(base_path, "data.zip"), "r") as f:
                 f.extractall(base_path)
             os.remove(os.path.join(base_path, "data.zip"))
