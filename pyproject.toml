@@ -25,6 +25,7 @@ PyYAML = "^5.0"
 pooch = "^1.6"
 requests = "^2.15.1"
 coverage = "^5.5"
+tqdm = "^4.62"
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^3.3"
