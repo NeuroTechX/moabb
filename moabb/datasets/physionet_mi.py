@@ -123,7 +123,7 @@ class PhysionetMI(BaseDataset):
             stim[stim == "T1"] = "left_hand"
             stim[stim == "T2"] = "right_hand"
             raw.annotations.description = stim
-            data["run_{idx}"] = raw
+            data[f"run_{idx}"] = raw
             idx += 1
 
         # feet runs
@@ -136,7 +136,7 @@ class PhysionetMI(BaseDataset):
             stim[stim == "T1"] = "hands"
             stim[stim == "T2"] = "feet"
             raw.annotations.description = stim
-            data["run_{idx}"] = raw
+            data[f"run_{idx}"] = raw
             idx += 1
 
         return {"session_0": data}
