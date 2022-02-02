@@ -229,92 +229,144 @@ each subject / session of the dataset, and for each pipeline.
 
  .. code-block:: none
 
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    Zhou 2016-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]
+      0%|                                               | 0.00/156M [00:00<?, ?B/s][A
+      0%|                                       | 43.0k/156M [00:00<08:18, 313kB/s][A
+      0%|                                        | 165k/156M [00:00<04:02, 643kB/s][A
+      0%|▏                                      | 652k/156M [00:00<01:20, 1.94MB/s][A
+      2%|▌                                     | 2.42M/156M [00:00<00:24, 6.16MB/s][A
+      4%|█▍                                    | 5.79M/156M [00:00<00:10, 14.1MB/s][A
+      5%|██                                    | 8.40M/156M [00:00<00:08, 17.1MB/s][A
+      8%|██▊                                   | 11.8M/156M [00:00<00:06, 21.9MB/s][A
+      9%|███▌                                  | 14.6M/156M [00:00<00:05, 23.7MB/s][A
+     11%|████▎                                 | 17.9M/156M [00:01<00:05, 26.4MB/s][A
+     13%|█████                                 | 20.9M/156M [00:01<00:04, 27.3MB/s][A
+     16%|█████▉                                | 24.6M/156M [00:01<00:04, 30.1MB/s][A
+     18%|██████▊                               | 27.9M/156M [00:01<00:04, 30.0MB/s][A
+     20%|███████▋                              | 31.5M/156M [00:01<00:03, 31.7MB/s][A
+     22%|████████▍                             | 34.8M/156M [00:01<00:03, 31.2MB/s][A
+     25%|█████████▎                            | 38.5M/156M [00:01<00:03, 33.0MB/s][A
+     27%|██████████▏                           | 41.8M/156M [00:01<00:03, 32.0MB/s][A
+     29%|███████████                           | 45.5M/156M [00:01<00:03, 33.4MB/s][A
+     31%|███████████▉                          | 48.9M/156M [00:02<00:03, 32.2MB/s][A
+     34%|████████████▊                         | 52.6M/156M [00:02<00:03, 33.7MB/s][A
+     36%|█████████████▋                        | 56.0M/156M [00:02<00:03, 32.4MB/s][A
+     38%|██████████████▌                       | 59.8M/156M [00:02<00:02, 34.0MB/s][A
+     41%|███████████████▍                      | 63.3M/156M [00:02<00:02, 32.9MB/s][A
+     43%|████████████████▎                     | 67.0M/156M [00:02<00:02, 34.2MB/s][A
+     45%|█████████████████▏                    | 70.5M/156M [00:02<00:02, 32.9MB/s][A
+     48%|██████████████████                    | 74.3M/156M [00:02<00:02, 32.6MB/s][A
+     50%|███████████████████                   | 78.1M/156M [00:02<00:02, 34.0MB/s][A
+     52%|███████████████████▊                  | 81.5M/156M [00:02<00:02, 33.0MB/s][A
+     55%|████████████████████▋                 | 85.2M/156M [00:03<00:02, 33.9MB/s][A
+     57%|█████████████████████▌                | 88.6M/156M [00:03<00:02, 33.0MB/s][A
+     59%|██████████████████████▍               | 92.1M/156M [00:03<00:01, 33.7MB/s][A
+     61%|███████████████████████▎              | 95.6M/156M [00:03<00:01, 33.1MB/s][A
+     64%|████████████████████████▏             | 99.2M/156M [00:03<00:01, 34.0MB/s][A
+     66%|█████████████████████████▋             | 103M/156M [00:03<00:01, 33.3MB/s][A
+     68%|██████████████████████████▌            | 107M/156M [00:03<00:01, 34.8MB/s][A
+     70%|███████████████████████████▍           | 110M/156M [00:03<00:01, 33.8MB/s][A
+     73%|████████████████████████████▍          | 114M/156M [00:03<00:01, 35.6MB/s][A
+     75%|█████████████████████████████▍         | 118M/156M [00:04<00:01, 34.3MB/s][A
+     78%|██████████████████████████████▎        | 122M/156M [00:04<00:00, 35.8MB/s][A
+     80%|███████████████████████████████▎       | 125M/156M [00:04<00:00, 34.3MB/s][A
+     83%|████████████████████████████████▏      | 129M/156M [00:04<00:00, 35.5MB/s][A
+     85%|█████████████████████████████████      | 133M/156M [00:04<00:00, 34.2MB/s][A
+     87%|██████████████████████████████████     | 137M/156M [00:04<00:00, 35.8MB/s][A
+     90%|███████████████████████████████████    | 140M/156M [00:04<00:00, 34.3MB/s][A
+     92%|███████████████████████████████████▉   | 144M/156M [00:04<00:00, 34.9MB/s][A
+     94%|████████████████████████████████████▊  | 147M/156M [00:04<00:00, 33.8MB/s][A
+     97%|█████████████████████████████████████▋ | 151M/156M [00:05<00:00, 34.9MB/s][A
+     99%|██████████████████████████████████████▌| 155M/156M [00:05<00:00, 33.6MB/s][A
+      0%|                                               | 0.00/156M [00:00<?, ?B/s][A    100%|████████████████████████████████████████| 156M/156M [00:00<00:00, 282GB/s]
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    Zhou 2016-CrossSession:  50%|#####     | 1/2 [00:12<00:12, 12.97s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    Zhou 2016-CrossSession: 100%|##########| 2/2 [00:16<00:00,  7.23s/it]    Zhou 2016-CrossSession: 100%|##########| 2/2 [00:16<00:00,  8.09s/it]
+    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    001-2014-CrossSession:  50%|#####     | 1/2 [00:03<00:03,  3.98s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:90: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
+    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.93s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.94s/it]
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.956597  0.246996    144.0  ...          2   001-2014   CSP+LDA
-    1  0.930941  0.272067    144.0  ...          2   001-2014   CSP+LDA
-    2  0.649691  0.239590    144.0  ...          2   001-2014   CSP+LDA
-    3  0.526813  0.306479    144.0  ...          2   001-2014   CSP+LDA
-    4  0.851412  0.292224    200.0  ...          3  Zhou 2016   CSP+LDA
+    0  0.956597  0.319387    144.0  ...          2   001-2014   CSP+LDA
+    1  0.930941  0.399134    144.0  ...          2   001-2014   CSP+LDA
+    2  0.649691  0.330249    144.0  ...          2   001-2014   CSP+LDA
+    3  0.526813  0.310884    144.0  ...          2   001-2014   CSP+LDA
+    4  0.851412  0.336792    200.0  ...          3  Zhou 2016   CSP+LDA
 
     [5 rows x 9 columns]
 
@@ -357,7 +409,7 @@ Here we plot the results, indicating the score for each session and subject
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  21.184 seconds)
+   **Total running time of the script:** ( 0 minutes  24.507 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_cross_session_multiple_datasets.py:

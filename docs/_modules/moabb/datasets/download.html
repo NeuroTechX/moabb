@@ -293,7 +293,11 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">known_hash</span> <span class="o">=</span> <span class="n">file_hash</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
     <span class="n">dlpath</span> <span class="o">=</span> <span class="n">retrieve</span><span class="p">(</span>
-        <span class="n">url</span><span class="p">,</span> <span class="n">known_hash</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="n">osp</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">),</span> <span class="n">path</span><span class="o">=</span><span class="n">osp</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+        <span class="n">url</span><span class="p">,</span>
+        <span class="n">known_hash</span><span class="p">,</span>
+        <span class="n">fname</span><span class="o">=</span><span class="n">osp</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">),</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">osp</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">destination</span><span class="p">),</span>
+        <span class="n">progressbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">dlpath</span></div>
 

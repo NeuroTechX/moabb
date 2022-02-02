@@ -270,7 +270,7 @@
             <span class="n">stim</span><span class="p">[</span><span class="n">stim</span> <span class="o">==</span> <span class="s2">&quot;T1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;left_hand&quot;</span>
             <span class="n">stim</span><span class="p">[</span><span class="n">stim</span> <span class="o">==</span> <span class="s2">&quot;T2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;right_hand&quot;</span>
             <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">stim</span>
-            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;run_</span><span class="si">{idx}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
+            <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;run_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
             <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="c1"># feet runs</span>
@@ -283,7 +283,7 @@
             <span class="n">stim</span><span class="p">[</span><span class="n">stim</span> <span class="o">==</span> <span class="s2">&quot;T1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;hands&quot;</span>
             <span class="n">stim</span><span class="p">[</span><span class="n">stim</span> <span class="o">==</span> <span class="s2">&quot;T2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;feet&quot;</span>
             <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">stim</span>
-            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;run_</span><span class="si">{idx}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
+            <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;run_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
             <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;session_0&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>

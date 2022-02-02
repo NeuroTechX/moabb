@@ -300,6 +300,48 @@ be overwritten if necessary.</p>
 <span class="n">results</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.06M [00:00&lt;?, ?B/s]
+  4%|█▍                                    | 80.9k/2.06M [00:00&lt;00:04, 422kB/s]
+ 11%|████▎                                  | 228k/2.06M [00:00&lt;00:02, 624kB/s]
+ 31%|███████████▋                          | 634k/2.06M [00:00&lt;00:00, 1.67MB/s]
+ 64%|███████████████████████▌             | 1.31M/2.06M [00:00&lt;00:00, 3.19MB/s]
+  0%|                                              | 0.00/2.06M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.06M/2.06M [00:00&lt;00:00, 4.47GB/s]
+
+  0%|                                              | 0.00/2.82M [00:00&lt;?, ?B/s]
+  3%|█                                     | 80.9k/2.82M [00:00&lt;00:06, 416kB/s]
+  6%|██▎                                    | 163k/2.82M [00:00&lt;00:06, 422kB/s]
+ 17%|██████▍                               | 474k/2.82M [00:00&lt;00:01, 1.24MB/s]
+ 34%|████████████▉                         | 957k/2.82M [00:00&lt;00:00, 2.32MB/s]
+ 65%|███████████████████████▉             | 1.82M/2.82M [00:00&lt;00:00, 4.24MB/s]
+  0%|                                              | 0.00/2.82M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.82M/2.82M [00:00&lt;00:00, 4.87GB/s]
+
+  0%|                                              | 0.00/2.58M [00:00&lt;?, ?B/s]
+  3%|█▏                                    | 80.9k/2.58M [00:00&lt;00:05, 422kB/s]
+  6%|██▍                                    | 163k/2.58M [00:00&lt;00:05, 424kB/s]
+ 19%|███████▏                              | 488k/2.58M [00:00&lt;00:01, 1.29MB/s]
+ 37%|██████████████                        | 952k/2.58M [00:00&lt;00:00, 2.30MB/s]
+ 67%|████████████████████████▊            | 1.73M/2.58M [00:00&lt;00:00, 3.96MB/s]
+  0%|                                              | 0.00/2.58M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.58M/2.58M [00:00&lt;00:00, 3.86GB/s]
+
+  0%|                                              | 0.00/2.14M [00:00&lt;?, ?B/s]
+  4%|█▍                                    | 80.9k/2.14M [00:00&lt;00:04, 423kB/s]
+  6%|██▎                                    | 124k/2.14M [00:00&lt;00:04, 424kB/s]
+ 21%|███████▊                              | 439k/2.14M [00:00&lt;00:01, 1.46MB/s]
+ 42%|███████████████▊                      | 892k/2.14M [00:00&lt;00:00, 2.53MB/s]
+ 75%|███████████████████████████▋         | 1.60M/2.14M [00:00&lt;00:00, 4.07MB/s]
+  0%|                                              | 0.00/2.14M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.14M/2.14M [00:00&lt;00:00, 3.79GB/s]
+
+SSVEP Exoskeleton-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
+SSVEP Exoskeleton-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  3.26it/s]
+SSVEP Exoskeleton-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  3.29it/s]
+SSVEP Exoskeleton-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  3.29it/s]
+</pre></div>
+</div>
 <p>Filter bank processing, determine the filter automatically from the
 stimulation frequency values of events.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evaluation_fb</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">CrossSubjectEvaluation</span></a><span class="p">(</span>
@@ -308,11 +350,25 @@ stimulation frequency values of events.</p>
 <span class="n">results_fb</span> <span class="o">=</span> <span class="n">evaluation_fb</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_fb</span></a><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>SSVEP Exoskeleton-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
+SSVEP Exoskeleton-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  4.03it/s]
+SSVEP Exoskeleton-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  3.91it/s]
+SSVEP Exoskeleton-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  3.93it/s]
+</pre></div>
+</div>
 <p>TRCA processing also relies on filter bank that is automatically designed.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">evaluation_TRCA</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/abc.html#abc.ABC" title="abc.ABC" class="sphx-glr-backref-module-abc sphx-glr-backref-type-py-class"><span class="n">CrossSubjectEvaluation</span></a><span class="p">(</span>
     <span class="n">paradigm</span><span class="o">=</span><span class="n">paradigm_TRCA</span><span class="p">,</span> <span class="n">datasets</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">overwrite</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">overwrite</span></a>
 <span class="p">)</span>
 <span class="n">results_TRCA</span> <span class="o">=</span> <span class="n">evaluation_TRCA</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_TRCA</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>SSVEP Exoskeleton-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
+SSVEP Exoskeleton-CrossSubject:  50%|#####     | 1/2 [00:01&lt;00:01,  1.38s/it]
+SSVEP Exoskeleton-CrossSubject: 100%|##########| 2/2 [00:02&lt;00:00,  1.38s/it]
+SSVEP Exoskeleton-CrossSubject: 100%|##########| 2/2 [00:02&lt;00:00,  1.38s/it]
 </pre></div>
 </div>
 <p>After processing the three, we simply concatenate the results.</p>
@@ -341,7 +397,7 @@ stimulation frequency values of events.</p>
 </pre></div>
 </div>
 <img alt="plot cross subject ssvep" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.224 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.675 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-subject-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5459b5c2be76a529eb282ae496a50415/plot_cross_subject_ssvep.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_subject_ssvep.py</span></code></a></p>

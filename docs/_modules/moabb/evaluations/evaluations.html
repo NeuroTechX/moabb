@@ -162,6 +162,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection._validation</span> <span class="kn">import</span> <span class="n">_fit_and_score</span><span class="p">,</span> <span class="n">_score</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelEncoder</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">moabb.evaluations.base</span> <span class="kn">import</span> <span class="n">BaseEvaluation</span>
 
@@ -269,7 +270,8 @@
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
+        <span class="c1"># Progress Bar at subject level</span>
+        <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">-WithinSession&quot;</span><span class="p">):</span>
             <span class="c1"># check if we already have result for this subject/pipeline</span>
             <span class="c1"># we might need a better granularity, if we query the DB</span>
             <span class="n">run_pipes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">not_yet_computed</span><span class="p">(</span><span class="n">pipelines</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
@@ -382,7 +384,8 @@
         <span class="k">return</span> <span class="n">score</span><span class="p">,</span> <span class="n">duration</span>
 
     <span class="k">def</span> <span class="nf">_evaluate_learning_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
+        <span class="c1"># Progressbar at subject level</span>
+        <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">-WithinSession&quot;</span><span class="p">):</span>
             <span class="c1"># check if we already have result for this subject/pipeline</span>
             <span class="c1"># we might need a better granularity, if we query the DB</span>
             <span class="n">run_pipes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">not_yet_computed</span><span class="p">(</span><span class="n">pipelines</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
@@ -503,7 +506,8 @@
 <div class="viewcode-block" id="CrossSessionEvaluation.evaluate"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">pipelines</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valid</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Dataset is not appropriate for evaluation&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
+        <span class="c1"># Progressbar at subject level</span>
+        <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">-CrossSession&quot;</span><span class="p">):</span>
             <span class="c1"># check if we already have result for this subject/pipeline</span>
             <span class="c1"># we might need a better granularity, if we query the DB</span>
             <span class="n">run_pipes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">not_yet_computed</span><span class="p">(</span><span class="n">pipelines</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
@@ -618,12 +622,18 @@
             <span class="c1"># extract metadata</span>
             <span class="n">groups</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">values</span>
             <span class="n">sessions</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">n_subjects</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">)</span>
 
             <span class="n">scorer</span> <span class="o">=</span> <span class="n">get_scorer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paradigm</span><span class="o">.</span><span class="n">scoring</span><span class="p">)</span>
 
             <span class="c1"># perform leave one subject out CV</span>
             <span class="n">cv</span> <span class="o">=</span> <span class="n">LeaveOneGroupOut</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">):</span>
+            <span class="c1"># Progressbar at subject level</span>
+            <span class="k">for</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+                <span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">),</span>
+                <span class="n">total</span><span class="o">=</span><span class="n">n_subjects</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">-CrossSubject&quot;</span><span class="p">,</span>
+            <span class="p">):</span>
 
                 <span class="n">subject</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">test</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
                 <span class="c1"># now we can check if this subject has results</span>

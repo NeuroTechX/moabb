@@ -278,7 +278,7 @@ paradigm (note that BNCI2014001 is in it)</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014001 object at 0x7f2730b89f70&gt;, &lt;moabb.datasets.bnci.BNCI2014004 object at 0x7f2730b89070&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f2730b89190&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f2730b89b50&gt;, &lt;moabb.datasets.mpi_mi.MunichMI object at 0x7f2730b89a30&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f2730b89460&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f2730b89cd0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f2730b89af0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f2730b897f0&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7f2730b899a0&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014001 object at 0x7f6352b06160&gt;, &lt;moabb.datasets.bnci.BNCI2014004 object at 0x7f6352b06f70&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f6352b06b50&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f6352b062e0&gt;, &lt;moabb.datasets.mpi_mi.MunichMI object at 0x7f6352b06400&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f6352b06490&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f6352b064f0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f6352b06e20&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f6352b063d0&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7f6352b06190&gt;]
 </pre></div>
 </div>
 <p>The data from a list of subjects could be preprocessed and return as a 3D
@@ -324,6 +324,14 @@ partition and the remaining one as testing partition.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">process</span><span class="p">({</span><span class="s2">&quot;csp+lda&quot;</span><span class="p">:</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a><span class="p">})</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
+001-2014-WithinSession:  33%|###3      | 1/3 [00:06&lt;00:12,  6.21s/it]
+001-2014-WithinSession:  67%|######6   | 2/3 [00:12&lt;00:06,  6.17s/it]
+001-2014-WithinSession: 100%|##########| 3/3 [00:18&lt;00:00,  6.15s/it]
+001-2014-WithinSession: 100%|##########| 3/3 [00:18&lt;00:00,  6.16s/it]
+</pre></div>
+</div>
 <p>The results are stored in locally, to avoid recomputing the results each time.
 It is saved in <cite>hdf5_path</cite> if defined or in ~/mne_data/results  otherwise.
 To export the results in CSV:</p>
@@ -350,7 +358,7 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
 </pre></div>
 </div>
 <img alt="tutorial 1 simple example motor imagery" class="sphx-glr-single-img" src="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  21.252 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  23.926 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-1-simple-example-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/b446bb6bcfa12c42d029c4259163f668/tutorial_1_simple_example_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_1_simple_example_motor_imagery.py</span></code></a></p>
