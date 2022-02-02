@@ -5,7 +5,6 @@ from typing import Optional, Union
 
 import numpy as np
 from mne.epochs import BaseEpochs
-from tqdm import tqdm
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import (
@@ -16,6 +15,7 @@ from sklearn.model_selection import (
 )
 from sklearn.model_selection._validation import _fit_and_score, _score
 from sklearn.preprocessing import LabelEncoder
+from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
 
@@ -482,7 +482,11 @@ class CrossSubjectEvaluation(BaseEvaluation):
             # perform leave one subject out CV
             cv = LeaveOneGroupOut()
             # Progressbar at subject level
-            for train, test in tqdm(cv.split(X, y, groups), len=n_subjects, desc=f"{dataset.code}-CrossSubject"):
+            for train, test in tqdm(
+                cv.split(X, y, groups),
+                total=n_subjects,
+                desc=f"{dataset.code}-CrossSubject",
+            ):
 
                 subject = groups[test[0]]
                 # now we can check if this subject has results
