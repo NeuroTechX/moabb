@@ -33,6 +33,7 @@ sphinx-gallery = "^0.8.2"
 sphinx-bootstrap-theme = "^0.8"
 numpydoc = "^1.1.0"
 m2r2 = "^0.2.7"
+mistune = "<2"
 pre-commit = "^2.11.1"
 tdlda = {git = "https://github.com/jsosulski/tdlda.git", rev = "0.1.0"}
 

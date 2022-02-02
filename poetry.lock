@@ -263,8 +263,8 @@ setuptools_scm = ">=4"
 
 [[package]]
 name = "mistune"
-version = "2.0.2"
-description = "A sane Markdown parser with useful plugins and renderers"
+version = "0.8.4"
+description = "The fastest markdown parser in pure Python"
 category = "dev"
 optional = false
 python-versions = "*"
@@ -785,7 +785,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "acea74a71587c4be333cf1c3ce3a4a578ff999eb2271afe78c437f2a45ea8673"
+content-hash = "d8455fb5c62ccfe69f1688fcede1d8ecede6bc530ad318df77daf924ef47c112"
 
 [metadata.files]
 alabaster = [
@@ -1095,8 +1095,8 @@ matplotlib = [
     {file = "matplotlib-3.5.1.tar.gz", hash = "sha256:b2e9810e09c3a47b73ce9cab5a72243a1258f61e7900969097a817232246ce1c"},
 ]
 mistune = [
-    {file = "mistune-2.0.2-py2.py3-none-any.whl", hash = "sha256:6bab6c6abd711c4604206c7d8cad5cd48b28f072b4bb75797d74146ba393a049"},
-    {file = "mistune-2.0.2.tar.gz", hash = "sha256:6fc88c3cb49dba8b16687b41725e661cf85784c12e8974a29b9d336dd596c3a1"},
+    {file = "mistune-0.8.4-py2.py3-none-any.whl", hash = "sha256:88a1051873018da288eee8538d476dffe1262495144b33ecb586c4ab266bb8d4"},
+    {file = "mistune-0.8.4.tar.gz", hash = "sha256:59a3429db53c50b5c6bcc8a07f8848cb00d7dc8bdb431a4ab41920d201d4756e"},
 ]
 mne = [
     {file = "mne-0.24.1-py3-none-any.whl", hash = "sha256:26f75fc0b468ed078f35a86a26fa75bab60887b914b90707000cbc0cb8b11e78"},
