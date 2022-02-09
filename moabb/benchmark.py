@@ -112,4 +112,4 @@ def benchmark(
                 del eval_results[f"FilterBank{p}"]
 
         for paradigm_result in eval_results.values():
-            analyze(pd.concat(paradigm_result, ignore_index=True), output, plot=plot)
+            analyze(paradigm_result, output, plot=plot)
