@@ -1,4 +1,5 @@
 import importlib
+import logging
 import os
 from collections import OrderedDict
 from copy import deepcopy
@@ -11,6 +12,9 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import make_pipeline
 
 from moabb.analysis.results import get_string_rep
+
+
+log = logging.getLogger(__name__)
 
 
 def create_pipeline_from_config(config):
@@ -96,7 +100,7 @@ def parse_pipelines_from_directory(dir_path):
     return pipeline_configs
 
 
-def generate_paradigms(pipeline_configs, context=None, log=None):
+def generate_paradigms(pipeline_configs, context=None, logger=log):
     """
 
     Parameters
@@ -105,7 +109,7 @@ def generate_paradigms(pipeline_configs, context=None, log=None):
         dictionary of pipeline configurations
     context:
 
-    log:
+    logger:
         logger
 
     Returns
@@ -120,7 +124,7 @@ def generate_paradigms(pipeline_configs, context=None, log=None):
     for config in pipeline_configs:
 
         if "paradigms" not in config.keys():
-            log.error("{} must have a 'paradigms' key.".format(config))
+            logger.error("{} must have a 'paradigms' key.".format(config))
             continue
 
         # iterate over paradigms
@@ -130,8 +134,8 @@ def generate_paradigms(pipeline_configs, context=None, log=None):
             # check if it is in the context parameters file
             if len(context) > 0:
                 if paradigm not in context.keys():
-                    log.debug(context)
-                    log.warning(
+                    logger.debug(context)
+                    logger.warning(
                         "Paradigm {} not in context file {}".format(
                             paradigm, context.keys()
                         )
@@ -140,7 +144,7 @@ def generate_paradigms(pipeline_configs, context=None, log=None):
             if isinstance(config["pipeline"], BaseEstimator):
                 pipeline = deepcopy(config["pipeline"])
             else:
-                log.error(config["pipeline"])
+                logger.error(config["pipeline"])
                 raise (ValueError("pipeline must be a sklearn estimator"))
 
             # append the pipeline in the paradigm list
@@ -148,7 +152,7 @@ def generate_paradigms(pipeline_configs, context=None, log=None):
                 paradigms[paradigm] = {}
 
             # FIXME name are not unique
-            log.debug("Pipeline: \n\n {} \n".format(get_string_rep(pipeline)))
+            logger.debug("Pipeline: \n\n {} \n".format(get_string_rep(pipeline)))
             paradigms[paradigm][config["name"]] = pipeline
 
     return paradigms
