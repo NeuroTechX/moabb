@@ -97,6 +97,7 @@ def benchmark(
             log.debug(f"{paradigm}: {context_params[paradigm]}")
             p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
             log.debug(f"Datasets in this paradigm {[d.code for d in p.datasets]}")
+            print(f"Datasets in this paradigm {[d.code for d in p.datasets]}")
             context = eval_type[evaluation](
                 paradigm=p, random_state=42, n_jobs=threads, overwrite=force
             )
