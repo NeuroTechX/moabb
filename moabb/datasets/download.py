@@ -219,6 +219,7 @@ def fs_get_file_list(article_id, version=None):
         return response
     else:
         url = fsurl + "/articles/{}/versions/{}".format(article_id, version)
+        headers = {"Content-Type": "application/json"}
         request = fs_issue_request("GET", url, headers=headers)
         return request["files"]
 
