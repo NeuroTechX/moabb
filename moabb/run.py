@@ -2,13 +2,8 @@ import logging
 from argparse import ArgumentParser
 
 import mne
-import pandas as pd
-import yaml
 
-from moabb import paradigms as moabb_paradigms
-from moabb.analysis import analyze
-from moabb.evaluations import WithinSessionEvaluation
-from moabb.pipelines.utils import generate_paradigms, parse_pipelines_from_directory
+from moabb.benchmark import benchmark
 
 
 log = logging.getLogger(__name__)
@@ -23,6 +18,16 @@ def parser_init():
         type=str,
         default="./pipelines/",
         help="Folder containing the pipelines to evaluates.",
+    )
+    parser.add_argument(
+        "-e",
+        "--evaluations",
+        dest="evaluations",
+        type=list,
+        default=None,
+        help="Evaluation types to be run. Must be given as a list. "
+        'Options - ["WithinSession","CrossSession","CrossSubject"]'
+        "By default, all 3 types of evaluations will be done",
     )
     parser.add_argument(
         "-r",
@@ -84,7 +89,7 @@ def parser_init():
 
 
 if __name__ == "__main__":
-    # TODO: replace by call to moabb.benchmark
+    # FIXME: The verbose and debug params are useless currently
     # set logs
     mne.set_log_level(False)
     # logging.basicConfig(level=logging.WARNING)
@@ -92,27 +97,14 @@ if __name__ == "__main__":
     parser = parser_init()
     options = parser.parse_args()
 
-    pipeline_configs = parse_pipelines_from_directory(options.pipelines)
-
-    context_params = {}
-    if options.context is not None:
-        with open(options.context, "r") as cfile:
-            context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
-
-    paradigms = generate_paradigms(pipeline_configs, context_params)
-
-    if len(context_params) == 0:
-        for paradigm in paradigms:
-            context_params[paradigm] = {}
-
-    all_results = []
-    for paradigm in paradigms:
-        # get the context
-        log.debug("{}: {}".format(paradigm, context_params[paradigm]))
-        p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
-        context = WithinSessionEvaluation(
-            paradigm=p, random_state=42, n_jobs=options.threads, overwrite=options.force
-        )
-        results = context.process(pipelines=paradigms[paradigm])
-        all_results.append(results)
-    analyze(pd.concat(all_results, ignore_index=True), options.output, plot=options.plot)
+    # call within session benchmark
+    benchmark(
+        pipelines=options.pipelines,
+        evaluations=options.evaluations,
+        results=options.results,
+        force=options.force,
+        output=options.output,
+        threads=options.threads,
+        plot=options.plot,
+        contexts=options.context,
+    )
