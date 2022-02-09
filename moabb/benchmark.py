@@ -6,7 +6,11 @@ import yaml
 
 from moabb import paradigms as moabb_paradigms
 from moabb.analysis import analyze
-from moabb.evaluations import WithinSessionEvaluation
+from moabb.evaluations import (
+    CrossSessionEvaluation,
+    CrossSubjectEvaluation,
+    WithinSessionEvaluation,
+)
 from moabb.pipelines.utils import generate_paradigms, parse_pipelines_from_directory
 
 
@@ -63,6 +67,12 @@ def benchmark(
     if evaluations is None:
         evaluations = ["WithinSession", "CrossSession", "CrossSubject"]
 
+    eval_type = {
+        "WithinSession": WithinSessionEvaluation,
+        "CrossSession": CrossSessionEvaluation,
+        "CrossSubject": CrossSubjectEvaluation,
+    }
+
     mne.set_log_level(False)
     # logging.basicConfig(level=logging.WARNING)
 
@@ -79,19 +89,28 @@ def benchmark(
         for paradigm in paradigms:
             context_params[paradigm] = {}
 
-    all_results = []
-    # TODO : Extend to run other evaluations based on evaluations param list
-    # If statement? Or would that be wastage in run time
-    # Loop paradigms within evaluations
-    for paradigm in paradigms:
-        # get the context
-        log.debug("{}: {}".format(paradigm, context_params[paradigm]))
-        p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
-        context = WithinSessionEvaluation(
-            paradigm=p, random_state=42, n_jobs=threads, overwrite=force
-        )
-        # TODO : If filterbank type paradigm is run, concatenate the results of the base and
-        #  filterbank. Don't append everything else. Need to keep paradigm results separate.
-        results = context.process(pipelines=paradigms[paradigm])
-        all_results.append(results)
-    analyze(pd.concat(all_results, ignore_index=True), output, plot=plot)
+    # Looping over the evaluations to be done
+    for evaluation in evaluations:
+        eval_results = dict()
+        for paradigm in paradigms:
+            # get the context
+            log.debug(f"{paradigm}: {context_params[paradigm]}")
+            p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
+            log.debug(f"Datasets in this paradigm {[d.code for d in p.datasets]}")
+            context = eval_type[evaluation](
+                paradigm=p, random_state=42, n_jobs=threads, overwrite=force
+            )
+            results = context.process(pipelines=paradigms[paradigm])
+            eval_results[f"{paradigm}"] = results
+
+        # Combining the FilterBank and the base Paradigm
+        combine_paradigms = ["SSVEP", "MotorImagery"]
+        for p in combine_paradigms:
+            if f"FilterBank{p}" in eval_results.keys() and f"{p}" in eval_results.keys():
+                eval_results[f"{p}"] = pd.concat(
+                    [eval_results[f"{p}"], eval_results[f"FilterBank{p}"]]
+                )
+                del eval_results[f"FilterBank{p}"]
+
+        for paradigm_result in eval_results.values():
+            analyze(pd.concat(paradigm_result, ignore_index=True), output, plot=plot)
