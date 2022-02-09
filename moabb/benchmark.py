@@ -22,8 +22,6 @@ def benchmark(
     evaluations=None,
     results="./results/",
     force=False,
-    verbose=False,
-    debug=False,
     output="./",
     threads=1,
     plot=False,
@@ -44,10 +42,6 @@ def benchmark(
         Folder to store the results
     force: bool
         Force evaluation of cached pipelines
-    verbose:
-        verbosity level
-    debug: bool
-        Print debug level parse statements. Overrides verbose
     output: str
         Folder to store the analysis results
     threads: int
@@ -99,10 +93,14 @@ def benchmark(
             log.debug(f"Datasets in this paradigm {[d.code for d in p.datasets]}")
             print(f"Datasets in this paradigm {[d.code for d in p.datasets]}")
             context = eval_type[evaluation](
-                paradigm=p, random_state=42, n_jobs=threads, overwrite=force
+                paradigm=p,
+                random_state=42,
+                hdf5_path=results,
+                n_jobs=threads,
+                overwrite=force,
             )
-            results = context.process(pipelines=paradigms[paradigm])
-            eval_results[f"{paradigm}"] = results
+            paradigm_results = context.process(pipelines=paradigms[paradigm])
+            eval_results[f"{paradigm}"] = paradigm_results
 
         # Combining the FilterBank and the base Paradigm
         combine_paradigms = ["SSVEP", "MotorImagery"]
