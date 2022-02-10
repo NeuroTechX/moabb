@@ -3,8 +3,6 @@ import logging
 import mne
 from mne.channels import make_standard_montage
 
-# import requests
-
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
