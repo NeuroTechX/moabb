@@ -25,6 +25,7 @@ from .mpi_mi import MunichMI
 from .neiry import DemonsP300
 from .physionet_mi import PhysionetMI
 from .schirrmeister2017 import Schirrmeister2017
+from .sosulski2019 import Sosulski2019
 from .ssvep_exo import SSVEPExo
 from .ssvep_mamem import MAMEM1, MAMEM2, MAMEM3
 from .ssvep_nakanishi import Nakanishi2015
