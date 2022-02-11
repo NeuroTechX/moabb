@@ -41,6 +41,7 @@ def eeg_data_path(base_path, subject, accept):
                         None,
                         fname="EEG.zip",
                         path=base_path,
+                        progressbar=True,
                     )
                 with z.ZipFile(op.join(base_path, "EEG.zip"), "r") as f:
                     f.extractall(op.join(base_path, "EEG"))
@@ -65,6 +66,7 @@ def fnirs_data_path(path, subject, accept):
                 None,
                 fname="fNIRS.zip",
                 path=path,
+                progressbar=True,
             )
         if not op.isdir(op.join(path, "NIRS")):
             os.makedirs(op.join(path, "NIRS"))

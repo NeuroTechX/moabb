@@ -146,7 +146,11 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
     else:
         known_hash = file_hash(destination)
     dlpath = retrieve(
-        url, known_hash, fname=osp.basename(url), path=osp.dirname(destination)
+        url,
+        known_hash,
+        fname=osp.basename(url),
+        path=osp.dirname(destination),
+        progressbar=True,
     )
     return dlpath
 
