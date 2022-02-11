@@ -7,39 +7,12 @@ import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-from moabb.datasets import (
-    BNCI2014008,
-    BNCI2014009,
-    BNCI2015003,
-    EPFLP300,
-    DemonsP300,
-    Huebner2017,
-    Huebner2018,
-    Lee2019_ERP,
-    bi2013a,
-)
 from moabb.paradigms import P300
 
 
 matplotlib.use("agg")
 sns.set_style("whitegrid")
-
-P300_DSETS = [
-    Huebner2017(),
-    Huebner2018(),
-    EPFLP300(),
-    BNCI2014008(),
-    BNCI2014009(),
-    BNCI2015003(),
-    bi2013a(True, True, True, True),  # Just load all?
-    DemonsP300(),
-    Lee2019_ERP(),
-    # # Unclear how to handle conditions/sub-session blocks
-    # SpotPilotData(),
-    # # No Publication permission
-    # AphasiaDirectionStudyOddball(),
-    # AphasiaDirectionStudyWords(),
-]
+mne.set_log_level("WARNING")
 
 
 def create_plot_overview(epo, plot_opts=None, path=None, description=""):
@@ -155,15 +128,17 @@ def epo_summary(epos):
 
 FIGURES_PATH = Path("/home/jan/bci_data/figures/moabb_erps")
 
+# Changing this to False re-generates all plots even if they exist. Use with caution.
 cache_plots = True
 
 plot_format = "png"
 baseline = None
 highpass = 0.5
 lowpass = 16
+sampling_rate = 100
 
 paradigm = P300(
-    resample=100,
+    resample=sampling_rate,
     fmin=highpass,
     fmax=lowpass,
     baseline=baseline,
@@ -181,19 +156,22 @@ plot_opts = {
 }
 
 plt.ioff()
-dsets = P300_DSETS
+# dsets = P300_DSETS
+dsets = paradigm.datasets
 for dset in dsets:
-    print(f"Processing dataset: {dset}")
-
     dset.interval = ival
     dset_name = dset.__class__.__name__
 
+    print(f"Processing dataset: {dset_name}")
+
     data_path = FIGURES_PATH / dset_name  # Path of the dataset folder
     Path(data_path).mkdir(parents=True, exist_ok=True)
+    all_subjects_cached = True
     for subject in dset.subject_list:
         subject_path = data_path / f"subject_{subject}"
         if cache_plots and subject_path.exists():
             continue
+        all_subjects_cached = False
         print(f"  Processing subject: {subject}")
 
         subject_path.mkdir(parents=True, exist_ok=True)
@@ -225,3 +203,8 @@ for dset in dsets:
                     path=session_path,
                     description=description,
                 )
+
+    if all_subjects_cached:
+        print(" No plots necessary, every subject has output folder.")
+
+print("All datasets processed.")
