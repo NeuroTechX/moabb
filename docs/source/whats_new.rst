@@ -18,6 +18,7 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
+- Progress bars, pooch, tqdm (:gh:`258` by `Divyesh Narayanan`_ and `Sylvain Chevallier`_)
 - Adding Test and Example for set_download_dir (:gh:`249` by `Divyesh Narayanan`_)
 
 Bugs

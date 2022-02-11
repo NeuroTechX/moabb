@@ -15,6 +15,7 @@ from sklearn.model_selection import (
 )
 from sklearn.model_selection._validation import _fit_and_score, _score
 from sklearn.preprocessing import LabelEncoder
+from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
 
@@ -122,7 +123,8 @@ class WithinSessionEvaluation(BaseEvaluation):
             super().__init__(**kwargs)
 
     def _evaluate(self, dataset, pipelines):
-        for subject in dataset.subject_list:
+        # Progress Bar at subject level
+        for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-WithinSession"):
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
             run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
@@ -235,7 +237,8 @@ class WithinSessionEvaluation(BaseEvaluation):
         return score, duration
 
     def _evaluate_learning_curve(self, dataset, pipelines):
-        for subject in dataset.subject_list:
+        # Progressbar at subject level
+        for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-WithinSession"):
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
             run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
@@ -356,7 +359,8 @@ class CrossSessionEvaluation(BaseEvaluation):
     def evaluate(self, dataset, pipelines):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
-        for subject in dataset.subject_list:
+        # Progressbar at subject level
+        for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-CrossSession"):
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
             run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
@@ -471,12 +475,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
             # extract metadata
             groups = metadata.subject.values
             sessions = metadata.session.values
+            n_subjects = len(dataset.subject_list)
 
             scorer = get_scorer(self.paradigm.scoring)
 
             # perform leave one subject out CV
             cv = LeaveOneGroupOut()
-            for train, test in cv.split(X, y, groups):
+            # Progressbar at subject level
+            for train, test in tqdm(
+                cv.split(X, y, groups),
+                total=n_subjects,
+                desc=f"{dataset.code}-CrossSubject",
+            ):
 
                 subject = groups[test[0]]
                 # now we can check if this subject has results
