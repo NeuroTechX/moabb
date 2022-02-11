@@ -18,11 +18,7 @@ OPTICAL_MARKER_CODE = 500
 
 
 class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
-    def __init__(self, src_url, n_subjects, run_split_n, raw_slice_offset, **kwargs):
-        if run_split_n is not None and (run_split_n > 7 or run_split_n < 1):
-            raise ValueError(
-                f"Split must be in interval [1, 7] or None. But was {run_split_n}."
-            )
+    def __init__(self, src_url, n_subjects, raw_slice_offset, **kwargs):
 
         self.n_channels = 31  # all channels except 5 times x_* CH and EOGvu
         if kwargs["interval"] is None:
@@ -36,7 +32,6 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
             **kwargs,
         )
 
-        self.run_split_n = run_split_n
         self.raw_slice_offset = 2_000 if raw_slice_offset is None else raw_slice_offset
         self._src_url = src_url
 
@@ -68,20 +63,14 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
 
             raw_bvr_list = _read_raw_llp_study_data(
                 vhdr_fname=subject_data_vhdr_file,
-                run_split_n=self.run_split_n,
                 raw_slice_offset=self.raw_slice_offset,
                 verbose=None,
             )
 
             session_name = f"{session_name}_block_{block_idx}"
-            if self.run_split_n is not None:
-                for split_idx, raw_split in enumerate(raw_bvr_list):
-                    session_name = session_name + f"_run_{run_idx}_split_{split_idx}"
-                    sessions[session_name] = {"0": raw_split}
-            else:
-                if session_name not in sessions.keys():
-                    sessions[session_name] = dict()
-                sessions[session_name][run_idx] = raw_bvr_list[0]
+            if session_name not in sessions.keys():
+                sessions[session_name] = dict()
+            sessions[session_name][run_idx] = raw_bvr_list[0]
 
         return sessions
 
@@ -148,12 +137,6 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
 
     Parameters
     ----------
-    run_split_n: None, int
-        Define how to split the runs. If None load whole EEG sessions. If integer load splits of run_split_n runs.
-        That is to say runs are loaded individually if run_split_n is set to one. If run_split_n is set to 2 then the
-        data is split into two splits of three trials a 68 epochs. The seventh trial is discarded. Default is set to
-        None.
-        Note: the data can be split into at most seven splits.
     interval: array_like
         range/interval in milliseconds in which the brain response/activity relative to an event/stimulus onset lies in.
         Default is set to [-.2, .7].
@@ -169,11 +152,10 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
            https://doi.org/10.1371/journal.pone.0175856
     """
 
-    def __init__(self, run_split_n=None, interval=None, raw_slice_offset=None):
+    def __init__(self, interval=None, raw_slice_offset=None):
         llp_speller_paper_doi = "10.1371/journal.pone.0175856"
         super().__init__(
             src_url=VISUAL_SPELLER_LLP_URL,
-            run_split_n=run_split_n,
             raw_slice_offset=raw_slice_offset,
             n_subjects=13,
             sessions_per_subject=1,  # if varying, take minimum
@@ -200,12 +182,6 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
 
     Parameters
     ----------
-    run_split_n: None, int
-        Define how to split the runs. If None load whole EEG sessions. If integer load splits of run_split_n runs.
-        That is to say runs are loaded individually if run_split_n is set to one. If run_split_n is set to 2 then the
-        data is split into two splits of three trials a 68 epochs. The seventh trial is discarded. Default is set to
-        None.
-        Note: the data can be split into at most seven splits.
     interval: array_like
         range/interval in milliseconds in which the brain response/activity relative to an event/stimulus onset lies in.
         Default is set to [-.2, .7].
@@ -221,11 +197,10 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
            https://doi.org/10.1109/MCI.2018.2807039
     """
 
-    def __init__(self, run_split_n=None, interval=None, raw_slice_offset=None):
+    def __init__(self, interval=None, raw_slice_offset=None):
         mix_speller_paper_doi = "10.1109/MCI.2018.2807039"
         super().__init__(
             src_url=VISUAL_SPELLER_MIX_URL,
-            run_split_n=run_split_n,
             raw_slice_offset=raw_slice_offset,
             n_subjects=12,
             sessions_per_subject=1,  # if varying, take minimum
@@ -235,7 +210,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         )
 
 
-def _read_raw_llp_study_data(vhdr_fname, run_split_n, raw_slice_offset, verbose=None):
+def _read_raw_llp_study_data(vhdr_fname, raw_slice_offset, verbose=None):
     """
     Read LLP BVR recordings file. Ignore the different sequence lengths. Just tag event as target or non-target if it
     contains a target or does not contain a target.
@@ -263,14 +238,10 @@ def _read_raw_llp_study_data(vhdr_fname, run_split_n, raw_slice_offset, verbose=
 
     events = _parse_events(raw_bvr)
 
-    onset_arr_list, marker_arr_list = _extract_target_non_target_description(
-        events, run_split_n
-    )
-
-    has_multiple_splits = run_split_n is not None and run_split_n > 1
+    onset_arr_list, marker_arr_list = _extract_target_non_target_description(events)
 
     def annotate_and_crop_raw(onset_arr, marker_arr):
-        raw = raw_bvr.copy() if has_multiple_splits else raw_bvr
+        raw = raw_bvr
 
         raw_annotated = raw.set_annotations(
             _create_annotations_from(marker_arr, onset_arr, raw)
@@ -318,7 +289,7 @@ def _find_single_trial_start_end_idx(events):
     return np.where(np.isin(events[:, 2], trial_start_end_markers))[0]
 
 
-def _extract_target_non_target_description(events, run_split_n):
+def _extract_target_non_target_description(events):
     single_trial_start_end_idx = _find_single_trial_start_end_idx(events)
 
     n_events = single_trial_start_end_idx.size - 1
@@ -343,51 +314,9 @@ def _extract_target_non_target_description(events, run_split_n):
             _single_trial_contains_target(epoch_events)
         )  # 1/true if single trial has target
 
-    if run_split_n is None or run_split_n == 1:
-        return [np.delete(onset_arr, broken_events_idx)], [
-            np.delete(marker_arr, broken_events_idx)
-        ]
-    else:
-        return _split_run_into_n_splits_of_trials(
-            broken_events_idx, marker_arr, onset_arr, run_split_n
-        )
-
-
-def _split_run_into_n_splits_of_trials(broken_events, marker_arr, onset_arr, run_split_n):
-    epochs_per_trial = 68
-    trials_per_run = 7
-
-    trials_per_split = int(trials_per_run / run_split_n)
-    trial_split_idx = (
-        np.arange(start=trials_per_split, stop=trials_per_run, step=trials_per_split)
-        * epochs_per_trial
-    )
-    epochs_per_split = trials_per_split * epochs_per_trial
-
-    broken_events = np.array(broken_events)
-    has_broken = len(broken_events) > 0
-
-    def broken_idx_for_split(split_idx):
-        if not has_broken:
-            return []
-
-        broke_int_split_i = broken_events - split_idx * epochs_per_split
-        idx_broken_events_in_split = (broke_int_split_i >= 0) & (
-            broke_int_split_i < epochs_per_split
-        )
-        return broke_int_split_i[idx_broken_events_in_split]
-
-    def split_data(data_arr):
-        splits = np.split(data_arr, trial_split_idx)
-        del splits[run_split_n:]
-
-        return [
-            np.delete(split, broken_idx_for_split(i)) for i, split in enumerate(splits)
-        ]
-
-    onset_arr_list = split_data(onset_arr)
-    marker_arr_list = split_data(marker_arr)
-    return onset_arr_list, marker_arr_list
+    return [np.delete(onset_arr, broken_events_idx)], [
+        np.delete(marker_arr, broken_events_idx)
+    ]
 
 
 def _find_epoch_onset(epoch_events):
