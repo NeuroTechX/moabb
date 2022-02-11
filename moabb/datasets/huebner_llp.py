@@ -18,7 +18,9 @@ OPTICAL_MARKER_CODE = 500
 
 
 class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
-    def __init__(self, src_url, n_subjects, raw_slice_offset, **kwargs):
+    def __init__(
+        self, src_url, n_subjects, raw_slice_offset, use_blocks_as_sessions=True, **kwargs
+    ):
 
         self.n_channels = 31  # all channels except 5 times x_* CH and EOGvu
         if kwargs["interval"] is None:
@@ -34,6 +36,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
 
         self.raw_slice_offset = 2_000 if raw_slice_offset is None else raw_slice_offset
         self._src_url = src_url
+        self.use_blocks_as_sessions = use_blocks_as_sessions
 
     @staticmethod
     def _filename_trial_info_extraction(vhdr_file_path):
@@ -67,7 +70,10 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
                 verbose=None,
             )
 
-            session_name = f"{session_name}_block_{block_idx}"
+            if self.use_blocks_as_sessions:
+                session_name = f"{session_name}_block_{block_idx}"
+            else:
+                session_name = f"{session_name}"
             if session_name not in sessions.keys():
                 sessions[session_name] = dict()
             sessions[session_name][run_idx] = raw_bvr_list[0]
@@ -152,7 +158,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
            https://doi.org/10.1371/journal.pone.0175856
     """
 
-    def __init__(self, interval=None, raw_slice_offset=None):
+    def __init__(self, interval=None, raw_slice_offset=None, use_blocks_as_sessions=True):
         llp_speller_paper_doi = "10.1371/journal.pone.0175856"
         super().__init__(
             src_url=VISUAL_SPELLER_LLP_URL,
@@ -162,6 +168,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             code="Visual Speller LLP",
             interval=interval,
             doi=llp_speller_paper_doi,
+            use_blocks_as_sessions=use_blocks_as_sessions,
         )
 
 
@@ -197,7 +204,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
            https://doi.org/10.1109/MCI.2018.2807039
     """
 
-    def __init__(self, interval=None, raw_slice_offset=None):
+    def __init__(self, interval=None, raw_slice_offset=None, use_blocks_as_sessions=True):
         mix_speller_paper_doi = "10.1109/MCI.2018.2807039"
         super().__init__(
             src_url=VISUAL_SPELLER_MIX_URL,
@@ -207,6 +214,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             code="Visual Speller MIX",
             interval=interval,
             doi=mix_speller_paper_doi,
+            use_blocks_as_sessions=use_blocks_as_sessions,
         )
 
 
