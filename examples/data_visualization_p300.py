@@ -17,24 +17,24 @@ mne.set_log_level("WARNING")
 
 def create_plot_overview(epo, plot_opts=None, path=None, description=""):
     # Butterflyplot
-    suptitle = f"$\\bf{{{description}}}$ ({epo_summary(epo)[1]})"
+    suptitle = f"{description} ({epo_summary(epo)[1]})"
     epo_t = epo["Target"]
     epo_nt = epo["NonTarget"]
     evkd_t = epo_t.average()
     evkd_nt = epo_nt.average()
-    ix_t = epos.events[:, 2] == epos.event_id["Target"]
-    ix_nt = epos.events[:, 2] == epos.event_id["NonTarget"]
+    ix_t = epo.events[:, 2] == epo.event_id["Target"]
+    ix_nt = epo.events[:, 2] == epo.event_id["NonTarget"]
 
     fig0, ax = plt.subplots(1, 1, figsize=(10, 3), sharey="all", sharex="all")
     ax.scatter(
-        epos.events[ix_t, 0],
+        epo.events[ix_t, 0],
         np.ones((np.sum(ix_t),)),
         color="r",
         marker="|",
         label="Target",
     )
     ax.scatter(
-        epos.events[ix_nt, 0],
+        epo.events[ix_nt, 0],
         np.zeros((np.sum(ix_nt),)),
         color="b",
         marker="|",
