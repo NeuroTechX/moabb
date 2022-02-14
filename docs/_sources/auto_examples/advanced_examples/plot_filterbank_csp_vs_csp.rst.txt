@@ -173,7 +173,7 @@ from 8 to 35 Hz.
 
  .. code-block:: none
 
-    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession: 100%|##########| 2/2 [00:00<00:00, 480.75it/s]
+    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession: 100%|##########| 2/2 [00:00<00:00, 452.78it/s]
     001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
@@ -270,7 +270,7 @@ from 8 to 35 Hz.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-CrossSession:  50%|#####     | 1/2 [00:11<00:11, 11.77s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    001-2014-CrossSession:  50%|#####     | 1/2 [00:13<00:13, 13.93s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
@@ -366,7 +366,7 @@ from 8 to 35 Hz.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-CrossSession: 100%|##########| 2/2 [00:23<00:00, 11.95s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:23<00:00, 11.93s/it]
+    001-2014-CrossSession: 100%|##########| 2/2 [00:27<00:00, 13.80s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:27<00:00, 13.82s/it]
 
 
 
@@ -448,7 +448,7 @@ points are in its quadrant.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  24.061 seconds)
+   **Total running time of the script:** ( 0 minutes  27.935 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_filterbank_csp_vs_csp.py:
