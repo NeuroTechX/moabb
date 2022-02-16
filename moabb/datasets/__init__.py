@@ -20,6 +20,7 @@ from .bnci import (
 from .braininvaders import bi2013a
 from .epfl import EPFLP300
 from .gigadb import Cho2017
+from .huebner_llp import Huebner2017, Huebner2018
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .mpi_mi import MunichMI
 from .neiry import DemonsP300
