@@ -5,14 +5,14 @@
 
 Computation times
 =================
-**03:20.418** total execution time for **auto_examples_advanced_examples** files:
+**02:59.569** total execution time for **auto_examples_advanced_examples** files:
 
 +-----------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_advanced_examples_plot_mne_and_scikit_estimators.py` (``plot_mne_and_scikit_estimators.py``)   | 01:14.220 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_advanced_examples_plot_mne_and_scikit_estimators.py` (``plot_mne_and_scikit_estimators.py``)   | 01:04.177 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_advanced_examples_plot_statistical_analysis.py` (``plot_statistical_analysis.py``)             | 00:59.167 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_advanced_examples_plot_statistical_analysis.py` (``plot_statistical_analysis.py``)             | 00:58.670 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_advanced_examples_plot_select_electrodes_resample.py` (``plot_select_electrodes_resample.py``) | 00:39.095 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_advanced_examples_plot_select_electrodes_resample.py` (``plot_select_electrodes_resample.py``) | 00:31.419 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_advanced_examples_plot_filterbank_csp_vs_csp.py` (``plot_filterbank_csp_vs_csp.py``)           | 00:27.935 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_advanced_examples_plot_filterbank_csp_vs_csp.py` (``plot_filterbank_csp_vs_csp.py``)           | 00:25.303 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------------------------------+-----------+--------+

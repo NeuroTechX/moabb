@@ -254,7 +254,7 @@ a sampling rate of 200 Hz.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:04<00:04,  4.68s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:03<00:03,  3.78s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
@@ -374,7 +374,7 @@ a sampling rate of 200 Hz.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:08<00:00,  4.17s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:08<00:00,  4.25s/it]
+    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:06<00:00,  3.28s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:06<00:00,  3.35s/it]
     001-2014-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
@@ -455,7 +455,7 @@ a sampling rate of 200 Hz.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-WithinSession:  50%|#####     | 1/2 [00:04<00:04,  4.06s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    001-2014-WithinSession:  50%|#####     | 1/2 [00:03<00:03,  3.45s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
@@ -535,13 +535,13 @@ a sampling rate of 200 Hz.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-WithinSession: 100%|##########| 2/2 [00:08<00:00,  4.06s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:08<00:00,  4.06s/it]
+    001-2014-WithinSession: 100%|##########| 2/2 [00:06<00:00,  3.42s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:06<00:00,  3.42s/it]
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.871293  0.025646    144.0  ...          2   001-2014   csp+lda
-    1  0.855918  0.025010    144.0  ...          2   001-2014   csp+lda
-    2  0.515034  0.026180    144.0  ...          2   001-2014   csp+lda
-    3  0.551293  0.024731    144.0  ...          2   001-2014   csp+lda
-    4  0.846212  0.025371    119.0  ...          3  Zhou 2016   csp+lda
+    0  0.874354  0.020120    144.0  ...          2   001-2014   csp+lda
+    1  0.857211  0.020090    144.0  ...          2   001-2014   csp+lda
+    2  0.488639  0.021190    144.0  ...          2   001-2014   csp+lda
+    3  0.571020  0.019515    144.0  ...          2   001-2014   csp+lda
+    4  0.831692  0.021572    119.0  ...          3  Zhou 2016   csp+lda
 
     [5 rows x 9 columns]
 
@@ -702,7 +702,7 @@ as well as the list of datasets with valid channels.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:04<00:04,  4.58s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:03<00:03,  3.69s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
@@ -822,7 +822,7 @@ as well as the list of datasets with valid channels.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:08<00:00,  4.32s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:08<00:00,  4.36s/it]
+    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:06<00:00,  3.23s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:06<00:00,  3.30s/it]
     001-2014-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
@@ -903,7 +903,7 @@ as well as the list of datasets with valid channels.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-WithinSession:  50%|#####     | 1/2 [00:04<00:04,  4.66s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    001-2014-WithinSession:  50%|#####     | 1/2 [00:03<00:03,  3.62s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
@@ -983,13 +983,13 @@ as well as the list of datasets with valid channels.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-WithinSession: 100%|##########| 2/2 [00:09<00:00,  4.55s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:09<00:00,  4.56s/it]
+    001-2014-WithinSession: 100%|##########| 2/2 [00:06<00:00,  3.45s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:06<00:00,  3.48s/it]
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.867823  0.026221    144.0  ...          2   001-2014   csp+lda
-    1  0.872041  0.027983    144.0  ...          2   001-2014   csp+lda
-    2  0.502517  0.026880    144.0  ...          2   001-2014   csp+lda
-    3  0.482041  0.024326    144.0  ...          2   001-2014   csp+lda
-    4  0.857702  0.025206    119.0  ...          3  Zhou 2016   csp+lda
+    0  0.873469  0.020814    144.0  ...          2   001-2014   csp+lda
+    1  0.872109  0.020083    144.0  ...          2   001-2014   csp+lda
+    2  0.514830  0.019936    144.0  ...          2   001-2014   csp+lda
+    3  0.520272  0.019740    144.0  ...          2   001-2014   csp+lda
+    4  0.848232  0.021417    119.0  ...          3  Zhou 2016   csp+lda
 
     [5 rows x 9 columns]
 
@@ -1025,7 +1025,7 @@ regression computed in the tangent space of the covariance matrices.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  39.095 seconds)
+   **Total running time of the script:** ( 0 minutes  31.419 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_select_electrodes_resample.py:
