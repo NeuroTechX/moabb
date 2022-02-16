@@ -159,7 +159,7 @@ class Sosulski2019(BaseDataset):
         # check if has the .zip
         file_number = Sosulski2019._map_subject_to_filenumber(subject)
         url = f"{SPOT_PILOT_P300_URL}/FILE{file_number}/content"
-        path_zip = dl.data_path(url, "spot")
+        path_zip = dl.data_dl(url, "spot")
         path_folder = path_zip[:-8] + f"/subject{subject}"
 
         # check if has to unzip
