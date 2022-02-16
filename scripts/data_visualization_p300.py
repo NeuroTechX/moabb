@@ -1,3 +1,17 @@
+"""
+===========================
+Script for visualization of ALL P300 datasets
+===========================
+
+This script will download ALL P300 datasets and create
+descriptive plots for every single session.
+
+Total downloaded size will be (as of now) 120GB.
+
+"""
+# Authors: Jan Sosulski <mail@jan-sosulski.de>
+#
+# License: BSD (3-clause)
 import warnings
 from pathlib import Path
 
