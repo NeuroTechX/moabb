@@ -84,7 +84,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         url = f"{self._src_url}subject{subject:02d}.zip"
-        data_archive_path = dl.data_path(url, "llp")
+        data_archive_path = dl.data_dl(url, "llp")
         data_dir_extracted_path = os.path.dirname(data_archive_path)
         # else:
         #     raise ValueError(f'URL or data path must be given but both are None.')
