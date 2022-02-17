@@ -231,48 +231,52 @@ each subject / session of the dataset, and for each pipeline.
 
     Zhou 2016-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]
       0%|                                               | 0.00/156M [00:00<?, ?B/s][A
-      0%|                                       | 54.3k/156M [00:00<06:39, 391kB/s][A
-      0%|                                        | 141k/156M [00:00<04:58, 523kB/s][A
-      0%|▏                                      | 577k/156M [00:00<01:32, 1.69MB/s][A
-      1%|▌                                     | 2.25M/156M [00:00<00:27, 5.69MB/s][A
-      4%|█▍                                    | 6.11M/156M [00:00<00:09, 15.1MB/s][A
-      6%|██▏                                   | 8.74M/156M [00:00<00:08, 17.6MB/s][A
-      8%|███                                   | 12.7M/156M [00:00<00:06, 23.8MB/s][A
-     10%|███▋                                  | 15.3M/156M [00:00<00:05, 23.7MB/s][A
-     12%|████▋                                 | 19.2M/156M [00:01<00:04, 28.0MB/s][A
-     14%|█████▍                                | 22.2M/156M [00:01<00:04, 26.8MB/s][A
-     17%|██████▍                               | 26.2M/156M [00:01<00:04, 30.6MB/s][A
-     19%|███████▎                              | 29.8M/156M [00:01<00:03, 31.7MB/s][A
-     22%|████████▏                             | 33.9M/156M [00:01<00:03, 33.7MB/s][A
-     24%|█████████▏                            | 37.6M/156M [00:01<00:03, 33.9MB/s][A
-     27%|██████████                            | 41.6M/156M [00:01<00:03, 35.2MB/s][A
-     29%|███████████                           | 45.3M/156M [00:01<00:03, 34.9MB/s][A
-     32%|███████████▉                          | 49.3M/156M [00:01<00:02, 36.0MB/s][A
-     34%|█████████████                         | 53.6M/156M [00:02<00:02, 38.0MB/s][A
-     37%|█████████████▉                        | 57.4M/156M [00:02<00:02, 36.5MB/s][A
-     40%|███████████████                       | 61.7M/156M [00:02<00:02, 37.5MB/s][A
-     42%|███████████████▉                      | 65.7M/156M [00:02<00:02, 37.5MB/s][A
-     45%|█████████████████                     | 70.2M/156M [00:02<00:02, 39.8MB/s][A
-     48%|██████████████████                    | 74.2M/156M [00:02<00:02, 38.4MB/s][A
-     50%|███████████████████                   | 78.6M/156M [00:02<00:01, 39.9MB/s][A
-     53%|████████████████████▏                 | 82.9M/156M [00:02<00:01, 39.3MB/s][A
-     56%|█████████████████████▏                | 87.1M/156M [00:02<00:01, 40.0MB/s][A
-     59%|██████████████████████▎               | 91.5M/156M [00:03<00:01, 39.5MB/s][A
-     61%|███████████████████████▎              | 95.8M/156M [00:03<00:01, 40.5MB/s][A
-     64%|████████████████████████▎             | 99.9M/156M [00:03<00:01, 39.4MB/s][A
-     67%|██████████████████████████             | 104M/156M [00:03<00:01, 40.8MB/s][A
-     70%|███████████████████████████▏           | 109M/156M [00:03<00:01, 40.4MB/s][A
-     72%|████████████████████████████▏          | 113M/156M [00:03<00:01, 40.7MB/s][A
-     75%|█████████████████████████████▎         | 117M/156M [00:03<00:00, 40.1MB/s][A
-     78%|██████████████████████████████▍        | 122M/156M [00:03<00:00, 41.3MB/s][A
-     81%|███████████████████████████████▌       | 126M/156M [00:03<00:00, 40.3MB/s][A
-     84%|████████████████████████████████▌      | 131M/156M [00:03<00:00, 41.3MB/s][A
-     87%|█████████████████████████████████▋     | 135M/156M [00:04<00:00, 41.1MB/s][A
-     89%|██████████████████████████████████▊    | 139M/156M [00:04<00:00, 41.0MB/s][A
-     92%|███████████████████████████████████▉   | 144M/156M [00:04<00:00, 41.3MB/s][A
-     95%|████████████████████████████████████▉  | 148M/156M [00:04<00:00, 41.3MB/s][A
-     98%|██████████████████████████████████████ | 153M/156M [00:04<00:00, 42.4MB/s][A
-      0%|                                               | 0.00/156M [00:00<?, ?B/s][A    100%|████████████████████████████████████████| 156M/156M [00:00<00:00, 206GB/s]
+      0%|                                       | 52.2k/156M [00:00<06:57, 374kB/s][A
+      0%|                                        | 174k/156M [00:00<03:57, 657kB/s][A
+      0%|▏                                      | 731k/156M [00:00<01:12, 2.14MB/s][A
+      2%|▋                                     | 2.80M/156M [00:00<00:19, 7.98MB/s][A
+      3%|█▎                                    | 5.21M/156M [00:00<00:12, 12.4MB/s][A
+      6%|██                                    | 8.72M/156M [00:00<00:07, 19.1MB/s][A
+      7%|██▊                                   | 11.4M/156M [00:00<00:07, 20.5MB/s][A
+     10%|███▋                                  | 14.9M/156M [00:00<00:05, 24.9MB/s][A
+     11%|████▎                                 | 17.6M/156M [00:01<00:05, 24.4MB/s][A
+     14%|█████▏                                | 21.4M/156M [00:01<00:04, 28.4MB/s][A
+     16%|█████▉                                | 24.4M/156M [00:01<00:04, 26.7MB/s][A
+     18%|██████▊                               | 28.1M/156M [00:01<00:04, 27.2MB/s][A
+     20%|███████▊                              | 31.9M/156M [00:01<00:04, 30.0MB/s][A
+     22%|████████▌                             | 35.0M/156M [00:01<00:04, 28.4MB/s][A
+     25%|█████████▍                            | 38.7M/156M [00:01<00:03, 30.8MB/s][A
+     27%|██████████▏                           | 41.9M/156M [00:01<00:03, 29.0MB/s][A
+     29%|██████████▉                           | 45.0M/156M [00:01<00:03, 27.8MB/s][A
+     31%|███████████▊                          | 48.8M/156M [00:02<00:03, 30.5MB/s][A
+     33%|████████████▌                         | 51.9M/156M [00:02<00:03, 28.7MB/s][A
+     36%|█████████████▌                        | 55.5M/156M [00:02<00:03, 28.2MB/s][A
+     38%|██████████████▍                       | 59.3M/156M [00:02<00:03, 30.7MB/s][A
+     40%|███████████████▏                      | 62.4M/156M [00:02<00:03, 28.9MB/s][A
+     42%|████████████████                      | 66.2M/156M [00:02<00:02, 31.3MB/s][A
+     45%|████████████████▉                     | 69.6M/156M [00:02<00:02, 31.6MB/s][A
+     47%|█████████████████▊                    | 73.4M/156M [00:02<00:02, 33.0MB/s][A
+     49%|██████████████████▋                   | 77.0M/156M [00:03<00:02, 33.2MB/s][A
+     52%|███████████████████▋                  | 80.9M/156M [00:03<00:02, 34.2MB/s][A
+     54%|████████████████████▌                 | 84.6M/156M [00:03<00:02, 34.1MB/s][A
+     57%|█████████████████████▌                | 88.5M/156M [00:03<00:01, 34.8MB/s][A
+     59%|██████████████████████▍               | 92.3M/156M [00:03<00:01, 34.9MB/s][A
+     61%|███████████████████████▎              | 95.9M/156M [00:03<00:01, 34.8MB/s][A
+     64%|████████████████████████▎             | 99.8M/156M [00:03<00:01, 35.1MB/s][A
+     67%|█████████████████████████▉             | 104M/156M [00:03<00:01, 37.3MB/s][A
+     69%|██████████████████████████▉            | 108M/156M [00:03<00:01, 36.0MB/s][A
+     72%|███████████████████████████▉           | 112M/156M [00:03<00:01, 37.5MB/s][A
+     74%|████████████████████████████▉          | 116M/156M [00:04<00:01, 36.7MB/s][A
+     77%|██████████████████████████████         | 120M/156M [00:04<00:00, 38.8MB/s][A
+     80%|███████████████████████████████        | 124M/156M [00:04<00:00, 39.4MB/s][A
+     82%|████████████████████████████████       | 128M/156M [00:04<00:00, 39.5MB/s][A
+     85%|█████████████████████████████████      | 132M/156M [00:04<00:00, 39.4MB/s][A
+     87%|██████████████████████████████████     | 136M/156M [00:04<00:00, 38.8MB/s][A
+     90%|███████████████████████████████████    | 140M/156M [00:04<00:00, 39.2MB/s][A
+     93%|████████████████████████████████████   | 145M/156M [00:04<00:00, 39.0MB/s][A
+     95%|█████████████████████████████████████▏ | 149M/156M [00:04<00:00, 40.6MB/s][A
+     98%|██████████████████████████████████████▏| 153M/156M [00:04<00:00, 40.8MB/s][A
+      0%|                                               | 0.00/156M [00:00<?, ?B/s][A    100%|████████████████████████████████████████| 156M/156M [00:00<00:00, 112GB/s]
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
@@ -297,7 +301,7 @@ each subject / session of the dataset, and for each pipeline.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    Zhou 2016-CrossSession:  50%|#####     | 1/2 [00:12<00:12, 12.06s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    Zhou 2016-CrossSession:  50%|#####     | 1/2 [00:13<00:13, 13.15s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
@@ -321,7 +325,7 @@ each subject / session of the dataset, and for each pipeline.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    Zhou 2016-CrossSession: 100%|##########| 2/2 [00:15<00:00,  6.72s/it]    Zhou 2016-CrossSession: 100%|##########| 2/2 [00:15<00:00,  7.52s/it]
+    Zhou 2016-CrossSession: 100%|##########| 2/2 [00:16<00:00,  7.30s/it]    Zhou 2016-CrossSession: 100%|##########| 2/2 [00:16<00:00,  8.18s/it]
     001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
@@ -338,7 +342,7 @@ each subject / session of the dataset, and for each pipeline.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-CrossSession:  50%|#####     | 1/2 [00:03<00:03,  3.93s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    001-2014-CrossSession:  50%|#####     | 1/2 [00:04<00:04,  4.22s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
@@ -354,13 +358,13 @@ each subject / session of the dataset, and for each pipeline.
       LooseVersion(library.__version__) < LooseVersion(min_version):
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
       LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.82s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.84s/it]
+    001-2014-CrossSession: 100%|##########| 2/2 [00:08<00:00,  4.16s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:08<00:00,  4.17s/it]
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.956597  0.282676    144.0  ...          2   001-2014   CSP+LDA
-    1  0.930941  0.458051    144.0  ...          2   001-2014   CSP+LDA
-    2  0.649691  0.278816    144.0  ...          2   001-2014   CSP+LDA
-    3  0.526813  0.392714    144.0  ...          2   001-2014   CSP+LDA
-    4  0.851412  0.300979    200.0  ...          3  Zhou 2016   CSP+LDA
+    0  0.956597  0.286296    144.0  ...          2   001-2014   CSP+LDA
+    1  0.930941  0.385181    144.0  ...          2   001-2014   CSP+LDA
+    2  0.649691  0.319018    144.0  ...          2   001-2014   CSP+LDA
+    3  0.526813  0.299471    144.0  ...          2   001-2014   CSP+LDA
+    4  0.851412  0.361024    200.0  ...          3  Zhou 2016   CSP+LDA
 
     [5 rows x 9 columns]
 
@@ -403,7 +407,7 @@ Here we plot the results, indicating the score for each session and subject
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  23.060 seconds)
+   **Total running time of the script:** ( 0 minutes  25.085 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_cross_session_multiple_datasets.py:
