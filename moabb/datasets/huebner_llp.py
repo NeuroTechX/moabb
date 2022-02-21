@@ -156,6 +156,8 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
            Learning from label proportions in brain-computer interfaces: Online unsupervised learning with guarantees.
            PLOS ONE 12(4): e0175856.
            https://doi.org/10.1371/journal.pone.0175856
+
+    .. versionadded:: 0.4.5
     """
 
     def __init__(self, interval=None, raw_slice_offset=None, use_blocks_as_sessions=True):
@@ -202,6 +204,8 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
            Unsupervised learning for brain-computer interfaces based on event-related potentials: Review and online comparison [research frontier].
            IEEE Computational Intelligence Magazine, 13(2), 66-77.
            https://doi.org/10.1109/MCI.2018.2807039
+
+    .. versionadded:: 0.4.5
     """
 
     def __init__(self, interval=None, raw_slice_offset=None, use_blocks_as_sessions=True):

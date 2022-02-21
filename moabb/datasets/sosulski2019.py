@@ -60,8 +60,9 @@ class Sosulski2019(BaseDataset):
     auditory oddball paradigm under different stimulus onset asynchrony conditions. Dataset. DOI: 10.6094/UNIFR/154576
     .. [2] Sosulski, J., Tangermann, M.: Spatial filters for auditory evoked potentials transfer between different
     experimental conditions. Graz BCI Conference. 2019.
-    .. [3] Sosulski, J., Hübner, D., Klein, A., Tangermann, M.:  Online Optimization of Stimulation Speed in an Auditory Brain-Computer
-    Interface under Time Constraints. arXiv preprint. 2021.
+    .. [3] Sosulski, J., Hübner, D., Klein, A., Tangermann, M.:  Online Optimization of Stimulation Speed in an Auditory Brain-Computer Interface under Time Constraints. arXiv preprint. 2021.
+
+    .. versionadded:: 0.4.5
     """
 
     def __init__(
