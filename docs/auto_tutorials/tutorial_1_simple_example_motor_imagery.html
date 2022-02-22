@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tutorial 1: Simple Motor Imagery &#8212; moabb 0.4.4 documentation</title>
+    <title>Tutorial 1: Simple Motor Imagery &#8212; moabb 0.4.5 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -21,10 +21,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
-<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
 
   </head><body>
 
@@ -39,7 +39,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4.4</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.5</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -62,7 +62,8 @@
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s new</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../whats_new.html#develop-branch">Develop branch</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-4-stable-pypi">Version - 0.4.4  (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-5-stable-pypi">Version - 0.4.5  (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-4">Version - 0.4.4</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-3">Version - 0.4.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
@@ -278,7 +279,7 @@ paradigm (note that BNCI2014001 is in it)</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014001 object at 0x7ff248dcfd60&gt;, &lt;moabb.datasets.bnci.BNCI2014004 object at 0x7ff248dcf3d0&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7ff248dcf1f0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7ff248dcf550&gt;, &lt;moabb.datasets.mpi_mi.MunichMI object at 0x7ff248dcfd30&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7ff248dcfa00&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7ff248dcff10&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7ff248dcf700&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7ff24851adf0&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7ff24851a4c0&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014001 object at 0x7fdb14c43ca0&gt;, &lt;moabb.datasets.bnci.BNCI2014004 object at 0x7fdb14c436d0&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fdb14c43e80&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fdb14c438b0&gt;, &lt;moabb.datasets.mpi_mi.MunichMI object at 0x7fdb14c43cd0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fdb14c43d00&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fdb14c43c70&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fdb14c43130&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fdb14c43070&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7fdb14c43a00&gt;]
 </pre></div>
 </div>
 <p>The data from a list of subjects could be preprocessed and return as a 3D
@@ -326,10 +327,10 @@ partition and the remaining one as testing partition.</p>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-001-2014-WithinSession:  33%|###3      | 1/3 [00:06&lt;00:12,  6.19s/it]
-001-2014-WithinSession:  67%|######6   | 2/3 [00:12&lt;00:06,  6.12s/it]
-001-2014-WithinSession: 100%|##########| 3/3 [00:18&lt;00:00,  6.08s/it]
-001-2014-WithinSession: 100%|##########| 3/3 [00:18&lt;00:00,  6.10s/it]
+001-2014-WithinSession:  33%|###3      | 1/3 [00:06&lt;00:13,  6.72s/it]
+001-2014-WithinSession:  67%|######6   | 2/3 [00:13&lt;00:06,  6.81s/it]
+001-2014-WithinSession: 100%|##########| 3/3 [00:20&lt;00:00,  6.76s/it]
+001-2014-WithinSession: 100%|##########| 3/3 [00:20&lt;00:00,  6.76s/it]
 </pre></div>
 </div>
 <p>The results are stored in locally, to avoid recomputing the results each time.
@@ -358,7 +359,7 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
 </pre></div>
 </div>
 <img alt="tutorial 1 simple example motor imagery" class="sphx-glr-single-img" src="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  24.382 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  26.302 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-1-simple-example-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/b446bb6bcfa12c42d029c4259163f668/tutorial_1_simple_example_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_1_simple_example_motor_imagery.py</span></code></a></p>
