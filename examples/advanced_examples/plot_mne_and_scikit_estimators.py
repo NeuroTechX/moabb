@@ -1,16 +1,16 @@
 """
-=========================
-MNE Epochs-based piplines
-=========================
+==========================
+MNE Epochs-based pipelines
+==========================
 
 This example shows how to use machine learning pipeline based on MNE Epochs
-instead of numpy arrays. This is useful to make the most of the MNE code base
+instead of Numpy arrays. This is useful to make the most of the MNE code base
 and to embed EEG specific code inside sklearn pipelines.
 
-We will compare compare different pipelines for P300:
-- Logistic Regression, based on MNE Epochs
+We will compare different pipelines for P300:
+- Logistic regression, based on MNE Epochs
 - XDAWN and Logistic Regression (LR), based on MNE Epochs
-- XDAWN extended covariance and LR on tangent space, based on numpy
+- XDAWN extended covariance and LR on tangent space, based on Numpy
 
 """
 # Authors: Sylvain Chevallier
@@ -47,7 +47,7 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 moabb.set_log_level("info")
 
 ###############################################################################
-# Loading dataset
+# Loading Dataset
 # ---------------
 #
 # Load 2 subjects of BNCI 2014-009 dataset, with 3 session each
@@ -58,7 +58,7 @@ datasets = [dataset]
 paradigm = P300()
 
 ##############################################################################
-# Get data (optional)
+# Get Data (optional)
 # -------------------
 #
 # To get access to the EEG signals downloaded from the dataset, you could
@@ -66,7 +66,7 @@ paradigm = P300()
 # in a dictionary of sessions and runs.
 # The ``paradigm.get_data(dataset=dataset, subjects=[subject_id])`` allows to
 # obtain the preprocessed EEG data, the labels and the meta information. By
-# default, the EEG is return as a numpy array. With ``return_epochs=True``, MNE
+# default, the EEG is return as a Numpy array. With ``return_epochs=True``, MNE
 # Epochs are returned.
 
 subject_list = [1]
@@ -77,14 +77,14 @@ epochs, labels, meta = paradigm.get_data(
 )
 
 ##############################################################################
-# A simple MNE pipeline
+# A Simple MNE Pipeline
 # ---------------------
 #
 # Using ``return_epochs=True`` in the evaluation, it is possible to design a
 # pipeline based on MNE Epochs input. Let's create a simple one, that
 # reshape the input data from epochs, rescale the data and uses a logistic
 # regression to classify the data. We will need to write a basic Transformer
-# estimator, that comply with
+# estimator, that complies with
 # `sklearn convention <https://scikit-learn.org/stable/developers/develop.html>`_.
 # This transformer will extract the data from an input Epoch, and reshapes into
 # 2D array.
@@ -124,13 +124,13 @@ mne_eval = CrossSessionEvaluation(
 mne_res = mne_eval.process(mne_ppl)
 
 ##############################################################################
-# Advanced MNE pipeline
+# Advanced MNE Pipeline
 # ---------------------
 #
 # In some case, the MNE pipeline should have access to the original labels from
 # the dataset. This is the case for the XDAWN code of MNE. One could pass
 # `mne_labels` to evaluation in order to keep this label.
-# As an example, we will define a pipeline that compute an XDAWN filter, rescale,
+# As an example, we will define a pipeline that computes an XDAWN filter, rescale,
 # then apply a logistic regression.
 
 mne_adv = {}
@@ -151,10 +151,10 @@ adv_eval = CrossSessionEvaluation(
 adv_res = mne_eval.process(mne_adv)
 
 ###############################################################################
-# Numpy-based pipeline
+# Numpy-based Pipeline
 # --------------------
 #
-# For the comparison, we will define a numpy-based pipeline that relies on
+# For the comparison, we will define a Numpy-based pipeline that relies on
 # pyriemann to estimate XDAWN-extended covariance matrices that are projected
 # on the tangent space and classified with a logistic regression.
 
@@ -173,11 +173,12 @@ sk_eval = CrossSessionEvaluation(
 sk_res = sk_eval.process(sk_ppl)
 
 ###############################################################################
-# Combining results
+# Combining Results
 # -----------------
 #
 # Even if the results have been obtained by different evaluation processes, it
-# possible to combine the resulting dataframes to analyze and plot the results.
+# is possible to combine the resulting DataFrames to analyze and plot the
+# results.
 
 all_res = pd.concat([mne_res, adv_res, sk_res])
 

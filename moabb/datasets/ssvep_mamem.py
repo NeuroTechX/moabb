@@ -107,14 +107,12 @@ class BaseMAMEM(BaseDataset):
             fnamed = fsn[osp.basename(fpath)]
             if fnamed[4] == "x":
                 continue
-            session_name = "session_" + fnamed[4]
+            session_name = "session_0"
             if self.code == "SSVEP MAMEM3":
-                # Since the data for each session is saved in 2 files,
-                # it is being saved in 2 runs
-                run_number = len(fnamed) - 10
-                run_name = "run_" + str(run_number)
+                repetition = len(fnamed) - 10
+                run_name = f"run_{(ord(fnamed[4])-97)*2 + repetition}"
             else:
-                run_name = "run_0"
+                run_name = f"run_{ord(fnamed[4])-97}"
 
             if self.code == "SSVEP MAMEM3":
                 m = loadmat(fpath)
@@ -124,10 +122,8 @@ class BaseMAMEM(BaseDataset):
                 eeg = m["eeg"]
             else:
                 m = loadmat(fpath, squeeze_me=True)
-                ch_names = ["E{}".format(i + 1) for i in range(0, 256)]
+                ch_names = [f"E{i + 1}" for i in range(0, 256)]
                 ch_names.append("stim")
-                # ch_names = ["{}-{}".format(s, i) if s == "EEG" else s
-                #             for i, s in enumerate(record.sig_name)]
                 sfreq = 250
                 if self.code == "SSVEP MAMEM2":
                     labels = m["labels"]
@@ -153,9 +149,9 @@ class BaseMAMEM(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
-        sub = "{:02d}".format(subject)
+        sub = f"{subject:02d}"
         sign = self.code.split()[1]
-        key_dest = "MNE-{:s}-data".format(sign.lower())
+        key_dest = f"MNE-{sign.lower():s}-data"
         path = osp.join(get_dataset_path(sign, path), key_dest)
 
         filelist = fs_get_file_list(self.figshare_id)
@@ -273,8 +269,8 @@ class MAMEM1(BaseMAMEM):
     def __init__(self):
         super().__init__(
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
-            sessions_per_subject=3,
-            # 3 for S001, S003, S008, 4 for S004
+            sessions_per_subject=1,
+            # 5 runs per sessions, except 3 for S001, S003, S008, 4 for S004
             code="SSVEP MAMEM1",
             doi="https://arxiv.org/abs/1602.00904",
             figshare_id=2068677,
@@ -358,7 +354,7 @@ class MAMEM2(BaseMAMEM):
     def __init__(self):
         super().__init__(
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
-            sessions_per_subject=5,
+            sessions_per_subject=1,
             code="SSVEP MAMEM2",
             doi="https://arxiv.org/abs/1602.00904",
             figshare_id=3153409,
@@ -457,7 +453,7 @@ class MAMEM3(BaseMAMEM):
                 "10.00": 33026,
                 "12.00": 33025,
             },
-            sessions_per_subject=5,
+            sessions_per_subject=1,
             code="SSVEP MAMEM3",
             doi="https://arxiv.org/abs/1602.00904",
             figshare_id=3413851,

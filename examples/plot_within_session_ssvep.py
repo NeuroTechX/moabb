@@ -1,15 +1,14 @@
 """
 ===================
-Cross Session SSVEP
+Within Session SSVEP
 ===================
 
-This Example show how to perform a cross-session SSVEP analysis on the
+This Example show how to perform a within-session SSVEP analysis on the
 MAMEM dataset 3, using a CCA pipeline.
 
-The cross session evaluation context will evaluate performance using a leave
-one session out cross-validation. For each session in the dataset, a model
-is trained on every other session and performance are evaluated on the current
-session.
+The within-session evaluation assesses the performance of a classification
+pipeline using a 5-fold cross-validation. The reported metric (here, accuracy)
+is the average of all fold.
 """
 # Authors: Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
 #
@@ -23,7 +22,7 @@ from sklearn.pipeline import make_pipeline
 
 import moabb
 from moabb.datasets import MAMEM3
-from moabb.evaluations import CrossSessionEvaluation
+from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import SSVEP
 from moabb.pipelines import SSVEP_CCA
 
@@ -33,17 +32,17 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 moabb.set_log_level("info")
 
 ###############################################################################
-# Loading dataset
+# Loading Dataset
 # ---------------
 #
-# Load 2 subjects of MAMEM3 dataset, with 3 session each
+# Load 2 subjects of MAMEM3 dataset
 
 subj = [1, 3]
 dataset = MAMEM3()
 dataset.subject_list = subj
 
 ###############################################################################
-# Choose paradigm
+# Choose Paradigm
 # ---------------
 #
 # We select the paradigm SSVEP, applying a bandpass filter (3-15 Hz) on
@@ -53,7 +52,7 @@ dataset.subject_list = subj
 paradigm = SSVEP(fmin=3, fmax=15, n_classes=3)
 
 ##############################################################################
-# Create pipelines
+# Create Pipelines
 # ----------------
 #
 # Use a Canonical Correlation Analysis classifier
@@ -65,7 +64,7 @@ pipeline = {}
 pipeline["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
 
 ##############################################################################
-# Get data (optional)
+# Get Data (optional)
 # -------------------
 #
 # To get access to the EEG signals downloaded from the dataset, you could
@@ -83,12 +82,12 @@ pipeline["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harm
 # Evaluation
 # ----------
 #
-# The evaluation will return a dataframe containing a single AUC score for
-# each subject / session of the dataset, and for each pipeline.
+# The evaluation will return a DataFrame containing a single AUC score for
+# each subject and pipeline.
 
 overwrite = True  # set to True if we want to overwrite cached results
 
-evaluation = CrossSessionEvaluation(
+evaluation = WithinSessionEvaluation(
     paradigm=paradigm, datasets=dataset, suffix="examples", overwrite=overwrite
 )
 results = evaluation.process(pipeline)
@@ -99,9 +98,15 @@ print(results.head())
 # Plot Results
 # ----------------
 #
-# Here we plot the results, indicating the score for each session and subject
+# Here we plot the results, indicating the score for each subject
 
 plt.figure()
 sns.barplot(data=results, y="score", x="session", hue="subject", palette="viridis")
 
+##############################################################################
+# And the computation time in seconds
+
+plt.figure()
+ax = sns.barplot(data=results, y="time", x="session", hue="subject", palette="Reds")
+ax.set_ylabel("Time (s)")
 plt.show()

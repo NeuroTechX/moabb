@@ -31,7 +31,29 @@ API changes
 - None
 
 
-Version - 0.4.4  (Stable - PyPi)
+Version - 0.4.5  (Stable - PyPi)
+---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+
+- Progress bars, pooch, tqdm (:gh:`258` by `Divyesh Narayanan`_ and `Sylvain Chevallier`_)
+- Adding test and example for set_download_dir (:gh:`249` by `Divyesh Narayanan`_)
+- Update to newer version of Schirrmeister2017 dataset (:gh:`265` by `Robin Schirrmeister`_)
+- Adding Huebner2017 and Huebner2018 P300 datasets (:gh:`260`  by `Jan Sosulski`_)
+- Adding Sosulski2019 auditory P300 datasets (:gh:`266`  by `Jan Sosulski`_)
+- New script to visualize ERP on all datasets, as a sanity check (:gh:`261`  by `Jan Sosulski`_)
+
+Bugs
+~~~~
+
+- Removing dependency on mne method for PhysionetMI data downloading, renaming runs (:gh:`257` by `Divyesh Narayanan`_)
+- Correcting events management in Schirrmeister2017, renaming session and run (:gh:`255` by `Pierre Guetschel`_ and `Sylvain Chevallier`_)
+- Switch session and runs in MAMEM1, 2 and 3 to avoid error in WithinSessionEvaluation (:gh:`256` by `Sylvain Chevallier`_)
+- Correct doctstrings for the documentation, incuding Lee2017 (:gh:`256` by `Sylvain Chevallier`_)
+
+
+Version - 0.4.4
 ---------------
 
 Enhancements

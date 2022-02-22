@@ -128,8 +128,7 @@ can upgrade your pip version using: `pip install -U pip` before installing `moab
 
 ## Supported datasets
 
-The list of supported datasets can be found here :
-http://moabb.neurotechx.com/docs/datasets.html
+The list of supported datasets can be found here : https://neurotechx.github.io/moabb/
 
 ### Submit a new dataset
 
@@ -258,6 +257,6 @@ BCI algorithms applied on an extensive list of freely available EEG datasets.
 [link_sylvain]: https://sylvchev.github.io/
 [link_neurotechx_signup]: https://neurotechx.com/
 [link_gitter]: https://gitter.im/moabb_dev/community
-[link_moabb_docs]: http://moabb.neurotechx.com/docs/index.html
+[link_moabb_docs]: https://neurotechx.github.io/moabb/
 [link_arxiv]: https://arxiv.org/abs/1805.06427
 [link_jne]: http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta

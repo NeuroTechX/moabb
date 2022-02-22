@@ -20,11 +20,13 @@ from .bnci import (
 from .braininvaders import bi2013a
 from .epfl import EPFLP300
 from .gigadb import Cho2017
+from .huebner_llp import Huebner2017, Huebner2018
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .mpi_mi import MunichMI
 from .neiry import DemonsP300
 from .physionet_mi import PhysionetMI
 from .schirrmeister2017 import Schirrmeister2017
+from .sosulski2019 import Sosulski2019
 from .ssvep_exo import SSVEPExo
 from .ssvep_mamem import MAMEM1, MAMEM2, MAMEM3
 from .ssvep_nakanishi import Nakanishi2015

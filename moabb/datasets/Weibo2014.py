@@ -32,7 +32,14 @@ def eeg_data_path(base_path, subject):
     def get_subjects(sub_inds, sub_names, ind):
         dataname = "data{}".format(ind)
         if not os.path.isfile(os.path.join(base_path, dataname + ".zip")):
-            retrieve(FILES[ind], None, dataname + ".zip", base_path, processor=Unzip())
+            retrieve(
+                FILES[ind],
+                None,
+                dataname + ".zip",
+                base_path,
+                processor=Unzip(),
+                progressbar=True,
+            )
 
         for fname in os.listdir(os.path.join(base_path, dataname + ".zip.unzip")):
             for ind, prefix in zip(sub_inds, sub_names):

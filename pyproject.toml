@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "moabb"
-version = "0.4.4"
+version = "0.4.5"
 description = "Mother of All BCI Benchmarks"
 authors = ["Alexandre Barachant", "Vinay Jayaram"]
 maintainers = ["Sylvain Chevallier <sylvain.chevallier@uvsq.fr>"]
@@ -22,9 +22,10 @@ pyriemann = ">=0.2.6"
 matplotlib = "^3.0"
 seaborn = ">=0.9"
 PyYAML = "^5.0"
-pooch = "^1.3"
+pooch = "^1.6"
 requests = "^2.15.1"
 coverage = "^5.5"
+tqdm = "^4.62"
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^3.3"
@@ -32,6 +33,7 @@ sphinx-gallery = "^0.8.2"
 sphinx-bootstrap-theme = "^0.8"
 numpydoc = "^1.1.0"
 m2r2 = "^0.2.7"
+mistune = "<2"
 pre-commit = "^2.11.1"
 tdlda = {git = "https://github.com/jsosulski/tdlda.git", rev = "0.1.0"}
 

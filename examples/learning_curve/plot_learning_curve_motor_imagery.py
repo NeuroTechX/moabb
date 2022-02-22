@@ -1,9 +1,9 @@
 """
 ================================================
-Within Session Motor Imagery with learning curve
+Within Session Motor Imagery with Learning Curve
 ================================================
 
-This Example show how to perform a within session motor imagery analysis on the
+This example shows how to perform a within session motor imagery analysis on the
 very popular dataset 2a from the BCI competition IV.
 
 We will compare two pipelines :
@@ -11,8 +11,8 @@ We will compare two pipelines :
 - CSP + LDA
 - Riemannian Geometry + Logistic Regression
 
-We will use the LeftRightImagery paradigm. this will restrict the analysis
-to two classes (left hand versus righ hand) and use AUC as metric.
+We will use the LeftRightImagery paradigm. This will restrict the analysis
+to two classes (left- vs right-hand) and use AUC as metric.
 """
 # Original author: Alexandre Barachant <alexandre.barachant@gmail.com>
 # Learning curve modification: Jan Sosulski
@@ -38,16 +38,16 @@ from moabb.paradigms import LeftRightImagery
 moabb.set_log_level("info")
 
 ##############################################################################
-# Create pipelines
+# Create Pipelines
 # ----------------
 #
 # Pipelines must be a dict of sklearn pipeline transformer.
 #
-# The csp implementation from MNE is used. We selected 8 CSP components, as
+# The CSP implementation from MNE is used. We selected 8 CSP components, as
 # usually done in the litterature.
 #
-# The riemannian geometry pipeline consists in covariance estimation, tangent
-# space mapping and finaly a logistic regression for the classification.
+# The Riemannian geometry pipeline consists in covariance estimation, tangent
+# space mapping and finally a logistic regression for the classification.
 
 pipelines = {}
 
@@ -64,12 +64,12 @@ pipelines["RG+LR"] = make_pipeline(
 # ----------
 #
 # We define the paradigm (LeftRightImagery) and the dataset (BNCI2014001).
-# The evaluation will return a dataframe containing a single AUC score for
+# The evaluation will return a DataFrame containing a single AUC score for
 # each subject / session of the dataset, and for each pipeline.
 #
 # Results are saved into the database, so that if you add a new pipeline, it
 # will not run again the evaluation unless a parameter has changed. Results can
-# be overwrited if necessary.
+# be overwritten if necessary.
 
 paradigm = LeftRightImagery()
 dataset = BNCI2014001()
@@ -97,7 +97,8 @@ print(results.head())
 # Plot Results
 # ------------
 #
-# Here we plot the results.
+# We plot the accuracy as a function of the number of training samples, for
+# each pipeline
 
 fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
 

@@ -1,11 +1,7 @@
 import logging
-import re
 
-import h5py
 import mne
-
-# import requests
-import numpy as np
+from mne.channels import make_standard_montage
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -77,7 +73,7 @@ class Schirrmeister2017(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         def _url(prefix):
-            return "/".join([GIN_URL, prefix, "{:d}.mat".format(subject)])
+            return "/".join([GIN_URL, prefix, "{:d}.edf".format(subject)])
 
         return [
             dl.data_dl(_url(t), "SCHIRRMEISTER2017", path, force_update, verbose)
@@ -85,172 +81,18 @@ class Schirrmeister2017(BaseDataset):
         ]
 
     def _get_single_subject_data(self, subject):
-        train, test = [BBCIDataset(path) for path in self.data_path(subject)]
-        sessions = {}
-        sessions["session_1"] = {"train": train.load(), "test": test.load()}
-        return sessions
-
-
-class BBCIDataset(object):
-    """
-    Loader class for files created by saving BBCI files in matlab (make
-    sure to save with '-v7.3' in matlab, see
-    https://de.mathworks.com/help/matlab/import_export/mat-file-versions.html#buk6i87
-    )
-    Parameters
-    ----------
-    filename: str
-    load_sensor_names: list of str, optional
-        Also speeds up loading if you only load some sensors.
-        None means load all sensors.
-
-    Copyright Robin Schirrmeister, 2017
-    Altered by Vinay Jayaram, 2018
-    """
-
-    def __init__(self, filename, load_sensor_names=None):
-        self.__dict__.update(locals())
-        del self.self
-
-    def load(self):
-        cnt = self._load_continuous_signal()
-        cnt = self._add_markers(cnt)
-        return cnt
-
-    def _load_continuous_signal(self):
-        wanted_chan_inds, wanted_sensor_names = self._determine_sensors()
-        fs = self._determine_samplingrate()
-        with h5py.File(self.filename, "r") as h5file:
-            samples = int(h5file["nfo"]["T"][0, 0])
-            cnt_signal_shape = (samples, len(wanted_chan_inds))
-            continuous_signal = np.ones(cnt_signal_shape, dtype=np.float32) * np.nan
-            for chan_ind_arr, chan_ind_set in enumerate(wanted_chan_inds):
-                # + 1 because matlab/this hdf5-naming logic
-                # has 1-based indexing
-                # i.e ch1,ch2,....
-                chan_set_name = "ch" + str(chan_ind_set + 1)
-                # first 0 to unpack into vector, before it is 1xN matrix
-                chan_signal = h5file[chan_set_name][
-                    :
-                ].squeeze()  # already load into memory
-                continuous_signal[:, chan_ind_arr] = chan_signal
-            assert not np.any(np.isnan(continuous_signal)), "No NaNs expected in signal"
-
-        # Assume we cant know channel type here automatically
-        ch_types = ["eeg"] * len(wanted_chan_inds)
-        info = mne.create_info(ch_names=wanted_sensor_names, sfreq=fs, ch_types=ch_types)
-        # Scale to volts from microvolts, (VJ 19.6.18)
-        continuous_signal = continuous_signal * 1e-6
-        cnt = mne.io.RawArray(continuous_signal.T, info)
-        return cnt
-
-    def _determine_sensors(self):
-        all_sensor_names = self.get_all_sensors(self.filename, pattern=None)
-        if self.load_sensor_names is None:
-
-            # if no sensor names given, take all EEG-chans
-            eeg_sensor_names = all_sensor_names
-            eeg_sensor_names = filter(lambda s: not s.startswith("BIP"), eeg_sensor_names)
-            eeg_sensor_names = filter(lambda s: not s.startswith("E"), eeg_sensor_names)
-            eeg_sensor_names = filter(
-                lambda s: not s.startswith("Microphone"), eeg_sensor_names
-            )
-            eeg_sensor_names = filter(
-                lambda s: not s.startswith("Breath"), eeg_sensor_names
-            )
-            eeg_sensor_names = filter(lambda s: not s.startswith("GSR"), eeg_sensor_names)
-            eeg_sensor_names = list(eeg_sensor_names)
-            assert len(eeg_sensor_names) in set(
-                [128, 64, 32, 16]
-            ), "check this code if you have different sensors..."  # noqa
-            self.load_sensor_names = eeg_sensor_names
-        chan_inds = self._determine_chan_inds(all_sensor_names, self.load_sensor_names)
-        return chan_inds, self.load_sensor_names
-
-    def _determine_samplingrate(self):
-        with h5py.File(self.filename, "r") as h5file:
-            fs = h5file["nfo"]["fs"][0, 0]
-            assert isinstance(fs, int) or fs.is_integer()
-            fs = int(fs)
-        return fs
-
-    @staticmethod
-    def _determine_chan_inds(all_sensor_names, sensor_names):
-        assert sensor_names is not None
-        chan_inds = [all_sensor_names.index(s) for s in sensor_names]
-        assert len(chan_inds) == len(sensor_names), "All" "sensors" "should be there."
-        # TODO: is it possible for this to fail? the list
-        # comp fails first right?
-        assert len(set(chan_inds)) == len(chan_inds), "No" "duplicated sensors" "wanted."
-        return chan_inds
-
-    @staticmethod
-    def get_all_sensors(filename, pattern=None):
-        """
-        Get all sensors that exist in the given file.
-
-        Parameters
-        ----------
-        filename: str
-        pattern: str, optional
-            Only return those sensor names that match the given pattern.
-        Returns
-        -------
-        sensor_names: list of str
-            Sensor names that match the pattern or all
-            sensor names in the file.
-        """
-        with h5py.File(filename, "r") as h5file:
-            clab_set = h5file["nfo"]["clab"][:].squeeze()
-            all_sensor_names = [
-                "".join(chr(c.squeeze()) for c in h5file[obj_ref]) for obj_ref in clab_set
-            ]
-            if pattern is not None:
-                all_sensor_names = filter(
-                    lambda sname: re.search(pattern, sname), all_sensor_names
-                )
-        return all_sensor_names
-
-    def _add_markers(self, cnt):
-        with h5py.File(self.filename, "r") as h5file:
-            event_times_in_ms = h5file["mrk"]["time"][:].squeeze()
-            event_classes = h5file["mrk"]["event"]["desc"][:].squeeze().astype(np.int64)
-
-            # Check whether class names known and correct order
-            # class_name_set = h5file['nfo']['className'][:].squeeze()
-            # all_class_names = [''.join(chr(c) for c in h5file[obj_ref])
-            #                    for obj_ref in class_name_set]
-
-        event_times_in_samples = event_times_in_ms * cnt.info["sfreq"] / 1000.0
-        event_times_in_samples = np.uint32(np.round(event_times_in_samples))
-
-        # Check if there are markers at the same time
-        previous_i_sample = -1
-        for i_event, (i_sample, _) in enumerate(
-            zip(event_times_in_samples, event_classes)
-        ):
-            if i_sample == previous_i_sample:
-                info = "{:d}: ({:.0f} and {:.0f}).\n".format(
-                    i_sample, event_classes[i_event - 1], event_classes[i_event]
-                )
-                log.warning(
-                    f"Same sample has at least two markers.\n{info}Marker codes will be summed."
-                )
-            previous_i_sample = i_sample
-
-        # Now create stim chan
-        stim_chan = np.zeros_like(cnt.get_data()[0])
-        for i_sample, id_class in zip(event_times_in_samples, event_classes):
-            stim_chan[i_sample] += id_class
-        info = mne.create_info(
-            ch_names=["STI 014"], sfreq=cnt.info["sfreq"], ch_types=["stim"]
-        )
-        stim_cnt = mne.io.RawArray(stim_chan[None], info, verbose="WARNING")
-        cnt = cnt.add_channels([stim_cnt])
-        event_arr = [
-            event_times_in_samples,
-            [0] * len(event_times_in_samples),
-            event_classes,
+        train_raw, test_raw = [
+            mne.io.read_raw_edf(path, infer_types=True)
+            for path in self.data_path(subject)
         ]
-        cnt.info["events"] = np.array(event_arr).T
-        return cnt
+
+        # Select only EEG sensors (remove EOG, EMG),
+        # and also set montage for visualizations
+        montage = make_standard_montage("standard_1005")
+        train_raw, test_raw = [
+            raw.pick_types(eeg=True).set_montage(montage) for raw in (train_raw, test_raw)
+        ]
+        sessions = {
+            "session_0": {"train": train_raw, "test": test_raw},
+        }
+        return sessions

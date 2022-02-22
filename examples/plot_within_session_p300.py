@@ -3,13 +3,13 @@
 Within Session P300
 ===========================
 
-This Example shows how to perform a within session analysis on three different
+This example shows how to perform a within session analysis on three different
 P300 datasets.
 
 We will compare two pipelines :
 
-- Riemannian Geometry
-- xDawn with Linear Discriminant Analysis
+- Riemannian geometry
+- XDAWN with Linear Discriminant Analysis
 
 We will use the P300 paradigm, which uses the AUC as metric.
 
@@ -44,7 +44,7 @@ moabb.set_log_level("info")
 
 ##############################################################################
 # This is an auxiliary transformer that allows one to vectorize data
-# structures in a pipeline For instance, in the case of a X with dimensions
+# structures in a pipeline For instance, in the case of an X with dimensions
 # Nt x Nc x Ns, one might be interested in a new data structure with
 # dimensions Nt x (Nc.Ns)
 
@@ -63,7 +63,7 @@ class Vectorizer(BaseEstimator, TransformerMixin):
 
 
 ##############################################################################
-# Create pipelines
+# Create Pipelines
 # ----------------
 #
 # Pipelines must be a dict of sklearn pipeline transformer.
@@ -72,7 +72,7 @@ class Vectorizer(BaseEstimator, TransformerMixin):
 pipelines = {}
 
 ##############################################################################
-# we have to do this because the classes are called 'Target' and 'NonTarget'
+# We have to do this because the classes are called 'Target' and 'NonTarget'
 # but the evaluation function uses a LabelEncoder, transforming them
 # to 0 and 1
 labels_dict = {"Target": 1, "NonTarget": 0}
@@ -94,7 +94,7 @@ pipelines["Xdw+LDA"] = make_pipeline(
 # ----------
 #
 # We define the paradigm (P300) and use all three datasets available for it.
-# The evaluation will return a dataframe containing a single AUC score for
+# The evaluation will return a DataFrame containing a single AUC score for
 # each subject / session of the dataset, and for each pipeline.
 #
 # Results are saved into the database, so that if you add a new pipeline, it
@@ -115,7 +115,7 @@ results = evaluation.process(pipelines)
 # Plot Results
 # ----------------
 #
-# Here we plot the results.
+# Here we plot the results to compare the two pipelines
 
 fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
 
