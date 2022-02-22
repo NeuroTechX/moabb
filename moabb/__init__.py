@@ -1,4 +1,4 @@
 # flake8: noqa
-__version__ = "0.4.4"
+__version__ = "0.4.5"
 
 from moabb.utils import set_log_level

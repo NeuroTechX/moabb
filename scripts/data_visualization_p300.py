@@ -8,6 +8,8 @@ descriptive plots for every single session.
 
 Total downloaded size will be (as of now) 120GB.
 
+
+.. versionadded:: 0.4.5
 """
 # Authors: Jan Sosulski <mail@jan-sosulski.de>
 #
