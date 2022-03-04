@@ -142,7 +142,7 @@ def epo_summary(epos):
     return summary, info_str
 
 
-FIGURES_PATH = Path("/home/jan/bci_data/figures/moabb_erps")
+FIGURES_PATH = Path.home() / "moabb_figures" / "erps"
 
 # Changing this to False re-generates all plots even if they exist. Use with caution.
 cache_plots = True
