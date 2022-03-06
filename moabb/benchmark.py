@@ -181,5 +181,6 @@ def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
         datasets_codes = [d.code for d in datasets]
         for excdat in exclude_datasets:
             del d[datasets_codes.index(excdat)]
-
+    else:
+        d = datasets
     return d
