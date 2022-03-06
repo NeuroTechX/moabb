@@ -26,11 +26,32 @@ def benchmark(
     threads=1,
     plot=False,
     contexts=None,
+    include_datasets=None,
+    exclude_datasets=None,
 ):
     """
     Function to run benchmark from scripts.
-    Load from saved pipeline configurations, identify sui
+    Load from saved pipeline configurations
     Take input of paradigms, option to exclude certain datasets
+
+    In case of using include_datasets or exclude_dataset, you can get possible dataset options
+    for each paradigm as shown in this example -
+
+    # Replace paradigm name as required
+
+    p = moabb.paradigms.SSVEP()
+
+    # Alternatively
+
+    p = moabb.datasets.utils.dataset_search("ssvep")
+
+    # For the class names
+
+    print(p.datasets)
+
+    # For the key_codes
+
+    print([d.code for d in p.datasets])
 
     Parameters
     ----------
@@ -52,6 +73,12 @@ def benchmark(
         File path to context.yml file that describes context parameters.
         If none, assumes all defaults. Must contain an entry for all
         paradigms described in the pipelines
+    include_datasets: list of str
+        Datasets to include in the benchmark run. By default all suitable datasets are taken.
+        If arguments are given for both include_datasets as well as exclude_datasets,
+        include_datasets will take precedence and exclude_datasets will be neglected.
+    exclude_datasets: list of str
+        Datasets to exclude from the benchmark run.
 
     Returns
     -------
@@ -92,8 +119,19 @@ def benchmark(
             p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
             log.debug(f"Datasets in this paradigm {[d.code for d in p.datasets]}")
             print(f"Datasets in this paradigm {[d.code for d in p.datasets]}")
+            # List of dataset class instances
+            datasets = p.datasets
+            d = _inc_exc_datasets(datasets, include_datasets, exclude_datasets)
+
+            # if len(d) = 0, raise warning that no suitable datasets were present after the
+            # arguments were satisfied
+            if len(d) == 0:
+                log.debug("No datasets matched the include_datasets or exclude_datasets")
+                print("No datasets matched the include_datasets or exclude_datasets")
+
             context = eval_type[evaluation](
                 paradigm=p,
+                datasets=d,
                 random_state=42,
                 hdf5_path=results,
                 n_jobs=threads,
@@ -113,3 +151,35 @@ def benchmark(
 
         for paradigm_result in eval_results.values():
             analyze(paradigm_result, output, plot=plot)
+
+
+def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
+    d = list()
+    if include_datasets is not None:
+        # Assert if the inputs are key_codes
+        if isinstance(datasets[0], str):
+            # Map from key_codes to class instances
+            datasets_codes = [d.code for d in datasets]
+            # Get the indices of the matching datasets
+            for incdat in include_datasets:
+                if incdat in datasets_codes:
+                    d.append(datasets[datasets_codes.index(incdat)])
+
+        else:
+            # The case where the class instances have been given
+            # can be passed on directly
+            d = include_datasets
+
+    elif exclude_datasets is not None:
+        d = datasets
+        # Assert if the inputs are not key_codes i.e expected to be dataset class objects
+        if not isinstance(datasets[0], str):
+            # Convert the input to key_codes
+            exclude_datasets = [e.code for e in exclude_datasets]
+
+        # Map from key_codes to class instances
+        datasets_codes = [d.code for d in datasets]
+        for excdat in exclude_datasets:
+            del d[datasets_codes.index(excdat)]
+
+    return d
