@@ -23,16 +23,17 @@ def benchmark(
     results="./results/",
     force=False,
     output="./",
-    threads=1,
+    n_jobs=-1,
     plot=False,
     contexts=None,
     include_datasets=None,
     exclude_datasets=None,
 ):
-    """
-    Function to run benchmark from scripts.
-    Load from saved pipeline configurations
-    Take input of paradigms, option to exclude certain datasets
+    """Run benchmarks for selected pipelines and datasets
+
+    Load from saved pipeline configurations to determine associated paradigms. It is
+    possible to include or exclude specific datasets and to choose the type of
+    evaluation.
 
     In case of using include_datasets or exclude_dataset, you can get possible dataset options
     for each paradigm as shown in this example -
@@ -111,17 +112,20 @@ def benchmark(
             context_params[paradigm] = {}
 
     # Looping over the evaluations to be done
+    df_eval = []
     for evaluation in evaluations:
         eval_results = dict()
         for paradigm in paradigms:
             # get the context
             log.debug(f"{paradigm}: {context_params[paradigm]}")
             p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
-            log.debug(f"Datasets in this paradigm {[d.code for d in p.datasets]}")
-            print(f"Datasets in this paradigm {[d.code for d in p.datasets]}")
             # List of dataset class instances
             datasets = p.datasets
             d = _inc_exc_datasets(datasets, include_datasets, exclude_datasets)
+            log.debug(
+                f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}"
+            )
+            print(f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}")
 
             # if len(d) = 0, raise warning that no suitable datasets were present after the
             # arguments were satisfied
@@ -134,11 +138,14 @@ def benchmark(
                 datasets=d,
                 random_state=42,
                 hdf5_path=results,
-                n_jobs=threads,
+                n_jobs=n_jobs,
                 overwrite=force,
             )
             paradigm_results = context.process(pipelines=paradigms[paradigm])
             eval_results[f"{paradigm}"] = paradigm_results
+            paradigm_results["paradigm"] = f"{paradigm}"
+            paradigm_results["evaluation"] = f"{evaluation}"
+            df_eval.append(paradigm_results)
 
         # Combining the FilterBank and the base Paradigm
         combine_paradigms = ["SSVEP", "MotorImagery"]
@@ -152,28 +159,31 @@ def benchmark(
         for paradigm_result in eval_results.values():
             analyze(paradigm_result, output, plot=plot)
 
+    return pd.concat(df_eval)
+
 
 def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
     d = list()
     if include_datasets is not None:
         # Assert if the inputs are key_codes
-        if isinstance(datasets[0], str):
+        if isinstance(include_datasets[0], str):
             # Map from key_codes to class instances
             datasets_codes = [d.code for d in datasets]
             # Get the indices of the matching datasets
             for incdat in include_datasets:
                 if incdat in datasets_codes:
                     d.append(datasets[datasets_codes.index(incdat)])
-
         else:
             # The case where the class instances have been given
             # can be passed on directly
             d = include_datasets
+        if exclude_datasets is not None:
+            raise AttributeError("You could specify both include and exclude datasets")
 
     elif exclude_datasets is not None:
         d = datasets
         # Assert if the inputs are not key_codes i.e expected to be dataset class objects
-        if not isinstance(datasets[0], str):
+        if not isinstance(exclude_datasets[0], str):
             # Convert the input to key_codes
             exclude_datasets = [e.code for e in exclude_datasets]
 
