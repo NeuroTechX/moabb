@@ -104,7 +104,7 @@ if __name__ == "__main__":
         results=options.results,
         force=options.force,
         output=options.output,
-        threads=options.threads,
+        n_jobs=options.threads,
         plot=options.plot,
         contexts=options.context,
     )
