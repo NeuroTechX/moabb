@@ -46,7 +46,10 @@ ERP Datasets
     BNCI2015003
     DemonsP300
     EPFLP300
+    Huebner2017
+    Huebner2018
     Lee2019_ERP
+    Sosulski2019
 
 
 --------------
