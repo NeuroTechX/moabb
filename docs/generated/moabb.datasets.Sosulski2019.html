@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moabb.datasets.Wang2016 &#8212; moabb 0.4.5 documentation</title>
+    <title>moabb.datasets.Sosulski2019 &#8212; moabb 0.4.5 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -17,8 +17,8 @@
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.MAMEM1" href="moabb.datasets.MAMEM1.html" />
-    <link rel="prev" title="moabb.datasets.Nakanishi2015" href="moabb.datasets.Nakanishi2015.html" />
+    <link rel="next" title="moabb.datasets.SSVEPExo" href="moabb.datasets.SSVEPExo.html" />
+    <link rel="prev" title="moabb.datasets.Lee2019_ERP" href="moabb.datasets.Lee2019_ERP.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -80,8 +80,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../datasets.html">Datasets</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../datasets.html#erp-datasets">ERP Datasets</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../datasets.html#ssvep-datasets">SSVEP Datasets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../datasets.html#erp-datasets">ERP Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets.html#ssvep-datasets">SSVEP Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#base-utils">Base &amp; Utils</a></li>
 </ul>
 </li>
@@ -120,7 +120,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">moabb.datasets.Wang2016</a></li>
+<li><a class="reference internal" href="#">moabb.datasets.Sosulski2019</a></li>
 </ul>
 </ul>
 </li>
@@ -150,64 +150,52 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="moabb-datasets-wang2016">
-<h1>moabb.datasets.Wang2016<a class="headerlink" href="#moabb-datasets-wang2016" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="moabb-datasets-sosulski2019">
+<h1>moabb.datasets.Sosulski2019<a class="headerlink" href="#moabb-datasets-sosulski2019" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="moabb.datasets.Wang2016">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></code><code class="sig-name descname"><span class="pre">Wang2016</span></code><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/datasets/ssvep_wang.py#L24-L151"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/ssvep_wang.html#Wang2016"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2016" title="Permalink to this definition">¶</a></dt>
-<dd><p>SSVEP Wang 2016 dataset</p>
-<p>Dataset from <a class="reference internal" href="#rd6745bf218a6-1" id="id1">[1]</a>.</p>
-<p>This dataset gathered SSVEP-BCI recordings of 35 healthy subjects (17
-females, aged 17-34 years, mean age: 22 years) focusing on 40 characters
-flickering at different frequencies (8-15.8 Hz with an interval of 0.2 Hz).
-For each subject, the experiment consisted of 6 blocks. Each block
-contained 40 trials corresponding to all 40 characters indicated in a
-random order. Each trial started with a visual cue (a red square)
-indicating a target stimulus. The cue appeared for 0.5 s on the screen.
-Subjects were asked to shift their gaze to the target as soon as possible
-within the cue duration. Following the cue offset, all stimuli started to
-flicker on the screen concurrently and lasted 5 s. After stimulus offset,
-the screen was blank for 0.5 s before the next trial began, which allowed
-the subjects to have short breaks between consecutive trials. Each trial
-lasted a total of 6 s. To facilitate visual fixation, a red triangle
-appeared below the flickering target during the stimulation period. In each
-block, subjects were asked to avoid eye blinks during the stimulation
-period. To avoid visual fatigue, there was a rest for several minutes
-between two consecutive blocks.</p>
-<p>EEG data were acquired using a Synamps2 system (Neuroscan, Inc.) with a
-sampling rate of 1000 Hz. The amplifier frequency passband ranged from
-0.15 Hz to 200 Hz. Sixty-four channels covered the whole scalp of the
-subject and were aligned according to the international 10-20 system.
-The ground was placed on midway between Fz and FPz. The reference was
-located on the vertex. Electrode impedances were kept below 10 KΩ. To
-remove the common power-line noise, a notch filter at 50 Hz was applied
-in data recording. Event triggers generated by the computer to the
-amplifier and recorded on an event channel synchronized to the EEG data.</p>
-<p>The continuous EEG data was segmented into 6 s epochs (500 ms pre-stimulus,
-5.5 s post-stimulus onset). The epochs were subsequently downsampled to
-250 Hz. Thus each trial consisted of 1500 time points. Finally, these data
-were stored as double-precision floating-point values in MATLAB and were
-named as subject indices (i.e., S01.mat, …, S35.mat). For each file, the
-data loaded in MATLAB generate a 4-D matrix named ‘data’ with dimensions
-of [64, 1500, 40, 6]. The four dimensions indicate ‘Electrode index’,
-‘Time points’, ‘Target index’, and ‘Block index’. The electrode positions
-were saved in a ‘64-channels.loc’ file. Six trials were available for each
-SSVEP frequency. Frequency and phase values for the 40 target indices were
-saved in a ‘Freq_Phase.mat’ file.</p>
-<p>Information for all subjects was listed in a ‘Sub_info.txt’ file. For each
-subject, there are five factors including ‘Subject Index’, ‘Gender’, ‘Age’,
-‘Handedness’, and ‘Group’. Subjects were divided into an ‘experienced’
-group (eight subjects, S01-S08) and a ‘naive’ group (27 subjects, S09-S35)
-according to their experience in SSVEP-based BCIs.</p>
+<dt id="moabb.datasets.Sosulski2019">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></code><code class="sig-name descname"><span class="pre">Sosulski2019</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_soas_as_sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_soa_60</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reject_non_iid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/datasets/sosulski2019.py#L17-L176"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/sosulski2019.html#Sosulski2019"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Sosulski2019" title="Permalink to this definition">¶</a></dt>
+<dd><p>P300 dataset from initial spot study.</p>
+<p>Dataset [1], study on spatial transfer between SOAs [2], actual paradigm / online optimization [3].</p>
+<p><strong>Dataset Description</strong></p>
+<p>This dataset contains multiple small trials of an auditory oddball paradigm. The paradigm presented two different
+sinusoidal tones. A low-pitched (500 Hz, 40 ms duration) non-target tone and a high-pitched (1000 Hz,
+40 ms duration) target tone. Subjects were instructed to attend to the high-pitched target tones and ignore the
+low-pitched tones.</p>
+<p>One trial (= one file) consisted of 90 tones, 15 targets and 75 non-targets. The order was pseudo-randomized in a
+way that at least two non-target tones occur between two target tones. Additionally, if you split the 90 tones of
+one trial into consecutive sets of six tones, there will always be exactly one target and five non-target tones
+in each set.</p>
+<p>In the first part of the experiment (run 1), each subject performed 50-70 trials with various different stimulus
+onset asynchronies (SOAs) – i.e. the time between the onset of successive tones – for each trial. In the second
+part (run 2), 4-5 SOAs were played, with blocks of 5 trials having the same SOA. All SOAs were in the range of 60
+ms to 600 ms. Regardless of the experiment part, after a set of five trials, subjects were given the opportunity
+to take a short break to e.g. drink etc.</p>
+<p>Finally, before and after each run, resting data was recorded. One minute with eyes open and one minute with eyes
+closed, i.e. in total four minutes of resting data are available for each subject.</p>
+<p>Data was recorded using a BrainAmp DC (BrainVision) amplifier and a 31 passive electrode EasyCap. The cap was
+placed according to the extended 10-20 electrode layout. The reference electrode was placed on the nose. Before
+recording, the cap was prepared such that impedances on all electrodes were around 20 kOhm. The EEG signal was
+recorded at 1000 Hz.</p>
+<p>The data contains 31 scalp channels, one EOG channel and five miscellaneous non-EEG signal channels. However,
+only scalp EEG and the EOG channel is available in all subjects. The markers in the marker file indicate the
+onset of target tones (21) and non-target tones (1).</p>
+<p>WARNING: Note that this wrapper currently only loads the second part of the experiment and uses pseudo-sessions
+to achieve the functionality to handle different conditions in MOABB. As a result, the statistical testing
+features of MOABB cannot be used for this dataset.</p>
 <p class="rubric">References</p>
 <dl class="citation">
-<dt class="label" id="rd6745bf218a6-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Y. Wang, X. Chen, X. Gao and S. Gao, 2017, “A Benchmark Dataset for
-SSVEP-Based Brain–Computer Interfaces,” in IEEE Transactions on Neural
-Systems and Rehabilitation Engineering, vol. 25, no. 10, pp. 1746-1752,
-doi: 10.1109/TNSRE.2016.2627556.</p>
+<dt class="label" id="rc783cf247497-1"><span class="brackets">1</span></dt>
+<dd><p>Sosulski, J., Tangermann, M.: Electroencephalogram signals recorded from 13 healthy subjects during an</p>
 </dd>
 </dl>
+<p>auditory oddball paradigm under different stimulus onset asynchrony conditions. Dataset. DOI: 10.6094/UNIFR/154576
+.. [Rc783cf247497-2] Sosulski, J., Tangermann, M.: Spatial filters for auditory evoked potentials transfer between different
+experimental conditions. Graz BCI Conference. 2019.
+.. [Rc783cf247497-3] Sosulski, J., Hübner, D., Klein, A., Tangermann, M.:  Online Optimization of Stimulation Speed in an Auditory Brain-Computer Interface under Time Constraints. arXiv preprint. 2021.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.4.5.</span></p>
+</div>
 <p class="rubric">Methods</p>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -215,7 +203,7 @@ doi: 10.1109/TNSRE.2016.2627556.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.datasets.Wang2016.data_path" title="moabb.datasets.Wang2016.data_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_path</span></code></a>(subject[, path, force_update, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.datasets.Sosulski2019.data_path" title="moabb.datasets.Sosulski2019.data_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_path</span></code></a>(subject[, path, force_update, …])</p></td>
 <td><p>Get path to local copy of a subject data.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code>([subject_list, path, force_update, …])</p></td>
@@ -226,9 +214,20 @@ doi: 10.1109/TNSRE.2016.2627556.</p>
 </tr>
 </tbody>
 </table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 77%" />
+<col style="width: 23%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>filename_trial_info_extraction</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <dl class="py method">
-<dt id="moabb.datasets.Wang2016.data_path">
-<code class="sig-name descname"><span class="pre">data_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/datasets/ssvep_wang.py#L145-L151"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/ssvep_wang.html#Wang2016.data_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Wang2016.data_path" title="Permalink to this definition">¶</a></dt>
+<dt id="moabb.datasets.Sosulski2019.data_path">
+<code class="sig-name descname"><span class="pre">data_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/datasets/sosulski2019.py#L153-L176"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/sosulski2019.html#Sosulski2019.data_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Sosulski2019.data_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -274,7 +273,7 @@ list of length one, for compatibility.</p>
         <br/>
         
 <div id="sourcelink">
-  <a href="../_sources/generated/moabb.datasets.Wang2016.rst.txt"
+  <a href="../_sources/generated/moabb.datasets.Sosulski2019.rst.txt"
      rel="nofollow">Source</a>
 </div>
       
