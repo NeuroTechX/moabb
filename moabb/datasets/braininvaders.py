@@ -358,6 +358,10 @@ class bi2012(BaseDataset):
     **ID of the dataset**
     BI.EEG.2012-GIPSA
 
+    Notes
+    -----
+    .. versionadded:: 0.4.6
+
     References
     ----------
 
@@ -505,6 +509,10 @@ class bi2014a(BaseDataset):
                        M. Sc. Violette Gautheret
     Scientific Supervisor: Ph.D. Marco Congedo
 
+    Notes
+    -----
+    .. versionadded:: 0.4.6
+
     References
     ----------
 
@@ -555,6 +563,10 @@ class bi2014b(BaseDataset):
     Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
                        M. Sc. Violette Gautheret
     Scientific Supervisor: Ph.D. Marco Congedo
+
+    Notes
+    -----
+    .. versionadded:: 0.4.6
 
     References
     ----------
@@ -607,6 +619,10 @@ class bi2015a(BaseDataset):
     Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
                        M. Sc. Violette Gautheret
     Scientific Supervisor: Ph.D. Marco Congedo
+
+    Notes
+    -----
+    .. versionadded:: 0.4.6
 
     References
     ----------
@@ -662,6 +678,10 @@ class bi2015b(BaseDataset):
     Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
                        M. Sc. Violette Gautheret
     Scientific Supervisor: Ph.D. Marco Congedo
+
+    Notes
+    -----
+    .. versionadded:: 0.4.6
 
     References
     ----------
