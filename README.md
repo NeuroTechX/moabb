@@ -33,7 +33,7 @@ one of the sections below, or just scroll down to find out more.
 - [Supported datasets](#supported-datasets)
 - [Who are we?](#who-are-we)
 - [Get in touch](#contact-us)
-- [Documentation](#documentation)
+- [Documentation][link_moabb_docs]
 - [Architecture and main concepts](#architecture-and-main-concepts)
 - [Citing MOABB and related publications](#citing-moabb-and-related-publications)
 
