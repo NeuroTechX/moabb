@@ -2,6 +2,7 @@ import os
 import os.path as osp
 import unittest
 import warnings
+import platform
 from collections import OrderedDict
 
 import numpy as np
