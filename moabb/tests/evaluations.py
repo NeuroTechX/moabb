@@ -1,8 +1,8 @@
 import os
 import os.path as osp
+import platform
 import unittest
 import warnings
-import platform
 from collections import OrderedDict
 
 import numpy as np
@@ -205,7 +205,7 @@ class Test_LambdaWarning(Test_WithinSess):
 
         self.assertFalse(repr(c1) == repr(c2))
         with self.assertWarns(RuntimeWarning):
-            if platform.system() != 'Windows':
+            if platform.system() != "Windows":
                 self.assertTrue(get_string_rep(c1) == get_string_rep(c2))
 
         # I do not know an elegant way to check for no warnings
