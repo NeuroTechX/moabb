@@ -204,8 +204,8 @@ class Test_LambdaWarning(Test_WithinSess):
         c3 = DummyClassifier(kernel=explicit_kernel)
 
         self.assertFalse(repr(c1) == repr(c2))
-        with self.assertWarns(RuntimeWarning):
-            if platform.system() != "Windows":
+        if platform.system() != "Windows":
+            with self.assertWarns(RuntimeWarning):
                 self.assertTrue(get_string_rep(c1) == get_string_rep(c2))
 
         # I do not know an elegant way to check for no warnings
