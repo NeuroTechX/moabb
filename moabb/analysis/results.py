@@ -2,6 +2,7 @@ import hashlib
 import os
 import os.path as osp
 import re
+import warnings
 from datetime import datetime
 
 import h5py
@@ -17,6 +18,15 @@ def get_string_rep(obj):
         str_repr = repr(obj.get_params())
     else:
         str_repr = repr(obj)
+    if "<lambda> at " in str_repr:
+        warnings.warn(
+            "You are probably using a classifier with a lambda function"
+            " as an attribute. Lambda functions can only be identified"
+            " by memory address which MOABB does not consider. To avoid"
+            " issues you can use named functions defined using the def"
+            " keyword instead.",
+            RuntimeWarning,
+        )
     str_no_addresses = re.sub("0x[a-z0-9]*", "0x__", str_repr)
     return str_no_addresses.replace("\n", "").encode("utf8")
 

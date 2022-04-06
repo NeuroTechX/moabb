@@ -1,14 +1,18 @@
 import os
 import os.path as osp
+import platform
 import unittest
+import warnings
 from collections import OrderedDict
 
 import numpy as np
+import sklearn.base
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
+from moabb.analysis.results import get_string_rep
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import evaluations as ev
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
@@ -19,6 +23,13 @@ pipelines["C"] = make_pipeline(Covariances("oas"), CSP(8), LDA())
 dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=2)
 if not osp.isdir(osp.join(osp.expanduser("~"), "mne_data")):
     os.makedirs(osp.join(osp.expanduser("~"), "mne_data"))
+
+
+class DummyClassifier(sklearn.base.BaseEstimator):
+    __slots__ = "kernel"
+
+    def __init__(self, kernel):
+        self.kernel = kernel
 
 
 class Test_WithinSess(unittest.TestCase):
@@ -175,6 +186,32 @@ class Test_CrossSess(Test_WithinSess):
         # do not raise
         ds = FakeDataset(["left_hand", "right_hand"], n_sessions=2)
         self.assertTrue(self.eval.is_valid(dataset=ds))
+
+
+class Test_LambdaWarning(Test_WithinSess):
+    def setUp(self):
+        self.eval = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(), datasets=[dataset]
+        )
+
+    def test_lambda_warning(self):
+        def explicit_kernel(x):
+            return x ** 3
+
+        c1 = DummyClassifier(kernel=lambda x: x ** 2)
+        c2 = DummyClassifier(kernel=lambda x: 5 * x)
+
+        c3 = DummyClassifier(kernel=explicit_kernel)
+
+        self.assertFalse(repr(c1) == repr(c2))
+        if platform.system() != "Windows":
+            with self.assertWarns(RuntimeWarning):
+                self.assertTrue(get_string_rep(c1) == get_string_rep(c2))
+
+        # I do not know an elegant way to check for no warnings
+        with warnings.catch_warnings(record=True) as w:
+            get_string_rep(c3)
+            self.assertTrue(len(w) == 0)
 
 
 if __name__ == "__main__":
