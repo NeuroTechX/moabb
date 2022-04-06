@@ -14,9 +14,9 @@ Total downloaded size will be (as of now) 120GB.
 # Authors: Jan Sosulski <mail@jan-sosulski.de>
 #
 # License: BSD (3-clause)
-import warnings
 import os
 import os.path as osp
+import warnings
 
 import matplotlib
 import mne
