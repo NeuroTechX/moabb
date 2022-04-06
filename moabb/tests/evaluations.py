@@ -205,7 +205,8 @@ class Test_LambdaWarning(Test_WithinSess):
 
         self.assertFalse(repr(c1) == repr(c2))
         with self.assertWarns(RuntimeWarning):
-            self.assertTrue(get_string_rep(c1) == get_string_rep(c2))
+            if platform.system() != 'Windows':
+                self.assertTrue(get_string_rep(c1) == get_string_rep(c2))
 
         # I do not know an elegant way to check for no warnings
         with warnings.catch_warnings(record=True) as w:
