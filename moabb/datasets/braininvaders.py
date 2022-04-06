@@ -55,7 +55,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             # fmt: on
             chtypes = ["eeg"] * 17 + ["stim"]
             X = loadmat(file_path)[condition].T
-            S = X[1:18, :]
+            S = X[1:18, :] * 1e-6
             stim = (X[18, :] + X[19, :])[None, :]
             X = np.concatenate([S, stim])
             sfreq = 128
@@ -101,9 +101,9 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
 
             D = loadmat(file_path)["samples"].T
             if subject % 2 == 1:
-                S = D[1:33, :]
+                S = D[1:33, :] * 1e-6
             else:
-                S = D[33:65, :]
+                S = D[33:65, :] * 1e-6
             stim = D[-1, :]
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
@@ -118,7 +118,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             # fmt: on
             chtypes = ["eeg"] * 32 + ["stim"]
             D = loadmat(file_path)["DATA"].T
-            S = D[1:33, :]
+            S = D[1:33, :] * 1e-6
             stim = D[-2, :] + D[-1, :]
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
@@ -135,9 +135,9 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
 
             D = loadmat(file_path)["mat_data"].T
             if subject % 2 == 1:
-                S = D[1:33, :]
+                S = D[1:33, :] * 1e-6
             else:
-                S = D[33:65, :]
+                S = D[33:65, :] * 1e-6
             stim = D[-1, :]
             idx_target = (stim >= 60) & (stim <= 85)
             idx_nontarget = (stim >= 20) & (stim <= 45)
