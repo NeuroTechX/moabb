@@ -30,9 +30,26 @@ API changes
 
 - None
 
-
-Version - 0.4.5  (Stable - PyPi)
+Version - 0.4.6  (Stable - PyPi)
 ---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+
+- Add P300 BrainInvaders datasets (:gh:`283` by `Sylvain Chevallier`_)
+- Add explicit warning when lambda function are used to parametrize pipelines (:gh:`278` by `Jan Sosulski`_)
+
+
+Bugs
+~~~~
+
+- Correct default path for ERP visualization (:gh:`279` by `Jan Sosulski`_)
+- Correct documentation (:gh:`282` and :gh:`284` by `Jan Sosulski`_)
+
+
+
+Version - 0.4.5
+---------------
 
 Enhancements
 ~~~~~~~~~~~~
