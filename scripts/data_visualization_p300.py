@@ -14,8 +14,9 @@ Total downloaded size will be (as of now) 120GB.
 # Authors: Jan Sosulski <mail@jan-sosulski.de>
 #
 # License: BSD (3-clause)
+import os
+import os.path as osp
 import warnings
-from pathlib import Path
 
 import matplotlib
 import mne
@@ -142,7 +143,7 @@ def epo_summary(epos):
     return summary, info_str
 
 
-FIGURES_PATH = Path("/home/jan/bci_data/figures/moabb_erps")
+FIGURES_PATH = osp.join(osp.expanduser("~"), "moabb_figures", "erps")
 
 # Changing this to False re-generates all plots even if they exist. Use with caution.
 cache_plots = True
@@ -180,11 +181,11 @@ for dset in dsets:
 
     print(f"Processing dataset: {dset_name}")
 
-    data_path = FIGURES_PATH / dset_name  # Path of the dataset folder
-    Path(data_path).mkdir(parents=True, exist_ok=True)
+    data_path = osp.join(FIGURES_PATH, dset_name)  # path of the dataset folder
+    os.makedirs(data_path, exist_ok=True)
     all_subjects_cached = True
     for subject in dset.subject_list:
-        subject_path = data_path / f"subject_{subject}"
+        subject_path = osp.join(data_path, f"subject_{subject}")
         if cache_plots and subject_path.exists():
             continue
         all_subjects_cached = False
