@@ -40,13 +40,21 @@ ERP Datasets
     :toctree: generated/
     :template: class.rst
 
+    bi2012a
     bi2013a
+    bi2014a
+    bi2014b
+    bi2015a
+    bi2015b
     BNCI2014008
     BNCI2014009
     BNCI2015003
     DemonsP300
     EPFLP300
+    Huebner2017
+    Huebner2018
     Lee2019_ERP
+    Sosulski2019
 
 
 --------------
