@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>moabb.datasets.braininvaders &#8212; moabb 0.4.5 documentation</title>
+    <title>moabb.datasets.braininvaders &#8212; moabb 0.4.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
@@ -39,7 +39,7 @@
         </button>
         <a class="navbar-brand" href="../../../index.html">
           moabb</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4.5</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -62,7 +62,8 @@
       aria-labelledby="dLabelGlobalToc"><ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../whats_new.html">What’s new</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#develop-branch">Develop branch</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-5-stable-pypi">Version - 0.4.5  (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-6-stable-pypi">Version - 0.4.6  (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-5">Version - 0.4.5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-4">Version - 0.4.4</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-3">Version - 0.4.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
@@ -148,40 +149,410 @@
   <h1>Source code for moabb.datasets.braininvaders</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">zipfile</span> <span class="k">as</span> <span class="nn">z</span>
+<span class="kn">from</span> <span class="nn">distutils.dir_util</span> <span class="kn">import</span> <span class="n">copy_tree</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">make_standard_montage</span>
+<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>
 
 <span class="kn">from</span> <span class="nn">moabb.datasets</span> <span class="kn">import</span> <span class="n">download</span> <span class="k">as</span> <span class="n">dl</span>
 <span class="kn">from</span> <span class="nn">moabb.datasets.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span>
 
 
-<span class="n">BI2013a_URL</span> <span class="o">=</span> <span class="s2">&quot;https://zenodo.org/record/1494240/files/&quot;</span>
+<span class="n">BI2012a_URL</span> <span class="o">=</span> <span class="s2">&quot;https://zenodo.org/record/2649069/files/&quot;</span>
+<span class="n">BI2013a_URL</span> <span class="o">=</span> <span class="s2">&quot;https://zenodo.org/record/2669187/files/&quot;</span>
+<span class="n">BI2014a_URL</span> <span class="o">=</span> <span class="s2">&quot;https://zenodo.org/record/3266223/files/&quot;</span>
+<span class="n">BI2014b_URL</span> <span class="o">=</span> <span class="s2">&quot;https://zenodo.org/record/3267302/files/&quot;</span>
+<span class="n">BI2015a_URL</span> <span class="o">=</span> <span class="s2">&quot;https://zenodo.org/record/3266930/files/&quot;</span>
+<span class="n">BI2015b_URL</span> <span class="o">=</span> <span class="s2">&quot;https://zenodo.org/record/3268762/files/&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_bi_get_subject_data</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>  <span class="c1"># noqa: C901</span>
+    <span class="n">file_path_list</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_path</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
+
+    <span class="n">sessions</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">file_path_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;Brain Invaders 2012&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Brain Invaders 2014a&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Brain Invaders 2014b&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Brain Invaders 2015b&quot;</span><span class="p">,</span>
+        <span class="p">]:</span>
+            <span class="n">session_name</span> <span class="o">=</span> <span class="s2">&quot;session_1&quot;</span>
+        <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2013a&quot;</span><span class="p">:</span>
+            <span class="n">session_number</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">session_name</span> <span class="o">=</span> <span class="s2">&quot;session_&quot;</span> <span class="o">+</span> <span class="n">session_number</span>
+        <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2015a&quot;</span><span class="p">:</span>
+            <span class="n">session_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;session_</span><span class="si">{</span><span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="n">session_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sessions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2012&quot;</span><span class="p">:</span>
+            <span class="n">condition</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">run_name</span> <span class="o">=</span> <span class="s2">&quot;run_&quot;</span> <span class="o">+</span> <span class="n">condition</span>
+            <span class="c1"># fmt: off</span>
+            <span class="n">chnames</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s1">&#39;F7&#39;</span><span class="p">,</span> <span class="s1">&#39;F3&#39;</span><span class="p">,</span> <span class="s1">&#39;Fz&#39;</span><span class="p">,</span> <span class="s1">&#39;F4&#39;</span><span class="p">,</span> <span class="s1">&#39;F8&#39;</span><span class="p">,</span> <span class="s1">&#39;T7&#39;</span><span class="p">,</span> <span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;Cz&#39;</span><span class="p">,</span> <span class="s1">&#39;C4&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;T8&#39;</span><span class="p">,</span> <span class="s1">&#39;P7&#39;</span><span class="p">,</span> <span class="s1">&#39;P3&#39;</span><span class="p">,</span> <span class="s1">&#39;Pz&#39;</span><span class="p">,</span> <span class="s1">&#39;P4&#39;</span><span class="p">,</span> <span class="s1">&#39;P8&#39;</span><span class="p">,</span> <span class="s1">&#39;O1&#39;</span><span class="p">,</span> <span class="s1">&#39;O2&#39;</span><span class="p">,</span> <span class="s1">&#39;STI 014&#39;</span>
+            <span class="p">]</span>
+            <span class="c1"># fmt: on</span>
+            <span class="n">chtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">17</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;stim&quot;</span><span class="p">]</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">file_path</span><span class="p">)[</span><span class="n">condition</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">18</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+            <span class="n">stim</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">18</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">X</span><span class="p">[</span><span class="mi">19</span><span class="p">,</span> <span class="p">:])[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">S</span><span class="p">,</span> <span class="n">stim</span><span class="p">])</span>
+            <span class="n">sfreq</span> <span class="o">=</span> <span class="mi">128</span>
+        <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2013a&quot;</span><span class="p">:</span>
+            <span class="n">run_number</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">run_number</span> <span class="o">=</span> <span class="n">run_number</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">run_number</span> <span class="o">=</span> <span class="n">run_number</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.mat&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">run_name</span> <span class="o">=</span> <span class="s2">&quot;run_&quot;</span> <span class="o">+</span> <span class="n">run_number</span>
+            <span class="c1"># fmt: off</span>
+            <span class="n">chnames</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;Fp1&quot;</span><span class="p">,</span> <span class="s2">&quot;Fp2&quot;</span><span class="p">,</span> <span class="s2">&quot;F5&quot;</span><span class="p">,</span> <span class="s2">&quot;AFz&quot;</span><span class="p">,</span> <span class="s2">&quot;F6&quot;</span><span class="p">,</span> <span class="s2">&quot;T7&quot;</span><span class="p">,</span> <span class="s2">&quot;Cz&quot;</span><span class="p">,</span> <span class="s2">&quot;T8&quot;</span><span class="p">,</span> <span class="s2">&quot;P7&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;P3&quot;</span><span class="p">,</span> <span class="s2">&quot;Pz&quot;</span><span class="p">,</span> <span class="s2">&quot;P4&quot;</span><span class="p">,</span> <span class="s2">&quot;P8&quot;</span><span class="p">,</span> <span class="s2">&quot;O1&quot;</span><span class="p">,</span> <span class="s2">&quot;Oz&quot;</span><span class="p">,</span> <span class="s2">&quot;O2&quot;</span><span class="p">,</span> <span class="s2">&quot;STI 014&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="c1"># fmt: on</span>
+            <span class="n">chtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">16</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;stim&quot;</span><span class="p">]</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">file_path</span><span class="p">)[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">sfreq</span> <span class="o">=</span> <span class="mi">512</span>
+        <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2014a&quot;</span><span class="p">:</span>
+            <span class="n">run_name</span> <span class="o">=</span> <span class="s2">&quot;run_1&quot;</span>
+            <span class="c1"># fmt: off</span>
+            <span class="n">chnames</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s1">&#39;Fp1&#39;</span><span class="p">,</span> <span class="s1">&#39;Fp2&#39;</span><span class="p">,</span> <span class="s1">&#39;F3&#39;</span><span class="p">,</span> <span class="s1">&#39;AFz&#39;</span><span class="p">,</span> <span class="s1">&#39;F4&#39;</span><span class="p">,</span> <span class="s1">&#39;T7&#39;</span><span class="p">,</span> <span class="s1">&#39;Cz&#39;</span><span class="p">,</span> <span class="s1">&#39;T8&#39;</span><span class="p">,</span> <span class="s1">&#39;P7&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;P3&#39;</span><span class="p">,</span> <span class="s1">&#39;Pz&#39;</span><span class="p">,</span> <span class="s1">&#39;P4&#39;</span><span class="p">,</span> <span class="s1">&#39;P8&#39;</span><span class="p">,</span> <span class="s1">&#39;O1&#39;</span><span class="p">,</span> <span class="s1">&#39;Oz&#39;</span><span class="p">,</span> <span class="s1">&#39;O2&#39;</span><span class="p">,</span> <span class="s1">&#39;STI 014&#39;</span>
+            <span class="p">]</span>
+            <span class="c1"># fmt: on</span>
+            <span class="n">chtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">16</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;stim&quot;</span><span class="p">]</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">D</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">file_path</span><span class="p">)[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">17</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+            <span class="n">stim</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">S</span><span class="p">,</span> <span class="n">stim</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]])</span>
+            <span class="n">sfreq</span> <span class="o">=</span> <span class="mi">512</span>
+        <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2014b&quot;</span><span class="p">:</span>
+            <span class="c1"># fmt: off</span>
+            <span class="n">chnames</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s1">&#39;Fp1&#39;</span><span class="p">,</span> <span class="s1">&#39;Fp2&#39;</span><span class="p">,</span> <span class="s1">&#39;AFz&#39;</span><span class="p">,</span> <span class="s1">&#39;F7&#39;</span><span class="p">,</span> <span class="s1">&#39;F3&#39;</span><span class="p">,</span> <span class="s1">&#39;F4&#39;</span><span class="p">,</span> <span class="s1">&#39;F8&#39;</span><span class="p">,</span> <span class="s1">&#39;FC5&#39;</span><span class="p">,</span> <span class="s1">&#39;FC1&#39;</span><span class="p">,</span> <span class="s1">&#39;FC2&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;FC6&#39;</span><span class="p">,</span> <span class="s1">&#39;T7&#39;</span><span class="p">,</span> <span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;Cz&#39;</span><span class="p">,</span> <span class="s1">&#39;C4&#39;</span><span class="p">,</span> <span class="s1">&#39;T8&#39;</span><span class="p">,</span> <span class="s1">&#39;CP5&#39;</span><span class="p">,</span> <span class="s1">&#39;CP1&#39;</span><span class="p">,</span> <span class="s1">&#39;CP2&#39;</span><span class="p">,</span> <span class="s1">&#39;CP6&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;P7&#39;</span><span class="p">,</span> <span class="s1">&#39;P3&#39;</span><span class="p">,</span> <span class="s1">&#39;Pz&#39;</span><span class="p">,</span> <span class="s1">&#39;P4&#39;</span><span class="p">,</span> <span class="s1">&#39;P8&#39;</span><span class="p">,</span> <span class="s1">&#39;PO7&#39;</span><span class="p">,</span> <span class="s1">&#39;O1&#39;</span><span class="p">,</span> <span class="s1">&#39;Oz&#39;</span><span class="p">,</span> <span class="s1">&#39;O2&#39;</span><span class="p">,</span> <span class="s1">&#39;PO8&#39;</span><span class="p">,</span> <span class="s1">&#39;PO9&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;PO10&#39;</span><span class="p">,</span> <span class="s1">&#39;STI 014&#39;</span><span class="p">]</span>
+            <span class="c1"># fmt: on</span>
+            <span class="n">chtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">32</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;stim&quot;</span><span class="p">]</span>
+            <span class="n">run_name</span> <span class="o">=</span> <span class="s2">&quot;run_1&quot;</span>
+
+            <span class="n">D</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">file_path</span><span class="p">)[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+            <span class="k">if</span> <span class="n">subject</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">33</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="mi">33</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+            <span class="n">stim</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">S</span><span class="p">,</span> <span class="n">stim</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]])</span>
+            <span class="n">sfreq</span> <span class="o">=</span> <span class="mi">512</span>
+        <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2015a&quot;</span><span class="p">:</span>
+            <span class="n">run_name</span> <span class="o">=</span> <span class="s2">&quot;run_1&quot;</span>
+            <span class="c1"># fmt: off</span>
+            <span class="n">chnames</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s1">&#39;Fp1&#39;</span><span class="p">,</span> <span class="s1">&#39;Fp2&#39;</span><span class="p">,</span> <span class="s1">&#39;AFz&#39;</span><span class="p">,</span> <span class="s1">&#39;F7&#39;</span><span class="p">,</span> <span class="s1">&#39;F3&#39;</span><span class="p">,</span> <span class="s1">&#39;F4&#39;</span><span class="p">,</span> <span class="s1">&#39;F8&#39;</span><span class="p">,</span> <span class="s1">&#39;FC5&#39;</span><span class="p">,</span> <span class="s1">&#39;FC1&#39;</span><span class="p">,</span> <span class="s1">&#39;FC2&#39;</span><span class="p">,</span> <span class="s1">&#39;FC6&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;T7&#39;</span><span class="p">,</span> <span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;Cz&#39;</span><span class="p">,</span> <span class="s1">&#39;C4&#39;</span><span class="p">,</span> <span class="s1">&#39;T8&#39;</span><span class="p">,</span> <span class="s1">&#39;CP5&#39;</span><span class="p">,</span> <span class="s1">&#39;CP1&#39;</span><span class="p">,</span> <span class="s1">&#39;CP2&#39;</span><span class="p">,</span> <span class="s1">&#39;CP6&#39;</span><span class="p">,</span> <span class="s1">&#39;P7&#39;</span><span class="p">,</span> <span class="s1">&#39;P3&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Pz&#39;</span><span class="p">,</span> <span class="s1">&#39;P4&#39;</span><span class="p">,</span> <span class="s1">&#39;P8&#39;</span><span class="p">,</span> <span class="s1">&#39;PO7&#39;</span><span class="p">,</span> <span class="s1">&#39;O1&#39;</span><span class="p">,</span> <span class="s1">&#39;Oz&#39;</span><span class="p">,</span> <span class="s1">&#39;O2&#39;</span><span class="p">,</span> <span class="s1">&#39;PO8&#39;</span><span class="p">,</span> <span class="s1">&#39;PO9&#39;</span><span class="p">,</span> <span class="s1">&#39;PO10&#39;</span><span class="p">,</span> <span class="s1">&#39;STI 014&#39;</span>
+            <span class="p">]</span>
+            <span class="c1"># fmt: on</span>
+            <span class="n">chtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">32</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;stim&quot;</span><span class="p">]</span>
+            <span class="n">D</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">file_path</span><span class="p">)[</span><span class="s2">&quot;DATA&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">33</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+            <span class="n">stim</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">D</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">S</span><span class="p">,</span> <span class="n">stim</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]])</span>
+            <span class="n">sfreq</span> <span class="o">=</span> <span class="mi">512</span>
+        <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2015b&quot;</span><span class="p">:</span>
+            <span class="n">run_name</span> <span class="o">=</span> <span class="s2">&quot;run_&quot;</span> <span class="o">+</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># fmt: off</span>
+            <span class="n">chnames</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s1">&#39;Fp1&#39;</span><span class="p">,</span> <span class="s1">&#39;Fp2&#39;</span><span class="p">,</span> <span class="s1">&#39;AFz&#39;</span><span class="p">,</span> <span class="s1">&#39;F7&#39;</span><span class="p">,</span> <span class="s1">&#39;F3&#39;</span><span class="p">,</span> <span class="s1">&#39;F4&#39;</span><span class="p">,</span> <span class="s1">&#39;F8&#39;</span><span class="p">,</span> <span class="s1">&#39;FC5&#39;</span><span class="p">,</span> <span class="s1">&#39;FC1&#39;</span><span class="p">,</span> <span class="s1">&#39;FC2&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;FC6&#39;</span><span class="p">,</span> <span class="s1">&#39;T7&#39;</span><span class="p">,</span> <span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;Cz&#39;</span><span class="p">,</span> <span class="s1">&#39;C4&#39;</span><span class="p">,</span> <span class="s1">&#39;T8&#39;</span><span class="p">,</span> <span class="s1">&#39;CP5&#39;</span><span class="p">,</span> <span class="s1">&#39;CP1&#39;</span><span class="p">,</span> <span class="s1">&#39;CP2&#39;</span><span class="p">,</span> <span class="s1">&#39;CP6&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;P7&#39;</span><span class="p">,</span> <span class="s1">&#39;P3&#39;</span><span class="p">,</span> <span class="s1">&#39;Pz&#39;</span><span class="p">,</span> <span class="s1">&#39;P4&#39;</span><span class="p">,</span> <span class="s1">&#39;P8&#39;</span><span class="p">,</span> <span class="s1">&#39;PO7&#39;</span><span class="p">,</span> <span class="s1">&#39;O1&#39;</span><span class="p">,</span> <span class="s1">&#39;Oz&#39;</span><span class="p">,</span> <span class="s1">&#39;O2&#39;</span><span class="p">,</span> <span class="s1">&#39;PO8&#39;</span><span class="p">,</span> <span class="s1">&#39;PO9&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;PO10&#39;</span><span class="p">,</span> <span class="s1">&#39;STI 014&#39;</span><span class="p">]</span>
+            <span class="c1"># fmt: on</span>
+            <span class="n">chtypes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">32</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;stim&quot;</span><span class="p">]</span>
+
+            <span class="n">D</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">file_path</span><span class="p">)[</span><span class="s2">&quot;mat_data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+            <span class="k">if</span> <span class="n">subject</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">33</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="mi">33</span><span class="p">:</span><span class="mi">65</span><span class="p">,</span> <span class="p">:]</span> <span class="o">*</span> <span class="mf">1e-6</span>
+            <span class="n">stim</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">idx_target</span> <span class="o">=</span> <span class="p">(</span><span class="n">stim</span> <span class="o">&gt;=</span> <span class="mi">60</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">stim</span> <span class="o">&lt;=</span> <span class="mi">85</span><span class="p">)</span>
+            <span class="n">idx_nontarget</span> <span class="o">=</span> <span class="p">(</span><span class="n">stim</span> <span class="o">&gt;=</span> <span class="mi">20</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">stim</span> <span class="o">&lt;=</span> <span class="mi">45</span><span class="p">)</span>
+            <span class="n">stim</span><span class="p">[</span><span class="n">idx_target</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">stim</span><span class="p">[</span><span class="n">idx_nontarget</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">S</span><span class="p">,</span> <span class="n">stim</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]])</span>
+            <span class="n">sfreq</span> <span class="o">=</span> <span class="mi">512</span>
+
+        <span class="n">info</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">create_info</span><span class="p">(</span>
+            <span class="n">ch_names</span><span class="o">=</span><span class="n">chnames</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span>
+            <span class="n">ch_types</span><span class="o">=</span><span class="n">chtypes</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><span class="n">make_standard_montage</span><span class="p">(</span><span class="s2">&quot;standard_1020&quot;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2012&quot;</span><span class="p">:</span>
+            <span class="c1"># get rid of the Fz channel (it is the ground)</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Fz&quot;</span><span class="p">]</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">][</span><span class="n">run_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
+    <span class="k">return</span> <span class="n">sessions</span>
+
+
+<span class="k">def</span> <span class="nf">_bi_data_path</span><span class="p">(</span>  <span class="c1"># noqa: C901</span>
+    <span class="n">ds</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid subject number&quot;</span><span class="p">))</span>
+
+    <span class="n">subject_paths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2012&quot;</span><span class="p">:</span>
+        <span class="c1"># check if has the .zip</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BI2012a_URL</span><span class="si">}</span><span class="s2">subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.zip&quot;</span>
+        <span class="n">path_zip</span> <span class="o">=</span> <span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;BRAININVADERS2012&quot;</span><span class="p">)</span>
+        <span class="n">path_folder</span> <span class="o">=</span> <span class="n">path_zip</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.zip&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check if has to unzip</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_folder</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="n">osp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_folder</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;subject_0</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">zip_ref</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">path_zip</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+            <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path_folder</span><span class="p">)</span>
+
+        <span class="c1"># filter the data regarding the experimental conditions</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="n">subject_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path_folder</span><span class="si">}</span><span class="s2">subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;training.mat&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">online</span><span class="p">:</span>
+            <span class="n">subject_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path_folder</span><span class="si">}</span><span class="s2">subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;online.mat&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2013a&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">subject</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]:</span>
+            <span class="n">zipname_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;subject</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">_session</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.zip&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">zipname_list</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;subject</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.zip&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">zipname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">zipname_list</span><span class="p">):</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">BI2013a_URL</span> <span class="o">+</span> <span class="n">zipname</span>
+            <span class="n">path_zip</span> <span class="o">=</span> <span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;BRAININVADERS2013&quot;</span><span class="p">)</span>
+            <span class="n">path_folder</span> <span class="o">=</span> <span class="n">path_zip</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">zipname</span><span class="p">)</span>
+
+            <span class="c1"># check if has the directory for the subject</span>
+            <span class="n">directory</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path_folder</span><span class="si">}</span><span class="s2">subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">directory</span><span class="p">)):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Session</span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))):</span>
+                <span class="n">zip_ref</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">path_zip</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+                <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path_folder</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Session</span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+                <span class="n">copy_tree</span><span class="p">(</span><span class="n">path_zip</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;.zip&quot;</span><span class="p">),</span> <span class="n">directory</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path_zip</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;.zip&quot;</span><span class="p">))</span>
+
+        <span class="c1"># filter the data regarding the experimental conditions</span>
+        <span class="n">meta_file</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="o">+</span> <span class="s2">&quot;meta.yml&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">meta_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="n">meta</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
+        <span class="n">conditions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">adaptive</span><span class="p">:</span>
+            <span class="n">conditions</span> <span class="o">=</span> <span class="n">conditions</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;adaptive&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">nonadaptive</span><span class="p">:</span>
+            <span class="n">conditions</span> <span class="o">=</span> <span class="n">conditions</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;nonadaptive&quot;</span><span class="p">]</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="n">types</span> <span class="o">=</span> <span class="n">types</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;training&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ds</span><span class="o">.</span><span class="n">online</span><span class="p">:</span>
+            <span class="n">types</span> <span class="o">=</span> <span class="n">types</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;online&quot;</span><span class="p">]</span>
+        <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;runs&quot;</span><span class="p">]:</span>
+            <span class="n">run_condition</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="s2">&quot;experimental_condition&quot;</span><span class="p">]</span>
+            <span class="n">run_type</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">run_condition</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">run_type</span> <span class="ow">in</span> <span class="n">types</span><span class="p">):</span>
+                <span class="n">filenames</span> <span class="o">=</span> <span class="n">filenames</span> <span class="o">+</span> <span class="p">[</span><span class="n">run</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]]</span>
+
+        <span class="c1"># list the filepaths for this subject</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+            <span class="n">subject_paths</span> <span class="o">=</span> <span class="n">subject_paths</span> <span class="o">+</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
+                <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Session*&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.gdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.mat&quot;</span><span class="p">))</span>
+            <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2014a&quot;</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BI2014a_URL</span><span class="si">}</span><span class="s2">subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.zip&quot;</span>
+        <span class="n">path_zip</span> <span class="o">=</span> <span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;BRAININVADERS2014A&quot;</span><span class="p">)</span>
+        <span class="n">path_folder</span> <span class="o">=</span> <span class="n">path_zip</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.zip&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check if has to unzip</span>
+        <span class="n">path_folder_subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path_folder</span><span class="si">}</span><span class="s2">subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)</span>
+            <span class="n">zip_ref</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">path_zip</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+            <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)</span>
+
+        <span class="c1"># filter the data regarding the experimental conditions</span>
+        <span class="n">subject_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.mat&quot;</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2014b&quot;</span><span class="p">:</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="p">(</span><span class="n">subject</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BI2014b_URL</span><span class="si">}</span><span class="s2">group_</span><span class="si">{</span><span class="n">group</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">_mat.zip&quot;</span>
+        <span class="n">path_zip</span> <span class="o">=</span> <span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;BRAININVADERS2014B&quot;</span><span class="p">)</span>
+        <span class="n">path_folder</span> <span class="o">=</span> <span class="n">path_zip</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;group_</span><span class="si">{</span><span class="n">group</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">_mat.zip&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check if has to unzip</span>
+        <span class="n">path_folder_subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path_folder</span><span class="si">}</span><span class="s2">group_</span><span class="si">{</span><span class="n">group</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)</span>
+            <span class="n">zip_ref</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">path_zip</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+            <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)</span>
+
+        <span class="n">subject_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># filter the data regarding the experimental conditions</span>
+        <span class="k">if</span> <span class="n">subject</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">subject_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;group_</span><span class="si">{</span><span class="n">group</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">_sujet_01.mat&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subject_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;group_</span><span class="si">{</span><span class="n">group</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">_sujet_02.mat&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="c1"># Collaborative session are not loaded</span>
+        <span class="c1"># subject_paths.append(osp.join(path_folder_subject, f&#39;group_{(subject+1)//2:02}.mat&#39;)</span>
+
+    <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2015a&quot;</span><span class="p">:</span>
+        <span class="c1"># TODO: possible fusion with 2014a?</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BI2015a_URL</span><span class="si">}</span><span class="s2">subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">_mat.zip&quot;</span>
+        <span class="n">path_zip</span> <span class="o">=</span> <span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;BRAININVADERS2015A&quot;</span><span class="p">)</span>
+        <span class="n">path_folder</span> <span class="o">=</span> <span class="n">path_zip</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.zip&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check if has to unzip</span>
+        <span class="n">path_folder_subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path_folder</span><span class="si">}</span><span class="s2">subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)</span>
+            <span class="n">zip_ref</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">path_zip</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+            <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)</span>
+
+        <span class="c1"># filter the data regarding the experimental conditions</span>
+        <span class="n">subject_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+            <span class="n">subject_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">path_folder_subject</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;subject_</span><span class="si">{</span><span class="n">subject</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">_session_</span><span class="si">{</span><span class="n">session</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">.mat&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">ds</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;Brain Invaders 2015b&quot;</span><span class="p">:</span>
+        <span class="c1"># TODO: possible fusion with 2014b?</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BI2015b_URL</span><span class="si">}</span><span class="s2">group_</span><span class="si">{</span><span class="p">(</span><span class="n">subject</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">_mat.zip&quot;</span>
+        <span class="n">path_zip</span> <span class="o">=</span> <span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;BRAININVADERS2015B&quot;</span><span class="p">)</span>
+        <span class="n">path_folder</span> <span class="o">=</span> <span class="n">path_zip</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;group_</span><span class="si">{</span><span class="p">(</span><span class="n">subject</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">_mat.zip&quot;</span><span class="p">)</span>
+        <span class="c1"># check if has to unzip</span>
+        <span class="n">path_folder_subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path_folder</span><span class="si">}</span><span class="s2">group_</span><span class="si">{</span><span class="p">(</span><span class="n">subject</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)</span>
+            <span class="n">zip_ref</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">path_zip</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+            <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path_folder_subject</span><span class="p">)</span>
+
+        <span class="n">subject_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">subject_paths</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">path_folder</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;group_</span><span class="si">{</span><span class="p">(</span><span class="n">subject</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;group_</span><span class="si">{</span><span class="p">(</span><span class="n">subject</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">_s</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">subject_paths</span>
+
+
+<span class="k">class</span> <span class="nc">bi2012</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;P300 dataset bi2012 from a &quot;Brain Invaders&quot; experiment</span>
+
+<span class="sd">    Dataset following the setup from [1]_ carried-out at University of</span>
+<span class="sd">    Grenoble Alpes.</span>
+
+<span class="sd">    **Dataset Description**</span>
+
+<span class="sd">    This dataset contains electroencephalographic (EEG) recordings of 25 subjects testing</span>
+<span class="sd">    the Brain Invaders, a visual P300 Brain-Computer Interface inspired by the famous vintage</span>
+<span class="sd">    video game Space Invaders (Taito, Tokyo, Japan). The visual P300 is an event-related</span>
+<span class="sd">    potential elicited by a visual stimulation, peaking 240-600 ms after stimulus onset. EEG</span>
+<span class="sd">    data were recorded by 16 electrodes in an experiment that took place in the GIPSA-lab,</span>
+<span class="sd">    Grenoble, France, in 2012). A full description of the experiment is available in [1]_.</span>
+
+<span class="sd">    **Authors**</span>
+
+<span class="sd">    Principal Investigator: B.Sc. Gijsbrecht Franciscus Petrus Van Veen</span>
+<span class="sd">    Technical Supervisors: Ph.D. Alexandre Barachant, Eng. Anton Andreev, Eng. Grégoire Cattan,</span>
+<span class="sd">                           Eng. Pedro. L. C. Rodrigues</span>
+<span class="sd">    Scientific Supervisor: Ph.D. Marco Congedo</span>
+
+<span class="sd">    **ID of the dataset**</span>
+<span class="sd">    BI.EEG.2012-GIPSA</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. versionadded:: 0.4.6</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    .. [1] Van Veen, G., Barachant, A., Andreev, A., Cattan, G., Rodrigues, P. C., &amp;</span>
+<span class="sd">           Congedo, M. (2019). Building Brain Invaders: EEG data of an experimental validation.</span>
+<span class="sd">           arXiv preprint arXiv:1905.05182.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Training</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">Online</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">subjects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">26</span><span class="p">)),</span>
+            <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Target</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">NonTarget</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;Brain Invaders 2012&quot;</span><span class="p">,</span>
+            <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">paradigm</span><span class="o">=</span><span class="s2">&quot;p300&quot;</span><span class="p">,</span>
+            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.5281/zenodo.2649006&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">training</span> <span class="o">=</span> <span class="n">Training</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">online</span> <span class="o">=</span> <span class="n">Online</span>
+
+    <span class="k">def</span> <span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;return data for a single subject&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_bi_get_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">data_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">_bi_data_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">update_path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="bi2013a"><a class="viewcode-back" href="../../../generated/moabb.datasets.bi2013a.html#moabb.datasets.bi2013a">[docs]</a><span class="k">class</span> <span class="nc">bi2013a</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;P300 dataset bi2013a from a &quot;Brain Invaders&quot; experiment</span>
 
 <span class="sd">    Dataset following the setup from [1]_ carried-out at University of</span>
-<span class="sd">    Grenoble Alpes [1]_.</span>
+<span class="sd">    Grenoble Alpes.</span>
 
 <span class="sd">    **Dataset Description**</span>
 
 <span class="sd">    This dataset concerns an experiment carried out at GIPSA-lab</span>
 <span class="sd">    (University of Grenoble Alpes, CNRS, Grenoble-INP) in 2013.</span>
-<span class="sd">    Principal Investigators: Erwan Vaineau, Dr. Alexandre Barachant</span>
-<span class="sd">    Scientific Supervisor :  Dr. Marco Congedo</span>
-<span class="sd">    Technical Supervisor : Anton Andreev</span>
-
-<span class="sd">    The experiment uses the Brain Invaders P300-based Brain-Computer Interface</span>
-<span class="sd">    [7]_, which uses the Open-ViBE platform for on-line EEG data acquisition and</span>
-<span class="sd">    processing [1]_ [9]_. For classification purposes the Brain Invaders</span>
-<span class="sd">    implements on-line Riemannian MDM classifiers [2]_ [3]_ [4]_ [6]_. This experiment</span>
-<span class="sd">    features both a training-test (classical) mode of operation and a</span>
-<span class="sd">    calibration-less mode of operation [4]_ [5]_ [6]_ [8]_.</span>
-
 <span class="sd">    The recordings concerned 24 subjects in total. Subjects 1 to 7 participated</span>
 <span class="sd">    to eight sessions, run in different days, subject 8 to 24 participated to</span>
 <span class="sd">    one session. Each session consisted in two runs, one in a Non-Adaptive</span>
@@ -190,22 +561,22 @@
 <span class="sd">    was a Training (calibration) phase and an Online phase, always passed in</span>
 <span class="sd">    this order. In the non-Adaptive run the data from the Training phase was</span>
 <span class="sd">    used for classifying the trials on the Online phase using the training-test</span>
-<span class="sd">    version of the MDM algorithm [3]_ [4]_. In the Adaptive run, the data from the</span>
+<span class="sd">    version of the MDM algorithm [2]_. In the Adaptive run, the data from the</span>
 <span class="sd">    training phase was not used at all, instead the classifier was initialized</span>
 <span class="sd">    with generic class geometric means and continuously adapted to the incoming</span>
-<span class="sd">    data using the Riemannian method explained in [4]_. Subjects were completely</span>
+<span class="sd">    data using the Riemannian method explained in [2]_. Subjects were completely</span>
 <span class="sd">    blind to the mode of operation and the two runs appeared to them identical.</span>
 
 <span class="sd">    In the Brain Invaders P300 paradigm, a repetition is composed of 12</span>
 <span class="sd">    flashes, of which 2 include the Target symbol (Target flashes) and 10 do</span>
-<span class="sd">    not (non-Target flash). Please see [7]_ for a description of the paradigm.</span>
+<span class="sd">    not (non-Target flash). Please see [3]_ for a description of the paradigm.</span>
 <span class="sd">    For this experiment, in the Training phases the number of flashes is fixed</span>
 <span class="sd">    (80 Target flashes and 400 non-Target flashes). In the Online phases the</span>
 <span class="sd">    number of Target and non-Target still are in a ratio 1/5, however their</span>
 <span class="sd">    number is variable because the Brain Invaders works with a fixed number of</span>
 <span class="sd">    game levels, however the number of repetitions needed to destroy the target</span>
 <span class="sd">    (hence to proceed to the next level) depends on the user’s performance</span>
-<span class="sd">    [4]_ [5]_. In any case, since the classes are unbalanced, an appropriate score</span>
+<span class="sd">    [2]_. In any case, since the classes are unbalanced, an appropriate score</span>
 <span class="sd">    must be used for quantifying the performance of classification methods</span>
 <span class="sd">    (e.g., balanced accuracy, AUC methods, etc).</span>
 
@@ -219,50 +590,37 @@
 <span class="sd">    * Reference: left ear-lobe.</span>
 <span class="sd">    * Ground: N/A.</span>
 
+<span class="sd">    **Authors**</span>
+
+<span class="sd">    Principal Investigators: Erwan Vaineau, Dr. Alexandre Barachant</span>
+<span class="sd">    Scientific Supervisor :  Dr. Marco Congedo</span>
+<span class="sd">    Technical Supervisor : Anton Andreev</span>
+
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 
-<span class="sd">    .. [1] Arrouët C, Congedo M, Marvie J-E, Lamarche F, Lècuyer A, Arnaldi B</span>
-<span class="sd">           (2005) Open-ViBE: a 3D Platform for Real-Time Neuroscience.</span>
-<span class="sd">           Journal of Neurotherapy, 9(1), 3-25.</span>
-<span class="sd">    .. [2] Barachant A, Bonnet S, Congedo M, Jutten C (2013) Classification of</span>
-<span class="sd">           covariance matrices using a Riemannian-based kernel for BCI</span>
-<span class="sd">           applications. Neurocomputing 112, 172-178.</span>
-<span class="sd">    .. [3] Barachant A, Bonnet S, Congedo M, Jutten C (2012) Multi-Class Brain</span>
-<span class="sd">           Computer Interface, Classification by Riemannian Geometry.</span>
-<span class="sd">           IEEE Transactions on Biomedical Engineering 59(4), 920-928</span>
-<span class="sd">    .. [4] Barachant A, Congedo M (2014) A Plug &amp; Play P300 BCI using</span>
+<span class="sd">    .. [1] Vaineau, E., Barachant, A., Andreev, A., Rodrigues, P. C.,</span>
+<span class="sd">           Cattan, G. &amp; Congedo, M. (2019). Brain invaders adaptive</span>
+<span class="sd">           versus non-adaptive P300 brain-computer interface dataset.</span>
+<span class="sd">           arXiv preprint arXiv:1904.09111.</span>
+<span class="sd">    .. [2] Barachant A, Congedo M (2014) A Plug &amp; Play P300 BCI using</span>
 <span class="sd">           Information Geometry.</span>
 <span class="sd">           arXiv:1409.0107.</span>
-<span class="sd">    .. [5] Congedo M, Barachant A, Andreev A (2013) A New Generation of</span>
-<span class="sd">           Brain-Computer Interface Based on Riemannian Geometry.</span>
-<span class="sd">           arXiv:1310.8115.</span>
-<span class="sd">    .. [6] Congedo M, Barachant A, Bhatia R (2017) Riemannian Geometry for</span>
-<span class="sd">           EEG-based Brain-Computer Interfaces; a Primer and a Review.</span>
-<span class="sd">           Brain-Computer Interfaces, 4(3), 155-174.</span>
 <span class="sd">    .. [7] Congedo M, Goyat M, Tarrin N, Ionescu G, Rivet B,Varnet L, Rivet B,</span>
 <span class="sd">           Phlypo R, Jrad N, Acquadro M, Jutten C (2011) “Brain Invaders”: a</span>
 <span class="sd">           prototype of an open-source P300-based video game working with the</span>
 <span class="sd">           OpenViBE platform. Proc. IBCI Conf., Graz, Austria, 280-283.</span>
-<span class="sd">    .. [8] Congedo M, Korczowski L, Delorme A, Lopes da Silva F. (2016)</span>
-<span class="sd">           Spatio-temporal common pattern: A companion method for ERP analysis</span>
-<span class="sd">           in the time domain. Journal of Neuroscience Methods, 267, 74-88.</span>
-<span class="sd">    .. [9] Renard Y, Lotte F, Gibert G, Congedo M, Maby E, Delannoy V, Bertrand</span>
-<span class="sd">           O, Lécuyer A (2010) OpenViBE: An Open-Source Software Platform to</span>
-<span class="sd">           Design, Test and Use Brain-Computer Interfaces in Real and Virtual</span>
-<span class="sd">           Environments. PRESENCE : Teleoperators and Virtual Environments</span>
-<span class="sd">           19(1), 35-53.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">NonAdaptive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">Adaptive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Training</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">Online</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">subjects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">24</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span>
+            <span class="n">subjects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">)),</span>
             <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">events</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Target</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">NonTarget</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">events</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Target</span><span class="o">=</span><span class="mi">33285</span><span class="p">,</span> <span class="n">NonTarget</span><span class="o">=</span><span class="mi">33286</span><span class="p">),</span>
             <span class="n">code</span><span class="o">=</span><span class="s2">&quot;Brain Invaders 2013a&quot;</span><span class="p">,</span>
             <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
             <span class="n">paradigm</span><span class="o">=</span><span class="s2">&quot;p300&quot;</span><span class="p">,</span>
-            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.5281/zenodo.2669187&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">adaptive</span> <span class="o">=</span> <span class="n">Adaptive</span>
@@ -272,78 +630,236 @@
 
     <span class="k">def</span> <span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;return data for a single subject&quot;&quot;&quot;</span>
-
-        <span class="n">file_path_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
-        <span class="n">sessions</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">file_path_list</span><span class="p">:</span>
-
-            <span class="n">session_number</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="n">session_name</span> <span class="o">=</span> <span class="s2">&quot;session_&quot;</span> <span class="o">+</span> <span class="n">session_number</span>
-            <span class="k">if</span> <span class="n">session_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sessions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-
-            <span class="n">run_number</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">run_number</span> <span class="o">=</span> <span class="n">run_number</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">run_number</span> <span class="o">=</span> <span class="n">run_number</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.gdf&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">run_name</span> <span class="o">=</span> <span class="s2">&quot;run_&quot;</span> <span class="o">+</span> <span class="n">run_number</span>
-
-            <span class="n">raw_original</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_gdf</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">raw_original</span><span class="o">.</span><span class="n">rename_channels</span><span class="p">({</span><span class="s2">&quot;FP1&quot;</span><span class="p">:</span> <span class="s2">&quot;Fp1&quot;</span><span class="p">,</span> <span class="s2">&quot;FP2&quot;</span><span class="p">:</span> <span class="s2">&quot;Fp2&quot;</span><span class="p">})</span>
-            <span class="n">raw_original</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><span class="n">make_standard_montage</span><span class="p">(</span><span class="s2">&quot;standard_1020&quot;</span><span class="p">))</span>
-
-            <span class="n">sessions</span><span class="p">[</span><span class="n">session_name</span><span class="p">][</span><span class="n">run_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_original</span>
-
-        <span class="k">return</span> <span class="n">sessions</span>
+        <span class="k">return</span> <span class="n">_bi_get_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
 
 <div class="viewcode-block" id="bi2013a.data_path"><a class="viewcode-back" href="../../../generated/moabb.datasets.bi2013a.html#moabb.datasets.bi2013a.data_path">[docs]</a>    <span class="k">def</span> <span class="nf">data_path</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
+        <span class="k">return</span> <span class="n">_bi_data_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">update_path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span></div></div>
 
-        <span class="k">if</span> <span class="n">subject</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid subject number&quot;</span><span class="p">))</span>
 
-        <span class="c1"># check if has the .zip</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:s}</span><span class="s2">subject</span><span class="si">{:d}</span><span class="s2">.zip&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">BI2013a_URL</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
-        <span class="n">path_zip</span> <span class="o">=</span> <span class="n">dl</span><span class="o">.</span><span class="n">data_dl</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s2">&quot;BRAININVADERS&quot;</span><span class="p">)</span>
-        <span class="n">path_folder</span> <span class="o">=</span> <span class="n">path_zip</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;subject</span><span class="si">{:d}</span><span class="s2">.zip&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">))</span>
+<div class="viewcode-block" id="bi2014a"><a class="viewcode-back" href="../../../generated/moabb.datasets.bi2014a.html#moabb.datasets.bi2014a">[docs]</a><span class="k">class</span> <span class="nc">bi2014a</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;P300 dataset bi2014a from a &quot;Brain Invaders&quot; experiment</span>
 
-        <span class="c1"># check if has to unzip</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path_folder</span> <span class="o">+</span> <span class="s2">&quot;subject</span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">))):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;unzip&quot;</span><span class="p">,</span> <span class="n">path_zip</span><span class="p">)</span>
-            <span class="n">zip_ref</span> <span class="o">=</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">path_zip</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
-            <span class="n">zip_ref</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">path_folder</span><span class="p">)</span>
+<span class="sd">    **Dataset Description**</span>
 
-        <span class="c1"># filter the data regarding the experimental conditions</span>
-        <span class="n">meta_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;subject</span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">),</span> <span class="s2">&quot;meta.yml&quot;</span><span class="p">)</span>
-        <span class="n">meta_path</span> <span class="o">=</span> <span class="n">path_folder</span> <span class="o">+</span> <span class="n">meta_file</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">meta_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
-            <span class="n">meta</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
-        <span class="n">conditions</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaptive</span><span class="p">:</span>
-            <span class="n">conditions</span> <span class="o">=</span> <span class="n">conditions</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;adaptive&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonadaptive</span><span class="p">:</span>
-            <span class="n">conditions</span> <span class="o">=</span> <span class="n">conditions</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;nonadaptive&quot;</span><span class="p">]</span>
-        <span class="n">types</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
-            <span class="n">types</span> <span class="o">=</span> <span class="n">types</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;training&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">online</span><span class="p">:</span>
-            <span class="n">types</span> <span class="o">=</span> <span class="n">types</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;online&quot;</span><span class="p">]</span>
-        <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;runs&quot;</span><span class="p">]:</span>
-            <span class="n">run_condition</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="s2">&quot;experimental_condition&quot;</span><span class="p">]</span>
-            <span class="n">run_type</span> <span class="o">=</span> <span class="n">run</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">run_condition</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">run_type</span> <span class="ow">in</span> <span class="n">types</span><span class="p">):</span>
-                <span class="n">filenames</span> <span class="o">=</span> <span class="n">filenames</span> <span class="o">+</span> <span class="p">[</span><span class="n">run</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]]</span>
+<span class="sd">    This dataset contains electroencephalographic (EEG) recordings of 71 subjects</span>
+<span class="sd">    playing to a visual P300 Brain-Computer Interface (BCI) videogame named Brain Invaders.</span>
+<span class="sd">    The interface uses the oddball paradigm on a grid of 36 symbols (1 Target, 35 Non-Target)</span>
+<span class="sd">    that are flashed pseudo-randomly to elicit the P300 response. EEG data were recorded</span>
+<span class="sd">    using 16 active dry electrodes with up to three game sessions. The experiment took place</span>
+<span class="sd">    at GIPSA-lab, Grenoble, France, in 2014. A full description of the experiment is available</span>
+<span class="sd">    at [1]_. The ID of this dataset is bi2014a.</span>
 
-        <span class="c1"># list the filepaths for this subject</span>
-        <span class="n">subject_paths</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-            <span class="n">subject_paths</span> <span class="o">=</span> <span class="n">subject_paths</span> <span class="o">+</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="n">path_folder</span><span class="p">,</span> <span class="s2">&quot;subject</span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">),</span> <span class="s2">&quot;Session*&quot;</span><span class="p">,</span> <span class="n">filename</span>
-                <span class="p">)</span>
-            <span class="p">)</span>  <span class="c1"># noqa</span>
-        <span class="k">return</span> <span class="n">subject_paths</span></div></div>
+<span class="sd">    **Authors**</span>
+
+<span class="sd">    Investigators: Eng. Louis Korczowski, B. Sc. Ekaterina Ostaschenko</span>
+<span class="sd">    Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,</span>
+<span class="sd">                       M. Sc. Violette Gautheret</span>
+<span class="sd">    Scientific Supervisor: Ph.D. Marco Congedo</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. versionadded:: 0.4.6</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    .. [1] Korczowski, L., Ostaschenko, E., Andreev, A., Cattan, G., Rodrigues, P. L. C.,</span>
+<span class="sd">           Gautheret, V., &amp; Congedo, M. (2019). Brain Invaders calibration-less P300-based</span>
+<span class="sd">           BCI using dry EEG electrodes Dataset (bi2014a).</span>
+<span class="sd">           https://hal.archives-ouvertes.fr/hal-02171575</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">subjects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">65</span><span class="p">)),</span>
+            <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Target</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">NonTarget</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;Brain Invaders 2014a&quot;</span><span class="p">,</span>
+            <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">paradigm</span><span class="o">=</span><span class="s2">&quot;p300&quot;</span><span class="p">,</span>
+            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.5281/zenodo.3266222&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;return data for a single subject&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_bi_get_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
+
+<div class="viewcode-block" id="bi2014a.data_path"><a class="viewcode-back" href="../../../generated/moabb.datasets.bi2014a.html#moabb.datasets.bi2014a.data_path">[docs]</a>    <span class="k">def</span> <span class="nf">data_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">_bi_data_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">update_path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="bi2014b"><a class="viewcode-back" href="../../../generated/moabb.datasets.bi2014b.html#moabb.datasets.bi2014b">[docs]</a><span class="k">class</span> <span class="nc">bi2014b</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;P300 dataset bi2014b from a &quot;Brain Invaders&quot; experiment</span>
+
+<span class="sd">    **Dataset Description**</span>
+
+<span class="sd">    This dataset contains electroencephalographic (EEG) recordings of 38 subjects playing in</span>
+<span class="sd">    pair (19 pairs) to the multi-user version of a visual P300-based Brain-Computer Interface (BCI)</span>
+<span class="sd">    named Brain Invaders. The interface uses the oddball paradigm on a grid of 36 symbols (1 Target,</span>
+<span class="sd">    35 Non-Target) that are flashed pseudo-randomly to elicit a P300 response, an evoked-potential</span>
+<span class="sd">    appearing about 300ms after stimulation onset. EEG data were recorded using 32 active wet</span>
+<span class="sd">    electrodes per subjects (total: 64 electrodes) during three randomized conditions</span>
+<span class="sd">    (Solo1, Solo2, Collaboration). The experiment took place at GIPSA-lab, Grenoble, France, in 2014.</span>
+<span class="sd">    A full description of the experiment is available at [1]_. The ID of this dataset is bi2014b.</span>
+
+<span class="sd">    **Authors**</span>
+
+<span class="sd">    Investigators: Eng. Louis Korczowski, B. Sc. Ekaterina Ostaschenko</span>
+<span class="sd">    Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,</span>
+<span class="sd">                       M. Sc. Violette Gautheret</span>
+<span class="sd">    Scientific Supervisor: Ph.D. Marco Congedo</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. versionadded:: 0.4.6</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    .. [1] Korczowski, L., Ostaschenko, E., Andreev, A., Cattan, G., Rodrigues, P. L. C.,</span>
+<span class="sd">           Gautheret, V., &amp; Congedo, M. (2019). Brain Invaders Solo versus Collaboration:</span>
+<span class="sd">           Multi-User P300-Based Brain-Computer Interface Dataset (bi2014b).</span>
+<span class="sd">           https://hal.archives-ouvertes.fr/hal-02173958</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">subjects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">38</span><span class="p">)),</span>
+            <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Target</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">NonTarget</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;Brain Invaders 2014b&quot;</span><span class="p">,</span>
+            <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">paradigm</span><span class="o">=</span><span class="s2">&quot;p300&quot;</span><span class="p">,</span>
+            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.5281/zenodo.3267301&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;return data for a single subject&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_bi_get_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
+
+<div class="viewcode-block" id="bi2014b.data_path"><a class="viewcode-back" href="../../../generated/moabb.datasets.bi2014b.html#moabb.datasets.bi2014b.data_path">[docs]</a>    <span class="k">def</span> <span class="nf">data_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">_bi_data_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">update_path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="bi2015a"><a class="viewcode-back" href="../../../generated/moabb.datasets.bi2015a.html#moabb.datasets.bi2015a">[docs]</a><span class="k">class</span> <span class="nc">bi2015a</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;P300 dataset bi2015a from a &quot;Brain Invaders&quot; experiment</span>
+
+<span class="sd">    **Dataset Description**</span>
+
+<span class="sd">    This dataset contains electroencephalographic (EEG) recordings</span>
+<span class="sd">    of 43 subjects playing to a visual P300 Brain-Computer Interface (BCI)</span>
+<span class="sd">    videogame named Brain Invaders. The interface uses the oddball paradigm</span>
+<span class="sd">    on a grid of 36 symbols (1 Target, 35 Non-Target) that are flashed</span>
+<span class="sd">    pseudo-randomly to elicit the P300 response. EEG data were recorded using</span>
+<span class="sd">    32 active wet electrodes with three conditions: flash duration 50ms, 80ms</span>
+<span class="sd">    or 110ms. The experiment took place at GIPSA-lab, Grenoble, France, in 2015.</span>
+<span class="sd">    A full description of the experiment is available at [1]_. The ID of this</span>
+<span class="sd">    dataset is bi2015a.</span>
+
+<span class="sd">    **Authors**</span>
+
+<span class="sd">    Investigators: Eng. Louis Korczowski, B. Sc. Martine Cederhout</span>
+<span class="sd">    Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,</span>
+<span class="sd">                       M. Sc. Violette Gautheret</span>
+<span class="sd">    Scientific Supervisor: Ph.D. Marco Congedo</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. versionadded:: 0.4.6</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    .. [1] Korczowski, L., Cederhout, M., Andreev, A., Cattan, G., Rodrigues, P. L. C.,</span>
+<span class="sd">           Gautheret, V., &amp; Congedo, M. (2019). Brain Invaders calibration-less P300-based</span>
+<span class="sd">           BCI with modulation of flash duration Dataset (bi2015a)</span>
+<span class="sd">           https://hal.archives-ouvertes.fr/hal-02172347</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">subjects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">44</span><span class="p">)),</span>
+            <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Target</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">NonTarget</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;Brain Invaders 2015a&quot;</span><span class="p">,</span>
+            <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">paradigm</span><span class="o">=</span><span class="s2">&quot;p300&quot;</span><span class="p">,</span>
+            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.5281/zenodo.3266929&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;return data for a single subject&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_bi_get_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
+
+<div class="viewcode-block" id="bi2015a.data_path"><a class="viewcode-back" href="../../../generated/moabb.datasets.bi2015a.html#moabb.datasets.bi2015a.data_path">[docs]</a>    <span class="k">def</span> <span class="nf">data_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">_bi_data_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">update_path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="bi2015b"><a class="viewcode-back" href="../../../generated/moabb.datasets.bi2015b.html#moabb.datasets.bi2015b">[docs]</a><span class="k">class</span> <span class="nc">bi2015b</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;P300 dataset bi2015b from a &quot;Brain Invaders&quot; experiment</span>
+
+<span class="sd">    **Dataset Description**</span>
+
+<span class="sd">    This dataset contains electroencephalographic (EEG) recordings</span>
+<span class="sd">    of 44 subjects playing in pair to the multi-user version of a visual</span>
+<span class="sd">    P300 Brain-Computer Interface (BCI) named Brain Invaders. The interface</span>
+<span class="sd">    uses the oddball paradigm on a grid of 36 symbols (1 or 2 Target,</span>
+<span class="sd">    35 or 34 Non-Target) that are flashed pseudo-randomly to elicit the</span>
+<span class="sd">    P300 response. EEG data were recorded using 32 active wet electrodes</span>
+<span class="sd">    per subjects (total: 64 electrodes) during four randomised conditions</span>
+<span class="sd">    (Cooperation 1-Target, Cooperation 2-Targets, Competition 1-Target,</span>
+<span class="sd">    Competition 2-Targets). The experiment took place at GIPSA-lab, Grenoble,</span>
+<span class="sd">    France, in 2015. A full description of the experiment is available at</span>
+<span class="sd">    A full description of the experiment is available at [1]_. The ID of this</span>
+<span class="sd">    dataset is bi2015a.</span>
+
+<span class="sd">    **Authors**</span>
+
+<span class="sd">    Investigators: Eng. Louis Korczowski, B. Sc. Martine Cederhout</span>
+<span class="sd">    Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,</span>
+<span class="sd">                       M. Sc. Violette Gautheret</span>
+<span class="sd">    Scientific Supervisor: Ph.D. Marco Congedo</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. versionadded:: 0.4.6</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    .. [1] Korczowski, L., Cederhout, M., Andreev, A., Cattan, G., Rodrigues, P. L. C.,</span>
+<span class="sd">           Gautheret, V., &amp; Congedo, M. (2019). Brain Invaders Cooperative versus Competitive:</span>
+<span class="sd">           Multi-User P300-based Brain-Computer Interface Dataset (bi2015b)</span>
+<span class="sd">           https://hal.archives-ouvertes.fr/hal-02172347</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">subjects</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">45</span><span class="p">)),</span>
+            <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">Target</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">NonTarget</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;Brain Invaders 2015b&quot;</span><span class="p">,</span>
+            <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">paradigm</span><span class="o">=</span><span class="s2">&quot;p300&quot;</span><span class="p">,</span>
+            <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;https://doi.org/10.5281/zenodo.3267307&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_single_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;return data for a single subject&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_bi_get_subject_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
+
+<div class="viewcode-block" id="bi2015b.data_path"><a class="viewcode-back" href="../../../generated/moabb.datasets.bi2015b.html#moabb.datasets.bi2015b.data_path">[docs]</a>    <span class="k">def</span> <span class="nf">data_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_update</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">_bi_data_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">force_update</span><span class="p">,</span> <span class="n">update_path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span></div></div>
 </pre></div>
 
     </div>
