@@ -134,4 +134,4 @@ sns.pointplot(data=results, y="score", x="pipeline", ax=ax, zorder=1, palette="S
 ax.set_ylabel("ROC AUC")
 ax.set_ylim(0.5, 1)
 
-fig.show()
+plt.show()
