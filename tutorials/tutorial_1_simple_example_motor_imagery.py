@@ -168,4 +168,4 @@ results["subj"] = results["subject"].apply(str)
 sns.barplot(
     x="score", y="subj", hue="session", data=results, orient="h", palette="viridis", ax=ax
 )
-fig.show()
+plt.show()
