@@ -163,4 +163,4 @@ sns.stripplot(
 sns.pointplot(data=results, y="score", x="pipeline", ax=ax, zorder=1, palette="Set1")
 ax.set_ylabel("Accuracy")
 ax.set_ylim(0.1, 0.6)
-fig.show()
+plt.show()
