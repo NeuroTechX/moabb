@@ -35,24 +35,14 @@ def benchmark(
     possible to include or exclude specific datasets and to choose the type of
     evaluation.
 
-    In case of using include_datasets or exclude_dataset, you can get possible dataset options
-    for each paradigm as shown in this example -
-
-    # Replace paradigm name as required
-
-    p = moabb.paradigms.SSVEP()
-
-    # Alternatively
-
-    p = moabb.datasets.utils.dataset_search("ssvep")
-
-    # For the class names
-
-    print(p.datasets)
-
-    # For the key_codes
-
-    print([d.code for d in p.datasets])
+    To define the include_datasets or exclude_dataset, you could start from the full dataset list,
+    using for example the following code:
+    > # Choose your paradigm
+    > p = moabb.paradigms.SSVEP()
+    > # Get the class names
+    > print(p.datasets)
+    > # Get the dataset code
+    > print([d.code for d in p.datasets])
 
     Parameters
     ----------
@@ -74,11 +64,11 @@ def benchmark(
         File path to context.yml file that describes context parameters.
         If none, assumes all defaults. Must contain an entry for all
         paradigms described in the pipelines
-    include_datasets: list of str
+    include_datasets: list of str or Dataset object
         Datasets to include in the benchmark run. By default all suitable datasets are taken.
         If arguments are given for both include_datasets as well as exclude_datasets,
         include_datasets will take precedence and exclude_datasets will be neglected.
-    exclude_datasets: list of str
+    exclude_datasets: list of str or Dataset object
         Datasets to exclude from the benchmark run.
 
     Returns
