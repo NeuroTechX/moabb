@@ -31,7 +31,7 @@ class FM(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        """transform. """
+        """transform."""
         xphase = np.unwrap(np.angle(signal.hilbert(X, axis=-1)))
         return np.median(self.freq * np.diff(xphase, axis=-1) / (2 * np.pi), axis=-1)
 
