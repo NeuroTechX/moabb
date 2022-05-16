@@ -58,7 +58,7 @@ class Vectorizer(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        """transform. """
+        """transform."""
         return np.reshape(X, (X.shape[0], -1))
 
 
