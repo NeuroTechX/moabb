@@ -23,7 +23,7 @@ Enhancements
 Bugs
 ~~~~
 
-- None
+- Correct CI error due to black (:gh:`292` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~

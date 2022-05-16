@@ -196,9 +196,9 @@ class Test_LambdaWarning(Test_WithinSess):
 
     def test_lambda_warning(self):
         def explicit_kernel(x):
-            return x ** 3
+            return x**3
 
-        c1 = DummyClassifier(kernel=lambda x: x ** 2)
+        c1 = DummyClassifier(kernel=lambda x: x**2)
         c2 = DummyClassifier(kernel=lambda x: 5 * x)
 
         c3 = DummyClassifier(kernel=explicit_kernel)
