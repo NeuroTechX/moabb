@@ -223,10 +223,10 @@ each subject and pipeline.
 
  .. code-block:: none
 
-    SSVEP MAMEM3-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    SSVEP MAMEM3-WithinSession:  50%|#####     | 1/2 [00:18<00:18, 18.40s/it]    SSVEP MAMEM3-WithinSession: 100%|##########| 2/2 [00:37<00:00, 18.60s/it]    SSVEP MAMEM3-WithinSession: 100%|##########| 2/2 [00:37<00:00, 18.57s/it]
+    SSVEP MAMEM3-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    SSVEP MAMEM3-WithinSession:  50%|#####     | 1/2 [00:13<00:13, 13.86s/it]    SSVEP MAMEM3-WithinSession: 100%|##########| 2/2 [00:27<00:00, 13.58s/it]    SSVEP MAMEM3-WithinSession: 100%|##########| 2/2 [00:27<00:00, 13.63s/it]
           score      time  samples  ... n_sessions       dataset  pipeline
-    0  0.688889  0.047003     45.0  ...          1  SSVEP MAMEM3       CCA
-    1  0.266667  0.048329     45.0  ...          1  SSVEP MAMEM3       CCA
+    0  0.688889  0.046173     45.0  ...          1  SSVEP MAMEM3       CCA
+    1  0.266667  0.045392     45.0  ...          1  SSVEP MAMEM3       CCA
 
     [2 rows x 9 columns]
 
@@ -294,7 +294,7 @@ And the computation time in seconds
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  37.334 seconds)
+   **Total running time of the script:** ( 0 minutes  27.443 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_within_session_ssvep.py:

@@ -24,6 +24,7 @@ Bugs
 ~~~~
 
 - Correct CI error due to black (:gh:`292` by `Sylvain Chevallier`_)
+- Preload Schirrmeister2017 raw files (:gh:`290` by `Pierre Guetschel`_)
 
 API changes
 ~~~~~~~~~~~
