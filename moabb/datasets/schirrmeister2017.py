@@ -82,7 +82,7 @@ class Schirrmeister2017(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         train_raw, test_raw = [
-            mne.io.read_raw_edf(path, infer_types=True)
+            mne.io.read_raw_edf(path, infer_types=True, preload=True)
             for path in self.data_path(subject)
         ]
 
