@@ -110,7 +110,7 @@ class BaseMotorImagery(BaseParadigm):
 
 
 class SinglePass(BaseMotorImagery):
-    """Single Bandpass filter motot Imagery.
+    """Single Bandpass filter motor Imagery.
 
     Motor imagery paradigm with only one bandpass filter (default 8 to 32 Hz)
 
