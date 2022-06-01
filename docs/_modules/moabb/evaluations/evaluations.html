@@ -610,63 +610,60 @@
         <span class="n">run_pipes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">:</span>
             <span class="n">run_pipes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">not_yet_computed</span><span class="p">(</span><span class="n">pipelines</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">subject</span><span class="p">))</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">run_pipes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">run_pipes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
 
-            <span class="c1"># get the data</span>
-            <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span>
-                <span class="n">dataset</span><span class="p">,</span> <span class="n">return_epochs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">return_epochs</span>
-            <span class="p">)</span>
+        <span class="c1"># get the data</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">return_epochs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">return_epochs</span><span class="p">)</span>
 
-            <span class="c1"># encode labels</span>
-            <span class="n">le</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mne_labels</span> <span class="k">else</span> <span class="n">le</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="c1"># encode labels</span>
+        <span class="n">le</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mne_labels</span> <span class="k">else</span> <span class="n">le</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 
-            <span class="c1"># extract metadata</span>
-            <span class="n">groups</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">sessions</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">n_subjects</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">)</span>
+        <span class="c1"># extract metadata</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">sessions</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">n_subjects</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">)</span>
 
-            <span class="n">scorer</span> <span class="o">=</span> <span class="n">get_scorer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paradigm</span><span class="o">.</span><span class="n">scoring</span><span class="p">)</span>
+        <span class="n">scorer</span> <span class="o">=</span> <span class="n">get_scorer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paradigm</span><span class="o">.</span><span class="n">scoring</span><span class="p">)</span>
 
-            <span class="c1"># perform leave one subject out CV</span>
-            <span class="n">cv</span> <span class="o">=</span> <span class="n">LeaveOneGroupOut</span><span class="p">()</span>
-            <span class="c1"># Progressbar at subject level</span>
-            <span class="k">for</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
-                <span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">),</span>
-                <span class="n">total</span><span class="o">=</span><span class="n">n_subjects</span><span class="p">,</span>
-                <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">-CrossSubject&quot;</span><span class="p">,</span>
-            <span class="p">):</span>
+        <span class="c1"># perform leave one subject out CV</span>
+        <span class="n">cv</span> <span class="o">=</span> <span class="n">LeaveOneGroupOut</span><span class="p">()</span>
+        <span class="c1"># Progressbar at subject level</span>
+        <span class="k">for</span> <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">groups</span><span class="p">),</span>
+            <span class="n">total</span><span class="o">=</span><span class="n">n_subjects</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dataset</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">-CrossSubject&quot;</span><span class="p">,</span>
+        <span class="p">):</span>
 
-                <span class="n">subject</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">test</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-                <span class="c1"># now we can check if this subject has results</span>
-                <span class="n">run_pipes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">not_yet_computed</span><span class="p">(</span><span class="n">pipelines</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
+            <span class="n">subject</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">test</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="c1"># now we can check if this subject has results</span>
+            <span class="n">run_pipes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">not_yet_computed</span><span class="p">(</span><span class="n">pipelines</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">subject</span><span class="p">)</span>
 
-                <span class="c1"># iterate over pipelines</span>
-                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">run_pipes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">t_start</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
-                    <span class="n">model</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">train</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">train</span><span class="p">])</span>
-                    <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start</span>
+            <span class="c1"># iterate over pipelines</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">run_pipes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">t_start</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">train</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">train</span><span class="p">])</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start</span>
 
-                    <span class="c1"># we eval on each session</span>
-                    <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">sessions</span><span class="p">[</span><span class="n">test</span><span class="p">]):</span>
-                        <span class="n">ix</span> <span class="o">=</span> <span class="n">sessions</span><span class="p">[</span><span class="n">test</span><span class="p">]</span> <span class="o">==</span> <span class="n">session</span>
-                        <span class="n">score</span> <span class="o">=</span> <span class="n">_score</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">[</span><span class="n">test</span><span class="p">[</span><span class="n">ix</span><span class="p">]],</span> <span class="n">y</span><span class="p">[</span><span class="n">test</span><span class="p">[</span><span class="n">ix</span><span class="p">]],</span> <span class="n">scorer</span><span class="p">)</span>
+                <span class="c1"># we eval on each session</span>
+                <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">sessions</span><span class="p">[</span><span class="n">test</span><span class="p">]):</span>
+                    <span class="n">ix</span> <span class="o">=</span> <span class="n">sessions</span><span class="p">[</span><span class="n">test</span><span class="p">]</span> <span class="o">==</span> <span class="n">session</span>
+                    <span class="n">score</span> <span class="o">=</span> <span class="n">_score</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">[</span><span class="n">test</span><span class="p">[</span><span class="n">ix</span><span class="p">]],</span> <span class="n">y</span><span class="p">[</span><span class="n">test</span><span class="p">[</span><span class="n">ix</span><span class="p">]],</span> <span class="n">scorer</span><span class="p">)</span>
 
-                        <span class="n">nchan</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="n">X</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;nchan&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">)</span> <span class="k">else</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                        <span class="p">)</span>
-                        <span class="n">res</span> <span class="o">=</span> <span class="p">{</span>
-                            <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
-                            <span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
-                            <span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="n">subject</span><span class="p">,</span>
-                            <span class="s2">&quot;session&quot;</span><span class="p">:</span> <span class="n">session</span><span class="p">,</span>
-                            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="n">score</span><span class="p">,</span>
-                            <span class="s2">&quot;n_samples&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">),</span>
-                            <span class="s2">&quot;n_channels&quot;</span><span class="p">:</span> <span class="n">nchan</span><span class="p">,</span>
-                            <span class="s2">&quot;pipeline&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-                        <span class="p">}</span>
+                    <span class="n">nchan</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;nchan&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">BaseEpochs</span><span class="p">)</span> <span class="k">else</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
+                        <span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="n">dataset</span><span class="p">,</span>
+                        <span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="n">subject</span><span class="p">,</span>
+                        <span class="s2">&quot;session&quot;</span><span class="p">:</span> <span class="n">session</span><span class="p">,</span>
+                        <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="n">score</span><span class="p">,</span>
+                        <span class="s2">&quot;n_samples&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">),</span>
+                        <span class="s2">&quot;n_channels&quot;</span><span class="p">:</span> <span class="n">nchan</span><span class="p">,</span>
+                        <span class="s2">&quot;pipeline&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                    <span class="p">}</span>
 
-                        <span class="k">yield</span> <span class="n">res</span></div>
+                    <span class="k">yield</span> <span class="n">res</span></div>
 
 <div class="viewcode-block" id="CrossSubjectEvaluation.is_valid"><a class="viewcode-back" href="../../../generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span></div></div>
