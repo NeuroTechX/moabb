@@ -150,16 +150,6 @@ class Lee2019(BaseDataset):
             stim_chan[:, None], ["STI 014"], "stim", sfreq, verbose="WARNING"
         )
 
-        # Add events
-        event_arr = [
-            event_times_in_samples,
-            [0] * len(event_times_in_samples),
-            event_id,
-        ]
-        raw.info["events"] = [
-            dict(list=np.array(event_arr).T, channels=None),
-        ]
-
         # Add EMG and stim channels
         raw = raw.add_channels([emg_raw, stim_raw])
         return raw
