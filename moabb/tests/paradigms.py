@@ -3,6 +3,7 @@ import unittest
 
 import numpy as np
 from mne import BaseEpochs
+from mne.io import BaseRaw
 
 from moabb.datasets.fake import FakeDataset
 from moabb.paradigms import (
@@ -50,6 +51,13 @@ class Test_MotorImagery(unittest.TestCase):
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         self.assertIsInstance(epochs, BaseEpochs)
+        # should return raws
+        raw, _, _ = paradigm.get_data(dataset, subjects=[1], return_raws=True)
+        self.assertIsInstance(raw, BaseRaw)
+        # should raise error
+        self.assertRaises(
+            paradigm.get_data, dataset, subjects=[1], return_epochs=True, return_raws=True
+        )
 
     def test_BaseImagery_channel_order(self):
         """test if paradigm return correct channel order, see issue #227"""
@@ -178,6 +186,13 @@ class Test_P300(unittest.TestCase):
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         self.assertIsInstance(epochs, BaseEpochs)
+        # should return raws
+        raw, _, _ = paradigm.get_data(dataset, subjects=[1], return_raws=True)
+        self.assertIsInstance(raw, BaseRaw)
+        # should raise error
+        self.assertRaises(
+            paradigm.get_data, dataset, subjects=[1], return_epochs=True, return_raws=True
+        )
 
     def test_BaseP300_channel_order(self):
         """test if paradigm return correct channel order, see issue #227"""
@@ -271,6 +286,13 @@ class Test_SSVEP(unittest.TestCase):
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         self.assertIsInstance(epochs, BaseEpochs)
+        # should return raws
+        raw, _, _ = paradigm.get_data(dataset, subjects=[1], return_raws=True)
+        self.assertIsInstance(raw, BaseRaw)
+        # should raise error
+        self.assertRaises(
+            paradigm.get_data, dataset, subjects=[1], return_epochs=True, return_raws=True
+        )
 
     def test_BaseSSVEP_channel_order(self):
         """test if paradigm return correct channel order, see issue #227"""
