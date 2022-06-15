@@ -138,6 +138,10 @@ class BaseP300(BaseParadigm):
 
         """
 
+        if return_epochs and return_raws:
+            message = "Select only return_epochs or return_raws, not both"
+            raise ValueError(message)
+
         # get events id
         event_id = self.used_events(dataset)
 

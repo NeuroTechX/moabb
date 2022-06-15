@@ -105,6 +105,10 @@ class BaseParadigm(metaclass=ABCMeta):
 
         """
 
+        if return_epochs and return_raws:
+            message = "Select only return_epochs or return_raws, not both"
+            raise ValueError(message)
+
         # get events id
         event_id = self.used_events(dataset)
 
@@ -248,7 +252,7 @@ class BaseParadigm(metaclass=ABCMeta):
 
         if return_epochs and return_raws:
             message = "Select only return_epochs or return_raws, not both"
-            raise AssertionError(message)
+            raise ValueError(message)
 
         data = dataset.get_data(subjects)
         self.prepare_process(dataset)
@@ -277,7 +281,6 @@ class BaseParadigm(metaclass=ABCMeta):
                         X.append(x)
                     elif return_raws:
                         X.append(x)
-                        labels.append(lbs)
                     else:
                         X = np.append(X, x, axis=0) if len(X) else x
                     labels = np.append(labels, lbs, axis=0)
