@@ -108,13 +108,13 @@ class BaseMAMEM(BaseDataset):
             if fnamed[4] == "x":
                 continue
             session_name = "session_0"
-            if self.code == "SSVEP MAMEM3":
+            if self.code == "MAMEM3_SSVEP":
                 repetition = len(fnamed) - 10
                 run_name = f"run_{(ord(fnamed[4])-97)*2 + repetition}"
             else:
                 run_name = f"run_{ord(fnamed[4])-97}"
 
-            if self.code == "SSVEP MAMEM3":
+            if self.code == "MAMEM3_SSVEP":
                 m = loadmat(fpath)
                 ch_names = [e[0] for e in m["info"][0, 0][9][0]]
                 sfreq = 128
@@ -125,7 +125,7 @@ class BaseMAMEM(BaseDataset):
                 ch_names = [f"E{i + 1}" for i in range(0, 256)]
                 ch_names.append("stim")
                 sfreq = 250
-                if self.code == "SSVEP MAMEM2":
+                if self.code == "MAMEM2_SSVEP":
                     labels = m["labels"]
                 else:
                     labels = None
