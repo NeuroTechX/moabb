@@ -271,7 +271,7 @@ class MAMEM1(BaseMAMEM):
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=1,
             # 5 runs per sessions, except 3 for S001, S003, S008, 4 for S004
-            code="SSVEP MAMEM1",
+            code="MAMEM1_SSVEP",
             doi="https://arxiv.org/abs/1602.00904",
             figshare_id=2068677,
         )
@@ -355,7 +355,7 @@ class MAMEM2(BaseMAMEM):
         super().__init__(
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=1,
-            code="SSVEP MAMEM2",
+            code="MAMEM2_SSVEP",
             doi="https://arxiv.org/abs/1602.00904",
             figshare_id=3153409,
         )
@@ -454,7 +454,7 @@ class MAMEM3(BaseMAMEM):
                 "12.00": 33025,
             },
             sessions_per_subject=1,
-            code="SSVEP MAMEM3",
+            code="MAMEM3_SSVEP",
             doi="https://arxiv.org/abs/1602.00904",
             figshare_id=3413851,
         )
