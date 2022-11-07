@@ -76,7 +76,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-18.04]
-        python-version: ["3.7"]
+        python-version: ["3.8"]
     steps:
       - uses: actions/checkout@v2
 
@@ -85,4 +85,4 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: pre-commit/action@v2.0.0
+      - uses: pre-commit/action@v3.0.0
