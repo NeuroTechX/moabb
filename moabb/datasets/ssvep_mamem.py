@@ -150,7 +150,7 @@ class BaseMAMEM(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         sub = f"{subject:02d}"
-        sign = self.code.split()[1]
+        sign = self.code.split("_")[0]
         key_dest = f"MNE-{sign.lower():s}-data"
         path = osp.join(get_dataset_path(sign, path), key_dest)
 
