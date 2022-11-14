@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 class BaseParadigm(metaclass=ABCMeta):
     """Base Paradigm."""
 
+    @abstractmethod
     def __init__(self):
         pass
 
@@ -62,7 +63,8 @@ class BaseParadigm(metaclass=ABCMeta):
             The dataset corresponding to the raw file. mainly use to access
             dataset specific information.
         """
-        pass
+        if dataset is not None:
+            pass
 
     def process_raw(self, raw, dataset, return_epochs=False):  # noqa: C901
         """

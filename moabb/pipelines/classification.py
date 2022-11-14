@@ -68,7 +68,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
                 if f.replace(".", "", 1).isnumeric():
                     S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
                     corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0, 1]
-            y.append(self.one_hot[max(corr_f, key=lambda k: corr_f[k])])
+            y.append(self.one_hot[max(corr_f, key=corr_f.get)])
         return y
 
     def predict_proba(self, X):
