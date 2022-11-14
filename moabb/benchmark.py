@@ -16,10 +16,11 @@ from moabb.pipelines.utils import generate_paradigms, parse_pipelines_from_direc
 
 log = logging.getLogger(__name__)
 
-
+# flake8: noqa: C901
 def benchmark(
     pipelines="./pipelines/",
     evaluations=None,
+    select_paradigms=None,
     results="./results/",
     force=False,
     output="./",
@@ -34,6 +35,9 @@ def benchmark(
     Load from saved pipeline configurations to determine associated paradigms. It is
     possible to include or exclude specific datasets and to choose the type of
     evaluation.
+
+    If particular paradigms are mentioned through select_paradigms, only the pipelines corresponding to those paradigms
+    will be run
 
     To define the include_datasets or exclude_dataset, you could start from the full dataset list,
     using for example the following code:
@@ -50,6 +54,11 @@ def benchmark(
         Folder containing the pipelines to evaluate
     evaluations: list of str
         If to restrict the types of evaluations to be run. By default all 3 base types are run
+        Can be a list of these elements ["WithinSession", "CrossSession", "CrossSubject"]
+    select_paradigms: list of str
+        To restrict the paradigms on which evaluations should be run.
+        Can be a list of these elements ['LeftRightImagery', 'MotorImagery', 'FilterBankSSVEP', 'SSVEP',
+        'FilterBankMotorImagery']
     results: str
         Folder to store the results
     force: bool
@@ -96,6 +105,12 @@ def benchmark(
             context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
     paradigms = generate_paradigms(pipeline_configs, context_params, log)
+    if select_paradigms is not None:
+        for p in select_paradigms:
+            if p in paradigms.keys():
+                paradigms.pop(p)
+
+    log.debug(f"The paradigms being run are {paradigms}")
 
     if len(context_params) == 0:
         for paradigm in paradigms:
