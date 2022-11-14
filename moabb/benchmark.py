@@ -16,7 +16,7 @@ from moabb.pipelines.utils import generate_paradigms, parse_pipelines_from_direc
 
 log = logging.getLogger(__name__)
 
-# flake8: noqa: C901
+
 def benchmark(
     pipelines="./pipelines/",
     evaluations=None,
@@ -105,10 +105,7 @@ def benchmark(
             context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
     paradigms = generate_paradigms(pipeline_configs, context_params, log)
-    if select_paradigms is not None:
-        for p in select_paradigms:
-            if p in paradigms.keys():
-                paradigms.pop(p)
+    paradigms = {p: paradigms[p] for p in select_paradigms}
 
     log.debug(f"The paradigms being run are {paradigms}")
 
