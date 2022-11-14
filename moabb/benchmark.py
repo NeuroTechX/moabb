@@ -56,7 +56,7 @@ def benchmark(
         Force evaluation of cached pipelines
     output: str
         Folder to store the analysis results
-    threads: int
+    n_jobs: int
         Number of threads to use for running parallel jobs
     plot: bool
         Plot results after computing
@@ -138,7 +138,7 @@ def benchmark(
             df_eval.append(paradigm_results)
 
         # Combining the FilterBank and the base Paradigm
-        combine_paradigms = ["SSVEP", "MotorImagery"]
+        combine_paradigms = ["SSVEP"]
         for p in combine_paradigms:
             if f"FilterBank{p}" in eval_results.keys() and f"{p}" in eval_results.keys():
                 eval_results[f"{p}"] = pd.concat(
