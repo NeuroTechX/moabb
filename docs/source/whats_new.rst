@@ -26,6 +26,7 @@ Bugs
 - Correct CI error due to black (:gh:`292` by `Sylvain Chevallier`_)
 - Preload Schirrmeister2017 raw files (:gh:`290` by `Pierre Guetschel`_)
 - Incorrect event assignation for Lee2019 in MNE >= 1.0.0 (:gh:`298` by `Sylvain Chevallier`_)
+- Correct usage of name simplification function in analyze (:gh:`306` by `Divyesh Narayanan`_)
 
 API changes
 ~~~~~~~~~~~
