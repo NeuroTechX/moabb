@@ -161,6 +161,7 @@
 <div class="viewcode-block" id="BaseParadigm"><a class="viewcode-back" href="../../../generated/moabb.paradigms.base.BaseParadigm.html#moabb.paradigms.base.BaseParadigm">[docs]</a><span class="k">class</span> <span class="nc">BaseParadigm</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base Paradigm.&quot;&quot;&quot;</span>
 
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
@@ -211,7 +212,8 @@
 <span class="sd">            The dataset corresponding to the raw file. mainly use to access</span>
 <span class="sd">            dataset specific information.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">if</span> <span class="n">dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseParadigm.process_raw"><a class="viewcode-back" href="../../../generated/moabb.paradigms.base.BaseParadigm.html#moabb.paradigms.base.BaseParadigm.process_raw">[docs]</a>    <span class="k">def</span> <span class="nf">process_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">return_epochs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  <span class="c1"># noqa: C901</span>
         <span class="sd">&quot;&quot;&quot;</span>
