@@ -72,7 +72,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
-    "m2r2",
+    #  "m2r2",
     "numpydoc",
 ]
 

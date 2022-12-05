@@ -54,7 +54,7 @@ class Nakanishi2015(BaseDataset):
                 "12.75": 11,
                 "14.75": 12,
             },
-            code="SSVEP Nakanishi",
+            code="Nakanishi_SSVEP",
             interval=[0.15, 4.3],
             paradigm="ssvep",
             doi="doi.org/10.1371/journal.pone.0140703",

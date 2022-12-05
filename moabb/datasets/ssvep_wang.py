@@ -104,7 +104,7 @@ class Wang2016(BaseDataset):
             subjects=list(range(1, 35)),
             sessions_per_subject=1,
             events=self._events,
-            code="SSVEP Wang",
+            code="Wang_SSVEP",
             interval=[0.5, 5.5],
             paradigm="ssvep",
             doi="doi://10.1109/TNSRE.2016.2627556",
