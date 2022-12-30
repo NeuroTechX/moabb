@@ -36,7 +36,7 @@ matplotlib.use("Agg")
 # -- Project information -----------------------------------------------------
 
 project = "moabb"
-copyright = "2018-2021, Alexandre Barachant, Sylvain Chevallier"
+copyright = "2018-2023 MOABB contributors"
 author = "Alexandre Barachant, Vinay Jayaram, Sylvain Chevallier"
 
 # The short X.Y version
@@ -72,7 +72,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
-    #  "m2r2",
+    "m2r2",
     "numpydoc",
 ]
 
@@ -194,7 +194,7 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -222,9 +222,9 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # theme further.
 html_theme_options = {
     # Navigation bar title. (Default: ``project`` value)
-    # 'navbar_title': "Demo",
+    "navbar_title": "MOABB documentation",
     # Tab name for entire site. (Default: "Site")
-    # 'navbar_site_name': "Site",
+    "navbar_site_name": "MOABB",
     # A list of tuples containing pages or urls to link to.
     # Valid tuples should be in the following forms:
     #    (name, page)                 # a link to a page
@@ -347,7 +347,7 @@ texinfo_documents = [
         "moabb Documentation",
         author,
         "moabb",
-        "One line description of project.",
+        "Mother of all BCI benchmarks.",
         "Miscellaneous",
     ),
 ]
