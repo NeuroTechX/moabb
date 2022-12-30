@@ -1,7 +1,7 @@
 """
-===================
+=====================
 Within Session SSVEP
-===================
+=====================
 
 This Example show how to perform a within-session SSVEP analysis on the
 MAMEM dataset 3, using a CCA pipeline.

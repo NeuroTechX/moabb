@@ -111,7 +111,7 @@ sns.stripplot(
     zorder=1,
     palette="Set1",
 )
-sns.pointplot(data=results, y="score", x="pipeline", ax=axes[0], zorder=1, palette="Set1")
+sns.pointplot(data=results, y="score", x="pipeline", ax=axes[0], palette="Set1")
 
 axes[0].set_ylabel("ROC AUC")
 axes[0].set_ylim(0.5, 1)
