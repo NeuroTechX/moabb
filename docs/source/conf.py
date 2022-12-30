@@ -222,7 +222,7 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # theme further.
 html_theme_options = {
     # Navigation bar title. (Default: ``project`` value)
-    "navbar_title": "MOABB documentation",
+    "navbar_title": "MOABB",
     # Tab name for entire site. (Default: "Site")
     "navbar_site_name": "MOABB",
     # A list of tuples containing pages or urls to link to.
