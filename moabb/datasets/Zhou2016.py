@@ -9,11 +9,11 @@ import zipfile as z
 
 import numpy as np
 from mne.channels import make_standard_montage
-from mne.datasets.utils import _get_path
 from mne.io import read_raw_cnt
 from pooch import retrieve
 
 from .base import BaseDataset
+from .download import get_dataset_path
 
 
 DATA_PATH = "https://ndownloader.figshare.com/files/3662952"
@@ -114,8 +114,7 @@ class Zhou2016(BaseDataset):
     ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
-        key = "MNE_DATASETS_ZHOU2016_PATH"
-        path = _get_path(path, key, "Zhou 2016")
+        path = get_dataset_path("ZHOU", path)
         basepath = os.path.join(path, "MNE-zhou-2016")
         if not os.path.isdir(basepath):
             os.makedirs(basepath)
