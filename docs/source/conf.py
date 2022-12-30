@@ -69,7 +69,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
     "sphinx.ext.mathjax",
-    "sphinx.ext.viewcode",
+    # "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
     "m2r2",
@@ -79,24 +79,29 @@ extensions = [
 
 def linkcode_resolve(domain, info):  # noqa: C901
     """Determine the URL corresponding to a Python object.
+
     Parameters
     ----------
     domain : str
         Only useful when 'py'.
     info : dict
         With keys "module" and "fullname".
+
     Returns
     -------
     url : str
         The code URL.
+
     Notes
     -----
     This has been adapted to deal with our "verbose" decorator.
     Adapted from SciPy (doc/source/conf.py).
     """
-    import mne
+    repo = "https://github.com/NeuroTechX/moabb"
 
     if domain != "py":
+        return None
+    if not info["module"]:
         return None
 
     modname = info["module"]
@@ -112,9 +117,6 @@ def linkcode_resolve(domain, info):  # noqa: C901
             obj = getattr(obj, part)
         except Exception:
             return None
-    # deal with our decorators properly
-    while hasattr(obj, "__wrapped__"):
-        obj = obj.__wrapped__
 
     try:
         fn = inspect.getsourcefile(obj)
@@ -127,7 +129,7 @@ def linkcode_resolve(domain, info):  # noqa: C901
             fn = None
     if not fn:
         return None
-    fn = op.relpath(fn, start=op.dirname(mne.__file__))
+    fn = op.relpath(fn, start=op.dirname(moabb.__file__))
     fn = "/".join(op.normpath(fn).split(os.sep))  # in case on Windows
 
     try:
@@ -140,15 +142,11 @@ def linkcode_resolve(domain, info):  # noqa: C901
     else:
         linespec = ""
 
-    if "dev" in moabb.__version__:
-        kind = "master"
-    else:
-        kind = "maint/%s" % (".".join(mne.__version__.split(".")[:2]))
-    return "http://github.com/NeuroTechX/moabb/blob/%s/moabb/%s%s" % (  # noqa
-        kind,
-        fn,
-        linespec,
-    )
+    # if "dev" in moabb.__version__:
+    #     kind = "develop"
+    # else:
+    #     kind = "master"
+    return f"{repo}/blob/develop/moabb/{fn}{linespec}"
 
 
 napoleon_google_docstring = False
