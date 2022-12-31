@@ -17,7 +17,7 @@ SPOT_PILOT_P300_URL = (
 class Sosulski2019(BaseDataset):
     """P300 dataset from initial spot study.
 
-    Dataset [1], study on spatial transfer between SOAs [2], actual paradigm / online optimization [3].
+    Dataset [1]_, study on spatial transfer between SOAs [2]_, actual paradigm / online optimization [3]_.
 
     **Dataset Description**
 
@@ -49,20 +49,30 @@ class Sosulski2019(BaseDataset):
     only scalp EEG and the EOG channel is available in all subjects. The markers in the marker file indicate the
     onset of target tones (21) and non-target tones (1).
 
-    WARNING: Note that this wrapper currently only loads the second part of the experiment and uses pseudo-sessions
-    to achieve the functionality to handle different conditions in MOABB. As a result, the statistical testing
-    features of MOABB cannot be used for this dataset.
+    .. caution::
+
+       Note that this wrapper currently only loads the second part of the experiment and uses pseudo-sessions
+       to achieve the functionality to handle different conditions in MOABB. As a result, the statistical testing
+       features of MOABB cannot be used for this dataset.
 
     References
     ----------
 
     .. [1] Sosulski, J., Tangermann, M.: Electroencephalogram signals recorded from 13 healthy subjects during an
-    auditory oddball paradigm under different stimulus onset asynchrony conditions. Dataset. DOI: 10.6094/UNIFR/154576
+           auditory oddball paradigm under different stimulus onset asynchrony conditions.
+           Dataset. DOI: 10.6094/UNIFR/154576
+
     .. [2] Sosulski, J., Tangermann, M.: Spatial filters for auditory evoked potentials transfer between different
-    experimental conditions. Graz BCI Conference. 2019.
-    .. [3] Sosulski, J., Hübner, D., Klein, A., Tangermann, M.:  Online Optimization of Stimulation Speed in an Auditory Brain-Computer Interface under Time Constraints. arXiv preprint. 2021.
+           experimental conditions. Graz BCI Conference. 2019.
+
+    .. [3] Sosulski, J., Hübner, D., Klein, A., Tangermann, M.:  Online Optimization of Stimulation Speed in
+           an Auditory Brain-Computer Interface under Time Constraints. arXiv preprint. 2021.
+
+    Notes
+    -----
 
     .. versionadded:: 0.4.5
+
     """
 
     def __init__(

@@ -325,7 +325,7 @@ class Lee2019_ERP(Lee2019):
     and gazing at the next target character. The participant
     was instructed to attend to the target symbol by counting the
     number of times each target character had been flashed.
-        In the training session, subjects were asked to copy-spell
+    In the training session, subjects were asked to copy-spell
     a given sentence, "NEURAL NETWORKS AND DEEP LEARNING"
     (33 characters including spaces) by gazing at the target character
     on the screen. The training session was performed in the offline

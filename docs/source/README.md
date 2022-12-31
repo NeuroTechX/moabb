@@ -5,7 +5,7 @@
 ![banner](images/M.png)
 
 <p align=center>
-n  Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
+  Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
 </p>
 
 ## Disclaimer

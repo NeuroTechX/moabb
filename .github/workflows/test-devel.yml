@@ -13,16 +13,16 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-18.04, windows-latest, macOS-latest]
-        python-version: ["3.7"]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        python-version: ["3.8"]
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -35,7 +35,7 @@ jobs:
       - name: Load cached venv
         if: runner.os != 'Windows'
         id: cached-poetry-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key:
@@ -55,6 +55,7 @@ jobs:
         run: |
           source $VENV
           poetry run coverage run -m unittest moabb.tests
+          poetry run coverage xml
 
       - name: Run pipelines
         run: |
@@ -62,27 +63,10 @@ jobs:
           poetry run python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         if: success()
         with:
           verbose: true
           directory: /home/runner/work/moabb/moabb
-          files: ./.coverage
-
-  lint:
-    name: lint ${{ matrix.os }}, py-${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: true
-      matrix:
-        os: [ubuntu-18.04]
-        python-version: ["3.8"]
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - uses: pre-commit/action@v3.0.0
+          files: ./.coverage,coverage.xml
+          env_vars: OS,PYTHON
