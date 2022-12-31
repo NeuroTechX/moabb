@@ -55,6 +55,7 @@ jobs:
         run: |
           source $VENV
           poetry run coverage run -m unittest moabb.tests
+          poetry run coverage xml
 
       - name: Run pipelines
         run: |
@@ -67,4 +68,10 @@ jobs:
         with:
           verbose: true
           directory: /home/runner/work/moabb/moabb
-          files: ./.coverage
+          files: ./.coverage,coverage.xml
+          env_vars: OS,PYTHON
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.MOABB_COVERALL }}
