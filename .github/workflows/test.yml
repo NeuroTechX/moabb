@@ -70,8 +70,3 @@ jobs:
           directory: /home/runner/work/moabb/moabb
           files: ./.coverage,coverage.xml
           env_vars: OS,PYTHON
-
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.MOABB_COVERALL }}
