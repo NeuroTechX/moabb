@@ -105,7 +105,9 @@ def benchmark(
             context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
     paradigms = generate_paradigms(pipeline_configs, context_params, log)
-    paradigms = {p: paradigms[p] for p in select_paradigms}
+    print(paradigms)
+    if select_paradigms is not None:
+        paradigms = {p: paradigms[p] for p in select_paradigms}
 
     log.debug(f"The paradigms being run are {paradigms}")
 
