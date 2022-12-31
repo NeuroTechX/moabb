@@ -187,8 +187,10 @@ class Shin2017A(Shin2017):
 
     Dataset from [1]_.
 
-    You should accept the licence term [2]_ to download this dataset, using::
-        Shin2017A(accept=True)
+
+    .. caution::
+       You should accept the licence term [2]_ to download this dataset, using:
+       ``Shin2017A(accept=True)``
 
     **Data Acquisition**
 
@@ -279,6 +281,7 @@ class Shin2017A(Shin2017):
            Hwang, H.J. and Müller, K.R., 2017. Open access dataset for EEG+NIRS
            single-trial classification. IEEE Transactions on Neural Systems
            and Rehabilitation Engineering, 25(10), pp.1735-1745.
+
     .. [2] GNU General Public License, Version 3
            `<https://www.gnu.org/licenses/gpl-3.0.txt>`_
     """
@@ -295,8 +298,9 @@ class Shin2017B(Shin2017):
 
     Dataset from [1]_.
 
-    You should accept the licence term [2]_ to download this dataset, using::
-        Shin2017A(accept=True)
+    .. caution::
+        You should accept the licence term [2]_ to download this dataset, using:
+        ``Shin2017B(accept=True)``
 
     **Data Acquisition**
 
@@ -381,6 +385,7 @@ class Shin2017B(Shin2017):
            Hwang, H.J. and Müller, K.R., 2017. Open access dataset for EEG+NIRS
            single-trial classification. IEEE Transactions on Neural Systems
            and Rehabilitation Engineering, 25(10), pp.1735-1745.
+
     .. [2] GNU General Public License, Version 3
            `<https://www.gnu.org/licenses/gpl-3.0.txt>`_
     """
