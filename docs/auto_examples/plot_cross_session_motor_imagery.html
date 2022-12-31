@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Cross-Session Motor Imagery &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <meta charset='utf-8'>
@@ -38,7 +38,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -56,7 +56,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -75,7 +75,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -159,8 +159,8 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-cross-session-motor-imagery-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="cross-session-motor-imagery">
-<span id="sphx-glr-auto-examples-plot-cross-session-motor-imagery-py"></span><h1>Cross-Session Motor Imagery<a class="headerlink" href="#cross-session-motor-imagery" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="cross-session-motor-imagery">
+<span id="sphx-glr-auto-examples-plot-cross-session-motor-imagery-py"></span><h1>Cross-Session Motor Imagery<a class="headerlink" href="#cross-session-motor-imagery" title="Permalink to this heading">¶</a></h1>
 <p>This example show how to perform a cross session motor imagery analysis on the
 very popular dataset 2a from the BCI competition IV.</p>
 <p>We will compare two pipelines :</p>
@@ -197,35 +197,8 @@ session.</p>
 <span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;rocket&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;rocket_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;mako&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;mako_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;icefire&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;icefire_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;vlag&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;vlag_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;flare&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;flare_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;crest&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;crest_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-</pre></div>
-</div>
-<div class="section" id="create-pipelines">
-<h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this headline">¶</a></h2>
+<section id="create-pipelines">
+<h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this heading">¶</a></h2>
 <p>Pipelines must be a dict of sklearn pipeline transformer.</p>
 <p>The CSP implementation is based on the MNE implementation. We selected 8 CSP
 components, as usually done in the literature.</p>
@@ -240,9 +213,9 @@ space mapping and finally a logistic regression for the classification.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="evaluation">
-<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="evaluation">
+<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this heading">¶</a></h2>
 <p>We define the paradigm (LeftRightImagery) and the dataset (BNCI2014001).
 The evaluation will return a DataFrame containing a single AUC score for
 each subject / session of the dataset, and for each pipeline.</p>
@@ -264,10 +237,9 @@ be overwritten if necessary.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/results.py:79: RuntimeWarning: Setting non-standard config type: &quot;MOABB_RESULTS&quot;
   set_config(&quot;MOABB_RESULTS&quot;, osp.join(osp.expanduser(&quot;~&quot;), &quot;mne_data&quot;))
-2022-11-28 15:00:54,682 INFO MainThread moabb.evaluations.base Processing dataset: 001-2014
+2022-12-31 00:44:20,894 INFO MainThread moabb.evaluations.base Processing dataset: 001-2014
 
 001-2014-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_data
 All datasets will be downloaded to this location, if anything is already downloaded, please move manually to this location
@@ -275,259 +247,258 @@ All datasets will be downloaded to this location, if anything is already downloa
   set_config(key, get_config(&quot;MNE_DATA&quot;))
 
 
-  0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s][A
+  0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
 
-  0%|                                      | 32.8k/42.8M [00:00&lt;04:13, 169kB/s][A
+  0%|                                     | 8.19k/42.8M [00:00&lt;14:21, 49.7kB/s]
 
-  0%|▏                                      | 137k/42.8M [00:00&lt;01:19, 540kB/s][A
+  0%|                                      | 32.8k/42.8M [00:00&lt;06:40, 107kB/s]
 
-  1%|▎                                      | 296k/42.8M [00:00&lt;00:45, 935kB/s][A
+  0%|                                      | 96.3k/42.8M [00:00&lt;03:05, 230kB/s]
 
-  1%|▍                                     | 539k/42.8M [00:00&lt;00:29, 1.46MB/s][A
+  0%|▏                                      | 209k/42.8M [00:00&lt;01:45, 403kB/s]
 
-  2%|▊                                    | 1.01M/42.8M [00:00&lt;00:16, 2.53MB/s][A
+  1%|▍                                      | 432k/42.8M [00:00&lt;00:57, 735kB/s]
 
-  5%|█▊                                   | 2.07M/42.8M [00:00&lt;00:07, 5.16MB/s][A
+  2%|▊                                     | 889k/42.8M [00:01&lt;00:29, 1.41MB/s]
 
-  9%|███▍                                 | 3.94M/42.8M [00:00&lt;00:04, 9.42MB/s][A
+  4%|█▌                                   | 1.80M/42.8M [00:01&lt;00:15, 2.71MB/s]
 
- 15%|█████▋                               | 6.52M/42.8M [00:00&lt;00:02, 14.5MB/s][A
+  8%|███▏                                 | 3.62M/42.8M [00:01&lt;00:07, 5.29MB/s]
 
- 21%|███████▋                             | 8.92M/42.8M [00:00&lt;00:01, 17.4MB/s][A
+ 14%|█████                                | 5.89M/42.8M [00:01&lt;00:04, 7.83MB/s]
 
- 27%|█████████▊                           | 11.4M/42.8M [00:01&lt;00:01, 19.5MB/s][A
+ 19%|██████▉                              | 7.96M/42.8M [00:01&lt;00:03, 9.21MB/s]
 
- 32%|███████████▉                         | 13.8M/42.8M [00:01&lt;00:01, 21.0MB/s][A
+ 24%|████████▊                            | 10.2M/42.8M [00:01&lt;00:03, 10.4MB/s]
 
- 38%|██████████████                       | 16.2M/42.8M [00:01&lt;00:01, 22.0MB/s][A
+ 28%|██████████▌                          | 12.2M/42.8M [00:02&lt;00:02, 10.9MB/s]
 
- 44%|████████████████▏                    | 18.7M/42.8M [00:01&lt;00:01, 22.9MB/s][A
+ 33%|████████████▍                        | 14.3M/42.8M [00:02&lt;00:02, 11.4MB/s]
 
- 49%|██████████████████▎                  | 21.1M/42.8M [00:01&lt;00:00, 23.3MB/s][A
+ 39%|██████████████▎                      | 16.5M/42.8M [00:02&lt;00:02, 11.9MB/s]
 
- 55%|████████████████████▍                | 23.7M/42.8M [00:01&lt;00:00, 24.0MB/s][A
+ 43%|████████████████                     | 18.5M/42.8M [00:02&lt;00:02, 12.0MB/s]
 
- 61%|██████████████████████▌              | 26.1M/42.8M [00:01&lt;00:00, 24.0MB/s][A
+ 48%|█████████████████▉                   | 20.8M/42.8M [00:02&lt;00:01, 12.3MB/s]
 
- 67%|████████████████████████▋            | 28.6M/42.8M [00:01&lt;00:00, 24.3MB/s][A
+ 53%|███████████████████▊                 | 22.9M/42.8M [00:02&lt;00:01, 12.4MB/s]
 
- 73%|██████████████████████████▊          | 31.1M/42.8M [00:01&lt;00:00, 24.4MB/s][A
+ 59%|█████████████████████▋               | 25.1M/42.8M [00:03&lt;00:01, 12.6MB/s]
 
- 79%|█████████████████████████████        | 33.6M/42.8M [00:01&lt;00:00, 24.7MB/s][A
+ 64%|███████████████████████▌             | 27.2M/42.8M [00:03&lt;00:01, 12.6MB/s]
 
- 84%|███████████████████████████████▏     | 36.1M/42.8M [00:02&lt;00:00, 24.7MB/s][A
+ 69%|█████████████████████████▍           | 29.4M/42.8M [00:03&lt;00:01, 12.7MB/s]
 
- 90%|█████████████████████████████████▍   | 38.6M/42.8M [00:02&lt;00:00, 24.9MB/s][A
+ 74%|███████████████████████████▏         | 31.5M/42.8M [00:03&lt;00:00, 12.7MB/s]
 
- 96%|███████████████████████████████████▌ | 41.1M/42.8M [00:02&lt;00:00, 24.9MB/s][A
+ 79%|█████████████████████████████▏       | 33.7M/42.8M [00:03&lt;00:00, 12.8MB/s]
 
-  0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s][A
-100%|█████████████████████████████████████| 42.8M/42.8M [00:00&lt;00:00, 60.3GB/s]
+ 84%|██████████████████████████████▉      | 35.9M/42.8M [00:03&lt;00:00, 12.8MB/s]
 
+ 89%|████████████████████████████████▉    | 38.1M/42.8M [00:04&lt;00:00, 12.9MB/s]
 
-  0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s][A
+ 94%|██████████████████████████████████▋  | 40.2M/42.8M [00:04&lt;00:00, 12.7MB/s]
 
-  0%|                                      | 32.8k/43.8M [00:00&lt;04:18, 169kB/s][A
+ 99%|████████████████████████████████████▌| 42.3M/42.8M [00:04&lt;00:00, 12.8MB/s]
 
-  0%|▏                                      | 153k/43.8M [00:00&lt;01:12, 605kB/s][A
+  0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 42.8M/42.8M [00:00&lt;00:00, 56.5GB/s]
 
-  1%|▎                                      | 310k/43.8M [00:00&lt;00:44, 972kB/s][A
 
-  1%|▌                                     | 593k/43.8M [00:00&lt;00:26, 1.62MB/s][A
+  0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
 
-  2%|▉                                    | 1.08M/43.8M [00:00&lt;00:15, 2.72MB/s][A
+  0%|                                     | 8.19k/43.8M [00:00&lt;14:38, 49.8kB/s]
 
-  5%|█▋                                   | 2.04M/43.8M [00:00&lt;00:08, 4.93MB/s][A
+  0%|                                      | 32.8k/43.8M [00:00&lt;06:49, 107kB/s]
 
-  9%|███▎                                 | 3.91M/43.8M [00:00&lt;00:04, 9.28MB/s][A
+  0%|                                      | 96.3k/43.8M [00:00&lt;03:09, 231kB/s]
 
- 14%|█████▎                               | 6.33M/43.8M [00:00&lt;00:02, 13.9MB/s][A
+  0%|▏                                      | 209k/43.8M [00:00&lt;01:47, 404kB/s]
 
- 19%|███████▏                             | 8.46M/43.8M [00:00&lt;00:02, 16.2MB/s][A
+  1%|▍                                      | 432k/43.8M [00:00&lt;00:58, 737kB/s]
 
- 25%|█████████▏                           | 10.8M/43.8M [00:01&lt;00:01, 18.5MB/s][A
+  2%|▊                                     | 889k/43.8M [00:01&lt;00:30, 1.41MB/s]
 
- 30%|███████████                          | 13.1M/43.8M [00:01&lt;00:01, 19.7MB/s][A
+  4%|█▌                                   | 1.80M/43.8M [00:01&lt;00:15, 2.72MB/s]
 
- 35%|████████████▉                        | 15.4M/43.8M [00:01&lt;00:01, 20.6MB/s][A
+  8%|███                                  | 3.62M/43.8M [00:01&lt;00:07, 5.30MB/s]
 
- 40%|██████████████▉                      | 17.6M/43.8M [00:01&lt;00:01, 21.3MB/s][A
+ 13%|████▉                                | 5.90M/43.8M [00:01&lt;00:04, 7.88MB/s]
 
- 46%|████████████████▊                    | 19.9M/43.8M [00:01&lt;00:01, 21.8MB/s][A
+ 18%|██████▊                              | 8.02M/43.8M [00:01&lt;00:03, 9.17MB/s]
 
- 51%|██████████████████▊                  | 22.2M/43.8M [00:01&lt;00:00, 22.1MB/s][A
+ 23%|████████▋                            | 10.3M/43.8M [00:01&lt;00:03, 10.4MB/s]
 
- 56%|████████████████████▋                | 24.5M/43.8M [00:01&lt;00:00, 22.4MB/s][A
+ 28%|██████████▏                          | 12.1M/43.8M [00:02&lt;00:03, 10.6MB/s]
 
- 61%|██████████████████████▋              | 26.9M/43.8M [00:01&lt;00:00, 22.7MB/s][A
+ 33%|████████████▏                        | 14.4M/43.8M [00:02&lt;00:02, 11.5MB/s]
 
- 67%|████████████████████████▋            | 29.1M/43.8M [00:01&lt;00:00, 22.6MB/s][A
+ 38%|█████████████▉                       | 16.5M/43.8M [00:02&lt;00:02, 11.8MB/s]
 
- 72%|██████████████████████████▌          | 31.4M/43.8M [00:02&lt;00:00, 21.5MB/s][A
+ 43%|███████████████▊                     | 18.7M/43.8M [00:02&lt;00:02, 12.1MB/s]
 
- 78%|████████████████████████████▉        | 34.2M/43.8M [00:02&lt;00:00, 23.2MB/s][A
+ 47%|█████████████████▍                   | 20.6M/43.8M [00:02&lt;00:01, 12.0MB/s]
 
- 84%|███████████████████████████████      | 36.7M/43.8M [00:02&lt;00:00, 23.9MB/s][A
+ 52%|███████████████████▏                 | 22.8M/43.8M [00:02&lt;00:01, 12.2MB/s]
 
- 90%|█████████████████████████████████▎   | 39.5M/43.8M [00:02&lt;00:00, 24.9MB/s][A
+ 57%|████████████████████▉                | 24.8M/43.8M [00:03&lt;00:01, 12.1MB/s]
 
- 96%|███████████████████████████████████▌ | 42.0M/43.8M [00:02&lt;00:00, 25.1MB/s][A
+ 61%|██████████████████████▋              | 26.9M/43.8M [00:03&lt;00:01, 12.2MB/s]
 
-  0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s][A
-100%|█████████████████████████████████████| 43.8M/43.8M [00:00&lt;00:00, 67.8GB/s]
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-2022-11-28 15:01:05,496 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_E: Score 0.955
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-2022-11-28 15:01:05,870 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_T: Score 0.932
-2022-11-28 15:01:06,342 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_E: Score 0.963
-2022-11-28 15:01:06,741 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_T: Score 0.950
+ 66%|████████████████████████▍            | 28.9M/43.8M [00:03&lt;00:01, 12.1MB/s]
 
-001-2014-CrossSession:  50%|#####     | 1/2 [00:12&lt;00:12, 12.06s/it]
+ 71%|██████████████████████████▎          | 31.1M/43.8M [00:03&lt;00:01, 12.5MB/s]
 
-  0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s][A
+ 76%|████████████████████████████         | 33.2M/43.8M [00:03&lt;00:00, 12.5MB/s]
 
-  0%|                                      | 32.8k/43.1M [00:00&lt;04:15, 168kB/s][A
+ 81%|█████████████████████████████▊       | 35.3M/43.8M [00:03&lt;00:00, 12.4MB/s]
 
-  0%|                                       | 135k/43.1M [00:00&lt;01:20, 530kB/s][A
+ 86%|███████████████████████████████▋     | 37.5M/43.8M [00:04&lt;00:00, 12.6MB/s]
 
-  1%|▎                                      | 289k/43.1M [00:00&lt;00:47, 909kB/s][A
+ 90%|█████████████████████████████████▍   | 39.5M/43.8M [00:04&lt;00:00, 12.4MB/s]
 
-  1%|▌                                     | 575k/43.1M [00:00&lt;00:26, 1.59MB/s][A
+ 95%|███████████████████████████████████▏ | 41.7M/43.8M [00:04&lt;00:00, 12.6MB/s]
 
-  2%|▉                                    | 1.03M/43.1M [00:00&lt;00:16, 2.57MB/s][A
+100%|████████████████████████████████████▉| 43.7M/43.8M [00:04&lt;00:00, 12.4MB/s]
 
-  5%|█▋                                   | 1.98M/43.1M [00:00&lt;00:08, 4.82MB/s][A
+  0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 43.8M/43.8M [00:00&lt;00:00, 79.2GB/s]
+2022-12-31 00:44:38,575 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_E: Score 0.955
+2022-12-31 00:44:39,073 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_T: Score 0.932
+2022-12-31 00:44:39,377 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_E: Score 0.963
+2022-12-31 00:44:39,659 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_T: Score 0.950
 
-  9%|███▎                                 | 3.85M/43.1M [00:00&lt;00:04, 9.19MB/s][A
+001-2014-CrossSession:  50%|#####     | 1/2 [00:18&lt;00:18, 18.77s/it]
 
- 16%|██████                               | 7.05M/43.1M [00:00&lt;00:02, 16.3MB/s][A
+  0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
 
- 23%|████████▍                            | 9.80M/43.1M [00:00&lt;00:01, 19.7MB/s][A
+  0%|                                     | 8.19k/43.1M [00:00&lt;12:16, 58.5kB/s]
 
- 29%|██████████▌                          | 12.3M/43.1M [00:01&lt;00:01, 21.3MB/s][A
+  0%|                                      | 32.8k/43.1M [00:00&lt;06:18, 114kB/s]
 
- 35%|████████████▉                        | 15.1M/43.1M [00:01&lt;00:01, 23.3MB/s][A
+  0%|                                      | 88.1k/43.1M [00:00&lt;03:19, 215kB/s]
 
- 41%|███████████████▎                     | 17.9M/43.1M [00:01&lt;00:01, 24.7MB/s][A
+  0%|▏                                      | 193k/43.1M [00:00&lt;01:53, 379kB/s]
 
- 47%|█████████████████▌                   | 20.4M/43.1M [00:01&lt;00:00, 24.8MB/s][A
+  1%|▎                                      | 409k/43.1M [00:00&lt;01:00, 709kB/s]
 
- 54%|███████████████████▉                 | 23.2M/43.1M [00:01&lt;00:00, 26.0MB/s][A
+  2%|▋                                     | 841k/43.1M [00:00&lt;00:31, 1.35MB/s]
 
- 61%|██████████████████████▍              | 26.1M/43.1M [00:01&lt;00:00, 26.9MB/s][A
+  4%|█▍                                   | 1.71M/43.1M [00:01&lt;00:15, 2.60MB/s]
 
- 67%|████████████████████████▉            | 29.1M/43.1M [00:01&lt;00:00, 27.6MB/s][A
+  8%|██▉                                  | 3.44M/43.1M [00:01&lt;00:07, 5.05MB/s]
 
- 74%|███████████████████████████▎         | 31.8M/43.1M [00:01&lt;00:00, 27.4MB/s][A
+ 15%|█████▌                               | 6.54M/43.1M [00:01&lt;00:03, 9.23MB/s]
 
- 81%|█████████████████████████████▉       | 34.8M/43.1M [00:01&lt;00:00, 28.1MB/s][A
+ 21%|███████▋                             | 8.95M/43.1M [00:01&lt;00:02, 12.4MB/s]
 
- 88%|████████████████████████████████▍    | 37.8M/43.1M [00:01&lt;00:00, 28.6MB/s][A
+ 24%|████████▉                            | 10.3M/43.1M [00:01&lt;00:02, 12.5MB/s]
 
- 95%|███████████████████████████████████  | 40.8M/43.1M [00:02&lt;00:00, 29.1MB/s][A
+ 27%|██████████                           | 11.7M/43.1M [00:01&lt;00:02, 11.8MB/s]
 
-  0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s][A
-100%|█████████████████████████████████████| 43.1M/43.1M [00:00&lt;00:00, 64.1GB/s]
+ 33%|████████████▏                        | 14.2M/43.1M [00:01&lt;00:02, 12.9MB/s]
 
+ 40%|██████████████▋                      | 17.0M/43.1M [00:02&lt;00:01, 14.3MB/s]
 
-  0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s][A
+ 46%|█████████████████                    | 19.8M/43.1M [00:02&lt;00:01, 15.0MB/s]
 
-  0%|                                      | 32.8k/44.2M [00:00&lt;04:22, 169kB/s][A
+ 52%|███████████████████▎                 | 22.4M/43.1M [00:02&lt;00:01, 15.2MB/s]
 
-  0%|▏                                      | 148k/44.2M [00:00&lt;01:15, 587kB/s][A
+ 58%|█████████████████████▌               | 25.1M/43.1M [00:02&lt;00:01, 15.4MB/s]
 
-  1%|▎                                      | 304k/44.2M [00:00&lt;00:46, 953kB/s][A
+ 65%|███████████████████████▉             | 27.9M/43.1M [00:02&lt;00:00, 15.7MB/s]
 
-  1%|▌                                     | 641k/44.2M [00:00&lt;00:24, 1.80MB/s][A
+ 71%|██████████████████████████▍          | 30.7M/43.1M [00:03&lt;00:00, 16.0MB/s]
 
-  3%|▉                                    | 1.14M/44.2M [00:00&lt;00:15, 2.85MB/s][A
+ 78%|████████████████████████████▊        | 33.5M/43.1M [00:03&lt;00:00, 18.5MB/s]
 
-  5%|█▊                                   | 2.16M/44.2M [00:00&lt;00:08, 5.23MB/s][A
+ 82%|██████████████████████████████▍      | 35.5M/43.1M [00:03&lt;00:00, 17.1MB/s]
 
-  9%|███▎                                 | 4.02M/44.2M [00:00&lt;00:04, 9.45MB/s][A
+ 87%|████████████████████████████████     | 37.3M/43.1M [00:03&lt;00:00, 16.2MB/s]
 
- 15%|█████▌                               | 6.60M/44.2M [00:00&lt;00:02, 14.5MB/s][A
+ 91%|█████████████████████████████████▌   | 39.0M/43.1M [00:03&lt;00:00, 15.3MB/s]
 
- 20%|███████▌                             | 9.05M/44.2M [00:00&lt;00:02, 17.6MB/s][A
+ 97%|███████████████████████████████████▊ | 41.7M/43.1M [00:03&lt;00:00, 18.0MB/s]
 
- 26%|█████████▋                           | 11.5M/44.2M [00:01&lt;00:01, 19.8MB/s][A
+  0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 43.1M/43.1M [00:00&lt;00:00, 61.7GB/s]
 
- 32%|███████████▋                         | 14.0M/44.2M [00:01&lt;00:01, 21.3MB/s][A
 
- 37%|█████████████▊                       | 16.5M/44.2M [00:01&lt;00:01, 22.5MB/s][A
+  0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
 
- 45%|████████████████▍                    | 19.7M/44.2M [00:01&lt;00:00, 25.3MB/s][A
+  0%|                                     | 8.19k/44.2M [00:00&lt;14:47, 49.8kB/s]
 
- 51%|██████████████████▉                  | 22.7M/44.2M [00:01&lt;00:00, 26.5MB/s][A
+  0%|                                      | 32.8k/44.2M [00:00&lt;06:53, 107kB/s]
 
- 57%|█████████████████████▏               | 25.4M/44.2M [00:01&lt;00:00, 26.8MB/s][A
+  0%|                                      | 88.1k/44.2M [00:00&lt;03:31, 208kB/s]
 
- 64%|███████████████████████▌             | 28.1M/44.2M [00:01&lt;00:00, 27.0MB/s][A
+  0%|▏                                      | 193k/44.2M [00:00&lt;01:58, 371kB/s]
 
- 70%|██████████████████████████           | 31.1M/44.2M [00:01&lt;00:00, 27.7MB/s][A
+  1%|▎                                      | 409k/44.2M [00:00&lt;01:02, 701kB/s]
 
- 77%|████████████████████████████▋        | 34.3M/44.2M [00:01&lt;00:00, 28.9MB/s][A
+  2%|▋                                     | 841k/44.2M [00:01&lt;00:32, 1.34MB/s]
 
- 84%|███████████████████████████████▏     | 37.2M/44.2M [00:01&lt;00:00, 29.1MB/s][A
+  4%|█▍                                   | 1.71M/44.2M [00:01&lt;00:16, 2.59MB/s]
 
- 91%|█████████████████████████████████▌   | 40.1M/44.2M [00:02&lt;00:00, 28.7MB/s][A
+  8%|██▉                                  | 3.44M/44.2M [00:01&lt;00:08, 5.04MB/s]
 
- 97%|████████████████████████████████████ | 43.1M/44.2M [00:02&lt;00:00, 28.9MB/s][A
+ 15%|█████▍                               | 6.48M/44.2M [00:01&lt;00:04, 9.11MB/s]
 
-  0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s][A
-100%|█████████████████████████████████████| 44.2M/44.2M [00:00&lt;00:00, 67.3GB/s]
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-2022-11-28 15:01:16,331 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_E: Score 0.646
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-2022-11-28 15:01:16,669 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_T: Score 0.527
-2022-11-28 15:01:17,069 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_E: Score 0.586
-2022-11-28 15:01:17,471 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_T: Score 0.575
+ 20%|███████▌                             | 9.05M/44.2M [00:01&lt;00:03, 11.0MB/s]
 
-001-2014-CrossSession: 100%|##########| 2/2 [00:22&lt;00:00, 11.28s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [00:22&lt;00:00, 11.40s/it]
+ 26%|█████████▋                           | 11.6M/44.2M [00:01&lt;00:02, 12.2MB/s]
+
+ 32%|███████████▉                         | 14.2M/44.2M [00:02&lt;00:02, 13.3MB/s]
+
+ 38%|██████████████                       | 16.9M/44.2M [00:02&lt;00:01, 14.0MB/s]
+
+ 44%|████████████████▎                    | 19.5M/44.2M [00:02&lt;00:01, 14.5MB/s]
+
+ 50%|██████████████████▍                  | 22.1M/44.2M [00:02&lt;00:01, 14.8MB/s]
+
+ 56%|████████████████████▋                | 24.8M/44.2M [00:02&lt;00:01, 15.1MB/s]
+
+ 62%|██████████████████████▉              | 27.4M/44.2M [00:02&lt;00:01, 15.3MB/s]
+
+ 68%|█████████████████████████▏           | 30.1M/44.2M [00:03&lt;00:00, 15.4MB/s]
+
+ 74%|███████████████████████████▍         | 32.7M/44.2M [00:03&lt;00:00, 15.5MB/s]
+
+ 80%|█████████████████████████████▋       | 35.4M/44.2M [00:03&lt;00:00, 15.7MB/s]
+
+ 86%|███████████████████████████████▉     | 38.1M/44.2M [00:03&lt;00:00, 15.7MB/s]
+
+ 92%|██████████████████████████████████   | 40.8M/44.2M [00:03&lt;00:00, 15.8MB/s]
+
+ 98%|████████████████████████████████████▎| 43.4M/44.2M [00:03&lt;00:00, 15.8MB/s]
+
+  0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 44.2M/44.2M [00:00&lt;00:00, 72.7GB/s]
+2022-12-31 00:44:55,012 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_E: Score 0.646
+2022-12-31 00:44:55,412 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_T: Score 0.527
+2022-12-31 00:44:55,702 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_E: Score 0.586
+2022-12-31 00:44:55,973 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_T: Score 0.575
+
+001-2014-CrossSession: 100%|##########| 2/2 [00:35&lt;00:00, 17.33s/it]
+001-2014-CrossSession: 100%|##########| 2/2 [00:35&lt;00:00, 17.54s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.962963  0.466195    144.0       1  ...       22           2  001-2014    RG+LR
-1  0.950424  0.392283    144.0       1  ...       22           2  001-2014    RG+LR
-2  0.585648  0.389309    144.0       2  ...       22           2  001-2014    RG+LR
-3  0.574846  0.396230    144.0       2  ...       22           2  001-2014    RG+LR
-4  0.955440  0.336524    144.0       1  ...       22           2  001-2014  CSP+LDA
+0  0.962963  0.294161    144.0       1  ...       22           2  001-2014    RG+LR
+1  0.950424  0.273679    144.0       1  ...       22           2  001-2014    RG+LR
+2  0.585648  0.283039    144.0       2  ...       22           2  001-2014    RG+LR
+3  0.574846  0.263834    144.0       2  ...       22           2  001-2014    RG+LR
+4  0.955440  0.438204    144.0       1  ...       22           2  001-2014  CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
 </div>
-</div>
-<div class="section" id="plot-results">
-<h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="plot-results">
+<h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this heading">¶</a></h2>
 <p>Here we plot the results. We first make a pointplot with the average
-performance of each pipeline across session and subjects.</p>
+performance of each pipeline across session and subjects.
+The second plot is a paired scatter plot. Each point representing the score
+of a single session. An algorithm will outperform another is most of the
+points are in its quadrant.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span>
@@ -540,21 +511,12 @@ performance of each pipeline across session and subjects.</p>
     <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">pointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;pipeline&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">pointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;pipeline&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">)</span>
 
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;ROC AUC&quot;</span><span class="p">)</span>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="plot cross session motor imagery" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(0.5, 1.0)
-</pre></div>
-</div>
-<p>The second plot is a paired scatter plot. Each point representing the score
-of a single session. An algorithm will outperform another is most of the
-points are in its quadrant.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paired</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span>
+
+<span class="n">paired</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span>
     <span class="n">values</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;pipeline&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="s2">&quot;session&quot;</span><span class="p">]</span>
 <span class="p">)</span>
 <span class="n">paired</span> <span class="o">=</span> <span class="n">paired</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
@@ -566,8 +528,12 @@ points are in its quadrant.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  23.023 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-motor-imagery-py">
+<img src="../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" srcset="../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" alt="plot cross session motor imagery" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/examples/plot_cross_session_motor_imagery.py:102: FutureWarning: Passing `palette` without assigning `hue` is deprecated.
+  sns.stripplot(
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  35.370 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/82e3e6cb009bb9a9c444c6cff254cea8/plot_cross_session_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_motor_imagery.py</span></code></a></p>
 </div>
@@ -576,8 +542,8 @@ points are in its quadrant.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -598,8 +564,8 @@ points are in its quadrant.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

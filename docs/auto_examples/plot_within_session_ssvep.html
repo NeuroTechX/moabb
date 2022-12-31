@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Within Session SSVEP &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <meta charset='utf-8'>
@@ -38,7 +38,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -56,7 +56,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -75,7 +75,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -162,8 +162,8 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-within-session-ssvep-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="within-session-ssvep">
-<span id="sphx-glr-auto-examples-plot-within-session-ssvep-py"></span><h1>Within Session SSVEP<a class="headerlink" href="#within-session-ssvep" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="within-session-ssvep">
+<span id="sphx-glr-auto-examples-plot-within-session-ssvep-py"></span><h1>Within Session SSVEP<a class="headerlink" href="#within-session-ssvep" title="Permalink to this heading">¶</a></h1>
 <p>This Example show how to perform a within-session SSVEP analysis on the
 MAMEM dataset 3, using a CCA pipeline.</p>
 <p>The within-session evaluation assesses the performance of a classification
@@ -191,53 +191,26 @@ is the average of all fold.</p>
 <span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;rocket&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;rocket_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;mako&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;mako_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;icefire&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;icefire_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;vlag&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;vlag_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;flare&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;flare_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;crest&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;crest_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-</pre></div>
-</div>
-<div class="section" id="loading-dataset">
-<h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this headline">¶</a></h2>
+<section id="loading-dataset">
+<h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this heading">¶</a></h2>
 <p>Load 2 subjects of MAMEM3 dataset</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">MAMEM3</span><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj</span></a>
 </pre></div>
 </div>
-</div>
-<div class="section" id="choose-paradigm">
-<h2>Choose Paradigm<a class="headerlink" href="#choose-paradigm" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="choose-paradigm">
+<h2>Choose Paradigm<a class="headerlink" href="#choose-paradigm" title="Permalink to this heading">¶</a></h2>
 <p>We select the paradigm SSVEP, applying a bandpass filter (3-15 Hz) on
 the data and we keep only the first 3 classes, that is stimulation
 frequency of 6.66, 7.50 and 8.57 Hz.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paradigm</span> <span class="o">=</span> <span class="n">SSVEP</span><span class="p">(</span><span class="n">fmin</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="create-pipelines">
-<h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="create-pipelines">
+<h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this heading">¶</a></h2>
 <p>Use a Canonical Correlation Analysis classifier</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">interval</span></a>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a> <span class="o">=</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">used_events</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
@@ -246,9 +219,9 @@ frequency of 6.66, 7.50 and 8.57 Hz.</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a><span class="p">[</span><span class="s2">&quot;CCA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">SSVEP_CCA</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a><span class="p">,</span> <span class="n">n_harmonics</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="get-data-optional">
-<h2>Get Data (optional)<a class="headerlink" href="#get-data-optional" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="get-data-optional">
+<h2>Get Data (optional)<a class="headerlink" href="#get-data-optional" title="Permalink to this heading">¶</a></h2>
 <p>To get access to the EEG signals downloaded from the dataset, you could
 use <cite>dataset.get_data(subjects=[subject_id])</cite> to obtain the EEG under
 MNE format, stored in a dictionary of sessions and runs.
@@ -260,9 +233,9 @@ to the paradigm requirement.</p>
 <span class="c1"># X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[3])</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="evaluation">
-<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="evaluation">
+<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this heading">¶</a></h2>
 <p>The evaluation will return a DataFrame containing a single AUC score for
 each subject and pipeline.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">overwrite</span></a> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># set to True if we want to overwrite cached results</span>
@@ -275,29 +248,26 @@ each subject and pipeline.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>MAMEM3_SSVEP-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-MAMEM3_SSVEP-WithinSession:  50%|#####     | 1/2 [00:13&lt;00:13, 13.24s/it]
-MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:26&lt;00:00, 13.39s/it]
-MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:26&lt;00:00, 13.37s/it]
+MAMEM3_SSVEP-WithinSession:  50%|#####     | 1/2 [00:26&lt;00:26, 26.56s/it]
+MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:53&lt;00:00, 26.52s/it]
+MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:53&lt;00:00, 26.53s/it]
       score      time  samples  ... n_sessions       dataset  pipeline
-0  0.688889  0.047268     45.0  ...          1  MAMEM3_SSVEP       CCA
-1  0.266667  0.046701     45.0  ...          1  MAMEM3_SSVEP       CCA
+0  0.688889  0.072158     45.0  ...          1  MAMEM3_SSVEP       CCA
+1  0.266667  0.073878     45.0  ...          1  MAMEM3_SSVEP       CCA
 
 [2 rows x 9 columns]
 </pre></div>
 </div>
-</div>
-<div class="section" id="plot-results">
-<h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="plot-results">
+<h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this heading">¶</a></h2>
 <p>Here we plot the results, indicating the score for each subject</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">()</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="plot within session ssvep" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_within_session_ssvep_001.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:xlabel=&#39;session&#39;, ylabel=&#39;score&#39;&gt;
+<img src="../_images/sphx_glr_plot_within_session_ssvep_001.png" srcset="../_images/sphx_glr_plot_within_session_ssvep_001.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot: xlabel=&#39;session&#39;, ylabel=&#39;score&#39;&gt;
 </pre></div>
 </div>
 <p>And the computation time in seconds</p>
@@ -307,9 +277,8 @@ MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:26&lt;00:00, 13.37s/it]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="plot within session ssvep" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_within_session_ssvep_002.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  26.928 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-within-session-ssvep-py">
+<img src="../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  53.268 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-within-session-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/09c597e028c1574e907e103b3db53254/plot_within_session_ssvep.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_within_session_ssvep.py</span></code></a></p>
 </div>
@@ -318,8 +287,8 @@ MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:26&lt;00:00, 13.37s/it]
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -340,8 +309,8 @@ MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:26&lt;00:00, 13.37s/it]
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

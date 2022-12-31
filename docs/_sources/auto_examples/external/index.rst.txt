@@ -1,0 +1,46 @@
+
+
+.. _sphx_glr_auto_examples_external:
+
+External examples
+-----------------
+
+You need to install external dependencies to run these examples. These consist mostly of
+various classifier implementations. When using poetry, you can use
+
+``poetry install --extras external``
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves...">
+
+.. only:: html
+
+  .. image:: /auto_examples/external/images/thumb/sphx_glr_plot_learning_curve_p300_external_thumb.png
+    :alt: Within Session P300 with Learning Curve
+
+  :ref:`sphx_glr_auto_examples_external_plot_learning_curve_p300_external.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Within Session P300 with Learning Curve</div>
+    </div>
+
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/external/plot_learning_curve_p300_external
+

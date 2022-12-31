@@ -72,37 +72,6 @@ We will use the P300 paradigm, which uses the AUC as metric.
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'rocket' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'rocket_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'mako' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'mako_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'icefire' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'icefire_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'vlag' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'vlag_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'flare' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'flare_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'crest' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'crest_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-
 
 
 
@@ -210,196 +179,194 @@ and dataset size.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
     [20 12  7  5  3  2]
-    009-2014-WithinSession:   0%|          | 0/1 [00:00<?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    009-2014-WithinSession:   0%|          | 0/1 [00:00<?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:229: UserWarning: Only one sample available. You may want to reshape your data array
+    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_shrunk_covariance.py:237: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    009-2014-WithinSession: 100%|##########| 1/1 [00:41<00:00, 41.96s/it]    009-2014-WithinSession: 100%|##########| 1/1 [00:41<00:00, 41.96s/it]
+    009-2014-WithinSession: 100%|##########| 1/1 [00:48<00:00, 48.97s/it]    009-2014-WithinSession: 100%|##########| 1/1 [00:48<00:00, 48.97s/it]
 
 
 
@@ -437,9 +404,10 @@ Here we plot the results.
 
 
 
-.. image:: /auto_examples/external/images/sphx_glr_plot_learning_curve_p300_external_001.png
-    :alt: Errorbar shows Mean-CI across permutations
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/external/images/sphx_glr_plot_learning_curve_p300_external_001.png
+   :alt: Errorbar shows Mean-CI across permutations
+   :srcset: /auto_examples/external/images/sphx_glr_plot_learning_curve_p300_external_001.png
+   :class: sphx-glr-single-img
 
 
 
@@ -448,28 +416,23 @@ Here we plot the results.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  42.631 seconds)
+   **Total running time of the script:** ( 0 minutes  50.053 seconds)
 
 
 .. _sphx_glr_download_auto_examples_external_plot_learning_curve_p300_external.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_learning_curve_p300_external.py <plot_learning_curve_p300_external.py>`
 
-     :download:`Download Python source code: plot_learning_curve_p300_external.py <plot_learning_curve_p300_external.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_learning_curve_p300_external.ipynb <plot_learning_curve_p300_external.ipynb>`
+      :download:`Download Jupyter notebook: plot_learning_curve_p300_external.ipynb <plot_learning_curve_p300_external.ipynb>`
 
 
 .. only:: html

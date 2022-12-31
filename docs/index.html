@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>What’s new &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Mother of all BCI Benchmarks &#8212; moabb 0.4.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="What’s new" href="whats_new.html" />
@@ -39,7 +39,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="#">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -57,7 +57,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="#">Site <b class="caret"></b></a>
+     href="#">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -76,7 +76,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -120,7 +120,49 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">What’s new</a></li>
+<li><a class="reference internal" href="#">Mother of all BCI Benchmarks</a><ul>
+<li><a class="reference internal" href="#disclaimer">Disclaimer</a></li>
+<li><a class="reference internal" href="#welcome">Welcome!</a></li>
+<li><a class="reference internal" href="#what-are-we-doing">What are we doing?</a><ul>
+<li><a class="reference internal" href="#the-problem">The problem</a></li>
+<li><a class="reference internal" href="#the-solution">The solution</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id1">Installation</a><ul>
+<li><a class="reference internal" href="#pip-installation">Pip installation</a></li>
+<li><a class="reference internal" href="#manual-installation">Manual installation</a></li>
+<li><a class="reference internal" href="#requirements-we-use">Requirements we use</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2">Running</a><ul>
+<li><a class="reference internal" href="#verify-installation">Verify Installation</a></li>
+<li><a class="reference internal" href="#use-moabb">Use MOABB</a></li>
+<li><a class="reference internal" href="#id3">Troubleshooting</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4">Supported datasets</a><ul>
+<li><a class="reference internal" href="#submit-a-new-dataset">Submit a new dataset</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id5">Who are we?</a><ul>
+<li><a class="reference internal" href="#what-do-we-need">What do we need?</a></li>
+<li><a class="reference internal" href="#get-involved">Get involved</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#contact-us">Contact us</a></li>
+<li><a class="reference internal" href="#id7">Architecture and Main Concepts</a><ul>
+<li><a class="reference internal" href="#datasets">Datasets</a></li>
+<li><a class="reference internal" href="#paradigm">Paradigm</a></li>
+<li><a class="reference internal" href="#evaluations">Evaluations</a></li>
+<li><a class="reference internal" href="#pipelines">Pipelines</a></li>
+<li><a class="reference internal" href="#statistics-and-visualization">Statistics and visualization</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id9">Citing MOABB and related publications</a></li>
+<li><a class="reference internal" href="#thank-you">Thank You</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#what-s-new">What’s new</a></li>
 <li><a class="reference internal" href="#public-api">Public API</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
@@ -152,8 +194,244 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="what-s-new">
-<h1>What’s new<a class="headerlink" href="#what-s-new" title="Permalink to this headline">¶</a></h1>
+  <section id="mother-of-all-bci-benchmarks">
+<h1>Mother of all BCI Benchmarks<a class="headerlink" href="#mother-of-all-bci-benchmarks" title="Permalink to this heading">¶</a></h1>
+<a class="reference external image-reference" href="images/M.png"><img alt="banner" src="_images/M.png" /></a>
+<p align=center>
+  Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
+</p><section id="disclaimer">
+<h2>Disclaimer<a class="headerlink" href="#disclaimer" title="Permalink to this heading">¶</a></h2>
+<p><strong>This is an open science project that may evolve depending on the need of the
+community.</strong></p>
+<a class="reference external image-reference" href="https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster"><img alt="Build Status" src="https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg" /></a>
+<a class="reference external image-reference" href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a>
+<a class="reference external image-reference" href="https://img.shields.io/pypi/v/moabb"><img alt="PyPI" src="https://img.shields.io/pypi/v/moabb?color=blue&amp;style=plastic" /></a>
+<a class="reference external image-reference" href="https://pepy.tech/project/moabb"><img alt="Downloads" src="https://pepy.tech/badge/moabb" /></a>
+</section>
+<section id="welcome">
+<h2>Welcome!<a class="headerlink" href="#welcome" title="Permalink to this heading">¶</a></h2>
+<p>Thank you for visiting the Mother of all BCI Benchmark documentation and associated
+<a class="reference external" href="https://github.com/NeuroTechX/moabb">GitHub repository</a></p>
+<p>This document is a hub to give you some information about the project. Jump straight to
+one of the sections below, or just scroll down to find out more.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="#what-are-we-doing">What are we doing? (And why?)</a></p></li>
+<li><p><a class="reference external" href="#installation">Installation</a></p></li>
+<li><p><a class="reference external" href="#running">Running</a></p></li>
+<li><p><a class="reference external" href="#supported-datasets">Supported datasets</a></p></li>
+<li><p><a class="reference external" href="#who-are-we">Who are we?</a></p></li>
+<li><p><a class="reference external" href="#contact-us">Get in touch</a></p></li>
+<li><p><a class="reference external" href="#documentation">Documentation</a></p></li>
+<li><p><a class="reference external" href="#architecture-and-main-concepts">Architecture and main concepts</a></p></li>
+<li><p><a class="reference external" href="#citing-moabb-and-related-publications">Citing MOABB and related publications</a></p></li>
+</ul>
+</section>
+<section id="what-are-we-doing">
+<h2>What are we doing?<a class="headerlink" href="#what-are-we-doing" title="Permalink to this heading">¶</a></h2>
+<section id="the-problem">
+<h3>The problem<a class="headerlink" href="#the-problem" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Brain%E2%80%93computer_interface">Brain-Computer Interfaces</a>
+allow to interact with a computer using brain signals. In this project, we focus mostly on
+electroencephalographic signals
+(<a class="reference external" href="https://en.wikipedia.org/wiki/Electroencephalography">EEG</a>), that is a very active
+research domain, with worldwide scientific contributions. Still:</p>
+<ul class="simple">
+<li><p>Reproducible Research in BCI has a long way to go.</p></li>
+<li><p>While many BCI datasets are made freely available, researchers do not publish code, and
+reproducing results required to benchmark new algorithms turns out to be trickier than
+it should be.</p></li>
+<li><p>Performances can be significantly impacted by parameters of the preprocessing steps,
+toolboxes used and implementation “tricks” that are almost never reported in the
+literature.</p></li>
+</ul>
+<p>As a result, there is no comprehensive benchmark of BCI algorithms, and newcomers are
+spending a tremendous amount of time browsing literature to find out what algorithm works
+best and on which dataset.</p>
+</section>
+<section id="the-solution">
+<h3>The solution<a class="headerlink" href="#the-solution" title="Permalink to this heading">¶</a></h3>
+<p>The Mother of all BCI Benchmarks allows to:</p>
+<ul class="simple">
+<li><p>Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list
+of freely available EEG datasets.</p></li>
+<li><p>The code will be made available on github, serving as a reference point for the future
+algorithmic developments.</p></li>
+<li><p>Algorithms can be ranked and promoted on a website, providing a clear picture of the
+different solutions available in the field.</p></li>
+</ul>
+<p>This project will be successful when we read in an abstract “ … the proposed method
+obtained a score of 89% on the MOABB (Mother of All BCI Benchmarks), outperforming the
+state of the art by 5% …”.</p>
+</section>
+</section>
+<section id="id1">
+<h2>Installation<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<section id="pip-installation">
+<h3>Pip installation<a class="headerlink" href="#pip-installation" title="Permalink to this heading">¶</a></h3>
+<p>To use MOABB, you could simply do: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">MOABB</span></code> See <a class="reference external" href="#Troubleshooting">Troubleshooting</a> section if you have a problem.</p>
+</section>
+<section id="manual-installation">
+<h3>Manual installation<a class="headerlink" href="#manual-installation" title="Permalink to this heading">¶</a></h3>
+<p>You could fork or clone the repository and go to the downloaded directory, then run:</p>
+<ol class="arabic simple">
+<li><p>install <code class="docutils literal notranslate"><span class="pre">poetry</span></code> (only once per machine):<code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-sSL</span> <span class="pre">https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py</span> <span class="pre">|</span> <span class="pre">python</span> <span class="pre">-</span></code>or <a class="reference external" href="https://python-poetry.org/docs/#installation">checkout installation instruction</a> or
+use <a class="reference external" href="https://anaconda.org/conda-forge/poetry">conda forge version</a></p></li>
+<li><p>(Optional, skip if not sure) Disable automatic environment creation:<code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">config</span> <span class="pre">virtualenvs.create</span> <span class="pre">false</span></code></p></li>
+<li><p>install all dependencies in one command (have to be run in the project directory):<code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span></code></p></li>
+</ol>
+<p>See
+<a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">contributors’ guidelines</a>
+for detailed explanation.</p>
+</section>
+<section id="requirements-we-use">
+<h3>Requirements we use<a class="headerlink" href="#requirements-we-use" title="Permalink to this heading">¶</a></h3>
+<p>See <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file for full list of dependencies</p>
+</section>
+</section>
+<section id="id2">
+<h2>Running<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<section id="verify-installation">
+<h3>Verify Installation<a class="headerlink" href="#verify-installation" title="Permalink to this heading">¶</a></h3>
+<p>To ensure it is running correctly, you can also run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">unittest</span> <span class="n">moabb</span><span class="o">.</span><span class="n">tests</span>
+</pre></div>
+</div>
+<p>once it is installed.</p>
+</section>
+<section id="use-moabb">
+<h3>Use MOABB<a class="headerlink" href="#use-moabb" title="Permalink to this heading">¶</a></h3>
+<p>First, you could take a look at our <a class="reference external" href="./auto_tutorials/index.html">tutorials</a> that cover
+the most important concepts and use cases. Also, we have a gallery of
+<a class="reference external" href="./auto_examples/index.html">examples</a> available.</p>
+</section>
+<section id="id3">
+<h3>Troubleshooting<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<p>Currently pip install moabb fails when pip version &lt; 21, e.g. with 20.0.2 due to an <code class="docutils literal notranslate"><span class="pre">idna</span></code>
+package conflict. Newer pip versions resolve this conflict automatically. To fix this you
+can upgrade your pip version using: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-U</span> <span class="pre">pip</span></code> before installing <code class="docutils literal notranslate"><span class="pre">moabb</span></code>.</p>
+</section>
+</section>
+<section id="id4">
+<h2>Supported datasets<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<p>The list of supported datasets can be found here : <a class="reference external" href="https://neurotechx.github.io/moabb/">https://neurotechx.github.io/moabb/</a></p>
+<section id="submit-a-new-dataset">
+<h3>Submit a new dataset<a class="headerlink" href="#submit-a-new-dataset" title="Permalink to this heading">¶</a></h3>
+<p>you can submit a new dataset by mentioning it to this
+<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">issue</a>. The datasets currently on our radar
+can be seen [here] (<a class="reference external" href="https://github.com/NeuroTechX/moabb/wiki/Datasets-Support">https://github.com/NeuroTechX/moabb/wiki/Datasets-Support</a>)</p>
+</section>
+</section>
+<section id="id5">
+<h2>Who are we?<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<p>The founders of the Mother of all BCI Benchmarks are <a class="reference external" href="http://alexandre.barachant.org/">Alexander Barachant</a>
+and <a class="reference external" href="https://ei.is.tuebingen.mpg.de/~vjayaram">Vinay Jayaram</a>. This project is under the umbrella of
+<a class="reference external" href="http://neurotechx.com/">NeuroTechX</a>, the international community for NeuroTech enthusiasts. The
+project is currently maintained by <a class="reference external" href="https://sylvchev.github.io/">Sylvain Chevallier</a>.</p>
+<section id="what-do-we-need">
+<h3>What do we need?<a class="headerlink" href="#what-do-we-need" title="Permalink to this heading">¶</a></h3>
+<p><strong>You</strong>! In whatever way you can help.</p>
+<p>We need expertise in programming, user experience, software sustainability, documentation
+and technical writing and project management.</p>
+<p>We’d love your feedback along the way.</p>
+<p>Our primary goal is to build a comprehensive benchmark of popular BCI algorithms applied
+on an extensive list of freely available EEG datasets, and we’re excited to support the
+professional development of any and all of our contributors. If you’re looking to learn to
+code, try out working collaboratively, or translate your skills to the digital domain,
+we’re here to help.</p>
+</section>
+<section id="get-involved">
+<h3>Get involved<a class="headerlink" href="#get-involved" title="Permalink to this heading">¶</a></h3>
+<p>If you think you can help in any of the areas listed above (and we bet you can) or in any
+of the many areas that we haven’t yet thought of (and here we’re <em>sure</em> you can) then
+please check out our
+<a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">contributors’ guidelines</a>
+and our <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/ROADMAP.md">roadmap</a>.</p>
+<p>Please note that it’s very important to us that we maintain a positive and supportive
+environment for everyone who wants to participate. When you join us we ask that you follow
+our <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CODE_OF_CONDUCT.md">code of conduct</a>
+in all interactions both on and offline.</p>
+</section>
+</section>
+<section id="contact-us">
+<h2>Contact us<a class="headerlink" href="#contact-us" title="Permalink to this heading">¶</a></h2>
+<p>If you want to report a problem or suggest an enhancement, we’d love for you to
+<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues">open an issue</a> at this github repository
+because then we can get right on it.</p>
+<p>For a less formal discussion or exchanging ideas, you can also reach us on the <a class="reference external" href="https://gitter.im/moabb_dev/community">Gitter
+channel</a> or join our weekly office hours! This an open video meeting
+happening on a <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/191">regular basis</a>, please ask
+the link on the gitter channel. We are also on NeuroTechX slack channel
+<a class="reference external" href="https://neurotechx.com/">#moabb</a>.</p>
+</section>
+<section id="id7">
+<h2>Architecture and Main Concepts<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h2>
+<a class="reference external image-reference" href="images/architecture.png"><img alt="architecture" src="_images/architecture.png" /></a>
+<p>There are 4 main concepts in the MOABB: the datasets, the paradigm, the evaluation, and
+the pipelines. In addition, we offer statistical and visualization utilities to simplify
+the workflow.</p>
+<section id="datasets">
+<h3>Datasets<a class="headerlink" href="#datasets" title="Permalink to this heading">¶</a></h3>
+<p>A dataset handles and abstracts low-level access to the data. The dataset will read data
+stored locally, in the format in which they have been downloaded, and will convert them
+into a MNE raw object. There are options to pool all the different recording sessions per
+subject or to evaluate them separately.</p>
+</section>
+<section id="paradigm">
+<h3>Paradigm<a class="headerlink" href="#paradigm" title="Permalink to this heading">¶</a></h3>
+<p>A paradigm defines how the raw data will be converted to trials ready to be processed by a
+decoding algorithm. This is a function of the paradigm used, i.e. in motor imagery one can
+have two-class, multi-class, or continuous paradigms; similarly, different preprocessing
+is necessary for ERP vs ERD paradigms.</p>
+</section>
+<section id="evaluations">
+<h3>Evaluations<a class="headerlink" href="#evaluations" title="Permalink to this heading">¶</a></h3>
+<p>An evaluation defines how we go from trials per subject and session to a generalization
+statistic (AUC score, f-score, accuracy, etc) – it can be either within-recording-session
+accuracy, across-session within-subject accuracy, across-subject accuracy, or other
+transfer learning settings.</p>
+</section>
+<section id="pipelines">
+<h3>Pipelines<a class="headerlink" href="#pipelines" title="Permalink to this heading">¶</a></h3>
+<p>Pipeline defines all steps required by an algorithm to obtain predictions. Pipelines are
+typically a chain of sklearn compatible transformers and end with a sklearn compatible
+estimator. See
+<a class="reference external" href="http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html">Pipelines</a>
+for more info.</p>
+</section>
+<section id="statistics-and-visualization">
+<h3>Statistics and visualization<a class="headerlink" href="#statistics-and-visualization" title="Permalink to this heading">¶</a></h3>
+<p>Once an evaluation has been run, the raw results are returned as a DataFrame. This can be
+further processed via the following commands to generate some basic visualization and
+statistical comparisons:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">moabb.analysis</span> <span class="kn">import</span> <span class="n">analyze</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">pipeline_dict</span><span class="p">)</span>
+<span class="n">analyze</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id9">
+<h2>Citing MOABB and related publications<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h2>
+<p>To cite MOABB, you could use the following paper:</p>
+<ul class="simple">
+<li><p>Vinay Jayaram and Alexandre Barachant. MOABB: trustworthy algorithm benchmarking for
+BCIs. Journal of neural engineering 15.6 (2018): 066011.
+<a class="reference external" href="https://doi.org/10.1088/1741-2552/aadea0">DOI:10.1088/1741-2552</a></p></li>
+</ul>
+<p>If you publish a paper using MOABB, please contact us on <a class="reference external" href="https://gitter.im/moabb_dev/community">gitter</a> or open an
+issue, and we will add your paper to the
+<a class="reference external" href="https://github.com/NeuroTechX/moabb/wiki/MOABB-bibliography">dedicated wiki page</a>.</p>
+</section>
+<section id="thank-you">
+<h2>Thank You<a class="headerlink" href="#thank-you" title="Permalink to this heading">¶</a></h2>
+<p>Thank you so much (Danke schön! Merci beaucoup!) for visiting the project and we do hope
+that you’ll join us on this amazing journey to build a comprehensive benchmark of popular
+BCI algorithms applied on an extensive list of freely available EEG datasets.</p>
+</section>
+</section>
+<section id="what-s-new">
+<h1>What’s new<a class="headerlink" href="#what-s-new" title="Permalink to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="whats_new.html">What’s new</a><ul>
@@ -172,11 +450,11 @@
 </li>
 </ul>
 </div>
-</div>
-<div class="section" id="public-api">
-<h1>Public API<a class="headerlink" href="#public-api" title="Permalink to this headline">¶</a></h1>
+</section>
+<section id="public-api">
+<h1>Public API<a class="headerlink" href="#public-api" title="Permalink to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -209,13 +487,13 @@
 </li>
 </ul>
 </div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 </ul>
-</div>
+</section>
 
 
     </div>
@@ -236,8 +514,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Tutorial 3: Benchmarking mulitple pipelines &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <meta charset='utf-8'>
@@ -38,7 +38,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -56,7 +56,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -75,7 +75,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -158,8 +158,8 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="tutorial-3-benchmarking-mulitple-pipelines">
-<span id="sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"></span><h1>Tutorial 3: Benchmarking mulitple pipelines<a class="headerlink" href="#tutorial-3-benchmarking-mulitple-pipelines" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="tutorial-3-benchmarking-mulitple-pipelines">
+<span id="sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"></span><h1>Tutorial 3: Benchmarking mulitple pipelines<a class="headerlink" href="#tutorial-3-benchmarking-mulitple-pipelines" title="Permalink to this heading">¶</a></h1>
 <p>In this last part, we extend the previous example by assessing the
 classification score of not one but three classification pipelines.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pedro L. C. Rodrigues, Sylvain Chevallier</span>
@@ -190,8 +190,8 @@ classification score of not one but three classification pipelines.</p>
 <a href="https://docs.python.org/3/library/warnings.html#warnings.filterwarnings" title="warnings.filterwarnings" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span></a><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="section" id="creating-pipelines">
-<h2>Creating Pipelines<a class="headerlink" href="#creating-pipelines" title="Permalink to this headline">¶</a></h2>
+<section id="creating-pipelines">
+<h2>Creating Pipelines<a class="headerlink" href="#creating-pipelines" title="Permalink to this heading">¶</a></h2>
 <p>We instantiate the three different classiciation pipelines to be considered
 in the analysis. The object that gathers each pipeline is a dictionary. The
 first pipeline is the CSP+LDA that we have seen in the previous parts. The
@@ -219,26 +219,25 @@ obtaining a pandas dataframe containing the results of the evaluation.</p>
 <span class="n">results</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-001-2014-WithinSession:  33%|###3      | 1/3 [00:08&lt;00:16,  8.49s/it]
-001-2014-WithinSession:  67%|######6   | 2/3 [00:17&lt;00:08,  8.53s/it]
-001-2014-WithinSession: 100%|##########| 3/3 [00:25&lt;00:00,  8.54s/it]
-001-2014-WithinSession: 100%|##########| 3/3 [00:25&lt;00:00,  8.54s/it]
+001-2014-WithinSession:  33%|###3      | 1/3 [00:07&lt;00:14,  7.20s/it]
+001-2014-WithinSession:  67%|######6   | 2/3 [00:14&lt;00:07,  7.32s/it]
+001-2014-WithinSession: 100%|##########| 3/3 [00:21&lt;00:00,  7.34s/it]
+001-2014-WithinSession: 100%|##########| 3/3 [00:21&lt;00:00,  7.32s/it]
 
 Zhou 2016-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-Zhou 2016-WithinSession:  33%|###3      | 1/3 [00:06&lt;00:13,  6.83s/it]
-Zhou 2016-WithinSession:  67%|######6   | 2/3 [00:12&lt;00:06,  6.23s/it]
-Zhou 2016-WithinSession: 100%|##########| 3/3 [00:18&lt;00:00,  6.08s/it]
-Zhou 2016-WithinSession: 100%|##########| 3/3 [00:18&lt;00:00,  6.18s/it]
+Zhou 2016-WithinSession:  33%|###3      | 1/3 [00:06&lt;00:12,  6.35s/it]
+Zhou 2016-WithinSession:  67%|######6   | 2/3 [00:11&lt;00:05,  5.81s/it]
+Zhou 2016-WithinSession: 100%|##########| 3/3 [00:17&lt;00:00,  5.71s/it]
+Zhou 2016-WithinSession: 100%|##########| 3/3 [00:17&lt;00:00,  5.79s/it]
 </pre></div>
 </div>
 <p>As <cite>overwrite</cite> is set to False, the results from the previous tutorial are reused and
 only the new pipelines are evaluated. The results from “csp+lda” are not recomputed.
 The results are saved in ~/mne_data/results if the parameter <cite>hdf5_path</cite> is not set.</p>
-</div>
-<div class="section" id="plotting-results">
-<h2>Plotting Results<a class="headerlink" href="#plotting-results" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="plotting-results">
+<h2>Plotting Results<a class="headerlink" href="#plotting-results" title="Permalink to this heading">¶</a></h2>
 <p>The following plot shows a comparison of the three classification pipelines
 for each subject of each dataset.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;subj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">resi</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">resi</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;subject&quot;</span><span class="p">]]</span>
@@ -257,9 +256,8 @@ for each subject of each dataset.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="dataset = 001-2014, dataset = Zhou 2016" class="sphx-glr-single-img" src="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  45.054 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py">
+<img src="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" srcset="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" alt="dataset = 001-2014, dataset = Zhou 2016" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  40.543 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fe7c33d68ac9fa4d60c0efbc341f93f3/tutorial_3_benchmarking_multiple_pipelines.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_3_benchmarking_multiple_pipelines.py</span></code></a></p>
 </div>
@@ -268,8 +266,8 @@ for each subject of each dataset.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -290,8 +288,8 @@ for each subject of each dataset.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

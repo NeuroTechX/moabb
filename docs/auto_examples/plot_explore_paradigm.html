@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Explore Paradigm Object &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <meta charset='utf-8'>
@@ -38,7 +38,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -56,7 +56,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -75,7 +75,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -159,8 +159,8 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-explore-paradigm-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="explore-paradigm-object">
-<span id="sphx-glr-auto-examples-plot-explore-paradigm-py"></span><h1>Explore Paradigm Object<a class="headerlink" href="#explore-paradigm-object" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="explore-paradigm-object">
+<span id="sphx-glr-auto-examples-plot-explore-paradigm-py"></span><h1>Explore Paradigm Object<a class="headerlink" href="#explore-paradigm-object" title="Permalink to this heading">¶</a></h1>
 <p>A paradigm defines how the raw data will be converted to trials ready
 to be processed by a decoding algorithm. This is a function of the paradigm
 used, i.e. in motor imagery one can have two-class, multi-class,
@@ -191,15 +191,14 @@ coefficients for continuous paradigms.</p>
 <span class="nb">print</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="section" id="motorimagery">
-<h2>MotorImagery<a class="headerlink" href="#motorimagery" title="Permalink to this headline">¶</a></h2>
+<section id="motorimagery">
+<h2>MotorImagery<a class="headerlink" href="#motorimagery" title="Permalink to this heading">¶</a></h2>
 <p>First, let’s take an example of the MotorImagery paradigm.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paradigm</span> <span class="o">=</span> <span class="n">MotorImagery</span><span class="p">(</span><span class="n">n_classes</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">paradigm</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>N-class motor imagery.
 
 Metric is &#39;roc-auc&#39; if 2 classes and &#39;accuracy&#39; if more
@@ -254,7 +253,6 @@ preprocessed EEG data, the labels, and a dataframe with metadata.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Return the data for a list of subject.
 
 return the data, labels and a dataframe with metadata. the dataframe
@@ -304,7 +302,6 @@ one.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(576, 22, 1001)
 </pre></div>
 </div>
@@ -313,7 +310,6 @@ dataset, we have the 4 types of motor imagery that was performed.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.unique.html#numpy.unique" title="numpy.unique" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">unique</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">))</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;feet&#39; &#39;left_hand&#39; &#39;right_hand&#39; &#39;tongue&#39;]
 </pre></div>
 </div>
@@ -328,7 +324,6 @@ may or may not contain multiple runs.</p></li>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   subject    session    run
 0        1  session_T  run_0
 1        1  session_T  run_0
@@ -342,11 +337,10 @@ and 6 runs per session.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>        subject    session    run
 count     576.0        576    576
 unique      NaN          2      6
-top         NaN  session_T  run_1
+top         NaN  session_T  run_0
 freq        NaN        288     96
 mean        1.0        NaN    NaN
 std         0.0        NaN    NaN
@@ -363,13 +357,12 @@ it will return the list all the imagery datasets from the MOABB.</p>
 <span class="nb">print</span><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">code</span></a> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">compatible_datasets</span></a><span class="p">])</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;Alexandre Motor Imagery&#39;, &#39;001-2014&#39;, &#39;002-2014&#39;, &#39;004-2014&#39;, &#39;001-2015&#39;, &#39;004-2015&#39;, &#39;Cho2017&#39;, &#39;Lee2019_MI&#39;, &#39;Grosse-Wentrup 2009&#39;, &#39;Ofner2017&#39;, &#39;Physionet Motor Imagery&#39;, &#39;Schirrmeister2017&#39;, &#39;Shin2017A&#39;, &#39;Weibo 2014&#39;, &#39;Zhou 2016&#39;]
 </pre></div>
 </div>
-</div>
-<div class="section" id="filterbank-motorimagery">
-<h2>FilterBank MotorImagery<a class="headerlink" href="#filterbank-motorimagery" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="filterbank-motorimagery">
+<h2>FilterBank MotorImagery<a class="headerlink" href="#filterbank-motorimagery" title="Permalink to this heading">¶</a></h2>
 <p>FilterBankMotorImagery is the same paradigm, but with a different
 preprocessing. In this case, it applies a bank of 6 bandpass filter on the data
 before concatenating the output.</p>
@@ -378,7 +371,6 @@ before concatenating the output.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">paradigm</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Filter bank n-class motor imagery.
 
 Metric is &#39;roc-auc&#39; if 2 classes and &#39;accuracy&#39; if more
@@ -401,13 +393,12 @@ n_classes: int,
 <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span><span class="o">.</span><span class="n">shape</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(288, 22, 1001, 6)
 </pre></div>
 </div>
-</div>
-<div class="section" id="leftright-motorimagery">
-<h2>LeftRight MotorImagery<a class="headerlink" href="#leftright-motorimagery" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="leftright-motorimagery">
+<h2>LeftRight MotorImagery<a class="headerlink" href="#leftright-motorimagery" title="Permalink to this heading">¶</a></h2>
 <p>LeftRightImagery is a variation over the BaseMotorImagery paradigm,
 restricted to left- and right-hand events.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paradigm</span> <span class="o">=</span> <span class="n">LeftRightImagery</span><span class="p">()</span>
@@ -415,7 +406,6 @@ restricted to left- and right-hand events.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">paradigm</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Motor Imagery for left hand/right hand classification
 
     Metric is &#39;roc_auc&#39;
@@ -427,7 +417,6 @@ contains at least left and right hand events.</p>
 <span class="nb">print</span><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">code</span></a> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">compatible_datasets</span></a><span class="p">])</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;001-2014&#39;, &#39;004-2014&#39;, &#39;Cho2017&#39;, &#39;Lee2019_MI&#39;, &#39;Grosse-Wentrup 2009&#39;, &#39;Physionet Motor Imagery&#39;, &#39;Schirrmeister2017&#39;, &#39;Shin2017A&#39;, &#39;Weibo 2014&#39;, &#39;Zhou 2016&#39;]
 </pre></div>
 </div>
@@ -438,12 +427,11 @@ corresponding to left- and right-hand motor imagination.</p>
 <span class="nb">print</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.unique.html#numpy.unique" title="numpy.unique" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">unique</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">))</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;left_hand&#39; &#39;right_hand&#39;]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.470 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-explore-paradigm-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  16.213 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-explore-paradigm-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9b872d163c45f60eb451b1869667203a/plot_explore_paradigm.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_explore_paradigm.py</span></code></a></p>
 </div>
@@ -452,8 +440,8 @@ corresponding to left- and right-hand motor imagination.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -474,8 +462,8 @@ corresponding to left- and right-hand motor imagination.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>moabb.datasets.download.data_dl &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="moabb.datasets.download.fs_issue_request" href="moabb.datasets.download.fs_issue_request.html" />
@@ -40,7 +40,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -58,7 +58,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -77,7 +77,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../datasets.html">Datasets</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -122,6 +122,7 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">moabb.datasets.download.data_dl</a><ul>
+<li><a class="reference internal" href="#moabb.datasets.download.data_dl"><code class="docutils literal notranslate"><span class="pre">data_dl()</span></code></a></li>
 <li><a class="reference internal" href="#examples-using-moabb-datasets-download-data-dl">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.download.data_dl</span></code></a></li>
 </ul>
 </li>
@@ -154,16 +155,16 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="moabb-datasets-download-data-dl">
-<h1>moabb.datasets.download.data_dl<a class="headerlink" href="#moabb-datasets-download-data-dl" title="Permalink to this headline">¶</a></h1>
+  <section id="moabb-datasets-download-data-dl">
+<h1>moabb.datasets.download.data_dl<a class="headerlink" href="#moabb-datasets-download-data-dl" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
-<dt id="moabb.datasets.download.data_dl">
-<code class="sig-prename descclassname"><span class="pre">moabb.datasets.download.</span></code><code class="sig-name descname"><span class="pre">data_dl</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/datasets/download.py#L104-L155"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/download.html#data_dl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.download.data_dl" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="moabb.datasets.download.data_dl">
+<span class="sig-prename descclassname"><span class="pre">moabb.datasets.download.</span></span><span class="sig-name descname"><span class="pre">data_dl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../docs/&lt;decorator-gen-604&gt;#L104-L155"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.download.data_dl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download file from url to specified path</p>
 <p>This function should replace data_path as the MNE will not support the download
 of dataset anymore. This version is using Pooch.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> (<em>str</em>) – Path to remote location of data</p></li>
 <li><p><strong>sign</strong> (<em>str</em>) – Signifier of dataset</p></li>
@@ -174,27 +175,26 @@ If None, the environment variable or config parameter
 is not found under the given path, the data
 will be automatically downloaded to the specified folder.</p></li>
 <li><p><strong>force_update</strong> (<em>bool</em>) – Force update of the dataset even if a local copy exists.</p></li>
-<li><p><strong>verbose</strong> (<em>bool, str, int, or None</em>) – If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
+<li><p><strong>verbose</strong> (<em>bool, str, int, or None</em>) – If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>path</strong> – Local path to the given data file. This path is contained inside a list
 of length one, for compatibility.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list of str</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<div class="section" id="examples-using-moabb-datasets-download-data-dl">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.download.data_dl</span></code><a class="headerlink" href="#examples-using-moabb-datasets-download-data-dl" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="Tutorial 4: Creating a dataset class"><div class="figure align-default" id="id1">
-<img alt="Tutorial 4: Creating a dataset class" src="../_images/sphx_glr_tutorial_4_adding_a_dataset_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html#sphx-glr-auto-tutorials-tutorial-4-adding-a-dataset-py"><span class="std std-ref">Tutorial 4: Creating a dataset class</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div style='clear:both'></div></div>
-</div>
+<section id="examples-using-moabb-datasets-download-data-dl">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.download.data_dl</span></code><a class="headerlink" href="#examples-using-moabb-datasets-download-data-dl" title="Permalink to this heading">¶</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Tutorial 4: Creating a dataset class"><img alt="Tutorial 4: Creating a dataset class" src="../_images/sphx_glr_tutorial_4_adding_a_dataset_thumb.png" />
+<p><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html#sphx-glr-auto-tutorials-tutorial-4-adding-a-dataset-py"><span class="std std-ref">Tutorial 4: Creating a dataset class</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Tutorial 4: Creating a dataset class</div>
+</div></div><div style='clear:both'></div></section>
+</section>
 
 
     </div>
@@ -215,8 +215,8 @@ of length one, for compatibility.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

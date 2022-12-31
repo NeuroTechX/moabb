@@ -5,8 +5,8 @@
 
 Computation times
 =================
-**00:42.631** total execution time for **auto_examples_external** files:
+**00:50.053** total execution time for **auto_examples_external** files:
 
 +------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_external_plot_learning_curve_p300_external.py` (``plot_learning_curve_p300_external.py``) | 00:42.631 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_external_plot_learning_curve_p300_external.py` (``plot_learning_curve_p300_external.py``) | 00:50.053 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------------------+-----------+--------+

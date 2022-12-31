@@ -143,231 +143,115 @@ be overwritten if necessary.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    001-2014-CrossSession:   0%|          | 0/4 [00:00<?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-CrossSession:  25%|##5       | 1/4 [00:06<00:18,  6.10s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-CrossSession:  50%|#####     | 2/4 [00:12<00:12,  6.13s/it]
-      0%|                                              | 0.00/44.1M [00:00<?, ?B/s][A
-      0%|                                      | 32.8k/44.1M [00:00<04:21, 168kB/s][A
-      0%|▏                                      | 144k/44.1M [00:00<01:17, 570kB/s][A
-      1%|▎                                      | 289k/44.1M [00:00<00:48, 899kB/s][A
-      1%|▌                                     | 593k/44.1M [00:00<00:26, 1.65MB/s][A
-      3%|▉                                    | 1.10M/44.1M [00:00<00:15, 2.79MB/s][A
-      5%|█▊                                   | 2.10M/44.1M [00:00<00:08, 5.10MB/s][A
-      9%|███▎                                 | 3.95M/44.1M [00:00<00:04, 9.34MB/s][A
-     16%|█████▊                               | 6.97M/44.1M [00:00<00:02, 15.8MB/s][A
-     23%|████████▍                            | 10.0M/44.1M [00:00<00:01, 20.4MB/s][A
-     29%|██████████▋                          | 12.8M/44.1M [00:01<00:01, 22.5MB/s][A
-     35%|█████████████                        | 15.6M/44.1M [00:01<00:01, 24.2MB/s][A
-     42%|███████████████▋                     | 18.6M/44.1M [00:01<00:00, 26.1MB/s][A
-     49%|██████████████████▏                  | 21.6M/44.1M [00:01<00:00, 27.3MB/s][A
-     56%|████████████████████▋                | 24.6M/44.1M [00:01<00:00, 28.0MB/s][A
-     62%|███████████████████████              | 27.4M/44.1M [00:01<00:00, 27.8MB/s][A
-     69%|█████████████████████████▍           | 30.2M/44.1M [00:01<00:00, 27.9MB/s][A
-     76%|███████████████████████████▉         | 33.3M/44.1M [00:01<00:00, 28.7MB/s][A
-     82%|██████████████████████████████▍      | 36.2M/44.1M [00:01<00:00, 29.0MB/s][A
-     89%|█████████████████████████████████    | 39.3M/44.1M [00:02<00:00, 28.7MB/s][A
-     96%|███████████████████████████████████▌ | 42.4M/44.1M [00:02<00:00, 29.3MB/s][A
-      0%|                                              | 0.00/44.1M [00:00<?, ?B/s][A    100%|█████████████████████████████████████| 44.1M/44.1M [00:00<00:00, 61.8GB/s]
+    001-2014-CrossSession:   0%|          | 0/4 [00:00<?, ?it/s]    001-2014-CrossSession:  25%|##5       | 1/4 [00:06<00:18,  6.14s/it]    001-2014-CrossSession:  50%|#####     | 2/4 [00:12<00:12,  6.03s/it]
+      0%|                                              | 0.00/44.1M [00:00<?, ?B/s]
+      0%|                                     | 8.19k/44.1M [00:00<14:48, 49.6kB/s]
+      0%|                                      | 32.8k/44.1M [00:00<06:52, 107kB/s]
+      0%|                                      | 88.1k/44.1M [00:00<03:31, 208kB/s]
+      0%|▏                                      | 184k/44.1M [00:00<02:04, 351kB/s]
+      1%|▎                                      | 392k/44.1M [00:00<01:05, 670kB/s]
+      2%|▋                                     | 816k/44.1M [00:01<00:33, 1.30MB/s]
+      4%|█▍                                   | 1.65M/44.1M [00:01<00:17, 2.49MB/s]
+      8%|██▊                                  | 3.33M/44.1M [00:01<00:08, 4.86MB/s]
+     13%|████▊                                | 5.70M/44.1M [00:01<00:04, 7.75MB/s]
+     18%|██████▍                              | 7.72M/44.1M [00:01<00:04, 9.05MB/s]
+     23%|████████▍                            | 9.99M/44.1M [00:01<00:03, 10.4MB/s]
+     27%|██████████▏                          | 12.1M/44.1M [00:02<00:02, 11.0MB/s]
+     33%|████████████                         | 14.3M/44.1M [00:02<00:02, 11.7MB/s]
+     37%|█████████████▊                       | 16.4M/44.1M [00:02<00:02, 11.9MB/s]
+     42%|███████████████▌                     | 18.6M/44.1M [00:02<00:02, 12.2MB/s]
+     47%|█████████████████▍                   | 20.8M/44.1M [00:02<00:01, 12.4MB/s]
+     52%|███████████████████▎                 | 23.0M/44.1M [00:02<00:01, 12.6MB/s]
+     57%|█████████████████████                | 25.1M/44.1M [00:03<00:01, 12.7MB/s]
+     62%|██████████████████████▉              | 27.3M/44.1M [00:03<00:01, 12.7MB/s]
+     67%|████████████████████████▊            | 29.5M/44.1M [00:03<00:01, 12.8MB/s]
+     72%|██████████████████████████▌          | 31.7M/44.1M [00:03<00:00, 12.8MB/s]
+     77%|████████████████████████████▍        | 33.9M/44.1M [00:03<00:00, 12.9MB/s]
+     82%|██████████████████████████████▎      | 36.1M/44.1M [00:03<00:00, 12.9MB/s]
+     87%|████████████████████████████████▏    | 38.3M/44.1M [00:04<00:00, 13.0MB/s]
+     92%|█████████████████████████████████▉   | 40.5M/44.1M [00:04<00:00, 13.0MB/s]
+     97%|███████████████████████████████████▉ | 42.8M/44.1M [00:04<00:00, 13.2MB/s]
+      0%|                                              | 0.00/44.1M [00:00<?, ?B/s]    100%|█████████████████████████████████████| 44.1M/44.1M [00:00<00:00, 52.3GB/s]
 
-      0%|                                              | 0.00/42.3M [00:00<?, ?B/s][A
-      0%|                                      | 32.8k/42.3M [00:00<04:10, 169kB/s][A
-      0%|▏                                      | 147k/42.3M [00:00<01:12, 584kB/s][A
-      1%|▎                                      | 312k/42.3M [00:00<00:42, 985kB/s][A
-      1%|▌                                     | 574k/42.3M [00:00<00:26, 1.56MB/s][A
-      2%|▉                                    | 1.06M/42.3M [00:00<00:15, 2.65MB/s][A
-      5%|█▊                                   | 2.03M/42.3M [00:00<00:08, 4.92MB/s][A
-      9%|███▍                                 | 3.91M/42.3M [00:00<00:04, 9.31MB/s][A
-     15%|█████▌                               | 6.34M/42.3M [00:00<00:02, 14.0MB/s][A
-     20%|███████▍                             | 8.44M/42.3M [00:00<00:02, 16.1MB/s][A
-     26%|█████████▍                           | 10.8M/42.3M [00:01<00:01, 18.5MB/s][A
-     31%|███████████▍                         | 13.1M/42.3M [00:01<00:01, 19.7MB/s][A
-     36%|█████████████▍                       | 15.4M/42.3M [00:01<00:01, 20.7MB/s][A
-     42%|███████████████▍                     | 17.6M/42.3M [00:01<00:01, 21.3MB/s][A
-     47%|█████████████████▍                   | 20.0M/42.3M [00:01<00:01, 21.9MB/s][A
-     53%|███████████████████▍                 | 22.2M/42.3M [00:01<00:00, 22.1MB/s][A
-     58%|█████████████████████▍               | 24.5M/42.3M [00:01<00:00, 22.4MB/s][A
-     63%|███████████████████████▍             | 26.9M/42.3M [00:01<00:00, 22.6MB/s][A
-     69%|█████████████████████████▍           | 29.1M/42.3M [00:01<00:00, 22.7MB/s][A
-     74%|███████████████████████████▌         | 31.5M/42.3M [00:01<00:00, 23.0MB/s][A
-     80%|█████████████████████████████▌       | 33.8M/42.3M [00:02<00:00, 23.0MB/s][A
-     85%|███████████████████████████████▋     | 36.2M/42.3M [00:02<00:00, 23.2MB/s][A
-     91%|█████████████████████████████████▋   | 38.5M/42.3M [00:02<00:00, 23.3MB/s][A
-     97%|███████████████████████████████████▊ | 40.9M/42.3M [00:02<00:00, 23.6MB/s][A
-      0%|                                              | 0.00/42.3M [00:00<?, ?B/s][A    100%|█████████████████████████████████████| 42.3M/42.3M [00:00<00:00, 61.3GB/s]
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-CrossSession:  75%|#######5  | 3/4 [00:24<00:09,  9.03s/it]
-      0%|                                              | 0.00/37.2M [00:00<?, ?B/s][A
-      0%|                                      | 32.8k/37.2M [00:00<03:40, 168kB/s][A
-      0%|▏                                      | 133k/37.2M [00:00<01:10, 522kB/s][A
-      1%|▎                                      | 288k/37.2M [00:00<00:40, 908kB/s][A
-      2%|▌                                     | 572k/37.2M [00:00<00:23, 1.59MB/s][A
-      3%|█                                    | 1.09M/37.2M [00:00<00:12, 2.77MB/s][A
-      6%|██                                   | 2.06M/37.2M [00:00<00:06, 5.01MB/s][A
-     11%|███▉                                 | 3.96M/37.2M [00:00<00:03, 9.42MB/s][A
-     17%|██████▍                              | 6.46M/37.2M [00:00<00:02, 14.3MB/s][A
-     24%|████████▉                            | 8.94M/37.2M [00:00<00:01, 17.5MB/s][A
-     31%|███████████▍                         | 11.5M/37.2M [00:01<00:01, 19.9MB/s][A
-     38%|█████████████▉                       | 13.9M/37.2M [00:01<00:01, 21.3MB/s][A
-     44%|████████████████▎                    | 16.4M/37.2M [00:01<00:00, 22.4MB/s][A
-     53%|███████████████████▌                 | 19.7M/37.2M [00:01<00:00, 25.4MB/s][A
-     61%|██████████████████████▌              | 22.7M/37.2M [00:01<00:00, 26.8MB/s][A
-     68%|█████████████████████████▎           | 25.4M/37.2M [00:01<00:00, 27.0MB/s][A
-     76%|████████████████████████████▎        | 28.4M/37.2M [00:01<00:00, 27.9MB/s][A
-     84%|███████████████████████████████▏     | 31.3M/37.2M [00:01<00:00, 28.3MB/s][A
-     92%|██████████████████████████████████   | 34.2M/37.2M [00:01<00:00, 28.6MB/s][A
-      0%|                                              | 0.00/37.2M [00:00<?, ?B/s][A    100%|█████████████████████████████████████| 37.2M/37.2M [00:00<00:00, 55.6GB/s]
+      0%|                                              | 0.00/42.3M [00:00<?, ?B/s]
+      0%|                                     | 8.19k/42.3M [00:00<14:12, 49.6kB/s]
+      0%|                                      | 32.8k/42.3M [00:00<06:36, 107kB/s]
+      0%|                                      | 96.3k/42.3M [00:00<03:03, 231kB/s]
+      0%|▏                                      | 209k/42.3M [00:00<01:44, 404kB/s]
+      1%|▍                                      | 432k/42.3M [00:00<00:56, 737kB/s]
+      2%|▊                                     | 889k/42.3M [00:01<00:29, 1.41MB/s]
+      4%|█▌                                   | 1.80M/42.3M [00:01<00:14, 2.72MB/s]
+      9%|███▏                                 | 3.62M/42.3M [00:01<00:07, 5.30MB/s]
+     14%|█████▏                               | 5.90M/42.3M [00:01<00:04, 7.86MB/s]
+     19%|██████▉                              | 7.97M/42.3M [00:01<00:03, 9.24MB/s]
+     24%|████████▉                            | 10.2M/42.3M [00:01<00:03, 10.4MB/s]
+     29%|██████████▋                          | 12.2M/42.3M [00:02<00:02, 11.0MB/s]
+     34%|████████████▋                        | 14.5M/42.3M [00:02<00:02, 11.7MB/s]
+     39%|██████████████▌                      | 16.6M/42.3M [00:02<00:02, 12.0MB/s]
+     45%|████████████████▍                    | 18.8M/42.3M [00:02<00:01, 12.3MB/s]
+     50%|██████████████████▎                  | 21.0M/42.3M [00:02<00:01, 12.5MB/s]
+     55%|████████████████████▎                | 23.2M/42.3M [00:02<00:01, 12.6MB/s]
+     60%|██████████████████████▏              | 25.4M/42.3M [00:03<00:01, 12.7MB/s]
+     65%|████████████████████████             | 27.5M/42.3M [00:03<00:01, 12.8MB/s]
+     70%|█████████████████████████▉           | 29.7M/42.3M [00:03<00:00, 12.8MB/s]
+     75%|███████████████████████████▊         | 31.8M/42.3M [00:03<00:00, 12.7MB/s]
+     80%|█████████████████████████████▋       | 34.0M/42.3M [00:03<00:00, 12.8MB/s]
+     86%|███████████████████████████████▋     | 36.2M/42.3M [00:03<00:00, 12.9MB/s]
+     91%|█████████████████████████████████▌   | 38.3M/42.3M [00:04<00:00, 12.8MB/s]
+     96%|███████████████████████████████████▍ | 40.6M/42.3M [00:04<00:00, 13.0MB/s]
+      0%|                                              | 0.00/42.3M [00:00<?, ?B/s]    100%|█████████████████████████████████████| 42.3M/42.3M [00:00<00:00, 87.5GB/s]
+    001-2014-CrossSession:  75%|#######5  | 3/4 [00:30<00:11, 11.89s/it]
+      0%|                                              | 0.00/37.2M [00:00<?, ?B/s]
+      0%|                                     | 8.19k/37.2M [00:00<12:27, 49.7kB/s]
+      0%|                                      | 32.8k/37.2M [00:00<05:48, 106kB/s]
+      0%|                                      | 96.3k/37.2M [00:00<02:40, 230kB/s]
+      1%|▏                                      | 209k/37.2M [00:00<01:31, 404kB/s]
+      1%|▍                                      | 432k/37.2M [00:00<00:49, 736kB/s]
+      2%|▉                                     | 889k/37.2M [00:01<00:25, 1.41MB/s]
+      5%|█▊                                   | 1.80M/37.2M [00:01<00:13, 2.72MB/s]
+     10%|███▌                                 | 3.62M/37.2M [00:01<00:06, 5.29MB/s]
+     18%|██████▌                              | 6.58M/37.2M [00:01<00:03, 9.13MB/s]
+     24%|████████▊                            | 8.83M/37.2M [00:01<00:02, 10.4MB/s]
+     31%|███████████▍                         | 11.5M/37.2M [00:01<00:02, 12.0MB/s]
+     38%|█████████████▉                       | 14.0M/37.2M [00:02<00:01, 12.7MB/s]
+     45%|████████████████▌                    | 16.7M/37.2M [00:02<00:01, 13.7MB/s]
+     52%|███████████████████▎                 | 19.4M/37.2M [00:02<00:01, 14.4MB/s]
+     59%|█████████████████████▊               | 21.9M/37.2M [00:02<00:01, 14.5MB/s]
+     66%|████████████████████████▎            | 24.4M/37.2M [00:02<00:00, 14.7MB/s]
+     73%|██████████████████████████▉          | 27.0M/37.2M [00:02<00:00, 14.9MB/s]
+     80%|█████████████████████████████▌       | 29.7M/37.2M [00:03<00:00, 15.1MB/s]
+     87%|████████████████████████████████▏    | 32.3M/37.2M [00:03<00:00, 15.3MB/s]
+     94%|██████████████████████████████████▊  | 34.9M/37.2M [00:03<00:00, 15.4MB/s]
+      0%|                                              | 0.00/37.2M [00:00<?, ?B/s]    100%|█████████████████████████████████████| 37.2M/37.2M [00:00<00:00, 60.8GB/s]
 
-      0%|                                              | 0.00/41.7M [00:00<?, ?B/s][A
-      0%|                                      | 32.8k/41.7M [00:00<04:07, 168kB/s][A
-      0%|▏                                      | 148k/41.7M [00:00<01:10, 587kB/s][A
-      1%|▎                                      | 297k/41.7M [00:00<00:44, 925kB/s][A
-      2%|▌                                     | 641k/41.7M [00:00<00:22, 1.81MB/s][A
-      3%|█                                    | 1.19M/41.7M [00:00<00:13, 3.03MB/s][A
-      5%|█▉                                   | 2.14M/41.7M [00:00<00:07, 5.12MB/s][A
-     10%|███▌                                 | 4.03M/41.7M [00:00<00:03, 9.45MB/s][A
-     17%|██████▎                              | 7.19M/41.7M [00:00<00:02, 16.3MB/s][A
-     24%|████████▉                            | 10.0M/41.7M [00:00<00:01, 20.1MB/s][A
-     31%|███████████▌                         | 13.1M/41.7M [00:01<00:01, 23.3MB/s][A
-     39%|██████████████▎                      | 16.1M/41.7M [00:01<00:01, 25.4MB/s][A
-     46%|████████████████▉                    | 19.1M/41.7M [00:01<00:00, 26.6MB/s][A
-     53%|███████████████████▌                 | 22.1M/41.7M [00:01<00:00, 27.8MB/s][A
-     60%|██████████████████████▏              | 25.0M/41.7M [00:01<00:00, 26.8MB/s][A
-     67%|████████████████████████▉            | 28.1M/41.7M [00:01<00:00, 27.8MB/s][A
-     74%|███████████████████████████▌         | 31.1M/41.7M [00:01<00:00, 28.4MB/s][A
-     82%|██████████████████████████████▏      | 34.1M/41.7M [00:01<00:00, 29.0MB/s][A
-     89%|████████████████████████████████▊    | 37.0M/41.7M [00:01<00:00, 28.9MB/s][A
-     96%|███████████████████████████████████▍ | 39.9M/41.7M [00:02<00:00, 29.0MB/s][A
-      0%|                                              | 0.00/41.7M [00:00<?, ?B/s][A    100%|█████████████████████████████████████| 41.7M/41.7M [00:00<00:00, 61.4GB/s]
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    001-2014-CrossSession: 100%|##########| 4/4 [00:36<00:00, 10.06s/it]    001-2014-CrossSession: 100%|##########| 4/4 [00:36<00:00,  9.09s/it]
+      0%|                                              | 0.00/41.7M [00:00<?, ?B/s]
+      0%|                                     | 8.19k/41.7M [00:00<13:59, 49.7kB/s]
+      0%|                                      | 32.8k/41.7M [00:00<06:30, 107kB/s]
+      0%|                                      | 96.3k/41.7M [00:00<03:00, 231kB/s]
+      1%|▏                                      | 209k/41.7M [00:00<01:42, 404kB/s]
+      1%|▍                                      | 432k/41.7M [00:00<00:56, 737kB/s]
+      2%|▊                                     | 889k/41.7M [00:01<00:28, 1.41MB/s]
+      4%|█▌                                   | 1.80M/41.7M [00:01<00:14, 2.72MB/s]
+      9%|███▏                                 | 3.62M/41.7M [00:01<00:07, 5.30MB/s]
+     16%|█████▊                               | 6.58M/41.7M [00:01<00:03, 9.14MB/s]
+     22%|████████                             | 9.12M/41.7M [00:01<00:03, 10.8MB/s]
+     27%|██████████▏                          | 11.4M/41.7M [00:01<00:02, 11.7MB/s]
+     34%|████████████▍                        | 14.1M/41.7M [00:02<00:02, 12.9MB/s]
+     40%|██████████████▋                      | 16.6M/41.7M [00:02<00:01, 13.4MB/s]
+     46%|████████████████▊                    | 19.0M/41.7M [00:02<00:01, 13.8MB/s]
+     52%|███████████████████▏                 | 21.6M/41.7M [00:02<00:01, 14.2MB/s]
+     58%|█████████████████████▍               | 24.1M/41.7M [00:02<00:01, 14.5MB/s]
+     64%|███████████████████████▌             | 26.6M/41.7M [00:02<00:01, 14.6MB/s]
+     70%|█████████████████████████▊           | 29.1M/41.7M [00:03<00:00, 14.7MB/s]
+     76%|████████████████████████████         | 31.7M/41.7M [00:03<00:00, 14.9MB/s]
+     82%|██████████████████████████████▎      | 34.2M/41.7M [00:03<00:00, 14.9MB/s]
+     88%|████████████████████████████████▍    | 36.6M/41.7M [00:03<00:00, 14.6MB/s]
+     94%|██████████████████████████████████▋  | 39.1M/41.7M [00:03<00:00, 14.7MB/s]
+    100%|████████████████████████████████████▉| 41.6M/41.7M [00:03<00:00, 14.8MB/s]
+      0%|                                              | 0.00/41.7M [00:00<?, ?B/s]    100%|█████████████████████████████████████| 41.7M/41.7M [00:00<00:00, 90.9GB/s]
+    001-2014-CrossSession: 100%|##########| 4/4 [00:47<00:00, 13.79s/it]    001-2014-CrossSession: 100%|##########| 4/4 [00:47<00:00, 11.91s/it]
 
 
 
@@ -392,10 +276,18 @@ for every dataset and pipeline.
 
 
 
-.. image:: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_001.png
-    :alt: Scores per dataset and algorithm
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_001.png
+   :alt: Scores per dataset and algorithm
+   :srcset: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_001.png
+   :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /home/runner/work/moabb/moabb/moabb/analysis/plotting.py:59: UserWarning: The palette list has more values (6) than needed (4), which may not be intended.
+      sea.stripplot(
 
 
 
@@ -418,9 +310,10 @@ number of sessions.
 
 
 
-.. image:: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_002.png
-    :alt: plot statistical analysis
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_002.png
+   :alt: plot statistical analysis
+   :srcset: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_002.png
+   :class: sphx-glr-single-img
 
 
 
@@ -468,9 +361,10 @@ meta-effect and significance both per-dataset and overall.
 
 
 
-.. image:: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_003.png
-    :alt: < RG+LDA better                                                                              CSP+LDA better >, p-value
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_003.png
+   :alt: < RG+LDA better                                                                              CSP+LDA better >, p-value
+   :srcset: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_003.png
+   :class: sphx-glr-single-img
 
 
 
@@ -491,9 +385,10 @@ the x-axis over all datasets
 
 
 
-.. image:: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_004.png
-    :alt: Algorithm comparison
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_004.png
+   :alt: Algorithm comparison
+   :srcset: /auto_examples/advanced_examples/images/sphx_glr_plot_statistical_analysis_004.png
+   :class: sphx-glr-single-img
 
 
 
@@ -502,28 +397,23 @@ the x-axis over all datasets
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  37.043 seconds)
+   **Total running time of the script:** ( 0 minutes  48.434 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_statistical_analysis.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_statistical_analysis.py <plot_statistical_analysis.py>`
 
-     :download:`Download Python source code: plot_statistical_analysis.py <plot_statistical_analysis.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_statistical_analysis.ipynb <plot_statistical_analysis.ipynb>`
+      :download:`Download Jupyter notebook: plot_statistical_analysis.ipynb <plot_statistical_analysis.ipynb>`
 
 
 .. only:: html

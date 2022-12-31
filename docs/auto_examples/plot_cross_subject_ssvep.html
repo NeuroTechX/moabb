@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Cross-Subject SSVEP &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <meta charset='utf-8'>
@@ -38,7 +38,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -56,7 +56,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -75,7 +75,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -161,8 +161,8 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-cross-subject-ssvep-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="cross-subject-ssvep">
-<span id="sphx-glr-auto-examples-plot-cross-subject-ssvep-py"></span><h1>Cross-Subject SSVEP<a class="headerlink" href="#cross-subject-ssvep" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="cross-subject-ssvep">
+<span id="sphx-glr-auto-examples-plot-cross-subject-ssvep-py"></span><h1>Cross-Subject SSVEP<a class="headerlink" href="#cross-subject-ssvep" title="Permalink to this heading">¶</a></h1>
 <p>This example shows how to perform a cross-subject analysis on an SSVEP dataset.
 We will compare two pipelines :</p>
 <ul class="simple">
@@ -196,35 +196,8 @@ We will compare two pipelines :</p>
 <span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;rocket&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;rocket_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;mako&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;mako_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;icefire&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;icefire_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;vlag&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;vlag_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;flare&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;flare_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;crest&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;crest_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-</pre></div>
-</div>
-<div class="section" id="loading-dataset">
-<h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this headline">¶</a></h2>
+<section id="loading-dataset">
+<h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this heading">¶</a></h2>
 <p>We will load the data from the first 2 subjects of the <code class="docutils literal notranslate"><span class="pre">SSVEP_Exo</span></code> dataset
 and compare two algorithms on this set. One of the algorithms could only
 process class associated with a stimulation frequency, we will thus drop
@@ -237,9 +210,9 @@ frequency.</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">interval</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">interval</span></a>
 </pre></div>
 </div>
-</div>
-<div class="section" id="choose-paradigm">
-<h2>Choose Paradigm<a class="headerlink" href="#choose-paradigm" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="choose-paradigm">
+<h2>Choose Paradigm<a class="headerlink" href="#choose-paradigm" title="Permalink to this heading">¶</a></h2>
 <p>We define the paradigms (SSVEP, SSSVEP_TRCA and FilterBankSSVEP) and use the dataset
 SSVEPExo. The SSVEP paradigm applied a bandpass filter (10-25 Hz) on
 the data, SSVEP_TRCA applied a bandpass filter (1-110 Hz) which correspond to almost
@@ -260,9 +233,9 @@ to 0 and 1</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a> <span class="o">=</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">used_events</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="create-pipelines">
-<h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="create-pipelines">
+<h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this heading">¶</a></h2>
 <p>Pipelines must be a dict of sklearn pipeline transformer.
 The first pipeline uses Riemannian geometry, by building an extended
 covariance matrices from the signal filtered around the considered
@@ -286,9 +259,9 @@ The third pipeline relies on the TRCA algorithm.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="evaluation">
-<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="evaluation">
+<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this heading">¶</a></h2>
 <p>The evaluation will return a DataFrame containing an accuracy score for
 each subject / session of the dataset, and for each pipeline.</p>
 <p>Results are saved into the database, so that if you add a new pipeline, it
@@ -302,170 +275,314 @@ be overwritten if necessary.</p>
 <span class="n">results</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.06M [00:00&lt;?, ?B/s]
-  4%|█▍                                    | 80.9k/2.06M [00:00&lt;00:04, 440kB/s]
-  7%|██▊                                    | 146k/2.06M [00:00&lt;00:04, 390kB/s]
- 10%|████                                   | 212k/2.06M [00:00&lt;00:04, 374kB/s]
- 14%|█████▎                                 | 278k/2.06M [00:00&lt;00:04, 366kB/s]
- 17%|██████▌                                | 343k/2.06M [00:00&lt;00:04, 362kB/s]
- 20%|███████▊                               | 409k/2.06M [00:01&lt;00:04, 360kB/s]
- 23%|████████▉                              | 474k/2.06M [00:01&lt;00:04, 358kB/s]
- 26%|██████████▏                            | 540k/2.06M [00:01&lt;00:04, 358kB/s]
- 29%|███████████▍                           | 605k/2.06M [00:01&lt;00:04, 357kB/s]
- 33%|████████████▋                          | 671k/2.06M [00:01&lt;00:03, 356kB/s]
- 36%|█████████████▉                         | 736k/2.06M [00:02&lt;00:03, 356kB/s]
- 39%|███████████████▏                       | 802k/2.06M [00:02&lt;00:03, 356kB/s]
- 42%|████████████████▍                      | 867k/2.06M [00:02&lt;00:03, 355kB/s]
- 45%|█████████████████▋                     | 933k/2.06M [00:02&lt;00:03, 355kB/s]
- 49%|██████████████████▉                    | 998k/2.06M [00:02&lt;00:02, 355kB/s]
- 52%|███████████████████▋                  | 1.06M/2.06M [00:02&lt;00:02, 355kB/s]
- 55%|████████████████████▉                 | 1.13M/2.06M [00:03&lt;00:02, 355kB/s]
- 59%|██████████████████████▍               | 1.21M/2.06M [00:03&lt;00:02, 382kB/s]
- 62%|███████████████████████▌              | 1.28M/2.06M [00:03&lt;00:02, 374kB/s]
- 65%|████████████████████████▊             | 1.34M/2.06M [00:03&lt;00:01, 368kB/s]
- 69%|██████████████████████████            | 1.41M/2.06M [00:03&lt;00:01, 364kB/s]
- 72%|███████████████████████████▏          | 1.47M/2.06M [00:04&lt;00:01, 362kB/s]
- 75%|████████████████████████████▍         | 1.54M/2.06M [00:04&lt;00:01, 360kB/s]
- 78%|█████████████████████████████▋        | 1.60M/2.06M [00:04&lt;00:01, 359kB/s]
- 81%|██████████████████████████████▉       | 1.67M/2.06M [00:04&lt;00:01, 358kB/s]
- 84%|████████████████████████████████      | 1.74M/2.06M [00:04&lt;00:00, 357kB/s]
- 88%|█████████████████████████████████▎    | 1.80M/2.06M [00:04&lt;00:00, 356kB/s]
- 92%|██████████████████████████████████▊   | 1.88M/2.06M [00:05&lt;00:00, 383kB/s]
- 95%|████████████████████████████████████  | 1.95M/2.06M [00:05&lt;00:00, 374kB/s]
- 98%|█████████████████████████████████████▏| 2.01M/2.06M [00:05&lt;00:00, 368kB/s]
+  2%|▌                                     | 31.7k/2.06M [00:00&lt;00:10, 195kB/s]
+  4%|█▍                                    | 80.9k/2.06M [00:00&lt;00:07, 259kB/s]
+  6%|██▏                                    | 114k/2.06M [00:00&lt;00:08, 233kB/s]
+  7%|██▊                                    | 146k/2.06M [00:00&lt;00:08, 221kB/s]
+  9%|███▍                                   | 179k/2.06M [00:00&lt;00:08, 214kB/s]
+ 10%|████                                   | 212k/2.06M [00:00&lt;00:08, 210kB/s]
+ 12%|████▋                                  | 245k/2.06M [00:01&lt;00:08, 207kB/s]
+ 14%|█████▎                                 | 278k/2.06M [00:01&lt;00:08, 206kB/s]
+ 15%|█████▉                                 | 310k/2.06M [00:01&lt;00:08, 205kB/s]
+ 17%|██████▌                                | 343k/2.06M [00:01&lt;00:08, 204kB/s]
+ 18%|███████▏                               | 376k/2.06M [00:01&lt;00:08, 203kB/s]
+ 20%|███████▊                               | 409k/2.06M [00:01&lt;00:08, 203kB/s]
+ 21%|████████▎                              | 441k/2.06M [00:02&lt;00:07, 203kB/s]
+ 23%|████████▉                              | 474k/2.06M [00:02&lt;00:07, 203kB/s]
+ 25%|█████████▌                             | 507k/2.06M [00:02&lt;00:07, 203kB/s]
+ 26%|██████████▏                            | 540k/2.06M [00:02&lt;00:07, 202kB/s]
+ 28%|██████████▊                            | 572k/2.06M [00:02&lt;00:07, 202kB/s]
+ 29%|███████████▍                           | 605k/2.06M [00:02&lt;00:07, 202kB/s]
+ 31%|████████████                           | 638k/2.06M [00:03&lt;00:07, 202kB/s]
+ 33%|████████████▋                          | 671k/2.06M [00:03&lt;00:06, 202kB/s]
+ 34%|█████████████▎                         | 703k/2.06M [00:03&lt;00:06, 202kB/s]
+ 36%|█████████████▉                         | 736k/2.06M [00:03&lt;00:06, 202kB/s]
+ 37%|██████████████▌                        | 769k/2.06M [00:03&lt;00:06, 202kB/s]
+ 39%|███████████████▏                       | 802k/2.06M [00:03&lt;00:06, 202kB/s]
+ 41%|███████████████▊                       | 835k/2.06M [00:04&lt;00:06, 203kB/s]
+ 42%|████████████████▍                      | 867k/2.06M [00:04&lt;00:05, 203kB/s]
+ 44%|█████████████████                      | 900k/2.06M [00:04&lt;00:05, 202kB/s]
+ 45%|█████████████████▋                     | 933k/2.06M [00:04&lt;00:05, 202kB/s]
+ 47%|██████████████████▎                    | 966k/2.06M [00:04&lt;00:05, 202kB/s]
+ 49%|██████████████████▉                    | 998k/2.06M [00:04&lt;00:05, 202kB/s]
+ 50%|███████████████████                   | 1.03M/2.06M [00:05&lt;00:05, 202kB/s]
+ 52%|███████████████████▋                  | 1.06M/2.06M [00:05&lt;00:04, 202kB/s]
+ 53%|████████████████████▎                 | 1.10M/2.06M [00:05&lt;00:04, 202kB/s]
+ 55%|████████████████████▉                 | 1.13M/2.06M [00:05&lt;00:04, 202kB/s]
+ 57%|█████████████████████▍                | 1.16M/2.06M [00:05&lt;00:04, 202kB/s]
+ 58%|██████████████████████                | 1.20M/2.06M [00:05&lt;00:04, 202kB/s]
+ 60%|██████████████████████▋               | 1.23M/2.06M [00:05&lt;00:04, 202kB/s]
+ 61%|███████████████████████▎              | 1.26M/2.06M [00:06&lt;00:03, 202kB/s]
+ 63%|███████████████████████▉              | 1.29M/2.06M [00:06&lt;00:03, 202kB/s]
+ 65%|████████████████████████▌             | 1.33M/2.06M [00:06&lt;00:03, 202kB/s]
+ 66%|█████████████████████████             | 1.36M/2.06M [00:06&lt;00:03, 202kB/s]
+ 68%|█████████████████████████▋            | 1.39M/2.06M [00:06&lt;00:03, 202kB/s]
+ 69%|██████████████████████████▎           | 1.42M/2.06M [00:06&lt;00:03, 202kB/s]
+ 71%|██████████████████████████▉           | 1.46M/2.06M [00:07&lt;00:02, 202kB/s]
+ 72%|███████████████████████████▌          | 1.49M/2.06M [00:07&lt;00:02, 202kB/s]
+ 74%|████████████████████████████▏         | 1.52M/2.06M [00:07&lt;00:02, 202kB/s]
+ 76%|████████████████████████████▊         | 1.56M/2.06M [00:07&lt;00:02, 202kB/s]
+ 77%|█████████████████████████████▎        | 1.59M/2.06M [00:07&lt;00:02, 202kB/s]
+ 79%|█████████████████████████████▉        | 1.62M/2.06M [00:07&lt;00:02, 202kB/s]
+ 80%|██████████████████████████████▌       | 1.65M/2.06M [00:08&lt;00:01, 202kB/s]
+ 82%|███████████████████████████████▏      | 1.69M/2.06M [00:08&lt;00:01, 202kB/s]
+ 84%|███████████████████████████████▊      | 1.72M/2.06M [00:08&lt;00:01, 202kB/s]
+ 85%|████████████████████████████████▍     | 1.75M/2.06M [00:08&lt;00:01, 202kB/s]
+ 87%|█████████████████████████████████     | 1.78M/2.06M [00:08&lt;00:01, 202kB/s]
+ 88%|█████████████████████████████████▌    | 1.82M/2.06M [00:08&lt;00:01, 202kB/s]
+ 90%|██████████████████████████████████▏   | 1.85M/2.06M [00:09&lt;00:01, 202kB/s]
+ 92%|██████████████████████████████████▊   | 1.88M/2.06M [00:09&lt;00:00, 202kB/s]
+ 93%|███████████████████████████████████▍  | 1.92M/2.06M [00:09&lt;00:00, 202kB/s]
+ 95%|████████████████████████████████████  | 1.95M/2.06M [00:09&lt;00:00, 202kB/s]
+ 96%|████████████████████████████████████▋ | 1.98M/2.06M [00:09&lt;00:00, 202kB/s]
+ 98%|█████████████████████████████████████▏| 2.01M/2.06M [00:09&lt;00:00, 202kB/s]
+100%|█████████████████████████████████████▊| 2.05M/2.06M [00:10&lt;00:00, 202kB/s]
   0%|                                              | 0.00/2.06M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.06M/2.06M [00:00&lt;00:00, 3.41GB/s]
+100%|█████████████████████████████████████| 2.06M/2.06M [00:00&lt;00:00, 2.73GB/s]
 
   0%|                                              | 0.00/2.82M [00:00&lt;?, ?B/s]
-  3%|█                                     | 80.9k/2.82M [00:00&lt;00:06, 439kB/s]
-  5%|██                                     | 146k/2.82M [00:00&lt;00:06, 387kB/s]
-  8%|██▉                                    | 212k/2.82M [00:00&lt;00:07, 372kB/s]
- 10%|███▊                                   | 278k/2.82M [00:00&lt;00:06, 365kB/s]
- 12%|████▊                                  | 343k/2.82M [00:00&lt;00:06, 361kB/s]
- 15%|█████▋                                 | 409k/2.82M [00:01&lt;00:06, 358kB/s]
- 17%|██████▌                                | 474k/2.82M [00:01&lt;00:06, 357kB/s]
- 19%|███████▍                               | 540k/2.82M [00:01&lt;00:06, 355kB/s]
- 21%|████████▍                              | 605k/2.82M [00:01&lt;00:06, 354kB/s]
- 24%|█████████▎                             | 671k/2.82M [00:01&lt;00:06, 354kB/s]
- 26%|██████████▏                            | 736k/2.82M [00:02&lt;00:05, 353kB/s]
- 28%|███████████                            | 802k/2.82M [00:02&lt;00:05, 353kB/s]
- 31%|████████████                           | 867k/2.82M [00:02&lt;00:05, 353kB/s]
- 33%|████████████▉                          | 933k/2.82M [00:02&lt;00:05, 353kB/s]
- 35%|█████████████▊                         | 998k/2.82M [00:02&lt;00:05, 353kB/s]
- 38%|██████████████▎                       | 1.06M/2.82M [00:02&lt;00:04, 353kB/s]
- 40%|███████████████▏                      | 1.13M/2.82M [00:03&lt;00:04, 353kB/s]
- 42%|████████████████▏                     | 1.20M/2.82M [00:03&lt;00:04, 354kB/s]
- 45%|█████████████████                     | 1.26M/2.82M [00:03&lt;00:04, 353kB/s]
- 47%|█████████████████▉                    | 1.33M/2.82M [00:03&lt;00:04, 354kB/s]
- 49%|██████████████████▊                   | 1.39M/2.82M [00:03&lt;00:04, 354kB/s]
- 52%|███████████████████▋                  | 1.46M/2.82M [00:04&lt;00:03, 354kB/s]
- 54%|████████████████████▌                 | 1.52M/2.82M [00:04&lt;00:03, 354kB/s]
- 56%|█████████████████████▍                | 1.59M/2.82M [00:04&lt;00:03, 354kB/s]
- 59%|██████████████████████▎               | 1.65M/2.82M [00:04&lt;00:03, 354kB/s]
- 61%|███████████████████████▏              | 1.72M/2.82M [00:04&lt;00:03, 353kB/s]
- 63%|████████████████████████              | 1.78M/2.82M [00:05&lt;00:02, 353kB/s]
- 66%|████████████████████████▉             | 1.85M/2.82M [00:05&lt;00:02, 353kB/s]
- 68%|█████████████████████████▊            | 1.92M/2.82M [00:05&lt;00:02, 353kB/s]
- 70%|██████████████████████████▋           | 1.98M/2.82M [00:05&lt;00:02, 353kB/s]
- 73%|███████████████████████████▋          | 2.05M/2.82M [00:05&lt;00:02, 354kB/s]
- 75%|████████████████████████████▌         | 2.11M/2.82M [00:05&lt;00:01, 354kB/s]
- 77%|█████████████████████████████▍        | 2.18M/2.82M [00:06&lt;00:01, 354kB/s]
- 80%|██████████████████████████████▎       | 2.24M/2.82M [00:06&lt;00:01, 354kB/s]
- 82%|███████████████████████████████▏      | 2.31M/2.82M [00:06&lt;00:01, 353kB/s]
- 84%|████████████████████████████████      | 2.37M/2.82M [00:06&lt;00:01, 354kB/s]
- 87%|████████████████████████████████▉     | 2.44M/2.82M [00:06&lt;00:01, 353kB/s]
- 89%|█████████████████████████████████▊    | 2.51M/2.82M [00:07&lt;00:00, 353kB/s]
- 91%|██████████████████████████████████▋   | 2.57M/2.82M [00:07&lt;00:00, 353kB/s]
- 94%|███████████████████████████████████▌  | 2.64M/2.82M [00:07&lt;00:00, 353kB/s]
- 96%|████████████████████████████████████▍ | 2.70M/2.82M [00:07&lt;00:00, 347kB/s]
- 98%|█████████████████████████████████████▎| 2.77M/2.82M [00:07&lt;00:00, 348kB/s]
+  1%|▍                                     | 31.7k/2.82M [00:00&lt;00:14, 197kB/s]
+  3%|█                                     | 80.9k/2.82M [00:00&lt;00:10, 260kB/s]
+  4%|█▌                                     | 114k/2.82M [00:00&lt;00:11, 234kB/s]
+  5%|██                                     | 146k/2.82M [00:00&lt;00:12, 222kB/s]
+  6%|██▍                                    | 179k/2.82M [00:00&lt;00:12, 215kB/s]
+  8%|██▉                                    | 212k/2.82M [00:00&lt;00:12, 211kB/s]
+  9%|███▍                                   | 245k/2.82M [00:01&lt;00:12, 208kB/s]
+ 10%|███▊                                   | 278k/2.82M [00:01&lt;00:12, 206kB/s]
+ 11%|████▎                                  | 310k/2.82M [00:01&lt;00:12, 205kB/s]
+ 12%|████▊                                  | 343k/2.82M [00:01&lt;00:12, 204kB/s]
+ 13%|█████▏                                 | 376k/2.82M [00:01&lt;00:11, 204kB/s]
+ 15%|█████▋                                 | 409k/2.82M [00:01&lt;00:11, 203kB/s]
+ 16%|██████                                 | 441k/2.82M [00:02&lt;00:11, 203kB/s]
+ 17%|██████▌                                | 474k/2.82M [00:02&lt;00:11, 203kB/s]
+ 18%|███████                                | 507k/2.82M [00:02&lt;00:11, 203kB/s]
+ 19%|███████▍                               | 540k/2.82M [00:02&lt;00:11, 203kB/s]
+ 20%|███████▉                               | 572k/2.82M [00:02&lt;00:11, 203kB/s]
+ 21%|████████▍                              | 605k/2.82M [00:02&lt;00:10, 203kB/s]
+ 23%|████████▊                              | 638k/2.82M [00:03&lt;00:10, 203kB/s]
+ 24%|█████████▎                             | 671k/2.82M [00:03&lt;00:10, 203kB/s]
+ 25%|█████████▋                             | 703k/2.82M [00:03&lt;00:10, 203kB/s]
+ 26%|██████████▏                            | 736k/2.82M [00:03&lt;00:10, 203kB/s]
+ 27%|██████████▋                            | 769k/2.82M [00:03&lt;00:10, 203kB/s]
+ 28%|███████████                            | 802k/2.82M [00:03&lt;00:09, 203kB/s]
+ 30%|███████████▌                           | 835k/2.82M [00:04&lt;00:09, 203kB/s]
+ 31%|████████████                           | 867k/2.82M [00:04&lt;00:09, 203kB/s]
+ 32%|████████████▍                          | 900k/2.82M [00:04&lt;00:09, 203kB/s]
+ 33%|████████████▉                          | 933k/2.82M [00:04&lt;00:09, 203kB/s]
+ 34%|█████████████▎                         | 966k/2.82M [00:04&lt;00:09, 203kB/s]
+ 35%|█████████████▊                         | 998k/2.82M [00:04&lt;00:08, 203kB/s]
+ 37%|█████████████▉                        | 1.03M/2.82M [00:05&lt;00:08, 203kB/s]
+ 38%|██████████████▎                       | 1.06M/2.82M [00:05&lt;00:08, 202kB/s]
+ 39%|██████████████▊                       | 1.10M/2.82M [00:05&lt;00:08, 202kB/s]
+ 40%|███████████████▏                      | 1.13M/2.82M [00:05&lt;00:08, 202kB/s]
+ 41%|███████████████▋                      | 1.16M/2.82M [00:05&lt;00:08, 202kB/s]
+ 42%|████████████████▏                     | 1.20M/2.82M [00:05&lt;00:08, 202kB/s]
+ 44%|████████████████▌                     | 1.23M/2.82M [00:05&lt;00:07, 202kB/s]
+ 45%|█████████████████                     | 1.26M/2.82M [00:06&lt;00:07, 202kB/s]
+ 46%|█████████████████▍                    | 1.29M/2.82M [00:06&lt;00:07, 202kB/s]
+ 47%|█████████████████▉                    | 1.33M/2.82M [00:06&lt;00:07, 203kB/s]
+ 48%|██████████████████▎                   | 1.36M/2.82M [00:06&lt;00:07, 203kB/s]
+ 49%|██████████████████▊                   | 1.39M/2.82M [00:06&lt;00:07, 202kB/s]
+ 51%|███████████████████▏                  | 1.42M/2.82M [00:06&lt;00:06, 202kB/s]
+ 52%|███████████████████▋                  | 1.46M/2.82M [00:07&lt;00:06, 203kB/s]
+ 53%|████████████████████                  | 1.49M/2.82M [00:07&lt;00:06, 203kB/s]
+ 54%|████████████████████▌                 | 1.52M/2.82M [00:07&lt;00:06, 203kB/s]
+ 55%|████████████████████▉                 | 1.56M/2.82M [00:07&lt;00:06, 203kB/s]
+ 56%|█████████████████████▍                | 1.59M/2.82M [00:07&lt;00:06, 203kB/s]
+ 58%|█████████████████████▉                | 1.62M/2.82M [00:07&lt;00:05, 203kB/s]
+ 59%|██████████████████████▎               | 1.65M/2.82M [00:08&lt;00:05, 203kB/s]
+ 60%|██████████████████████▊               | 1.69M/2.82M [00:08&lt;00:05, 203kB/s]
+ 61%|███████████████████████▏              | 1.72M/2.82M [00:08&lt;00:05, 203kB/s]
+ 62%|███████████████████████▋              | 1.75M/2.82M [00:08&lt;00:05, 203kB/s]
+ 63%|████████████████████████              | 1.78M/2.82M [00:08&lt;00:05, 203kB/s]
+ 65%|████████████████████████▌             | 1.82M/2.82M [00:08&lt;00:04, 203kB/s]
+ 66%|████████████████████████▉             | 1.85M/2.82M [00:09&lt;00:04, 203kB/s]
+ 67%|█████████████████████████▍            | 1.88M/2.82M [00:09&lt;00:04, 203kB/s]
+ 68%|█████████████████████████▊            | 1.92M/2.82M [00:09&lt;00:04, 203kB/s]
+ 69%|██████████████████████████▎           | 1.95M/2.82M [00:09&lt;00:04, 203kB/s]
+ 70%|██████████████████████████▋           | 1.98M/2.82M [00:09&lt;00:04, 203kB/s]
+ 72%|███████████████████████████▏          | 2.01M/2.82M [00:09&lt;00:03, 203kB/s]
+ 73%|███████████████████████████▋          | 2.05M/2.82M [00:10&lt;00:03, 203kB/s]
+ 74%|████████████████████████████          | 2.08M/2.82M [00:10&lt;00:03, 203kB/s]
+ 75%|████████████████████████████▌         | 2.11M/2.82M [00:10&lt;00:03, 202kB/s]
+ 76%|████████████████████████████▉         | 2.15M/2.82M [00:10&lt;00:03, 202kB/s]
+ 77%|█████████████████████████████▍        | 2.18M/2.82M [00:10&lt;00:03, 202kB/s]
+ 79%|█████████████████████████████▊        | 2.21M/2.82M [00:10&lt;00:02, 203kB/s]
+ 80%|██████████████████████████████▎       | 2.24M/2.82M [00:10&lt;00:02, 203kB/s]
+ 81%|██████████████████████████████▋       | 2.28M/2.82M [00:11&lt;00:02, 203kB/s]
+ 82%|███████████████████████████████▏      | 2.31M/2.82M [00:11&lt;00:02, 203kB/s]
+ 83%|███████████████████████████████▌      | 2.34M/2.82M [00:11&lt;00:02, 203kB/s]
+ 84%|████████████████████████████████      | 2.37M/2.82M [00:11&lt;00:02, 203kB/s]
+ 86%|████████████████████████████████▍     | 2.41M/2.82M [00:11&lt;00:02, 203kB/s]
+ 87%|████████████████████████████████▉     | 2.44M/2.82M [00:11&lt;00:01, 202kB/s]
+ 88%|█████████████████████████████████▎    | 2.47M/2.82M [00:12&lt;00:01, 202kB/s]
+ 89%|█████████████████████████████████▊    | 2.51M/2.82M [00:12&lt;00:01, 202kB/s]
+ 90%|██████████████████████████████████▎   | 2.54M/2.82M [00:12&lt;00:01, 202kB/s]
+ 91%|██████████████████████████████████▋   | 2.57M/2.82M [00:12&lt;00:01, 202kB/s]
+ 92%|███████████████████████████████████▏  | 2.60M/2.82M [00:12&lt;00:01, 202kB/s]
+ 94%|███████████████████████████████████▌  | 2.64M/2.82M [00:12&lt;00:00, 202kB/s]
+ 95%|████████████████████████████████████  | 2.67M/2.82M [00:13&lt;00:00, 202kB/s]
+ 96%|████████████████████████████████████▍ | 2.70M/2.82M [00:13&lt;00:00, 202kB/s]
+ 97%|████████████████████████████████████▉ | 2.74M/2.82M [00:13&lt;00:00, 202kB/s]
+ 98%|█████████████████████████████████████▎| 2.77M/2.82M [00:13&lt;00:00, 202kB/s]
+ 99%|█████████████████████████████████████▊| 2.80M/2.82M [00:13&lt;00:00, 203kB/s]
   0%|                                              | 0.00/2.82M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.82M/2.82M [00:00&lt;00:00, 3.63GB/s]
+100%|█████████████████████████████████████| 2.82M/2.82M [00:00&lt;00:00, 3.49GB/s]
 
   0%|                                              | 0.00/2.58M [00:00&lt;?, ?B/s]
-  3%|█▏                                    | 80.9k/2.58M [00:00&lt;00:05, 441kB/s]
-  6%|██▏                                    | 146k/2.58M [00:00&lt;00:06, 391kB/s]
-  8%|███▏                                   | 212k/2.58M [00:00&lt;00:06, 375kB/s]
- 11%|████▏                                  | 278k/2.58M [00:00&lt;00:06, 367kB/s]
- 13%|█████▏                                 | 343k/2.58M [00:00&lt;00:06, 363kB/s]
- 16%|██████▏                                | 409k/2.58M [00:01&lt;00:06, 360kB/s]
- 18%|███████▏                               | 474k/2.58M [00:01&lt;00:05, 359kB/s]
- 21%|████████▏                              | 540k/2.58M [00:01&lt;00:05, 358kB/s]
- 23%|█████████▏                             | 605k/2.58M [00:01&lt;00:05, 356kB/s]
- 26%|██████████                             | 671k/2.58M [00:01&lt;00:05, 356kB/s]
- 28%|███████████                            | 736k/2.58M [00:02&lt;00:05, 355kB/s]
- 31%|████████████                           | 802k/2.58M [00:02&lt;00:05, 355kB/s]
- 34%|█████████████                          | 867k/2.58M [00:02&lt;00:04, 352kB/s]
- 36%|██████████████                         | 933k/2.58M [00:02&lt;00:04, 353kB/s]
- 39%|███████████████                        | 998k/2.58M [00:02&lt;00:04, 354kB/s]
- 41%|███████████████▋                      | 1.06M/2.58M [00:02&lt;00:04, 354kB/s]
- 44%|████████████████▌                     | 1.13M/2.58M [00:03&lt;00:04, 355kB/s]
- 46%|█████████████████▌                    | 1.20M/2.58M [00:03&lt;00:03, 355kB/s]
- 49%|██████████████████▌                   | 1.26M/2.58M [00:03&lt;00:03, 355kB/s]
- 51%|███████████████████▌                  | 1.33M/2.58M [00:03&lt;00:03, 355kB/s]
- 54%|████████████████████▍                 | 1.39M/2.58M [00:03&lt;00:03, 356kB/s]
- 56%|█████████████████████▍                | 1.46M/2.58M [00:04&lt;00:03, 356kB/s]
- 59%|██████████████████████▍               | 1.52M/2.58M [00:04&lt;00:02, 356kB/s]
- 61%|███████████████████████▎              | 1.59M/2.58M [00:04&lt;00:02, 355kB/s]
- 64%|████████████████████████▎             | 1.65M/2.58M [00:04&lt;00:02, 356kB/s]
- 67%|█████████████████████████▎            | 1.72M/2.58M [00:04&lt;00:02, 355kB/s]
- 69%|██████████████████████████▏           | 1.78M/2.58M [00:04&lt;00:02, 355kB/s]
- 72%|███████████████████████████▏          | 1.85M/2.58M [00:05&lt;00:02, 355kB/s]
- 74%|████████████████████████████▏         | 1.92M/2.58M [00:05&lt;00:01, 355kB/s]
- 77%|█████████████████████████████▏        | 1.98M/2.58M [00:05&lt;00:01, 355kB/s]
- 79%|██████████████████████████████        | 2.05M/2.58M [00:05&lt;00:01, 355kB/s]
- 82%|███████████████████████████████       | 2.11M/2.58M [00:05&lt;00:01, 355kB/s]
- 84%|████████████████████████████████      | 2.18M/2.58M [00:06&lt;00:01, 355kB/s]
- 87%|████████████████████████████████▉     | 2.24M/2.58M [00:06&lt;00:00, 355kB/s]
- 89%|█████████████████████████████████▉    | 2.31M/2.58M [00:06&lt;00:00, 356kB/s]
- 92%|██████████████████████████████████▉   | 2.37M/2.58M [00:06&lt;00:00, 355kB/s]
- 94%|███████████████████████████████████▉  | 2.44M/2.58M [00:06&lt;00:00, 355kB/s]
- 97%|████████████████████████████████████▊ | 2.51M/2.58M [00:07&lt;00:00, 356kB/s]
-100%|█████████████████████████████████████▊| 2.57M/2.58M [00:07&lt;00:00, 355kB/s]
+  1%|▍                                     | 31.7k/2.58M [00:00&lt;00:12, 197kB/s]
+  3%|█▏                                    | 80.9k/2.58M [00:00&lt;00:09, 259kB/s]
+  4%|█▋                                     | 114k/2.58M [00:00&lt;00:10, 234kB/s]
+  6%|██▏                                    | 146k/2.58M [00:00&lt;00:10, 222kB/s]
+  7%|██▋                                    | 179k/2.58M [00:00&lt;00:11, 215kB/s]
+  8%|███▏                                   | 212k/2.58M [00:00&lt;00:11, 211kB/s]
+  9%|███▋                                   | 245k/2.58M [00:01&lt;00:11, 208kB/s]
+ 11%|████▏                                  | 278k/2.58M [00:01&lt;00:11, 206kB/s]
+ 12%|████▋                                  | 310k/2.58M [00:01&lt;00:11, 205kB/s]
+ 13%|█████▏                                 | 343k/2.58M [00:01&lt;00:10, 204kB/s]
+ 15%|█████▋                                 | 376k/2.58M [00:01&lt;00:10, 203kB/s]
+ 16%|██████▏                                | 409k/2.58M [00:01&lt;00:10, 203kB/s]
+ 17%|██████▋                                | 441k/2.58M [00:02&lt;00:10, 203kB/s]
+ 18%|███████▏                               | 474k/2.58M [00:02&lt;00:10, 202kB/s]
+ 20%|███████▋                               | 507k/2.58M [00:02&lt;00:10, 202kB/s]
+ 21%|████████▏                              | 540k/2.58M [00:02&lt;00:10, 202kB/s]
+ 22%|████████▋                              | 572k/2.58M [00:02&lt;00:09, 202kB/s]
+ 23%|█████████▏                             | 605k/2.58M [00:02&lt;00:09, 201kB/s]
+ 25%|█████████▋                             | 638k/2.58M [00:03&lt;00:09, 202kB/s]
+ 26%|██████████                             | 671k/2.58M [00:03&lt;00:09, 202kB/s]
+ 27%|██████████▌                            | 703k/2.58M [00:03&lt;00:09, 202kB/s]
+ 28%|███████████                            | 736k/2.58M [00:03&lt;00:09, 202kB/s]
+ 30%|███████████▌                           | 769k/2.58M [00:03&lt;00:08, 202kB/s]
+ 31%|████████████                           | 802k/2.58M [00:03&lt;00:08, 201kB/s]
+ 32%|████████████▌                          | 835k/2.58M [00:04&lt;00:08, 202kB/s]
+ 34%|█████████████                          | 867k/2.58M [00:04&lt;00:08, 202kB/s]
+ 35%|█████████████▌                         | 900k/2.58M [00:04&lt;00:08, 202kB/s]
+ 36%|██████████████                         | 933k/2.58M [00:04&lt;00:08, 202kB/s]
+ 37%|██████████████▌                        | 966k/2.58M [00:04&lt;00:08, 202kB/s]
+ 39%|███████████████                        | 998k/2.58M [00:04&lt;00:07, 202kB/s]
+ 40%|███████████████▏                      | 1.03M/2.58M [00:05&lt;00:07, 202kB/s]
+ 41%|███████████████▋                      | 1.06M/2.58M [00:05&lt;00:07, 202kB/s]
+ 43%|████████████████▎                     | 1.11M/2.58M [00:05&lt;00:06, 233kB/s]
+ 44%|████████████████▊                     | 1.15M/2.58M [00:05&lt;00:06, 224kB/s]
+ 46%|█████████████████▎                    | 1.18M/2.58M [00:05&lt;00:06, 217kB/s]
+ 47%|█████████████████▊                    | 1.21M/2.58M [00:05&lt;00:06, 212kB/s]
+ 48%|██████████████████▎                   | 1.24M/2.58M [00:05&lt;00:06, 209kB/s]
+ 49%|██████████████████▊                   | 1.28M/2.58M [00:06&lt;00:06, 207kB/s]
+ 51%|███████████████████▎                  | 1.31M/2.58M [00:06&lt;00:06, 206kB/s]
+ 52%|███████████████████▋                  | 1.34M/2.58M [00:06&lt;00:06, 205kB/s]
+ 53%|████████████████████▏                 | 1.38M/2.58M [00:06&lt;00:05, 204kB/s]
+ 54%|████████████████████▋                 | 1.41M/2.58M [00:06&lt;00:05, 204kB/s]
+ 56%|█████████████████████▏                | 1.44M/2.58M [00:06&lt;00:05, 203kB/s]
+ 57%|█████████████████████▋                | 1.47M/2.58M [00:07&lt;00:05, 203kB/s]
+ 58%|██████████████████████▏               | 1.51M/2.58M [00:07&lt;00:05, 203kB/s]
+ 60%|██████████████████████▋               | 1.54M/2.58M [00:07&lt;00:05, 203kB/s]
+ 61%|███████████████████████               | 1.57M/2.58M [00:07&lt;00:05, 202kB/s]
+ 62%|███████████████████████▌              | 1.60M/2.58M [00:07&lt;00:04, 202kB/s]
+ 63%|████████████████████████              | 1.64M/2.58M [00:07&lt;00:04, 202kB/s]
+ 65%|████████████████████████▌             | 1.67M/2.58M [00:08&lt;00:04, 202kB/s]
+ 66%|█████████████████████████             | 1.70M/2.58M [00:08&lt;00:04, 202kB/s]
+ 67%|█████████████████████████▌            | 1.74M/2.58M [00:08&lt;00:04, 202kB/s]
+ 68%|██████████████████████████            | 1.77M/2.58M [00:08&lt;00:04, 203kB/s]
+ 70%|██████████████████████████▍           | 1.80M/2.58M [00:08&lt;00:03, 203kB/s]
+ 71%|██████████████████████████▉           | 1.83M/2.58M [00:08&lt;00:03, 203kB/s]
+ 72%|███████████████████████████▍          | 1.87M/2.58M [00:09&lt;00:03, 202kB/s]
+ 74%|███████████████████████████▉          | 1.90M/2.58M [00:09&lt;00:03, 203kB/s]
+ 75%|████████████████████████████▍         | 1.93M/2.58M [00:09&lt;00:03, 203kB/s]
+ 76%|████████████████████████████▉         | 1.97M/2.58M [00:09&lt;00:03, 202kB/s]
+ 77%|█████████████████████████████▍        | 2.00M/2.58M [00:09&lt;00:02, 202kB/s]
+ 79%|█████████████████████████████▊        | 2.03M/2.58M [00:09&lt;00:02, 202kB/s]
+ 80%|██████████████████████████████▎       | 2.06M/2.58M [00:10&lt;00:02, 202kB/s]
+ 81%|██████████████████████████████▊       | 2.10M/2.58M [00:10&lt;00:02, 202kB/s]
+ 82%|███████████████████████████████▎      | 2.13M/2.58M [00:10&lt;00:02, 202kB/s]
+ 84%|███████████████████████████████▊      | 2.16M/2.58M [00:10&lt;00:02, 202kB/s]
+ 85%|████████████████████████████████▎     | 2.19M/2.58M [00:10&lt;00:01, 202kB/s]
+ 86%|████████████████████████████████▊     | 2.23M/2.58M [00:10&lt;00:01, 202kB/s]
+ 87%|█████████████████████████████████▏    | 2.26M/2.58M [00:11&lt;00:01, 202kB/s]
+ 89%|█████████████████████████████████▋    | 2.29M/2.58M [00:11&lt;00:01, 202kB/s]
+ 90%|██████████████████████████████████▏   | 2.33M/2.58M [00:11&lt;00:01, 202kB/s]
+ 91%|██████████████████████████████████▋   | 2.36M/2.58M [00:11&lt;00:01, 202kB/s]
+ 93%|███████████████████████████████████▏  | 2.39M/2.58M [00:11&lt;00:00, 202kB/s]
+ 94%|███████████████████████████████████▋  | 2.42M/2.58M [00:11&lt;00:00, 202kB/s]
+ 95%|████████████████████████████████████  | 2.46M/2.58M [00:11&lt;00:00, 202kB/s]
+ 96%|████████████████████████████████████▌ | 2.49M/2.58M [00:12&lt;00:00, 202kB/s]
+ 98%|█████████████████████████████████████ | 2.52M/2.58M [00:12&lt;00:00, 202kB/s]
+ 99%|█████████████████████████████████████▌| 2.55M/2.58M [00:12&lt;00:00, 202kB/s]
   0%|                                              | 0.00/2.58M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.58M/2.58M [00:00&lt;00:00, 3.93GB/s]
+100%|█████████████████████████████████████| 2.58M/2.58M [00:00&lt;00:00, 3.89GB/s]
 
   0%|                                              | 0.00/2.14M [00:00&lt;?, ?B/s]
-  4%|█▍                                    | 80.9k/2.14M [00:00&lt;00:04, 438kB/s]
-  7%|██▋                                    | 146k/2.14M [00:00&lt;00:05, 388kB/s]
- 10%|███▊                                   | 212k/2.14M [00:00&lt;00:05, 373kB/s]
- 13%|█████                                  | 278k/2.14M [00:00&lt;00:05, 365kB/s]
- 16%|██████▏                                | 343k/2.14M [00:00&lt;00:04, 361kB/s]
- 19%|███████▍                               | 409k/2.14M [00:01&lt;00:04, 358kB/s]
- 22%|████████▋                              | 474k/2.14M [00:01&lt;00:04, 357kB/s]
- 25%|█████████▊                             | 540k/2.14M [00:01&lt;00:04, 356kB/s]
- 28%|███████████                            | 605k/2.14M [00:01&lt;00:04, 355kB/s]
- 31%|████████████▏                          | 671k/2.14M [00:01&lt;00:04, 355kB/s]
- 34%|█████████████▍                         | 736k/2.14M [00:02&lt;00:03, 354kB/s]
- 37%|██████████████▌                        | 802k/2.14M [00:02&lt;00:03, 354kB/s]
- 40%|███████████████▊                       | 867k/2.14M [00:02&lt;00:03, 354kB/s]
- 44%|████████████████▉                      | 933k/2.14M [00:02&lt;00:03, 354kB/s]
- 47%|██████████████████▏                    | 998k/2.14M [00:02&lt;00:03, 354kB/s]
- 50%|██████████████████▊                   | 1.06M/2.14M [00:02&lt;00:03, 354kB/s]
- 53%|████████████████████                  | 1.13M/2.14M [00:03&lt;00:02, 354kB/s]
- 56%|█████████████████████▏                | 1.20M/2.14M [00:03&lt;00:02, 354kB/s]
- 59%|██████████████████████▎               | 1.26M/2.14M [00:03&lt;00:02, 354kB/s]
- 62%|███████████████████████▌              | 1.33M/2.14M [00:03&lt;00:02, 354kB/s]
- 65%|████████████████████████▋             | 1.39M/2.14M [00:03&lt;00:02, 354kB/s]
- 68%|█████████████████████████▊            | 1.46M/2.14M [00:04&lt;00:01, 354kB/s]
- 71%|███████████████████████████           | 1.52M/2.14M [00:04&lt;00:01, 354kB/s]
- 74%|████████████████████████████▏         | 1.59M/2.14M [00:04&lt;00:01, 354kB/s]
- 77%|█████████████████████████████▎        | 1.65M/2.14M [00:04&lt;00:01, 354kB/s]
- 80%|██████████████████████████████▍       | 1.72M/2.14M [00:04&lt;00:01, 354kB/s]
- 83%|███████████████████████████████▋      | 1.78M/2.14M [00:05&lt;00:01, 353kB/s]
- 86%|████████████████████████████████▊     | 1.85M/2.14M [00:05&lt;00:00, 352kB/s]
- 89%|█████████████████████████████████▉    | 1.92M/2.14M [00:05&lt;00:00, 352kB/s]
- 92%|███████████████████████████████████▏  | 1.98M/2.14M [00:05&lt;00:00, 352kB/s]
- 96%|████████████████████████████████████▎ | 2.05M/2.14M [00:05&lt;00:00, 353kB/s]
- 99%|█████████████████████████████████████▊| 2.13M/2.14M [00:05&lt;00:00, 380kB/s]
+  1%|▌                                     | 31.7k/2.14M [00:00&lt;00:10, 197kB/s]
+  4%|█▍                                    | 80.9k/2.14M [00:00&lt;00:07, 260kB/s]
+  5%|██                                     | 114k/2.14M [00:00&lt;00:08, 234kB/s]
+  7%|██▋                                    | 146k/2.14M [00:00&lt;00:09, 221kB/s]
+  8%|███▎                                   | 179k/2.14M [00:00&lt;00:09, 215kB/s]
+ 10%|███▊                                   | 212k/2.14M [00:00&lt;00:09, 211kB/s]
+ 11%|████▍                                  | 245k/2.14M [00:01&lt;00:09, 208kB/s]
+ 13%|█████                                  | 278k/2.14M [00:01&lt;00:09, 206kB/s]
+ 14%|█████▋                                 | 310k/2.14M [00:01&lt;00:08, 205kB/s]
+ 16%|██████▏                                | 343k/2.14M [00:01&lt;00:08, 204kB/s]
+ 18%|██████▊                                | 376k/2.14M [00:01&lt;00:08, 204kB/s]
+ 19%|███████▍                               | 409k/2.14M [00:01&lt;00:08, 203kB/s]
+ 21%|████████                               | 441k/2.14M [00:02&lt;00:08, 203kB/s]
+ 22%|████████▋                              | 474k/2.14M [00:02&lt;00:08, 203kB/s]
+ 24%|█████████▏                             | 507k/2.14M [00:02&lt;00:08, 203kB/s]
+ 25%|█████████▊                             | 540k/2.14M [00:02&lt;00:07, 203kB/s]
+ 27%|██████████▍                            | 572k/2.14M [00:02&lt;00:07, 203kB/s]
+ 28%|███████████                            | 605k/2.14M [00:02&lt;00:07, 203kB/s]
+ 30%|███████████▌                           | 638k/2.14M [00:03&lt;00:07, 203kB/s]
+ 31%|████████████▏                          | 671k/2.14M [00:03&lt;00:07, 203kB/s]
+ 33%|████████████▊                          | 703k/2.14M [00:03&lt;00:07, 202kB/s]
+ 34%|█████████████▍                         | 736k/2.14M [00:03&lt;00:06, 203kB/s]
+ 36%|█████████████▉                         | 769k/2.14M [00:03&lt;00:06, 203kB/s]
+ 37%|██████████████▌                        | 802k/2.14M [00:03&lt;00:06, 203kB/s]
+ 39%|███████████████▏                       | 835k/2.14M [00:04&lt;00:06, 203kB/s]
+ 40%|███████████████▊                       | 867k/2.14M [00:04&lt;00:06, 203kB/s]
+ 42%|████████████████▍                      | 900k/2.14M [00:04&lt;00:06, 203kB/s]
+ 44%|████████████████▉                      | 933k/2.14M [00:04&lt;00:05, 203kB/s]
+ 45%|█████████████████▌                     | 966k/2.14M [00:04&lt;00:05, 203kB/s]
+ 47%|██████████████████▏                    | 998k/2.14M [00:04&lt;00:05, 203kB/s]
+ 48%|██████████████████▎                   | 1.03M/2.14M [00:05&lt;00:05, 203kB/s]
+ 50%|██████████████████▊                   | 1.06M/2.14M [00:05&lt;00:05, 203kB/s]
+ 51%|███████████████████▍                  | 1.10M/2.14M [00:05&lt;00:05, 203kB/s]
+ 53%|████████████████████                  | 1.13M/2.14M [00:05&lt;00:04, 203kB/s]
+ 54%|████████████████████▌                 | 1.16M/2.14M [00:05&lt;00:04, 203kB/s]
+ 56%|█████████████████████▏                | 1.20M/2.14M [00:05&lt;00:04, 203kB/s]
+ 57%|█████████████████████▊                | 1.23M/2.14M [00:05&lt;00:04, 203kB/s]
+ 59%|██████████████████████▎               | 1.26M/2.14M [00:06&lt;00:04, 203kB/s]
+ 60%|██████████████████████▉               | 1.29M/2.14M [00:06&lt;00:04, 203kB/s]
+ 62%|███████████████████████▌              | 1.33M/2.14M [00:06&lt;00:04, 203kB/s]
+ 63%|████████████████████████              | 1.36M/2.14M [00:06&lt;00:03, 203kB/s]
+ 65%|████████████████████████▋             | 1.39M/2.14M [00:06&lt;00:03, 203kB/s]
+ 66%|█████████████████████████▎            | 1.42M/2.14M [00:06&lt;00:03, 203kB/s]
+ 68%|█████████████████████████▊            | 1.46M/2.14M [00:07&lt;00:03, 203kB/s]
+ 70%|██████████████████████████▍           | 1.49M/2.14M [00:07&lt;00:03, 203kB/s]
+ 71%|███████████████████████████           | 1.52M/2.14M [00:07&lt;00:03, 203kB/s]
+ 73%|███████████████████████████▌          | 1.56M/2.14M [00:07&lt;00:02, 203kB/s]
+ 74%|████████████████████████████▏         | 1.59M/2.14M [00:07&lt;00:02, 203kB/s]
+ 76%|████████████████████████████▋         | 1.62M/2.14M [00:07&lt;00:02, 203kB/s]
+ 77%|█████████████████████████████▎        | 1.65M/2.14M [00:08&lt;00:02, 203kB/s]
+ 79%|█████████████████████████████▉        | 1.69M/2.14M [00:08&lt;00:02, 203kB/s]
+ 80%|██████████████████████████████▍       | 1.72M/2.14M [00:08&lt;00:02, 203kB/s]
+ 82%|███████████████████████████████       | 1.75M/2.14M [00:08&lt;00:01, 203kB/s]
+ 83%|███████████████████████████████▋      | 1.78M/2.14M [00:08&lt;00:01, 202kB/s]
+ 85%|████████████████████████████████▏     | 1.82M/2.14M [00:08&lt;00:01, 202kB/s]
+ 86%|████████████████████████████████▊     | 1.85M/2.14M [00:09&lt;00:01, 202kB/s]
+ 88%|█████████████████████████████████▍    | 1.88M/2.14M [00:09&lt;00:01, 202kB/s]
+ 89%|█████████████████████████████████▉    | 1.92M/2.14M [00:09&lt;00:01, 202kB/s]
+ 91%|██████████████████████████████████▌   | 1.95M/2.14M [00:09&lt;00:00, 202kB/s]
+ 92%|███████████████████████████████████▏  | 1.98M/2.14M [00:09&lt;00:00, 203kB/s]
+ 94%|███████████████████████████████████▋  | 2.01M/2.14M [00:09&lt;00:00, 203kB/s]
+ 96%|████████████████████████████████████▎ | 2.05M/2.14M [00:10&lt;00:00, 203kB/s]
+ 97%|████████████████████████████████████▉ | 2.08M/2.14M [00:10&lt;00:00, 203kB/s]
+ 99%|█████████████████████████████████████▍| 2.11M/2.14M [00:10&lt;00:00, 203kB/s]
   0%|                                              | 0.00/2.14M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.14M/2.14M [00:00&lt;00:00, 3.25GB/s]
+100%|█████████████████████████████████████| 2.14M/2.14M [00:00&lt;00:00, 3.07GB/s]
 
 Exoskeleton_SSVEP-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  4.69it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  4.64it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  4.64it/s]
+Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  2.64it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.57it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.58it/s]
 </pre></div>
 </div>
 <p>Filter bank processing, determine the filter automatically from the
@@ -476,11 +593,10 @@ stimulation frequency values of events.</p>
 <span class="n">results_fb</span> <span class="o">=</span> <span class="n">evaluation_fb</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_fb</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Exoskeleton_SSVEP-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  5.45it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  5.25it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  5.27it/s]
+Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  6.45it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  6.18it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  6.21it/s]
 </pre></div>
 </div>
 <p>TRCA processing also relies on filter bank that is automatically designed.</p>
@@ -490,20 +606,19 @@ Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  5.27it/s]
 <span class="n">results_TRCA</span> <span class="o">=</span> <span class="n">evaluation_TRCA</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_TRCA</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Exoskeleton_SSVEP-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  1.02it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.03it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.02it/s]
+Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:01&lt;00:01,  1.55s/it]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:03&lt;00:00,  1.55s/it]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:03&lt;00:00,  1.55s/it]
 </pre></div>
 </div>
 <p>After processing the three, we simply concatenate the results.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">results</span><span class="p">,</span> <span class="n">results_fb</span><span class="p">,</span> <span class="n">results_TRCA</span><span class="p">])</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="plot-results">
-<h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="plot-results">
+<h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this heading">¶</a></h2>
 <p>Here we display the results as stripplot, with a pointplot for error bar.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span>
@@ -516,15 +631,14 @@ Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.02it/s]
     <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">pointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;pipeline&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">pointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;pipeline&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Accuracy&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html#matplotlib.axes.Axes.set_ylim" title="matplotlib.axes.Axes.set_ylim" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span></a><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="plot cross subject ssvep" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  36.396 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-subject-ssvep-py">
+<img src="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" srcset="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" alt="plot cross subject ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  59.864 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-subject-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5459b5c2be76a529eb282ae496a50415/plot_cross_subject_ssvep.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_subject_ssvep.py</span></code></a></p>
 </div>
@@ -533,8 +647,8 @@ Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.02it/s]
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -555,8 +669,8 @@ Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.02it/s]
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

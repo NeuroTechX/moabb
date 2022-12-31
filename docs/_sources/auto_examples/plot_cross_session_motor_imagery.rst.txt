@@ -68,37 +68,6 @@ session.
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'rocket' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'rocket_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'mako' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'mako_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'icefire' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'icefire_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'vlag' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'vlag_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'flare' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'flare_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'crest' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'crest_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-
 
 
 
@@ -173,177 +142,160 @@ be overwritten if necessary.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
     /home/runner/work/moabb/moabb/moabb/analysis/results.py:79: RuntimeWarning: Setting non-standard config type: "MOABB_RESULTS"
       set_config("MOABB_RESULTS", osp.join(osp.expanduser("~"), "mne_data"))
-    2022-11-28 15:00:54,682 INFO MainThread moabb.evaluations.base Processing dataset: 001-2014
+    2022-12-31 00:44:20,894 INFO MainThread moabb.evaluations.base Processing dataset: 001-2014
     001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_data
     All datasets will be downloaded to this location, if anything is already downloaded, please move manually to this location
     /home/runner/work/moabb/moabb/moabb/datasets/download.py:53: RuntimeWarning: Setting non-standard config type: "MNE_DATASETS_BNCI_PATH"
       set_config(key, get_config("MNE_DATA"))
 
-      0%|                                              | 0.00/42.8M [00:00<?, ?B/s][A
-      0%|                                      | 32.8k/42.8M [00:00<04:13, 169kB/s][A
-      0%|▏                                      | 137k/42.8M [00:00<01:19, 540kB/s][A
-      1%|▎                                      | 296k/42.8M [00:00<00:45, 935kB/s][A
-      1%|▍                                     | 539k/42.8M [00:00<00:29, 1.46MB/s][A
-      2%|▊                                    | 1.01M/42.8M [00:00<00:16, 2.53MB/s][A
-      5%|█▊                                   | 2.07M/42.8M [00:00<00:07, 5.16MB/s][A
-      9%|███▍                                 | 3.94M/42.8M [00:00<00:04, 9.42MB/s][A
-     15%|█████▋                               | 6.52M/42.8M [00:00<00:02, 14.5MB/s][A
-     21%|███████▋                             | 8.92M/42.8M [00:00<00:01, 17.4MB/s][A
-     27%|█████████▊                           | 11.4M/42.8M [00:01<00:01, 19.5MB/s][A
-     32%|███████████▉                         | 13.8M/42.8M [00:01<00:01, 21.0MB/s][A
-     38%|██████████████                       | 16.2M/42.8M [00:01<00:01, 22.0MB/s][A
-     44%|████████████████▏                    | 18.7M/42.8M [00:01<00:01, 22.9MB/s][A
-     49%|██████████████████▎                  | 21.1M/42.8M [00:01<00:00, 23.3MB/s][A
-     55%|████████████████████▍                | 23.7M/42.8M [00:01<00:00, 24.0MB/s][A
-     61%|██████████████████████▌              | 26.1M/42.8M [00:01<00:00, 24.0MB/s][A
-     67%|████████████████████████▋            | 28.6M/42.8M [00:01<00:00, 24.3MB/s][A
-     73%|██████████████████████████▊          | 31.1M/42.8M [00:01<00:00, 24.4MB/s][A
-     79%|█████████████████████████████        | 33.6M/42.8M [00:01<00:00, 24.7MB/s][A
-     84%|███████████████████████████████▏     | 36.1M/42.8M [00:02<00:00, 24.7MB/s][A
-     90%|█████████████████████████████████▍   | 38.6M/42.8M [00:02<00:00, 24.9MB/s][A
-     96%|███████████████████████████████████▌ | 41.1M/42.8M [00:02<00:00, 24.9MB/s][A
-      0%|                                              | 0.00/42.8M [00:00<?, ?B/s][A    100%|█████████████████████████████████████| 42.8M/42.8M [00:00<00:00, 60.3GB/s]
+      0%|                                              | 0.00/42.8M [00:00<?, ?B/s]
+      0%|                                     | 8.19k/42.8M [00:00<14:21, 49.7kB/s]
+      0%|                                      | 32.8k/42.8M [00:00<06:40, 107kB/s]
+      0%|                                      | 96.3k/42.8M [00:00<03:05, 230kB/s]
+      0%|▏                                      | 209k/42.8M [00:00<01:45, 403kB/s]
+      1%|▍                                      | 432k/42.8M [00:00<00:57, 735kB/s]
+      2%|▊                                     | 889k/42.8M [00:01<00:29, 1.41MB/s]
+      4%|█▌                                   | 1.80M/42.8M [00:01<00:15, 2.71MB/s]
+      8%|███▏                                 | 3.62M/42.8M [00:01<00:07, 5.29MB/s]
+     14%|█████                                | 5.89M/42.8M [00:01<00:04, 7.83MB/s]
+     19%|██████▉                              | 7.96M/42.8M [00:01<00:03, 9.21MB/s]
+     24%|████████▊                            | 10.2M/42.8M [00:01<00:03, 10.4MB/s]
+     28%|██████████▌                          | 12.2M/42.8M [00:02<00:02, 10.9MB/s]
+     33%|████████████▍                        | 14.3M/42.8M [00:02<00:02, 11.4MB/s]
+     39%|██████████████▎                      | 16.5M/42.8M [00:02<00:02, 11.9MB/s]
+     43%|████████████████                     | 18.5M/42.8M [00:02<00:02, 12.0MB/s]
+     48%|█████████████████▉                   | 20.8M/42.8M [00:02<00:01, 12.3MB/s]
+     53%|███████████████████▊                 | 22.9M/42.8M [00:02<00:01, 12.4MB/s]
+     59%|█████████████████████▋               | 25.1M/42.8M [00:03<00:01, 12.6MB/s]
+     64%|███████████████████████▌             | 27.2M/42.8M [00:03<00:01, 12.6MB/s]
+     69%|█████████████████████████▍           | 29.4M/42.8M [00:03<00:01, 12.7MB/s]
+     74%|███████████████████████████▏         | 31.5M/42.8M [00:03<00:00, 12.7MB/s]
+     79%|█████████████████████████████▏       | 33.7M/42.8M [00:03<00:00, 12.8MB/s]
+     84%|██████████████████████████████▉      | 35.9M/42.8M [00:03<00:00, 12.8MB/s]
+     89%|████████████████████████████████▉    | 38.1M/42.8M [00:04<00:00, 12.9MB/s]
+     94%|██████████████████████████████████▋  | 40.2M/42.8M [00:04<00:00, 12.7MB/s]
+     99%|████████████████████████████████████▌| 42.3M/42.8M [00:04<00:00, 12.8MB/s]
+      0%|                                              | 0.00/42.8M [00:00<?, ?B/s]    100%|█████████████████████████████████████| 42.8M/42.8M [00:00<00:00, 56.5GB/s]
 
-      0%|                                              | 0.00/43.8M [00:00<?, ?B/s][A
-      0%|                                      | 32.8k/43.8M [00:00<04:18, 169kB/s][A
-      0%|▏                                      | 153k/43.8M [00:00<01:12, 605kB/s][A
-      1%|▎                                      | 310k/43.8M [00:00<00:44, 972kB/s][A
-      1%|▌                                     | 593k/43.8M [00:00<00:26, 1.62MB/s][A
-      2%|▉                                    | 1.08M/43.8M [00:00<00:15, 2.72MB/s][A
-      5%|█▋                                   | 2.04M/43.8M [00:00<00:08, 4.93MB/s][A
-      9%|███▎                                 | 3.91M/43.8M [00:00<00:04, 9.28MB/s][A
-     14%|█████▎                               | 6.33M/43.8M [00:00<00:02, 13.9MB/s][A
-     19%|███████▏                             | 8.46M/43.8M [00:00<00:02, 16.2MB/s][A
-     25%|█████████▏                           | 10.8M/43.8M [00:01<00:01, 18.5MB/s][A
-     30%|███████████                          | 13.1M/43.8M [00:01<00:01, 19.7MB/s][A
-     35%|████████████▉                        | 15.4M/43.8M [00:01<00:01, 20.6MB/s][A
-     40%|██████████████▉                      | 17.6M/43.8M [00:01<00:01, 21.3MB/s][A
-     46%|████████████████▊                    | 19.9M/43.8M [00:01<00:01, 21.8MB/s][A
-     51%|██████████████████▊                  | 22.2M/43.8M [00:01<00:00, 22.1MB/s][A
-     56%|████████████████████▋                | 24.5M/43.8M [00:01<00:00, 22.4MB/s][A
-     61%|██████████████████████▋              | 26.9M/43.8M [00:01<00:00, 22.7MB/s][A
-     67%|████████████████████████▋            | 29.1M/43.8M [00:01<00:00, 22.6MB/s][A
-     72%|██████████████████████████▌          | 31.4M/43.8M [00:02<00:00, 21.5MB/s][A
-     78%|████████████████████████████▉        | 34.2M/43.8M [00:02<00:00, 23.2MB/s][A
-     84%|███████████████████████████████      | 36.7M/43.8M [00:02<00:00, 23.9MB/s][A
-     90%|█████████████████████████████████▎   | 39.5M/43.8M [00:02<00:00, 24.9MB/s][A
-     96%|███████████████████████████████████▌ | 42.0M/43.8M [00:02<00:00, 25.1MB/s][A
-      0%|                                              | 0.00/43.8M [00:00<?, ?B/s][A    100%|█████████████████████████████████████| 43.8M/43.8M [00:00<00:00, 67.8GB/s]
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    2022-11-28 15:01:05,496 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_E: Score 0.955
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    2022-11-28 15:01:05,870 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_T: Score 0.932
-    2022-11-28 15:01:06,342 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_E: Score 0.963
-    2022-11-28 15:01:06,741 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_T: Score 0.950
-    001-2014-CrossSession:  50%|#####     | 1/2 [00:12<00:12, 12.06s/it]
-      0%|                                              | 0.00/43.1M [00:00<?, ?B/s][A
-      0%|                                      | 32.8k/43.1M [00:00<04:15, 168kB/s][A
-      0%|                                       | 135k/43.1M [00:00<01:20, 530kB/s][A
-      1%|▎                                      | 289k/43.1M [00:00<00:47, 909kB/s][A
-      1%|▌                                     | 575k/43.1M [00:00<00:26, 1.59MB/s][A
-      2%|▉                                    | 1.03M/43.1M [00:00<00:16, 2.57MB/s][A
-      5%|█▋                                   | 1.98M/43.1M [00:00<00:08, 4.82MB/s][A
-      9%|███▎                                 | 3.85M/43.1M [00:00<00:04, 9.19MB/s][A
-     16%|██████                               | 7.05M/43.1M [00:00<00:02, 16.3MB/s][A
-     23%|████████▍                            | 9.80M/43.1M [00:00<00:01, 19.7MB/s][A
-     29%|██████████▌                          | 12.3M/43.1M [00:01<00:01, 21.3MB/s][A
-     35%|████████████▉                        | 15.1M/43.1M [00:01<00:01, 23.3MB/s][A
-     41%|███████████████▎                     | 17.9M/43.1M [00:01<00:01, 24.7MB/s][A
-     47%|█████████████████▌                   | 20.4M/43.1M [00:01<00:00, 24.8MB/s][A
-     54%|███████████████████▉                 | 23.2M/43.1M [00:01<00:00, 26.0MB/s][A
-     61%|██████████████████████▍              | 26.1M/43.1M [00:01<00:00, 26.9MB/s][A
-     67%|████████████████████████▉            | 29.1M/43.1M [00:01<00:00, 27.6MB/s][A
-     74%|███████████████████████████▎         | 31.8M/43.1M [00:01<00:00, 27.4MB/s][A
-     81%|█████████████████████████████▉       | 34.8M/43.1M [00:01<00:00, 28.1MB/s][A
-     88%|████████████████████████████████▍    | 37.8M/43.1M [00:01<00:00, 28.6MB/s][A
-     95%|███████████████████████████████████  | 40.8M/43.1M [00:02<00:00, 29.1MB/s][A
-      0%|                                              | 0.00/43.1M [00:00<?, ?B/s][A    100%|█████████████████████████████████████| 43.1M/43.1M [00:00<00:00, 64.1GB/s]
+      0%|                                              | 0.00/43.8M [00:00<?, ?B/s]
+      0%|                                     | 8.19k/43.8M [00:00<14:38, 49.8kB/s]
+      0%|                                      | 32.8k/43.8M [00:00<06:49, 107kB/s]
+      0%|                                      | 96.3k/43.8M [00:00<03:09, 231kB/s]
+      0%|▏                                      | 209k/43.8M [00:00<01:47, 404kB/s]
+      1%|▍                                      | 432k/43.8M [00:00<00:58, 737kB/s]
+      2%|▊                                     | 889k/43.8M [00:01<00:30, 1.41MB/s]
+      4%|█▌                                   | 1.80M/43.8M [00:01<00:15, 2.72MB/s]
+      8%|███                                  | 3.62M/43.8M [00:01<00:07, 5.30MB/s]
+     13%|████▉                                | 5.90M/43.8M [00:01<00:04, 7.88MB/s]
+     18%|██████▊                              | 8.02M/43.8M [00:01<00:03, 9.17MB/s]
+     23%|████████▋                            | 10.3M/43.8M [00:01<00:03, 10.4MB/s]
+     28%|██████████▏                          | 12.1M/43.8M [00:02<00:03, 10.6MB/s]
+     33%|████████████▏                        | 14.4M/43.8M [00:02<00:02, 11.5MB/s]
+     38%|█████████████▉                       | 16.5M/43.8M [00:02<00:02, 11.8MB/s]
+     43%|███████████████▊                     | 18.7M/43.8M [00:02<00:02, 12.1MB/s]
+     47%|█████████████████▍                   | 20.6M/43.8M [00:02<00:01, 12.0MB/s]
+     52%|███████████████████▏                 | 22.8M/43.8M [00:02<00:01, 12.2MB/s]
+     57%|████████████████████▉                | 24.8M/43.8M [00:03<00:01, 12.1MB/s]
+     61%|██████████████████████▋              | 26.9M/43.8M [00:03<00:01, 12.2MB/s]
+     66%|████████████████████████▍            | 28.9M/43.8M [00:03<00:01, 12.1MB/s]
+     71%|██████████████████████████▎          | 31.1M/43.8M [00:03<00:01, 12.5MB/s]
+     76%|████████████████████████████         | 33.2M/43.8M [00:03<00:00, 12.5MB/s]
+     81%|█████████████████████████████▊       | 35.3M/43.8M [00:03<00:00, 12.4MB/s]
+     86%|███████████████████████████████▋     | 37.5M/43.8M [00:04<00:00, 12.6MB/s]
+     90%|█████████████████████████████████▍   | 39.5M/43.8M [00:04<00:00, 12.4MB/s]
+     95%|███████████████████████████████████▏ | 41.7M/43.8M [00:04<00:00, 12.6MB/s]
+    100%|████████████████████████████████████▉| 43.7M/43.8M [00:04<00:00, 12.4MB/s]
+      0%|                                              | 0.00/43.8M [00:00<?, ?B/s]    100%|█████████████████████████████████████| 43.8M/43.8M [00:00<00:00, 79.2GB/s]
+    2022-12-31 00:44:38,575 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_E: Score 0.955
+    2022-12-31 00:44:39,073 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 1 | session_T: Score 0.932
+    2022-12-31 00:44:39,377 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_E: Score 0.963
+    2022-12-31 00:44:39,659 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 1 | session_T: Score 0.950
+    001-2014-CrossSession:  50%|#####     | 1/2 [00:18<00:18, 18.77s/it]
+      0%|                                              | 0.00/43.1M [00:00<?, ?B/s]
+      0%|                                     | 8.19k/43.1M [00:00<12:16, 58.5kB/s]
+      0%|                                      | 32.8k/43.1M [00:00<06:18, 114kB/s]
+      0%|                                      | 88.1k/43.1M [00:00<03:19, 215kB/s]
+      0%|▏                                      | 193k/43.1M [00:00<01:53, 379kB/s]
+      1%|▎                                      | 409k/43.1M [00:00<01:00, 709kB/s]
+      2%|▋                                     | 841k/43.1M [00:00<00:31, 1.35MB/s]
+      4%|█▍                                   | 1.71M/43.1M [00:01<00:15, 2.60MB/s]
+      8%|██▉                                  | 3.44M/43.1M [00:01<00:07, 5.05MB/s]
+     15%|█████▌                               | 6.54M/43.1M [00:01<00:03, 9.23MB/s]
+     21%|███████▋                             | 8.95M/43.1M [00:01<00:02, 12.4MB/s]
+     24%|████████▉                            | 10.3M/43.1M [00:01<00:02, 12.5MB/s]
+     27%|██████████                           | 11.7M/43.1M [00:01<00:02, 11.8MB/s]
+     33%|████████████▏                        | 14.2M/43.1M [00:01<00:02, 12.9MB/s]
+     40%|██████████████▋                      | 17.0M/43.1M [00:02<00:01, 14.3MB/s]
+     46%|█████████████████                    | 19.8M/43.1M [00:02<00:01, 15.0MB/s]
+     52%|███████████████████▎                 | 22.4M/43.1M [00:02<00:01, 15.2MB/s]
+     58%|█████████████████████▌               | 25.1M/43.1M [00:02<00:01, 15.4MB/s]
+     65%|███████████████████████▉             | 27.9M/43.1M [00:02<00:00, 15.7MB/s]
+     71%|██████████████████████████▍          | 30.7M/43.1M [00:03<00:00, 16.0MB/s]
+     78%|████████████████████████████▊        | 33.5M/43.1M [00:03<00:00, 18.5MB/s]
+     82%|██████████████████████████████▍      | 35.5M/43.1M [00:03<00:00, 17.1MB/s]
+     87%|████████████████████████████████     | 37.3M/43.1M [00:03<00:00, 16.2MB/s]
+     91%|█████████████████████████████████▌   | 39.0M/43.1M [00:03<00:00, 15.3MB/s]
+     97%|███████████████████████████████████▊ | 41.7M/43.1M [00:03<00:00, 18.0MB/s]
+      0%|                                              | 0.00/43.1M [00:00<?, ?B/s]    100%|█████████████████████████████████████| 43.1M/43.1M [00:00<00:00, 61.7GB/s]
 
-      0%|                                              | 0.00/44.2M [00:00<?, ?B/s][A
-      0%|                                      | 32.8k/44.2M [00:00<04:22, 169kB/s][A
-      0%|▏                                      | 148k/44.2M [00:00<01:15, 587kB/s][A
-      1%|▎                                      | 304k/44.2M [00:00<00:46, 953kB/s][A
-      1%|▌                                     | 641k/44.2M [00:00<00:24, 1.80MB/s][A
-      3%|▉                                    | 1.14M/44.2M [00:00<00:15, 2.85MB/s][A
-      5%|█▊                                   | 2.16M/44.2M [00:00<00:08, 5.23MB/s][A
-      9%|███▎                                 | 4.02M/44.2M [00:00<00:04, 9.45MB/s][A
-     15%|█████▌                               | 6.60M/44.2M [00:00<00:02, 14.5MB/s][A
-     20%|███████▌                             | 9.05M/44.2M [00:00<00:02, 17.6MB/s][A
-     26%|█████████▋                           | 11.5M/44.2M [00:01<00:01, 19.8MB/s][A
-     32%|███████████▋                         | 14.0M/44.2M [00:01<00:01, 21.3MB/s][A
-     37%|█████████████▊                       | 16.5M/44.2M [00:01<00:01, 22.5MB/s][A
-     45%|████████████████▍                    | 19.7M/44.2M [00:01<00:00, 25.3MB/s][A
-     51%|██████████████████▉                  | 22.7M/44.2M [00:01<00:00, 26.5MB/s][A
-     57%|█████████████████████▏               | 25.4M/44.2M [00:01<00:00, 26.8MB/s][A
-     64%|███████████████████████▌             | 28.1M/44.2M [00:01<00:00, 27.0MB/s][A
-     70%|██████████████████████████           | 31.1M/44.2M [00:01<00:00, 27.7MB/s][A
-     77%|████████████████████████████▋        | 34.3M/44.2M [00:01<00:00, 28.9MB/s][A
-     84%|███████████████████████████████▏     | 37.2M/44.2M [00:01<00:00, 29.1MB/s][A
-     91%|█████████████████████████████████▌   | 40.1M/44.2M [00:02<00:00, 28.7MB/s][A
-     97%|████████████████████████████████████ | 43.1M/44.2M [00:02<00:00, 28.9MB/s][A
-      0%|                                              | 0.00/44.2M [00:00<?, ?B/s][A    100%|█████████████████████████████████████| 44.2M/44.2M [00:00<00:00, 67.3GB/s]
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    2022-11-28 15:01:16,331 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_E: Score 0.646
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-      LooseVersion(library.__version__) < LooseVersion(min_version):
-    2022-11-28 15:01:16,669 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_T: Score 0.527
-    2022-11-28 15:01:17,069 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_E: Score 0.586
-    2022-11-28 15:01:17,471 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_T: Score 0.575
-    001-2014-CrossSession: 100%|##########| 2/2 [00:22<00:00, 11.28s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:22<00:00, 11.40s/it]
+      0%|                                              | 0.00/44.2M [00:00<?, ?B/s]
+      0%|                                     | 8.19k/44.2M [00:00<14:47, 49.8kB/s]
+      0%|                                      | 32.8k/44.2M [00:00<06:53, 107kB/s]
+      0%|                                      | 88.1k/44.2M [00:00<03:31, 208kB/s]
+      0%|▏                                      | 193k/44.2M [00:00<01:58, 371kB/s]
+      1%|▎                                      | 409k/44.2M [00:00<01:02, 701kB/s]
+      2%|▋                                     | 841k/44.2M [00:01<00:32, 1.34MB/s]
+      4%|█▍                                   | 1.71M/44.2M [00:01<00:16, 2.59MB/s]
+      8%|██▉                                  | 3.44M/44.2M [00:01<00:08, 5.04MB/s]
+     15%|█████▍                               | 6.48M/44.2M [00:01<00:04, 9.11MB/s]
+     20%|███████▌                             | 9.05M/44.2M [00:01<00:03, 11.0MB/s]
+     26%|█████████▋                           | 11.6M/44.2M [00:01<00:02, 12.2MB/s]
+     32%|███████████▉                         | 14.2M/44.2M [00:02<00:02, 13.3MB/s]
+     38%|██████████████                       | 16.9M/44.2M [00:02<00:01, 14.0MB/s]
+     44%|████████████████▎                    | 19.5M/44.2M [00:02<00:01, 14.5MB/s]
+     50%|██████████████████▍                  | 22.1M/44.2M [00:02<00:01, 14.8MB/s]
+     56%|████████████████████▋                | 24.8M/44.2M [00:02<00:01, 15.1MB/s]
+     62%|██████████████████████▉              | 27.4M/44.2M [00:02<00:01, 15.3MB/s]
+     68%|█████████████████████████▏           | 30.1M/44.2M [00:03<00:00, 15.4MB/s]
+     74%|███████████████████████████▍         | 32.7M/44.2M [00:03<00:00, 15.5MB/s]
+     80%|█████████████████████████████▋       | 35.4M/44.2M [00:03<00:00, 15.7MB/s]
+     86%|███████████████████████████████▉     | 38.1M/44.2M [00:03<00:00, 15.7MB/s]
+     92%|██████████████████████████████████   | 40.8M/44.2M [00:03<00:00, 15.8MB/s]
+     98%|████████████████████████████████████▎| 43.4M/44.2M [00:03<00:00, 15.8MB/s]
+      0%|                                              | 0.00/44.2M [00:00<?, ?B/s]    100%|█████████████████████████████████████| 44.2M/44.2M [00:00<00:00, 72.7GB/s]
+    2022-12-31 00:44:55,012 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_E: Score 0.646
+    2022-12-31 00:44:55,412 INFO MainThread moabb.evaluations.base CSP+LDA | 001-2014 | 2 | session_T: Score 0.527
+    2022-12-31 00:44:55,702 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_E: Score 0.586
+    2022-12-31 00:44:55,973 INFO MainThread moabb.evaluations.base RG+LR | 001-2014 | 2 | session_T: Score 0.575
+    001-2014-CrossSession: 100%|##########| 2/2 [00:35<00:00, 17.33s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:35<00:00, 17.54s/it]
           score      time  samples subject  ... channels  n_sessions   dataset pipeline
-    0  0.962963  0.466195    144.0       1  ...       22           2  001-2014    RG+LR
-    1  0.950424  0.392283    144.0       1  ...       22           2  001-2014    RG+LR
-    2  0.585648  0.389309    144.0       2  ...       22           2  001-2014    RG+LR
-    3  0.574846  0.396230    144.0       2  ...       22           2  001-2014    RG+LR
-    4  0.955440  0.336524    144.0       1  ...       22           2  001-2014  CSP+LDA
+    0  0.962963  0.294161    144.0       1  ...       22           2  001-2014    RG+LR
+    1  0.950424  0.273679    144.0       1  ...       22           2  001-2014    RG+LR
+    2  0.585648  0.283039    144.0       2  ...       22           2  001-2014    RG+LR
+    3  0.574846  0.263834    144.0       2  ...       22           2  001-2014    RG+LR
+    4  0.955440  0.438204    144.0       1  ...       22           2  001-2014  CSP+LDA
 
     [5 rows x 9 columns]
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-96
+.. GENERATED FROM PYTHON SOURCE LINES 91-99
 
 Plot Results
 ----------------
 
 Here we plot the results. We first make a pointplot with the average
 performance of each pipeline across session and subjects.
+The second plot is a paired scatter plot. Each point representing the score
+of a single session. An algorithm will outperform another is most of the
+points are in its quadrant.
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-114
+.. GENERATED FROM PYTHON SOURCE LINES 99-127
 
 .. code-block:: default
 
@@ -360,40 +312,10 @@ performance of each pipeline across session and subjects.
         zorder=1,
         palette="Set1",
     )
-    sns.pointplot(data=results, y="score", x="pipeline", ax=axes[0], zorder=1, palette="Set1")
+    sns.pointplot(data=results, y="score", x="pipeline", ax=axes[0], palette="Set1")
 
     axes[0].set_ylabel("ROC AUC")
     axes[0].set_ylim(0.5, 1)
-
-
-
-
-.. image:: /auto_examples/images/sphx_glr_plot_cross_session_motor_imagery_001.png
-    :alt: plot cross session motor imagery
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    (0.5, 1.0)
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 115-118
-
-The second plot is a paired scatter plot. Each point representing the score
-of a single session. An algorithm will outperform another is most of the
-points are in its quadrant.
-
-.. GENERATED FROM PYTHON SOURCE LINES 118-129
-
-.. code-block:: default
-
 
     paired = results.pivot_table(
         values="score", columns="pipeline", index=["subject", "session"]
@@ -408,6 +330,18 @@ points are in its quadrant.
 
 
 
+.. image-sg:: /auto_examples/images/sphx_glr_plot_cross_session_motor_imagery_001.png
+   :alt: plot cross session motor imagery
+   :srcset: /auto_examples/images/sphx_glr_plot_cross_session_motor_imagery_001.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /home/runner/work/moabb/moabb/examples/plot_cross_session_motor_imagery.py:102: FutureWarning: Passing `palette` without assigning `hue` is deprecated.
+      sns.stripplot(
 
 
 
@@ -415,28 +349,23 @@ points are in its quadrant.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  23.023 seconds)
+   **Total running time of the script:** ( 0 minutes  35.370 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_cross_session_motor_imagery.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_cross_session_motor_imagery.py <plot_cross_session_motor_imagery.py>`
 
-     :download:`Download Python source code: plot_cross_session_motor_imagery.py <plot_cross_session_motor_imagery.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_cross_session_motor_imagery.ipynb <plot_cross_session_motor_imagery.ipynb>`
+      :download:`Download Jupyter notebook: plot_cross_session_motor_imagery.ipynb <plot_cross_session_motor_imagery.ipynb>`
 
 
 .. only:: html

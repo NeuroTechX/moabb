@@ -88,23 +88,18 @@ Set the directory back to default location
 
 .. _sphx_glr_download_auto_examples_changing_download_directory.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: changing_download_directory.py <changing_download_directory.py>`
 
-     :download:`Download Python source code: changing_download_directory.py <changing_download_directory.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: changing_download_directory.ipynb <changing_download_directory.ipynb>`
+      :download:`Download Jupyter notebook: changing_download_directory.ipynb <changing_download_directory.ipynb>`
 
 
 .. only:: html

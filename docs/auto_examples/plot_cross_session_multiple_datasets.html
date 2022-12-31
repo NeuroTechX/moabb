@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Cross-Session on Multiple Datasets &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <meta charset='utf-8'>
@@ -38,7 +38,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -56,7 +56,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -75,7 +75,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -162,8 +162,8 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-cross-session-multiple-datasets-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="cross-session-on-multiple-datasets">
-<span id="sphx-glr-auto-examples-plot-cross-session-multiple-datasets-py"></span><h1>Cross-Session on Multiple Datasets<a class="headerlink" href="#cross-session-on-multiple-datasets" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="cross-session-on-multiple-datasets">
+<span id="sphx-glr-auto-examples-plot-cross-session-multiple-datasets-py"></span><h1>Cross-Session on Multiple Datasets<a class="headerlink" href="#cross-session-on-multiple-datasets" title="Permalink to this heading">¶</a></h1>
 <p>This example shows how to perform a cross-session analysis on two MI datasets
 using a CSP+LDA pipeline</p>
 <p>The cross session evaluation context will evaluate performance using a leave
@@ -193,35 +193,8 @@ session.</p>
 <span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;rocket&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;rocket_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;mako&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;mako_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;icefire&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;icefire_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;vlag&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;vlag_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;flare&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;flare_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;crest&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;crest_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-</pre></div>
-</div>
-<div class="section" id="loading-dataset">
-<h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this headline">¶</a></h2>
+<section id="loading-dataset">
+<h2>Loading Dataset<a class="headerlink" href="#loading-dataset" title="Permalink to this heading">¶</a></h2>
 <p>Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">Zhou2016</span><span class="p">(),</span> <span class="n">BNCI2014001</span><span class="p">()]</span>
@@ -229,26 +202,26 @@ session.</p>
     <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">d</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj</span></a>
 </pre></div>
 </div>
-</div>
-<div class="section" id="choose-paradigm">
-<h2>Choose Paradigm<a class="headerlink" href="#choose-paradigm" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="choose-paradigm">
+<h2>Choose Paradigm<a class="headerlink" href="#choose-paradigm" title="Permalink to this heading">¶</a></h2>
 <p>We select the paradigm MI, applying a bandpass filter (8-35 Hz) on
 the data and we will keep only left- and right-hand motor imagery</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paradigm</span> <span class="o">=</span> <span class="n">LeftRightImagery</span><span class="p">(</span><span class="n">fmin</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">35</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="create-pipelines">
-<h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="create-pipelines">
+<h2>Create Pipelines<a class="headerlink" href="#create-pipelines" title="Permalink to this heading">¶</a></h2>
 <p>Use the Common Spatial Patterns with 8 components and a Linear Discriminant
 Analysis classifier.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a> <span class="o">=</span> <span class="p">{}</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a><span class="p">[</span><span class="s2">&quot;CSP+LDA&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="get-data-optional">
-<h2>Get Data (optional)<a class="headerlink" href="#get-data-optional" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="get-data-optional">
+<h2>Get Data (optional)<a class="headerlink" href="#get-data-optional" title="Permalink to this heading">¶</a></h2>
 <p>To get access to the EEG signals downloaded from the dataset, you could
 use <cite>dataset.get_data(subjects=[subject_id])</cite> to obtain the EEG under
 an MNE format, stored in a dictionary of sessions and runs.
@@ -265,9 +238,9 @@ requirements.</p>
 <span class="c1">#     meta_all.append(meta)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="evaluation">
-<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="evaluation">
+<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this heading">¶</a></h2>
 <p>The evaluation will return a DataFrame containing a single AUC score for
 each subject / session of the dataset, and for each pipeline.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">overwrite</span></a> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># set to True if we want to overwrite cached results</span>
@@ -281,197 +254,192 @@ each subject / session of the dataset, and for each pipeline.</p>
 <span class="n">results</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="s2">&quot;session_E&quot;</span><span class="p">,</span> <span class="s2">&quot;session_T&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;session_0&quot;</span><span class="p">,</span> <span class="s2">&quot;session_1&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Zhou 2016-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
 
-  0%|                                               | 0.00/156M [00:00&lt;?, ?B/s][A
+  0%|                                               | 0.00/156M [00:00&lt;?, ?B/s]
 
-  0%|                                       | 56.3k/156M [00:00&lt;06:03, 429kB/s][A
+  0%|                                    | 4.10k/156M [00:00&lt;1:24:40, 30.7kB/s]
 
-  0%|                                       | 264k/156M [00:00&lt;02:22, 1.09MB/s][A
+  0%|                                       | 56.3k/156M [00:00&lt;11:02, 236kB/s]
 
-  1%|▏                                      | 822k/156M [00:00&lt;01:02, 2.50MB/s][A
+  0%|                                        | 109k/156M [00:00&lt;08:36, 302kB/s]
 
-  2%|▊                                     | 3.15M/156M [00:00&lt;00:18, 8.35MB/s][A
+  0%|                                        | 248k/156M [00:00&lt;04:26, 585kB/s]
 
-  5%|█▊                                    | 7.32M/156M [00:00&lt;00:08, 16.5MB/s][A
+  0%|▏                                      | 526k/156M [00:00&lt;02:20, 1.11MB/s]
 
-  7%|██▊                                   | 11.5M/156M [00:00&lt;00:06, 21.5MB/s][A
+  1%|▎                                     | 1.10M/156M [00:00&lt;01:11, 2.16MB/s]
 
- 10%|███▊                                  | 15.6M/156M [00:00&lt;00:05, 24.6MB/s][A
+  1%|▌                                     | 2.21M/156M [00:00&lt;00:37, 4.12MB/s]
 
- 13%|████▊                                 | 19.8M/156M [00:01&lt;00:04, 29.0MB/s][A
+  3%|█                                     | 4.46M/156M [00:01&lt;00:18, 8.03MB/s]
 
- 15%|█████▌                                | 22.8M/156M [00:01&lt;00:04, 28.1MB/s][A
+  4%|█▌                                    | 6.31M/156M [00:01&lt;00:15, 9.77MB/s]
 
- 17%|██████▎                               | 26.1M/156M [00:01&lt;00:04, 27.9MB/s][A
+  5%|██                                    | 8.42M/156M [00:01&lt;00:12, 11.5MB/s]
 
- 19%|███████▍                              | 30.4M/156M [00:01&lt;00:04, 29.3MB/s][A
+  7%|██▌                                   | 10.4M/156M [00:01&lt;00:11, 12.4MB/s]
 
- 22%|████████▍                             | 34.8M/156M [00:01&lt;00:04, 30.2MB/s][A
+  8%|███                                   | 12.5M/156M [00:01&lt;00:10, 13.3MB/s]
 
- 25%|█████████▍                            | 39.0M/156M [00:01&lt;00:03, 30.6MB/s][A
+  9%|███▌                                  | 14.4M/156M [00:01&lt;00:10, 13.5MB/s]
 
- 28%|██████████▌                           | 43.3M/156M [00:01&lt;00:03, 30.9MB/s][A
+ 11%|████                                  | 16.5M/156M [00:01&lt;00:09, 14.1MB/s]
 
- 30%|███████████▌                          | 47.5M/156M [00:01&lt;00:03, 31.1MB/s][A
+ 12%|████▍                                 | 18.5M/156M [00:02&lt;00:09, 14.1MB/s]
 
- 33%|████████████▌                         | 51.7M/156M [00:02&lt;00:03, 31.1MB/s][A
+ 13%|████▉                                 | 20.5M/156M [00:02&lt;00:09, 14.4MB/s]
 
- 36%|█████████████▌                        | 55.9M/156M [00:02&lt;00:03, 31.1MB/s][A
+ 14%|█████▍                                | 22.5M/156M [00:02&lt;00:09, 14.2MB/s]
 
- 38%|██████████████▌                       | 60.0M/156M [00:02&lt;00:03, 31.0MB/s][A
+ 16%|█████▉                                | 24.6M/156M [00:02&lt;00:09, 14.6MB/s]
 
- 41%|███████████████▋                      | 64.2M/156M [00:02&lt;00:02, 31.0MB/s][A
+ 17%|██████▍                               | 26.5M/156M [00:02&lt;00:09, 14.4MB/s]
 
- 44%|████████████████▋                     | 68.4M/156M [00:02&lt;00:02, 31.1MB/s][A
+ 18%|██████▉                               | 28.5M/156M [00:02&lt;00:08, 14.6MB/s]
 
- 46%|█████████████████▋                    | 72.6M/156M [00:02&lt;00:02, 30.9MB/s][A
+ 20%|███████▍                              | 30.6M/156M [00:02&lt;00:08, 14.8MB/s]
 
- 49%|██████████████████▋                   | 76.7M/156M [00:02&lt;00:02, 30.9MB/s][A
+ 21%|███████▉                              | 32.7M/156M [00:03&lt;00:08, 15.0MB/s]
 
- 52%|███████████████████▋                  | 80.8M/156M [00:03&lt;00:02, 30.8MB/s][A
+ 22%|████████▍                             | 34.8M/156M [00:03&lt;00:08, 15.1MB/s]
 
- 55%|████████████████████▊                 | 85.6M/156M [00:03&lt;00:02, 34.9MB/s][A
+ 24%|████████▉                             | 36.9M/156M [00:03&lt;00:07, 15.2MB/s]
 
- 57%|█████████████████████▋                | 89.2M/156M [00:03&lt;00:01, 33.7MB/s][A
+ 25%|█████████▍                            | 39.0M/156M [00:03&lt;00:07, 15.3MB/s]
 
- 60%|██████████████████████▋               | 93.1M/156M [00:03&lt;00:01, 33.5MB/s][A
+ 26%|█████████▉                            | 41.1M/156M [00:03&lt;00:07, 15.3MB/s]
 
- 63%|███████████████████████▊              | 97.8M/156M [00:03&lt;00:01, 37.0MB/s][A
+ 28%|██████████▌                           | 43.3M/156M [00:03&lt;00:07, 15.5MB/s]
 
- 65%|█████████████████████████▎             | 102M/156M [00:03&lt;00:01, 35.4MB/s][A
+ 29%|███████████                           | 45.4M/156M [00:03&lt;00:07, 15.5MB/s]
 
- 67%|██████████████████████████▎            | 105M/156M [00:03&lt;00:01, 34.5MB/s][A
+ 30%|███████████▌                          | 47.4M/156M [00:03&lt;00:07, 15.2MB/s]
 
- 70%|███████████████████████████▍           | 110M/156M [00:03&lt;00:01, 37.8MB/s][A
+ 32%|████████████                          | 49.6M/156M [00:04&lt;00:06, 15.6MB/s]
 
- 73%|████████████████████████████▍          | 114M/156M [00:03&lt;00:01, 36.0MB/s][A
+ 33%|████████████▌                         | 51.7M/156M [00:04&lt;00:06, 15.5MB/s]
 
- 75%|█████████████████████████████▎         | 118M/156M [00:04&lt;00:01, 34.6MB/s][A
+ 34%|█████████████                         | 53.8M/156M [00:04&lt;00:06, 15.3MB/s]
 
- 78%|██████████████████████████████▌        | 122M/156M [00:04&lt;00:00, 38.0MB/s][A
+ 36%|█████████████▌                        | 56.0M/156M [00:04&lt;00:06, 15.5MB/s]
 
- 81%|███████████████████████████████▌       | 126M/156M [00:04&lt;00:00, 36.2MB/s][A
+ 37%|██████████████                        | 58.0M/156M [00:04&lt;00:06, 15.1MB/s]
 
- 83%|████████████████████████████████▍      | 130M/156M [00:04&lt;00:00, 34.7MB/s][A
+ 38%|██████████████▌                       | 60.0M/156M [00:04&lt;00:06, 15.1MB/s]
 
- 86%|█████████████████████████████████▌     | 135M/156M [00:04&lt;00:00, 35.0MB/s][A
+ 40%|███████████████                       | 62.1M/156M [00:04&lt;00:06, 15.2MB/s]
 
- 89%|██████████████████████████████████▊    | 139M/156M [00:04&lt;00:00, 38.2MB/s][A
+ 41%|███████████████▋                      | 64.3M/156M [00:05&lt;00:05, 15.4MB/s]
 
- 92%|███████████████████████████████████▊   | 143M/156M [00:04&lt;00:00, 36.3MB/s][A
+ 43%|████████████████▏                     | 66.4M/156M [00:05&lt;00:05, 15.5MB/s]
 
- 94%|████████████████████████████████████▋  | 147M/156M [00:04&lt;00:00, 34.7MB/s][A
+ 44%|████████████████▋                     | 68.6M/156M [00:05&lt;00:05, 15.7MB/s]
 
- 97%|█████████████████████████████████████▊ | 152M/156M [00:04&lt;00:00, 34.9MB/s][A
+ 45%|█████████████████▏                    | 70.7M/156M [00:05&lt;00:05, 15.6MB/s]
 
-100%|██████████████████████████████████████▉| 156M/156M [00:05&lt;00:00, 37.8MB/s][A
+ 47%|█████████████████▋                    | 72.9M/156M [00:05&lt;00:05, 15.7MB/s]
 
-  0%|                                               | 0.00/156M [00:00&lt;?, ?B/s][A
-100%|████████████████████████████████████████| 156M/156M [00:00&lt;00:00, 258GB/s]
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
+ 48%|██████████████████▏                   | 74.9M/156M [00:05&lt;00:05, 15.5MB/s]
 
-Zhou 2016-CrossSession:  50%|#####     | 1/2 [00:12&lt;00:12, 12.20s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
+ 49%|██████████████████▊                   | 77.1M/156M [00:05&lt;00:05, 15.6MB/s]
 
-Zhou 2016-CrossSession: 100%|##########| 2/2 [00:15&lt;00:00,  6.83s/it]
-Zhou 2016-CrossSession: 100%|##########| 2/2 [00:15&lt;00:00,  7.63s/it]
+ 51%|███████████████████▎                  | 79.2M/156M [00:06&lt;00:04, 15.5MB/s]
 
-001-2014-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
+ 52%|███████████████████▊                  | 81.3M/156M [00:06&lt;00:04, 15.5MB/s]
 
-001-2014-CrossSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.69s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/utils/check.py:92: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-  LooseVersion(library.__version__) &lt; LooseVersion(min_version):
+ 53%|████████████████████▎                 | 83.5M/156M [00:06&lt;00:04, 15.6MB/s]
 
-001-2014-CrossSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.66s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.66s/it]
+ 55%|████████████████████▊                 | 85.6M/156M [00:06&lt;00:04, 15.7MB/s]
+
+ 56%|█████████████████████▎                | 87.8M/156M [00:06&lt;00:04, 15.6MB/s]
+
+ 57%|█████████████████████▊                | 89.8M/156M [00:06&lt;00:04, 15.3MB/s]
+
+ 59%|██████████████████████▎               | 92.0M/156M [00:06&lt;00:04, 15.4MB/s]
+
+ 60%|██████████████████████▉               | 94.0M/156M [00:06&lt;00:04, 15.4MB/s]
+
+ 62%|███████████████████████▍              | 96.1M/156M [00:07&lt;00:03, 15.4MB/s]
+
+ 63%|███████████████████████▊              | 98.1M/156M [00:07&lt;00:03, 15.1MB/s]
+
+ 64%|█████████████████████████              | 100M/156M [00:07&lt;00:03, 15.3MB/s]
+
+ 65%|█████████████████████████▌             | 102M/156M [00:07&lt;00:03, 14.9MB/s]
+
+ 67%|██████████████████████████             | 104M/156M [00:07&lt;00:03, 15.3MB/s]
+
+ 68%|██████████████████████████▌            | 106M/156M [00:07&lt;00:03, 15.0MB/s]
+
+ 69%|███████████████████████████            | 109M/156M [00:07&lt;00:03, 15.3MB/s]
+
+ 71%|███████████████████████████▌           | 111M/156M [00:08&lt;00:02, 15.3MB/s]
+
+ 72%|████████████████████████████▏          | 113M/156M [00:08&lt;00:02, 15.4MB/s]
+
+ 74%|████████████████████████████▋          | 115M/156M [00:08&lt;00:02, 15.4MB/s]
+
+ 75%|█████████████████████████████▏         | 117M/156M [00:08&lt;00:02, 15.5MB/s]
+
+ 76%|█████████████████████████████▋         | 119M/156M [00:08&lt;00:02, 15.3MB/s]
+
+ 78%|██████████████████████████████▎        | 121M/156M [00:08&lt;00:02, 15.9MB/s]
+
+ 79%|██████████████████████████████▊        | 124M/156M [00:08&lt;00:02, 15.8MB/s]
+
+ 81%|███████████████████████████████▍       | 126M/156M [00:09&lt;00:01, 16.2MB/s]
+
+ 82%|███████████████████████████████▉       | 128M/156M [00:09&lt;00:01, 16.2MB/s]
+
+ 83%|████████████████████████████████▌      | 130M/156M [00:09&lt;00:01, 16.4MB/s]
+
+ 85%|█████████████████████████████████      | 132M/156M [00:09&lt;00:01, 16.0MB/s]
+
+ 86%|█████████████████████████████████▌     | 135M/156M [00:09&lt;00:01, 16.1MB/s]
+
+ 88%|██████████████████████████████████▏    | 137M/156M [00:09&lt;00:01, 15.9MB/s]
+
+ 89%|██████████████████████████████████▋    | 139M/156M [00:09&lt;00:01, 16.2MB/s]
+
+ 90%|███████████████████████████████████▎   | 141M/156M [00:09&lt;00:00, 16.3MB/s]
+
+ 92%|███████████████████████████████████▊   | 144M/156M [00:10&lt;00:00, 16.5MB/s]
+
+ 93%|████████████████████████████████████▍  | 146M/156M [00:10&lt;00:00, 16.4MB/s]
+
+ 95%|████████████████████████████████████▉  | 148M/156M [00:10&lt;00:00, 16.6MB/s]
+
+ 96%|█████████████████████████████████████▍ | 150M/156M [00:10&lt;00:00, 16.0MB/s]
+
+ 98%|██████████████████████████████████████ | 153M/156M [00:10&lt;00:00, 16.6MB/s]
+
+ 99%|██████████████████████████████████████▋| 155M/156M [00:10&lt;00:00, 16.4MB/s]
+
+  0%|                                               | 0.00/156M [00:00&lt;?, ?B/s]
+100%|████████████████████████████████████████| 156M/156M [00:00&lt;00:00, 276GB/s]
+
+Zhou 2016-CrossSession:  50%|#####     | 1/2 [00:19&lt;00:19, 19.57s/it]
+Zhou 2016-CrossSession: 100%|##########| 2/2 [00:23&lt;00:00, 10.20s/it]
+Zhou 2016-CrossSession: 100%|##########| 2/2 [00:23&lt;00:00, 11.61s/it]
+
+001-2014-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
+001-2014-CrossSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.14s/it]
+001-2014-CrossSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.15s/it]
+001-2014-CrossSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.15s/it]
       score      time  samples  ... n_sessions    dataset  pipeline
-0  0.956597  0.271488    144.0  ...          2   001-2014   CSP+LDA
-1  0.930941  0.320665    144.0  ...          2   001-2014   CSP+LDA
-2  0.649691  0.251724    144.0  ...          2   001-2014   CSP+LDA
-3  0.526813  0.298418    144.0  ...          2   001-2014   CSP+LDA
-4  0.851412  0.314166    200.0  ...          3  Zhou 2016   CSP+LDA
+0  0.956597  0.339697    144.0  ...          2   001-2014   CSP+LDA
+1  0.930941  0.398045    144.0  ...          2   001-2014   CSP+LDA
+2  0.649691  0.321411    144.0  ...          2   001-2014   CSP+LDA
+3  0.526813  0.412721    144.0  ...          2   001-2014   CSP+LDA
+4  0.851412  0.386355    200.0  ...          3  Zhou 2016   CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
 </div>
-</div>
-<div class="section" id="plot-results">
-<h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="plot-results">
+<h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this heading">¶</a></h2>
 <p>Here we plot the results, indicating the score for each session and subject</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">catplot</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
@@ -485,9 +453,8 @@ Zhou 2016-CrossSession: 100%|##########| 2/2 [00:15&lt;00:00,  7.63s/it]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="dataset = 001-2014, dataset = Zhou 2016" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  22.921 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-multiple-datasets-py">
+<img src="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = 001-2014, dataset = Zhou 2016" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  32.031 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fa1ca889a5b6c6678d3af932651fcf7f/plot_cross_session_multiple_datasets.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_multiple_datasets.py</span></code></a></p>
 </div>
@@ -496,8 +463,8 @@ Zhou 2016-CrossSession: 100%|##########| 2/2 [00:15&lt;00:00,  7.63s/it]
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -518,8 +485,8 @@ Zhou 2016-CrossSession: 100%|##########| 2/2 [00:15&lt;00:00,  7.63s/it]
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

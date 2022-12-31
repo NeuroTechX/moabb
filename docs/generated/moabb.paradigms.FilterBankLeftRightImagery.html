@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>moabb.paradigms.FilterBankLeftRightImagery &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="moabb.paradigms.FilterBankMotorImagery" href="moabb.paradigms.FilterBankMotorImagery.html" />
@@ -40,7 +40,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -58,7 +58,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -77,7 +77,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -122,6 +122,10 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">moabb.paradigms.FilterBankLeftRightImagery</a><ul>
+<li><a class="reference internal" href="#moabb.paradigms.FilterBankLeftRightImagery"><code class="docutils literal notranslate"><span class="pre">FilterBankLeftRightImagery</span></code></a><ul>
+<li><a class="reference internal" href="#moabb.paradigms.FilterBankLeftRightImagery.scoring"><code class="docutils literal notranslate"><span class="pre">FilterBankLeftRightImagery.scoring</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#examples-using-moabb-paradigms-filterbankleftrightimagery">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.paradigms.FilterBankLeftRightImagery</span></code></a></li>
 </ul>
 </li>
@@ -154,15 +158,15 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="moabb-paradigms-filterbankleftrightimagery">
-<h1>moabb.paradigms.FilterBankLeftRightImagery<a class="headerlink" href="#moabb-paradigms-filterbankleftrightimagery" title="Permalink to this headline">¶</a></h1>
+  <section id="moabb-paradigms-filterbankleftrightimagery">
+<h1>moabb.paradigms.FilterBankLeftRightImagery<a class="headerlink" href="#moabb-paradigms-filterbankleftrightimagery" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
-<dt id="moabb.paradigms.FilterBankLeftRightImagery">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.paradigms.</span></code><code class="sig-name descname"><span class="pre">FilterBankLeftRightImagery</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/paradigms/motor_imagery.py#L195-L212"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/paradigms/motor_imagery.html#FilterBankLeftRightImagery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.FilterBankLeftRightImagery" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="moabb.paradigms.FilterBankLeftRightImagery">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.</span></span><span class="sig-name descname"><span class="pre">FilterBankLeftRightImagery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/motor_imagery.py#L195-L212"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.FilterBankLeftRightImagery" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filter Bank Motor Imagery for left hand/right hand classification</p>
 <p>Metric is ‘roc_auc’</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets</span></code></dt><dd><p>Property that define the list of compatible datasets</p>
 </dd>
@@ -172,11 +176,7 @@
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code>(dataset[, subjects, return_epochs])</p></td>
 <td><p>Return the data for a list of subject.</p></td>
@@ -193,19 +193,15 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 60%" />
-<col style="width: 40%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>used_events</strong></p></td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<dl class="py method">
-<dt id="moabb.paradigms.FilterBankLeftRightImagery.scoring">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">scoring</span></code><a class="headerlink" href="#moabb.paradigms.FilterBankLeftRightImagery.scoring" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="moabb.paradigms.FilterBankLeftRightImagery.scoring">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scoring</span></span><a class="headerlink" href="#moabb.paradigms.FilterBankLeftRightImagery.scoring" title="Permalink to this definition">¶</a></dt>
 <dd><p>Property that defines scoring metric (e.g. ROC-AUC or accuracy
 or f-score), given as a sklearn-compatible string or a compatible
 sklearn scorer.</p>
@@ -213,14 +209,13 @@ sklearn scorer.</p>
 
 </dd></dl>
 
-<div class="section" id="examples-using-moabb-paradigms-filterbankleftrightimagery">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.paradigms.FilterBankLeftRightImagery</span></code><a class="headerlink" href="#examples-using-moabb-paradigms-filterbankleftrightimagery" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="This example show a comparison of CSP versus FilterBank CSP on the very popular dataset 2a from..."><div class="figure align-default" id="id1">
-<img alt="FilterBank CSP versus CSP" src="../_images/sphx_glr_plot_filterbank_csp_vs_csp_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/advanced_examples/plot_filterbank_csp_vs_csp.html#sphx-glr-auto-examples-advanced-examples-plot-filterbank-csp-vs-csp-py"><span class="std std-ref">FilterBank CSP versus CSP</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div style='clear:both'></div></div>
-</div>
+<section id="examples-using-moabb-paradigms-filterbankleftrightimagery">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.paradigms.FilterBankLeftRightImagery</span></code><a class="headerlink" href="#examples-using-moabb-paradigms-filterbankleftrightimagery" title="Permalink to this heading">¶</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example show a comparison of CSP versus FilterBank CSP on the very popular dataset 2a from..."><img alt="FilterBank CSP versus CSP" src="../_images/sphx_glr_plot_filterbank_csp_vs_csp_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/advanced_examples/plot_filterbank_csp_vs_csp.html#sphx-glr-auto-examples-advanced-examples-plot-filterbank-csp-vs-csp-py"><span class="std std-ref">FilterBank CSP versus CSP</span></a></p>
+  <div class="sphx-glr-thumbnail-title">FilterBank CSP versus CSP</div>
+</div></div><div style='clear:both'></div></section>
+</section>
 
 
     </div>
@@ -241,8 +236,8 @@ sklearn scorer.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

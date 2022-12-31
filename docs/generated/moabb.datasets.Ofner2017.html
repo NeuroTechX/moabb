@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>moabb.datasets.Ofner2017 &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="moabb.datasets.PhysionetMI" href="moabb.datasets.PhysionetMI.html" />
@@ -40,7 +40,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -58,7 +58,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -77,7 +77,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../datasets.html">Datasets</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -121,7 +121,13 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">moabb.datasets.Ofner2017</a></li>
+<li><a class="reference internal" href="#">moabb.datasets.Ofner2017</a><ul>
+<li><a class="reference internal" href="#moabb.datasets.Ofner2017"><code class="docutils literal notranslate"><span class="pre">Ofner2017</span></code></a><ul>
+<li><a class="reference internal" href="#moabb.datasets.Ofner2017.data_path"><code class="docutils literal notranslate"><span class="pre">Ofner2017.data_path()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -151,11 +157,11 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="moabb-datasets-ofner2017">
-<h1>moabb.datasets.Ofner2017<a class="headerlink" href="#moabb-datasets-ofner2017" title="Permalink to this headline">¶</a></h1>
+  <section id="moabb-datasets-ofner2017">
+<h1>moabb.datasets.Ofner2017<a class="headerlink" href="#moabb-datasets-ofner2017" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
-<dt id="moabb.datasets.Ofner2017">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></code><code class="sig-name descname"><span class="pre">Ofner2017</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imagined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/datasets/upper_limb.py#L13-L155"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/upper_limb.html#Ofner2017"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Ofner2017" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="moabb.datasets.Ofner2017">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Ofner2017</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imagined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/upper_limb.py#L13-L155"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Ofner2017" title="Permalink to this definition">¶</a></dt>
 <dd><p>Motor Imagery ataset from Ofner et al 2017.</p>
 <p>Upper limb Motor imagery dataset from the paper <a class="reference internal" href="#r4e4b953d8efd-1" id="id1">[1]</a>.</p>
 <p><strong>Dataset description</strong></p>
@@ -187,25 +193,22 @@ session, we recorded 10 runs with 42 trials per run. We presented 6
 movement classes and a rest class and recorded 60 trials per class in a
 session.</p>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r4e4b953d8efd-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Ofner, P., Schwarz, A., Pereira, J. and Müller-Putz, G.R., 2017.
+<div role="list" class="citation-list">
+<div class="citation" id="r4e4b953d8efd-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Ofner, P., Schwarz, A., Pereira, J. and Müller-Putz, G.R., 2017.
 Upper limb movements can be decoded from the time-domain of
 low-frequency EEG. PloS one, 12(8), p.e0182578.
 <a class="reference external" href="https://doi.org/10.1371/journal.pone.0182578">https://doi.org/10.1371/journal.pone.0182578</a></p>
-</dd>
-</dl>
+</div>
+</div>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.datasets.Ofner2017.data_path" title="moabb.datasets.Ofner2017.data_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_path</span></code></a>(subject[, path, force_update, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.datasets.Ofner2017.data_path" title="moabb.datasets.Ofner2017.data_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_path</span></code></a>(subject[, path, force_update, ...])</p></td>
 <td><p>Get path to local copy of a subject data.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code>([subject_list, path, force_update, …])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code>([subject_list, path, force_update, ...])</p></td>
 <td><p>Download all data from the dataset.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code>([subjects])</p></td>
@@ -214,11 +217,11 @@ low-frequency EEG. PloS one, 12(8), p.e0182578.
 </tbody>
 </table>
 <dl class="py method">
-<dt id="moabb.datasets.Ofner2017.data_path">
-<code class="sig-name descname"><span class="pre">data_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/datasets/upper_limb.py#L122-L155"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/upper_limb.html#Ofner2017.data_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Ofner2017.data_path" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="moabb.datasets.Ofner2017.data_path">
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/upper_limb.py#L122-L155"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Ofner2017.data_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>subject</strong> (<em>int</em>) – Number of subject to use</p></li>
 <li><p><strong>path</strong> (<em>None | str</em>) – Location of where to look for the data storing location.
@@ -231,22 +234,22 @@ will be automatically downloaded to the specified folder.</p></li>
 <li><p><strong>update_path</strong> (<em>bool | None **Deprecated**</em>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
 config to the given path. If None, the user is prompted.</p></li>
 <li><p><strong>verbose</strong> (<em>bool, str, int, or None</em>) – If not None, override default verbose level
-(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
+(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>path</strong> – Local path to the given data file. This path is contained inside a
 list of length one, for compatibility.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list of str</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-<div style='clear:both'></div></div>
+<div style='clear:both'></div></section>
 
 
     </div>
@@ -267,8 +270,8 @@ list of length one, for compatibility.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

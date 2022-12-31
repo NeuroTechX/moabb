@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>moabb.datasets.Sosulski2019 &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="moabb.datasets.SSVEPExo" href="moabb.datasets.SSVEPExo.html" />
@@ -40,7 +40,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -58,7 +58,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -77,7 +77,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../datasets.html">Datasets</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -121,7 +121,13 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">moabb.datasets.Sosulski2019</a></li>
+<li><a class="reference internal" href="#">moabb.datasets.Sosulski2019</a><ul>
+<li><a class="reference internal" href="#moabb.datasets.Sosulski2019"><code class="docutils literal notranslate"><span class="pre">Sosulski2019</span></code></a><ul>
+<li><a class="reference internal" href="#moabb.datasets.Sosulski2019.data_path"><code class="docutils literal notranslate"><span class="pre">Sosulski2019.data_path()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -151,13 +157,13 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="moabb-datasets-sosulski2019">
-<h1>moabb.datasets.Sosulski2019<a class="headerlink" href="#moabb-datasets-sosulski2019" title="Permalink to this headline">¶</a></h1>
+  <section id="moabb-datasets-sosulski2019">
+<h1>moabb.datasets.Sosulski2019<a class="headerlink" href="#moabb-datasets-sosulski2019" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
-<dt id="moabb.datasets.Sosulski2019">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></code><code class="sig-name descname"><span class="pre">Sosulski2019</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_soas_as_sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_soa_60</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reject_non_iid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/datasets/sosulski2019.py#L17-L176"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/sosulski2019.html#Sosulski2019"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Sosulski2019" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="moabb.datasets.Sosulski2019">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Sosulski2019</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_soas_as_sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_soa_60</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reject_non_iid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/sosulski2019.py#L17-L186"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Sosulski2019" title="Permalink to this definition">¶</a></dt>
 <dd><p>P300 dataset from initial spot study.</p>
-<p>Dataset [1], study on spatial transfer between SOAs [2], actual paradigm / online optimization [3].</p>
+<p>Dataset <a class="reference internal" href="#rc783cf247497-1" id="id1">[1]</a>, study on spatial transfer between SOAs <a class="reference internal" href="#rc783cf247497-2" id="id2">[2]</a>, actual paradigm / online optimization <a class="reference internal" href="#rc783cf247497-3" id="id3">[3]</a>.</p>
 <p><strong>Dataset Description</strong></p>
 <p>This dataset contains multiple small trials of an auditory oddball paradigm. The paradigm presented two different
 sinusoidal tones. A low-pitched (500 Hz, 40 ms duration) non-target tone and a high-pitched (1000 Hz,
@@ -181,33 +187,42 @@ recorded at 1000 Hz.</p>
 <p>The data contains 31 scalp channels, one EOG channel and five miscellaneous non-EEG signal channels. However,
 only scalp EEG and the EOG channel is available in all subjects. The markers in the marker file indicate the
 onset of target tones (21) and non-target tones (1).</p>
-<p>WARNING: Note that this wrapper currently only loads the second part of the experiment and uses pseudo-sessions
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Note that this wrapper currently only loads the second part of the experiment and uses pseudo-sessions
 to achieve the functionality to handle different conditions in MOABB. As a result, the statistical testing
 features of MOABB cannot be used for this dataset.</p>
+</div>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="rc783cf247497-1"><span class="brackets">1</span></dt>
-<dd><p>Sosulski, J., Tangermann, M.: Electroencephalogram signals recorded from 13 healthy subjects during an</p>
-</dd>
-</dl>
-<p>auditory oddball paradigm under different stimulus onset asynchrony conditions. Dataset. DOI: 10.6094/UNIFR/154576
-.. [Rc783cf247497-2] Sosulski, J., Tangermann, M.: Spatial filters for auditory evoked potentials transfer between different
-experimental conditions. Graz BCI Conference. 2019.
-.. [Rc783cf247497-3] Sosulski, J., Hübner, D., Klein, A., Tangermann, M.:  Online Optimization of Stimulation Speed in an Auditory Brain-Computer Interface under Time Constraints. arXiv preprint. 2021.</p>
+<div role="list" class="citation-list">
+<div class="citation" id="rc783cf247497-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Sosulski, J., Tangermann, M.: Electroencephalogram signals recorded from 13 healthy subjects during an
+auditory oddball paradigm under different stimulus onset asynchrony conditions.
+Dataset. DOI: 10.6094/UNIFR/154576</p>
+</div>
+<div class="citation" id="rc783cf247497-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Sosulski, J., Tangermann, M.: Spatial filters for auditory evoked potentials transfer between different
+experimental conditions. Graz BCI Conference. 2019.</p>
+</div>
+<div class="citation" id="rc783cf247497-3" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Sosulski, J., Hübner, D., Klein, A., Tangermann, M.:  Online Optimization of Stimulation Speed in
+an Auditory Brain-Computer Interface under Time Constraints. arXiv preprint. 2021.</p>
+</div>
+</div>
+<p class="rubric">Notes</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 0.4.5.</span></p>
 </div>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.datasets.Sosulski2019.data_path" title="moabb.datasets.Sosulski2019.data_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_path</span></code></a>(subject[, path, force_update, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.datasets.Sosulski2019.data_path" title="moabb.datasets.Sosulski2019.data_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_path</span></code></a>(subject[, path, force_update, ...])</p></td>
 <td><p>Get path to local copy of a subject data.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code>([subject_list, path, force_update, …])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code>([subject_list, path, force_update, ...])</p></td>
 <td><p>Download all data from the dataset.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code>([subjects])</p></td>
@@ -216,10 +231,6 @@ experimental conditions. Graz BCI Conference. 2019.
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 77%" />
-<col style="width: 23%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>filename_trial_info_extraction</strong></p></td>
 <td></td>
@@ -227,11 +238,11 @@ experimental conditions. Graz BCI Conference. 2019.
 </tbody>
 </table>
 <dl class="py method">
-<dt id="moabb.datasets.Sosulski2019.data_path">
-<code class="sig-name descname"><span class="pre">data_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/datasets/sosulski2019.py#L153-L176"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/datasets/sosulski2019.html#Sosulski2019.data_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Sosulski2019.data_path" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="moabb.datasets.Sosulski2019.data_path">
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/sosulski2019.py#L163-L186"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Sosulski2019.data_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>subject</strong> (<em>int</em>) – Number of subject to use</p></li>
 <li><p><strong>path</strong> (<em>None | str</em>) – Location of where to look for the data storing location.
@@ -244,22 +255,22 @@ will be automatically downloaded to the specified folder.</p></li>
 <li><p><strong>update_path</strong> (<em>bool | None **Deprecated**</em>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
 config to the given path. If None, the user is prompted.</p></li>
 <li><p><strong>verbose</strong> (<em>bool, str, int, or None</em>) – If not None, override default verbose level
-(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
+(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>path</strong> – Local path to the given data file. This path is contained inside a
 list of length one, for compatibility.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list of str</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-<div style='clear:both'></div></div>
+<div style='clear:both'></div></section>
 
 
     </div>
@@ -280,8 +291,8 @@ list of length one, for compatibility.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

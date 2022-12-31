@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Tutorial 4: Creating a dataset class &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <meta charset='utf-8'>
@@ -38,7 +38,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -56,7 +56,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -75,7 +75,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -160,8 +160,8 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-tutorials-tutorial-4-adding-a-dataset-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="tutorial-4-creating-a-dataset-class">
-<span id="sphx-glr-auto-tutorials-tutorial-4-adding-a-dataset-py"></span><h1>Tutorial 4: Creating a dataset class<a class="headerlink" href="#tutorial-4-creating-a-dataset-class" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="tutorial-4-creating-a-dataset-class">
+<span id="sphx-glr-auto-tutorials-tutorial-4-adding-a-dataset-py"></span><h1>Tutorial 4: Creating a dataset class<a class="headerlink" href="#tutorial-4-creating-a-dataset-class" title="Permalink to this heading">¶</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pedro L. C. Rodrigues, Sylvain Chevallier</span>
 <span class="c1">#</span>
 <span class="c1"># https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019</span>
@@ -179,8 +179,8 @@ to download the full example code</p>
 <span class="kn">from</span> <span class="nn">moabb.paradigms</span> <span class="kn">import</span> <span class="n">LeftRightImagery</span>
 </pre></div>
 </div>
-<div class="section" id="creating-some-data">
-<h2>Creating some Data<a class="headerlink" href="#creating-some-data" title="Permalink to this headline">¶</a></h2>
+<section id="creating-some-data">
+<h2>Creating some Data<a class="headerlink" href="#creating-some-data" title="Permalink to this heading">¶</a></h2>
 <p>To illustrate the creation of a dataset class in MOABB, we first create an
 example dataset saved in .mat file. It contains a single fake recording on
 8 channels lasting for 150 seconds (sampling frequency 256 Hz). We have
@@ -222,9 +222,9 @@ The fake dataset is available on the
     <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.savemat.html#scipy.io.savemat" title="scipy.io.savemat" class="sphx-glr-backref-module-scipy-io sphx-glr-backref-type-py-function"><span class="n">savemat</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">filename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mdict</span></a><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="creating-a-dataset-class">
-<h2>Creating a Dataset Class<a class="headerlink" href="#creating-a-dataset-class" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="creating-a-dataset-class">
+<h2>Creating a Dataset Class<a class="headerlink" href="#creating-a-dataset-class" title="Permalink to this heading">¶</a></h2>
 <p>We will create now a dataset class using the fake data simulated with the
 code from above. For this, we first need to import the right classes from
 MOABB:</p>
@@ -294,9 +294,9 @@ have been downloaded</p></li>
         <span class="k">return</span> <span class="p">[</span><span class="n">path</span><span class="p">]</span>  <span class="c1"># it has to return a list</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="using-the-exampledataset">
-<h2>Using the ExampleDataset<a class="headerlink" href="#using-the-exampledataset" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="using-the-exampledataset">
+<h2>Using the ExampleDataset<a class="headerlink" href="#using-the-exampledataset" title="Permalink to this heading">¶</a></h2>
 <p>Now that the <cite>ExampleDataset</cite> is defined, it could be instanciated directly.
 The rest of the code follows the steps described in the previous tutorials.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ExampleDataset</span><span class="p">()</span>
@@ -314,65 +314,81 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:06, 447kB/s]
-  6%|██▎                                    | 164k/2.77M [00:00&lt;00:05, 446kB/s]
- 21%|████████                              | 590k/2.77M [00:00&lt;00:01, 1.30MB/s]
- 57%|█████████████████████                | 1.58M/2.77M [00:00&lt;00:00, 3.55MB/s]
+  1%|▍                                     | 32.8k/2.77M [00:00&lt;00:13, 203kB/s]
+  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:10, 262kB/s]
+  4%|█▌                                     | 115k/2.77M [00:00&lt;00:11, 235kB/s]
+  9%|███▍                                   | 246k/2.77M [00:00&lt;00:05, 462kB/s]
+ 18%|███████▏                               | 508k/2.77M [00:00&lt;00:02, 879kB/s]
+ 38%|██████████████                       | 1.05M/2.77M [00:00&lt;00:01, 1.71MB/s]
+ 77%|████████████████████████████▌        | 2.13M/2.77M [00:01&lt;00:00, 3.33MB/s]
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 3.76GB/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 4.58GB/s]
 
 Example dataset-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-Example dataset-WithinSession:  33%|###3      | 1/3 [00:00&lt;00:00,  4.53it/s]
+Example dataset-WithinSession:  33%|###3      | 1/3 [00:00&lt;00:00,  5.31it/s]
 
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s][A
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
 
-  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:06, 447kB/s][A
+  1%|▍                                     | 32.8k/2.77M [00:00&lt;00:13, 203kB/s]
 
-  9%|███▋                                   | 262k/2.77M [00:00&lt;00:03, 761kB/s][A
+  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:10, 262kB/s]
 
- 35%|█████████████▏                        | 961k/2.77M [00:00&lt;00:00, 2.71MB/s][A
+  4%|█▌                                     | 115k/2.77M [00:00&lt;00:11, 235kB/s]
 
- 76%|████████████████████████████         | 2.09M/2.77M [00:00&lt;00:00, 5.38MB/s][A
+  6%|██▎                                    | 164k/2.77M [00:00&lt;00:09, 261kB/s]
 
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s][A
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 3.12GB/s]
+ 11%|████▍                                  | 311k/2.77M [00:00&lt;00:04, 495kB/s]
 
-Example dataset-WithinSession:  67%|######6   | 2/3 [00:01&lt;00:01,  1.05s/it]
+ 21%|████████▎                              | 590k/2.77M [00:00&lt;00:02, 912kB/s]
 
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s][A
+ 41%|███████████████▎                     | 1.15M/2.77M [00:01&lt;00:00, 1.74MB/s]
 
-  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:05, 447kB/s][A
+ 83%|██████████████████████████████▋      | 2.29M/2.77M [00:01&lt;00:00, 3.44MB/s]
 
-  6%|██▎                                    | 164k/2.77M [00:00&lt;00:05, 446kB/s][A
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 4.90GB/s]
 
- 23%|████████▌                             | 623k/2.77M [00:00&lt;00:01, 1.38MB/s][A
+Example dataset-WithinSession:  67%|######6   | 2/3 [00:02&lt;00:01,  1.71s/it]
 
- 61%|██████████████████████▍              | 1.68M/2.77M [00:00&lt;00:00, 3.79MB/s][A
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
 
-  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s][A
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 2.89GB/s]
+  1%|▍                                     | 32.8k/2.77M [00:00&lt;00:13, 204kB/s]
 
-Example dataset-WithinSession: 100%|##########| 3/3 [00:03&lt;00:00,  1.34s/it]
-Example dataset-WithinSession: 100%|##########| 3/3 [00:03&lt;00:00,  1.18s/it]
+  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:10, 262kB/s]
+
+  5%|██                                     | 147k/2.77M [00:00&lt;00:07, 327kB/s]
+
+  9%|███▋                                   | 262k/2.77M [00:00&lt;00:05, 477kB/s]
+
+ 19%|███████▍                               | 524k/2.77M [00:00&lt;00:02, 888kB/s]
+
+ 38%|██████████████                       | 1.05M/2.77M [00:00&lt;00:01, 1.69MB/s]
+
+ 75%|███████████████████████████▊         | 2.08M/2.77M [00:01&lt;00:00, 3.22MB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 4.06GB/s]
+
+Example dataset-WithinSession: 100%|##########| 3/3 [00:05&lt;00:00,  2.22s/it]
+Example dataset-WithinSession: 100%|##########| 3/3 [00:05&lt;00:00,  1.93s/it]
    score      time  samples  ... n_sessions          dataset  pipeline
-0    1.0  0.031138     40.0  ...          1  Example dataset       MDM
-1    1.0  0.031187     40.0  ...          1  Example dataset       MDM
-2    1.0  0.030289     40.0  ...          1  Example dataset       MDM
+0    1.0  0.023811     40.0  ...          1  Example dataset       MDM
+1    1.0  0.020392     40.0  ...          1  Example dataset       MDM
+2    1.0  0.019030     40.0  ...          1  Example dataset       MDM
 
 [3 rows x 9 columns]
 </pre></div>
 </div>
-</div>
-<div class="section" id="pushing-on-moabb-github">
-<h2>Pushing on MOABB Github<a class="headerlink" href="#pushing-on-moabb-github" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="pushing-on-moabb-github">
+<h2>Pushing on MOABB Github<a class="headerlink" href="#pushing-on-moabb-github" title="Permalink to this heading">¶</a></h2>
 <p>If you want to make your dataset available to everyone, you could upload
 your data on public server (like Zenodo or Figshare) and signal that you
 want to add your dataset to MOABB in the  <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">dedicated issue</a>.  # noqa: E501
 You could then follow the instructions on <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">how to contribute</a>  # noqa: E501</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.620 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-4-adding-a-dataset-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  9.264 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1ce8a4c577491f8abfb105c7b1aba3d2/tutorial_4_adding_a_dataset.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_4_adding_a_dataset.py</span></code></a></p>
 </div>
@@ -381,8 +397,8 @@ You could then follow the instructions on <a class="reference external" href="ht
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -403,8 +419,8 @@ You could then follow the instructions on <a class="reference external" href="ht
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Tutorial 1: Simple Motor Imagery &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <meta charset='utf-8'>
@@ -38,7 +38,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -56,7 +56,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -75,7 +75,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -162,8 +162,8 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-tutorials-tutorial-1-simple-example-motor-imagery-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="tutorial-1-simple-motor-imagery">
-<span id="sphx-glr-auto-tutorials-tutorial-1-simple-example-motor-imagery-py"></span><h1>Tutorial 1: Simple Motor Imagery<a class="headerlink" href="#tutorial-1-simple-motor-imagery" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="tutorial-1-simple-motor-imagery">
+<span id="sphx-glr-auto-tutorials-tutorial-1-simple-example-motor-imagery-py"></span><h1>Tutorial 1: Simple Motor Imagery<a class="headerlink" href="#tutorial-1-simple-motor-imagery" title="Permalink to this heading">¶</a></h1>
 <p>In this example, we will go through all the steps to make a simple BCI
 classification task, downloading a dataset and using a standard classifier. We
 choose the dataset 2a from BCI Competition IV, a motor imagery task. We will
@@ -192,35 +192,8 @@ classify these signals.</p>
 <a href="https://docs.python.org/3/library/warnings.html#warnings.filterwarnings" title="warnings.filterwarnings" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span></a><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;rocket&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;rocket_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;mako&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;mako_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;icefire&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;icefire_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;vlag&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;vlag_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;flare&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;flare_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap &#39;crest&#39; which already exists.
-  mpl_cm.register_cmap(_name, _cmap)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap &#39;crest_r&#39; which already exists.
-  mpl_cm.register_cmap(_name + &quot;_r&quot;, _cmap_r)
-</pre></div>
-</div>
-<div class="section" id="instantiating-dataset">
-<h2>Instantiating Dataset<a class="headerlink" href="#instantiating-dataset" title="Permalink to this headline">¶</a></h2>
+<section id="instantiating-dataset">
+<h2>Instantiating Dataset<a class="headerlink" href="#instantiating-dataset" title="Permalink to this heading">¶</a></h2>
 <p>The first thing to do is to instantiate the dataset that we want to analyze.
 MOABB has a list of many different datasets, each one containing all the
 necessary information for describing them, such as the number of subjects,
@@ -235,9 +208,9 @@ size of trials, names of classes, etc.</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="accessing-eeg-recording">
-<h2>Accessing EEG Recording<a class="headerlink" href="#accessing-eeg-recording" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="accessing-eeg-recording">
+<h2>Accessing EEG Recording<a class="headerlink" href="#accessing-eeg-recording" title="Permalink to this heading">¶</a></h2>
 <p>As an example, we may access the EEG recording from a given session and a
 given run as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sessions</span></a> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -253,9 +226,9 @@ multiple subjects, MOABB ends up being a more appropriate option.</p>
 <a href="https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray" title="mne.io.RawArray" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sessions</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">][</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">session_name</span></a><span class="p">][</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_name</span></a><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="choosing-a-paradigm">
-<h2>Choosing a Paradigm<a class="headerlink" href="#choosing-a-paradigm" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="choosing-a-paradigm">
+<h2>Choosing a Paradigm<a class="headerlink" href="#choosing-a-paradigm" title="Permalink to this heading">¶</a></h2>
 <p>Once we have instantiated a dataset, we have to choose a paradigm. This
 object is responsible for filtering the data, epoching it, and extracting
 the labels for each epoch. Note that each dataset comes with the names of
@@ -264,7 +237,6 @@ process a P300 dataset with a MI paradigm object.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">paradigm</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>imagery
 </pre></div>
 </div>
@@ -279,8 +251,7 @@ paradigm (note that BNCI2014001 is in it)</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">paradigm</span><span class="o">.</span><span class="n">datasets</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014001 object at 0x7fde6e647280&gt;, &lt;moabb.datasets.bnci.BNCI2014004 object at 0x7fde6e647460&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fde6e69a970&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fde6e69a370&gt;, &lt;moabb.datasets.mpi_mi.MunichMI object at 0x7fde6e6471f0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fde6e69ae20&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fde6e69a670&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fde6e69aac0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fde6e69a160&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7fde6e69ae50&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014001 object at 0x7fc96f08f490&gt;, &lt;moabb.datasets.bnci.BNCI2014004 object at 0x7fc96f08f3a0&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fc96f08f9d0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fc96f08fd00&gt;, &lt;moabb.datasets.mpi_mi.MunichMI object at 0x7fc96f08f130&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fc96ef1dee0&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fc96ef1d490&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fc96ef1d580&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fc96ef1d8b0&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7fc96ef1dd90&gt;]
 </pre></div>
 </div>
 <p>The data from a list of subjects could be preprocessed and return as a 3D
@@ -290,9 +261,9 @@ session and the run associated to each trial.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">labels</span></a><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="create-pipeline">
-<h2>Create Pipeline<a class="headerlink" href="#create-pipeline" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="create-pipeline">
+<h2>Create Pipeline<a class="headerlink" href="#create-pipeline" title="Permalink to this heading">¶</a></h2>
 <p>Our goal is to evaluate the performance of a given classification pipeline
 (or several of them) when it is applied to the epochs from the previously
 chosen dataset. We will consider a very simple classification pipeline in
@@ -301,9 +272,9 @@ classified via a linear discriminant analysis.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a><span class="p">())</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="evaluation">
-<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="evaluation">
+<h2>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this heading">¶</a></h2>
 <p>To evaluate the score of this pipeline, we use the <cite>evaluation</cite> class. When
 instantiating it, we say which paradigm we want to consider, a list with the
 datasets to analyze, and whether the scores should be recalculated each time
@@ -326,12 +297,11 @@ partition and the remaining one as testing partition.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">process</span><span class="p">({</span><span class="s2">&quot;csp+lda&quot;</span><span class="p">:</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a><span class="p">})</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-001-2014-WithinSession:  33%|###3      | 1/3 [00:05&lt;00:10,  5.45s/it]
-001-2014-WithinSession:  67%|######6   | 2/3 [00:11&lt;00:05,  5.60s/it]
-001-2014-WithinSession: 100%|##########| 3/3 [00:16&lt;00:00,  5.55s/it]
-001-2014-WithinSession: 100%|##########| 3/3 [00:16&lt;00:00,  5.55s/it]
+001-2014-WithinSession:  33%|###3      | 1/3 [00:06&lt;00:12,  6.41s/it]
+001-2014-WithinSession:  67%|######6   | 2/3 [00:12&lt;00:06,  6.43s/it]
+001-2014-WithinSession: 100%|##########| 3/3 [00:19&lt;00:00,  6.34s/it]
+001-2014-WithinSession: 100%|##########| 3/3 [00:19&lt;00:00,  6.36s/it]
 </pre></div>
 </div>
 <p>The results are stored in locally, to avoid recomputing the results each time.
@@ -344,9 +314,9 @@ To export the results in CSV:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./results_part2-1.csv&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="plotting-results">
-<h2>Plotting Results<a class="headerlink" href="#plotting-results" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="plotting-results">
+<h2>Plotting Results<a class="headerlink" href="#plotting-results" title="Permalink to this heading">¶</a></h2>
 <p>We create a figure with the seaborn package comparing the classification
 score for each subject on each session. Note that the ‘subject’ field from
 the <cite>results</cite> is given in terms of integers, but seaborn accepts only
@@ -359,9 +329,8 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="tutorial 1 simple example motor imagery" class="sphx-glr-single-img" src="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  21.974 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-1-simple-example-motor-imagery-py">
+<img src="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  24.677 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-1-simple-example-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/b446bb6bcfa12c42d029c4259163f668/tutorial_1_simple_example_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_1_simple_example_motor_imagery.py</span></code></a></p>
 </div>
@@ -370,8 +339,8 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -392,8 +361,8 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>moabb.paradigms.P300 &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="moabb.paradigms.SSVEP" href="moabb.paradigms.SSVEP.html" />
@@ -40,7 +40,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -58,7 +58,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -77,7 +77,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -122,6 +122,10 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">moabb.paradigms.P300</a><ul>
+<li><a class="reference internal" href="#moabb.paradigms.P300"><code class="docutils literal notranslate"><span class="pre">P300</span></code></a><ul>
+<li><a class="reference internal" href="#moabb.paradigms.P300.scoring"><code class="docutils literal notranslate"><span class="pre">P300.scoring</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#examples-using-moabb-paradigms-p300">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.paradigms.P300</span></code></a></li>
 </ul>
 </li>
@@ -154,15 +158,15 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="moabb-paradigms-p300">
-<h1>moabb.paradigms.P300<a class="headerlink" href="#moabb-paradigms-p300" title="Permalink to this headline">¶</a></h1>
+  <section id="moabb-paradigms-p300">
+<h1>moabb.paradigms.P300<a class="headerlink" href="#moabb-paradigms-p300" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
-<dt id="moabb.paradigms.P300">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">moabb.paradigms.</span></code><code class="sig-name descname"><span class="pre">P300</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/paradigms/p300.py#L264-L281"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/paradigms/p300.html#P300"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.P300" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="moabb.paradigms.P300">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.</span></span><span class="sig-name descname"><span class="pre">P300</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/p300.py#L264-L281"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.P300" title="Permalink to this definition">¶</a></dt>
 <dd><p>P300 for Target/NonTarget classification</p>
 <p>Metric is ‘roc_auc’</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">datasets</span></code></dt><dd><p>Property that define the list of compatible datasets</p>
 </dd>
@@ -172,11 +176,7 @@
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code>(dataset[, subjects, return_epochs])</p></td>
 <td><p>Return the data for a list of subject.</p></td>
@@ -193,19 +193,15 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 60%" />
-<col style="width: 40%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>used_events</strong></p></td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<dl class="py method">
-<dt id="moabb.paradigms.P300.scoring">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">scoring</span></code><a class="headerlink" href="#moabb.paradigms.P300.scoring" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="moabb.paradigms.P300.scoring">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scoring</span></span><a class="headerlink" href="#moabb.paradigms.P300.scoring" title="Permalink to this definition">¶</a></dt>
 <dd><p>Property that defines scoring metric (e.g. ROC-AUC or accuracy
 or f-score), given as a sklearn-compatible string or a compatible
 sklearn scorer.</p>
@@ -213,26 +209,22 @@ sklearn scorer.</p>
 
 </dd></dl>
 
-<div class="section" id="examples-using-moabb-paradigms-p300">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.paradigms.P300</span></code><a class="headerlink" href="#examples-using-moabb-paradigms-p300" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis on three different P300 datasets."><div class="figure align-default" id="id1">
-<img alt="Within Session P300" src="../_images/sphx_glr_plot_within_session_p300_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_within_session_p300.html#sphx-glr-auto-examples-plot-within-session-p300-py"><span class="std std-ref">Within Session P300</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use machine learning pipeline based on MNE Epochs instead of Numpy ar..."><div class="figure align-default" id="id2">
-<img alt="MNE Epochs-based pipelines" src="../_images/sphx_glr_plot_mne_and_scikit_estimators_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/advanced_examples/plot_mne_and_scikit_estimators.html#sphx-glr-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py"><span class="std std-ref">MNE Epochs-based pipelines</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves..."><div class="figure align-default" id="id3">
-<img alt="Within Session P300 with Learning Curve" src="../_images/sphx_glr_plot_learning_curve_p300_external_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/external/plot_learning_curve_p300_external.html#sphx-glr-auto-examples-external-plot-learning-curve-p300-external-py"><span class="std std-ref">Within Session P300 with Learning Curve</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves..."><div class="figure align-default" id="id4">
-<img alt="Within Session P300 with Learning Curve" src="../_images/sphx_glr_plot_learning_curve_p300_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/learning_curve/plot_learning_curve_p300.html#sphx-glr-auto-examples-learning-curve-plot-learning-curve-p300-py"><span class="std std-ref">Within Session P300 with Learning Curve</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
-</div><div style='clear:both'></div></div>
-</div>
+<section id="examples-using-moabb-paradigms-p300">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.paradigms.P300</span></code><a class="headerlink" href="#examples-using-moabb-paradigms-p300" title="Permalink to this heading">¶</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis on three different P300 datasets."><img alt="Within Session P300" src="../_images/sphx_glr_plot_within_session_p300_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/plot_within_session_p300.html#sphx-glr-auto-examples-plot-within-session-p300-py"><span class="std std-ref">Within Session P300</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Within Session P300</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use machine learning pipeline based on MNE Epochs instead of Numpy ar..."><img alt="MNE Epochs-based pipelines" src="../_images/sphx_glr_plot_mne_and_scikit_estimators_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/advanced_examples/plot_mne_and_scikit_estimators.html#sphx-glr-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py"><span class="std std-ref">MNE Epochs-based pipelines</span></a></p>
+  <div class="sphx-glr-thumbnail-title">MNE Epochs-based pipelines</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves..."><img alt="Within Session P300 with Learning Curve" src="../_images/sphx_glr_plot_learning_curve_p300_external_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/external/plot_learning_curve_p300_external.html#sphx-glr-auto-examples-external-plot-learning-curve-p300-external-py"><span class="std std-ref">Within Session P300 with Learning Curve</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Within Session P300 with Learning Curve</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves..."><img alt="Within Session P300 with Learning Curve" src="../_images/sphx_glr_plot_learning_curve_p300_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/learning_curve/plot_learning_curve_p300.html#sphx-glr-auto-examples-learning-curve-plot-learning-curve-p300-py"><span class="std std-ref">Within Session P300 with Learning Curve</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Within Session P300 with Learning Curve</div>
+</div></div><div style='clear:both'></div></section>
+</section>
 
 
     </div>
@@ -253,8 +245,8 @@ sklearn scorer.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

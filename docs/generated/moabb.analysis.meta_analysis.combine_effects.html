@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>moabb.analysis.meta_analysis.combine_effects &#8212; moabb 0.4.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="moabb.analysis.meta_analysis.combine_pvalues" href="moabb.analysis.meta_analysis.combine_pvalues.html" />
@@ -40,7 +40,7 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="../index.html">
-          moabb</a>
+          MOABB</a>
         <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
       </div>
 
@@ -58,7 +58,7 @@
      id="dLabelGlobalToc"
      data-toggle="dropdown"
      data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
+     href="../index.html">MOABB <b class="caret"></b></a>
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul>
@@ -77,7 +77,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Main classes of MOABB:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
@@ -121,7 +121,10 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">moabb.analysis.meta_analysis.combine_effects</a></li>
+<li><a class="reference internal" href="#">moabb.analysis.meta_analysis.combine_effects</a><ul>
+<li><a class="reference internal" href="#moabb.analysis.meta_analysis.combine_effects"><code class="docutils literal notranslate"><span class="pre">combine_effects()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -151,31 +154,31 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="moabb-analysis-meta-analysis-combine-effects">
-<h1>moabb.analysis.meta_analysis.combine_effects<a class="headerlink" href="#moabb-analysis-meta-analysis-combine-effects" title="Permalink to this headline">¶</a></h1>
+  <section id="moabb-analysis-meta-analysis-combine-effects">
+<h1>moabb.analysis.meta_analysis.combine_effects<a class="headerlink" href="#moabb-analysis-meta-analysis-combine-effects" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
-<dt id="moabb.analysis.meta_analysis.combine_effects">
-<code class="sig-prename descclassname"><span class="pre">moabb.analysis.meta_analysis.</span></code><code class="sig-name descname"><span class="pre">combine_effects</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsubs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="http://github.com/NeuroTechX/moabb/blob/maint/0.24/moabb/../../../../../moabb/analysis/meta_analysis.py#L243-L263"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="reference internal" href="../_modules/moabb/analysis/meta_analysis.html#combine_effects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.analysis.meta_analysis.combine_effects" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="moabb.analysis.meta_analysis.combine_effects">
+<span class="sig-prename descclassname"><span class="pre">moabb.analysis.meta_analysis.</span></span><span class="sig-name descname"><span class="pre">combine_effects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">effects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsubs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/analysis/meta_analysis.py#L243-L263"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.analysis.meta_analysis.combine_effects" title="Permalink to this definition">¶</a></dt>
 <dd><p>Combining effects for meta-analysis statistics</p>
 <p>Function that takes effects from each experiments and number of subjects to
 return meta-analysis effect</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>p</strong> (<em>DataFrame</em>) – effects for 2 pipelines computed on different datasets</p></li>
 <li><p><strong>nsubs</strong> (<em>float</em>) – average number of subject per datasets</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>effect</strong> – Estimatation of the combined p-value</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<div style='clear:both'></div></div>
+<div style='clear:both'></div></section>
 
 
     </div>
@@ -196,8 +199,8 @@ return meta-analysis effect</p>
       
     </p>
     <p>
-        &copy; Copyright 2018-2021, Alexandre Barachant, Sylvain Chevallier.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
     </p>
   </div>
 </footer>

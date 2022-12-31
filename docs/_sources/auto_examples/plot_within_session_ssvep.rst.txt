@@ -18,9 +18,9 @@
 .. _sphx_glr_auto_examples_plot_within_session_ssvep.py:
 
 
-===================
+=====================
 Within Session SSVEP
-===================
+=====================
 
 This Example show how to perform a within-session SSVEP analysis on the
 MAMEM dataset 3, using a CCA pipeline.
@@ -57,37 +57,6 @@ is the average of all fold.
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'rocket' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'rocket_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'mako' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'mako_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'icefire' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'icefire_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'vlag' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'vlag_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'flare' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'flare_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1582: UserWarning: Trying to register the cmap 'crest' which already exists.
-      mpl_cm.register_cmap(_name, _cmap)
-    /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/seaborn/cm.py:1583: UserWarning: Trying to register the cmap 'crest_r' which already exists.
-      mpl_cm.register_cmap(_name + "_r", _cmap_r)
 
 
 
@@ -219,14 +188,12 @@ each subject and pipeline.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    MAMEM3_SSVEP-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    MAMEM3_SSVEP-WithinSession:  50%|#####     | 1/2 [00:13<00:13, 13.24s/it]    MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:26<00:00, 13.39s/it]    MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:26<00:00, 13.37s/it]
+    MAMEM3_SSVEP-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    MAMEM3_SSVEP-WithinSession:  50%|#####     | 1/2 [00:26<00:26, 26.56s/it]    MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:53<00:00, 26.52s/it]    MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:53<00:00, 26.53s/it]
           score      time  samples  ... n_sessions       dataset  pipeline
-    0  0.688889  0.047268     45.0  ...          1  MAMEM3_SSVEP       CCA
-    1  0.266667  0.046701     45.0  ...          1  MAMEM3_SSVEP       CCA
+    0  0.688889  0.072158     45.0  ...          1  MAMEM3_SSVEP       CCA
+    1  0.266667  0.073878     45.0  ...          1  MAMEM3_SSVEP       CCA
 
     [2 rows x 9 columns]
 
@@ -251,19 +218,18 @@ Here we plot the results, indicating the score for each subject
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_within_session_ssvep_001.png
-    :alt: plot within session ssvep
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/images/sphx_glr_plot_within_session_ssvep_001.png
+   :alt: plot within session ssvep
+   :srcset: /auto_examples/images/sphx_glr_plot_within_session_ssvep_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <AxesSubplot:xlabel='session', ylabel='score'>
+    <AxesSubplot: xlabel='session', ylabel='score'>
 
 
 
@@ -283,9 +249,10 @@ And the computation time in seconds
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_within_session_ssvep_002.png
-    :alt: plot within session ssvep
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/images/sphx_glr_plot_within_session_ssvep_002.png
+   :alt: plot within session ssvep
+   :srcset: /auto_examples/images/sphx_glr_plot_within_session_ssvep_002.png
+   :class: sphx-glr-single-img
 
 
 
@@ -294,28 +261,23 @@ And the computation time in seconds
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  26.928 seconds)
+   **Total running time of the script:** ( 0 minutes  53.268 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_within_session_ssvep.py:
 
+.. only:: html
 
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_within_session_ssvep.py <plot_within_session_ssvep.py>`
 
-     :download:`Download Python source code: plot_within_session_ssvep.py <plot_within_session_ssvep.py>`
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_within_session_ssvep.ipynb <plot_within_session_ssvep.ipynb>`
+      :download:`Download Jupyter notebook: plot_within_session_ssvep.ipynb <plot_within_session_ssvep.ipynb>`
 
 
 .. only:: html
