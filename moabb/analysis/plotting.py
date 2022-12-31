@@ -45,7 +45,12 @@ def score_plot(data, pipelines=None):
         Dictionary with the facecolor
     """
     data = collapse_session_scores(data)
-    data["dataset"] = data["dataset"].apply(_simplify_names)
+    unique_ids = data["dataset"].apply(_simplify_names)
+    if len(unique_ids) != len(set(unique_ids)):
+        log.warning("Dataset names are too similar, turning off name shortening")
+    else:
+        data["dataset"] = unique_ids
+
     if pipelines is not None:
         data = data[data.pipeline.isin(pipelines)]
     fig = plt.figure(figsize=(8.5, 11))
@@ -202,6 +207,11 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     df_bk = stats_df.loc[(stats_df.pipe1 == alg2) & (stats_df.pipe2 == alg1)]
     df_bk = df_bk.sort_values(by="pipe1")
     dsets = df_fw.dataset.unique()
+    simplify = True
+    unique_ids = [_simplify_names(x) for x in dsets]
+    if len(unique_ids) != len(set(unique_ids)):
+        log.warning("Dataset names are too similar, turning off name shortening")
+        simplify = False
     ci = []
     fig = plt.figure()
     gs = gridspec.GridSpec(1, 5)
@@ -209,7 +219,10 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     pvals = []
     ax = fig.add_subplot(gs[0, :-1])
     ax.set_yticks(np.arange(len(dsets) + 1))
-    ax.set_yticklabels(["Meta-effect"] + [_simplify_names(d) for d in dsets])
+    if simplify:
+        ax.set_yticklabels(["Meta-effect"] + [d for d in unique_ids])
+    else:
+        ax.set_yticklabels(["Meta-effect"] + [d for d in dsets])
     pval_ax = fig.add_subplot(gs[0, -1], sharey=ax)
     plt.setp(pval_ax.get_yticklabels(), visible=False)
     _min = 0

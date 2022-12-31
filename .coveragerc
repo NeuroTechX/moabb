@@ -1,7 +1,6 @@
 [run]
 branch = True
 source = moabb
-include = */moabb/*
 omit =
     */docs/*
     */pipelines/*

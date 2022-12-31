@@ -14,6 +14,11 @@ from .base import BaseDataset
 class DemonsP300(BaseDataset):
     """Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons versus Demons.
 
+    .. danger::
+
+       This dataset contains major unresolved issues and could removed in the near futur. Use it in a benchmark
+       at your own risk. See https://github.com/NeuroTechX/moabb/issues/216
+
     **Dataset Description**
 
     We publish dataset of visual P300 BCI performed in Virtual Reality (VR) game Raccoons versus
@@ -75,18 +80,18 @@ class DemonsP300(BaseDataset):
 
     _act_dtype = np.dtype(
         [
-            ("id", np.int),
-            ("target", np.int),
-            ("is_train", np.bool),
-            ("prediction", np.int),
-            ("sessions", np.object),  # list of `_session_dtype`
+            ("id", int),
+            ("target", int),
+            ("is_train", bool),
+            ("prediction", int),
+            ("sessions", object),  # list of `_session_dtype`
         ]
     )
     _session_dtype = np.dtype(
         [
-            ("eeg", np.object),
-            ("starts", np.object),
-            ("stimuli", np.object),
+            ("eeg", object),
+            ("starts", object),
+            ("stimuli", object),
         ]
     )
 
