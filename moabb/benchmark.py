@@ -75,17 +75,18 @@ def benchmark(
     contexts: str
         File path to context.yml file that describes context parameters.
         If none, assumes all defaults. Must contain an entry for all
-        paradigms described in the pipelines
+        paradigms described in the pipelines.
     include_datasets: list of str or Dataset object
-        Datasets to include in the benchmark run. By default all suitable datasets are taken.
-        If arguments are given for both include_datasets as well as exclude_datasets,
-        include_datasets will take precedence and exclude_datasets will be neglected.
+        Datasets (dataset.code or object) to include in the benchmark run.
+        By default, all suitable datasets are included. If both include_datasets
+        and exclude_datasets are specified, raise an error.
     exclude_datasets: list of str or Dataset object
-        Datasets to exclude from the benchmark run.
+        Datasets to exclude from the benchmark run
 
     Returns
     -------
-
+    eval_results: DataFrame
+        Results of benchmark for all considered paradigms
     """
     # set logs
     if evaluations is None:
@@ -135,13 +136,6 @@ def benchmark(
             log.debug(
                 f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}"
             )
-            print(f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}")
-
-            # if len(d) = 0, raise warning that no suitable datasets were present after the
-            # arguments were satisfied
-            if len(d) == 0:
-                log.debug("No datasets matched the include_datasets or exclude_datasets")
-                print("No datasets matched the include_datasets or exclude_datasets")
 
             context = eval_type[evaluation](
                 paradigm=p,
@@ -251,7 +245,9 @@ def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
             # can be passed on directly
             d = include_datasets
         if exclude_datasets is not None:
-            raise AttributeError("You could specify both include and exclude datasets")
+            raise AttributeError(
+                "You could not specify both include and exclude datasets"
+            )
 
     elif exclude_datasets is not None:
         d = datasets
