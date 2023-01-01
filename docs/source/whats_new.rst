@@ -18,7 +18,7 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
-- Adding a comprehensive benchmarking function (:gh:`264` by `Divyesh Narayanan`_)
+- Adding a comprehensive benchmarking function (:gh:`264` by `Divyesh Narayanan`_ and `Sylvain Chevallier`_)
 
 Bugs
 ~~~~
