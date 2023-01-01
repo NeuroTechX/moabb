@@ -44,8 +44,6 @@ def analyze(results, out_path, name="analysis", plot=False):
 
     unique_ids = [plt._simplify_names(x) for x in results.pipeline.unique()]
     simplify = True
-    print(unique_ids)
-    print(set(unique_ids))
     if len(unique_ids) != len(set(unique_ids)):
         log.warning("Pipeline names are too similar, turning off name shortening")
         simplify = False
