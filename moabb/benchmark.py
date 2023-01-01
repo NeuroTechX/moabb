@@ -1,4 +1,7 @@
 import logging
+import os
+import os.path as osp
+from pathlib import Path
 
 import mne
 import pandas as pd
@@ -23,7 +26,7 @@ def benchmark(
     select_paradigms=None,
     results="./results/",
     force=False,
-    output="./",
+    output="./benchmark/",
     n_jobs=-1,
     plot=False,
     contexts=None,
@@ -97,6 +100,10 @@ def benchmark(
     mne.set_log_level(False)
     # logging.basicConfig(level=logging.WARNING)
 
+    output = Path(output)
+    if not osp.isdir(output):
+        os.makedirs(output)
+
     pipeline_configs = parse_pipelines_from_directory(pipelines)
 
     context_params = {}
@@ -105,7 +112,6 @@ def benchmark(
             context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
     paradigms = generate_paradigms(pipeline_configs, context_params, log)
-    print(paradigms)
     if select_paradigms is not None:
         paradigms = {p: paradigms[p] for p in select_paradigms}
 
@@ -146,24 +152,87 @@ def benchmark(
                 overwrite=force,
             )
             paradigm_results = context.process(pipelines=paradigms[paradigm])
-            eval_results[f"{paradigm}"] = paradigm_results
             paradigm_results["paradigm"] = f"{paradigm}"
             paradigm_results["evaluation"] = f"{evaluation}"
+            eval_results[f"{paradigm}"] = paradigm_results
             df_eval.append(paradigm_results)
 
-        # Combining the FilterBank and the base Paradigm
-        combine_paradigms = ["SSVEP"]
-        for p in combine_paradigms:
-            if f"FilterBank{p}" in eval_results.keys() and f"{p}" in eval_results.keys():
-                eval_results[f"{p}"] = pd.concat(
-                    [eval_results[f"{p}"], eval_results[f"FilterBank{p}"]]
+        # Combining FilterBank and direct paradigms
+        eval_results = _combine_paradigms(eval_results)
+
+        _save_results(eval_results, output, plot)
+
+    df_eval = pd.concat(df_eval)
+    _display_results(df_eval)
+
+    return df_eval
+
+
+def _display_results(results):
+    """Print results after computation"""
+    tab = []
+    for d in results["dataset"].unique():
+        for p in results["pipeline"].unique():
+            for e in results["evaluation"].unique():
+                tab.append(
+                    {
+                        "dataset": d,
+                        "evaluation": e,
+                        "pipeline": p,
+                        "avg score": results[
+                            (results["dataset"] == d)
+                            & (results["pipeline"] == p)
+                            & (results["evaluation"] == e)
+                        ]["score"].mean(),
+                    }
                 )
-                del eval_results[f"FilterBank{p}"]
+    tab = pd.DataFrame(tab)
+    print(tab)
 
-        for paradigm_result in eval_results.values():
-            analyze(paradigm_result, output, plot=plot)
 
-    return pd.concat(df_eval)
+def _combine_paradigms(prdgm_results):
+    """Combining FilterBank and direct paradigms
+
+    Applied only on SSVEP for now.
+
+    Parameters
+    ----------
+    prdgm_results: dict of DataFrame
+        Results of benchmark for all considered paradigms
+
+    Returns
+    -------
+    eval_results: dict of DataFrame
+        Results with filterbank and direct paradigms combined
+    """
+    eval_results = prdgm_results.copy()
+    combine_paradigms = ["SSVEP"]
+    for p in combine_paradigms:
+        if f"FilterBank{p}" in eval_results.keys() and f"{p}" in eval_results.keys():
+            eval_results[f"{p}"] = pd.concat(
+                [eval_results[f"{p}"], eval_results[f"FilterBank{p}"]]
+            )
+            del eval_results[f"FilterBank{p}"]
+    return eval_results
+
+
+def _save_results(eval_results, output, plot):
+    """Save results in specified folder
+
+    Parameters
+    ----------
+    eval_results: dict of DataFrame
+        Results of benchmark for all considered paradigms
+    output: str
+        Folder to store the analysis results
+    plot: bool
+        Plot results after computing
+    """
+    for prdgm, prdgm_result in eval_results.items():
+        prdgm_path = output / prdgm
+        if not osp.isdir(prdgm_path):
+            prdgm_path.mkdir()
+        analyze(prdgm_result, str(prdgm_path), plot=plot)
 
 
 def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
