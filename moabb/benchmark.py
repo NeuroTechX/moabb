@@ -145,7 +145,7 @@ def benchmark(
                 n_jobs=n_jobs,
                 overwrite=overwrite,
             )
-            paradigm_results = context.process(pipelines=paradigms[paradigm])
+            paradigm_results = context.process(pipelines=prdgms[paradigm])
             paradigm_results["paradigm"] = f"{paradigm}"
             paradigm_results["evaluation"] = f"{evaluation}"
             eval_results[f"{paradigm}"] = paradigm_results
