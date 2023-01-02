@@ -114,7 +114,7 @@ def benchmark(
 
     prdgms = generate_paradigms(pipeline_configs, context_params, log)
     if paradigms is not None:
-        paradigms = {p: prdgms[p] for p in paradigms}
+        prdgms = {p: prdgms[p] for p in paradigms}
 
     log.debug(f"The paradigms being run are {prdgms.keys()}")
 
