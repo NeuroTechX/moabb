@@ -299,6 +299,15 @@ class Lee2019_MI(Lee2019):
 class Lee2019_ERP(Lee2019):
     """BMI/OpenBMI dataset for P300.
 
+    .. note:: Meta-information about the dataset
+
+
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Lee2019_ERP       54       62  6900 NT / 1380 T   1s               1000Hz                     2
+        ===========  =======  =======  =================  ===============  ===============  ===========
+
     Dataset from Lee et al 2019 [1]_.
 
     **Dataset Description**

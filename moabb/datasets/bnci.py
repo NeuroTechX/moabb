@@ -887,6 +887,15 @@ class BNCI2014004(MNEBNCI):
 class BNCI2014008(MNEBNCI):
     """BNCI 2014-008 P300 dataset
 
+    .. note:: Meta-information about the dataset
+
+
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        BNCI2014008        8        8  3500 NT / 700 T    1s               256Hz                      1
+        ===========  =======  =======  =================  ===============  ===============  ===========
+
     Dataset from [1]_.
 
     **Dataset description**
@@ -948,6 +957,15 @@ class BNCI2014008(MNEBNCI):
 
 class BNCI2014009(MNEBNCI):
     """BNCI 2014-009 P300 dataset.
+
+    .. note:: Meta-information about the dataset
+
+
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        BNCI2014009       10       16  1440 NT / 288 T    0.8s             256Hz                      3
+        ===========  =======  =======  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -1059,6 +1077,15 @@ class BNCI2015001(MNEBNCI):
 
 class BNCI2015003(MNEBNCI):
     """BNCI 2015-003 P300 dataset.
+
+    .. note:: Meta-information about the dataset
+
+
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        BNCI2015003       10        8  1500 NT / 300 T    0.8s             256Hz                      1
+        ===========  =======  =======  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 

@@ -395,6 +395,15 @@ class bi2012(BaseDataset):
 class bi2013a(BaseDataset):
     """P300 dataset bi2013a from a "Brain Invaders" experiment
 
+    .. note:: Meta-information about the dataset
+
+
+        =======  =======  =======  =================  ===============  ===============  =================
+        Name       #Subj    #Chan  #Trials / class    Trials length    Sampling rate    #Sessions
+        =======  =======  =======  =================  ===============  ===============  =================
+        bi2013a       24       16  3200 NT / 640 T    1s               512Hz            (1-7)8 s|(8-24)1s
+        =======  =======  =======  =================  ===============  ===============  =================
+
     Dataset following the setup from [1]_ carried-out at University of
     Grenoble Alpes.
 

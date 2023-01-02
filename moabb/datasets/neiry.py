@@ -14,6 +14,15 @@ from .base import BaseDataset
 class DemonsP300(BaseDataset):
     """Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons versus Demons.
 
+    .. note:: Meta-information about the dataset
+
+
+        ==========  =======  =======  =================  ===============  ===============  ===========
+        Name          #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ==========  =======  =======  =================  ===============  ===============  ===========
+        DemonsP300       60        8  935 NT / 50 T      1s               500Hz                      1
+        ==========  =======  =======  =================  ===============  ===============  ===========
+
     .. danger::
 
        This dataset contains major unresolved issues and could removed in the near futur. Use it in a benchmark
