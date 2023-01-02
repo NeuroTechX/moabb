@@ -34,7 +34,7 @@ set_log_level("info")
 # `pipelines folder <https://github.com/NeuroTechX/moabb/tree/develop/pipelines>`_.
 # For this example, we will use a folder with only 2 pipelines, to keep the
 # computation time low.
-
+#
 # This is an example of a pipeline defined in YAML, defining on which paradigms it
 # can be used, the original publication, and the steps to perform using a
 # scikit-learn API. In this case, a CSP + SVM pipeline, the covariance are estimated
