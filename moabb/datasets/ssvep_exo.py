@@ -14,6 +14,15 @@ SSVEPEXO_URL = "https://zenodo.org/record/2392979/files/"
 class SSVEPExo(BaseDataset):
     """SSVEP Exo dataset
 
+    .. note:: Meta-information about the dataset
+
+
+        ========  =======  =======  ==========  =================  ===============  ===============  ===========
+        Name        #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
+        ========  =======  =======  ==========  =================  ===============  ===============  ===========
+        SSVEPExo       12        8           4                 16  2s               256Hz                      1
+        ========  =======  =======  ==========  =================  ===============  ===============  ===========
+
     SSVEP dataset from E. Kalunga PhD in University of Versailles [1]_.
 
     The datasets contains recording from 12 male and female subjects aged

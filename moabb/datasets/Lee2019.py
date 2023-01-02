@@ -389,6 +389,15 @@ class Lee2019_ERP(Lee2019):
 class Lee2019_SSVEP(Lee2019):
     """BMI/OpenBMI dataset for SSVEP.
 
+    .. note:: Meta-information about the dataset
+
+
+        =============  =======  =======  ==========  =================  ===============  ===============  ===========
+        Name             #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
+        =============  =======  =======  ==========  =================  ===============  ===============  ===========
+        Lee2019_SSVEP       24       16           4                 25  1s               1000Hz                     1
+        =============  =======  =======  ==========  =================  ===============  ===============  ===========
+
     Dataset from Lee et al 2019 [1]_.
 
     **Dataset Description**
