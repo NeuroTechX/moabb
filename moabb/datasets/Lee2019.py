@@ -229,6 +229,15 @@ class Lee2019(BaseDataset):
 class Lee2019_MI(Lee2019):
     """BMI/OpenBMI dataset for MI.
 
+    .. note:: Meta-information about the dataset
+
+
+        ==========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name          #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ==========  =======  =======  ==========  =================  ============  ===============  ===========
+        Lee2019_MI       55       62           2                100  4s            1000Hz                     2
+        ==========  =======  =======  ==========  =================  ============  ===============  ===========
+
     Dataset from Lee et al 2019 [1]_.
 
     **Dataset Description**

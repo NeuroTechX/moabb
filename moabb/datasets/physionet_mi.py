@@ -16,6 +16,15 @@ BASE_URL = "https://physionet.org/files/eegmmidb/1.0.0/"
 class PhysionetMI(BaseDataset):
     """Physionet Motor Imagery dataset.
 
+    .. note:: Meta-information about the dataset
+
+
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        PhysionetMI      109       64           4                 23  3s            160Hz                      1
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+
     Physionet MI dataset: https://physionet.org/pn4/eegmmidb/
 
     This data set consists of over 1500 one- and two-minute EEG recordings,

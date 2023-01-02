@@ -677,6 +677,15 @@ class MNEBNCI(BaseDataset):
 class BNCI2014001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset.
 
+    .. note:: Meta-information about the dataset
+
+
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014001       10       22           4                144  4s            250Hz                      2
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+
     Dataset IIa from BCI Competition 4 [1]_.
 
     **Dataset Description**
@@ -732,6 +741,15 @@ class BNCI2014001(MNEBNCI):
 class BNCI2014002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset.
 
+    .. note:: Meta-information about the dataset
+
+
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014002       15       15           2                 80  5s            512Hz                      1
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+
     Motor Imagery Dataset from [1]_.
 
     **Dataset description**
@@ -785,6 +803,15 @@ class BNCI2014002(MNEBNCI):
 
 class BNCI2014004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset.
+
+    .. note:: Meta-information about the dataset
+
+
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014004       10        3           2                360  4.5s          250Hz                      5
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset B from BCI Competition 2008.
 
@@ -976,6 +1003,15 @@ class BNCI2014009(MNEBNCI):
 class BNCI2015001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset.
 
+    .. note:: Meta-information about the dataset
+
+
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2015001       13       13           2                200  5s            512Hz                      2
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+
     Dataset from [1]_.
 
     **Dataset description**
@@ -1058,6 +1094,15 @@ class BNCI2015003(MNEBNCI):
 
 class BNCI2015004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset.
+
+    .. note:: Meta-information about the dataset
+
+
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2015004       10       30           5                 80  7s            256Hz                      2
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from [1]_.
 

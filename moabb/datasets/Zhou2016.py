@@ -50,6 +50,15 @@ def local_data_path(base_path, subject):
 class Zhou2016(BaseDataset):
     """Motor Imagery dataset from Zhou et al 2016.
 
+    .. note:: Meta-information about the dataset
+
+
+        ========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name        #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ========  =======  =======  ==========  =================  ============  ===============  ===========
+        Zhou2016        4       14           3                160  5s            250Hz                      3
+        ========  =======  =======  ==========  =================  ============  ===============  ===========
+
     Dataset from the article *A Fully Automated Trial Selection Method for
     Optimization of Motor Imagery Based Brain-Computer Interface* [1]_.
     This dataset contains data recorded on 4 subjects performing 3 type of

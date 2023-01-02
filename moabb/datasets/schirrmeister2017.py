@@ -17,6 +17,15 @@ GIN_URL = (
 class Schirrmeister2017(BaseDataset):
     """High-gamma dataset discribed in Schirrmeister et al. 2017
 
+    .. note:: Meta-information about the dataset
+
+
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
+        Name                 #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
+        Schirrmeister2017       14      128           4                120  4s            500Hz                      1
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
+
     Dataset from [1]_
 
     Our “High-Gamma Dataset” is a 128-electrode dataset (of which we later only use

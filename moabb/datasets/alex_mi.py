@@ -14,6 +14,15 @@ ALEX_URL = "https://zenodo.org/record/806023/files/"
 class AlexMI(BaseDataset):
     """Alex Motor Imagery dataset.
 
+    .. note:: Meta-information about the dataset
+
+
+        ======  =======  =======  ==========  =================  ============  ===============  ===========
+        Name      #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ======  =======  =======  ==========  =================  ============  ===============  ===========
+        AlexMI        8       16           3                 20  3s            512Hz                      1
+        ======  =======  =======  ==========  =================  ============  ===============  ===========
+
     Motor imagery dataset from the PhD dissertation of A. Barachant [1]_.
 
     This Dataset contains EEG recordings from 8 subjects, performing 2 task of
