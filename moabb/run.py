@@ -102,7 +102,7 @@ if __name__ == "__main__":
         pipelines=options.pipelines,
         evaluations=options.evaluations,
         results=options.results,
-        force=options.force,
+        overwrite=options.force,
         output=options.output,
         n_jobs=options.threads,
         plot=options.plot,
