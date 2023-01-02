@@ -42,7 +42,7 @@ class TestBenchmark(unittest.TestCase):
         res = benchmark(
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
-            select_paradigms=["FakeImageryParadigm"],
+            paradigms=["FakeImageryParadigm"],
         )
         self.assertEqual(len(res), 40)
 

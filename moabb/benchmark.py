@@ -23,9 +23,9 @@ log = logging.getLogger(__name__)
 def benchmark(
     pipelines="./pipelines/",
     evaluations=None,
-    select_paradigms=None,
+    paradigms=None,
     results="./results/",
-    force=False,
+    overwrite=False,
     output="./benchmark/",
     n_jobs=-1,
     plot=False,
@@ -56,15 +56,15 @@ def benchmark(
     pipelines: str
         Folder containing the pipelines to evaluate
     evaluations: list of str
-        If to restrict the types of evaluations to be run. By default all 3 base types are run
+        If to restrict the types of evaluations to be run. By default, all 3 base types are run
         Can be a list of these elements ["WithinSession", "CrossSession", "CrossSubject"]
-    select_paradigms: list of str
+    paradigms: list of str
         To restrict the paradigms on which evaluations should be run.
         Can be a list of these elements ['LeftRightImagery', 'MotorImagery', 'FilterBankSSVEP', 'SSVEP',
         'FilterBankMotorImagery']
     results: str
         Folder to store the results
-    force: bool
+    overwrite: bool
         Force evaluation of cached pipelines
     output: str
         Folder to store the analysis results
@@ -112,21 +112,21 @@ def benchmark(
         with open(contexts, "r") as cfile:
             context_params = yaml.load(cfile.read(), Loader=yaml.FullLoader)
 
-    paradigms = generate_paradigms(pipeline_configs, context_params, log)
-    if select_paradigms is not None:
-        paradigms = {p: paradigms[p] for p in select_paradigms}
+    prdgms = generate_paradigms(pipeline_configs, context_params, log)
+    if paradigms is not None:
+        paradigms = {p: prdgms[p] for p in paradigms}
 
-    log.debug(f"The paradigms being run are {paradigms}")
+    log.debug(f"The paradigms being run are {prdgms.keys()}")
 
     if len(context_params) == 0:
-        for paradigm in paradigms:
+        for paradigm in prdgms:
             context_params[paradigm] = {}
 
     # Looping over the evaluations to be done
     df_eval = []
     for evaluation in evaluations:
         eval_results = dict()
-        for paradigm in paradigms:
+        for paradigm in prdgms:
             # get the context
             log.debug(f"{paradigm}: {context_params[paradigm]}")
             p = getattr(moabb_paradigms, paradigm)(**context_params[paradigm])
@@ -143,7 +143,7 @@ def benchmark(
                 random_state=42,
                 hdf5_path=results,
                 n_jobs=n_jobs,
-                overwrite=force,
+                overwrite=overwrite,
             )
             paradigm_results = context.process(pipelines=paradigms[paradigm])
             paradigm_results["paradigm"] = f"{paradigm}"
@@ -217,13 +217,13 @@ def _save_results(eval_results, output, plot):
     ----------
     eval_results: dict of DataFrame
         Results of benchmark for all considered paradigms
-    output: str
+    output: str or Path
         Folder to store the analysis results
     plot: bool
         Plot results after computing
     """
     for prdgm, prdgm_result in eval_results.items():
-        prdgm_path = output / prdgm
+        prdgm_path = Path(output) / prdgm
         if not osp.isdir(prdgm_path):
             prdgm_path.mkdir()
         analyze(prdgm_result, str(prdgm_path), plot=plot)
@@ -251,7 +251,7 @@ def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
 
     elif exclude_datasets is not None:
         d = datasets
-        # Assert if the inputs are not key_codes i.e expected to be dataset class objects
+        # Assert if the inputs are not key_codes i.e. expected to be dataset class objects
         if not isinstance(exclude_datasets[0], str):
             # Convert the input to key_codes
             exclude_datasets = [e.code for e in exclude_datasets]
