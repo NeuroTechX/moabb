@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Advanced examples &#8212; moabb 0.4.6 documentation</title>
+    <title>Simple examples &#8212; moabb 0.4.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
@@ -119,7 +119,8 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Advanced examples</a></li>
+<li><a class="reference internal" href="#">Simple examples</a></li>
+<li><a class="reference internal" href="#advanced-examples">Advanced examples</a></li>
 <li><a class="reference internal" href="#external-examples">External examples</a></li>
 <li><a class="reference internal" href="#evaluation-with-learning-curve">Evaluation with learning curve</a></li>
 </ul>
@@ -151,9 +152,19 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This is a minimal example to demonstrate how to change the default data download directory to a..."><img alt="Change Download Directory" src="../_images/sphx_glr_changing_download_directory_thumb.png" />
+  <section id="simple-examples">
+<h1>Simple examples<a class="headerlink" href="#simple-examples" title="Permalink to this heading">¶</a></h1>
+<p>These examples demonstrate how to use MOABB, and its main concepts the
+<code class="docutils literal notranslate"><span class="pre">dataset</span></code>, <code class="docutils literal notranslate"><span class="pre">paradigm</span></code> and <code class="docutils literal notranslate"><span class="pre">evaluation</span></code>. Those examples are using
+only a small number of subjects, and a small number of sessions, to
+keep the execution time short. In practice, you should use all the
+subjects and sessions available in the dataset.</p>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This is a minimal example to demonstrate how to change the default data download directory to a..."><img alt="Change Download Directory" src="../_images/sphx_glr_changing_download_directory_thumb.png" />
 <p><a class="reference internal" href="changing_download_directory.html#sphx-glr-auto-examples-changing-download-directory-py"><span class="std std-ref">Change Download Directory</span></a></p>
   <div class="sphx-glr-thumbnail-title">Change Download Directory</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use MOABB to benchmark a set of pipelines on all available datasets. ..."><img alt="Benchmarking with MOABB" src="../_images/sphx_glr_plot_benchmark_thumb.png" />
+<p><a class="reference internal" href="plot_benchmark.html#sphx-glr-auto-examples-plot-benchmark-py"><span class="std std-ref">Benchmarking with MOABB</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Benchmarking with MOABB</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example show how to perform a cross session motor imagery analysis on the very popular dat..."><img alt="Cross-Session Motor Imagery" src="../_images/sphx_glr_plot_cross_session_motor_imagery_thumb.png" />
 <p><a class="reference internal" href="plot_cross_session_motor_imagery.html#sphx-glr-auto-examples-plot-cross-session-motor-imagery-py"><span class="std std-ref">Cross-Session Motor Imagery</span></a></p>
   <div class="sphx-glr-thumbnail-title">Cross-Session Motor Imagery</div>
@@ -174,9 +185,10 @@
   <div class="sphx-glr-thumbnail-title">Within Session SSVEP</div>
 </div></div><div class="toctree-wrapper compound">
 </div>
+</section>
 <section id="advanced-examples">
 <h1>Advanced examples<a class="headerlink" href="#advanced-examples" title="Permalink to this heading">¶</a></h1>
-<p>These examples shows various advanced topics:</p>
+<p>These examples show various advanced topics:</p>
 <ul class="simple">
 <li><p>using scikit-learn pipeline with MNE inputs</p></li>
 <li><p>selecting electrodes or resampling signal</p></li>

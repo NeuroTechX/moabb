@@ -217,7 +217,6 @@ one of the sections below, or just scroll down to find out more.</p>
 <li><p><a class="reference external" href="#supported-datasets">Supported datasets</a></p></li>
 <li><p><a class="reference external" href="#who-are-we">Who are we?</a></p></li>
 <li><p><a class="reference external" href="#contact-us">Get in touch</a></p></li>
-<li><p><a class="reference external" href="#documentation">Documentation</a></p></li>
 <li><p><a class="reference external" href="#architecture-and-main-concepts">Architecture and main concepts</a></p></li>
 <li><p><a class="reference external" href="#citing-moabb-and-related-publications">Citing MOABB and related publications</a></p></li>
 </ul>
@@ -250,8 +249,8 @@ best and on which dataset.</p>
 <ul class="simple">
 <li><p>Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list
 of freely available EEG datasets.</p></li>
-<li><p>The code will be made available on github, serving as a reference point for the future
-algorithmic developments.</p></li>
+<li><p>The code is available on GitHub, serving as a reference point for the future algorithmic
+developments.</p></li>
 <li><p>Algorithms can be ranked and promoted on a website, providing a clear picture of the
 different solutions available in the field.</p></li>
 </ul>
@@ -310,6 +309,8 @@ can upgrade your pip version using: <code class="docutils literal notranslate"><
 <section id="id4">
 <h2>Supported datasets<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
 <p>The list of supported datasets can be found here : <a class="reference external" href="https://neurotechx.github.io/moabb/">https://neurotechx.github.io/moabb/</a></p>
+<p>Detailed information regarding datasets (electrodes, trials, sessions) are indicated on
+the wiki: <a class="reference external" href="https://github.com/NeuroTechX/moabb/wiki/Datasets-Support">https://github.com/NeuroTechX/moabb/wiki/Datasets-Support</a></p>
 <section id="submit-a-new-dataset">
 <h3>Submit a new dataset<a class="headerlink" href="#submit-a-new-dataset" title="Permalink to this heading">¶</a></h3>
 <p>you can submit a new dataset by mentioning it to this
@@ -351,12 +352,12 @@ in all interactions both on and offline.</p>
 <section id="contact-us">
 <h2>Contact us<a class="headerlink" href="#contact-us" title="Permalink to this heading">¶</a></h2>
 <p>If you want to report a problem or suggest an enhancement, we’d love for you to
-<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues">open an issue</a> at this github repository
+<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues">open an issue</a> at this GitHub repository
 because then we can get right on it.</p>
 <p>For a less formal discussion or exchanging ideas, you can also reach us on the <a class="reference external" href="https://gitter.im/moabb_dev/community">Gitter
 channel</a> or join our weekly office hours! This an open video meeting
 happening on a <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/191">regular basis</a>, please ask
-the link on the gitter channel. We are also on NeuroTechX slack channel
+the link on the gitter channel. We are also on NeuroTechX Slack channel
 <a class="reference external" href="https://neurotechx.com/">#moabb</a>.</p>
 </section>
 <section id="id7">
@@ -369,7 +370,7 @@ the workflow.</p>
 <h3>Datasets<a class="headerlink" href="#datasets" title="Permalink to this heading">¶</a></h3>
 <p>A dataset handles and abstracts low-level access to the data. The dataset will read data
 stored locally, in the format in which they have been downloaded, and will convert them
-into a MNE raw object. There are options to pool all the different recording sessions per
+into an MNE raw object. There are options to pool all the different recording sessions per
 subject or to evaluate them separately.</p>
 </section>
 <section id="paradigm">

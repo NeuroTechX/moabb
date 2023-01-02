@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Benchmarking with MOABB &#8212; moabb 0.4.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MOABB</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../whats_new.html">What's new</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="index.html">Gallery</a></li>
+                <li><a href="../auto_tutorials/index.html">Tutorials</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">MOABB <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#develop-branch">Develop branch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-6-stable-pypi">Version - 0.4.6  (Stable - PyPi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-5">Version - 0.4.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-4">Version - 0.4.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-3">Version - 0.4.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-3-0">Version 0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-2-1">Version 0.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-2-0">Version 0.2.0</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets.html#erp-datasets">ERP Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets.html#ssvep-datasets">SSVEP Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../evaluations.html">Evaluations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../evaluations.html#id1">Evaluations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../evaluations.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../paradigms.html">Paradigms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#motor-imagery-paradigms">Motor Imagery Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#p300-paradigms">P300 Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#ssvep-paradigms">SSVEP Paradigms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pipelines.html">Pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pipelines.html#id1">Pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pipelines.html#base-utils">Base &amp; Utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../analysis.html#plotting">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../analysis.html#statistics">Statistics</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Benchmarking with MOABB</a><ul>
+<li><a class="reference internal" href="#loading-the-pipelines">Loading the pipelines</a></li>
+<li><a class="reference internal" href="#selecting-the-datasets-optional">Selecting the datasets (optional)</a></li>
+<li><a class="reference internal" href="#running-the-benchmark">Running the benchmark</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-benchmark-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="benchmarking-with-moabb">
+<span id="sphx-glr-auto-examples-plot-benchmark-py"></span><h1>Benchmarking with MOABB<a class="headerlink" href="#benchmarking-with-moabb" title="Permalink to this heading">¶</a></h1>
+<p>This example shows how to use MOABB to benchmark a set of pipelines
+on all available datasets. For this example, we will use only one
+dataset to keep the computation time low, but this benchmark is designed
+to easily scale to many datasets.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Sylvain Chevallier &lt;sylvain.chevallier@universite-paris-saclay.fr&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">moabb</span> <span class="kn">import</span> <span class="n">benchmark</span><span class="p">,</span> <span class="n">set_log_level</span>
+<span class="kn">from</span> <span class="nn">moabb.analysis.plotting</span> <span class="kn">import</span> <span class="n">score_plot</span>
+<span class="kn">from</span> <span class="nn">moabb.paradigms</span> <span class="kn">import</span> <span class="n">LeftRightImagery</span>
+
+
+<span class="n">set_log_level</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="loading-the-pipelines">
+<h2>Loading the pipelines<a class="headerlink" href="#loading-the-pipelines" title="Permalink to this heading">¶</a></h2>
+<p>The ML pipelines used in benchmark are defined in YAML files, following a
+simple format. It simplifies sharing and reusing pipelines across benchmarks,
+reproducing state-of-the-art results.</p>
+<p>MOABB comes with complete list of pipelines that cover most of the sucessful
+approaches in the literature. You can find them in the
+<a class="reference external" href="https://github.com/NeuroTechX/moabb/tree/develop/pipelines">pipelines folder</a>.
+For this example, we will use a folder with only 2 pipelines, to keep the
+computation time low.</p>
+<p>This is an example of a pipeline defined in YAML, defining on which paradigms it
+can be used, the original publication, and the steps to perform using a
+scikit-learn API. In this case, a CSP + SVM pipeline, the covariance are estimated
+to compute a CSP filter and then a linear SVM is trained on the CSP filtered
+signals.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;sample_pipelines/CSP_SVM.yml&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f</span></a><span class="p">:</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lines</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f</span></a><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lines</span></a><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line</span></a><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>name: CSP + SVM
+paradigms:
+  - LeftRightImagery
+
+citations:
+  - https://doi.org/10.1007/BF01129656
+  - https://doi.org/10.1109/MSP.2008.4408441
+
+pipeline:
+  - name: Covariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: oas
+
+  - name: CSP
+    from: pyriemann.spatialfilters
+    parameters:
+      nfilter: 6
+
+  - name: SVC
+    from: sklearn.svm
+    parameters:
+      kernel: &quot;linear&quot;
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">sample_pipelines</span></code> folder contains a second pipeline, a logistic regression
+performed in the tangent space using Riemannian geometry.</p>
+</section>
+<section id="selecting-the-datasets-optional">
+<h2>Selecting the datasets (optional)<a class="headerlink" href="#selecting-the-datasets-optional" title="Permalink to this heading">¶</a></h2>
+<p>If you want to limit your benchmark on a subset of datasets, you can use the
+<code class="docutils literal notranslate"><span class="pre">include_datasets</span></code> and <code class="docutils literal notranslate"><span class="pre">exclude_datasets</span></code> arguments. You will need either
+to provide the dataset’s object, or a the dataset’s code. To get the list of
+available dataset’s code for a given paradigm, you can use the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paradigm</span> <span class="o">=</span> <span class="n">LeftRightImagery</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">d</span><span class="o">.</span><span class="n">code</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014
+004-2014
+Cho2017
+Lee2019_MI
+Grosse-Wentrup 2009
+Physionet Motor Imagery
+Schirrmeister2017
+Shin2017A
+Weibo 2014
+Zhou 2016
+</pre></div>
+</div>
+<p>In this example, we will use only the last dataset, ‘Zhou 2016’.</p>
+</section>
+<section id="running-the-benchmark">
+<h2>Running the benchmark<a class="headerlink" href="#running-the-benchmark" title="Permalink to this heading">¶</a></h2>
+<p>The benchmark is run using the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> function. You need to specify the
+folder containing the pipelines to use, the kind of evaluation and the paradigm
+to use. By default, the benchmark will use all available datasets for all
+paradigms listed in the pipelines. You could restrict to specific evaluation and
+paradigm using the <code class="docutils literal notranslate"><span class="pre">evaluations</span></code> and <code class="docutils literal notranslate"><span class="pre">paradigms</span></code> arguments.</p>
+<p>To save computation time, the results are cached. If you want to re-run the
+benchmark, you can set the <code class="docutils literal notranslate"><span class="pre">overwrite</span></code> argument to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>It is possible to indicate the folder to cache the results and the one to save
+the analysis &amp; figures. By default, the results are saved in the <code class="docutils literal notranslate"><span class="pre">results</span></code>
+folder, and the analysis &amp; figures are saved in the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> folder.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">benchmark</span><span class="p">(</span>
+    <span class="n">pipelines</span><span class="o">=</span><span class="s2">&quot;./sample_pipelines/&quot;</span><span class="p">,</span>
+    <span class="n">evaluations</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;WithinSession&quot;</span><span class="p">],</span>
+    <span class="n">paradigms</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;LeftRightImagery&quot;</span><span class="p">],</span>
+    <span class="n">include_datasets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Zhou 2016&quot;</span><span class="p">],</span>
+    <span class="n">results</span><span class="o">=</span><span class="s2">&quot;./results/&quot;</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">output</span><span class="o">=</span><span class="s2">&quot;./benchmark/&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-01-02 17:35:57,988 INFO MainThread moabb.evaluations.base Processing dataset: Zhou 2016
+
+Zhou 2016-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_data
+All datasets will be downloaded to this location, if anything is already downloaded, please move manually to this location
+/home/runner/work/moabb/moabb/moabb/datasets/download.py:53: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_ZHOU_PATH&quot;
+  set_config(key, get_config(&quot;MNE_DATA&quot;))
+
+
+  0%|                                               | 0.00/156M [00:00&lt;?, ?B/s]
+
+  0%|                                       | 52.2k/156M [00:00&lt;09:37, 271kB/s]
+
+  0%|                                        | 157k/156M [00:00&lt;06:06, 426kB/s]
+
+  0%|                                        | 328k/156M [00:00&lt;03:11, 813kB/s]
+
+  0%|▏                                      | 674k/156M [00:00&lt;01:36, 1.61MB/s]
+
+  1%|▎                                     | 1.25M/156M [00:00&lt;00:54, 2.86MB/s]
+
+  2%|▌                                     | 2.38M/156M [00:00&lt;00:28, 5.40MB/s]
+
+  3%|█▏                                    | 4.65M/156M [00:00&lt;00:14, 10.6MB/s]
+
+  4%|█▌                                    | 6.46M/156M [00:00&lt;00:11, 12.9MB/s]
+
+  6%|██                                    | 8.68M/156M [00:01&lt;00:09, 15.7MB/s]
+
+  7%|██▌                                   | 10.6M/156M [00:01&lt;00:08, 16.8MB/s]
+
+  9%|███▍                                  | 13.9M/156M [00:01&lt;00:06, 21.5MB/s]
+
+ 10%|███▉                                  | 16.2M/156M [00:01&lt;00:06, 22.1MB/s]
+
+ 12%|████▌                                 | 18.9M/156M [00:01&lt;00:05, 23.5MB/s]
+
+ 14%|█████▎                                | 21.8M/156M [00:01&lt;00:05, 25.0MB/s]
+
+ 16%|█████▉                                | 24.6M/156M [00:01&lt;00:05, 25.0MB/s]
+
+ 18%|██████▊                               | 27.8M/156M [00:01&lt;00:04, 27.0MB/s]
+
+ 20%|███████▌                              | 30.8M/156M [00:01&lt;00:04, 28.0MB/s]
+
+ 22%|████████▏                             | 33.8M/156M [00:02&lt;00:04, 28.4MB/s]
+
+ 23%|████████▉                             | 36.7M/156M [00:02&lt;00:04, 28.5MB/s]
+
+ 25%|█████████▌                            | 39.5M/156M [00:02&lt;00:04, 27.7MB/s]
+
+ 27%|██████████▍                           | 42.8M/156M [00:02&lt;00:03, 28.5MB/s]
+
+ 29%|███████████▏                          | 45.9M/156M [00:02&lt;00:03, 29.4MB/s]
+
+ 31%|███████████▉                          | 49.0M/156M [00:02&lt;00:03, 29.7MB/s]
+
+ 33%|████████████▋                         | 52.0M/156M [00:02&lt;00:03, 29.0MB/s]
+
+ 35%|█████████████▍                        | 55.1M/156M [00:02&lt;00:03, 29.7MB/s]
+
+ 37%|██████████████▏                       | 58.3M/156M [00:02&lt;00:03, 30.1MB/s]
+
+ 39%|██████████████▉                       | 61.3M/156M [00:02&lt;00:03, 30.3MB/s]
+
+ 41%|███████████████▋                      | 64.4M/156M [00:03&lt;00:03, 30.3MB/s]
+
+ 43%|████████████████▍                     | 67.4M/156M [00:03&lt;00:02, 30.2MB/s]
+
+ 45%|█████████████████▏                    | 70.4M/156M [00:03&lt;00:02, 29.9MB/s]
+
+ 47%|█████████████████▉                    | 73.5M/156M [00:03&lt;00:02, 30.1MB/s]
+
+ 49%|██████████████████▌                   | 76.5M/156M [00:03&lt;00:02, 30.1MB/s]
+
+ 51%|███████████████████▎                  | 79.5M/156M [00:03&lt;00:02, 29.2MB/s]
+
+ 53%|████████████████████                  | 82.7M/156M [00:03&lt;00:02, 29.8MB/s]
+
+ 55%|████████████████████▊                 | 85.6M/156M [00:03&lt;00:02, 29.7MB/s]
+
+ 57%|█████████████████████▌                | 88.6M/156M [00:03&lt;00:02, 29.7MB/s]
+
+ 59%|██████████████████████▎               | 91.7M/156M [00:03&lt;00:02, 30.0MB/s]
+
+ 61%|███████████████████████               | 94.7M/156M [00:04&lt;00:02, 29.6MB/s]
+
+ 63%|███████████████████████▊              | 97.7M/156M [00:04&lt;00:01, 29.7MB/s]
+
+ 64%|█████████████████████████▏             | 101M/156M [00:04&lt;00:01, 29.9MB/s]
+
+ 66%|█████████████████████████▉             | 104M/156M [00:04&lt;00:01, 29.7MB/s]
+
+ 68%|██████████████████████████▋            | 107M/156M [00:04&lt;00:01, 29.9MB/s]
+
+ 70%|███████████████████████████▍           | 110M/156M [00:04&lt;00:01, 28.9MB/s]
+
+ 72%|████████████████████████████▏          | 113M/156M [00:04&lt;00:01, 29.4MB/s]
+
+ 74%|████████████████████████████▉          | 116M/156M [00:04&lt;00:01, 29.9MB/s]
+
+ 76%|█████████████████████████████▋         | 119M/156M [00:04&lt;00:01, 30.0MB/s]
+
+ 78%|██████████████████████████████▍        | 122M/156M [00:04&lt;00:01, 30.0MB/s]
+
+ 80%|███████████████████████████████▏       | 125M/156M [00:05&lt;00:01, 30.0MB/s]
+
+ 82%|███████████████████████████████▉       | 128M/156M [00:05&lt;00:00, 30.0MB/s]
+
+ 84%|████████████████████████████████▋      | 131M/156M [00:05&lt;00:00, 30.1MB/s]
+
+ 86%|█████████████████████████████████▍     | 134M/156M [00:05&lt;00:00, 29.2MB/s]
+
+ 88%|██████████████████████████████████▏    | 137M/156M [00:05&lt;00:00, 29.0MB/s]
+
+ 90%|██████████████████████████████████▉    | 140M/156M [00:05&lt;00:00, 29.4MB/s]
+
+ 92%|███████████████████████████████████▋   | 143M/156M [00:05&lt;00:00, 29.4MB/s]
+
+ 94%|████████████████████████████████████▍  | 146M/156M [00:05&lt;00:00, 29.8MB/s]
+
+ 95%|█████████████████████████████████████▏ | 149M/156M [00:05&lt;00:00, 30.0MB/s]
+
+ 97%|█████████████████████████████████████▉ | 152M/156M [00:05&lt;00:00, 29.4MB/s]
+
+ 99%|██████████████████████████████████████▊| 155M/156M [00:06&lt;00:00, 29.9MB/s]
+
+  0%|                                               | 0.00/156M [00:00&lt;?, ?B/s]
+100%|████████████████████████████████████████| 156M/156M [00:00&lt;00:00, 185GB/s]
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/io/cnt/cnt.py:240: RuntimeWarning: overflow encountered in scalar multiply
+  data_size // (n_samples * n_channels) not in [2, 4]):
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+2023-01-02 17:36:13,068 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_0: Score 0.909
+2023-01-02 17:36:13,345 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_0: Score 0.860
+2023-01-02 17:36:13,709 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_1: Score 0.926
+2023-01-02 17:36:13,951 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_1: Score 0.924
+2023-01-02 17:36:14,301 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_2: Score 0.964
+2023-01-02 17:36:14,541 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_2: Score 0.954
+
+Zhou 2016-WithinSession:  25%|##5       | 1/4 [00:16&lt;00:49, 16.56s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/io/cnt/cnt.py:240: RuntimeWarning: overflow encountered in scalar multiply
+  data_size // (n_samples * n_channels) not in [2, 4]):
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+2023-01-02 17:36:17,744 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_0: Score 0.910
+2023-01-02 17:36:17,985 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_0: Score 0.916
+2023-01-02 17:36:18,338 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_1: Score 0.765
+2023-01-02 17:36:18,569 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_1: Score 0.753
+2023-01-02 17:36:18,937 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_2: Score 0.904
+2023-01-02 17:36:19,177 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_2: Score 0.906
+
+Zhou 2016-WithinSession:  50%|#####     | 2/4 [00:21&lt;00:19,  9.55s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/io/cnt/cnt.py:240: RuntimeWarning: overflow encountered in scalar multiply
+  data_size // (n_samples * n_channels) not in [2, 4]):
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+2023-01-02 17:36:22,431 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_0: Score 0.994
+2023-01-02 17:36:22,671 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_0: Score 0.972
+2023-01-02 17:36:23,019 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_1: Score 0.990
+2023-01-02 17:36:23,257 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_1: Score 0.980
+2023-01-02 17:36:23,628 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_2: Score 0.992
+2023-01-02 17:36:23,867 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_2: Score 0.990
+
+Zhou 2016-WithinSession:  75%|#######5  | 3/4 [00:25&lt;00:07,  7.33s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:102: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
+2023-01-02 17:36:26,763 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_0: Score 0.995
+2023-01-02 17:36:26,991 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_0: Score 0.993
+2023-01-02 17:36:27,370 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_1: Score 0.972
+2023-01-02 17:36:27,607 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_1: Score 0.972
+2023-01-02 17:36:27,981 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_2: Score 0.978
+2023-01-02 17:36:28,224 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_2: Score 0.968
+
+Zhou 2016-WithinSession: 100%|##########| 4/4 [00:30&lt;00:00,  6.15s/it]
+Zhou 2016-WithinSession: 100%|##########| 4/4 [00:30&lt;00:00,  7.56s/it]
+     dataset     evaluation          pipeline  avg score
+0  Zhou 2016  WithinSession         CSP + SVM   0.932315
+1  Zhou 2016  WithinSession  Tangent Space LR   0.941601
+</pre></div>
+</div>
+<p>Benchmark prints a summary of the results. Detailed results are saved in a
+pandas dataframe, and can be used to generate figures. The analysis &amp; figures
+are saved in the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> folder.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_plot</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_benchmark_001.png" srcset="../_images/sphx_glr_plot_benchmark_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-01-02 17:36:28,317 WARNING MainThread moabb.analysis.plotting Dataset names are too similar, turning off name shortening
+/home/runner/work/moabb/moabb/moabb/analysis/plotting.py:59: UserWarning: The palette list has more values (6) than needed (2), which may not be intended.
+  sea.stripplot(
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  30.549 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/5657e54b8c692376a881117a99de998e/plot_benchmark.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/225d2b2bd0960a1fa6a57be5e1838af9/plot_benchmark.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_benchmark.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/plot_benchmark.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2023 MOABB contributors.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -140,8 +140,8 @@ from 8 to 35 Hz.
 
  .. code-block:: none
 
-    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession: 100%|##########| 2/2 [00:00<00:00, 445.35it/s]
-    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession:  50%|#####     | 1/2 [00:05<00:05,  5.96s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:12<00:00,  6.13s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:12<00:00,  6.11s/it]
+    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession: 100%|##########| 2/2 [00:00<00:00, 377.44it/s]
+    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession:  50%|#####     | 1/2 [00:06<00:06,  6.71s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:13<00:00,  6.75s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:13<00:00,  6.75s/it]
 
 
 
@@ -224,7 +224,7 @@ points are in its quadrant.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  12.507 seconds)
+   **Total running time of the script:** ( 0 minutes  13.835 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_filterbank_csp_vs_csp.py:

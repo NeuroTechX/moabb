@@ -1,5 +1,13 @@
 :orphan:
 
+Simple examples
+-----------------
+
+These examples demonstrate how to use MOABB, and its main concepts the
+``dataset``, ``paradigm`` and ``evaluation``. Those examples are using
+only a small number of subjects, and a small number of sessions, to
+keep the execution time short. In practice, you should use all the
+subjects and sessions available in the dataset.
 
 
 
@@ -22,6 +30,23 @@
 .. raw:: html
 
       <div class="sphx-glr-thumbnail-title">Change Download Directory</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use MOABB to benchmark a set of pipelines on all available datasets. ...">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_benchmark_thumb.png
+    :alt: Benchmarking with MOABB
+
+  :ref:`sphx_glr_auto_examples_plot_benchmark.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Benchmarking with MOABB</div>
     </div>
 
 
@@ -136,6 +161,7 @@
    :hidden:
 
    /auto_examples/changing_download_directory
+   /auto_examples/plot_benchmark
    /auto_examples/plot_cross_session_motor_imagery
    /auto_examples/plot_cross_session_multiple_datasets
    /auto_examples/plot_cross_subject_ssvep
@@ -146,7 +172,7 @@
 Advanced examples
 -----------------
 
-These examples shows various advanced topics:
+These examples show various advanced topics:
 
 * using scikit-learn pipeline with MNE inputs
 * selecting electrodes or resampling signal

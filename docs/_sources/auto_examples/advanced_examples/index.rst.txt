@@ -5,7 +5,7 @@
 Advanced examples
 -----------------
 
-These examples shows various advanced topics:
+These examples show various advanced topics:
 
 * using scikit-learn pipeline with MNE inputs
 * selecting electrodes or resampling signal

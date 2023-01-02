@@ -110,12 +110,12 @@ First, let's take an example of the MotorImagery paradigm.
         tmin: float (default 0.0)
             Start time (in second) of the epoch, relative to the dataset specific
             task interval e.g. tmin = 1 would mean the epoch will start 1 second
-            after the begining of the task as defined by the dataset.
+            after the beginning of the task as defined by the dataset.
 
         tmax: float | None, (default None)
-            End time (in second) of the epoch, relative to the begining of the
+            End time (in second) of the epoch, relative to the beginning of the
             dataset specific task interval. tmax = 5 would mean the epoch will end
-            5 second after the begining of the task as defined in the dataset. If
+            5 second after the beginning of the task as defined in the dataset. If
             None, use the dataset value.
 
         baseline: None | tuple of length 2
@@ -529,7 +529,7 @@ corresponding to left- and right-hand motor imagination.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  16.213 seconds)
+   **Total running time of the script:** ( 0 minutes  17.737 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_explore_paradigm.py:
