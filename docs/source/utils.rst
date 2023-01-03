@@ -12,7 +12,7 @@ Benchmark
 
 .. autosummary::
     :toctree: generated/
-    :template: class.rst
+    :template: function.rst
 
     benchmark
 
@@ -22,6 +22,6 @@ Utils
 
 .. autosummary::
     :toctree: generated/
-    :template: class.rst
+    :template: function.rst
 
     set_log_level
