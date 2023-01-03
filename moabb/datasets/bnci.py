@@ -239,6 +239,9 @@ def _load_data_009_2014(
     event_id = {}
     for run in data:
         raw, ev = _convert_run_p300_sl(run, verbose=verbose)
+        # Raw EEG data are scaled by a factor 10.
+        # See https://github.com/NeuroTechX/moabb/issues/275
+        raw._data[:16, :] /= 10.0
         sess.append(raw)
         event_id.update(ev)
 
