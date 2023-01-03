@@ -5,8 +5,6 @@ on:
     branches: [master, develop]
   pull_request:
     branches: [master, develop]
-    paths:
-      - "docs/**"
 
 jobs:
   build_docs:

@@ -31,7 +31,7 @@ one of the sections below, or just scroll down to find out more.
 - [Installation](#installation)
 - [Running](#running)
 - [Supported datasets](#supported-datasets)
-- [Who are we? n](#who-are-we)
+- [Who are we?](#who-are-we)
 - [Get in touch](#contact-us)
 - [Documentation][link_moabb_docs]
 - [Architecture and main concepts](#architecture-and-main-concepts)
@@ -87,7 +87,7 @@ See [Troubleshooting](#Troubleshooting) section if you have a problem.
 You could fork or clone the repository and go to the downloaded directory, then run:
 
 1. install `poetry` (only once per machine):\
-   `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`\
+   `curl -sSL https://install.python-poetry.org | python3 -`\
    or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
    use [conda forge version](https://anaconda.org/conda-forge/poetry)
 1. (Optional, skip if not sure) Disable automatic environment creation:\

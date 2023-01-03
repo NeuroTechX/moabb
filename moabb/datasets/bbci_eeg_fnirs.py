@@ -185,6 +185,15 @@ class Shin2017(BaseDataset):
 class Shin2017A(Shin2017):
     """Motor Imagey Dataset from Shin et al 2017
 
+    .. admonition:: Dataset summary
+
+
+        =========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name         #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        =========  =======  =======  ==========  =================  ============  ===============  ===========
+        Shin2017A       29       30           2                 30  10s           200Hz                      3
+        =========  =======  =======  ==========  =================  ============  ===============  ===========
+
     Dataset from [1]_.
 
 
@@ -295,6 +304,15 @@ class Shin2017A(Shin2017):
 
 class Shin2017B(Shin2017):
     """Mental Arithmetic Dataset from Shin et al 2017
+
+    .. admonition:: Dataset summary
+
+
+        =========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name         #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        =========  =======  =======  ==========  =================  ============  ===============  ===========
+        Shin2017B       29       30           2                 30  10s           200Hz                      3
+        =========  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from [1]_.
 

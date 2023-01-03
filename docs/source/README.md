@@ -85,7 +85,7 @@ See [Troubleshooting](#Troubleshooting) section if you have a problem.
 You could fork or clone the repository and go to the downloaded directory, then run:
 
 1. install `poetry` (only once per machine):\
-   `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`\
+   `curl -sSL https://install.python-poetry.org | python3 -`\
    or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
    use [conda forge version](https://anaconda.org/conda-forge/poetry)
 1. (Optional, skip if not sure) Disable automatic environment creation:\
