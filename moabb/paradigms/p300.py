@@ -33,12 +33,12 @@ class BaseP300(BaseParadigm):
     tmin: float (default 0.0)
         Start time (in second) of the epoch, relative to the dataset specific
         task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the begining of the task as defined by the dataset.
+        after the beginning of the task as defined by the dataset.
 
     tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the begining of the
+        End time (in second) of the epoch, relative to the beginning of the
         dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the begining of the task as defined in the dataset. If
+        5 second after the beginning of the task as defined in the dataset. If
         None, use the dataset value.
 
     baseline: None | tuple of length 2
@@ -230,12 +230,12 @@ class SinglePass(BaseP300):
     tmin: float (default 0.0)
         Start time (in second) of the epoch, relative to the dataset specific
         task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the begining of the task as defined by the dataset.
+        after the beginning of the task as defined by the dataset.
 
     tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the begining of the
+        End time (in second) of the epoch, relative to the beginning of the
         dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the begining of the task as defined in the dataset. If
+        5 second after the beginning of the task as defined in the dataset. If
         None, use the dataset value.
 
     baseline: None | tuple of length 2
@@ -287,3 +287,6 @@ class FakeP300Paradigm(P300):
     @property
     def datasets(self):
         return [FakeDataset(["Target", "NonTarget"], paradigm="p300")]
+
+    def is_valid(self, dataset):
+        return True

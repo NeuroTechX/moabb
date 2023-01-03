@@ -29,12 +29,12 @@ class BaseMotorImagery(BaseParadigm):
     tmin: float (default 0.0)
         Start time (in second) of the epoch, relative to the dataset specific
         task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the begining of the task as defined by the dataset.
+        after the beginning of the task as defined by the dataset.
 
     tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the begining of the
+        End time (in second) of the epoch, relative to the beginning of the
         dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the begining of the task as defined in the dataset. If
+        5 second after the beginning of the task as defined in the dataset. If
         None, use the dataset value.
 
     baseline: None | tuple of length 2
@@ -129,12 +129,12 @@ class SinglePass(BaseMotorImagery):
     tmin: float (default 0.0)
         Start time (in second) of the epoch, relative to the dataset specific
         task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the begining of the task as defined by the dataset.
+        after the beginning of the task as defined by the dataset.
 
     tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the begining of the
+        End time (in second) of the epoch, relative to the beginning of the
         dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the begining of the task as defined in the dataset. If
+        5 second after the beginning of the task as defined in the dataset. If
         None, use the dataset value.
 
     baseline: None | tuple of length 2
@@ -322,12 +322,12 @@ class MotorImagery(SinglePass):
     tmin: float (default 0.0)
         Start time (in second) of the epoch, relative to the dataset specific
         task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the begining of the task as defined by the dataset.
+        after the beginning of the task as defined by the dataset.
 
     tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the begining of the
+        End time (in second) of the epoch, relative to the beginning of the
         dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the begining of the task as defined in the dataset. If
+        5 second after the beginning of the task as defined in the dataset. If
         None, use the dataset value.
 
     baseline: None | tuple of length 2
@@ -417,3 +417,6 @@ class FakeImageryParadigm(LeftRightImagery):
     @property
     def datasets(self):
         return [FakeDataset(["left_hand", "right_hand"], paradigm="imagery")]
+
+    def is_valid(self, dataset):
+        return True

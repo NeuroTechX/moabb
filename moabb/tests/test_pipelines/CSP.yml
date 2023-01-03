@@ -1,0 +1,15 @@
+name: FakePipeline
+paradigms:
+  - FakeImageryParadigm
+
+pipeline:
+  - name: Covariances
+    from: pyriemann.estimation
+
+  - name: CSP
+    from: pyriemann.spatialfilters
+
+  - name: LinearDiscriminantAnalysis
+    from: sklearn.discriminant_analysis
+    parameters:
+      solver: svd
