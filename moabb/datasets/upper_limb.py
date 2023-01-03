@@ -13,7 +13,7 @@ UPPER_LIMB_URL = "https://zenodo.org/record/834976/files/"
 class Ofner2017(BaseDataset):
     """Motor Imagery ataset from Ofner et al 2017.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         =========  =======  =======  ==========  =================  ============  ===============  ===========

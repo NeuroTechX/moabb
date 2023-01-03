@@ -14,7 +14,7 @@ ALEX_URL = "https://zenodo.org/record/806023/files/"
 class AlexMI(BaseDataset):
     """Alex Motor Imagery dataset.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ======  =======  =======  ==========  =================  ============  ===============  ===========

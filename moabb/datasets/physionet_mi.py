@@ -16,7 +16,7 @@ BASE_URL = "https://physionet.org/files/eegmmidb/1.0.0/"
 class PhysionetMI(BaseDataset):
     """Physionet Motor Imagery dataset.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ===========  =======  =======  ==========  =================  ============  ===============  ===========

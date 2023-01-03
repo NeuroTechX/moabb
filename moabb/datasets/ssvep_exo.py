@@ -14,7 +14,7 @@ SSVEPEXO_URL = "https://zenodo.org/record/2392979/files/"
 class SSVEPExo(BaseDataset):
     """SSVEP Exo dataset
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ========  =======  =======  ==========  =================  ===============  ===============  ===========

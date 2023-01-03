@@ -18,7 +18,7 @@ EPFLP300_URL = "http://documents.epfl.ch/groups/m/mm/mmspg/www/BCI/p300/"
 class EPFLP300(BaseDataset):
     """P300 dataset from Hoffmann et al 2008.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ========  =======  =======  =================  ===============  ===============  ===========

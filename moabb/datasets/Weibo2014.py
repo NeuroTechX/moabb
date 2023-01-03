@@ -64,7 +64,7 @@ def eeg_data_path(base_path, subject):
 class Weibo2014(BaseDataset):
     """Motor Imagery dataset from Weibo et al 2014.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         =========  =======  =======  ==========  =================  ============  ===============  ===========

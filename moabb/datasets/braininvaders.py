@@ -395,7 +395,7 @@ class bi2012(BaseDataset):
 class bi2013a(BaseDataset):
     """P300 dataset bi2013a from a "Brain Invaders" experiment
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         =======  =======  =======  =================  ===============  ===============  =================

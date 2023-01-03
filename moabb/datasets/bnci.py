@@ -677,7 +677,7 @@ class MNEBNCI(BaseDataset):
 class BNCI2014001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ===========  =======  =======  ==========  =================  ============  ===============  ===========
@@ -741,7 +741,7 @@ class BNCI2014001(MNEBNCI):
 class BNCI2014002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ===========  =======  =======  ==========  =================  ============  ===============  ===========
@@ -804,7 +804,7 @@ class BNCI2014002(MNEBNCI):
 class BNCI2014004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ===========  =======  =======  ==========  =================  ============  ===============  ===========
@@ -887,7 +887,7 @@ class BNCI2014004(MNEBNCI):
 class BNCI2014008(MNEBNCI):
     """BNCI 2014-008 P300 dataset
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ===========  =======  =======  =================  ===============  ===============  ===========
@@ -958,7 +958,7 @@ class BNCI2014008(MNEBNCI):
 class BNCI2014009(MNEBNCI):
     """BNCI 2014-009 P300 dataset.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ===========  =======  =======  =================  ===============  ===============  ===========
@@ -1021,7 +1021,7 @@ class BNCI2014009(MNEBNCI):
 class BNCI2015001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ===========  =======  =======  ==========  =================  ============  ===============  ===========
@@ -1078,7 +1078,7 @@ class BNCI2015001(MNEBNCI):
 class BNCI2015003(MNEBNCI):
     """BNCI 2015-003 P300 dataset.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ===========  =======  =======  =================  ===============  ===============  ===========
@@ -1122,7 +1122,7 @@ class BNCI2015003(MNEBNCI):
 class BNCI2015004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ===========  =======  =======  ==========  =================  ============  ===============  ===========

@@ -22,7 +22,7 @@ NAKAHISHI_URL = "https://github.com/mnakanishi/12JFPM_SSVEP/raw/master/data/"
 class Nakanishi2015(BaseDataset):
     """SSVEP Nakanishi 2015 dataset
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         =============  =======  =======  ==========  =================  ===============  ===============  ===========

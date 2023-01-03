@@ -229,7 +229,7 @@ class Lee2019(BaseDataset):
 class Lee2019_MI(Lee2019):
     """BMI/OpenBMI dataset for MI.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ==========  =======  =======  ==========  =================  ============  ===============  ===========
@@ -299,7 +299,7 @@ class Lee2019_MI(Lee2019):
 class Lee2019_ERP(Lee2019):
     """BMI/OpenBMI dataset for P300.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ===========  =======  =======  =================  ===============  ===============  ===========
@@ -389,7 +389,7 @@ class Lee2019_ERP(Lee2019):
 class Lee2019_SSVEP(Lee2019):
     """BMI/OpenBMI dataset for SSVEP.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         =============  =======  =======  ==========  =================  ===============  ===============  ===========

@@ -17,7 +17,7 @@ GIN_URL = (
 class Schirrmeister2017(BaseDataset):
     """High-gamma dataset discribed in Schirrmeister et al. 2017
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         =================  =======  =======  ==========  =================  ============  ===============  ===========

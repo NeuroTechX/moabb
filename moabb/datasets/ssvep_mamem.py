@@ -169,7 +169,7 @@ class BaseMAMEM(BaseDataset):
 class MAMEM1(BaseMAMEM):
     """SSVEP MAMEM 1 dataset
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ======  =======  =======  ==========  =================  ===============  ===============  ===========
@@ -289,7 +289,7 @@ class MAMEM1(BaseMAMEM):
 class MAMEM2(BaseMAMEM):
     """SSVEP MAMEM 2 dataset
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ======  =======  =======  ==========  =================  ===============  ===============  ===========
@@ -382,7 +382,7 @@ class MAMEM2(BaseMAMEM):
 class MAMEM3(BaseMAMEM):
     """SSVEP MAMEM 3 dataset
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ======  =======  =======  ==========  =================  ===============  ===============  ===========

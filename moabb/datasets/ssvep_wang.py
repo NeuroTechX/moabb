@@ -24,7 +24,7 @@ WANG_URL = "ftp://sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
 class Wang2016(BaseDataset):
     """SSVEP Wang 2016 dataset
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ========  =======  =======  ==========  =================  ===============  ===============  ===========

@@ -50,7 +50,7 @@ def local_data_path(base_path, subject):
 class Zhou2016(BaseDataset):
     """Motor Imagery dataset from Zhou et al 2016.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ========  =======  =======  ==========  =================  ============  ===============  ===========

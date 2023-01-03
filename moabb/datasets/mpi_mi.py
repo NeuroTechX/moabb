@@ -15,7 +15,7 @@ DOWNLOAD_URL = "https://zenodo.org/record/1217449/files/"
 class MunichMI(BaseDataset):
     """Munich Motor Imagery dataset.
 
-    .. note:: Meta-information about the dataset
+    .. admonition:: Dataset summary
 
 
         ========  =======  =======  ==========  =================  ============  ===============  ===========
