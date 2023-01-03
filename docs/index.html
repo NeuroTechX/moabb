@@ -47,6 +47,7 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="whats_new.html">What's new</a></li>
+                <li><a href="dataset_summary.html">Datasets</a></li>
                 <li><a href="api.html">API</a></li>
                 <li><a href="auto_examples/index.html">Gallery</a></li>
                 <li><a href="auto_tutorials/index.html">Tutorials</a></li>
@@ -162,7 +163,25 @@
 <li><a class="reference internal" href="#thank-you">Thank You</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#what-s-new">What’s new</a></li>
+<li><a class="reference internal" href="#contributing">Contributing</a><ul>
+<li><a class="reference internal" href="#where-to-start">Where to start</a><ul>
+<li><a class="reference internal" href="#id10">Code of Conduct</a></li>
+<li><a class="reference internal" href="#contributing-on-github">Contributing on Github</a></li>
+<li><a class="reference internal" href="#community">Community</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-can-i-contribute">How can I contribute?</a><ul>
+<li><a class="reference internal" href="#steps-to-contribute">Steps to Contribute</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id16">Setup development environment</a><ul>
+<li><a class="reference internal" href="#tools-used">Tools used</a></li>
+<li><a class="reference internal" href="#generate-the-documentation">Generate the documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id19">What’s new</a></li>
 <li><a class="reference internal" href="#public-api">Public API</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
@@ -273,7 +292,7 @@ state of the art by 5% …”.</p>
 <h3>Manual installation<a class="headerlink" href="#manual-installation" title="Permalink to this heading">¶</a></h3>
 <p>You could fork or clone the repository and go to the downloaded directory, then run:</p>
 <ol class="arabic simple">
-<li><p>install <code class="docutils literal notranslate"><span class="pre">poetry</span></code> (only once per machine):<code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-sSL</span> <span class="pre">https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py</span> <span class="pre">|</span> <span class="pre">python</span> <span class="pre">-</span></code>or <a class="reference external" href="https://python-poetry.org/docs/#installation">checkout installation instruction</a> or
+<li><p>install <code class="docutils literal notranslate"><span class="pre">poetry</span></code> (only once per machine):<code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-sSL</span> <span class="pre">https://install.python-poetry.org</span> <span class="pre">|</span> <span class="pre">python3</span> <span class="pre">-</span></code>or <a class="reference external" href="https://python-poetry.org/docs/#installation">checkout installation instruction</a> or
 use <a class="reference external" href="https://anaconda.org/conda-forge/poetry">conda forge version</a></p></li>
 <li><p>(Optional, skip if not sure) Disable automatic environment creation:<code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">config</span> <span class="pre">virtualenvs.create</span> <span class="pre">false</span></code></p></li>
 <li><p>install all dependencies in one command (have to be run in the project directory):<code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span></code></p></li>
@@ -431,8 +450,104 @@ that you’ll join us on this amazing journey to build a comprehensive benchmark
 BCI algorithms applied on an extensive list of freely available EEG datasets.</p>
 </section>
 </section>
-<section id="what-s-new">
-<h1>What’s new<a class="headerlink" href="#what-s-new" title="Permalink to this heading">¶</a></h1>
+<section id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this heading">¶</a></h1>
+<p>Contributions are always welcome, no matter how small.</p>
+<p>The following is a small set of guidelines for how to contribute to the project</p>
+<section id="where-to-start">
+<h2>Where to start<a class="headerlink" href="#where-to-start" title="Permalink to this heading">¶</a></h2>
+<section id="id10">
+<h3>Code of Conduct<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h3>
+<p>This project adheres to the Contributor Covenant <a class="reference external" href="CODE_OF_CONDUCT.md">Code of Conduct</a>. By
+participating you are expected to adhere to these expectations. Please report unacceptable
+behavior to <a class="reference external" href="mailto:hi&#37;&#52;&#48;pushtheworld&#46;us">hi<span>&#64;</span>pushtheworld<span>&#46;</span>us</a></p>
+</section>
+<section id="contributing-on-github">
+<h3>Contributing on Github<a class="headerlink" href="#contributing-on-github" title="Permalink to this heading">¶</a></h3>
+<p>If you’re new to Git and want to learn how to fork this repo, make your own additions, and
+include those additions in the master version of this project, check out this
+<a class="reference external" href="http://blog.davidecoppola.com/2016/11/howto-contribute-to-open-source-project-on-github/">great tutorial</a>.</p>
+</section>
+<section id="community">
+<h3>Community<a class="headerlink" href="#community" title="Permalink to this heading">¶</a></h3>
+<p>This project is maintained by the <a class="reference external" href="www.neurotechx.com">NeuroTechX</a> community. Join the
+<a class="reference external" href="https://gitter.im/moabb_dev/community">Gitter</a>, where discussions about MOABB takes
+place.</p>
+</section>
+</section>
+<section id="how-can-i-contribute">
+<h2>How can I contribute?<a class="headerlink" href="#how-can-i-contribute" title="Permalink to this heading">¶</a></h2>
+<p>If there’s a feature you’d be interested in building or you find a bug or have a
+suggestion on how to improve the project, go ahead! Let us know on the
+<a class="reference external" href="https://gitter.im/moabb_dev/community">Gitter</a> or <a class="reference external" href="../../issues">open an issue</a> so others
+can follow along and we’ll support you as much as we can. When you’re finished submit a
+pull request to the master branch referencing the specific issue you addressed.</p>
+<section id="steps-to-contribute">
+<h3>Steps to Contribute<a class="headerlink" href="#steps-to-contribute" title="Permalink to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Look for open issues or open one</p></li>
+<li><p>Discuss the problem and or propose a solution</p></li>
+<li><p>Fork it! (and clone fork locally)</p></li>
+<li><p>Branch from <code class="docutils literal notranslate"><span class="pre">develop</span></code>: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">--track</span> <span class="pre">develop</span></code></p></li>
+<li><p><a class="reference external" href="#setup-development-environment">Setup development environment</a></p></li>
+<li><p>Create your feature branch: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">-b</span> <span class="pre">my-new-feature</span></code></p></li>
+<li><p>Make changes</p></li>
+<li><p>Commit your changes: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span> <span class="pre">-m</span> <span class="pre">'Add</span> <span class="pre">some</span> <span class="pre">feature'</span></code></p></li>
+<li><p>Don’t forget to fix issues from <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> pipeline (either add changes made by hooks
+or fix them manually in case of <code class="docutils literal notranslate"><span class="pre">flake8</span></code>)</p></li>
+<li><p>Push to the branch: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">my-new-feature</span></code></p></li>
+<li><p>Submit a pull request. Make sure it is based on the <code class="docutils literal notranslate"><span class="pre">develop</span></code> branch when submitting!
+:D</p></li>
+<li><p>Don’t forget to update the
+<a class="reference external" href="http://moabb.neurotechx.com/docs/whats_new.html">what’s new</a> and
+<a class="reference external" href="http://moabb.neurotechx.com/docs/index.html">documentation</a> pages if needed</p></li>
+</ol>
+</section>
+</section>
+<section id="id16">
+<h2>Setup development environment<a class="headerlink" href="#id16" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>install <code class="docutils literal notranslate"><span class="pre">poetry</span></code> (only once per machine):<code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-sSL</span> <span class="pre">https://install.python-poetry.org</span> <span class="pre">|</span> <span class="pre">python3</span> <span class="pre">-</span></code>or <a class="reference external" href="https://python-poetry.org/docs/#installation">checkout installation instruction</a> or
+use <a class="reference external" href="https://anaconda.org/conda-forge/poetry">conda forge version</a></p></li>
+<li><p>(Optional, skip if not sure) Disable automatic environment creation:<code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">config</span> <span class="pre">virtualenvs.create</span> <span class="pre">false</span></code></p></li>
+<li><p>install all dependencies in one command (have to be run in thibe project directory):<code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span></code></p></li>
+<li><p>install <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> hooks to git repo:<code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">install</span></code></p></li>
+<li><p>you are ready to code!</p></li>
+</ol>
+<p><em>Note 1:</em>Your first commit will trigger <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> to download <a class="reference external" href="#tools-used">Code Quality tools</a>.
+That’s OK and it is intended behavior. This will be done once per machine automatically.</p>
+<p><em>Note 2:</em>By default <code class="docutils literal notranslate"><span class="pre">poetry</span></code> creates separate Python virtual environment for every project (<a class="reference external" href="https://python-poetry.org/docs/managing-environments/">more details in documentation</a>).
+If you use <code class="docutils literal notranslate"><span class="pre">conda</span></code> or any other way to manage different environments by hand - you need to
+disable <code class="docutils literal notranslate"><span class="pre">poetry</span></code> environment creation. Also in this case be careful with version of Python
+in your environment - it has to satisfy requirements stated in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>. In case you
+disable <code class="docutils literal notranslate"><span class="pre">poetry</span></code> you are in charge of this.</p>
+<section id="tools-used">
+<h3>Tools used<a class="headerlink" href="#tools-used" title="Permalink to this heading">¶</a></h3>
+<p>MOABB uses <a class="reference external" href="https://python-poetry.org/">poetry</a> for dependency management. This tool
+enables one to have a reproducible environment on all popular OS (Linux, MacOS and
+Windows) and provides easy publishing pipeline.</p>
+<p>Another tool that makes development more stable is <a class="reference external" href="https://pre-commit.com/">pre-commit</a>.
+It automatically runs variety of Code Quality instruments against the code you produced.</p>
+<p>For Code Quality verification, we use:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/psf/black">black</a> - Python code formatting</p></li>
+<li><p><a class="reference external" href="https://github.com/timothycrosley/isort">isort</a> - imports sorting and grouping</p></li>
+<li><p><a class="reference external" href="https://gitlab.com/pycqa/flake8">flake8</a> - code style checking</p></li>
+<li><p><a class="reference external" href="https://github.com/prettier/prettier">prettier</a> - <code class="docutils literal notranslate"><span class="pre">.yml</span></code> and <code class="docutils literal notranslate"><span class="pre">.md</span></code> files formatting</p></li>
+</ul>
+</section>
+<section id="generate-the-documentation">
+<h3>Generate the documentation<a class="headerlink" href="#generate-the-documentation" title="Permalink to this heading">¶</a></h3>
+<p>To generate a local version of the documentation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">docs</span>
+<span class="n">make</span> <span class="n">html</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="id19">
+<h1>What’s new<a class="headerlink" href="#id19" title="Permalink to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="whats_new.html">What’s new</a><ul>

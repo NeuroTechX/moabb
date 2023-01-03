@@ -48,6 +48,7 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="../whats_new.html">What's new</a></li>
+                <li><a href="../dataset_summary.html">Datasets</a></li>
                 <li><a href="../api.html">API</a></li>
                 <li><a href="../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../auto_tutorials/index.html">Tutorials</a></li>
@@ -161,8 +162,33 @@
 <h1>moabb.datasets.bi2013a<a class="headerlink" href="#moabb-datasets-bi2013a" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.bi2013a">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">bi2013a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">NonAdaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Online</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L395-L485"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.bi2013a" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">bi2013a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">NonAdaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Online</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L395-L494"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.bi2013a" title="Permalink to this definition">¶</a></dt>
 <dd><p>P300 dataset bi2013a from a “Brain Invaders” experiment</p>
+<div class="admonition-dataset-summary admonition">
+<p class="admonition-title">Dataset summary</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>#Subj</p></th>
+<th class="head"><p>#Chan</p></th>
+<th class="head"><p>#Trials / class</p></th>
+<th class="head"><p>Trials length</p></th>
+<th class="head"><p>Sampling rate</p></th>
+<th class="head"><p>#Sessions</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>bi2013a</p></td>
+<td><p>24</p></td>
+<td><p>16</p></td>
+<td><p>3200 NT / 640 T</p></td>
+<td><p>1s</p></td>
+<td><p>512Hz</p></td>
+<td><p>(1-7)8 s|(8-24)1s</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>Dataset following the setup from <a class="reference internal" href="#rf8e422a08da4-1" id="id1">[1]</a> carried-out at University of
 Grenoble Alpes.</p>
 <p>This dataset concerns an experiment carried out at GIPSA-lab
@@ -253,7 +279,7 @@ OpenViBE platform. Proc. IBCI Conf., Graz, Austria, 280-283.</p>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.bi2013a.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L482-L485"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.bi2013a.data_path" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L491-L494"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.bi2013a.data_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

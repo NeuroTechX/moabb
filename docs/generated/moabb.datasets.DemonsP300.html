@@ -48,6 +48,7 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="../whats_new.html">What's new</a></li>
+                <li><a href="../dataset_summary.html">Datasets</a></li>
                 <li><a href="../api.html">API</a></li>
                 <li><a href="../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../auto_tutorials/index.html">Tutorials</a></li>
@@ -162,8 +163,33 @@
 <h1>moabb.datasets.DemonsP300<a class="headerlink" href="#moabb-datasets-demonsp300" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.DemonsP300">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">DemonsP300</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/neiry.py#L14-L193"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.DemonsP300" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">DemonsP300</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/neiry.py#L14-L202"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.DemonsP300" title="Permalink to this definition">¶</a></dt>
 <dd><p>Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons versus Demons.</p>
+<div class="admonition-dataset-summary admonition">
+<p class="admonition-title">Dataset summary</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>#Subj</p></th>
+<th class="head"><p>#Chan</p></th>
+<th class="head"><p>#Trials / class</p></th>
+<th class="head"><p>Trials length</p></th>
+<th class="head"><p>Sampling rate</p></th>
+<th class="head"><p>#Sessions</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>DemonsP300</p></td>
+<td><p>60</p></td>
+<td><p>8</p></td>
+<td><p>935 NT / 50 T</p></td>
+<td><p>1s</p></td>
+<td><p>500Hz</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
 <p>This dataset contains major unresolved issues and could removed in the near futur. Use it in a benchmark
@@ -237,7 +263,7 @@ ISBN 978-5-7417-0757-9
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.DemonsP300.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/neiry.py#L178-L193"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.DemonsP300.data_path" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/neiry.py#L187-L202"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.DemonsP300.data_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -268,7 +294,7 @@ list of length one, for compatibility.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.DemonsP300.read_hdf">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.24)"><span class="pre">ndarray</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/neiry.py#L123-L139"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.DemonsP300.read_hdf" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.24)"><span class="pre">ndarray</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/neiry.py#L132-L148"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.DemonsP300.read_hdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads data from HDF file</p>
 <dl class="simple">
 <dt>Returns:</dt><dd><p>array of <cite>_act_dtype</cite></p>

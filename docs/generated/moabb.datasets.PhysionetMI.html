@@ -48,6 +48,7 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="../whats_new.html">What's new</a></li>
+                <li><a href="../dataset_summary.html">Datasets</a></li>
                 <li><a href="../api.html">API</a></li>
                 <li><a href="../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../auto_tutorials/index.html">Tutorials</a></li>
@@ -161,8 +162,35 @@
 <h1>moabb.datasets.PhysionetMI<a class="headerlink" href="#moabb-datasets-physionetmi" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.PhysionetMI">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">PhysionetMI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imagined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/physionet_mi.py#L16-L173"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.PhysionetMI" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">PhysionetMI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imagined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/physionet_mi.py#L16-L182"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.PhysionetMI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Physionet Motor Imagery dataset.</p>
+<div class="admonition-dataset-summary admonition">
+<p class="admonition-title">Dataset summary</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>#Subj</p></th>
+<th class="head"><p>#Chan</p></th>
+<th class="head"><p>#Classes</p></th>
+<th class="head"><p>#Trials / class</p></th>
+<th class="head"><p>Trials len</p></th>
+<th class="head"><p>Sampling rate</p></th>
+<th class="head"><p>#Sessions</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PhysionetMI</p></td>
+<td><p>109</p></td>
+<td><p>64</p></td>
+<td><p>4</p></td>
+<td><p>23</p></td>
+<td><p>3s</p></td>
+<td><p>160Hz</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>Physionet MI dataset: <a class="reference external" href="https://physionet.org/pn4/eegmmidb/">https://physionet.org/pn4/eegmmidb/</a></p>
 <p>This data set consists of over 1500 one- and two-minute EEG recordings,
 obtained from 109 volunteers <a class="reference internal" href="#r144e24d9faf5-2" id="id1">[2]</a>.</p>
@@ -229,7 +257,7 @@ resource for complex physiologic signals Circulation 2000 Volume
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.PhysionetMI.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/physionet_mi.py#L144-L155"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.PhysionetMI.data_path" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/physionet_mi.py#L153-L164"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.PhysionetMI.data_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

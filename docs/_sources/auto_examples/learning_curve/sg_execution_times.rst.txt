@@ -5,10 +5,10 @@
 
 Computation times
 =================
-**01:01.010** total execution time for **auto_examples_learning_curve** files:
+**00:39.345** total execution time for **auto_examples_learning_curve** files:
 
 +------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_learning_curve_plot_learning_curve_p300.py` (``plot_learning_curve_p300.py``)                   | 00:42.619 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_learning_curve_plot_learning_curve_p300.py` (``plot_learning_curve_p300.py``)                   | 00:26.488 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_learning_curve_plot_learning_curve_motor_imagery.py` (``plot_learning_curve_motor_imagery.py``) | 00:18.391 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_learning_curve_plot_learning_curve_motor_imagery.py` (``plot_learning_curve_motor_imagery.py``) | 00:12.857 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
