@@ -232,6 +232,7 @@ html_theme_options = {
     # an arbitrary url.
     "navbar_links": [
         ("What's new", "whats_new"),
+        ("Datasets", "dataset_summary"),
         ("API", "api"),
         ("Gallery", "auto_examples/index"),
         ("Tutorials", "auto_tutorials/index"),
