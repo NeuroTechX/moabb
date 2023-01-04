@@ -210,7 +210,7 @@ paradigm (note that BNCI2014001 is in it)
 
  .. code-block:: none
 
-    [<moabb.datasets.bnci.BNCI2014001 object at 0x7f750c340340>, <moabb.datasets.bnci.BNCI2014004 object at 0x7f750c340af0>, <moabb.datasets.gigadb.Cho2017 object at 0x7f750c340940>, <moabb.datasets.Lee2019.Lee2019_MI object at 0x7f750c340610>, <moabb.datasets.mpi_mi.MunichMI object at 0x7f750c340640>, <moabb.datasets.physionet_mi.PhysionetMI object at 0x7f750c340a30>, <moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f750c340fa0>, <moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f750c340670>, <moabb.datasets.Weibo2014.Weibo2014 object at 0x7f750c3407f0>, <moabb.datasets.Zhou2016.Zhou2016 object at 0x7f750c3403a0>]
+    [<moabb.datasets.bnci.BNCI2014001 object at 0x7f52d5c59850>, <moabb.datasets.bnci.BNCI2014004 object at 0x7f52d5c59f70>, <moabb.datasets.gigadb.Cho2017 object at 0x7f52d5c59190>, <moabb.datasets.Lee2019.Lee2019_MI object at 0x7f52d5c59c10>, <moabb.datasets.mpi_mi.MunichMI object at 0x7f52d5c59c40>, <moabb.datasets.physionet_mi.PhysionetMI object at 0x7f52d5c59400>, <moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f52d5c59a90>, <moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f52d5c59130>, <moabb.datasets.Weibo2014.Weibo2014 object at 0x7f52d5c592e0>, <moabb.datasets.Zhou2016.Zhou2016 object at 0x7f52d5c590d0>]
 
 
 
@@ -315,7 +315,7 @@ We obtain the results in the form of a pandas dataframe
 
  .. code-block:: none
 
-    001-2014-WithinSession:   0%|          | 0/3 [00:00<?, ?it/s]    001-2014-WithinSession:  33%|###3      | 1/3 [00:05<00:11,  5.67s/it]    001-2014-WithinSession:  67%|######6   | 2/3 [00:11<00:05,  5.72s/it]    001-2014-WithinSession: 100%|##########| 3/3 [00:17<00:00,  5.70s/it]    001-2014-WithinSession: 100%|##########| 3/3 [00:17<00:00,  5.70s/it]
+    001-2014-WithinSession:   0%|          | 0/3 [00:00<?, ?it/s]    001-2014-WithinSession:  33%|###3      | 1/3 [00:07<00:14,  7.07s/it]    001-2014-WithinSession:  67%|######6   | 2/3 [00:13<00:06,  6.95s/it]    001-2014-WithinSession: 100%|##########| 3/3 [00:20<00:00,  6.98s/it]    001-2014-WithinSession: 100%|##########| 3/3 [00:20<00:00,  6.98s/it]
 
 
 
@@ -394,7 +394,7 @@ strings for its labeling. This is why we create the field 'subj'.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  22.286 seconds)
+   **Total running time of the script:** ( 0 minutes  27.114 seconds)
 
 
 .. _sphx_glr_download_auto_tutorials_tutorial_1_simple_example_motor_imagery.py:

@@ -132,14 +132,14 @@ a sampling rate of 200 Hz.
 
  .. code-block:: none
 
-    Zhou 2016-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:02<00:02,  2.99s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:05<00:00,  2.61s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:05<00:00,  2.66s/it]
-    001-2014-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-WithinSession:  50%|#####     | 1/2 [00:02<00:02,  2.86s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:05<00:00,  2.86s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:05<00:00,  2.86s/it]
+    Zhou 2016-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:04<00:04,  4.31s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:07<00:00,  3.63s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:07<00:00,  3.73s/it]
+    001-2014-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-WithinSession:  50%|#####     | 1/2 [00:03<00:03,  3.68s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:07<00:00,  3.72s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:07<00:00,  3.71s/it]
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.859184  0.020368    144.0  ...          2   001-2014     ts+lr
-    1  0.871361  0.019976    144.0  ...          2   001-2014     ts+lr
-    2  0.476122  0.020528    144.0  ...          2   001-2014     ts+lr
-    3  0.564422  0.019605    144.0  ...          2   001-2014     ts+lr
-    4  0.845455  0.017986    119.0  ...          3  Zhou 2016     ts+lr
+    0  0.851429  0.036560    144.0  ...          2   001-2014     ts+lr
+    1  0.836667  0.041912    144.0  ...          2   001-2014     ts+lr
+    2  0.529456  0.044455    144.0  ...          2   001-2014     ts+lr
+    3  0.513265  0.034418    144.0  ...          2   001-2014     ts+lr
+    4  0.840657  0.034544    119.0  ...          3  Zhou 2016     ts+lr
 
     [5 rows x 9 columns]
 
@@ -178,14 +178,14 @@ as well as the list of datasets with valid channels.
 
     Searching dataset: Zhou2016
     Searching dataset: BNCI2014001
-    Zhou 2016-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:02<00:02,  3.00s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:05<00:00,  2.61s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:05<00:00,  2.67s/it]
-    001-2014-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-WithinSession:  50%|#####     | 1/2 [00:02<00:02,  2.86s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:05<00:00,  2.86s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:05<00:00,  2.86s/it]
+    Zhou 2016-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:04<00:04,  4.16s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:07<00:00,  3.57s/it]    Zhou 2016-WithinSession: 100%|##########| 2/2 [00:07<00:00,  3.66s/it]
+    001-2014-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-WithinSession:  50%|#####     | 1/2 [00:03<00:03,  3.81s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:07<00:00,  3.82s/it]    001-2014-WithinSession: 100%|##########| 2/2 [00:07<00:00,  3.82s/it]
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.860476  0.020148    144.0  ...          2   001-2014     ts+lr
-    1  0.865034  0.019946    144.0  ...          2   001-2014     ts+lr
-    2  0.511088  0.020638    144.0  ...          2   001-2014     ts+lr
-    3  0.534694  0.020013    144.0  ...          2   001-2014     ts+lr
-    4  0.849242  0.018162    119.0  ...          3  Zhou 2016     ts+lr
+    0  0.856191  0.036230    144.0  ...          2   001-2014     ts+lr
+    1  0.863605  0.041607    144.0  ...          2   001-2014     ts+lr
+    2  0.522381  0.044200    144.0  ...          2   001-2014     ts+lr
+    3  0.577143  0.038132    144.0  ...          2   001-2014     ts+lr
+    4  0.855303  0.040904    119.0  ...          3  Zhou 2016     ts+lr
 
     [5 rows x 9 columns]
 
@@ -222,7 +222,7 @@ regression computed in the tangent space of the covariance matrices.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  26.408 seconds)
+   **Total running time of the script:** ( 0 minutes  35.164 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_select_electrodes_resample.py:
