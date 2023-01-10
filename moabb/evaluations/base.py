@@ -122,7 +122,7 @@ class BaseEvaluation(ABC):
             additional_columns=additional_columns,
         )
 
-    def process(self, pipelines):
+    def process(self, pipelines, param_grid=None):
         """Runs all pipelines on all datasets.
 
         This function will apply all provided pipelines and return a dataframe
@@ -150,7 +150,7 @@ class BaseEvaluation(ABC):
 
         for dataset in self.datasets:
             log.info("Processing dataset: {}".format(dataset.code))
-            results = self.evaluate(dataset, pipelines)
+            results = self.evaluate(dataset, pipelines, param_grid)
             for res in results:
                 self.push_result(res, pipelines)
 
@@ -169,7 +169,7 @@ class BaseEvaluation(ABC):
         return self.results.to_dataframe()
 
     @abstractmethod
-    def evaluate(self, dataset, pipelines):
+    def evaluate(self, dataset, pipelines, param_grid):
         """Evaluate results on a single dataset.
 
         This method return a generator. each results item is a dict with
