@@ -56,7 +56,7 @@ class Test_WithinSess(unittest.TestCase):
             os.remove(path)
 
     def test_eval_results(self):
-        results = [r for r in self.eval.evaluate(dataset, pipelines)]
+        results = [r for r in self.eval.evaluate(dataset, pipelines, param_grid=None)]
 
         # We should get 4 results, 2 session 2 subject
         self.assertEqual(len(results), 4)
@@ -80,7 +80,9 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
             data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
             n_perms=np.array([2, 2]),
         )
-        results = [r for r in learning_curve_eval.evaluate(dataset, pipelines)]
+        results = [
+            r for r in learning_curve_eval.evaluate(dataset, pipelines, param_grid=None)
+        ]
         keys = results[0].keys()
         self.assertEqual(len(keys), 10)  # 8 + 2 new for learning curve
         self.assertTrue("permutation" in keys)
@@ -104,7 +106,7 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
     def test_data_sanity(self):
         # need this helper to iterate over the generator
         def run_evaluation(eval, dataset, pipelines):
-            list(eval.evaluate(dataset, pipelines))
+            list(eval.evaluate(dataset, pipelines, param_grid=None))
 
         # E.g. if number of samples too high -> expect error
         kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], n_perms=[2, 2])
