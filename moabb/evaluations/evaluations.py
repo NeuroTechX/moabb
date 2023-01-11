@@ -302,7 +302,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         duration = time() - t_start
         return score, duration
 
-    def _evaluate_learning_curve(self, dataset, pipelines, param_grid):
+    def _evaluate_learning_curve(self, dataset, pipelines):
         # Progressbar at subject level
         for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-WithinSession"):
             # check if we already have result for this subject/pipeline
@@ -322,9 +322,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 y_sess = y_all[sess_idx]
                 # metadata_sess = metadata_all[sess_idx]
                 sss = StratifiedShuffleSplit(
-                    n_splits=self.n_perms[0],
-                    test_size=self.test_size,
-                    random_state=self.random_state,
+                    n_splits=self.n_perms[0], test_size=self.test_size
                 )
                 for perm_i, (train_idx, test_idx) in enumerate(sss.split(X_sess, y_sess)):
                     X_train_all = X_sess[train_idx]
@@ -377,12 +375,11 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 res["score"], res["time"] = self.score_explicit(
                                     deepcopy(clf), X_train, y_train, X_test, y_test
                                 )
-                            # print(res)
                             yield res
 
     def evaluate(self, dataset, pipelines, param_grid):
         if self.calculate_learning_curve:
-            yield from self._evaluate_learning_curve(dataset, pipelines, param_grid)
+            yield from self._evaluate_learning_curve(dataset, pipelines)
         else:
             yield from self._evaluate(dataset, pipelines, param_grid)
 
