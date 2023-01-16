@@ -1,3 +1,11 @@
+"""
+============================
+GridSearch within a session
+============================
+
+This example shows how to use GridSearchCV within a session.
+
+"""
 import os
 
 from pyriemann.estimation import Covariances
