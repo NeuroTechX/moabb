@@ -7,3 +7,4 @@ These examples show various advanced topics:
 * selecting electrodes or resampling signal
 * using filterbank approach in motor imagery
 * apply statistics for meta-analysis
+* using a gridsearch in within-subject decoding
