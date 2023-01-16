@@ -158,12 +158,12 @@ class WithinSessionEvaluation(BaseEvaluation):
                     # ===============================================================================================
                     # Load result if the folder exist
                     name_grid = os.path.join(
-                        self.hdf5_path,
+                        str(self.hdf5_path),
                         "GridSearch_WithinSession",
                         dataset.code,
                         "subject" + str(subject),
                         str(session),
-                        name,
+                        str(name),
                     )
                     if param_grid is not None and not os.path.isdir(name_grid):
                         if name in param_grid:
