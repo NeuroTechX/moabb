@@ -189,7 +189,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                                         # Save the result
                                         name_grid = os.path.join(
-                                            self.hdf5_path,
+                                            str(self.hdf5_path),
                                             "GridSearch_WithinSession",
                                             dataset.code,
                                             "subject" + str(subject),
@@ -452,7 +452,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                 # ===============================================================================================
                 # Load result if the folder exist
                 name_grid = os.path.join(
-                    self.hdf5_path,
+                    str(self.hdf5_path),
                     "GridSearch_CrossSession",
                     dataset.code,
                     str(subject),
@@ -482,11 +482,11 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                                     # Save the result
                                     name_grid = os.path.join(
-                                        self.hdf5_path,
+                                        str(self.hdf5_path),
                                         "GridSearch_CrossSession",
                                         dataset.code,
                                         str(subject),
-                                        name,
+                                        str(name),
                                     )
                                     os.makedirs(name_grid, exist_ok=True)
                                     joblib.dump(
@@ -614,7 +614,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             # iterate over pipelines
             for name, clf in pipelines.items():
                 name_grid = os.path.join(
-                    self.hdf5_path, "GridSearch_CrossSubject", dataset.code, name
+                    str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
                 )
                 if param_grid is not None and not os.path.isdir(name_grid):
                     if name in param_grid:
@@ -640,7 +640,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                                     # Save the result
                                     name_grid = os.path.join(
-                                        self.hdf5_path,
+                                        str(self.hdf5_path),
                                         "GridSearch_CrossSubject",
                                         dataset.code,
                                         name,
