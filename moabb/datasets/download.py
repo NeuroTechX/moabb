@@ -5,6 +5,7 @@
 import json
 import os
 import os.path as osp
+from pathlib import Path
 
 import requests
 from mne import get_config, set_config
@@ -39,17 +40,17 @@ def get_dataset_path(sign, path):
     key = "MNE_DATASETS_{:s}_PATH".format(sign)
     if get_config(key) is None:
         if get_config("MNE_DATA") is None:
-            path_def = osp.join(osp.expanduser("~"), "mne_data")
+            path_def = Path.home() / "mne_data"
             print(
                 "MNE_DATA is not already configured. It will be set to "
                 "default location in the home directory - "
-                + path_def
+                + str(path_def)
                 + "\nAll datasets will be downloaded to this location, if anything is "
                 "already downloaded, please move manually to this location"
             )
-            if not osp.isdir(path_def):
-                os.makedirs(path_def)
-            set_config("MNE_DATA", osp.join(osp.expanduser("~"), "mne_data"))
+            if not path_def.is_dir():
+                path_def.mkdir(parents=True)
+            set_config("MNE_DATA", str(Path.home() / "mne_data"))
         set_config(key, get_config("MNE_DATA"))
     return _get_path(path, key, sign)
 
@@ -132,24 +133,27 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
         Local path to the given data file. This path is contained inside a list
         of length one, for compatibility.
     """
-    path = get_dataset_path(sign, path)
+    path = Path(get_dataset_path(sign, path))
     key_dest = "MNE-{:s}-data".format(sign.lower())
-    destination = _url_to_local_path(url, osp.join(path, key_dest))
+    destination = _url_to_local_path(url, path / key_dest)
+    destination = str(path) + destination.split(str(path))[1]
+    table = {ord(c): "-" for c in ':*?"<>|'}
+    destination = Path(str(path) + destination.split(str(path))[1].translate(table))
 
     # Fetch the file
-    if not osp.isfile(destination) or force_update:
-        if osp.isfile(destination):
-            os.remove(destination)
-        if not osp.isdir(osp.dirname(destination)):
-            os.makedirs(osp.dirname(destination))
+    if not destination.is_file() or force_update:
+        if destination.is_file():
+            destination.unlink()
+        if not destination.parent.is_dir():
+            destination.parent.mkdir(parents=True)
         known_hash = None
     else:
-        known_hash = file_hash(destination)
+        known_hash = file_hash(str(destination))
     dlpath = retrieve(
         url,
         known_hash,
-        fname=osp.basename(url),
-        path=osp.dirname(destination),
+        fname=Path(url).name,
+        path=str(destination.parent),
         progressbar=True,
     )
     return dlpath
@@ -219,6 +223,7 @@ def fs_get_file_list(article_id, version=None):
         return response
     else:
         url = fsurl + "/articles/{}/versions/{}".format(article_id, version)
+        headers = {"Content-Type": "application/json"}
         request = fs_issue_request("GET", url, headers=headers)
         return request["files"]
 

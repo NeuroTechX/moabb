@@ -32,7 +32,6 @@ one of the sections below, or just scroll down to find out more.
 - [Supported datasets](#supported-datasets)
 - [Who are we?](#who-are-we)
 - [Get in touch](#contact-us)
-- [Documentation](#documentation)
 - [Architecture and main concepts](#architecture-and-main-concepts)
 - [Citing MOABB and related publications](#citing-moabb-and-related-publications)
 
@@ -64,8 +63,8 @@ The Mother of all BCI Benchmarks allows to:
 
 - Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list
   of freely available EEG datasets.
-- The code will be made available on github, serving as a reference point for the future
-  algorithmic developments.
+- The code is available on GitHub, serving as a reference point for the future algorithmic
+  developments.
 - Algorithms can be ranked and promoted on a website, providing a clear picture of the
   different solutions available in the field.
 
@@ -86,7 +85,7 @@ See [Troubleshooting](#Troubleshooting) section if you have a problem.
 You could fork or clone the repository and go to the downloaded directory, then run:
 
 1. install `poetry` (only once per machine):\
-   `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`\
+   `curl -sSL https://install.python-poetry.org | python3 -`\
    or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
    use [conda forge version](https://anaconda.org/conda-forge/poetry)
 1. (Optional, skip if not sure) Disable automatic environment creation:\
@@ -129,6 +128,9 @@ can upgrade your pip version using: `pip install -U pip` before installing `moab
 ## Supported datasets
 
 The list of supported datasets can be found here : https://neurotechx.github.io/moabb/
+
+Detailed information regarding datasets (electrodes, trials, sessions) are indicated on
+the wiki: https://github.com/NeuroTechX/moabb/wiki/Datasets-Support
 
 ### Submit a new dataset
 
@@ -174,13 +176,13 @@ in all interactions both on and offline.
 ## Contact us
 
 If you want to report a problem or suggest an enhancement, we'd love for you to
-[open an issue](https://github.com/NeuroTechX/moabb/issues) at this github repository
+[open an issue](https://github.com/NeuroTechX/moabb/issues) at this GitHub repository
 because then we can get right on it.
 
 For a less formal discussion or exchanging ideas, you can also reach us on the [Gitter
 channel][link_gitter] or join our weekly office hours! This an open video meeting
 happening on a [regular basis](https://github.com/NeuroTechX/moabb/issues/191), please ask
-the link on the gitter channel. We are also on NeuroTechX slack channel
+the link on the gitter channel. We are also on NeuroTechX Slack channel
 [#moabb][link_neurotechx_signup].
 
 ## Architecture and Main Concepts
@@ -195,7 +197,7 @@ the workflow.
 
 A dataset handles and abstracts low-level access to the data. The dataset will read data
 stored locally, in the format in which they have been downloaded, and will convert them
-into a MNE raw object. There are options to pool all the different recording sessions per
+into an MNE raw object. There are options to pool all the different recording sessions per
 subject or to evaluate them separately.
 
 ### Paradigm

@@ -1,5 +1,5 @@
 import logging
-from abc import ABCMeta, abstractmethod, abstractproperty
+from abc import ABCMeta, abstractmethod
 
 import mne
 import numpy as np
@@ -16,7 +16,8 @@ class BaseParadigm(metaclass=ABCMeta):
     def __init__(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def scoring(self):
         """Property that defines scoring metric (e.g. ROC-AUC or accuracy
         or f-score), given as a sklearn-compatible string or a compatible
@@ -25,7 +26,8 @@ class BaseParadigm(metaclass=ABCMeta):
         """
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def datasets(self):
         """Property that define the list of compatible datasets"""
         pass

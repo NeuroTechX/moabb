@@ -3,6 +3,7 @@
 import unittest
 
 from moabb.tests.analysis import *
+from moabb.tests.benchmark import *
 from moabb.tests.datasets import *
 from moabb.tests.download import *
 from moabb.tests.evaluations import *
