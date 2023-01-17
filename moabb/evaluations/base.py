@@ -40,6 +40,8 @@ class BaseEvaluation(ABC):
         Adding information to results.
     return_epochs: bool, default=False
         use MNE epoch to train pipelines.
+    return_raws: bool, default=False
+        use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
     """
@@ -56,6 +58,7 @@ class BaseEvaluation(ABC):
         hdf5_path=None,
         additional_columns=None,
         return_epochs=False,
+        return_raws=False,
         mne_labels=False,
     ):
         self.random_state = random_state
@@ -63,6 +66,7 @@ class BaseEvaluation(ABC):
         self.error_score = error_score
         self.hdf5_path = hdf5_path
         self.return_epochs = return_epochs
+        self.return_raws = return_raws
         self.mne_labels = mne_labels
 
         # check paradigm
