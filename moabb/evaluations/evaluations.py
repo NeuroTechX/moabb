@@ -188,7 +188,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 os.path.join(name_grid, "Grid_Search_WithinSession.pkl"),
                             )
                             del search
-                            break
 
                     elif param_grid is not None and os.path.isdir(name_grid):
                         search = joblib.load(
@@ -465,7 +464,6 @@ class CrossSessionEvaluation(BaseEvaluation):
                             os.path.join(name_grid, "Grid_Search_CrossSession.pkl"),
                         )
                         del search
-                        break
 
                 elif param_grid is not None and os.path.isdir(name_grid):
                     search = joblib.load(
@@ -606,7 +604,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
                             os.path.join(name_grid, "Grid_Search_CrossSubject.pkl"),
                         )
                         del search
-                        break
 
                 elif param_grid is not None and os.path.isdir(name_grid):
                     search = joblib.load(

@@ -29,7 +29,7 @@ tmax = None
 
 # Select the Subject
 subjects = [1]
-# Load the dataset, right now you have added Nothing events to DATA using new stim channel STI
+# Load the dataset
 dataset = BNCI2014001()
 
 events = ["right_hand", "left_hand"]
