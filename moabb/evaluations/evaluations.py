@@ -76,6 +76,8 @@ class WithinSessionEvaluation(BaseEvaluation):
         Adding information to results.
     return_epochs: bool, default=False
         use MNE epoch to train pipelines.
+    return_raws: bool, default=False
+        use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
     """
@@ -137,7 +139,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
             # get the data
             X, y, metadata = self.paradigm.get_data(
-                dataset, [subject], self.return_epochs
+                dataset, [subject], self.return_epochs, self.return_raws
             )
 
             # iterate over sessions
@@ -296,7 +298,10 @@ class WithinSessionEvaluation(BaseEvaluation):
 
             # get the data
             X_all, y_all, metadata_all = self.paradigm.get_data(
-                dataset, [subject], self.return_epochs
+                dataset=dataset,
+                subjects=[subject],
+                return_epochs=self.return_epochs,
+                return_raws=self.return_raws,
             )
             # shuffle_data = True if self.n_perms > 1 else False
             for session in np.unique(metadata_all.session):
@@ -401,6 +406,8 @@ class CrossSessionEvaluation(BaseEvaluation):
         Adding information to results.
     return_epochs: bool, default=False
         use MNE epoch to train pipelines.
+    return_raws: bool, default=False
+        use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
     """
@@ -419,7 +426,10 @@ class CrossSessionEvaluation(BaseEvaluation):
 
             # get the data
             X, y, metadata = self.paradigm.get_data(
-                dataset, [subject], self.return_epochs
+                dataset=dataset,
+                subjects=[subject],
+                return_epochs=self.return_epochs,
+                return_raws=self.return_raws,
             )
             le = LabelEncoder()
             y = y if self.mne_labels else le.fit_transform(y)
@@ -539,6 +549,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
         Adding information to results.
     return_epochs: bool, default=False
         use MNE epoch to train pipelines.
+    return_raws: bool, default=False
+        use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
     """
