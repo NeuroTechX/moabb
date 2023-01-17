@@ -177,6 +177,9 @@ preprocessed EEG data, the labels, and a dataframe with metadata.
             return_epochs: boolean
                 This flag specifies whether to return only the data array or the
                 complete processed mne.Epochs
+            return_raws: boolean
+                To return raw files and events, to ensure compatibility with braindecode.
+                Mutually exclusive with return_epochs
 
             returns
             -------
@@ -529,7 +532,7 @@ corresponding to left- and right-hand motor imagination.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  17.181 seconds)
+   **Total running time of the script:** ( 0 minutes  13.942 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_explore_paradigm.py:

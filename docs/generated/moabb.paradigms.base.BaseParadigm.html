@@ -167,7 +167,7 @@
 <h1>moabb.paradigms.base.BaseParadigm<a class="headerlink" href="#moabb-paradigms-base-baseparadigm" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.paradigms.base.BaseParadigm">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.base.</span></span><span class="sig-name descname"><span class="pre">BaseParadigm</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/base.py#L12-L270"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.base.</span></span><span class="sig-name descname"><span class="pre">BaseParadigm</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/base.py#L12-L295"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base Paradigm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
@@ -182,7 +182,7 @@
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.get_data" title="moabb.paradigms.base.BaseParadigm.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>(dataset[, subjects, return_epochs])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.get_data" title="moabb.paradigms.base.BaseParadigm.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>(dataset[, subjects, return_epochs, ...])</p></td>
 <td><p>Return the data for a list of subject.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.is_valid" title="moabb.paradigms.base.BaseParadigm.is_valid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_valid</span></code></a>(dataset)</p></td>
@@ -191,7 +191,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.prepare_process" title="moabb.paradigms.base.BaseParadigm.prepare_process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_process</span></code></a>(dataset)</p></td>
 <td><p>Prepare processing of raw files</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.process_raw" title="moabb.paradigms.base.BaseParadigm.process_raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_raw</span></code></a>(raw, dataset[, return_epochs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#moabb.paradigms.base.BaseParadigm.process_raw" title="moabb.paradigms.base.BaseParadigm.process_raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_raw</span></code></a>(raw, dataset[, return_epochs, ...])</p></td>
 <td><p>Process one raw data file.</p></td>
 </tr>
 </tbody>
@@ -204,7 +204,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.paradigms.base.BaseParadigm.get_data">
-<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/base.py#L201-L270"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.get_data" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_raws</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/base.py#L217-L295"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.get_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the data for a list of subject.</p>
 <p>return the data, labels and a dataframe with metadata. the dataframe
 will contain at least the following columns</p>
@@ -220,6 +220,8 @@ will contain at least the following columns</p>
 <li><p><strong>subjects</strong> (<em>List of int</em>) – List of subject number</p></li>
 <li><p><strong>return_epochs</strong> (<em>boolean</em>) – This flag specifies whether to return only the data array or the
 complete processed mne.Epochs</p></li>
+<li><p><strong>return_raws</strong> (<em>boolean</em>) – To return raw files and events, to ensure compatibility with braindecode.
+Mutually exclusive with return_epochs</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -254,22 +256,28 @@ dataset does not contain any of the required events.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.paradigms.base.BaseParadigm.prepare_process">
-<span class="sig-name descname"><span class="pre">prepare_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/base.py#L54-L69"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.prepare_process" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">prepare_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/base.py#L54-L70"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.prepare_process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare processing of raw files</p>
-<p>This function allows to set parameter of the paradigm class prior to
+<blockquote>
+<div><p>This function allows to set parameter of the paradigm class prior to
 the preprocessing (process_raw). Does nothing by default and could be
 overloaded if needed.</p>
-<dl class="field-list simple">
+</div></blockquote>
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset</strong> (<em>dataset instance</em>) – The dataset corresponding to the raw file. mainly use to access
-dataset specific information.</p>
+<dd class="field-odd"><dl>
+<dt><strong>dataset</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dataset</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">instance</span></code></span></dt><dd><p>The dataset corresponding to the raw file. mainly use to access
+dataset specific i</p>
+</dd>
+<dt><strong>nformation.</strong></dt><dd></dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.paradigms.base.BaseParadigm.process_raw">
-<span class="sig-name descname"><span class="pre">process_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/base.py#L71-L199"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.process_raw" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">process_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_raws</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/base.py#L72-L215"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.base.BaseParadigm.process_raw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process one raw data file.</p>
 <p>This function apply the preprocessing and eventual epoching on the
 individual run, and return the data, labels and a dataframe with
@@ -284,6 +292,8 @@ and labels.</p>
 dataset specific information.</p></li>
 <li><p><strong>return_epochs</strong> (<em>boolean</em>) – This flag specifies whether to return only the data array or the
 complete processed mne.Epochs</p></li>
+<li><p><strong>return_raws</strong> (<em>boolean</em>) – To return raw files and events, to ensure compatibility with braindecode.
+Mutually exclusive with return_epochs</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

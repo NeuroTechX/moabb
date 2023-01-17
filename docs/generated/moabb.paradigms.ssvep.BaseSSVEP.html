@@ -204,7 +204,7 @@ the dataset.</p></li>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code>(dataset[, subjects, return_epochs])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code>(dataset[, subjects, return_epochs, ...])</p></td>
 <td><p>Return the data for a list of subject.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#moabb.paradigms.ssvep.BaseSSVEP.is_valid" title="moabb.paradigms.ssvep.BaseSSVEP.is_valid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_valid</span></code></a>(dataset)</p></td>
@@ -213,7 +213,7 @@ the dataset.</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#moabb.paradigms.ssvep.BaseSSVEP.prepare_process" title="moabb.paradigms.ssvep.BaseSSVEP.prepare_process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_process</span></code></a>(dataset)</p></td>
 <td><p>Prepare processing of raw files</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_raw</span></code>(raw, dataset[, return_epochs])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_raw</span></code>(raw, dataset[, return_epochs, ...])</p></td>
 <td><p>Process one raw data file.</p></td>
 </tr>
 </tbody>
@@ -252,13 +252,19 @@ dataset does not contain any of the required events.</p>
 <dt class="sig sig-object py" id="moabb.paradigms.ssvep.BaseSSVEP.prepare_process">
 <span class="sig-name descname"><span class="pre">prepare_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/ssvep.py#L123-L132"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.ssvep.BaseSSVEP.prepare_process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare processing of raw files</p>
-<p>This function allows to set parameter of the paradigm class prior to
+<blockquote>
+<div><p>This function allows to set parameter of the paradigm class prior to
 the preprocessing (process_raw). Does nothing by default and could be
 overloaded if needed.</p>
-<dl class="field-list simple">
+</div></blockquote>
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset</strong> (<em>dataset instance</em>) – The dataset corresponding to the raw file. mainly use to access
-dataset specific information.</p>
+<dd class="field-odd"><dl>
+<dt><strong>dataset</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dataset</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">instance</span></code></span></dt><dd><p>The dataset corresponding to the raw file. mainly use to access
+dataset specific i</p>
+</dd>
+<dt><strong>nformation.</strong></dt><dd></dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>

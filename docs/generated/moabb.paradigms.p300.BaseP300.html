@@ -165,7 +165,7 @@
 <h1>moabb.paradigms.p300.BaseP300<a class="headerlink" href="#moabb-paradigms-p300-basep300" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.paradigms.p300.BaseP300">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.p300.</span></span><span class="sig-name descname"><span class="pre">BaseP300</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">([1,</span> <span class="pre">24],)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/p300.py#L18-L210"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.p300.BaseP300" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.p300.</span></span><span class="sig-name descname"><span class="pre">BaseP300</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">([1,</span> <span class="pre">24],)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/p300.py#L18-L263"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.p300.BaseP300" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base P300 paradigm.</p>
 <p>Please use one of the child classes</p>
 <dl class="field-list simple">
@@ -204,7 +204,7 @@ the dataset.</p></li>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code>(dataset[, subjects, return_epochs])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code>(dataset[, subjects, return_epochs, ...])</p></td>
 <td><p>Return the data for a list of subject.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#moabb.paradigms.p300.BaseP300.is_valid" title="moabb.paradigms.p300.BaseP300.is_valid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_valid</span></code></a>(dataset)</p></td>
@@ -213,7 +213,7 @@ the dataset.</p></li>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_process</span></code>(dataset)</p></td>
 <td><p>Prepare processing of raw files</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#moabb.paradigms.p300.BaseP300.process_raw" title="moabb.paradigms.p300.BaseP300.process_raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_raw</span></code></a>(raw, dataset[, return_epochs])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#moabb.paradigms.p300.BaseP300.process_raw" title="moabb.paradigms.p300.BaseP300.process_raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_raw</span></code></a>(raw, dataset[, return_epochs, ...])</p></td>
 <td><p>Process one raw data file.</p></td>
 </tr>
 </tbody>
@@ -250,7 +250,7 @@ dataset does not contain any of the required events.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.paradigms.p300.BaseP300.process_raw">
-<span class="sig-name descname"><span class="pre">process_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/p300.py#L101-L196"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.p300.BaseP300.process_raw" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">process_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_raws</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/p300.py#L101-L249"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.p300.BaseP300.process_raw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process one raw data file.</p>
 <p>This function apply the preprocessing and eventual epoching on the
 individual run, and return the data, labels and a dataframe with
@@ -265,6 +265,8 @@ and labels.</p>
 dataset specific information.</p></li>
 <li><p><strong>return_epochs</strong> (<em>boolean</em>) – This flag specifies whether to return only the data array or the
 complete processed mne.Epochs</p></li>
+<li><p><strong>return_raws</strong> (<em>boolean</em>) – To return raw files and events, to ensure compatibility with braindecode.
+Mutually exclusive with return_epochs</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
