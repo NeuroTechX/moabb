@@ -578,7 +578,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             # encode labels
             le = LabelEncoder()
             y = y if self.mne_labels else le.fit_transform(y)
-            
+
             # extract metadata
             groups = metadata.subject.values
             sessions = metadata.session.values
