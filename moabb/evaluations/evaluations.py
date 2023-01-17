@@ -153,6 +153,8 @@ class WithinSessionEvaluation(BaseEvaluation):
                     X_ = X[ix]
                     y_ = y[ix] if self.mne_labels else y_cv
 
+                    grid_clf = clone(clf)
+
                     # ===============================================================================================
                     # Implement Grid Search
                     # ===============================================================================================
@@ -167,50 +169,32 @@ class WithinSessionEvaluation(BaseEvaluation):
                     )
                     if param_grid is not None and not os.path.isdir(name_grid):
                         if name in param_grid:
-                            for k in np.arange(len(clf.steps)):
-                                for p in np.arange(len(list(param_grid[name].keys()))):
-                                    if (
-                                        clf.steps[k][0]
-                                        == (list(param_grid[name].keys())[p]).split(
-                                            sep="__"
-                                        )[0]
-                                    ):
-                                        search = GridSearchCV(
-                                            clf,
-                                            param_grid[name],
-                                            refit=True,
-                                            cv=cv,
-                                            n_jobs=-1,
-                                            scoring=self.paradigm.scoring,
-                                            return_train_score=True,
-                                        )
-                                        search.fit(X_, y_)
-                                        clf.set_params(**search.best_params_)
+                            search = GridSearchCV(
+                                grid_clf,
+                                param_grid[name],
+                                refit=True,
+                                cv=cv,
+                                n_jobs=-1,
+                                scoring=self.paradigm.scoring,
+                                return_train_score=True,
+                            )
+                            search.fit(X_, y_)
+                            grid_clf.set_params(**search.best_params_)
 
-                                        # Save the result
-                                        name_grid = os.path.join(
-                                            str(self.hdf5_path),
-                                            "GridSearch_WithinSession",
-                                            dataset.code,
-                                            "subject" + str(subject),
-                                            str(session),
-                                            name,
-                                        )
-                                        os.makedirs(name_grid, exist_ok=True)
-                                        joblib.dump(
-                                            search,
-                                            os.path.join(
-                                                name_grid, "Grid_Search_WithinSession.pkl"
-                                            ),
-                                        )
-                                        del search
-                                        break
+                            # Save the result
+                            os.makedirs(name_grid, exist_ok=True)
+                            joblib.dump(
+                                search,
+                                os.path.join(name_grid, "Grid_Search_WithinSession.pkl"),
+                            )
+                            del search
+                            break
 
                     elif param_grid is not None and os.path.isdir(name_grid):
                         search = joblib.load(
                             os.path.join(name_grid, "Grid_Search_WithinSession.pkl")
                         )
-                        clf.set_params(**search.best_params_)
+                        grid_clf.set_params(**search.best_params_)
 
                     if isinstance(X, BaseEpochs):
                         scorer = get_scorer(self.paradigm.scoring)
@@ -218,13 +202,13 @@ class WithinSessionEvaluation(BaseEvaluation):
                         X_ = X[ix]
                         y_ = y[ix] if self.mne_labels else y_cv
                         for train, test in cv.split(X_, y_):
-                            cvclf = clone(clf)
+                            cvclf = clone(grid_clf)
                             cvclf.fit(X_[train], y_[train])
                             acc.append(scorer(cvclf, X_[test], y_[test]))
                         acc = np.array(acc)
                     else:
                         acc = cross_val_score(
-                            clf,
+                            grid_clf,
                             X[ix],
                             y_cv,
                             cv=cv,
@@ -447,6 +431,8 @@ class CrossSessionEvaluation(BaseEvaluation):
                 # we want to store a results per session
                 cv = LeaveOneGroupOut()
 
+                grid_clf = clone(clf)
+
                 # ===============================================================================================
                 # Implement Grid Search
                 # ===============================================================================================
@@ -460,59 +446,42 @@ class CrossSessionEvaluation(BaseEvaluation):
                 )
                 if param_grid is not None and not os.path.isdir(name_grid):
                     if name in param_grid:
-                        for k in np.arange(len(clf.steps)):
-                            for p in np.arange(len(list(param_grid[name].keys()))):
-                                if (
-                                    clf.steps[k][0]
-                                    == (list(param_grid[name].keys())[p]).split(sep="__")[
-                                        0
-                                    ]
-                                ):
-                                    search = GridSearchCV(
-                                        clf,
-                                        param_grid[name],
-                                        refit=True,
-                                        cv=cv,
-                                        n_jobs=-1,
-                                        scoring=self.paradigm.scoring,
-                                        return_train_score=True,
-                                    )
-                                    search.fit(X, y, groups=groups)
-                                    clf.set_params(**search.best_params_)
+                        search = GridSearchCV(
+                            grid_clf,
+                            param_grid[name],
+                            refit=True,
+                            cv=cv,
+                            n_jobs=-1,
+                            scoring=self.paradigm.scoring,
+                            return_train_score=True,
+                        )
+                        search.fit(X, y, groups=groups)
+                        grid_clf.set_params(**search.best_params_)
 
-                                    # Save the result
-                                    name_grid = os.path.join(
-                                        str(self.hdf5_path),
-                                        "GridSearch_CrossSession",
-                                        dataset.code,
-                                        str(subject),
-                                        str(name),
-                                    )
-                                    os.makedirs(name_grid, exist_ok=True)
-                                    joblib.dump(
-                                        search,
-                                        os.path.join(
-                                            name_grid, "Grid_Search_CrossSession.pkl"
-                                        ),
-                                    )
-                                    del search
-                                    break
+                        # Save the result
+                        os.makedirs(name_grid, exist_ok=True)
+                        joblib.dump(
+                            search,
+                            os.path.join(name_grid, "Grid_Search_CrossSession.pkl"),
+                        )
+                        del search
+                        break
 
                 elif param_grid is not None and os.path.isdir(name_grid):
                     search = joblib.load(
                         os.path.join(name_grid, "Grid_Search_CrossSession.pkl")
                     )
-                    clf.set_params(**search.best_params_)
+                    grid_clf.set_params(**search.best_params_)
 
                 for train, test in cv.split(X, y, groups):
                     t_start = time()
                     if isinstance(X, BaseEpochs):
-                        cvclf = clone(clf)
+                        cvclf = clone(grid_clf)
                         cvclf.fit(X[train], y[train])
                         score = scorer(cvclf, X[test], y[test])
                     else:
                         result = _fit_and_score(
-                            clone(clf),
+                            clone(grid_clf),
                             X,
                             y,
                             scorer,
@@ -610,56 +579,40 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
             # ===============================================================================================
             # Implement Grid Search
-            # ===============================================================================================
-            # iterate over pipelines
             for name, clf in pipelines.items():
+
                 name_grid = os.path.join(
-                    str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
+                    self.hdf5_path, "GridSearch_CrossSubject", dataset.code, name
                 )
+
                 if param_grid is not None and not os.path.isdir(name_grid):
                     if name in param_grid:
-                        for k in np.arange(len(clf.steps)):
-                            for p in np.arange(len(list(param_grid[name].keys()))):
-                                if (
-                                    clf.steps[k][0]
-                                    == (list(param_grid[name].keys())[p]).split(sep="__")[
-                                        0
-                                    ]
-                                ):
-                                    search = GridSearchCV(
-                                        clf,
-                                        param_grid[name],
-                                        refit=True,
-                                        cv=cv,
-                                        n_jobs=-1,
-                                        scoring=self.paradigm.scoring,
-                                        return_train_score=True,
-                                    )
-                                    search.fit(X, y, groups=groups)
-                                    clf.set_params(**search.best_params_)
+                        search = GridSearchCV(
+                            clf,
+                            param_grid[name],
+                            refit=True,
+                            cv=cv,
+                            n_jobs=-1,
+                            scoring=self.paradigm.scoring,
+                            return_train_score=True,
+                        )
+                        search.fit(X, y, groups=groups)
+                        pipelines[name].set_params(**search.best_params_)
 
-                                    # Save the result
-                                    name_grid = os.path.join(
-                                        str(self.hdf5_path),
-                                        "GridSearch_CrossSubject",
-                                        dataset.code,
-                                        name,
-                                    )
-                                    os.makedirs(name_grid, exist_ok=True)
-                                    joblib.dump(
-                                        search,
-                                        os.path.join(
-                                            name_grid, "Grid_Search_CrossSubject.pkl"
-                                        ),
-                                    )
-                                    del search
-                                    break
+                        # Save the result
+                        os.makedirs(name_grid, exist_ok=True)
+                        joblib.dump(
+                            search,
+                            os.path.join(name_grid, "Grid_Search_CrossSubject.pkl"),
+                        )
+                        del search
+                        break
 
                 elif param_grid is not None and os.path.isdir(name_grid):
                     search = joblib.load(
                         os.path.join(name_grid, "Grid_Search_CrossSubject.pkl")
                     )
-                    clf.set_params(**search.best_params_)
+                    pipelines[name].set_params(**search.best_params_)
 
             # Progressbar at subject level
             for train, test in tqdm(
