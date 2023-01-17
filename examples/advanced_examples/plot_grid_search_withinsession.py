@@ -8,19 +8,18 @@ This example shows how to use GridSearchCV within a session.
 """
 import os
 
+import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
 from pyriemann.estimation import Covariances
-from pyriemann.spatialfilters import CSP
 from pyriemann.tangentspace import TangentSpace
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
-from moabb.datasets import Zhou2016
+from moabb.datasets import BNCI2014001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import MotorImagery
 
-
-sub_numb = 1
 
 # Initialize parameter for the Band Pass filter
 fmin = 8
@@ -29,32 +28,41 @@ tmin = 0
 tmax = None
 
 # Select the Subject
-subjects = [int(sub_numb)]
+subjects = [1]
 # Load the dataset, right now you have added Nothing events to DATA using new stim channel STI
-dataset = Zhou2016()
+dataset = BNCI2014001()
 
-events = ["right_hand", "feet"]
+events = ["right_hand", "left_hand"]
 
 paradigm = MotorImagery(
     events=events, n_classes=len(events), fmin=fmin, fmax=fmax, tmax=tmax
 )
 
 # Create a path and folder for every subject
-path = os.path.join(str("try_Subject_" + str(sub_numb)))
+path = os.path.join(str("Results"))
 os.makedirs(path, exist_ok=True)
 
 # Pipelines
 pipelines = {}
 # Define the different algorithm to test and assign a name in the dictionary
-pipelines["CSP+LDA"] = Pipeline(
+pipelines["VanillaEN"] = Pipeline(
     steps=[
         ("Covariances", Covariances("cov")),
-        ("csp", CSP(nfilter=6)),
-        ("lda", LDA(solver="lsqr", shrinkage="auto")),
+        ("Tangent_Space", TangentSpace(metric="riemann")),
+        (
+            "LogistReg",
+            LogisticRegression(
+                penalty="elasticnet",
+                l1_ratio=0.75,
+                intercept_scaling=1000.0,
+                solver="saga",
+                max_iter=1000,
+            ),
+        ),
     ]
 )
 
-pipelines["Cov+EN"] = Pipeline(
+pipelines["GridSearchEN"] = Pipeline(
     steps=[
         ("Covariances", Covariances("cov")),
         ("Tangent_Space", TangentSpace(metric="riemann")),
@@ -71,17 +79,18 @@ pipelines["Cov+EN"] = Pipeline(
     ]
 )
 
-# ====================================================================================================================
-# GridSearch
-# ====================================================================================================================
+##############################################################################
+# GridSearch Parameter
+# -------------
 param_grid = {}
-param_grid["Cov+EN"] = {
+param_grid["GridSearchEN"] = {
     "LogistReg__l1_ratio": [0.15, 0.30, 0.45, 0.60, 0.75],
 }
 
+##############################################################################
 # Evaluation For MOABB
-# ========================================================================================================
-dataset.subject_list = dataset.subject_list[int(sub_numb) - 1 : int(sub_numb)]
+# -------------
+dataset.subject_list = dataset.subject_list[:1]
 # Select an evaluation Within Session
 evaluation = WithinSessionEvaluation(
     paradigm=paradigm,
@@ -95,3 +104,66 @@ evaluation = WithinSessionEvaluation(
 # Print the results
 # result = evaluation.process(pipelines)
 result = evaluation.process(pipelines, param_grid)
+
+#####################################################################
+# Plot Results
+# ----------------------------------
+fig, axes = plt.subplots(1, 1, figsize=[8, 4], sharey=True)
+
+sns.stripplot(
+    data=result,
+    y="score",
+    x="pipeline",
+    ax=axes,
+    jitter=True,
+    alpha=0.5,
+    zorder=1,
+    palette="Set1",
+)
+sns.pointplot(data=result, y="score", x="pipeline", ax=axes, palette="Set1")
+
+axes[0].set_ylabel("ROC AUC")
+axes[0].set_ylim(0.5, 1)
+
+##########################################################
+# Load best model Parameter
+# -----------------------------------------------
+search_session_E = joblib.load(
+    os.path.join(
+        path,
+        "GridSearch_WithinSession",
+        "001-2014",
+        "subject1",
+        "session_E",
+        "GridSearchEN",
+        "Grid_Search_WithinSession.pkl",
+    )
+)
+print(
+    "Best Parameter l1_ratio Session_E GridSearchEN ",
+    search_session_E.best_params_["LogistReg__l1_ratio"],
+)
+print(
+    "Best Parameter l1_ratio Session_E VanillaEN: ",
+    pipelines["VanillaEN"].steps[2][1].l1_ratio,
+)
+
+search_session_T = joblib.load(
+    os.path.join(
+        path,
+        "GridSearch_WithinSession",
+        "001-2014",
+        "subject1",
+        "session_T",
+        "GridSearchEN",
+        "Grid_Search_WithinSession.pkl",
+    )
+)
+print(
+    "Best Parameter l1_ratio Session_T GridSearchEN ",
+    search_session_T.best_params_["LogistReg__l1_ratio"],
+)
+print(
+    "Best Parameter l1_ratio Session_T VanillaEN: ",
+    pipelines["VanillaEN"].steps[2][1].l1_ratio,
+)
