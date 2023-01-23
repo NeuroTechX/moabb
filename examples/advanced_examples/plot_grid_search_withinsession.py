@@ -108,7 +108,7 @@ result = evaluation.process(pipelines, param_grid)
 #####################################################################
 # Plot Results
 # ----------------------------------
-fig, axes = plt.subplots(1, 1, figsize=[8, 4], sharey=True)
+fig, axes = plt.subplots(1, 1, figsize=[8, 5], sharey=True)
 
 sns.stripplot(
     data=result,
