@@ -156,7 +156,7 @@ class DemonsP300(BaseDataset):
             run_data = []
             for eeg, starts, stims in act["sessions"]:
                 starts = starts * self.sampling_rate / self._ms_in_sec
-                starts = starts.round().astype(np.int)
+                starts = starts.round().astype(int)
                 stims = stims + 1
                 stims_channel = np.zeros(eeg.shape[1])
                 target_channel = np.zeros(eeg.shape[1])
