@@ -122,8 +122,7 @@ sns.stripplot(
 )
 sns.pointplot(data=result, y="score", x="pipeline", ax=axes, palette="Set1")
 
-axes[0].set_ylabel("ROC AUC")
-axes[0].set_ylim(0.5, 1)
+axes.set_ylabel("ROC AUC")
 
 ##########################################################
 # Load best model Parameter
