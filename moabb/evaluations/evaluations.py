@@ -592,7 +592,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             for name, clf in pipelines.items():
 
                 name_grid = os.path.join(
-                    self.hdf5_path, "GridSearch_CrossSubject", dataset.code, name
+                    str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
                 )
 
                 if param_grid is not None and not os.path.isdir(name_grid):
