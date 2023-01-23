@@ -3,8 +3,9 @@
 GridSearch within a session
 ============================
 
-This example shows how to use GridSearchCV within a session.
-
+This example demonstrates how to make a model selection in pipelines
+for finding the best model parameter, using grid search. Two models
+are compared, one "vanilla" model with model tuned via grid search.
 """
 import os
 
@@ -24,7 +25,6 @@ from moabb.paradigms import MotorImagery
 # Initialize parameter for the Band Pass filter
 fmin = 8
 fmax = 35
-tmin = 0
 tmax = None
 
 # Select the Subject
@@ -42,9 +42,14 @@ paradigm = MotorImagery(
 path = os.path.join(str("Results"))
 os.makedirs(path, exist_ok=True)
 
-# Pipelines
+##############################################################################
+# Create the Pipelines
+# --------------------
+# Two pipelines implementing elastic net classifiers, one using a fixed
+# l1_ratio ("VanillaEN") and the other using a range of values to select
+# l1_ratio ("GridSearchEN")
+
 pipelines = {}
-# Define the different algorithm to test and assign a name in the dictionary
 pipelines["VanillaEN"] = Pipeline(
     steps=[
         ("Covariances", Covariances("cov")),
@@ -80,18 +85,21 @@ pipelines["GridSearchEN"] = Pipeline(
 )
 
 ##############################################################################
-# GridSearch Parameter
-# -------------
+# The search space for parameters is defined as a dictionary, specifying the
+# name of the estimator and the parameter name as a key.
+
 param_grid = {}
 param_grid["GridSearchEN"] = {
     "LogistReg__l1_ratio": [0.15, 0.30, 0.45, 0.60, 0.75],
 }
 
 ##############################################################################
-# Evaluation For MOABB
-# -------------
+# Running the Evaluation
+# ----------------------
+# If a param_grid is specified during process, the specified pipelines will
+# automatically be run with a grid search.
+
 dataset.subject_list = dataset.subject_list[:1]
-# Select an evaluation Within Session
 evaluation = WithinSessionEvaluation(
     paradigm=paradigm,
     datasets=dataset,
@@ -100,14 +108,14 @@ evaluation = WithinSessionEvaluation(
     hdf5_path=path,
     n_jobs=-1,
 )
-
-# Print the results
-# result = evaluation.process(pipelines)
 result = evaluation.process(pipelines, param_grid)
 
 #####################################################################
 # Plot Results
-# ----------------------------------
+# ------------
+# The grid search allows to find better parameter during the
+# evaluation, leading to better accuracy results.
+
 fig, axes = plt.subplots(1, 1, figsize=[8, 5], sharey=True)
 
 sns.stripplot(
@@ -121,12 +129,17 @@ sns.stripplot(
     palette="Set1",
 )
 sns.pointplot(data=result, y="score", x="pipeline", ax=axes, palette="Set1")
-
 axes.set_ylabel("ROC AUC")
 
 ##########################################################
-# Load best model Parameter
-# -----------------------------------------------
+# Load Best Model Parameter
+# -------------------------
+# The best model are automatically saved in a pickle file, in the
+# results directory. It is possible to load those model for each
+# dataset, subject and session. Here, we could see that the grid
+# search found a l1_ratio that is different from the baseline
+# value.
+
 search_session_E = joblib.load(
     os.path.join(
         path,
