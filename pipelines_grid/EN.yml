@@ -1,0 +1,27 @@
+name: EN
+paradigms:
+  - LeftRightImagery
+
+citations:
+
+pipeline:
+  - name: Covariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: oas
+
+  - name: TangentSpace
+    from: pyriemann.tangentspace
+    parameters:
+      metric: "riemann"
+
+  - name: LogisticRegression
+    from: sklearn.linear_model
+    parameters:
+      penalty: "elasticnet"
+      l1_ratio: 0.15
+      intercept_scaling: 1000.0
+      solver: "saga"
+      max_iter: 1000
+
+param_grid: None
