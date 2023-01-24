@@ -137,7 +137,7 @@ class BaseEvaluation(ABC):
         pipelines : dict of pipeline instance.
             A dict containing the sklearn pipeline to evaluate.
         param_grid : dict of str
-            The key of the dictionary must be the same as the pipeline associated.
+            The key of the dictionary must be the same as the associated pipeline.
 
         Returns
         -------
