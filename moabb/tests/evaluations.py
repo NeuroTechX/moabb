@@ -93,6 +93,25 @@ class Test_WithinSess(unittest.TestCase):
         res = joblib.load(respath)
         self.assertIsInstance(res, GridSearchCV)
 
+    def test_lambda_warning(self):
+        def explicit_kernel(x):
+            return x**3
+
+        c1 = DummyClassifier(kernel=lambda x: x**2)
+        c2 = DummyClassifier(kernel=lambda x: 5 * x)
+
+        c3 = DummyClassifier(kernel=explicit_kernel)
+
+        self.assertFalse(repr(c1) == repr(c2))
+        if platform.system() != "Windows":
+            with self.assertWarns(RuntimeWarning):
+                self.assertTrue(get_string_rep(c1) == get_string_rep(c2))
+
+        # I do not know an elegant way to check for no warnings
+        with warnings.catch_warnings(record=True) as w:
+            get_string_rep(c3)
+            self.assertTrue(len(w) == 0)
+
 
 class Test_WithinSessLearningCurve(unittest.TestCase):
     """
@@ -151,6 +170,8 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
         self.assertRaises(
             ValueError, run_evaluation, too_many_samples, dataset, pipelines
         )
+
+    def test_eval_grid_search(self):
         pass
 
     def test_datasize_parameters(self):
@@ -192,7 +213,9 @@ class Test_AdditionalColumns(unittest.TestCase):
 class Test_CrossSubj(Test_WithinSess):
     def setUp(self):
         self.eval = ev.CrossSubjectEvaluation(
-            paradigm=FakeImageryParadigm(), datasets=[dataset]
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
         )
 
     def test_compatible_dataset(self):
@@ -208,7 +231,9 @@ class Test_CrossSubj(Test_WithinSess):
 class Test_CrossSess(Test_WithinSess):
     def setUp(self):
         self.eval = ev.CrossSessionEvaluation(
-            paradigm=FakeImageryParadigm(), datasets=[dataset]
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
         )
 
     def test_compatible_dataset(self):
@@ -218,32 +243,6 @@ class Test_CrossSess(Test_WithinSess):
         # do not raise
         ds = FakeDataset(["left_hand", "right_hand"], n_sessions=2)
         self.assertTrue(self.eval.is_valid(dataset=ds))
-
-
-class Test_LambdaWarning(Test_WithinSess):
-    def setUp(self):
-        self.eval = ev.WithinSessionEvaluation(
-            paradigm=FakeImageryParadigm(), datasets=[dataset]
-        )
-
-    def test_lambda_warning(self):
-        def explicit_kernel(x):
-            return x**3
-
-        c1 = DummyClassifier(kernel=lambda x: x**2)
-        c2 = DummyClassifier(kernel=lambda x: 5 * x)
-
-        c3 = DummyClassifier(kernel=explicit_kernel)
-
-        self.assertFalse(repr(c1) == repr(c2))
-        if platform.system() != "Windows":
-            with self.assertWarns(RuntimeWarning):
-                self.assertTrue(get_string_rep(c1) == get_string_rep(c2))
-
-        # I do not know an elegant way to check for no warnings
-        with warnings.catch_warnings(record=True) as w:
-            get_string_rep(c3)
-            self.assertTrue(len(w) == 0)
 
 
 if __name__ == "__main__":
