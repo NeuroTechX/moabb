@@ -122,8 +122,8 @@ obtaining a pandas dataframe containing the results of the evaluation.
 
  .. code-block:: none
 
-    001-2014-WithinSession:   0%|          | 0/3 [00:00<?, ?it/s]    001-2014-WithinSession:  33%|###3      | 1/3 [00:06<00:12,  6.21s/it]    001-2014-WithinSession:  67%|######6   | 2/3 [00:12<00:06,  6.22s/it]    001-2014-WithinSession: 100%|##########| 3/3 [00:18<00:00,  6.21s/it]    001-2014-WithinSession: 100%|##########| 3/3 [00:18<00:00,  6.21s/it]
-    Zhou 2016-WithinSession:   0%|          | 0/3 [00:00<?, ?it/s]    Zhou 2016-WithinSession:  33%|###3      | 1/3 [00:05<00:10,  5.10s/it]    Zhou 2016-WithinSession:  67%|######6   | 2/3 [00:09<00:04,  4.64s/it]    Zhou 2016-WithinSession: 100%|##########| 3/3 [00:13<00:00,  4.56s/it]    Zhou 2016-WithinSession: 100%|##########| 3/3 [00:13<00:00,  4.63s/it]
+    001-2014-WithinSession:   0%|          | 0/3 [00:00<?, ?it/s]    001-2014-WithinSession:  33%|###3      | 1/3 [00:06<00:12,  6.37s/it]    001-2014-WithinSession:  67%|######6   | 2/3 [00:12<00:06,  6.45s/it]    001-2014-WithinSession: 100%|##########| 3/3 [00:19<00:00,  6.44s/it]    001-2014-WithinSession: 100%|##########| 3/3 [00:19<00:00,  6.43s/it]
+    Zhou 2016-WithinSession:   0%|          | 0/3 [00:00<?, ?it/s]    Zhou 2016-WithinSession:  33%|###3      | 1/3 [00:05<00:10,  5.33s/it]    Zhou 2016-WithinSession:  67%|######6   | 2/3 [00:09<00:04,  4.85s/it]    Zhou 2016-WithinSession: 100%|##########| 3/3 [00:14<00:00,  4.68s/it]    Zhou 2016-WithinSession: 100%|##########| 3/3 [00:14<00:00,  4.78s/it]
 
 
 
@@ -176,7 +176,7 @@ for each subject of each dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  33.260 seconds)
+   **Total running time of the script:** ( 0 minutes  34.489 seconds)
 
 
 .. _sphx_glr_download_auto_tutorials_tutorial_3_benchmarking_multiple_pipelines.py:
