@@ -68,6 +68,39 @@ class Test_WithinSess(unittest.TestCase):
         self.assertEqual(len(results[0].keys()), 8)
 
     def test_eval_grid_search(self):
+        gs_param = {
+            "Within": os.path.join(
+                "res_test",
+                "GridSearch_WithinSession",
+                str(dataset.code),
+                "subject1",
+                "session_0",
+                "C",
+                "Grid_Search_WithinSession.pkl",
+            ),
+            "CrossSess": os.path.join(
+                "res_test",
+                "GridSearch_CrossSession",
+                str(dataset.code),
+                "1",
+                "C",
+                "Grid_Search_CrossSession.pkl",
+            ),
+            "CrossSubj": os.path.join(
+                "res_test",
+                "GridSearch_CrossSubject",
+                str(dataset.code),
+                "C",
+                "Grid_Search_CrossSubject.pkl",
+            ),
+        }
+        if isinstance(self.eval, ev.WithinSessionEvaluation):
+            respath = gs_param["Within"]
+        elif isinstance(self.eval, ev.CrossSessionEvaluation):
+            respath = gs_param["CrossSess"]
+        elif isinstance(self.eval, ev.CrossSubjectEvaluation):
+            respath = gs_param["CrossSubj"]
+
         # Test grid search
         param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
         results = [
@@ -79,17 +112,7 @@ class Test_WithinSess(unittest.TestCase):
         # We should have 8 columns in the results data frame
         self.assertEqual(len(results[0].keys()), 8)
         # We should check for selected parameters with joblib
-        respath = os.path.join(
-            "res_test",
-            "GridSearch_WithinSession",
-            str(dataset.code),
-            "subject1",
-            "session_0",
-            "C",
-            "Grid_Search_WithinSession.pkl",
-        )
-
-        self.assertTrue(os.path.isfile(respath), msg=os.listdir(os.path.join("res_test")))
+        self.assertTrue(os.path.isfile(respath))
         res = joblib.load(respath)
         self.assertIsInstance(res, GridSearchCV)
 
