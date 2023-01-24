@@ -89,7 +89,7 @@ class Test_WithinSess(unittest.TestCase):
             "Grid_Search_WithinSession.pkl",
         )
 
-        self.assertTrue(os.path.isfile(respath))
+        self.assertTrue(os.path.isfile(respath), msg=os.listdir(os.path.join("res_test")))
         res = joblib.load(respath)
         self.assertIsInstance(res, GridSearchCV)
 
