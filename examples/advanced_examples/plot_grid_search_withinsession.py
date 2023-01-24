@@ -75,7 +75,7 @@ pipelines["GridSearchEN"] = Pipeline(
             "LogistReg",
             LogisticRegression(
                 penalty="elasticnet",
-                l1_ratio=0.15,
+                l1_ratio=0.70,
                 intercept_scaling=1000.0,
                 solver="saga",
                 max_iter=1000,
