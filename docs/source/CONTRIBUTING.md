@@ -1,8 +1,5 @@
 # Contributing
 
-:tada::clinking_glasses: First off, thanks for taking the time to contribute!
-:tada::clinking_glasses:
-
 Contributions are always welcome, no matter how small.
 
 The following is a small set of guidelines for how to contribute to the project
@@ -81,20 +78,19 @@ disable `poetry` you are in charge of this.
 
 ### Tools used
 
-MOABB uses [`poetry`](https://python-poetry.org/) for dependency management. This tool
+MOABB uses [poetry](https://python-poetry.org/) for dependency management. This tool
 enables one to have a reproducible environment on all popular OS (Linux, MacOS and
 Windows) and provides easy publishing pipeline.
 
-Another tool that makes development more stable is
-[`pre-commit`](https://pre-commit.com/). It automatically runs variety of Code Quality
-instruments against the code you produced.
+Another tool that makes development more stable is [pre-commit](https://pre-commit.com/).
+It automatically runs variety of Code Quality instruments against the code you produced.
 
 For Code Quality verification, we use:
 
-- [`black`](https://github.com/psf/black) - Python code formatting
-- [`isort`](https://github.com/timothycrosley/isort) - imports sorting and grouping
-- [`flake8`](https://gitlab.com/pycqa/flake8) - code style checking
-- [`prettier`](https://github.com/prettier/prettier) - `.yml` and `.md` files formatting
+- [black](https://github.com/psf/black) - Python code formatting
+- [isort](https://github.com/timothycrosley/isort) - imports sorting and grouping
+- [flake8](https://gitlab.com/pycqa/flake8) - code style checking
+- [prettier](https://github.com/prettier/prettier) - `.yml` and `.md` files formatting
 
 ### Generate the documentation
 

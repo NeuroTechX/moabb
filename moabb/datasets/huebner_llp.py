@@ -1,8 +1,7 @@
-import glob
-import os
 import re
 import zipfile
 from abc import ABC
+from pathlib import Path
 
 import mne
 import numpy as np
@@ -40,7 +39,8 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
 
     @staticmethod
     def _filename_trial_info_extraction(vhdr_file_path):
-        vhdr_file_name = os.path.basename(vhdr_file_path)
+        vhdr_file_path = Path(vhdr_file_path)
+        vhdr_file_name = vhdr_file_path.name
         run_file_pattern = "^matrixSpeller_Block([0-9]+)_Run([0-9]+)\\.vhdr$"
         vhdr_file_patter_match = re.match(run_file_pattern, vhdr_file_name)
 
@@ -48,7 +48,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
             # TODO: raise a wild exception?
             print(vhdr_file_path)
 
-        session_name = os.path.basename(os.path.dirname(vhdr_file_path))
+        session_name = vhdr_file_path.parent.name
         block_idx = vhdr_file_patter_match.group(1)
         run_idx = vhdr_file_patter_match.group(2)
         return session_name, block_idx, run_idx
@@ -84,29 +84,19 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         url = f"{self._src_url}subject{subject:02d}.zip"
-        data_archive_path = dl.data_dl(url, "llp")
-        data_dir_extracted_path = os.path.dirname(data_archive_path)
-        # else:
-        #     raise ValueError(f'URL or data path must be given but both are None.')
+        zipfile_path = Path(dl.data_dl(url, "llp"))
+        zipfile_extracted_path = zipfile_path.parent
 
-        subject_dir_path = os.path.join(data_dir_extracted_path, f"subject{subject:02d}")
+        subject_dir_path = zipfile_extracted_path / f"subject{subject:02d}"
 
-        data_extracted = os.path.isdir(subject_dir_path)
-        if not data_extracted:
-            # print('unzip', path_to_data_archive)  # TODO logging? check verbose
-            zipfile_path = glob.glob(
-                os.path.join(data_dir_extracted_path, data_archive_path, "*.zip")
-            )[0]
+        if not subject_dir_path.is_dir():
             _BaseVisualMatrixSpellerDataset._extract_data(
-                data_dir_extracted_path, zipfile_path
+                zipfile_extracted_path, zipfile_path
             )
 
-        run_glob_pattern = os.path.join(
-            data_dir_extracted_path,
-            f"subject{subject:02d}",
-            "matrixSpeller_Block*_Run*.vhdr",
-        )
-        subject_paths = glob.glob(run_glob_pattern)
+        subject_paths = zipfile_extracted_path / f"subject{subject:02d}"
+        subject_paths = subject_paths.glob("matrixSpeller_Block*_Run*.vhdr")
+        subject_paths = [str(p) for p in subject_paths]
         return sorted(subject_paths)
 
     @staticmethod
