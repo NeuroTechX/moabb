@@ -623,75 +623,72 @@ class CrossSubjectEvaluation(BaseEvaluation):
         run_pipes = {}
         for subject in dataset.subject_list:
             run_pipes.update(self.results.not_yet_computed(pipelines, dataset, subject))
-        if len(run_pipes) != 0:
+        if len(run_pipes) == 0:
+            return
 
-            # get the data
-            X, y, metadata = self.paradigm.get_data(
-                dataset, return_epochs=self.return_epochs
+        # get the data
+        X, y, metadata = self.paradigm.get_data(dataset, return_epochs=self.return_epochs)
+
+        # encode labels
+        le = LabelEncoder()
+        y = y if self.mne_labels else le.fit_transform(y)
+
+        # extract metadata
+        groups = metadata.subject.values
+        sessions = metadata.session.values
+        n_subjects = len(dataset.subject_list)
+
+        scorer = get_scorer(self.paradigm.scoring)
+
+        # perform leave one subject out CV
+        cv = LeaveOneGroupOut()
+
+        # Implement Grid Search
+        for name, clf in pipelines.items():
+
+            name_grid = os.path.join(
+                str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
             )
 
-            # encode labels
-            le = LabelEncoder()
-            y = y if self.mne_labels else le.fit_transform(y)
+            pipelines[name] = self._grid_search(
+                param_grid, name_grid, name, clf, pipelines, X, y, cv, groups
+            )
 
-            # extract metadata
-            groups = metadata.subject.values
-            sessions = metadata.session.values
-            n_subjects = len(dataset.subject_list)
+        # Progressbar at subject level
+        for train, test in tqdm(
+            cv.split(X, y, groups),
+            total=n_subjects,
+            desc=f"{dataset.code}-CrossSubject",
+        ):
 
-            scorer = get_scorer(self.paradigm.scoring)
+            subject = groups[test[0]]
+            # now we can check if this subject has results
+            run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
 
-            # perform leave one subject out CV
-            cv = LeaveOneGroupOut()
+            # iterate over pipelines
+            for name, clf in run_pipes.items():
+                t_start = time()
+                model = deepcopy(clf).fit(X[train], y[train])
+                duration = time() - t_start
 
-            # Implement Grid Search
-            for name, clf in pipelines.items():
+                # we eval on each session
+                for session in np.unique(sessions[test]):
+                    ix = sessions[test] == session
+                    score = _score(model, X[test[ix]], y[test[ix]], scorer)
 
-                name_grid = os.path.join(
-                    str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
-                )
+                    nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+                    res = {
+                        "time": duration,
+                        "dataset": dataset,
+                        "subject": subject,
+                        "session": session,
+                        "score": score,
+                        "n_samples": len(train),
+                        "n_channels": nchan,
+                        "pipeline": name,
+                    }
 
-                pipelines[name] = self._grid_search(
-                    param_grid, name_grid, name, clf, pipelines, X, y, cv, groups
-                )
-
-            # Progressbar at subject level
-            for train, test in tqdm(
-                cv.split(X, y, groups),
-                total=n_subjects,
-                desc=f"{dataset.code}-CrossSubject",
-            ):
-
-                subject = groups[test[0]]
-                # now we can check if this subject has results
-                run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
-
-                # iterate over pipelines
-                for name, clf in run_pipes.items():
-                    t_start = time()
-                    model = deepcopy(clf).fit(X[train], y[train])
-                    duration = time() - t_start
-
-                    # we eval on each session
-                    for session in np.unique(sessions[test]):
-                        ix = sessions[test] == session
-                        score = _score(model, X[test[ix]], y[test[ix]], scorer)
-
-                        nchan = (
-                            X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
-                        )
-                        res = {
-                            "time": duration,
-                            "dataset": dataset,
-                            "subject": subject,
-                            "session": session,
-                            "score": score,
-                            "n_samples": len(train),
-                            "n_channels": nchan,
-                            "pipeline": name,
-                        }
-
-                        yield res
+                    yield res
 
     def is_valid(self, dataset):
         return len(dataset.subject_list) > 1
