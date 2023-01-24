@@ -128,6 +128,7 @@ class WithinSessionEvaluation(BaseEvaluation):
             super().__init__(**kwargs)
 
     def _grid_search(self, param_grid, name_grid, name, grid_clf, X_, y_, cv):
+        # Load result if the folder exists
         if param_grid is not None and not os.path.isdir(name_grid):
             if name in param_grid:
                 search = GridSearchCV(
@@ -192,7 +193,6 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     grid_clf = clone(clf)
 
-                    # Load result if the folder exist
                     name_grid = os.path.join(
                         str(self.hdf5_path),
                         "GridSearch_WithinSession",
