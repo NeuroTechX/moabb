@@ -5,11 +5,13 @@ import unittest
 import warnings
 from collections import OrderedDict
 
+import joblib
 import numpy as np
 import sklearn.base
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
 
 from moabb.analysis.results import get_string_rep
@@ -42,7 +44,9 @@ class Test_WithinSess(unittest.TestCase):
 
     def setUp(self):
         self.eval = ev.WithinSessionEvaluation(
-            paradigm=FakeImageryParadigm(), datasets=[dataset]
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
         )
 
     def test_mne_labels(self):
@@ -58,10 +62,36 @@ class Test_WithinSess(unittest.TestCase):
     def test_eval_results(self):
         results = [r for r in self.eval.evaluate(dataset, pipelines, param_grid=None)]
 
-        # We should get 4 results, 2 session 2 subject
+        # We should get 4 results, 2 sessions 2 subjects
         self.assertEqual(len(results), 4)
         # We should have 8 columns in the results data frame
         self.assertEqual(len(results[0].keys()), 8)
+
+    def test_eval_grid_search(self):
+        # Test grid search
+        param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
+        results = [
+            r for r in self.eval.evaluate(dataset, pipelines, param_grid=param_grid)
+        ]
+
+        # We should get 4 results, 2 sessions 2 subjects
+        self.assertEqual(len(results), 4)
+        # We should have 8 columns in the results data frame
+        self.assertEqual(len(results[0].keys()), 8)
+        # We should check for selected parameters with joblib
+        respath = os.path.join(
+            "res_test",
+            "GridSearch_WithinSession",
+            str(dataset.code),
+            "subject1",
+            "session_0",
+            "C",
+            "Grid_Search_WithinSession.pkl",
+        )
+
+        self.assertTrue(os.path.isfile(respath))
+        res = joblib.load(respath)
+        self.assertIsInstance(res, GridSearchCV)
 
 
 class Test_WithinSessLearningCurve(unittest.TestCase):
