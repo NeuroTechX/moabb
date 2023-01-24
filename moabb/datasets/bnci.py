@@ -239,6 +239,9 @@ def _load_data_009_2014(
     event_id = {}
     for run in data:
         raw, ev = _convert_run_p300_sl(run, verbose=verbose)
+        # Raw EEG data are scaled by a factor 10.
+        # See https://github.com/NeuroTechX/moabb/issues/275
+        raw._data[:16, :] /= 10.0
         sess.append(raw)
         event_id.update(ev)
 
@@ -677,6 +680,15 @@ class MNEBNCI(BaseDataset):
 class BNCI2014001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset.
 
+    .. admonition:: Dataset summary
+
+
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014001       10       22           4                144  4s            250Hz                      2
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+
     Dataset IIa from BCI Competition 4 [1]_.
 
     **Dataset Description**
@@ -732,6 +744,15 @@ class BNCI2014001(MNEBNCI):
 class BNCI2014002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset.
 
+    .. admonition:: Dataset summary
+
+
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014002       15       15           2                 80  5s            512Hz                      1
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+
     Motor Imagery Dataset from [1]_.
 
     **Dataset description**
@@ -785,6 +806,15 @@ class BNCI2014002(MNEBNCI):
 
 class BNCI2014004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset.
+
+    .. admonition:: Dataset summary
+
+
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014004       10        3           2                360  4.5s          250Hz                      5
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset B from BCI Competition 2008.
 
@@ -860,6 +890,15 @@ class BNCI2014004(MNEBNCI):
 class BNCI2014008(MNEBNCI):
     """BNCI 2014-008 P300 dataset
 
+    .. admonition:: Dataset summary
+
+
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        BNCI2014008        8        8  3500 NT / 700 T    1s               256Hz                      1
+        ===========  =======  =======  =================  ===============  ===============  ===========
+
     Dataset from [1]_.
 
     **Dataset description**
@@ -922,6 +961,15 @@ class BNCI2014008(MNEBNCI):
 class BNCI2014009(MNEBNCI):
     """BNCI 2014-009 P300 dataset.
 
+    .. admonition:: Dataset summary
+
+
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        BNCI2014009       10       16  1440 NT / 288 T    0.8s             256Hz                      3
+        ===========  =======  =======  =================  ===============  ===============  ===========
+
     Dataset from [1]_.
 
     **Dataset description**
@@ -976,6 +1024,15 @@ class BNCI2014009(MNEBNCI):
 class BNCI2015001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset.
 
+    .. admonition:: Dataset summary
+
+
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2015001       13       13           2                200  5s            512Hz                      2
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+
     Dataset from [1]_.
 
     **Dataset description**
@@ -1024,6 +1081,15 @@ class BNCI2015001(MNEBNCI):
 class BNCI2015003(MNEBNCI):
     """BNCI 2015-003 P300 dataset.
 
+    .. admonition:: Dataset summary
+
+
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        BNCI2015003       10        8  1500 NT / 300 T    0.8s             256Hz                      1
+        ===========  =======  =======  =================  ===============  ===============  ===========
+
     Dataset from [1]_.
 
     **Dataset description**
@@ -1058,6 +1124,15 @@ class BNCI2015003(MNEBNCI):
 
 class BNCI2015004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset.
+
+    .. admonition:: Dataset summary
+
+
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2015004       10       30           5                 80  7s            256Hz                      2
+        ===========  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from [1]_.
 

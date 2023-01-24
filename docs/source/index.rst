@@ -1,4 +1,5 @@
 .. mdinclude:: README.md
+.. mdinclude:: CONTRIBUTING.md
 
 What's new
 ==========
