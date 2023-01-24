@@ -25,6 +25,16 @@ log = logging.getLogger(__name__)
 
 def parser_init():
     parser = ArgumentParser(description="Main run script for MOABB")
+
+    parser.add_argument(
+        "-mne_p",
+        "--mne_data",
+        dest="mne_data",
+        type=str,
+        default=None,
+        help="Folder where to save and load the datasets with mne structure.",
+    )
+
     parser.add_argument(
         "-p",
         "--pipelines",
@@ -182,6 +192,9 @@ if __name__ == "__main__":
 
     parser = parser_init()
     options = parser.parse_args()
+
+    if options.mne_data is not None:
+        mne.set_config("MNE_DATA", options.mne_data)
 
     pipeline_configs = parse_pipelines_from_directory(options.pipelines)
 
