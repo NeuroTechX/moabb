@@ -1,2 +1,4 @@
 mne
+#if you want used a specific branch instead of branch devolop
+#changing the branch name git+REPOSITORY_LINK@BRANCH#egg=MOABB
 git+https://github.com/NeuroTechX/moabb#egg=moabb
