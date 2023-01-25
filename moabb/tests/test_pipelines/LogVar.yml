@@ -12,3 +12,5 @@ pipeline:
     from: sklearn.discriminant_analysis
     parameters:
       solver: svd
+
+param_grid: None
