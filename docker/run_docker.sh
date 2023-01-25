@@ -1,22 +1,20 @@
 #!/bin/bash
-TAG=moabb
-
 set -ex # Enable 'set -e' (exit on error) and 'set -x' (debugging) options
 
+TAG=moabb
 # Define the repository to download
 REPO_URL=https://github.com/NeuroTechX/moabb.git
-# Clone the repository
-git clone $REPO_URL
-# Navigate into the repository
-cd moabb
-#
-MOUNT_POINT=$1 # The first argument is the mount point
+# Updating the repository or (cloning the repository and Navigate into the repository)
+git -C $TAG pull || (git clone $REPO_URL moabb && cd moabb)
+
+MOUNT_POINT=${1} # The first argument is the mount point
+# Build the Docker image
 
 # Where to mount the dataset inside the docker container
 PIPELINE="/workdir/pipelines/"
-RESULTS="/workdir/results"
+RESULTS="/workdir/results/"
 OUTPUTS="/workdir/outputs/"
-DATASET="/workdir/dataset"
+DATASET="/workdir/dataset/"
 # Run a Docker container with the following options:
 # -it : interactive and tty mode
 # -v : mount a volume from host machine at $MOUNT_POINT to container's /root/mne_data/
@@ -27,7 +25,10 @@ DATASET="/workdir/dataset"
 # --results $RESULTS : store results in $RESULTS
 # --output $OUTPUTS : store outputs in $OUTPUTS
 # --mne_data $DATASET : use dataset located at $DATASET
-docker run -it -v "$MOUNT_POINT" \
+docker run -it \
+    -v "$MOUNT_POINT"+"output/:/workdir/mne_data"
+    -v "$MOUNT_POINT"+"/results:/workdir/results" \
+    -v "$MOUNT_POINT"+"/output:/workdir/output" \
     "$TAG" \
     /usr/bin/python \
     /workdir/moabb/run.py \
