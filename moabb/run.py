@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 import mne
 
 from moabb.benchmark import benchmark
+from moabb.utils import set_download_dir
 
 
 log = logging.getLogger(__name__)
@@ -108,7 +109,7 @@ if __name__ == "__main__":
     options = parser.parse_args()
 
     if options.mne_data is not None:
-        mne.set_config("MNE_DATA", options.mne_data)
+        set_download_dir(options.mne_data)
 
     # call within session benchmark
     benchmark(
