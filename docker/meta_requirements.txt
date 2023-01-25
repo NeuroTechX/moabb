@@ -1,2 +1,2 @@
 mne
-moabb
+git+https://github.com/NeuroTechX/moabb#egg=moabb
