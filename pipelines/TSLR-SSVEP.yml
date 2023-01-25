@@ -21,3 +21,5 @@ pipeline:
     from: sklearn.linear_model
     parameters:
       C: 1.0
+
+param_grid: None

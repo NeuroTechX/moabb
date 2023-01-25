@@ -18,3 +18,5 @@ pipeline:
     from: pyriemann.classification
     parameters:
       metric: "riemann"
+
+param_grid: None

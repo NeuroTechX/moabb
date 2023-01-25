@@ -21,3 +21,5 @@ pipeline:
     from: sklearn.svm
     parameters:
       kernel: "linear"
+
+param_grid: None

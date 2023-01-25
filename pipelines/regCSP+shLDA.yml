@@ -22,3 +22,5 @@ pipeline:
     parameters:
       solver: lsqr
       shrinkage: auto
+
+param_grid: None
