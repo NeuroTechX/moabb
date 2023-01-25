@@ -106,10 +106,10 @@ if __name__ == "__main__":
 
     parser = parser_init()
     options = parser.parse_args()
-    
+
     if options.mne_data is not None:
         mne.set_config("MNE_DATA", options.mne_data)
-  
+
     # call within session benchmark
     benchmark(
         pipelines=options.pipelines,
