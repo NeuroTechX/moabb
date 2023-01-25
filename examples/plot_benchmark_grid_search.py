@@ -48,7 +48,7 @@ set_log_level("info")
 
 results = benchmark(
     # pipelines="../pipelines_grid/",
-    pipelines="pipelines_grid/",
+    pipelines="./pipelines_grid/",
     evaluations=["WithinSession"],
     paradigms=["LeftRightImagery"],
     include_datasets=["Zhou 2016"],
