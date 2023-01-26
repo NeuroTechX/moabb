@@ -1,7 +1,7 @@
 """
-=======================
+========================================
 Benchmarking with MOABB with Grid Search
-=======================
+========================================
 
 This example shows how to use MOABB to benchmark a set of pipelines
 on all available datasets. In particular we run the Gridsearch to select the best hyperparameter of some pipelines
@@ -43,12 +43,13 @@ set_log_level("info")
 
 # In the results folder we will save the gridsearch evaluation
 # When write the pipeline in ylm file we need to specify the parameter that we want to test, in format
-# name__name_parameter. Note that name must be NOT in capital letter.
+# pipeline-name__estimator-name_parameter. Note that pipeline and estimator names MUST
+# be in lower case (no capital letters allowed).
 # If the grid search is already implemented it will load the previous results
 
 results = benchmark(
-    # pipelines="../pipelines_grid/",
-    pipelines="./pipelines_grid/",
+    # pipelines="./pipelines_grid/",
+    pipelines="examples/pipelines_grid/",
     evaluations=["WithinSession"],
     paradigms=["LeftRightImagery"],
     include_datasets=["Zhou 2016"],

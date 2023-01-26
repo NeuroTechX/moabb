@@ -10,5 +10,3 @@ pipeline:
       n_harmonics: 3
       interval: [2, 4]
       freqs: { "13": 2, "17": 3, "21": 4 }
-
-param_grid: None

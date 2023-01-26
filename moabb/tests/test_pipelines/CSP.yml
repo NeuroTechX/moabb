@@ -14,4 +14,11 @@ pipeline:
     parameters:
       solver: svd
 
-param_grid: None
+param_grid:
+  csp__nfilter:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6

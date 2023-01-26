@@ -3,6 +3,7 @@ paradigms:
   - LeftRightImagery
 
 citations:
+  - https://doi.org/10.1109/TBME.2022.3154885
 
 pipeline:
   - name: Covariances

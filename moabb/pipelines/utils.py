@@ -82,7 +82,7 @@ def parse_pipelines_from_directory(dir_path):
             # load config
             config_dict = yaml.load(content, Loader=yaml.FullLoader)
             ppl = create_pipeline_from_config(config_dict["pipeline"])
-            if config_dict["param_grid"] is not None:
+            if "param_grid" in config_dict:
                 pipeline_configs.append(
                     {
                         "paradigms": config_dict["paradigms"],
@@ -184,7 +184,7 @@ def generate_param_grid(pipeline_configs, context=None, logger=log):
             continue
 
         # iterate over paradigms
-        if config["param_grid"] != "None":
+        if "param_grid" in config.keys():
             param_grid[config["name"]] = config["param_grid"]
             # param_grid[config["name"]] = config["param_grid"].get(config["name"])
 
