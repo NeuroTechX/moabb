@@ -52,6 +52,23 @@ subjects and sessions available in the dataset.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use MOABB to benchmark a set of pipelines on all available datasets. ...">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_benchmark_grid_search_thumb.png
+    :alt: Benchmarking with MOABB with Grid Search
+
+  :ref:`sphx_glr_auto_examples_plot_benchmark_grid_search.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Benchmarking with MOABB with Grid Search</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This example show how to perform a cross session motor imagery analysis on the very popular dat...">
 
 .. only:: html
@@ -162,6 +179,7 @@ subjects and sessions available in the dataset.
 
    /auto_examples/changing_download_directory
    /auto_examples/plot_benchmark
+   /auto_examples/plot_benchmark_grid_search
    /auto_examples/plot_cross_session_motor_imagery
    /auto_examples/plot_cross_session_multiple_datasets
    /auto_examples/plot_cross_subject_ssvep
@@ -178,6 +196,7 @@ These examples show various advanced topics:
 * selecting electrodes or resampling signal
 * using filterbank approach in motor imagery
 * apply statistics for meta-analysis
+* using a gridsearch in within-subject decoding
 
 
 
@@ -200,6 +219,23 @@ These examples show various advanced topics:
 .. raw:: html
 
       <div class="sphx-glr-thumbnail-title">FilterBank CSP versus CSP</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to make a model selection in pipelines for finding the best model...">
+
+.. only:: html
+
+  .. image:: /auto_examples/advanced_examples/images/thumb/sphx_glr_plot_grid_search_withinsession_thumb.png
+    :alt: GridSearch within a session
+
+  :ref:`sphx_glr_auto_examples_advanced_examples_plot_grid_search_withinsession.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">GridSearch within a session</div>
     </div>
 
 

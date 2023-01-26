@@ -366,7 +366,7 @@ and dataset size.
       warnings.warn(
     /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/covariance/_empirical_covariance.py:86: UserWarning: Only one sample available. You may want to reshape your data array
       warnings.warn(
-    009-2014-WithinSession: 100%|##########| 1/1 [00:37<00:00, 37.04s/it]    009-2014-WithinSession: 100%|##########| 1/1 [00:37<00:00, 37.04s/it]
+    009-2014-WithinSession: 100%|##########| 1/1 [00:33<00:00, 33.89s/it]    009-2014-WithinSession: 100%|##########| 1/1 [00:33<00:00, 33.89s/it]
 
 
 
@@ -416,7 +416,7 @@ Here we plot the results.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  37.814 seconds)
+   **Total running time of the script:** ( 0 minutes  34.572 seconds)
 
 
 .. _sphx_glr_download_auto_examples_external_plot_learning_curve_p300_external.py:
