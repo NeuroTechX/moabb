@@ -8,7 +8,6 @@ REPO_URL=https://github.com/NeuroTechX/moabb.git
 git -C $TAG pull || (git clone $REPO_URL moabb && cd moabb)
 
 MOUNT_POINT=${1} # The first argument is the mount point
-# Build the Docker image
 
 # Where to mount the dataset inside the docker container
 PIPELINE="/workdir/pipelines/"
