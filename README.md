@@ -31,7 +31,7 @@ one of the sections below, or just scroll down to find out more.
 - [Installation](#installation)
 - [Running](#running)
 - [Supported datasets](#supported-datasets)
-- [Who are we? n](#who-are-we)
+- [Who are we?](#who-are-we)
 - [Get in touch](#contact-us)
 - [Documentation][link_moabb_docs]
 - [Architecture and main concepts](#architecture-and-main-concepts)
@@ -65,8 +65,8 @@ The Mother of all BCI Benchmarks allows to:
 
 - Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list
   of freely available EEG datasets.
-- The code will be made available on github, serving as a reference point for the future
-  algorithmic developments.
+- The code is available on GitHub, serving as a reference point for the future algorithmic
+  developments.
 - Algorithms can be ranked and promoted on a website, providing a clear picture of the
   different solutions available in the field.
 
@@ -87,7 +87,7 @@ See [Troubleshooting](#Troubleshooting) section if you have a problem.
 You could fork or clone the repository and go to the downloaded directory, then run:
 
 1. install `poetry` (only once per machine):\
-   `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -`\
+   `curl -sSL https://install.python-poetry.org | python3 -`\
    or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
    use [conda forge version](https://anaconda.org/conda-forge/poetry)
 1. (Optional, skip if not sure) Disable automatic environment creation:\
@@ -131,6 +131,9 @@ can upgrade your pip version using: `pip install -U pip` before installing `moab
 The list of supported datasets can be found here :
 https://neurotechx.github.io/moabb/datasets.html
 
+Detailed information regarding datasets (electrodes, trials, sessions) are indicated on
+the wiki: https://github.com/NeuroTechX/moabb/wiki/Datasets-Support
+
 ### Submit a new dataset
 
 you can submit a new dataset by mentioning it to this
@@ -173,13 +176,13 @@ our [code of conduct](CODE_OF_CONDUCT.md) in all interactions both on and offlin
 ## Contact us
 
 If you want to report a problem or suggest an enhancement, we'd love for you to
-[open an issue](../../issues) at this github repository because then we can get right on
+[open an issue](../../issues) at this GitHub repository because then we can get right on
 it.
 
 For a less formal discussion or exchanging ideas, you can also reach us on the [Gitter
 channel][link_gitter] or join our weekly office hours! This an open video meeting
 happening on a [regular basis](https://github.com/NeuroTechX/moabb/issues/191), please ask
-the link on the gitter channel. We are also on [NeuroTechX slack #moabb
+the link on the gitter channel. We are also on [NeuroTechX Slack #moabb
 channel][link_neurotechx_signup].
 
 ## Architecture and Main Concepts

@@ -18,7 +18,9 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
-- None
+- Switch to python-3.8, update dependencies, fix code link in doc, add `code coverage <https://app.codecov.io/gh/NeuroTechX/moabb>`__ (:gh:`315` by `Sylvain Chevallier`_)
+- Adding a comprehensive benchmarking function (:gh:`264` by `Divyesh Narayanan`_ and `Sylvain Chevallier`_)
+- Add meta-information for datasets in documentation (:gh:`317` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
@@ -27,6 +29,8 @@ Bugs
 - Preload Schirrmeister2017 raw files (:gh:`290` by `Pierre Guetschel`_)
 - Incorrect event assignation for Lee2019 in MNE >= 1.0.0 (:gh:`298` by `Sylvain Chevallier`_)
 - Correct usage of name simplification function in analyze (:gh:`306` by `Divyesh Narayanan`_)
+- Fix downloading path issue for Weibo2014 and Zhou2016, numy error in DemonsP300 (:gh:`315` by `Sylvain Chevallier`_)
+- Fix unzip error for Huebner2017 and Huebner2018 (:gh:`318` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
@@ -270,6 +274,7 @@ API changes
 
 
 
+.. _Bruno Aristimunha: https://github.com/bruAristimunha
 .. _Alexandre Barachant: https://github.com/alexandrebarachant
 .. _Quentin Barthelemy: https://github.com/qbarthelemy
 .. _Erik Bjäreholt: https://github.com/ErikBjare

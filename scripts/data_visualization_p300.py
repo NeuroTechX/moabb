@@ -11,12 +11,12 @@ Total downloaded size will be (as of now) 120GB.
 
 .. versionadded:: 0.4.5
 """
+import warnings
+
 # Authors: Jan Sosulski <mail@jan-sosulski.de>
 #
 # License: BSD (3-clause)
-import os
-import os.path as osp
-import warnings
+from pathlib import Path
 
 import matplotlib
 import mne
@@ -61,7 +61,7 @@ def create_plot_overview(epo, plot_opts=None, path=None, description=""):
     ax.set_title("Event timeline")
     fig0.suptitle(suptitle)
     fig0.tight_layout()
-    fig0.savefig(path / f"event_timeline.{plot_format}", dpi=plot_opts["dpi"])
+    fig0.savefig(path / f"event_timeline.{plot_opts['format']}", dpi=plot_opts["dpi"])
 
     fig1, axes = plt.subplots(2, 1, figsize=(6, 6), sharey="all", sharex="all")
     evkd_t.plot(spatial_colors=True, show=False, axes=axes[0])
@@ -72,7 +72,9 @@ def create_plot_overview(epo, plot_opts=None, path=None, description=""):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         fig1.tight_layout()
-    fig1.savefig(path / f"target_nontarget_erps.{plot_format}", dpi=plot_opts["dpi"])
+    fig1.savefig(
+        path / f"target_nontarget_erps.{plot_opts['format']}", dpi=plot_opts["dpi"]
+    )
 
     # topomap
     tp = plot_opts["topo"]["timepoints"]
@@ -81,21 +83,21 @@ def create_plot_overview(epo, plot_opts=None, path=None, description=""):
     fig2 = evkd_t.plot_topomap(times=times, colorbar=True, show=False)
     fig2.suptitle(suptitle)
     fig2.savefig(
-        path / f"target_topomap_{tp}_timepoints.{plot_format}",
+        path / f"target_topomap_{tp}_timepoints.{plot_opts['format']}",
         dpi=plot_opts["dpi"],
     )
 
     # jointmap
     fig3 = evkd_t.plot_joint(show=False)
     fig3.suptitle(suptitle)
-    fig3.savefig(path / f"target_erp_topo.{plot_format}", dpi=plot_opts["dpi"])
+    fig3.savefig(path / f"target_erp_topo.{plot_opts['format']}", dpi=plot_opts["dpi"])
 
     # sensorplot
     fig4 = mne.viz.plot_compare_evokeds(
         [evkd_t.crop(0, 0.6), evkd_nt.crop(0, 0.6)], axes="topo", show=False
     )
     fig4[0].suptitle(suptitle)
-    fig4[0].savefig(path / f"sensorplot.{plot_format}", dpi=plot_opts["dpi"])
+    fig4[0].savefig(path / f"sensorplot.{plot_opts['format']}", dpi=plot_opts["dpi"])
 
     fig5, ax = plt.subplots(2, 1, figsize=(8, 6), sharex="all", sharey="all")
     t_data = epo_t.get_data() * 1e6
@@ -119,14 +121,14 @@ def create_plot_overview(epo, plot_opts=None, path=None, description=""):
     ax[1].legend(title="Worst channels")
     fig5.suptitle(suptitle)
     fig5.tight_layout()
-    fig5.savefig(path / f"minmax.{plot_format}", dpi=plot_opts["dpi"])
+    fig5.savefig(path / f"minmax.{plot_opts['format']}", dpi=plot_opts["dpi"])
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         fig6 = epo.plot_psd(0, 20, bandwidth=1)
         fig6.suptitle(suptitle)
         fig6.tight_layout()
-    fig6.savefig(path / f"spectrum.{plot_format}", dpi=plot_opts["dpi"])
+    fig6.savefig(path / f"spectrum.{plot_opts['format']}", dpi=plot_opts["dpi"])
 
     plt.close("all")
 
@@ -143,85 +145,88 @@ def epo_summary(epos):
     return summary, info_str
 
 
-FIGURES_PATH = osp.join(osp.expanduser("~"), "moabb_figures", "erps")
+if __name__ == "__main__":
+    FIGURES_PATH = Path.home() / "moabb_figures" / "erps"
 
-# Changing this to False re-generates all plots even if they exist. Use with caution.
-cache_plots = True
+    # Changing this to False re-generates all plots even if they exist. Use with caution.
+    cache_plots = True
 
-plot_format = "png"
-baseline = None
-highpass = 0.5
-lowpass = 16
-sampling_rate = 100
+    baseline = None
+    highpass = 0.5
+    lowpass = 16
+    sampling_rate = 100
 
-paradigm = P300(
-    resample=sampling_rate,
-    fmin=highpass,
-    fmax=lowpass,
-    baseline=baseline,
-)
+    paradigm = P300(
+        resample=sampling_rate,
+        fmin=highpass,
+        fmax=lowpass,
+        baseline=baseline,
+    )
 
-ival = [-0.3, 1]
+    ival = [-0.3, 1]
 
-plot_opts = {
-    "dpi": 120,
-    "topo": {
-        "timepoints": 10,
-        "tmin": 0,
-        "tmax": 0.6,
-    },
-}
+    plot_opts = {
+        "dpi": 120,
+        "topo": {
+            "timepoints": 10,
+            "tmin": 0,
+            "tmax": 0.6,
+        },
+        "format": "png",
+    }
 
-plt.ioff()
-# dsets = P300_DSETS
-dsets = paradigm.datasets
-for dset in dsets:
-    dset.interval = ival
-    dset_name = dset.__class__.__name__
+    plt.ioff()
+    # dsets = P300_DSETS
+    dsets = paradigm.datasets
+    for dset in dsets:
+        dset.interval = ival
+        dset_name = dset.__class__.__name__
 
-    print(f"Processing dataset: {dset_name}")
+        print(f"Processing dataset: {dset_name}")
 
-    data_path = osp.join(FIGURES_PATH, dset_name)  # path of the dataset folder
-    os.makedirs(data_path, exist_ok=True)
-    all_subjects_cached = True
-    for subject in dset.subject_list:
-        subject_path = osp.join(data_path, f"subject_{subject}")
-        if cache_plots and subject_path.exists():
-            continue
-        all_subjects_cached = False
-        print(f"  Processing subject: {subject}")
+        data_path = FIGURES_PATH / dset_name  # path of the dataset folder
+        data_path.mkdir(exist_ok=True)
+        all_subjects_cached = True
+        for subject in dset.subject_list:
+            subject_path = data_path / f"subject_{subject}"
+            if cache_plots and subject_path.exists():
+                continue
+            all_subjects_cached = False
+            print(f"  Processing subject: {subject}")
 
-        subject_path.mkdir(parents=True, exist_ok=True)
-        try:
-            epos, labels, meta = paradigm.get_data(dset, [subject], return_epochs=True)
-        except Exception:  # catch all, dont stop processing pls
-            print(f"Failed to get data for {dset_name}-{subject}")
-            (subject_path / "processing_error").touch()
-            continue
-
-        description = f"Dset: {dset_name}, Sub: {subject}, Ses: all"
-
-        create_plot_overview(
-            epos,
-            plot_opts=plot_opts,
-            path=subject_path,
-            description=description,
-        )
-
-        if len(meta["session"].unique()) > 1:
-            for session in meta["session"].unique():
-                session_path = subject_path / f"session_{session}"
-                session_path.mkdir(parents=True, exist_ok=True)
-                ix = meta.session == session
-                description = f"Dset: {dset_name}, Sub: {subject}, Ses: {session}"
-                create_plot_overview(
-                    epos[ix],
-                    plot_opts=plot_opts,
-                    path=session_path,
-                    description=description,
+            subject_path.mkdir(parents=True, exist_ok=True)
+            try:
+                epos, labels, meta = paradigm.get_data(
+                    dset, [subject], return_epochs=True
                 )
+            except Exception:  # catch all, dont stop processing pls
+                print(f"Failed to get data for {dset_name}-{subject}")
+                (subject_path / "processing_error").touch()
+                continue
 
-    if all_subjects_cached:
-        print(" No plots necessary, every subject has output folder.")
+            description = f"Dset: {dset_name}, Sub: {subject}, Ses: all"
 
-print("All datasets processed.")
+            create_plot_overview(
+                epos,
+                plot_opts=plot_opts,
+                path=subject_path,
+                description=description,
+            )
+
+            if len(meta["session"].unique()) > 1:
+                for session in meta["session"].unique():
+                    session_path = subject_path / f"session_{session}"
+                    session_path.mkdir(parents=True, exist_ok=True)
+                    ix = meta.session == session
+                    description = f"Dset: {dset_name}, Sub: {subject}, Ses: {session}"
+                    create_plot_overview(
+                        epos[ix],
+                        plot_opts=plot_opts,
+                        path=session_path,
+                        description=description,
+                    )
+
+        if all_subjects_cached:
+            print(" No plots necessary, every subject has output folder.")
+
+    print("All datasets processed.")
