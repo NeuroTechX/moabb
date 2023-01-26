@@ -179,14 +179,13 @@ def generate_param_grid(pipeline_configs, context=None, logger=log):
     param_grid = {}
     for config in pipeline_configs:
 
-        if "paradigms" not in config.keys():
+        if "paradigms" not in config:
             logger.error("{} must have a 'paradigms' key.".format(config))
             continue
 
         # iterate over paradigms
-        if "param_grid" in config.keys():
+        if "param_grid" in config:
             param_grid[config["name"]] = config["param_grid"]
-            # param_grid[config["name"]] = config["param_grid"].get(config["name"])
 
     return param_grid
 
