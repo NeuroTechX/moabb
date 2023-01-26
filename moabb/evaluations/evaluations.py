@@ -1,13 +1,16 @@
 import logging
+import os
 from copy import deepcopy
 from time import time
 from typing import Optional, Union
 
+import joblib
 import numpy as np
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import (
+    GridSearchCV,
     LeaveOneGroupOut,
     StratifiedKFold,
     StratifiedShuffleSplit,
@@ -124,7 +127,44 @@ class WithinSessionEvaluation(BaseEvaluation):
             # Perform default within session evaluation
             super().__init__(**kwargs)
 
-    def _evaluate(self, dataset, pipelines):
+    def _grid_search(self, param_grid, name_grid, name, grid_clf, X_, y_, cv):
+        # Load result if the folder exists
+        if param_grid is not None and not os.path.isdir(name_grid):
+            if name in param_grid:
+                search = GridSearchCV(
+                    grid_clf,
+                    param_grid[name],
+                    refit=True,
+                    cv=cv,
+                    n_jobs=-1,
+                    scoring=self.paradigm.scoring,
+                    return_train_score=True,
+                )
+                search.fit(X_, y_)
+                grid_clf.set_params(**search.best_params_)
+
+                # Save the result
+                os.makedirs(name_grid, exist_ok=True)
+                joblib.dump(
+                    search,
+                    os.path.join(name_grid, "Grid_Search_WithinSession.pkl"),
+                )
+                del search
+                return grid_clf
+
+            else:
+                return grid_clf
+
+        elif param_grid is not None and os.path.isdir(name_grid):
+            search = joblib.load(os.path.join(name_grid, "Grid_Search_WithinSession.pkl"))
+            grid_clf.set_params(**search.best_params_)
+            return grid_clf
+
+        elif param_grid is None:
+            return grid_clf
+
+    # flake8: noqa: C901
+    def _evaluate(self, dataset, pipelines, param_grid):
         # Progress Bar at subject level
         for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-WithinSession"):
             # check if we already have result for this subject/pipeline
@@ -145,22 +185,41 @@ class WithinSessionEvaluation(BaseEvaluation):
                 for name, clf in run_pipes.items():
                     t_start = time()
                     cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
-
+                    scorer = get_scorer(self.paradigm.scoring)
                     le = LabelEncoder()
                     y_cv = le.fit_transform(y[ix])
+                    X_ = X[ix]
+                    y_ = y[ix] if self.mne_labels else y_cv
+
+                    grid_clf = clone(clf)
+
+                    name_grid = os.path.join(
+                        str(self.hdf5_path),
+                        "GridSearch_WithinSession",
+                        dataset.code,
+                        "subject" + str(subject),
+                        str(session),
+                        str(name),
+                    )
+
+                    # Implement Grid Search
+                    grid_clf = self._grid_search(
+                        param_grid, name_grid, name, grid_clf, X_, y_, cv
+                    )
+
                     if isinstance(X, BaseEpochs):
                         scorer = get_scorer(self.paradigm.scoring)
                         acc = list()
                         X_ = X[ix]
                         y_ = y[ix] if self.mne_labels else y_cv
                         for train, test in cv.split(X_, y_):
-                            cvclf = clone(clf)
+                            cvclf = clone(grid_clf)
                             cvclf.fit(X_[train], y_[train])
                             acc.append(scorer(cvclf, X_[test], y_[test]))
                         acc = np.array(acc)
                     else:
                         acc = cross_val_score(
-                            clf,
+                            grid_clf,
                             X[ix],
                             y_cv,
                             cv=cv,
@@ -316,11 +375,11 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 )
                             yield res
 
-    def evaluate(self, dataset, pipelines):
+    def evaluate(self, dataset, pipelines, param_grid):
         if self.calculate_learning_curve:
             yield from self._evaluate_learning_curve(dataset, pipelines)
         else:
-            yield from self._evaluate(dataset, pipelines)
+            yield from self._evaluate(dataset, pipelines, param_grid)
 
     def is_valid(self, dataset):
         return True
@@ -363,7 +422,43 @@ class CrossSessionEvaluation(BaseEvaluation):
         if returning MNE epoch, use original dataset label if True
     """
 
-    def evaluate(self, dataset, pipelines):
+    def _grid_search(self, param_grid, name_grid, name, grid_clf, X, y, cv, groups):
+        if param_grid is not None and not os.path.isdir(name_grid):
+            if name in param_grid:
+                search = GridSearchCV(
+                    grid_clf,
+                    param_grid[name],
+                    refit=True,
+                    cv=cv,
+                    n_jobs=-1,
+                    scoring=self.paradigm.scoring,
+                    return_train_score=True,
+                )
+                search.fit(X, y, groups=groups)
+                grid_clf.set_params(**search.best_params_)
+
+                # Save the result
+                os.makedirs(name_grid, exist_ok=True)
+                joblib.dump(
+                    search,
+                    os.path.join(name_grid, "Grid_Search_CrossSession.pkl"),
+                )
+                del search
+                return grid_clf
+
+            else:
+                return grid_clf
+
+        elif param_grid is not None and os.path.isdir(name_grid):
+            search = joblib.load(os.path.join(name_grid, "Grid_Search_CrossSession.pkl"))
+            grid_clf.set_params(**search.best_params_)
+            return grid_clf
+
+        elif param_grid is None:
+            return grid_clf
+
+    # flake8: noqa: C901
+    def evaluate(self, dataset, pipelines, param_grid):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
         # Progressbar at subject level
@@ -389,15 +484,32 @@ class CrossSessionEvaluation(BaseEvaluation):
             for name, clf in run_pipes.items():
                 # we want to store a results per session
                 cv = LeaveOneGroupOut()
+
+                grid_clf = clone(clf)
+
+                # Load result if the folder exist
+                name_grid = os.path.join(
+                    str(self.hdf5_path),
+                    "GridSearch_CrossSession",
+                    dataset.code,
+                    str(subject),
+                    name,
+                )
+
+                # Implement Grid Search
+                grid_clf = self._grid_search(
+                    param_grid, name_grid, name, grid_clf, X, y, cv, groups
+                )
+
                 for train, test in cv.split(X, y, groups):
                     t_start = time()
                     if isinstance(X, BaseEpochs):
-                        cvclf = clone(clf)
+                        cvclf = clone(grid_clf)
                         cvclf.fit(X[train], y[train])
                         score = scorer(cvclf, X[test], y[test])
                     else:
                         result = _fit_and_score(
-                            clone(clf),
+                            clone(grid_clf),
                             X,
                             y,
                             scorer,
@@ -463,7 +575,45 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if returning MNE epoch, use original dataset label if True
     """
 
-    def evaluate(self, dataset, pipelines):
+    def _grid_search(self, param_grid, name_grid, name, clf, pipelines, X, y, cv, groups):
+        if param_grid is not None and not os.path.isdir(name_grid):
+            if name in param_grid:
+                search = GridSearchCV(
+                    clf,
+                    param_grid[name],
+                    refit=True,
+                    cv=cv,
+                    n_jobs=-1,
+                    scoring=self.paradigm.scoring,
+                    return_train_score=True,
+                )
+                search.fit(X, y, groups=groups)
+                pipelines[name].set_params(**search.best_params_)
+
+                # Save the result
+                os.makedirs(name_grid, exist_ok=True)
+                joblib.dump(
+                    search,
+                    os.path.join(name_grid, "Grid_Search_CrossSubject.pkl"),
+                )
+                del search
+                return pipelines[name]
+
+            else:
+                return pipelines[name]
+
+        elif param_grid is not None and os.path.isdir(name_grid):
+
+            search = joblib.load(os.path.join(name_grid, "Grid_Search_CrossSubject.pkl"))
+
+            pipelines[name].set_params(**search.best_params_)
+            return pipelines[name]
+
+        elif param_grid is None:
+            return pipelines[name]
+
+    # flake8: noqa: C901
+    def evaluate(self, dataset, pipelines, param_grid):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
         # this is a bit akward, but we need to check if at least one pipe
@@ -477,9 +627,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             return
 
         # get the data
-        X, y, metadata = self.paradigm.get_data(
-            dataset, return_epochs=self.return_epochs, return_raws=self.return_raws
-        )
+        X, y, metadata = self.paradigm.get_data(dataset, return_epochs=self.return_epochs)
 
         # encode labels
         le = LabelEncoder()
@@ -494,6 +642,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
         # perform leave one subject out CV
         cv = LeaveOneGroupOut()
+
+        # Implement Grid Search
+        for name, clf in pipelines.items():
+
+            name_grid = os.path.join(
+                str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
+            )
+
+            pipelines[name] = self._grid_search(
+                param_grid, name_grid, name, clf, pipelines, X, y, cv, groups
+            )
+
         # Progressbar at subject level
         for train, test in tqdm(
             cv.split(X, y, groups),
