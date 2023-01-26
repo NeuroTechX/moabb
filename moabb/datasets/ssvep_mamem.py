@@ -67,7 +67,7 @@ def mamem_event(eeg, dins, labels=None):
     sampleB = samples[i - 1]
     freqs.append(s // c)
     t_start.append(sampleA)
-    freqs = np.array(freqs, dtype=np.int) * 2
+    freqs = np.array(freqs, dtype=int) * 2
     freqs = 1000 // freqs
     t_start = np.array(t_start)
 
