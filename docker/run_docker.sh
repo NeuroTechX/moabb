@@ -26,9 +26,9 @@ DATASET="/workdir/dataset/"
 # --output $OUTPUTS : store outputs in $OUTPUTS
 # --mne_data $DATASET : use dataset located at $DATASET
 docker run -it \
-    -v "$MOUNT_POINT"+"output/:/workdir/mne_data"
-    -v "$MOUNT_POINT"+"/results:/workdir/results" \
-    -v "$MOUNT_POINT"+"/output:/workdir/output" \
+    -v "${MOUNT_POINT}/dataset/:/workdir/dataset" \
+    -v "${MOUNT_POINT}/results/:/workdir/results" \
+    -v "${MOUNT_POINT}/output/:/workdir/output" \
     "$TAG" \
     /usr/bin/python \
     /workdir/moabb/run.py \
