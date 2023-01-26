@@ -120,6 +120,31 @@ concepts and use cases. Also, we have a several [examples](./examples/) availabl
 
 You might be interested in [MOABB documentation][link_moabb_docs]
 
+### Running with docker
+
+Moabb has a default image to run the benchmark. You can build it with the following
+command in the root of the repository:
+
+```bash
+bash docker/create_docker.sh
+```
+
+This will create a docker image called `moabb` with the latest version of moabb installed.
+To run the default benchmark, still, at the root of the project, you can use the following
+command:
+
+```bash
+mkdir dataset
+mkdir results
+mkdir output
+bash docker/run_docker.sh PATH_TO_ROOT_FOLDER
+```
+
+Note: It is important to use an absolute path for the root folder to run, but you can
+modify the run_docker.sh script to save in another path beyond the root of the project. By
+default, the script will save the results in the project's root in the folder `results`,
+the datasets in the folder `dataset` and the output in the folder `output`.
+
 ### Troubleshooting
 
 Currently pip install moabb fails when pip version < 21, e.g. with 20.0.2 due to an `idna`
