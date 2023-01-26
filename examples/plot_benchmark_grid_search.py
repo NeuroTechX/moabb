@@ -48,8 +48,7 @@ set_log_level("info")
 # If the grid search is already implemented it will load the previous results
 
 results = benchmark(
-    # pipelines="./pipelines_grid/",
-    pipelines="examples/pipelines_grid/",
+    pipelines="./pipelines_grid/",
     evaluations=["WithinSession"],
     paradigms=["LeftRightImagery"],
     include_datasets=["Zhou 2016"],
