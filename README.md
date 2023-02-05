@@ -122,21 +122,33 @@ You might be interested in [MOABB documentation][link_moabb_docs]
 
 ### Running with docker
 
-Moabb has a default image to run the benchmark. You can build it with the following
-command in the root of the repository:
+Moabb has a default image to run the benchmark. You have two options to download this
+image. You can build from scratch or pull from docker hub. **We recommend to pull from
+docker hub**.
+
+If was your first time using docker, you will need to **install the docker** and **login**
+on docker hub. We recommend the
+[official](https://docs.docker.com/desktop/install/linux-install/) docker documentation
+for this step, it is very important to follow the instructions.
+
+After installing docker, you can pull the image from docker hub:
+
+```bash
+docker pull baristimunha/moabb
+# rename the tag to moabb
+docker tag baristimunha/moabb moabb
+```
+
+If you want to build the image from scratch, you can use the following command at the
+root. You may have to login with API key in the
+[NGC Catalog](https://catalog.ngc.nvidia.com/) to run this command.
 
 ```bash
 bash docker/create_docker.sh
 ```
 
-or
-
-```bash
-docker image pull bruAristimunha:moabb
-```
-
-This will create a docker image called `moabb` with the latest version of moabb installed.
-To run the default benchmark, still, at the root of the project, you can use the following
+With the image downloaded or rebuild from scratch you will have a image called `moabb`. To
+run the default benchmark, still, at the root of the project, you can use the following
 command:
 
 ```bash
@@ -144,6 +156,16 @@ mkdir dataset
 mkdir results
 mkdir output
 bash docker/run_docker.sh PATH_TO_ROOT_FOLDER
+```
+
+An example of the command is:
+
+```bash
+cd /home/user/project/moabb
+mkdir dataset
+mkdir results
+mkdir output
+bash docker/run_docker.sh /home/user/project/moabb
 ```
 
 Note: It is important to use an absolute path for the root folder to run, but you can
