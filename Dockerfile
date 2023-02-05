@@ -17,7 +17,7 @@ ENV MNE_USE_NUMBA=false
 ADD . /workdir
 
 # Copy the 'docker/meta_requirements.txt' file to the current directory
-COPY docker/meta_requirements.txt .
+COPY bash/meta_requirements.txt .
 
 # Install the Python packages listed in the 'meta_requirements.txt' file
 RUN pip3 install -r meta_requirements.txt
