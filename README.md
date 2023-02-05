@@ -129,6 +129,12 @@ command in the root of the repository:
 bash docker/create_docker.sh
 ```
 
+or
+
+```bash
+docker image pull bruAristimunha:moabb
+```
+
 This will create a docker image called `moabb` with the latest version of moabb installed.
 To run the default benchmark, still, at the root of the project, you can use the following
 command:
