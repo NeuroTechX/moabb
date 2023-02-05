@@ -120,18 +120,18 @@ concepts and use cases. Also, we have a several [examples](./examples/) availabl
 
 You might be interested in [MOABB documentation][link_moabb_docs]
 
-### Running with docker
+### Moabb and docker
 
 Moabb has a default image to run the benchmark. You have two options to download this
-image. You can build from scratch or pull from docker hub. **We recommend to pull from
+image: build from scratch or pull from the docker hub. **We recommend pulling from the
 docker hub**.
 
-If was your first time using docker, you will need to **install the docker** and **login**
-on docker hub. We recommend the
+If this were your first time using docker, you would need to **install the docker** and
+**login** on docker hub. We recommend the
 [official](https://docs.docker.com/desktop/install/linux-install/) docker documentation
-for this step, it is very important to follow the instructions.
+for this step, it is essential to follow the instructions.
 
-After installing docker, you can pull the image from docker hub:
+After installing docker, you can pull the image from the docker hub:
 
 ```bash
 docker pull baristimunha/moabb
@@ -140,16 +140,16 @@ docker tag baristimunha/moabb moabb
 ```
 
 If you want to build the image from scratch, you can use the following command at the
-root. You may have to login with API key in the
+root. You may have to login with the API key in the
 [NGC Catalog](https://catalog.ngc.nvidia.com/) to run this command.
 
 ```bash
 bash docker/create_docker.sh
 ```
 
-With the image downloaded or rebuild from scratch you will have a image called `moabb`. To
-run the default benchmark, still, at the root of the project, you can use the following
-command:
+With the image downloaded or rebuilt from scratch, you will have an image called `moabb`.
+To run the default benchmark, still at the root of the project, and you can use the
+following command:
 
 ```bash
 mkdir dataset
