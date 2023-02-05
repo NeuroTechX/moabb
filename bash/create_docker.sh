@@ -1,7 +1,7 @@
 #!/bin/bash
 # A simple script to build the distributed Docker image.
 #
-# $ create_docker_image.sh
+# $ bash create_docker.sh
 set -ex
 # Updating the repository or (cloning the repository and Navigate into the repository)
 git -C $TAG pull || true
