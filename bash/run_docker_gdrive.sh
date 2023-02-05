@@ -20,4 +20,4 @@ DATASET="/workdir/dataset/"
 docker run -it \
     -v "${MOUNT_POINT}/dataset/:/workdir/dataset" \
     "$TAG" \
-    bash /workdir/moabb/docker/run_gdown.py \
+    bash /workdir/moabb/docker/run_gdown.py $DATASET \
