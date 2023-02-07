@@ -1,0 +1,25 @@
+name: EEGNet_8_2
+
+paradigms:
+  - LeftRightImagery
+
+pipeline:
+  - name: EEGNet_8_2
+    from: moabb.pipelines.DL_model
+    parameters:
+      loss: "sparse_categorical_crossentropy"
+      optimizer: "adam"
+      epochs: 200
+      batch_size: 128
+      verbose: 0
+      random_state: 42
+      validation_split: 0.2
+      callbacks:
+        monitor_es: val_loss
+        patience_es: 20
+        monitor_rl: val_loss
+        patience_rl: 5
+        factor_lr: 0.5
+        functions:
+          - tf.keras.callbacks.EarlyStopping()
+          - tf.keras.callbacks.ReduceLROnPlateau()
