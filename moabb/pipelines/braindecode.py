@@ -57,7 +57,7 @@ class CreateBraindecodeDataset(BaseEstimator, TransformerMixin):
         return True
 
 
-class ClassifierModel(BaseEstimator, ClassifierMixin):
+class BraindecodeClassifierModel(BaseEstimator, ClassifierMixin):
     def __init__(self, clf: BaseEstimator, kw_args: dict = None):
         self.clf = clf
         self.classes_ = None
