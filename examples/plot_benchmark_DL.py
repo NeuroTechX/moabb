@@ -1,10 +1,9 @@
 """
-========================================
-Benchmarking with MOABB with Grid Search
-========================================
-This example shows how to use MOABB to benchmark a set of pipelines
-on all available datasets. In particular we run the Gridsearch to select the best hyperparameter of some pipelines
-and save the gridsearch.
+====================================================================
+Benchmarking with MOABB with DeepLearning architecture in Tensorflow
+====================================================================
+This example shows how to use MOABB to benchmark a set of DeepLearning pipeline (Tensorflow)
+on all available datasets.
 For this example, we will use only one dataset to keep the computation time low, but this benchmark is designed
 to easily scale to many datasets.
 """
@@ -16,7 +15,6 @@ import matplotlib.pyplot as plt
 
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import score_plot
-from moabb.paradigms import LeftRightImagery
 import random
 import numpy as np
 import os
@@ -55,7 +53,7 @@ def setup_seed(seed):
 setup_seed(42)
 
 
-# In this example, we will use only the dataset 'Zhou 2016'.
+# In this example, we will use only the dataset 'BNCI2014001'.
 #
 # Running the benchmark
 # ---------------------
@@ -73,14 +71,7 @@ setup_seed(42)
 # the analysis & figures. By default, the results are saved in the ``results``
 # folder, and the analysis & figures are saved in the ``benchmark`` folder.
 
-# In the results folder we will save the gridsearch evaluation
-# When write the pipeline in ylm file we need to specify the parameter that we want to test, in format
-# pipeline-name__estimator-name_parameter. Note that pipeline and estimator names MUST
-# be in lower case (no capital letters allowed).
-# If the grid search is already implemented it will load the previous results
-
 results = benchmark(
-    # pipelines="./examples/pipelines_DL",
     pipelines="./pipelines_DL",
     evaluations=["WithinSession"],
     paradigms=["LeftRightImagery"],
