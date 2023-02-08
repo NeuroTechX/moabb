@@ -163,7 +163,6 @@ class Sosulski2019(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
