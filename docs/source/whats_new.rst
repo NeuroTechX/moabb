@@ -22,6 +22,7 @@ Enhancements
 - Adding a comprehensive benchmarking function (:gh:`264` by `Divyesh Narayanan`_ and `Sylvain Chevallier`_)
 - Add meta-information for datasets in documentation (:gh:`317` by `Bruno Aristimunha`_)
 - Add GridSearchCV for different evaluation procedure (:gh:`319` by `Igor Carrara`_)
+- Add compatibility between Tensorflow and MOABB (:gh:`326` by `Igor Carrara`_)
 
 Bugs
 ~~~~
