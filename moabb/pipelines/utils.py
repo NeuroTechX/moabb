@@ -55,20 +55,21 @@ def parse_Deeplearning_callbacks(config):
     config_parsed = config
 
     for j in np.arange(len(config["pipeline"])):
-        if "callbacks" in config["pipeline"][j]["parameters"]:
-            callbacks = []
-            mod = __import__(config["pipeline"][j]["from"], fromlist=["funct_parser"])
-            funct_parser = mod.funct_parser
+        if "parameters" in config["pipeline"][j]:
+            if "callbacks" in config["pipeline"][j]["parameters"]:
+                callbacks = []
+                mod = __import__(config["pipeline"][j]["from"], fromlist=["funct_parser"])
+                funct_parser = mod.funct_parser
 
-            def parse_DL_param(funct):
-                my_func = funct_parser[str(funct)]
-                return my_func
+                def parse_DL_param(funct):
+                    my_func = funct_parser[str(funct)]
+                    return my_func
 
-            for i in np.arange(len(config["pipeline"][j]["parameters"]["callbacks"])):
-                callbacks_ = parse_DL_param(config["pipeline"][j]["parameters"]["callbacks"][i])
-                callbacks.append(callbacks_)
+                for i in np.arange(len(config["pipeline"][j]["parameters"]["callbacks"])):
+                    callbacks_ = parse_DL_param(config["pipeline"][j]["parameters"]["callbacks"][i])
+                    callbacks.append(callbacks_)
 
-            config_parsed["pipeline"][j]["parameters"]["callbacks"] = callbacks
+                config_parsed["pipeline"][j]["parameters"]["callbacks"] = callbacks
 
     return config_parsed
 
