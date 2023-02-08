@@ -81,7 +81,6 @@ class SSVEPExo(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-
         runs = {s + 1: n for s, n in enumerate([2] * 6 + [3] + [2] * 2 + [4, 2, 5])}
 
         if subject not in self.subject_list:
