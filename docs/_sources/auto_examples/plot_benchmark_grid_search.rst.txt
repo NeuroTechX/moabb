@@ -128,7 +128,7 @@ folder, and the analysis & figures are saved in the ``benchmark`` folder.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
     /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
-    Zhou 2016-WithinSession:  25%|##5       | 1/4 [00:10<00:30, 10.30s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/io/cnt/cnt.py:240: RuntimeWarning: overflow encountered in scalar multiply
+    Zhou 2016-WithinSession:  25%|##5       | 1/4 [00:13<00:39, 13.18s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/mne/io/cnt/cnt.py:240: RuntimeWarning: overflow encountered in scalar multiply
       data_size // (n_samples * n_channels) not in [2, 4]):
     /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
@@ -150,7 +150,7 @@ folder, and the analysis & figures are saved in the ``benchmark`` folder.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
     /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
-    Zhou 2016-WithinSession:  50%|#####     | 2/4 [00:20<00:19,  9.97s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+    Zhou 2016-WithinSession:  50%|#####     | 2/4 [00:26<00:26, 13.03s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
     /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
@@ -168,7 +168,7 @@ folder, and the analysis & figures are saved in the ``benchmark`` folder.
       data_size // (n_samples * n_channels) not in [2, 4]):
     /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
-    Zhou 2016-WithinSession:  75%|#######5  | 3/4 [00:29<00:09,  9.60s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+    Zhou 2016-WithinSession:  75%|#######5  | 3/4 [00:37<00:12, 12.51s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
     /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
@@ -184,7 +184,7 @@ folder, and the analysis & figures are saved in the ``benchmark`` folder.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
     /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
       raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
-    Zhou 2016-WithinSession: 100%|##########| 4/4 [00:38<00:00,  9.40s/it]    Zhou 2016-WithinSession: 100%|##########| 4/4 [00:38<00:00,  9.57s/it]
+    Zhou 2016-WithinSession: 100%|##########| 4/4 [00:49<00:00, 12.26s/it]    Zhou 2016-WithinSession: 100%|##########| 4/4 [00:49<00:00, 12.47s/it]
          dataset     evaluation   pipeline  avg score
     0  Zhou 2016  WithinSession  CSP + LDA   0.944031
     1  Zhou 2016  WithinSession    EN Grid   0.948688
@@ -228,7 +228,7 @@ are saved in the ``benchmark`` folder.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  38.512 seconds)
+   **Total running time of the script:** ( 0 minutes  50.186 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_benchmark_grid_search.py:
