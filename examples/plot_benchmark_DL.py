@@ -11,23 +11,26 @@ to easily scale to many datasets.
 #
 # License: BSD (3-clause)
 
+import os
+import random
+
 import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
 
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import score_plot
-import random
-import numpy as np
-import os
-import tensorflow as tf
-from tensorflow import keras
 
 
 set_log_level("info")
 
 import absl.logging
+
+
 # Avoid output Warning
 absl.logging.set_verbosity(absl.logging.ERROR)
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 # Print Information Tensorflow
 print(f"Tensorflow Version: {tf.__version__}")
@@ -42,12 +45,15 @@ print("GPU is", "AVAILABLE" if GPU else "NOT AVAILABLE")
 # Allow parallelization on all physical devices available
 mirrored_strategy = tf.distribute.MirroredStrategy()
 
+
 # Set up reproducibility of Tensorflow
 def setup_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
     tf.random.set_seed(seed)  # tf cpu fix seed
-    os.environ['TF_DETERMINISTIC_OPS'] = '1'  # tf gpu fix seed, please `pip install tensorflow-determinism` first
+    os.environ[
+        "TF_DETERMINISTIC_OPS"
+    ] = "1"  # tf gpu fix seed, please `pip install tensorflow-determinism` first
 
 
 setup_seed(42)

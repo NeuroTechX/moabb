@@ -51,7 +51,6 @@ def create_pipeline_from_config(config):
 
 
 def parse_Deeplearning_callbacks(config):
-
     config_parsed = config
 
     for j in np.arange(len(config["pipeline"])):
@@ -66,12 +65,15 @@ def parse_Deeplearning_callbacks(config):
                     return my_func
 
                 for i in np.arange(len(config["pipeline"][j]["parameters"]["callbacks"])):
-                    callbacks_ = parse_DL_param(config["pipeline"][j]["parameters"]["callbacks"][i])
+                    callbacks_ = parse_DL_param(
+                        config["pipeline"][j]["parameters"]["callbacks"][i]
+                    )
                     callbacks.append(callbacks_)
 
                 config_parsed["pipeline"][j]["parameters"]["callbacks"] = callbacks
 
     return config_parsed
+
 
 def parse_pipelines_from_directory(dir_path):
     """
