@@ -164,7 +164,6 @@ def generate_paradigms(pipeline_configs, context=None, logger=log):
     context = context or {}
     paradigms = OrderedDict()
     for config in pipeline_configs:
-
         if "paradigms" not in config.keys():
             logger.error("{} must have a 'paradigms' key.".format(config))
             continue
@@ -172,7 +171,6 @@ def generate_paradigms(pipeline_configs, context=None, logger=log):
         # iterate over paradigms
 
         for paradigm in config["paradigms"]:
-
             # check if it is in the context parameters file
             if len(context) > 0:
                 if paradigm not in context.keys():
@@ -201,11 +199,9 @@ def generate_paradigms(pipeline_configs, context=None, logger=log):
 
 
 def generate_param_grid(pipeline_configs, context=None, logger=log):
-
     context = context or {}
     param_grid = {}
     for config in pipeline_configs:
-
         if "paradigms" not in config:
             logger.error("{} must have a 'paradigms' key.".format(config))
             continue

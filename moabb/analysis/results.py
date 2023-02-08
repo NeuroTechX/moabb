@@ -176,7 +176,6 @@ class Results:
 
         with h5py.File(self.filepath, "r") as f:
             for digest, p_group in f.items():
-
                 # skip if not in pipeline list
                 if (pipelines is not None) & (digest not in digests):
                     continue
