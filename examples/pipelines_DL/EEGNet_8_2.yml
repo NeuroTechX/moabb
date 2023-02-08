@@ -14,3 +14,6 @@ pipeline:
       verbose: 0
       random_state: 42
       validation_split: 0.2
+      callbacks:
+        - tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=20)
+        - tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5)

@@ -72,7 +72,8 @@ setup_seed(42)
 # folder, and the analysis & figures are saved in the ``benchmark`` folder.
 
 results = benchmark(
-    pipelines="./pipelines_DL",
+    pipelines="./examples/pipelines_DL",
+    # pipelines="./pipelines_DL",
     evaluations=["WithinSession"],
     paradigms=["LeftRightImagery"],
     include_datasets=["001-2014"],

@@ -50,6 +50,28 @@ def create_pipeline_from_config(config):
     return pipeline
 
 
+def parse_Deeplearning_callbacks(config):
+
+    config_parsed = config
+
+    for j in np.arange(len(config["pipeline"])):
+        if "callbacks" in config["pipeline"][j]["parameters"]:
+            callbacks = []
+            mod = __import__(config["pipeline"][j]["from"], fromlist=["funct_parser"])
+            funct_parser = mod.funct_parser
+
+            def parse_DL_param(funct):
+                my_func = funct_parser[str(funct)]
+                return my_func
+
+            for i in np.arange(len(config["pipeline"][j]["parameters"]["callbacks"])):
+                callbacks_ = parse_DL_param(config["pipeline"][j]["parameters"]["callbacks"][i])
+                callbacks.append(callbacks_)
+
+            config_parsed["pipeline"][j]["parameters"]["callbacks"] = callbacks
+
+    return config_parsed
+
 def parse_pipelines_from_directory(dir_path):
     """
     Takes in the path to a directory with pipeline configuration files and returns a dictionary
@@ -81,6 +103,10 @@ def parse_pipelines_from_directory(dir_path):
 
             # load config
             config_dict = yaml.load(content, Loader=yaml.FullLoader)
+
+            # Parse Callbacks for DeepLearning
+            config_dict = parse_Deeplearning_callbacks(config_dict)
+
             ppl = create_pipeline_from_config(config_dict["pipeline"])
             if "param_grid" in config_dict:
                 pipeline_configs.append(
