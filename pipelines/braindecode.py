@@ -2,6 +2,7 @@ from braindecode.classifier import EEGClassifier
 from braindecode.models import ShallowFBCSPNet
 from sklearn.pipeline import Pipeline
 from skorch.callbacks import LRScheduler
+from skorch.dataset import ValidSplit
 from torch.cuda import is_available
 from torch.nn import NLLLoss
 from torch.optim import AdamW
@@ -34,7 +35,7 @@ clf = EEGClassifier(
     model,
     criterion=NLLLoss,
     optimizer=AdamW,
-    train_split=None,  # using valid_set for validation
+    train_split=ValidSplit(0.2),  # using valid_set for validation
     optimizer__lr=lr,
     optimizer__weight_decay=weight_decay,
     batch_size=batch_size,
