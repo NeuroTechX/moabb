@@ -52,7 +52,6 @@ class FakeDataset(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-
         data = dict()
         for session in range(self.n_sessions):
             data[f"session_{session}"] = {
