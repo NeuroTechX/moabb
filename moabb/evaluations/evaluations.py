@@ -603,7 +603,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 return pipelines[name]
 
         elif param_grid is not None and os.path.isdir(name_grid):
-
             search = joblib.load(os.path.join(name_grid, "Grid_Search_CrossSubject.pkl"))
 
             pipelines[name].set_params(**search.best_params_)
@@ -645,7 +644,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
         # Implement Grid Search
         for name, clf in pipelines.items():
-
             name_grid = os.path.join(
                 str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
             )
@@ -660,7 +658,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
             total=n_subjects,
             desc=f"{dataset.code}-CrossSubject",
         ):
-
             subject = groups[test[0]]
             # now we can check if this subject has results
             run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
