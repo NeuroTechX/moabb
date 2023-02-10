@@ -12,24 +12,20 @@ to easily scale to many datasets.
 # License: BSD (3-clause)
 
 import os
-import random
-
 import matplotlib.pyplot as plt
-import numpy as np
+
 import tensorflow as tf
 from tensorflow import keras
+from absl.logging import set_verbosity, ERROR
 
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import score_plot
+from moabb.pipelines.utils import setup_seed
 
 
 set_log_level("info")
-
-import absl.logging
-
-
 # Avoid output Warning
-absl.logging.set_verbosity(absl.logging.ERROR)
+set_verbosity(ERROR)
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 # Print Information Tensorflow
@@ -41,22 +37,6 @@ print("CPU is", "AVAILABLE" if CPU else "NOT AVAILABLE")
 
 GPU = len(tf.config.list_physical_devices("GPU")) > 0
 print("GPU is", "AVAILABLE" if GPU else "NOT AVAILABLE")
-
-# Allow parallelization on all physical devices available
-mirrored_strategy = tf.distribute.MirroredStrategy()
-
-
-# Set up reproducibility of Tensorflow
-def setup_seed(seed):
-    random.seed(seed)
-    np.random.seed(seed)
-    tf.random.set_seed(seed)  # tf cpu fix seed
-    os.environ[
-        "TF_DETERMINISTIC_OPS"
-    ] = "1"  # tf gpu fix seed, please `pip install tensorflow-determinism` first
-
-
-setup_seed(42)
 
 
 # In this example, we will use only the dataset 'BNCI2014001'.
@@ -76,17 +56,23 @@ setup_seed(42)
 # It is possible to indicate the folder to cache the results and the one to save
 # the analysis & figures. By default, the results are saved in the ``results``
 # folder, and the analysis & figures are saved in the ``benchmark`` folder.
+#
+# This code is implemented to run on CPU. If you're using a GPU, do not use multithreading
+# (i.e. set n_jobs=1)
+
+# Set up reproducibility of Tensorflow
+setup_seed(42)
 
 results = benchmark(
-    pipelines="./examples/pipelines_DL",
-    # pipelines="./pipelines_DL",
+    pipelines="./pipelines_DL",
     evaluations=["WithinSession"],
     paradigms=["LeftRightImagery"],
     include_datasets=["001-2014"],
     results="./results/",
-    overwrite=True,
+    overwrite=False,
     plot=False,
     output="./benchmark/",
+    n_jobs=-1
 )
 
 ###############################################################################

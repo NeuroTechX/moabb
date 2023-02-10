@@ -1,9 +1,14 @@
 import importlib
 import logging
 import os
+import random
+import numpy as np
 from collections import OrderedDict
 from copy import deepcopy
 from glob import glob
+
+import tensorflow as tf
+from tensorflow import keras
 
 import numpy as np
 import scipy.signal as scp
@@ -15,6 +20,11 @@ from moabb.analysis.results import get_string_rep
 
 
 log = logging.getLogger(__name__)
+
+
+def parse_deep_param(funct, funct_parser):
+    my_func = funct_parser[str(funct)]
+    return my_func
 
 
 def create_pipeline_from_config(config):
@@ -50,7 +60,7 @@ def create_pipeline_from_config(config):
     return pipeline
 
 
-def parse_Deeplearning_callbacks(config):
+def parse_deep_callbacks(config):
     config_parsed = config
 
     for j in np.arange(len(config["pipeline"])):
@@ -60,13 +70,9 @@ def parse_Deeplearning_callbacks(config):
                 mod = __import__(config["pipeline"][j]["from"], fromlist=["funct_parser"])
                 funct_parser = mod.funct_parser
 
-                def parse_DL_param(funct):
-                    my_func = funct_parser[str(funct)]
-                    return my_func
-
                 for i in np.arange(len(config["pipeline"][j]["parameters"]["callbacks"])):
-                    callbacks_ = parse_DL_param(
-                        config["pipeline"][j]["parameters"]["callbacks"][i]
+                    callbacks_ = parse_deep_param(
+                        config["pipeline"][j]["parameters"]["callbacks"][i], funct_parser
                     )
                     callbacks.append(callbacks_)
 
@@ -108,7 +114,7 @@ def parse_pipelines_from_directory(dir_path):
             config_dict = yaml.load(content, Loader=yaml.FullLoader)
 
             # Parse Callbacks for DeepLearning
-            config_dict = parse_Deeplearning_callbacks(config_dict)
+            config_dict = parse_deep_callbacks(config_dict)
 
             ppl = create_pipeline_from_config(config_dict["pipeline"])
             if "param_grid" in config_dict:
@@ -373,3 +379,12 @@ def filterbank(X, sfreq, idx_fb, peaks):
                     padlen=3 * (max(len(B), len(A)) - 1),
                 )
     return y
+
+
+def setup_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    tf.random.set_seed(seed)  # tf cpu fix seed
+    os.environ[
+        "TF_DETERMINISTIC_OPS"
+    ] = "1"  # tf gpu fix seed, please `pip install tensorflow-determinism` first

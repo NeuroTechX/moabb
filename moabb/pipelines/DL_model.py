@@ -1,7 +1,7 @@
 from typing import Any, Dict, Iterable
 
 import tensorflow as tf
-from keras.callbacks import EarlyStopping
+from tensorflow import keras
 from keras.constraints import max_norm
 from keras.layers import (
     GRU,
@@ -28,10 +28,7 @@ from keras.layers import (
 )
 from keras.layers.normalization.batch_normalization import BatchNormalization
 from keras.models import Sequential
-from keras.regularizers import l2
 from scikeras.wrappers import KerasClassifier
-from sklearn.base import BaseEstimator, TransformerMixin
-from tensorflow import keras  # Super important for Tensorflow 2.11
 
 
 # ====================================================================================================================
@@ -47,7 +44,7 @@ funct_parser = {
 }
 
 
-class EEGNet_8_2(KerasClassifier):
+class Keras_EEGNet_8_2(KerasClassifier):
     def __init__(
         self,
         loss,

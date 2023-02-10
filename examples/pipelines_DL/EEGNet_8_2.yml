@@ -4,7 +4,7 @@ paradigms:
   - LeftRightImagery
 
 pipeline:
-  - name: EEGNet_8_2
+  - name: Keras_EEGNet_8_2
     from: moabb.pipelines.DL_model
     parameters:
       loss: "sparse_categorical_crossentropy"
