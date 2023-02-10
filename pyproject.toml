@@ -34,6 +34,8 @@ optional = true
 tensorflow = ">=1.11.0"
 keras = ">=1.11.0"
 scikeras = "^0.10.0"
+braindecode = "^0.7"
+torch = "^1.13.1"
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^6.0.0"
