@@ -1,7 +1,6 @@
 from typing import Any, Dict, Iterable
 
 import tensorflow as tf
-from tensorflow import keras
 from keras.constraints import max_norm
 from keras.layers import (
     GRU,
@@ -29,6 +28,7 @@ from keras.layers import (
 from keras.layers.normalization.batch_normalization import BatchNormalization
 from keras.models import Sequential
 from scikeras.wrappers import KerasClassifier
+from tensorflow import keras
 
 
 # ====================================================================================================================

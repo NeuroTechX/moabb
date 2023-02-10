@@ -12,11 +12,11 @@ to easily scale to many datasets.
 # License: BSD (3-clause)
 
 import os
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
 import tensorflow as tf
+from absl.logging import ERROR, set_verbosity
 from tensorflow import keras
-from absl.logging import set_verbosity, ERROR
 
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import score_plot
@@ -72,7 +72,7 @@ results = benchmark(
     overwrite=False,
     plot=False,
     output="./benchmark/",
-    n_jobs=-1
+    n_jobs=-1,
 )
 
 ###############################################################################
