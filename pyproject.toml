@@ -31,8 +31,8 @@ coverage = "^7.0.1"
 optional = true
 
 [tool.poetry.group.deeplearning.dependencies]
-tensorflow = "^1.11.0"
-keras = "1.11.0"
+tensorflow = ">=1.11.0"
+keras = ">=1.11.0"
 scikeras = "^0.10.0"
 braindecode = "^0.7"
 torch = "^1.13.1"
