@@ -66,8 +66,9 @@ class ExtendedSSVEPSignal(BaseEstimator, TransformerMixin):
 class AugmentedDataset(BaseEstimator, TransformerMixin):
     """This transformation allow to create an embedding version of the current dataset.
 
-        More detail of this: https://doi.org/10.48550/arXiv.2302.04508
+    More detail of this: https://doi.org/10.48550/arXiv.2302.04508
     """
+
     def __init__(self, order=1, lag=1):
         self.order = order
         self.lag = lag
