@@ -1,34 +1,21 @@
-from typing import Any, Dict, Iterable
+from typing import Any, Dict
 
 import tensorflow as tf
 from keras.constraints import max_norm
 from keras.layers import (
-    GRU,
-    LSTM,
     Activation,
-    Add,
-    AveragePooling2D,
     AvgPool2D,
-    Concatenate,
-    Conv1D,
     Conv2D,
-    Conv3D,
     Dense,
     DepthwiseConv2D,
     Dropout,
     Flatten,
     Input,
-    Lambda,
-    LayerNormalization,
-    MaxPooling1D,
-    MaxPooling2D,
-    Reshape,
     SeparableConv2D,
 )
 from keras.layers.normalization.batch_normalization import BatchNormalization
 from keras.models import Sequential
 from scikeras.wrappers import KerasClassifier
-from tensorflow import keras
 
 
 # ====================================================================================================================
@@ -48,7 +35,7 @@ class Keras_EEGNet_8_2(KerasClassifier):
     def __init__(
         self,
         loss,
-        optimizer=tf.keras.optimizers.Adam(),
+        optimizer=None,
         epochs=200,
         batch_size=128,
         verbose=0,
@@ -59,6 +46,8 @@ class Keras_EEGNet_8_2(KerasClassifier):
         super().__init__(**kwargs)
 
         self.loss = loss
+        if optimizer is None:
+            optimizer = tf.keras.optimizers.Adam()
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
