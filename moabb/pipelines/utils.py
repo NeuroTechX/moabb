@@ -12,7 +12,6 @@ import tensorflow as tf
 import yaml
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import make_pipeline
-from tensorflow import keras
 
 from moabb.analysis.results import get_string_rep
 
