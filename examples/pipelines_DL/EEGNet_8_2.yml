@@ -1,4 +1,4 @@
-name: EEGNet_8_2
+name: Keras_EEGNet_8_2
 
 paradigms:
   - LeftRightImagery
