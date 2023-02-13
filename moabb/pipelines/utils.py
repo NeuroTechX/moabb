@@ -2,19 +2,17 @@ import importlib
 import logging
 import os
 import random
-import numpy as np
 from collections import OrderedDict
 from copy import deepcopy
 from glob import glob
 
-import tensorflow as tf
-from tensorflow import keras
-
 import numpy as np
 import scipy.signal as scp
+import tensorflow as tf
 import yaml
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import make_pipeline
+from tensorflow import keras
 
 from moabb.analysis.results import get_string_rep
 
