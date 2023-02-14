@@ -3,7 +3,7 @@ Utils for Deep learning that work on Moabb.
 Implementation using the tensorflow, keras and scikeras framework.
 """
 
-# Authors: Igor Carrara <hubert.jbanville@gmail.com>
+# Authors: Igor Carrara <igor.carrara@inria.fr>
 #          Bruno Aristimunha <b.aristimunha@gmail.com>
 #          Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>
 

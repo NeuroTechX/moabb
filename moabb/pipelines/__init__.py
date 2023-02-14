@@ -14,5 +14,5 @@ from .deep_learning import (
     KerasShallowConvNet,
 )
 from .features import FM, ExtendedSSVEPSignal, LogVariance
-from .utilis_deep_model import EEGNet, TCN_block
 from .utils import FilterBank, create_pipeline_from_config
+from .utils_deep_model import EEGNet, TCN_block

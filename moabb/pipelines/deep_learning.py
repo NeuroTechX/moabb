@@ -3,7 +3,7 @@ Deep learning that work on Moabb.
 Implementation using the tensorflow, keras and scikeras framework.
 """
 
-# Authors: Igor Carrara <hubert.jbanville@gmail.com>
+# Authors: Igor Carrara <igor.carrara@inria.fr>
 #          Bruno Aristimunha <b.aristimunha@gmail.com>
 #          Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>
 
@@ -34,7 +34,7 @@ from keras.layers.normalization.batch_normalization import BatchNormalization
 from keras.models import Model, Sequential
 from scikeras.wrappers import KerasClassifier
 
-from moabb.pipelines.utilis_deep_model import EEGNet, TCN_block
+from moabb.pipelines.utils_deep_model import EEGNet, TCN_block
 
 
 # =====================================================================================
