@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest]
         python-version: ["3.8"]
     defaults:
       run:
@@ -46,10 +46,10 @@ jobs:
         if: |
           (runner.os != 'Windows') &&
           (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
-        run: poetry install --no-interaction --no-root --with deeplearning --no-dev
+        run: poetry install --no-interaction --no-root --with deeplearning
 
       - name: Install library
-        run: poetry install --no-interaction --with deeplearning --no-dev
+        run: poetry install --no-interaction --with deeplearning
 
       - name: Run tests
         run: |

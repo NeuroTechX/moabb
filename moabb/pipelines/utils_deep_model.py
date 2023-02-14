@@ -1,56 +1,47 @@
-import os
-from typing import Any, Dict, Iterable
+"""
+Utils for Deep learning that work on Moabb.
+Implementation using the tensorflow, keras and scikeras framework.
+"""
 
-import tensorflow as tf
-from keras import backend as K
-from keras.callbacks import EarlyStopping
+# Authors: Igor Carrara <igor.carrara@inria.fr>
+#          Bruno Aristimunha <b.aristimunha@gmail.com>
+#          Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>
+
+# License: BSD (3-clause)
+
 from keras.constraints import max_norm
 from keras.layers import (
-    GRU,
-    LSTM,
     Activation,
     Add,
     AveragePooling2D,
-    AvgPool2D,
-    Concatenate,
     Conv1D,
     Conv2D,
-    Conv3D,
-    Dense,
     DepthwiseConv2D,
     Dropout,
-    Flatten,
-    Input,
-    Lambda,
-    LayerNormalization,
-    MaxPooling1D,
-    MaxPooling2D,
-    Reshape,
     SeparableConv2D,
 )
 from keras.layers.normalization.batch_normalization import BatchNormalization
-from keras.models import Model, Sequential
-from keras.regularizers import l2
-from keras.utils.vis_utils import plot_model
-from scikeras.wrappers import KerasClassifier
-from sklearn.base import BaseEstimator, TransformerMixin
-from tensorflow import keras  # Super important for Tensorflow 2.11
 
 
-def EEGNet(self, input_layer, F1=8, kernLength=64, D=2, dropout=0.5, activation="elu"):
+def EEGNet(
+    data, input_layer, filters_1=8, kernel_size=64, depth=2, dropout=0.5, activation="elu"
+):
+    """
+    EEGNet implementation.
 
-    F2 = F1 * D
+    """
+    filters_2 = filters_1 * depth
 
     block1 = Conv2D(
-        F1,
-        kernel_size=(1, kernLength),
+        filters=filters_1,
+        kernel_size=(1, kernel_size),
         padding="same",
-        input_shape=(self.X_shape_[1], self.X_shape_[2], 1),
+        input_shape=(data.X_shape_[1], data.X_shape_[2], 1),
         use_bias=False,
     )(input_layer)
     block1 = BatchNormalization()(block1)
     block1 = DepthwiseConv2D(
-        kernel_size=(self.X_shape_[1], 1),
+        kernel_size=(data.X_shape_[1], 1),
         use_bias=False,
         depth_multiplier=2,
         depthwise_constraint=max_norm(1.0),
@@ -60,9 +51,9 @@ def EEGNet(self, input_layer, F1=8, kernLength=64, D=2, dropout=0.5, activation=
     block1 = AveragePooling2D((1, 4))(block1)
     block1 = Dropout(dropout)(block1)
 
-    block2 = SeparableConv2D(F2, kernel_size=(1, 16), use_bias=False, padding="same")(
-        block1
-    )
+    block2 = SeparableConv2D(
+        filters_2, kernel_size=(1, 16), use_bias=False, padding="same"
+    )(block1)
     block2 = BatchNormalization()(block2)
     block2 = Activation(activation)(block2)
     block2 = AveragePooling2D((1, 8))(block2)

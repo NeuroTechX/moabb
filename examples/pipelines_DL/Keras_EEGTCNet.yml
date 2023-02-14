@@ -8,8 +8,8 @@ citations:
   - https://doi.org/10.1109/SMC42975.2020.9283028
 
 pipeline:
-  - name: Keras_EEGTCNet
-    from: moabb.pipelines.DL_model
+  - name: KerasEEGTCNet
+    from: moabb.pipelines.deep_learning
     parameters:
       loss: "sparse_categorical_crossentropy"
       optimizer:

@@ -8,8 +8,8 @@ citations:
   - https://doi.org/10.1002/hbm.23730
 
 pipeline:
-  - name: Keras_ShallowConvNet
-    from: moabb.pipelines.DL_model
+  - name: KerasShallowConvNet
+    from: moabb.pipelines.deep_learning
     parameters:
       loss: "sparse_categorical_crossentropy"
       optimizer:
