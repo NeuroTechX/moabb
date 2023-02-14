@@ -1,3 +1,14 @@
+"""
+Deep learning that work on Moabb.
+Implementation using the tensorflow, keras and scikeras framework.
+"""
+
+# Authors: Igor Carrara <hubert.jbanville@gmail.com>
+#          Bruno Aristimunha <b.aristimunha@gmail.com>
+#          Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>
+
+# License: BSD (3-clause)
+
 from typing import Any, Dict
 
 import tensorflow as tf
@@ -18,27 +29,42 @@ from keras.layers import (
     Lambda,
     LayerNormalization,
     MaxPooling2D,
-    SeparableConv2D,
 )
 from keras.layers.normalization.batch_normalization import BatchNormalization
 from keras.models import Model, Sequential
 from scikeras.wrappers import KerasClassifier
 
-from moabb.pipelines.utilis_DL_model import EEGNet, TCN_block
+from moabb.pipelines.utilis_deep_model import EEGNet, TCN_block
 
 
-# ====================================================================================================================
+# =====================================================================================
 # ShallowConvNet
-# ====================================================================================================================
+# =====================================================================================
 def square(x):
+    """
+    Function to square the input tensor element-wise.
+    Element-wise square.
+    """
     return K.square(x)
 
 
 def log(x):
+    """
+    Function to take the log of the input tensor element-wise.
+    We use a clip to avoid taking the log of 0.
+    min_value=1e-7, max_value=10000
+    Parameters
+    ----------
+    x: tensor
+
+    Returns
+    -------
+    tensor
+    """
     return K.log(K.clip(x, min_value=1e-7, max_value=10000))
 
 
-class Keras_ShallowConvNet(KerasClassifier):
+class KerasShallowConvNet(KerasClassifier):
     """Keras implementation of the Shallow Convolutional Network as described
     in Schirrmeister et. al. (2017), Human Brain Mapping.
 
@@ -55,7 +81,7 @@ class Keras_ShallowConvNet(KerasClassifier):
     def __init__(
         self,
         loss,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=0.0009),
+        optimizer="Adam",
         epochs=1000,
         batch_size=64,
         verbose=0,
@@ -68,6 +94,9 @@ class Keras_ShallowConvNet(KerasClassifier):
         super().__init__(**kwargs)
 
         self.loss = loss
+        if optimizer == "Adam":
+            optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -107,10 +136,10 @@ class Keras_ShallowConvNet(KerasClassifier):
         return model
 
 
-# ====================================================================================================================
+# =================================================================================
 # DeepConvNet
-# ====================================================================================================================
-class Keras_DeepConvNet(KerasClassifier):
+# =================================================================================
+class KerasDeepConvNet(KerasClassifier):
     """Keras implementation of the Shallow Convolutional Network as described
     in Schirrmeister et. al. (2017), Human Brain Mapping.
 
@@ -127,7 +156,7 @@ class Keras_DeepConvNet(KerasClassifier):
     def __init__(
         self,
         loss,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=0.0009),
+        optimizer="Adam",
         epochs=1000,
         batch_size=64,
         verbose=0,
@@ -140,6 +169,9 @@ class Keras_DeepConvNet(KerasClassifier):
         super().__init__(**kwargs)
 
         self.loss = loss
+        if optimizer == "Adam":
+            optimizer = tf.keras.optimizers.Adam(learning_rate=0.0009)
+
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -158,7 +190,9 @@ class Keras_DeepConvNet(KerasClassifier):
             kernel_constraint=max_norm(2.0, axis=(0, 1, 2)),
         )(input_main)
         block1 = Conv2D(
-            25, (self.X_shape_[1], 1), kernel_constraint=max_norm(2.0, axis=(0, 1, 2))
+            25,
+            (self.X_shape_[1], 1),
+            kernel_constraint=max_norm(2.0, axis=(0, 1, 2)),
         )(block1)
         block1 = BatchNormalization(epsilon=1e-05, momentum=0.9)(block1)
         block1 = Activation("elu")(block1)
@@ -201,10 +235,10 @@ class Keras_DeepConvNet(KerasClassifier):
         return model
 
 
-# ====================================================================================================================
+# ===========================================================================
 # EEGNet_8_2
-# ====================================================================================================================
-class Keras_EEGNet_8_2(KerasClassifier):
+# ===========================================================================
+class KerasEEGNet_8_2(KerasClassifier):
     """Keras implementation of the EEGNet as described
     http://iopscience.iop.org/article/10.1088/1741-2552/aace8c/meta
 
@@ -221,7 +255,7 @@ class Keras_EEGNet_8_2(KerasClassifier):
     def __init__(
         self,
         loss,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=0.0009),
+        optimizer="Adam",
         epochs=1000,
         batch_size=64,
         verbose=0,
@@ -234,6 +268,8 @@ class Keras_EEGNet_8_2(KerasClassifier):
         super().__init__(**kwargs)
 
         self.loss = loss
+        if optimizer == "Adam":
+            optimizer = tf.keras.optimizers.Adam(learning_rate=0.0009)
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -275,10 +311,10 @@ class Keras_EEGNet_8_2(KerasClassifier):
         return model
 
 
-# ====================================================================================================================
+# =======================================================================
 # EEGTCNet
-# ====================================================================================================================
-class Keras_EEGTCNet(KerasClassifier):
+# =======================================================================
+class KerasEEGTCNet(KerasClassifier):
     """Keras implementation of the EEGTCNet as described
     https://ieeexplore.ieee.org/abstract/document/9283028
 
@@ -295,7 +331,7 @@ class Keras_EEGTCNet(KerasClassifier):
     def __init__(
         self,
         loss,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=0.0009),
+        optimizer="Adam",
         epochs=1000,
         batch_size=64,
         verbose=0,
@@ -308,6 +344,9 @@ class Keras_EEGTCNet(KerasClassifier):
         super().__init__(**kwargs)
 
         self.loss = loss
+        if optimizer == "Adam":
+            optimizer = tf.keras.optimizers.Adam(learning_rate=0.0009)
+
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -361,10 +400,10 @@ class Keras_EEGTCNet(KerasClassifier):
         return model
 
 
-# ====================================================================================================================
+# =====================================================================
 # EEGNeX
-# ====================================================================================================================
-class Keras_EEGNeX(KerasClassifier):
+# =====================================================================
+class KerasEEGNeX(KerasClassifier):
     """Keras implementation of the EEGNex as described
     https://arxiv.org/abs/2207.12369
 
@@ -381,7 +420,7 @@ class Keras_EEGNeX(KerasClassifier):
     def __init__(
         self,
         loss,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=0.0009),
+        optimizer="Adam",
         epochs=1000,
         batch_size=64,
         verbose=0,
@@ -394,6 +433,8 @@ class Keras_EEGNeX(KerasClassifier):
         super().__init__(**kwargs)
 
         self.loss = loss
+        if optimizer == "Adam":
+            optimizer = tf.keras.optimizers.Adam(learning_rate=0.0009)
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -471,6 +512,7 @@ class Keras_EEGNeX(KerasClassifier):
                 data_format="channels_last",
             )
         )
+
         model.add(LayerNormalization())
         model.add(Activation(activation="elu"))
         model.add(Dropout(0.5))
@@ -486,15 +528,15 @@ class Keras_EEGNeX(KerasClassifier):
         return model
 
 
-# ====================================================================================================================
+# =================================================================
 # EEGITNet
-# ====================================================================================================================
+# =================================================================
 
 n_ff = [2, 4, 8]
 n_sf = [1, 1, 1]
 
 
-class Keras_EEGITNet(KerasClassifier):
+class KerasEEGITNet(KerasClassifier):
     """Keras implementation of the EEITCNet as described
     https://ieeexplore.ieee.org/abstract/document/9739771
 
@@ -511,7 +553,7 @@ class Keras_EEGITNet(KerasClassifier):
     def __init__(
         self,
         loss,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=0.0009),
+        optimizer="Adam",
         epochs=1000,
         batch_size=64,
         verbose=0,
@@ -524,6 +566,8 @@ class Keras_EEGITNet(KerasClassifier):
         super().__init__(**kwargs)
 
         self.loss = loss
+        if optimizer == "Adam":
+            optimizer = tf.keras.optimizers.Adam(learning_rate=0.0009)
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
