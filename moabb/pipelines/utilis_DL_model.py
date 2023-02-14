@@ -38,6 +38,7 @@ from tensorflow import keras  # Super important for Tensorflow 2.11
 
 
 def EEGNet(self, input_layer, F1=8, kernLength=64, D=2, dropout=0.5, activation="elu"):
+
     F2 = F1 * D
 
     block1 = Conv2D(
