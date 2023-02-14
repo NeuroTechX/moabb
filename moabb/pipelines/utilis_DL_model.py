@@ -70,7 +70,7 @@ def TCN_block(input_layer, input_dimension, depth, kernel_size, filters, dropout
     block = BatchNormalization()(block)
     block = Activation(activation)(block)
     block = Dropout(dropout)(block)
-    if (input_dimension != filters):
+    if input_dimension != filters:
         conv = Conv1D(filters, kernel_size=1, padding='same')(input_layer)
         added = Add()([block, conv])
     else:
