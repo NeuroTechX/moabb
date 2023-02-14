@@ -8,7 +8,7 @@ citations:
   - https://doi.org/10.1088/1741-2552/aace8c
 
 pipeline:
-  - name: Keras_EEGNet_8_2
+  - name: KerasEEGNet_8_2
     from: moabb.pipelines.deep_learning
     parameters:
       loss: "sparse_categorical_crossentropy"
