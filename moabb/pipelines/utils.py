@@ -19,15 +19,12 @@ from moabb.analysis.results import get_string_rep
 log = logging.getLogger(__name__)
 
 
-def parse_deep_param(funct, funct_parser):
-    my_func = funct_parser[str(funct)]
-    return my_func
-
-
 def create_pipeline_from_config(config):
     """Create a pipeline from a config file.
 
-    takes a config dict as input and return the coresponding pipeline.
+    takes a config dict as input and return the corresponding pipeline.
+
+    If the pipeline is a Tensorflow pipeline it convert also the optimizer function and the callbacks.
 
     Parameters
     ----------
@@ -48,6 +45,22 @@ def create_pipeline_from_config(config):
         # create the instance
         if "parameters" in component.keys():
             params = component["parameters"]
+            if "optimizer" in component["parameters"].keys():
+                for optm in component["parameters"]["optimizer"]:
+                    mod_optm = __import__(name=optm["from"], fromlist=[optm["name"]])
+                    params_optm = optm["parameters"]
+                    instance = getattr(mod_optm, optm["name"])(**params_optm)
+                    component["parameters"]["optimizer"] = instance
+
+            if "callbacks" in component["parameters"].keys():
+                cb = []
+                for callbacks in component["parameters"]["callbacks"]:
+                    mod_callbacks = __import__(name=callbacks["from"], fromlist=[callbacks["name"]])
+                    params_callbacks = callbacks["parameters"]
+                    instance = getattr(mod_callbacks, callbacks["name"])(**params_callbacks)
+                    cb.append(instance)
+                component["parameters"]["callbacks"] = cb
+
         else:
             params = {}
         instance = getattr(mod, component["name"])(**params)
@@ -55,27 +68,6 @@ def create_pipeline_from_config(config):
 
     pipeline = make_pipeline(*components)
     return pipeline
-
-
-def parse_deep_callbacks(config):
-    config_parsed = config
-
-    for j in np.arange(len(config["pipeline"])):
-        if "parameters" in config["pipeline"][j]:
-            if "callbacks" in config["pipeline"][j]["parameters"]:
-                callbacks = []
-                mod = __import__(config["pipeline"][j]["from"], fromlist=["funct_parser"])
-                funct_parser = mod.funct_parser
-
-                for i in np.arange(len(config["pipeline"][j]["parameters"]["callbacks"])):
-                    callbacks_ = parse_deep_param(
-                        config["pipeline"][j]["parameters"]["callbacks"][i], funct_parser
-                    )
-                    callbacks.append(callbacks_)
-
-                config_parsed["pipeline"][j]["parameters"]["callbacks"] = callbacks
-
-    return config_parsed
 
 
 def parse_pipelines_from_directory(dir_path):
@@ -109,9 +101,6 @@ def parse_pipelines_from_directory(dir_path):
 
             # load config
             config_dict = yaml.load(content, Loader=yaml.FullLoader)
-
-            # Parse Callbacks for DeepLearning
-            config_dict = parse_deep_callbacks(config_dict)
 
             ppl = create_pipeline_from_config(config_dict["pipeline"])
             if "param_grid" in config_dict:
