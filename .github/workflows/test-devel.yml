@@ -9,7 +9,6 @@ on:
 jobs:
   test:
     name: dev ${{ matrix.os }}, py-${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
       matrix:
@@ -41,6 +40,27 @@ jobs:
           key:
             testvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
             hashFiles('**/poetry.lock') }}
+
+      - name: Set the environment used by Poetry on Windows 1/2
+        if:
+          runner.os == 'Windows' && steps.cached-poetry-dependencies.outputs.cache-hit !=
+          'true'
+        id: py
+        shell: bash
+        run: |
+          VER='${{ steps.setup-python.outputs.python-version }}'
+          ARR=(${VER//./ })
+          echo "tag=${ARR[0]}.${ARR[1]}" >> $GITHUB_OUTPUT
+
+      - name: Set the environment used by Poetry on Windows 2/2
+        if:
+          runner.os == 'Windows' && steps.cached-poetry-dependencies.outputs.cache-hit !=
+          'true'
+        shell: bash
+        env:
+          PY_PYTHON: ${{ steps.py.outputs.tag }}
+        run: |
+          poetry env use py
 
       - name: Install dependencies
         if: |
