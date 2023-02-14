@@ -11,15 +11,20 @@ from keras.layers import (
     Dropout,
     Flatten,
     Input,
+    Lambda,
     SeparableConv2D,
+    LayerNormalization,
     AveragePooling2D,
-    MaxPooling2D
+    MaxPooling2D,
+    Add,
+    Concatenate
 )
 from keras.layers.normalization.batch_normalization import BatchNormalization
 from keras.models import Sequential
 from keras.models import Model
 from scikeras.wrappers import KerasClassifier
 from keras import backend as K
+from moabb.pipelines.utilis_DL_model import EEGNet, TCN_block
 
 
 # ====================================================================================================================
@@ -182,80 +187,387 @@ class Keras_DeepConvNet(KerasClassifier):
 # EEGNet_8_2
 # ====================================================================================================================
 class Keras_EEGNet_8_2(KerasClassifier):
-    def __init__(
-        self,
-        loss,
-        optimizer=None,
-        epochs=200,
-        batch_size=128,
-        verbose=0,
-        random_state=42,
-        validation_split=0.2,
-        **kwargs,
-    ):
+    """ Keras implementation of the EEGNet as described
+        http://iopscience.iop.org/article/10.1088/1741-2552/aace8c/meta
+
+        This implementation is taken from code by the Army Research Laboratory (ARL)
+        at https://github.com/vlawhern/arl-eegmodels
+
+        We use the original parameter implemented on the paper.
+
+        Note that this implementation has not been verified by the original
+        authors. We do note that this implementation reproduces the results in the
+        original paper with minor deviations.
+        """
+
+    def __init__(self,
+                 loss,
+                 optimizer=tf.keras.optimizers.Adam(learning_rate=0.0009),
+                 epochs=1000,
+                 batch_size=64,
+                 verbose=0,
+                 random_state=42,
+                 validation_split=0.2,
+                 history_plot=False,
+                 path=None,
+                 **kwargs, ):
         super().__init__(**kwargs)
 
         self.loss = loss
-        if optimizer is None:
-            optimizer = tf.keras.optimizers.Adam()
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
         self.verbose = verbose
         self.random_state = random_state
         self.validation_split = validation_split
+        self.history_plot = history_plot
+        self.path = path
 
     def _keras_build_fn(self, compile_kwargs: Dict[str, Any]):
+
+        # Parameter of the Article
+        F1 = 8
+        kernLength = 64
+        D = 2
+        dropout = 0.5
+
+        # Architecture
+        # Input
+        input_main = Input(shape=(self.X_shape_[1], self.X_shape_[2], 1))
+        # EEGNet Block
+        eegnet = EEGNet(self, input_layer=input_main, F1=F1, kernLength=kernLength, D=D, dropout=dropout)
+        flatten = Flatten()(eegnet)
+        # Classification Block
+        dense = Dense(self.n_classes_, kernel_constraint=max_norm(0.5))(flatten)
+        softmax = Activation('softmax')(dense)
+        # Creation of the Model
+        model = Model(inputs=input_main, outputs=softmax)
+
+        # Compile Model
+        model.compile(loss=compile_kwargs["loss"], optimizer=compile_kwargs["optimizer"])
+
+        return model
+
+
+
+# ====================================================================================================================
+# EEGTCNet
+# ====================================================================================================================
+class Keras_EEGTCNet(KerasClassifier):
+    """ Keras implementation of the EEGTCNet as described
+    https://ieeexplore.ieee.org/abstract/document/9283028
+
+    This implementation is taken from code by
+    at https://github.com/AbbasSalami/EEG-ITNet
+
+    We use the original parameter implemented on the paper.
+
+    Note that this implementation has not been verified by the original
+    authors. We do note that this implementation reproduces the results in the
+    original paper with minor deviations.
+    """
+
+    def __init__(self,
+                 loss,
+                 optimizer=tf.keras.optimizers.Adam(learning_rate=0.0009),
+                 epochs=1000,
+                 batch_size=64,
+                 verbose=0,
+                 random_state=42,
+                 validation_split=0.2,
+                 history_plot=False,
+                 path=None,
+                 **kwargs, ):
+        super().__init__(**kwargs)
+
+        self.loss = loss
+        self.optimizer = optimizer
+        self.epochs = epochs
+        self.batch_size = batch_size
+        self.verbose = verbose
+        self.random_state = random_state
+        self.validation_split = validation_split
+        self.history_plot = history_plot
+        self.path = path
+
+    def _keras_build_fn(self, compile_kwargs: Dict[str, Any]):
+
+        # Parameter of the Article
+        F1 = 8
+        kernLength = 64
+        D = 2
+        dropout = 0.5
+        F2 = F1*D
+
+        # Architecture
+        # Input
+        input_main = Input(shape=(self.X_shape_[1], self.X_shape_[2], 1))
+        # EEGNet Block
+        eegnet = EEGNet(self, input_layer=input_main, F1=F1, kernLength=kernLength, D=D, dropout=dropout)
+        block2 = Lambda(lambda x: x[:, :, -1, :])(eegnet)
+        # TCN Block
+        outs = TCN_block(input_layer=block2, input_dimension=F2, depth=2, kernel_size=4, filters=12,
+                         dropout=dropout, activation="elu")
+        out = Lambda(lambda x: x[:, -1, :])(outs)
+        # Classification Block
+        dense = Dense(self.n_classes_, kernel_constraint=max_norm(0.5))(out)
+        softmax = Activation('softmax')(dense)
+        # Creation of the Model
+        model = Model(inputs=input_main, outputs=softmax)
+
+        # Compile Model
+        model.compile(loss=compile_kwargs["loss"], optimizer=compile_kwargs["optimizer"])
+
+        return model
+
+
+
+# ====================================================================================================================
+# EEGNeX
+# ====================================================================================================================
+class Keras_EEGNeX(KerasClassifier):
+    """ Keras implementation of the EEGNex as described
+    https://arxiv.org/abs/2207.12369
+
+    This implementation is taken from code by
+    at https://github.com/chenxiachan/EEGNeX
+
+    We use the original parameter implemented on the paper.
+
+    Note that this implementation has not been verified by the original
+    authors. We do note that this implementation reproduces the results in the
+    original paper with minor deviations.
+    """
+
+    def __init__(self,
+                 loss,
+                 optimizer=tf.keras.optimizers.Adam(learning_rate=0.0009),
+                 epochs=1000,
+                 batch_size=64,
+                 verbose=0,
+                 random_state=42,
+                 validation_split=0.2,
+                 history_plot=False,
+                 path=None,
+                 **kwargs, ):
+        super().__init__(**kwargs)
+
+        self.loss = loss
+        self.optimizer = optimizer
+        self.epochs = epochs
+        self.batch_size = batch_size
+        self.verbose = verbose
+        self.random_state = random_state
+        self.validation_split = validation_split
+        self.history_plot = history_plot
+        self.path = path
+
+    def _keras_build_fn(self, compile_kwargs: Dict[str, Any]):
+
+        # Architecture
+        # Input
         model = Sequential()
         model.add(Input(shape=(self.X_shape_[1], self.X_shape_[2], 1)))
-        #
-        model.add(
-            Conv2D(
-                filters=8,
-                kernel_size=(1, 64),
-                use_bias=False,
-                padding="same",
-                data_format="channels_last",
-            )
-        )
-        model.add(BatchNormalization())
+        # EEGNeX
+        model.add(Conv2D(filters=8, kernel_size=(1, 32), use_bias=False, padding='same', data_format="channels_last"))
+        model.add(LayerNormalization())
+        model.add(Activation(activation='elu'))
+        model.add(Conv2D(filters=32, kernel_size=(1, 32), use_bias=False, padding='same', data_format="channels_last"))
+        model.add(LayerNormalization())
+        model.add(Activation(activation='elu'))
 
-        model.add(
-            DepthwiseConv2D(
-                kernel_size=(self.X_shape_[1], 1),
-                depth_multiplier=2,
-                use_bias=False,
-                depthwise_constraint=max_norm(1.0),
-                data_format="channels_last",
-            )
-        )
-        model.add(BatchNormalization())
-        model.add(Activation(activation="elu"))
-        model.add(
-            AvgPool2D(pool_size=(1, 4), padding="same", data_format="channels_last")
-        )
+        model.add(DepthwiseConv2D(kernel_size=(self.X_shape_[1], 1), depth_multiplier=2, use_bias=False,
+                                  depthwise_constraint=max_norm(1.), data_format="channels_last"))
+        model.add(LayerNormalization())
+        model.add(Activation(activation='elu'))
+        model.add(AvgPool2D(pool_size=(1, 4), padding='same', data_format="channels_last"))
         model.add(Dropout(0.5))
 
-        model.add(
-            SeparableConv2D(
-                filters=16,
-                kernel_size=(1, 16),
-                use_bias=False,
-                padding="same",
-                data_format="channels_last",
-            )
-        )
-        model.add(BatchNormalization())
-        model.add(Activation(activation="elu"))
-        model.add(
-            AvgPool2D(pool_size=(1, 8), padding="same", data_format="channels_last")
-        )
+        model.add(Conv2D(filters=32, kernel_size=(1, 16), use_bias=False, padding='same', dilation_rate=(1, 2),
+                         data_format='channels_last'))
+        model.add(LayerNormalization())
+        model.add(Activation(activation='elu'))
+
+        model.add(Conv2D(filters=8, kernel_size=(1, 16), use_bias=False, padding='same', dilation_rate=(1, 4),
+                         data_format='channels_last'))
+        model.add(LayerNormalization())
+        model.add(Activation(activation='elu'))
         model.add(Dropout(0.5))
 
         model.add(Flatten())
-        model.add(Dense(self.n_classes_, kernel_constraint=max_norm(0.25)))
-        model.add(Activation("softmax"))
+        # Classification Block
+        model.add(Dense(self.n_classes_, kernel_constraint=max_norm(0.5)))
+        model.add(Activation(activation='softmax'))
+
+        # Compile Model
         model.compile(loss=compile_kwargs["loss"], optimizer=compile_kwargs["optimizer"])
-        # model.summary()
+
+        return model
+
+
+# ====================================================================================================================
+# EEGITNet
+# ====================================================================================================================
+
+n_ff = [2, 4, 8]
+n_sf = [1, 1, 1]
+
+class Keras_EEGITNet(KerasClassifier):
+    """ Keras implementation of the EEITCNet as described
+    https://ieeexplore.ieee.org/abstract/document/9739771
+
+    This implementation is taken from code by
+    at https://github.com/AbbasSalami/EEG-ITNet
+
+    We use the original parameter implemented on the paper.
+
+    Note that this implementation has not been verified by the original
+    authors. We do note that this implementation reproduces the results in the
+    original paper with minor deviations.
+    """
+
+    def __init__(self,
+                 loss,
+                 optimizer=tf.keras.optimizers.Adam(learning_rate=0.0009),
+                 epochs=1000,
+                 batch_size=64,
+                 verbose=0,
+                 random_state=42,
+                 validation_split=0.2,
+                 history_plot=False,
+                 path=None,
+                 **kwargs, ):
+        super().__init__(**kwargs)
+
+        self.loss = loss
+        self.optimizer = optimizer
+        self.epochs = epochs
+        self.batch_size = batch_size
+        self.verbose = verbose
+        self.random_state = random_state
+        self.validation_split = validation_split
+        self.history_plot = history_plot
+        self.path = path
+
+    def _keras_build_fn(self, compile_kwargs: Dict[str, Any]):
+
+        input_main = Input(shape=(self.X_shape_[1], self.X_shape_[2], 1))
+
+        block1 = Conv2D(n_ff[0], (1, 16), use_bias=False, activation='linear', padding='same',
+                        name='Spectral_filter_1')(input_main)
+        block1 = BatchNormalization()(block1)
+        block1 = DepthwiseConv2D((self.X_shape_[1], 1), use_bias=False, padding='valid', depth_multiplier=n_sf[0],
+                                 activation='linear',
+                                 depthwise_constraint=tf.keras.constraints.MaxNorm(max_value=1),
+                                 name='Spatial_filter_1')(block1)
+        block1 = BatchNormalization()(block1)
+        block1 = Activation('elu')(block1)
+
+        # ================================
+
+        block2 = Conv2D(n_ff[1], (1, 32), use_bias=False, activation='linear', padding='same',
+                        name='Spectral_filter_2')(input_main)
+        block2 = BatchNormalization()(block2)
+        block2 = DepthwiseConv2D((self.X_shape_[1], 1), use_bias=False, padding='valid', depth_multiplier=n_sf[1],
+                                 activation='linear',
+                                 depthwise_constraint=tf.keras.constraints.MaxNorm(max_value=1),
+                                 name='Spatial_filter_2')(block2)
+        block2 = BatchNormalization()(block2)
+        block2 = Activation('elu')(block2)
+
+        # ================================
+
+        block3 = Conv2D(n_ff[2], (1, 64), use_bias=False, activation='linear', padding='same',
+                        name='Spectral_filter_3')(input_main)
+        block3 = BatchNormalization()(block3)
+        block3 = DepthwiseConv2D((self.X_shape_[1], 1), use_bias=False, padding='valid', depth_multiplier=n_sf[2],
+                                 activation='linear',
+                                 depthwise_constraint=tf.keras.constraints.MaxNorm(max_value=1),
+                                 name='Spatial_filter_3')(block3)
+        block3 = BatchNormalization()(block3)
+        block3 = Activation('elu')(block3)
+
+        # ================================
+
+        block = Concatenate(axis=-1)([block1, block2, block3])
+
+        # ================================
+
+        block = AveragePooling2D((1, 4), padding="same")(block)
+        block_in = Dropout(0.4)(block)
+
+        # ================================
+
+        paddings = tf.constant([[0, 0], [0, 0], [3, 0], [0, 0]])
+        block = tf.pad(block_in, paddings, "CONSTANT")
+        block = DepthwiseConv2D((1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 1))(block)
+        block = BatchNormalization()(block)
+        block = Activation('elu')(block)
+        block = Dropout(0.4)(block)
+        block = tf.pad(block, paddings, "CONSTANT")
+        block = DepthwiseConv2D((1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 1))(block)
+        block = BatchNormalization()(block)
+        block = Activation('elu')(block)
+        block = Dropout(0.4)(block)
+        block_out = Add()([block_in, block])
+
+        paddings = tf.constant([[0, 0], [0, 0], [6, 0], [0, 0]])
+        block = tf.pad(block_out, paddings, "CONSTANT")
+        block = DepthwiseConv2D((1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 2))(block)
+        block = BatchNormalization()(block)
+        block = Activation('elu')(block)
+        block = Dropout(0.4)(block)
+        block = tf.pad(block, paddings, "CONSTANT")
+        block = DepthwiseConv2D((1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 2))(block)
+        block = BatchNormalization()(block)
+        block = Activation('elu')(block)
+        block = Dropout(0.4)(block)
+        block_out = Add()([block_out, block])
+
+        paddings = tf.constant([[0, 0], [0, 0], [12, 0], [0, 0]])
+        block = tf.pad(block_out, paddings, "CONSTANT")
+        block = DepthwiseConv2D((1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 4))(block)
+        block = BatchNormalization()(block)
+        block = Activation('elu')(block)
+        block = Dropout(0.4)(block)
+        block = tf.pad(block, paddings, "CONSTANT")
+        block = DepthwiseConv2D((1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 4))(block)
+        block = BatchNormalization()(block)
+        block = Activation('elu')(block)
+        block = Dropout(0.4)(block)
+        block_out = Add()([block_out, block])
+
+        paddings = tf.constant([[0, 0], [0, 0], [24, 0], [0, 0]])
+        block = tf.pad(block_out, paddings, "CONSTANT")
+        block = DepthwiseConv2D((1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 8))(block)
+        block = BatchNormalization()(block)
+        block = Activation('elu')(block)
+        block = Dropout(0.4)(block)
+        block = tf.pad(block, paddings, "CONSTANT")
+        block = DepthwiseConv2D((1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 8))(block)
+        block = BatchNormalization()(block)
+        block = Activation('elu')(block)
+        block = Dropout(0.4)(block)
+        block_out = Add()([block_out, block])
+
+        # ================================
+
+        block = block_out
+
+        # ================================
+
+        block = Conv2D(28, (1, 1))(block)
+        block = BatchNormalization()(block)
+        block = Activation('elu')(block)
+        block = AveragePooling2D((4, 1), padding="same")(block)
+        block = Dropout(0.4)(block)
+        embedded = Flatten()(block)
+
+        dense = Dense(self.n_classes_, kernel_constraint=max_norm(0.5))(embedded)
+        softmax = Activation('softmax')(dense)
+
+        model = Model(inputs=input_main, outputs=softmax)
+
+        model.compile(loss=compile_kwargs["loss"], optimizer=compile_kwargs["optimizer"])
 
         return model
