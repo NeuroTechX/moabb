@@ -293,9 +293,9 @@ class KerasEEGNet_8_2(KerasClassifier):
         eegnet = EEGNet(
             self,
             input_layer=input_main,
-            F1=F1,
-            kernLength=kernLength,
-            D=D,
+            filters_1=F1,
+            kernel_size=kernLength,
+            depth=D,
             dropout=dropout,
         )
         flatten = Flatten()(eegnet)
@@ -371,9 +371,9 @@ class KerasEEGTCNet(KerasClassifier):
         eegnet = EEGNet(
             self,
             input_layer=input_main,
-            F1=F1,
-            kernLength=kernLength,
-            D=D,
+            filters_1=F1,
+            kernel_size=kernLength,
+            depth=D,
             dropout=dropout,
         )
         block2 = Lambda(lambda x: x[:, :, -1, :])(eegnet)
