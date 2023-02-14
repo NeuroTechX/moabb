@@ -55,9 +55,13 @@ def create_pipeline_from_config(config):
             if "callbacks" in component["parameters"].keys():
                 cb = []
                 for callbacks in component["parameters"]["callbacks"]:
-                    mod_callbacks = __import__(name=callbacks["from"], fromlist=[callbacks["name"]])
+                    mod_callbacks = __import__(
+                        name=callbacks["from"], fromlist=[callbacks["name"]]
+                    )
                     params_callbacks = callbacks["parameters"]
-                    instance = getattr(mod_callbacks, callbacks["name"])(**params_callbacks)
+                    instance = getattr(mod_callbacks, callbacks["name"])(
+                        **params_callbacks
+                    )
                     cb.append(instance)
                 component["parameters"]["callbacks"] = cb
 
