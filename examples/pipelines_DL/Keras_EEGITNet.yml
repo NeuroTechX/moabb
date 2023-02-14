@@ -17,8 +17,8 @@ pipeline:
           from: tensorflow.keras.optimizers.legacy
           parameters:
             learning_rate: 0.0009
-      epochs: 1000
-      batch_size: 64
+      epochs: 2
+      batch_size: 1
       verbose: 0
       random_state: 42
       validation_split: 0.2
