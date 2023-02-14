@@ -9,7 +9,7 @@ citations:
 
 pipeline:
   - name: Keras_EEGITNet
-    from: moabb.pipelines.DL_model
+    from: moabb.pipelines..deep_learning
     parameters:
       loss: "sparse_categorical_crossentropy"
       optimizer:
