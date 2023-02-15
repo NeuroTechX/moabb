@@ -1,12 +1,12 @@
 import logging
 import os
 import os.path as osp
+import random
 
+import numpy as np
+import tensorflow as tf
 from mne import get_config, set_config
 from mne import set_log_level as sll
-import tensorflow as tf
-import random
-import numpy as np
 
 
 def setup_seed(seed):

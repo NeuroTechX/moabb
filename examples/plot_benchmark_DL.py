@@ -20,8 +20,8 @@ from tensorflow import keras
 
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import score_plot
-from moabb.utils import setup_seed
 from moabb.datasets import BNCI2014001
+from moabb.utils import setup_seed
 
 
 set_log_level("info")

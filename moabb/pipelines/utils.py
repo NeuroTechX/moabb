@@ -7,7 +7,6 @@ from glob import glob
 
 import numpy as np
 import scipy.signal as scp
-
 import yaml
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import make_pipeline
@@ -367,6 +366,3 @@ def filterbank(X, sfreq, idx_fb, peaks):
                     padlen=3 * (max(len(B), len(A)) - 1),
                 )
     return y
-
-
-
