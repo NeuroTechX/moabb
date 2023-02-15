@@ -1,5 +1,5 @@
 """
-Utils for Deep learning that work on Moabb.
+Utils for Deep learning integrated on MOABB.
 Implementation using the tensorflow, keras and scikeras framework.
 """
 
@@ -27,9 +27,24 @@ def EEGNet(
     data, input_layer, filters_1=8, kernel_size=64, depth=2, dropout=0.5, activation="elu"
 ):
     """
-    EEGNet implementation.
+    EEGNet block implementation as described in [1].
 
+    This implementation is taken from code by The Integrated Systems Laboratory of ETH Zurich
+    at https://github.com/iis-eth-zurich/eeg-tcnet
+
+    We use the original parameter implemented on the paper.
+
+    Note that this implementation has not been verified by the original
+    authors.
+
+    References
+    ----------
+    .. [1] Lawhern, V. J., Solon, A. J., Waytowich, N. R., Gordon, S. M., Hung, C. P., & Lance, B. J. (2018). EEGNet:
+           a compact convolutional neural network for EEG-based brain–computer interfaces. Journal of neural
+           engineering, 15(5), 056013.
+           https://doi.org/10.1088/1741-2552/aace8c
     """
+
     filters_2 = filters_1 * depth
 
     block1 = Conv2D(
@@ -65,21 +80,17 @@ def EEGNet(
 def TCN_block(
     input_layer, input_dimension, depth, kernel_size, filters, dropout, activation
 ):
-    """TCN_block from Bai et al 2018
-    Temporal Convolutional Network (TCN)
+    """Temporal Convolutional Network (TCN), TCN_block from [1].
 
-    Notes
-    -----
-    THe original code available at https://github.com/locuslab/TCN/blob/master/TCN/tcn.py
-    This implementation has a slight modification from the original code
-    and it is taken from the code by Ingolfsson et al at https://github.com/iis-eth-zurich/eeg-tcnet
-    See details at https://arxiv.org/abs/2006.00622
+    This implementation is taken from code by The Integrated Systems Laboratory of ETH Zurich
+    at https://github.com/iis-eth-zurich/eeg-tcnet
+
     References
     ----------
-    .. Bai, S., Kolter, J. Z., & Koltun, V. (2018).
-       An empirical evaluation of generic convolutional and recurrent networks
-       for sequence modeling.
-       arXiv preprint arXiv:1803.01271.
+    .. [1] Ingolfsson, T. M., Hersche, M., Wang, X., Kobayashi, N., Cavigelli, L., & Benini, L. (2020, October).
+           EEG-TCNet: An accurate temporal convolutional network for embedded motor-imagery brain–machine interfaces.
+           In 2020 IEEE International Conference on Systems, Man, and Cybernetics (SMC) (pp. 2958-2965). IEEE.
+           https://doi.org/10.48550/arXiv.2006.00622
     """
 
     block = Conv1D(

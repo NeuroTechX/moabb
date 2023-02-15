@@ -8,7 +8,7 @@ from glob import glob
 
 import numpy as np
 import scipy.signal as scp
-import tensorflow as tf
+
 import yaml
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import make_pipeline
@@ -105,7 +105,6 @@ def parse_pipelines_from_directory(dir_path):
 
             # load config
             config_dict = yaml.load(content, Loader=yaml.FullLoader)
-
             ppl = create_pipeline_from_config(config_dict["pipeline"])
             if "param_grid" in config_dict:
                 pipeline_configs.append(
@@ -371,10 +370,4 @@ def filterbank(X, sfreq, idx_fb, peaks):
     return y
 
 
-def setup_seed(seed):
-    random.seed(seed)
-    np.random.seed(seed)
-    tf.random.set_seed(seed)  # tf cpu fix seed
-    os.environ[
-        "TF_DETERMINISTIC_OPS"
-    ] = "1"  # tf gpu fix seed, please `pip install tensorflow-determinism` first
+

@@ -1,5 +1,5 @@
 """
-Deep learning that work on Moabb.
+Deep learning integrated in MOABB
 Implementation using the tensorflow, keras and scikeras framework.
 """
 
@@ -65,8 +65,7 @@ def log(x):
 
 
 class KerasShallowConvNet(KerasClassifier):
-    """Keras implementation of the Shallow Convolutional Network as described
-    in Schirrmeister et. al. (2017), Human Brain Mapping.
+    """Keras implementation of the Shallow Convolutional Network as described in [1].
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels
@@ -74,8 +73,14 @@ class KerasShallowConvNet(KerasClassifier):
     We use the original parameter implemented on the paper.
 
     Note that this implementation has not been verified by the original
-    authors. We do note that this implementation reproduces the results in the
-    original paper with minor deviations.
+    authors.
+
+    References
+    ----------
+    .. [1] Schirrmeister, R. T., Springenberg, J. T., Fiederer, L. D. J., Glasstetter, M., Eggensperger,
+           K., Tangermann, M., ... & Ball, T. (2017). Deep learning with convolutional neural networks
+           for EEG decoding and visualization. Human brain mapping, 38(11), 5391-5420.
+           https://doi.org/10.1002/hbm.23730
     """
 
     def __init__(
@@ -85,7 +90,7 @@ class KerasShallowConvNet(KerasClassifier):
         epochs=1000,
         batch_size=64,
         verbose=0,
-        random_state=42,
+        random_state=None,
         validation_split=0.2,
         history_plot=False,
         path=None,
@@ -140,8 +145,7 @@ class KerasShallowConvNet(KerasClassifier):
 # DeepConvNet
 # =================================================================================
 class KerasDeepConvNet(KerasClassifier):
-    """Keras implementation of the Shallow Convolutional Network as described
-    in Schirrmeister et. al. (2017), Human Brain Mapping.
+    """Keras implementation of the Shallow Convolutional Network as described in [1].
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels
@@ -149,8 +153,14 @@ class KerasDeepConvNet(KerasClassifier):
     We use the original parameter implemented on the paper.
 
     Note that this implementation has not been verified by the original
-    authors. We do note that this implementation reproduces the results in the
-    original paper with minor deviations.
+    authors.
+
+    References
+    ----------
+    .. [1] Schirrmeister, R. T., Springenberg, J. T., Fiederer, L. D. J., Glasstetter, M., Eggensperger,
+           K., Tangermann, M., ... & Ball, T. (2017). Deep learning with convolutional neural networks
+           for EEG decoding and visualization. Human brain mapping, 38(11), 5391-5420.
+           https://doi.org/10.1002/hbm.23730
     """
 
     def __init__(
@@ -160,7 +170,7 @@ class KerasDeepConvNet(KerasClassifier):
         epochs=1000,
         batch_size=64,
         verbose=0,
-        random_state=42,
+        random_state=None,
         validation_split=0.2,
         history_plot=False,
         path=None,
@@ -239,8 +249,7 @@ class KerasDeepConvNet(KerasClassifier):
 # EEGNet_8_2
 # ===========================================================================
 class KerasEEGNet_8_2(KerasClassifier):
-    """Keras implementation of the EEGNet as described
-    http://iopscience.iop.org/article/10.1088/1741-2552/aace8c/meta
+    """Keras implementation of the EEGNet as described in [1].
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels
@@ -248,8 +257,14 @@ class KerasEEGNet_8_2(KerasClassifier):
     We use the original parameter implemented on the paper.
 
     Note that this implementation has not been verified by the original
-    authors. We do note that this implementation reproduces the results in the
-    original paper with minor deviations.
+    authors.
+
+    References
+    ----------
+    .. [1] Lawhern, V. J., Solon, A. J., Waytowich, N. R., Gordon, S. M., Hung, C. P., & Lance, B. J. (2018). EEGNet:
+           a compact convolutional neural network for EEG-based brain–computer interfaces. Journal of neural
+           engineering, 15(5), 056013.
+           https://doi.org/10.1088/1741-2552/aace8c
     """
 
     def __init__(
@@ -259,7 +274,7 @@ class KerasEEGNet_8_2(KerasClassifier):
         epochs=1000,
         batch_size=64,
         verbose=0,
-        random_state=42,
+        random_state=None,
         validation_split=0.2,
         history_plot=False,
         path=None,
@@ -315,17 +330,22 @@ class KerasEEGNet_8_2(KerasClassifier):
 # EEGTCNet
 # =======================================================================
 class KerasEEGTCNet(KerasClassifier):
-    """Keras implementation of the EEGTCNet as described
-    https://ieeexplore.ieee.org/abstract/document/9283028
+    """Keras implementation of the EEGTCNet as described in [1].
 
     This implementation is taken from code by
-    at https://github.com/AbbasSalami/EEG-ITNet
+    at https://github.com/iis-eth-zurich/eeg-tcnet
 
     We use the original parameter implemented on the paper.
 
     Note that this implementation has not been verified by the original
-    authors. We do note that this implementation reproduces the results in the
-    original paper with minor deviations.
+    authors.
+
+    References
+    ----------
+    .. [1] Ingolfsson, T. M., Hersche, M., Wang, X., Kobayashi, N., Cavigelli, L., & Benini, L. (2020, October).
+           EEG-TCNet: An accurate temporal convolutional network for embedded motor-imagery brain–machine interfaces.
+           In 2020 IEEE International Conference on Systems, Man, and Cybernetics (SMC) (pp. 2958-2965). IEEE.
+           https://doi.org/10.1109/SMC42975.2020.9283028
     """
 
     def __init__(
@@ -335,7 +355,7 @@ class KerasEEGTCNet(KerasClassifier):
         epochs=1000,
         batch_size=64,
         verbose=0,
-        random_state=42,
+        random_state=None,
         validation_split=0.2,
         history_plot=False,
         path=None,
@@ -404,8 +424,7 @@ class KerasEEGTCNet(KerasClassifier):
 # EEGNeX
 # =====================================================================
 class KerasEEGNeX(KerasClassifier):
-    """Keras implementation of the EEGNex as described
-    https://arxiv.org/abs/2207.12369
+    """Keras implementation of the EEGNex as described in [1].
 
     This implementation is taken from code by
     at https://github.com/chenxiachan/EEGNeX
@@ -413,8 +432,14 @@ class KerasEEGNeX(KerasClassifier):
     We use the original parameter implemented on the paper.
 
     Note that this implementation has not been verified by the original
-    authors. We do note that this implementation reproduces the results in the
-    original paper with minor deviations.
+    authors.
+
+    References
+    ----------
+    .. [1] Chen, X., Teng, X., Chen, H., Pan, Y., & Geyer, P. (2022). Toward reliable signals decoding for
+           electroencephalogram: A benchmark study to EEGNeX. arXiv preprint arXiv:2207.12369.
+           https://doi.org/10.48550/arXiv.2207.12369
+
     """
 
     def __init__(
@@ -424,7 +449,7 @@ class KerasEEGNeX(KerasClassifier):
         epochs=1000,
         batch_size=64,
         verbose=0,
-        random_state=42,
+        random_state=None,
         validation_split=0.2,
         history_plot=False,
         path=None,
@@ -537,8 +562,7 @@ n_sf = [1, 1, 1]
 
 
 class KerasEEGITNet(KerasClassifier):
-    """Keras implementation of the EEITCNet as described
-    https://ieeexplore.ieee.org/abstract/document/9739771
+    """Keras implementation of the EEGITNet as described in [1].
 
     This implementation is taken from code by
     at https://github.com/AbbasSalami/EEG-ITNet
@@ -546,8 +570,14 @@ class KerasEEGITNet(KerasClassifier):
     We use the original parameter implemented on the paper.
 
     Note that this implementation has not been verified by the original
-    authors. We do note that this implementation reproduces the results in the
-    original paper with minor deviations.
+    authors.
+
+    References
+    ----------
+    .. [1] Salami, A., Andreu-Perez, J., & Gillmeister, H. (2022). EEG-ITNet: An explainable inception temporal
+           convolutional network for motor imagery classification. IEEE Access, 10, 36672-36685.
+           https://doi.org/10.1109/ACCESS.2022.3161489
+
     """
 
     def __init__(
@@ -557,7 +587,7 @@ class KerasEEGITNet(KerasClassifier):
         epochs=1000,
         batch_size=64,
         verbose=0,
-        random_state=42,
+        random_state=None,
         validation_split=0.2,
         history_plot=False,
         path=None,

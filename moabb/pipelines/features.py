@@ -65,8 +65,13 @@ class ExtendedSSVEPSignal(BaseEstimator, TransformerMixin):
 
 class AugmentedDataset(BaseEstimator, TransformerMixin):
     """This transformation allow to create an embedding version of the current dataset.
+    The implementation and the application is described in [1].
 
-    More detail of this: https://doi.org/10.48550/arXiv.2302.04508
+    References
+    ----------
+    .. [1] Carrara, I., & Papadopoulo, T. (2023). Classification of BCI-EEG based on augmented covariance matrix.
+           arXiv preprint arXiv:2302.04508.
+           https://doi.org/10.48550/arXiv.2302.04508
     """
 
     def __init__(self, order=1, lag=1):

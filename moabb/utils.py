@@ -4,6 +4,18 @@ import os.path as osp
 
 from mne import get_config, set_config
 from mne import set_log_level as sll
+import tensorflow as tf
+import random
+import numpy as np
+
+
+def setup_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    tf.random.set_seed(seed)  # tf cpu fix seed
+    os.environ[
+        "TF_DETERMINISTIC_OPS"
+    ] = "1"  # tf gpu fix seed, please `pip install tensorflow-determinism` first
 
 
 def set_log_level(level="INFO"):
