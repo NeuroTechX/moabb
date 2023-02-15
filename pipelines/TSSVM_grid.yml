@@ -23,7 +23,6 @@ pipeline:
     parameters:
       kernel: "linear"
 
-
 param_grid:
   svc__C:
     - 0.5
