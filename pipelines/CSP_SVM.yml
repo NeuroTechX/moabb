@@ -1,4 +1,5 @@
 name: CSP + SVM
+
 paradigms:
   - LeftRightImagery
   - MotorImagery

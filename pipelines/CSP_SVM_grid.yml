@@ -1,4 +1,4 @@
-name: CSP + LDA
+name: CSP + SVM Grid\
 
 paradigms:
   - LeftRightImagery
@@ -19,7 +19,24 @@ pipeline:
     parameters:
       nfilter: 6
 
-  - name: LinearDiscriminantAnalysis
-    from: sklearn.discriminant_analysis
+  - name: SVC
+    from: sklearn.svm
     parameters:
-      solver: svd
+      kernel: "linear"
+
+param_grid:
+  csp__nfilter:
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+  svc__C:
+    - 0.5
+    - 1
+    - 1.5
+  svc__kernel:
+    - "rbf"
+    - "linear"
