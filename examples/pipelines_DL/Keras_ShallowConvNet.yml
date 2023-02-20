@@ -8,6 +8,9 @@ citations:
   - https://doi.org/10.1002/hbm.23730
 
 pipeline:
+  - name: StandardScaler_Epoch
+    from: moabb.pipelines.deep_learning.features
+
   - name: KerasShallowConvNet
     from: moabb.pipelines.deep_learning
     parameters:

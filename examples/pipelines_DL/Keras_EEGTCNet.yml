@@ -8,6 +8,9 @@ citations:
   - https://doi.org/10.1109/SMC42975.2020.9283028
 
 pipeline:
+  - name: StandardScaler_Epoch
+    from: moabb.pipelines.deep_learning.features
+
   - name: KerasEEGTCNet
     from: moabb.pipelines.deep_learning
     parameters:

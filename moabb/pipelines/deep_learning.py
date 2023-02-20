@@ -29,12 +29,13 @@ from keras.layers import (
     Lambda,
     LayerNormalization,
     MaxPooling2D,
+    Permute
 )
 from keras.layers.normalization.batch_normalization import BatchNormalization
 from keras.models import Model, Sequential
 from scikeras.wrappers import KerasClassifier
 
-from moabb.pipelines.utils_deep_model import EEGNet, TCN_block
+from moabb.pipelines.utils_deep_model import EEGNet, TCN_block, EEGNet_TC
 
 
 # =====================================================================================
@@ -377,6 +378,7 @@ class KerasEEGTCNet(KerasClassifier):
         self.path = path
 
     def _keras_build_fn(self, compile_kwargs: Dict[str, Any]):
+
         # Parameter of the Article
         F1 = 8
         kernLength = 64
@@ -386,33 +388,20 @@ class KerasEEGTCNet(KerasClassifier):
 
         # Architecture
         # Input
-        input_main = Input(shape=(self.X_shape_[1], self.X_shape_[2], 1))
+        input_1 = Input(shape=(self.X_shape_[1], self.X_shape_[2], 1))
+        input_2 = Permute((2, 1, 3))(input_1)
         # EEGNet Block
-        eegnet = EEGNet(
-            self,
-            input_layer=input_main,
-            filters_1=F1,
-            kernel_size=kernLength,
-            depth=D,
-            dropout=dropout,
-        )
+        eegnet = EEGNet_TC(self, input_layer=input_2, F1=F1, kernLength=kernLength, D=D, dropout=dropout)
         block2 = Lambda(lambda x: x[:, :, -1, :])(eegnet)
         # TCN Block
-        outs = TCN_block(
-            input_layer=block2,
-            input_dimension=F2,
-            depth=2,
-            kernel_size=4,
-            filters=12,
-            dropout=dropout,
-            activation="elu",
-        )
+        outs = TCN_block(input_layer=block2, input_dimension=F2, depth=2, kernel_size=4, filters=12,
+                         dropout=dropout, activation="elu")
         out = Lambda(lambda x: x[:, -1, :])(outs)
         # Classification Block
         dense = Dense(self.n_classes_, kernel_constraint=max_norm(0.5))(out)
-        softmax = Activation("softmax")(dense)
+        softmax = Activation('softmax')(dense)
         # Creation of the Model
-        model = Model(inputs=input_main, outputs=softmax)
+        model = Model(inputs=input_1, outputs=softmax)
 
         # Compile Model
         model.compile(loss=compile_kwargs["loss"], optimizer=compile_kwargs["optimizer"])

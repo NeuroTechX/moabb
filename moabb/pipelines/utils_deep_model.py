@@ -149,3 +149,29 @@ def TCN_block(
         out = Activation(activation)(added)
 
     return out
+
+
+def EEGNet_TC(self, input_layer, F1=8, kernLength=64, D=2, dropout=0.1, activation="elu"):
+
+    F2 = F1 * D
+
+    block1 = Conv2D(F1, kernel_size=(kernLength, 1), padding='same', use_bias=False, data_format="channels_last")(input_layer)
+    block1 = BatchNormalization(axis = -1)(block1)
+    block1 = DepthwiseConv2D(kernel_size=(1, self.X_shape_[1]), use_bias=False,
+                             depth_multiplier=D,
+                             depthwise_constraint=max_norm(1.),
+                             data_format="channels_last")(block1)
+    block1 = BatchNormalization(axis = -1)(block1)
+    block1 = Activation(activation)(block1)
+    block1 = AveragePooling2D((8, 1), data_format="channels_last")(block1)
+    block1 = Dropout(dropout)(block1)
+
+    block2 = SeparableConv2D(F2, kernel_size=(16, 1),
+                             use_bias=False, padding='same',
+                             data_format="channels_last")(block1)
+    block2 = BatchNormalization(axis = -1)(block2)
+    block2 = Activation(activation)(block2)
+    block2 = AveragePooling2D((8, 1), data_format="channels_last")(block2)
+    block2 = Dropout(dropout)(block2)
+
+    return block2

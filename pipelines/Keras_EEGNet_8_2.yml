@@ -8,6 +8,9 @@ citations:
   - https://doi.org/10.1088/1741-2552/aace8c
 
 pipeline:
+  - name: StandardScaler_Epoch
+    from: moabb.pipelines.deep_learning.features
+
   - name: KerasEEGNet_8_2
     from: moabb.pipelines.deep_learning
     parameters:

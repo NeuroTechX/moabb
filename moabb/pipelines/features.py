@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.signal as signal
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.preprocessing import StandardScaler
 
 
 class LogVariance(BaseEstimator, TransformerMixin):
@@ -95,5 +96,30 @@ class AugmentedDataset(BaseEstimator, TransformerMixin):
                     )
                 X_fin.append(X_p)
             X_fin = np.array(X_fin)
+
+        return X_fin
+
+
+
+class StandardScaler_Epoch(BaseEstimator, TransformerMixin):
+    """
+    Function to standardize the X raw data for the DeepLearning Method
+    """
+
+    def __init__(self):
+        """Init."""
+
+    def fit(self, X, y):
+
+        return self
+
+    def transform(self, X):
+
+        X_fin = []
+
+        for i in np.arange(X.shape[0]):
+            X_p = StandardScaler().fit_transform(X[i])
+            X_fin.append(X_p)
+        X_fin = np.array(X_fin)
 
         return X_fin
