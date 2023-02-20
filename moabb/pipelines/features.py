@@ -100,7 +100,6 @@ class AugmentedDataset(BaseEstimator, TransformerMixin):
         return X_fin
 
 
-
 class StandardScaler_Epoch(BaseEstimator, TransformerMixin):
     """
     Function to standardize the X raw data for the DeepLearning Method
@@ -110,11 +109,9 @@ class StandardScaler_Epoch(BaseEstimator, TransformerMixin):
         """Init."""
 
     def fit(self, X, y):
-
         return self
 
     def transform(self, X):
-
         X_fin = []
 
         for i in np.arange(X.shape[0]):
