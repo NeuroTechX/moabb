@@ -9,7 +9,7 @@ citations:
 
 pipeline:
   - name: StandardScaler_Epoch
-    from: moabb.pipelines.deep_learning.features
+    from: moabb.pipelines.features
 
   - name: KerasDeepConvNet
     from: moabb.pipelines.deep_learning
