@@ -4,12 +4,16 @@ import os.path as osp
 import random
 
 import numpy as np
-import tensorflow as tf
 from mne import get_config, set_config
 from mne import set_log_level as sll
 
 
 def setup_seed(seed):
+    try:
+        import tensorflow as tf
+    except ImportError as ierr:
+        raise ImportError("Please install Tensorflow") from ierr
+
     random.seed(seed)
     np.random.seed(seed)
     tf.random.set_seed(seed)  # tf cpu fix seed
