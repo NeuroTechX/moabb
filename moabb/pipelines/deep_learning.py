@@ -66,7 +66,7 @@ def log(x):
 
 
 class KerasShallowConvNet(KerasClassifier):
-    """Keras implementation of the Shallow Convolutional Network as described in [1].
+    """Keras implementation of the Shallow Convolutional Network as described in [1]_.
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels
@@ -146,7 +146,7 @@ class KerasShallowConvNet(KerasClassifier):
 # DeepConvNet
 # =================================================================================
 class KerasDeepConvNet(KerasClassifier):
-    """Keras implementation of the Shallow Convolutional Network as described in [1].
+    """Keras implementation of the Shallow Convolutional Network as described in [1]_.
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels
@@ -250,7 +250,7 @@ class KerasDeepConvNet(KerasClassifier):
 # EEGNet_8_2
 # ===========================================================================
 class KerasEEGNet_8_2(KerasClassifier):
-    """Keras implementation of the EEGNet as described in [1].
+    """Keras implementation of the EEGNet as described in [1]_.
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels
@@ -331,7 +331,7 @@ class KerasEEGNet_8_2(KerasClassifier):
 # EEGTCNet
 # =======================================================================
 class KerasEEGTCNet(KerasClassifier):
-    """Keras implementation of the EEGTCNet as described in [1].
+    """Keras implementation of the EEGTCNet as described in [1]_.
 
     This implementation is taken from code by
     at https://github.com/iis-eth-zurich/eeg-tcnet
@@ -421,7 +421,7 @@ class KerasEEGTCNet(KerasClassifier):
 # EEGNeX
 # =====================================================================
 class KerasEEGNeX(KerasClassifier):
-    """Keras implementation of the EEGNex as described in [1].
+    """Keras implementation of the EEGNex as described in [1]_.
 
     This implementation is taken from code by
     at https://github.com/chenxiachan/EEGNeX
@@ -559,7 +559,7 @@ n_sf = [1, 1, 1]
 
 
 class KerasEEGITNet(KerasClassifier):
-    """Keras implementation of the EEGITNet as described in [1].
+    """Keras implementation of the EEGITNet as described in [1]_.
 
     This implementation is taken from code by
     at https://github.com/AbbasSalami/EEG-ITNet

@@ -40,6 +40,7 @@ GPU = len(tf.config.list_physical_devices("GPU")) > 0
 print("GPU is", "AVAILABLE" if GPU else "NOT AVAILABLE")
 
 ###############################################################################
+###############################################################################
 # In this example, we will use only the dataset 'BNCI2014001'.
 #
 # Running the benchmark
