@@ -14,7 +14,11 @@ from moabb.evaluations import (
     CrossSubjectEvaluation,
     WithinSessionEvaluation,
 )
-from moabb.pipelines.utils import generate_paradigms, parse_pipelines_from_directory
+from moabb.pipelines.utils import (
+    generate_paradigms,
+    generate_param_grid,
+    parse_pipelines_from_directory,
+)
 
 
 log = logging.getLogger(__name__)
@@ -116,6 +120,8 @@ def benchmark(
     if paradigms is not None:
         prdgms = {p: prdgms[p] for p in paradigms}
 
+    param_grid = generate_param_grid(pipeline_configs, context_params, log)
+
     log.debug(f"The paradigms being run are {prdgms.keys()}")
 
     if len(context_params) == 0:
@@ -145,7 +151,9 @@ def benchmark(
                 n_jobs=n_jobs,
                 overwrite=overwrite,
             )
-            paradigm_results = context.process(pipelines=prdgms[paradigm])
+            paradigm_results = context.process(
+                pipelines=prdgms[paradigm], param_grid=param_grid
+            )
             paradigm_results["paradigm"] = f"{paradigm}"
             paradigm_results["evaluation"] = f"{evaluation}"
             eval_results[f"{paradigm}"] = paradigm_results

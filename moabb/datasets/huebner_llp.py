@@ -20,7 +20,6 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
     def __init__(
         self, src_url, n_subjects, raw_slice_offset, use_blocks_as_sessions=True, **kwargs
     ):
-
         self.n_channels = 31  # all channels except 5 times x_* CH and EOGvu
         if kwargs["interval"] is None:
             # "Epochs were windowed to [−200, 700] ms relative to the stimulus onset [...]."
