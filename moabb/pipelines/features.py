@@ -66,7 +66,7 @@ class ExtendedSSVEPSignal(BaseEstimator, TransformerMixin):
 
 class AugmentedDataset(BaseEstimator, TransformerMixin):
     """This transformation allow to create an embedding version of the current dataset.
-    The implementation and the application is described in [1].
+    The implementation and the application is described in [1]_.
 
     References
     ----------
