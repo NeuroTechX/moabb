@@ -25,3 +25,4 @@ Utils
     :template: function.rst
 
     set_log_level
+    setup_seed
