@@ -559,7 +559,7 @@ n_sf = [1, 1, 1]
 
 
 class KerasEEGITNet(KerasClassifier):
-    """Keras implementation of the EEGITNet as described in [1].
+    """Keras implementation of the EEGITNet as described in [1]_.
 
     This implementation is taken from code by
     at https://github.com/AbbasSalami/EEG-ITNet
