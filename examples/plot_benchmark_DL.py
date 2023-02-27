@@ -1,8 +1,8 @@
 """
 ====================================================================
-Benchmarking with MOABB with DeepLearning architecture in Tensorflow
+Benchmarking on MOABB with Tensorflow deep net architectures
 ====================================================================
-This example shows how to use MOABB to benchmark a set of DeepLearning pipeline (Tensorflow)
+This example shows how to use MOABB to benchmark a set of Deep Learning pipeline (Tensorflow)
 on all available datasets.
 For this example, we will use only one dataset to keep the computation time low, but this benchmark is designed
 to easily scale to many datasets.
@@ -39,7 +39,6 @@ print("CPU is", "AVAILABLE" if CPU else "NOT AVAILABLE")
 GPU = len(tf.config.list_physical_devices("GPU")) > 0
 print("GPU is", "AVAILABLE" if GPU else "NOT AVAILABLE")
 
-###############################################################################
 ###############################################################################
 # In this example, we will use only the dataset 'BNCI2014001'.
 #
