@@ -146,7 +146,7 @@ class KerasShallowConvNet(KerasClassifier):
 # DeepConvNet
 # =================================================================================
 class KerasDeepConvNet(KerasClassifier):
-    """Keras implementation of the Shallow Convolutional Network as described in [1]_.
+    """Keras implementation of the Deep Convolutional Network as described in [1]_.
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels
