@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
         python-version: ["3.8", "3.9"]
     defaults:
       run:
@@ -39,8 +39,14 @@ jobs:
         with:
           path: .venv
           key:
-            venv-${{ matrix.os }}-py${{matrix.python-version}}-${{
+            testvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
             hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        if: |
+          (runner.os != 'Windows') &&
+          (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
+        run: poetry install --no-interaction --no-root --with deeplearning
 
       - name: Install dependencies
         if: |
