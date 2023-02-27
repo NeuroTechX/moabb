@@ -331,7 +331,7 @@ class KerasEEGNet_8_2(KerasClassifier):
 # EEGTCNet
 # =======================================================================
 class KerasEEGTCNet(KerasClassifier):
-    """Keras implementation of the EEGTCNet as described in [1].
+    """Keras implementation of the EEGTCNet as described in [1]_.
 
     This implementation is taken from code by
     at https://github.com/iis-eth-zurich/eeg-tcnet
