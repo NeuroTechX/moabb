@@ -250,7 +250,7 @@ class KerasDeepConvNet(KerasClassifier):
 # EEGNet_8_2
 # ===========================================================================
 class KerasEEGNet_8_2(KerasClassifier):
-    """Keras implementation of the EEGNet as described in [1].
+    """Keras implementation of the EEGNet as described in [1]_.
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels
