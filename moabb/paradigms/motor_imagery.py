@@ -373,8 +373,7 @@ class MotorImagery(SinglePass):
         if self.events is None:
             for k, v in dataset.event_id.items():
                 out[k] = v
-                if len(out) == self.n_classes:
-                    break
+            self.n_classes = len(out)
         else:
             for event in self.events:
                 if event in dataset.event_id.keys():
