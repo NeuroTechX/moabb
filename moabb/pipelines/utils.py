@@ -82,15 +82,26 @@ def parse_pipelines_from_directory(dir_path):
             # load config
             config_dict = yaml.load(content, Loader=yaml.FullLoader)
             ppl = create_pipeline_from_config(config_dict["pipeline"])
-            pipeline_configs.append(
-                {
-                    "paradigms": config_dict["paradigms"],
-                    "pipeline": ppl,
-                    "name": config_dict["name"],
-                }
-            )
+            if "param_grid" in config_dict:
+                pipeline_configs.append(
+                    {
+                        "paradigms": config_dict["paradigms"],
+                        "pipeline": ppl,
+                        "name": config_dict["name"],
+                        "param_grid": config_dict["param_grid"],
+                    }
+                )
+            else:
+                pipeline_configs.append(
+                    {
+                        "paradigms": config_dict["paradigms"],
+                        "pipeline": ppl,
+                        "name": config_dict["name"],
+                    }
+                )
 
     # we can do the same for python defined pipeline
+    # TODO for python pipelines
     python_files = glob(os.path.join(dir_path, "*.py"))
 
     for python_file in python_files:
@@ -126,7 +137,6 @@ def generate_paradigms(pipeline_configs, context=None, logger=log):
     context = context or {}
     paradigms = OrderedDict()
     for config in pipeline_configs:
-
         if "paradigms" not in config.keys():
             logger.error("{} must have a 'paradigms' key.".format(config))
             continue
@@ -134,7 +144,6 @@ def generate_paradigms(pipeline_configs, context=None, logger=log):
         # iterate over paradigms
 
         for paradigm in config["paradigms"]:
-
             # check if it is in the context parameters file
             if len(context) > 0:
                 if paradigm not in context.keys():
@@ -160,6 +169,21 @@ def generate_paradigms(pipeline_configs, context=None, logger=log):
             paradigms[paradigm][config["name"]] = pipeline
 
     return paradigms
+
+
+def generate_param_grid(pipeline_configs, context=None, logger=log):
+    context = context or {}
+    param_grid = {}
+    for config in pipeline_configs:
+        if "paradigms" not in config:
+            logger.error("{} must have a 'paradigms' key.".format(config))
+            continue
+
+        # iterate over paradigms
+        if "param_grid" in config:
+            param_grid[config["name"]] = config["param_grid"]
+
+    return param_grid
 
 
 class FilterBank(BaseEstimator, TransformerMixin):
