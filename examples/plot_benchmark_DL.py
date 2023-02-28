@@ -100,11 +100,6 @@ plt.show()
 ##############################################################################
 # References
 # ----------
-# .. [1] `Functional connectivity ensemble method to enhance BCI performance
-#    (FUCONE)
-#    <https://arxiv.org/abs/2111.03122>`_
-#    Corsi, M.-C., Chevallier, S., De Vico Fallani, F. & Yger, F. IEEE TBME,
-#    2022
 # .. [1] Schirrmeister, R. T., Springenberg, J. T., Fiederer, L. D. J.,
 #    Glasstetter, M., Eggensperger, K., Tangermann, M., ... & Ball, T. (2017).
 #    `Deep learning with convolutional neural networks for EEG decoding and
