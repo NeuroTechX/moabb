@@ -1,11 +1,11 @@
-name: MDM
+name: FgMDM
 
 paradigms:
   - LeftRightImagery
   - MotorImagery
 
 citations:
-  - https://doi.org/10.1109/TBME.2011.2172210
+  - https://doi.org/10.1007/978-3-642-15995-4_78
 
 pipeline:
   - name: Covariances
@@ -13,7 +13,7 @@ pipeline:
     parameters:
       estimator: oas
 
-  - name: MDM
+  - name: FgMDM
     from: pyriemann.classification
     parameters:
       metric: "riemann"

@@ -26,6 +26,7 @@ def get_string_rep(obj):
             " issues you can use named functions defined using the def"
             " keyword instead.",
             RuntimeWarning,
+            stacklevel=2,
         )
     str_no_addresses = re.sub("0x[a-z0-9]*", "0x__", str_repr)
     return str_no_addresses.replace("\n", "").encode("utf8")

@@ -1,5 +1,7 @@
 name: DLCSPauto + shLDA
+
 paradigms:
+  - LeftRightImagery
   - MotorImagery
 
 citations:
