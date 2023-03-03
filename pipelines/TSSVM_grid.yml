@@ -1,4 +1,4 @@
-name: Tangent Space LR
+name: Tangent Space SVM Grid
 
 paradigms:
   - LeftRightImagery
@@ -18,7 +18,16 @@ pipeline:
     parameters:
       metric: "riemann"
 
-  - name: LogisticRegression
-    from: sklearn.linear_model
+  - name: SVC
+    from: sklearn.svm
     parameters:
-      C: 1.0
+      kernel: "linear"
+
+param_grid:
+  svc__C:
+    - 0.5
+    - 1
+    - 1.5
+  svc__kernel:
+    - "rbf"
+    - "linear"
