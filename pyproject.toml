@@ -37,7 +37,10 @@ scikeras = "^0.10.0"
 braindecode = "^0.7"
 torch = "^1.13.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
 Sphinx = "^6.0.0"
 sphinx-gallery = "^0.11.1"
 sphinx-bootstrap-theme = "^0.8.1"
