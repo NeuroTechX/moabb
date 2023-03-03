@@ -18,7 +18,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="moabb.pipelines.utils.FilterBank" href="moabb.pipelines.utils.FilterBank.html" />
-    <link rel="prev" title="moabb.pipelines.classification.SSVEP_CCA" href="moabb.pipelines.classification.SSVEP_CCA.html" />
+    <link rel="prev" title="moabb.pipelines.deep_learning.KerasShallowConvNet" href="moabb.pipelines.deep_learning.KerasShallowConvNet.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -159,9 +159,10 @@
 <h1>moabb.pipelines.utils.create_pipeline_from_config<a class="headerlink" href="#moabb-pipelines-utils-create-pipeline-from-config" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="moabb.pipelines.utils.create_pipeline_from_config">
-<span class="sig-prename descclassname"><span class="pre">moabb.pipelines.utils.</span></span><span class="sig-name descname"><span class="pre">create_pipeline_from_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/utils.py#L20-L50"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.utils.create_pipeline_from_config" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">moabb.pipelines.utils.</span></span><span class="sig-name descname"><span class="pre">create_pipeline_from_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/utils.py#L20-L72"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.utils.create_pipeline_from_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pipeline from a config file.</p>
-<p>takes a config dict as input and return the coresponding pipeline.</p>
+<p>takes a config dict as input and return the corresponding pipeline.</p>
+<p>If the pipeline is a Tensorflow pipeline it convert also the optimizer function and the callbacks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>config</strong> (<em>Dict.</em>) – Dict containing the config parameters.</p>

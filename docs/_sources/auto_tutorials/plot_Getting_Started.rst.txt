@@ -167,7 +167,7 @@ Datasets can be specified in many ways: Each paradigm has a property
 
  .. code-block:: none
 
-    [<moabb.datasets.bnci.BNCI2014001 object at 0x7ffa34536760>, <moabb.datasets.bnci.BNCI2014004 object at 0x7ffa2988a070>, <moabb.datasets.gigadb.Cho2017 object at 0x7ffa2988af10>, <moabb.datasets.Lee2019.Lee2019_MI object at 0x7ffa2988ad30>, <moabb.datasets.mpi_mi.MunichMI object at 0x7ffa34536fa0>, <moabb.datasets.physionet_mi.PhysionetMI object at 0x7ffa2988a730>, <moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7ffa2988aa60>, <moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7ffa2988a550>, <moabb.datasets.Weibo2014.Weibo2014 object at 0x7ffa2988adf0>, <moabb.datasets.Zhou2016.Zhou2016 object at 0x7ffa2988a160>]
+    [<moabb.datasets.bnci.BNCI2014001 object at 0x7ffb5c6e16a0>, <moabb.datasets.bnci.BNCI2014004 object at 0x7ffb5c6e1dc0>, <moabb.datasets.gigadb.Cho2017 object at 0x7ffb5c6e1220>, <moabb.datasets.Lee2019.Lee2019_MI object at 0x7ffb5c6e1e80>, <moabb.datasets.mpi_mi.MunichMI object at 0x7ffb5c6e1e50>, <moabb.datasets.physionet_mi.PhysionetMI object at 0x7ffb5c6e1880>, <moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7ffba2516af0>, <moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7ffb5c6e1a00>, <moabb.datasets.Weibo2014.Weibo2014 object at 0x7ffba25166a0>, <moabb.datasets.Zhou2016.Zhou2016 object at 0x7ffba2516d30>]
 
 
 
@@ -190,7 +190,7 @@ Or you can run a search through the available datasets:
 
  .. code-block:: none
 
-    [<moabb.datasets.alex_mi.AlexMI object at 0x7ffa2988a6d0>, <moabb.datasets.bnci.BNCI2014001 object at 0x7ffa2988a4f0>, <moabb.datasets.bnci.BNCI2014002 object at 0x7ffa2988a490>, <moabb.datasets.bnci.BNCI2014004 object at 0x7ffa2988a610>, <moabb.datasets.bnci.BNCI2015001 object at 0x7ffa2988a790>, <moabb.datasets.bnci.BNCI2015004 object at 0x7ffa2988a760>, <moabb.datasets.gigadb.Cho2017 object at 0x7ffa2988a370>, <moabb.datasets.Lee2019.Lee2019_MI object at 0x7ffa2988adc0>, <moabb.datasets.mpi_mi.MunichMI object at 0x7ffa2988a670>, <moabb.datasets.upper_limb.Ofner2017 object at 0x7ffa2988ad60>, <moabb.datasets.physionet_mi.PhysionetMI object at 0x7ffa2988a910>, <moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7ffa2988a7c0>, <moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7ffa2988a1f0>, <moabb.datasets.Weibo2014.Weibo2014 object at 0x7ffa2988adf0>]
+    [<moabb.datasets.alex_mi.AlexMI object at 0x7ffb5c7ef2e0>, <moabb.datasets.bnci.BNCI2014001 object at 0x7ffb5c7ef430>, <moabb.datasets.bnci.BNCI2014002 object at 0x7ffb5c7ef190>, <moabb.datasets.bnci.BNCI2014004 object at 0x7ffba25161f0>, <moabb.datasets.bnci.BNCI2015001 object at 0x7ffba2516520>, <moabb.datasets.bnci.BNCI2015004 object at 0x7ffba2516ac0>, <moabb.datasets.gigadb.Cho2017 object at 0x7ffba2516a60>, <moabb.datasets.Lee2019.Lee2019_MI object at 0x7ffba25164c0>, <moabb.datasets.mpi_mi.MunichMI object at 0x7ffba2516850>, <moabb.datasets.upper_limb.Ofner2017 object at 0x7ffba2516ee0>, <moabb.datasets.physionet_mi.PhysionetMI object at 0x7ffba25167f0>, <moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7ffba2516550>, <moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7ffba2516f10>, <moabb.datasets.Weibo2014.Weibo2014 object at 0x7ffba2516fd0>]
 
 
 
@@ -270,7 +270,7 @@ subjects. This also is the correct place to specify multiple threads.
 
  .. code-block:: none
 
-    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession:  50%|#####     | 1/2 [00:03<00:03,  3.85s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.97s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.95s/it]
+    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession:  50%|#####     | 1/2 [00:03<00:03,  3.63s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.72s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.71s/it]
 
 
 
@@ -295,11 +295,11 @@ want with them
  .. code-block:: none
 
           score      time  samples subject  ... channels  n_sessions   dataset pipeline
-    0  0.801698  0.048679    144.0       1  ...       22           2  001-2014   AM+LDA
-    1  0.786458  0.044249    144.0       1  ...       22           2  001-2014   AM+LDA
-    2  0.498650  0.046292    144.0       2  ...       22           2  001-2014   AM+LDA
-    3  0.576582  0.039016    144.0       2  ...       22           2  001-2014   AM+LDA
-    4  0.773920  0.210449    144.0       1  ...       22           2  001-2014   AM+SVM
+    0  0.801698  0.037974    144.0       1  ...       22           2  001-2014   AM+LDA
+    1  0.786458  0.029756    144.0       1  ...       22           2  001-2014   AM+LDA
+    2  0.498650  0.038080    144.0       2  ...       22           2  001-2014   AM+LDA
+    3  0.576582  0.030088    144.0       2  ...       22           2  001-2014   AM+LDA
+    4  0.773920  0.168446    144.0       1  ...       22           2  001-2014   AM+SVM
 
     [5 rows x 9 columns]
 
@@ -309,7 +309,7 @@ want with them
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.940 seconds)
+   **Total running time of the script:** ( 0 minutes  7.447 seconds)
 
 
 .. _sphx_glr_download_auto_tutorials_plot_Getting_Started.py:

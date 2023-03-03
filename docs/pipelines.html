@@ -160,7 +160,7 @@
 <span id="pipelines"></span><h1>Pipelines<a class="headerlink" href="#module-moabb.pipelines" title="Permalink to this heading">¶</a></h1>
 <p>Pipeline defines all steps required by an algorithm to obtain predictions.
 Pipelines are typically a chain of sklearn compatible transformers and end
-with an sklearn compatible estimator.</p>
+with a sklearn compatible estimator.</p>
 <section id="id1">
 <h2>Pipelines<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
@@ -174,11 +174,35 @@ with an sklearn compatible estimator.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.features.ExtendedSSVEPSignal.html#moabb.pipelines.features.ExtendedSSVEPSignal" title="moabb.pipelines.features.ExtendedSSVEPSignal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">features.ExtendedSSVEPSignal</span></code></a>()</p></td>
 <td><p>Prepare FilterBank SSVEP EEG signal for estimating extended covariances</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.features.AugmentedDataset.html#moabb.pipelines.features.AugmentedDataset" title="moabb.pipelines.features.AugmentedDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">features.AugmentedDataset</span></code></a>([order, lag])</p></td>
+<td><p>This transformation allow to create an embedding version of the current dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.features.StandardScaler_Epoch.html#moabb.pipelines.features.StandardScaler_Epoch" title="moabb.pipelines.features.StandardScaler_Epoch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">features.StandardScaler_Epoch</span></code></a>()</p></td>
+<td><p>Function to standardize the X raw data for the DeepLearning Method</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.csp.TRCSP.html#moabb.pipelines.csp.TRCSP" title="moabb.pipelines.csp.TRCSP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">csp.TRCSP</span></code></a>([nfilter, metric, log, alpha])</p></td>
 <td><p>Weighted Tikhonov-regularized CSP as described in Lotte and Guan 2011</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.classification.SSVEP_CCA.html#moabb.pipelines.classification.SSVEP_CCA" title="moabb.pipelines.classification.SSVEP_CCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">classification.SSVEP_CCA</span></code></a>(interval, freqs[, ...])</p></td>
 <td><p>Classifier based on Canonical Correlation Analysis for SSVEP</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasDeepConvNet.html#moabb.pipelines.deep_learning.KerasDeepConvNet" title="moabb.pipelines.deep_learning.KerasDeepConvNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasDeepConvNet</span></code></a>(loss[, ...])</p></td>
+<td><p>Keras implementation of the Deep Convolutional Network as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasDeepConvNet.html#r679315cfbef6-1" id="id2"><span>[R679315cfbef6-1]</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGITNet.html#moabb.pipelines.deep_learning.KerasEEGITNet" title="moabb.pipelines.deep_learning.KerasEEGITNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasEEGITNet</span></code></a>(loss[, ...])</p></td>
+<td><p>Keras implementation of the EEGITNet as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGITNet.html#rf5b2ee1af1ae-1" id="id3"><span>[Rf5b2ee1af1ae-1]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGNet_8_2.html#moabb.pipelines.deep_learning.KerasEEGNet_8_2" title="moabb.pipelines.deep_learning.KerasEEGNet_8_2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasEEGNet_8_2</span></code></a>(loss[, ...])</p></td>
+<td><p>Keras implementation of the EEGNet as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGNet_8_2.html#rd83becb56589-1" id="id4"><span>[Rd83becb56589-1]</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGNeX.html#moabb.pipelines.deep_learning.KerasEEGNeX" title="moabb.pipelines.deep_learning.KerasEEGNeX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasEEGNeX</span></code></a>(loss[, optimizer, ...])</p></td>
+<td><p>Keras implementation of the EEGNex as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGNeX.html#r643fa75c3283-1" id="id5"><span>[R643fa75c3283-1]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGTCNet.html#moabb.pipelines.deep_learning.KerasEEGTCNet" title="moabb.pipelines.deep_learning.KerasEEGTCNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasEEGTCNet</span></code></a>(loss[, ...])</p></td>
+<td><p>Keras implementation of the EEGTCNet as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGTCNet.html#r89b58824c471-1" id="id6"><span>[R89b58824c471-1]</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasShallowConvNet.html#moabb.pipelines.deep_learning.KerasShallowConvNet" title="moabb.pipelines.deep_learning.KerasShallowConvNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasShallowConvNet</span></code></a>(loss[, ...])</p></td>
+<td><p>Keras implementation of the Shallow Convolutional Network as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasShallowConvNet.html#r2ccacb732305-1" id="id7"><span>[R2ccacb732305-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -192,6 +216,15 @@ with an sklearn compatible estimator.</p>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.utils.FilterBank.html#moabb.pipelines.utils.FilterBank" title="moabb.pipelines.utils.FilterBank"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.FilterBank</span></code></a>(estimator[, flatten])</p></td>
 <td><p>Apply a given indentical pipeline over a bank of filter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.EEGNet.html#moabb.pipelines.utils_deep_model.EEGNet" title="moabb.pipelines.utils_deep_model.EEGNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils_deep_model.EEGNet</span></code></a>(data, input_layer[, ...])</p></td>
+<td><p>EEGNet block implementation as described in <a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.EEGNet.html#r820c2366bc63-1" id="id8"><span>[R820c2366bc63-1]</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.EEGNet_TC.html#moabb.pipelines.utils_deep_model.EEGNet_TC" title="moabb.pipelines.utils_deep_model.EEGNet_TC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils_deep_model.EEGNet_TC</span></code></a>(self, input_layer)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.TCN_block.html#moabb.pipelines.utils_deep_model.TCN_block" title="moabb.pipelines.utils_deep_model.TCN_block"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils_deep_model.TCN_block</span></code></a>(input_layer, ...)</p></td>
+<td><p>Temporal Convolutional Network (TCN), TCN_block from <a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.TCN_block.html#r2eea69aed7b6-1" id="id9"><span>[R2eea69aed7b6-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>

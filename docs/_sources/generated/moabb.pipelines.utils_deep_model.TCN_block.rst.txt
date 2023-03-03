@@ -1,0 +1,12 @@
+﻿moabb.pipelines.utils_deep_model.TCN_block
+==========================================
+
+.. currentmodule:: moabb.pipelines.utils_deep_model
+
+.. autofunction:: TCN_block
+
+.. include:: moabb.pipelines.utils_deep_model.TCN_block.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>
