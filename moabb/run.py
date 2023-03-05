@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 import mne
 
 from moabb.benchmark import benchmark
+from moabb.utils import set_download_dir
 
 
 log = logging.getLogger(__name__)
@@ -11,6 +12,16 @@ log = logging.getLogger(__name__)
 
 def parser_init():
     parser = ArgumentParser(description="Main run script for MOABB")
+
+    parser.add_argument(
+        "-mne_p",
+        "--mne_data",
+        dest="mne_data",
+        type=str,
+        default=None,
+        help="Folder where to save and load the datasets with mne structure.",
+    )
+
     parser.add_argument(
         "-p",
         "--pipelines",
@@ -96,6 +107,9 @@ if __name__ == "__main__":
 
     parser = parser_init()
     options = parser.parse_args()
+
+    if options.mne_data is not None:
+        set_download_dir(options.mne_data)
 
     # call within session benchmark
     benchmark(
