@@ -10,11 +10,8 @@ In this example we use the architecture ShallowFBCSPNet.
 #
 # License: BSD (3-clause)
 
-import os.path as osp
-
 import matplotlib.pyplot as plt
 import mne
-import seaborn as sns
 import torch
 from braindecode import EEGClassifier
 from braindecode.models import ShallowFBCSPNet
