@@ -1,5 +1,6 @@
-import numpy as np
 import random
+
+import numpy as np
 import torch
 from braindecode.datasets import create_from_X_y
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -24,11 +25,11 @@ def set_seed(seed):
         torch.cuda.manual_seed_all(seed)
 
 
-
 class Transformer(BaseEstimator, TransformerMixin):
     """
     Class to Load the data from MOABB in a format compatible with braindecode
     """
+
     def __init__(self, kw_args=None):
         self.kw_args = kw_args
 
