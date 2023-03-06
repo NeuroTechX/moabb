@@ -1,124 +1,123 @@
-import os
+"""
+=====================================================
+Example of usage of BrainDecode with MOABB evaluation
+=====================================================
+This example shows how to use BrainDecode in combination with MOABB evaluation.
+In this example we use the architecture ShallowFBCSPNet.
+"""
+# Authors: Igor Carrara <igor.carrara@inria.fr>
+#          Bruno Aristimunha <b.aristimunha@gmail.com>
+#
+# License: BSD (3-clause)
+
 import os.path as osp
-
-# Set up the Directory for made it run on a server.
-import sys
-
-
-sys.path.append(r"/home/icarrara/Documents/Project/HolographicEEG")  # Server
 
 import matplotlib.pyplot as plt
 import mne
+
 import seaborn as sns
 import torch
 from braindecode import EEGClassifier
-from braindecode.datasets import create_from_X_y
-from braindecode.models import EEGNetv4, ShallowFBCSPNet
-from braindecode.util import set_random_seeds
-from Feature_Extraction.Transformer import Transformer
-from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
+from braindecode.models import ShallowFBCSPNet
 from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
-
+from moabb.pipelines.utilis_pytorch import set_seed
+from moabb.pipelines.utilis_pytorch import Transformer
 from moabb.datasets import BNCI2014001
-from moabb.evaluations import CrossSessionEvaluation, WithinSessionEvaluation
-from moabb.paradigms import LeftRightImagery, MotorImagery
-from moabb.utils import set_download_dir
-
+from moabb.evaluations import CrossSessionEvaluation
+from moabb.paradigms import MotorImagery
+from moabb.analysis.plotting import score_plot
 
 mne.set_log_level(False)
 
-set_download_dir(osp.join(osp.expanduser("~"), "mne_data"))
+# Print Information PyTorch
+print(f"Tensorflow Version: {torch.__version__}")
 
 # Set up GPU if it is there
 cuda = torch.cuda.is_available()
-print(cuda)
 device = "cuda" if cuda else "cpu"
-if cuda:
-    torch.backends.cudnn.benchmark = True
+print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 
 
-# Class to load the data
-class Transformer(BaseEstimator, TransformerMixin):
-    def __init__(self, kw_args=None):
-        self.kw_args = kw_args
+###############################################################################
+# In this example, we will use only the dataset ``BNCI2014001``.
+#
+# Running the benchmark
+# ---------------------
+#
+# This example use the CrossSession evaluation procedure. We focus on the dataset BNCI2014001 and only on 1 subject
+# to reduce the computational time.
+#
+# To keep the computational time low the number of epoch is reduced. In a real situation we suggest to use
+# EPOCH = 1000
+# PATIENCE = 300
+#
+# This code is implemented to run on CPU. If you're using a GPU, do not use multithreading
+# (i.e. set n_jobs=1)
 
-    def fit(self, X, y=None):
-        self.y = y
-        return self
-
-    def transform(self, X, y=None):
-        dataset = create_from_X_y(
-            X.get_data(),
-            y=self.y,
-            window_size_samples=X.get_data().shape[2],
-            window_stride_samples=X.get_data().shape[2],
-            drop_last_window=False,
-            sfreq=X.info["sfreq"],
-        )
-
-        return dataset
-
-    def __sklearn_is_fitted__(self):
-        """Return True since Transfomer is stateless."""
-        return True
 
 
 # Set random seed to be able to reproduce results
-seed = 42
-set_random_seeds(seed=seed, cuda=cuda)
+set_seed(42)
 
-# Hyperparameter ShallowEEG
-lr = 0.0625 * 0.01
-weight_decay = 0
-batch_size = 64
-n_epochs = 10
-patience = 5
+# Ensure that all operations are deterministic on GPU (if used) for reproducibility
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
+
+# Hyperparameter
+LEARNING_RATE = 0.0625 * 0.01  # result taken from BrainDecode
+WEIGHT_DECAY = 0  # result taken from BrainDecode
+BATCH_SIZE = 64  # result taken from BrainDecode
+EPOCH = 10
+PATIENCE = 3
 fmin = 4
 fmax = 100
 tmin = 0
 tmax = None
-sub_numb = 1
 
 # Load the dataset
 dataset = BNCI2014001()
 events = ["right_hand", "left_hand"]
-# events = ["right_hand", "left_hand", "tongue", "feet"]
 paradigm = MotorImagery(
     events=events, n_classes=len(events), fmin=fmin, fmax=fmax, tmin=tmin, tmax=tmax
 )
-subjects = [sub_numb]
+subjects = [1]
 X, _, _ = paradigm.get_data(dataset=dataset, subjects=subjects)
 # Define Transformer of Dataset compatible with Brain Decode
 create_dataset = Transformer()
 
-# ========================================================================================================
-# Define Model
-# ========================================================================================================
-model = EEGNetv4(
+##############################################################################
+# Create Pipelines
+# ----------------
+# In order to create a pipeline we need to load a model from BrainDecode.
+# the second step is to define a skorch model using EEGClassifier from BrainDecode
+# that allow to convert the PyTorch model in a scikit-learn classifier.
+
+model = ShallowFBCSPNet(
     in_chans=X.shape[1],
     n_classes=len(events),
     input_window_samples=X.shape[2],
-    final_conv_length="auto",
-    drop_prob=0.5,
+    final_conv_length="auto"
 )
 
 # Send model to GPU
 if cuda:
     model.cuda()
 
+# Define a Skorch classifier
 clf = EEGClassifier(
     model,
     criterion=torch.nn.CrossEntropyLoss,
     optimizer=torch.optim.Adam,
-    optimizer__lr=lr,
-    batch_size=batch_size,
-    max_epochs=n_epochs,
+    optimizer__lr=LEARNING_RATE,
+    batch_size=BATCH_SIZE,
+    max_epochs=EPOCH,
     train_split=ValidSplit(0.2),
     device=device,
     callbacks=[
-        EarlyStopping(monitor="valid_loss", patience=patience),
+        EarlyStopping(monitor="valid_loss", patience=PATIENCE),
         EpochScoring(
             scoring="accuracy", on_train=True, name="train_acc", lower_is_better=False
         ),
@@ -129,18 +128,17 @@ clf = EEGClassifier(
     verbose=1,  # Not printing the results foe each epoch
 )
 
-# ========================================================================================================
-# Define the pipeline
-# ========================================================================================================
+# Create the pipelines
 pipes = {}
 pipes["ShallowFBCSPNet"] = Pipeline(
     [("Braindecode_dataset", create_dataset), ("Net", clf)]
 )
 
-# ========================================================================================================
-# Evaluation For MOABB
-# ========================================================================================================
-dataset.subject_list = dataset.subject_list[int(sub_numb) - 1 : int(sub_numb)]
+
+##############################################################################
+# Evaluation
+# ----------
+dataset.subject_list = dataset.subject_list[:2]
 
 evaluation = CrossSessionEvaluation(
     paradigm=paradigm,
@@ -158,27 +156,5 @@ print(results.head())
 ##############################################################################
 # Plot Results
 # ----------------
-#
-# Here we plot the results. We the first plot is a pointplot with the average
-# performance of each pipeline across session and subjects.
-# The second plot is a paired scatter plot. Each point representing the score
-# of a single session. An algorithm will outperforms another is most of the
-# points are in its quadrant.
-
-fig, axes = plt.subplots(1, 1, figsize=[8, 4], sharey=True)
-
-sns.stripplot(
-    data=results,
-    y="score",
-    x="pipeline",
-    ax=axes,
-    jitter=True,
-    alpha=0.5,
-    palette="Set1",
-)
-sns.pointplot(data=results, y="score", x="pipeline", ax=axes, palette="Set1")
-
-axes.set_ylabel("ROC AUC")
-axes.set_ylim(0.4, 1.0)
-
+score_plot(results)
 plt.show()

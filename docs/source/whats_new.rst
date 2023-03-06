@@ -24,6 +24,7 @@ Enhancements
 - Add GridSearchCV for different evaluation procedure (:gh:`319` by `Igor Carrara`_)
 - Add six deep learning models (Tensorflow), and build a tutorial to show to used the deep learning model (:gh:`326` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Add a augmentation model to the pipeline (:gh:`326` by `Igor Carrara`_)
+- Add BrainDecode example(:gh:`340` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
