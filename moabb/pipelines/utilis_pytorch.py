@@ -1,7 +1,3 @@
-import random
-
-import numpy as np
-import torch
 from braindecode.datasets import create_from_X_y
 from sklearn.base import BaseEstimator, TransformerMixin
 
