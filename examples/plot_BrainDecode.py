@@ -29,7 +29,7 @@ from moabb.pipelines.utilis_pytorch import Transformer, set_seed
 mne.set_log_level(False)
 
 # Print Information PyTorch
-print(f"Tensorflow Version: {torch.__version__}")
+print(f"Torch Version: {torch.__version__}")
 
 # Set up GPU if it is there
 cuda = torch.cuda.is_available()
