@@ -1,7 +1,7 @@
 """
-=====================================================
+=============================================================
 Benchmarking on MOABB with BrainDecode deep net architectures
-=====================================================
+=============================================================
 This example shows how to use BrainDecode in combination with MOABB evaluation.
 In this example we use the architecture ShallowFBCSPNet.
 """
