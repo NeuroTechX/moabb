@@ -14,12 +14,21 @@ def setup_seed(seed):
     except ImportError as ierr:
         raise ImportError("Please install Tensorflow") from ierr
 
+    try:
+        import torch
+    except ImportError as ierr:
+        raise ImportError("Please install Tensorflow") from ierr
+
     random.seed(seed)
     np.random.seed(seed)
     tf.random.set_seed(seed)  # tf cpu fix seed
     os.environ[
         "TF_DETERMINISTIC_OPS"
     ] = "1"  # tf gpu fix seed, please `pip install tensorflow-determinism` first
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
 
 
 def set_log_level(level="INFO"):

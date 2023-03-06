@@ -23,7 +23,8 @@ from moabb.analysis.plotting import score_plot
 from moabb.datasets import BNCI2014001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import MotorImagery
-from moabb.pipelines.utilis_pytorch import Transformer, set_seed
+from moabb.pipelines.utilis_pytorch import Transformer
+from moabb.utils import setup_seed
 
 
 mne.set_log_level(False)
@@ -55,7 +56,7 @@ print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 
 
 # Set random seed to be able to reproduce results
-set_seed(42)
+setup_seed(42)
 
 # Ensure that all operations are deterministic on GPU (if used) for reproducibility
 torch.backends.cudnn.deterministic = True
