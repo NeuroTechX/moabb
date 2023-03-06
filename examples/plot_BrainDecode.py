@@ -14,7 +14,6 @@ import os.path as osp
 
 import matplotlib.pyplot as plt
 import mne
-
 import seaborn as sns
 import torch
 from braindecode import EEGClassifier
@@ -22,12 +21,13 @@ from braindecode.models import ShallowFBCSPNet
 from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
-from moabb.pipelines.utilis_pytorch import set_seed
-from moabb.pipelines.utilis_pytorch import Transformer
+
+from moabb.analysis.plotting import score_plot
 from moabb.datasets import BNCI2014001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import MotorImagery
-from moabb.analysis.plotting import score_plot
+from moabb.pipelines.utilis_pytorch import Transformer, set_seed
+
 
 mne.set_log_level(False)
 
@@ -55,7 +55,6 @@ print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 #
 # This code is implemented to run on CPU. If you're using a GPU, do not use multithreading
 # (i.e. set n_jobs=1)
-
 
 
 # Set random seed to be able to reproduce results
@@ -99,7 +98,7 @@ model = ShallowFBCSPNet(
     in_chans=X.shape[1],
     n_classes=len(events),
     input_window_samples=X.shape[2],
-    final_conv_length="auto"
+    final_conv_length="auto",
 )
 
 # Send model to GPU
