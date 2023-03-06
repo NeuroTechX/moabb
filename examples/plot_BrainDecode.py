@@ -1,27 +1,31 @@
+import os
 import os.path as osp
+
 # Set up the Directory for made it run on a server.
 import sys
-import os
 
-sys.path.append(r'/home/icarrara/Documents/Project/HolographicEEG')  # Server
+
+sys.path.append(r"/home/icarrara/Documents/Project/HolographicEEG")  # Server
 
 import matplotlib.pyplot as plt
 import mne
 import seaborn as sns
 import torch
 from braindecode import EEGClassifier
-from braindecode.models import ShallowFBCSPNet, EEGNetv4
+from braindecode.datasets import create_from_X_y
+from braindecode.models import EEGNetv4, ShallowFBCSPNet
 from braindecode.util import set_random_seeds
-from moabb.datasets import BNCI2014001
-from moabb.evaluations import WithinSessionEvaluation, CrossSessionEvaluation
-from moabb.paradigms import LeftRightImagery, MotorImagery
-from moabb.utils import set_download_dir
+from Feature_Extraction.Transformer import Transformer
+from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
 from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
-from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
-from braindecode.datasets import create_from_X_y
-from Feature_Extraction.Transformer import Transformer
+
+from moabb.datasets import BNCI2014001
+from moabb.evaluations import CrossSessionEvaluation, WithinSessionEvaluation
+from moabb.paradigms import LeftRightImagery, MotorImagery
+from moabb.utils import set_download_dir
+
 
 mne.set_log_level(False)
 
@@ -81,7 +85,9 @@ sub_numb = 1
 dataset = BNCI2014001()
 events = ["right_hand", "left_hand"]
 # events = ["right_hand", "left_hand", "tongue", "feet"]
-paradigm = MotorImagery(events=events, n_classes=len(events), fmin=fmin, fmax=fmax, tmin=tmin, tmax=tmax)
+paradigm = MotorImagery(
+    events=events, n_classes=len(events), fmin=fmin, fmax=fmax, tmin=tmin, tmax=tmax
+)
 subjects = [sub_numb]
 X, _, _ = paradigm.get_data(dataset=dataset, subjects=subjects)
 # Define Transformer of Dataset compatible with Brain Decode
@@ -95,7 +101,7 @@ model = EEGNetv4(
     n_classes=len(events),
     input_window_samples=X.shape[2],
     final_conv_length="auto",
-    drop_prob=0.5
+    drop_prob=0.5,
 )
 
 # Send model to GPU
@@ -111,24 +117,30 @@ clf = EEGClassifier(
     max_epochs=n_epochs,
     train_split=ValidSplit(0.2),
     device=device,
-    callbacks=[EarlyStopping(monitor='valid_loss', patience=patience),
-               EpochScoring(scoring='accuracy', on_train=True, name='train_acc', lower_is_better=False),
-               EpochScoring(scoring='accuracy', on_train=False, name='valid_acc', lower_is_better=False)],
-    verbose=1  # Not printing the results foe each epoch
+    callbacks=[
+        EarlyStopping(monitor="valid_loss", patience=patience),
+        EpochScoring(
+            scoring="accuracy", on_train=True, name="train_acc", lower_is_better=False
+        ),
+        EpochScoring(
+            scoring="accuracy", on_train=False, name="valid_acc", lower_is_better=False
+        ),
+    ],
+    verbose=1,  # Not printing the results foe each epoch
 )
 
 # ========================================================================================================
 # Define the pipeline
 # ========================================================================================================
 pipes = {}
-pipes["ShallowFBCSPNet"] = Pipeline([
-    ("Braindecode_dataset", create_dataset),
-    ("Net", clf)])
+pipes["ShallowFBCSPNet"] = Pipeline(
+    [("Braindecode_dataset", create_dataset), ("Net", clf)]
+)
 
 # ========================================================================================================
 # Evaluation For MOABB
 # ========================================================================================================
-dataset.subject_list = dataset.subject_list[int(sub_numb) - 1:int(sub_numb)]
+dataset.subject_list = dataset.subject_list[int(sub_numb) - 1 : int(sub_numb)]
 
 evaluation = CrossSessionEvaluation(
     paradigm=paradigm,
@@ -136,7 +148,7 @@ evaluation = CrossSessionEvaluation(
     suffix="braindecode_example",
     overwrite=True,
     return_epochs=True,
-    n_jobs=1
+    n_jobs=1,
 )
 
 results = evaluation.process(pipes)
@@ -164,9 +176,7 @@ sns.stripplot(
     alpha=0.5,
     palette="Set1",
 )
-sns.pointplot(
-    data=results, y="score", x="pipeline", ax=axes, palette="Set1"
-)
+sns.pointplot(data=results, y="score", x="pipeline", ax=axes, palette="Set1")
 
 axes.set_ylabel("ROC AUC")
 axes.set_ylim(0.4, 1.0)
