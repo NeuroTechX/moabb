@@ -14,4 +14,3 @@ pipeline:
       module: EEGNetv4
       from: braindecode.models.eegnet
       parameters:
-
