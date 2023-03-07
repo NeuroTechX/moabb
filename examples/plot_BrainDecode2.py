@@ -85,6 +85,8 @@ X, _, _ = paradigm.get_data(dataset=dataset, subjects=subjects)
 # Define Transformer of Dataset compatible with Brain Decode
 create_dataset = Transformer()
 
+from braindecode.models import ShallowFBCSPNet
+
 ##############################################################################
 # Create Pipelines
 # ----------------
@@ -92,27 +94,28 @@ create_dataset = Transformer()
 # the second step is to define a skorch model using EEGClassifier from BrainDecode
 # that allow to convert the PyTorch model in a scikit-learn classifier.
 from moabb.pipelines.deep_learning_BrainDecode import *
-from braindecode.models import ShallowFBCSPNet
 
-clf = braindecodeObject(fun_model=ShallowFBCSPNet,
-                        criterion=torch.nn.CrossEntropyLoss,
-                        optimizer=torch.optim.Adam,
-                        optimizer__lr=LEARNING_RATE,
-                        batch_size=BATCH_SIZE,
-                        max_epochs=EPOCH,
-                        train_split=ValidSplit(0.2),
-                        device=device,
-                        callbacks=[
-                            EarlyStopping(monitor="valid_loss", patience=PATIENCE),
-                            EpochScoring(
-                                scoring="accuracy", on_train=True, name="train_acc", lower_is_better=False
-                            ),
-                            EpochScoring(
-                                scoring="accuracy", on_train=False, name="valid_acc", lower_is_better=False
-                            ),
-                        ],
-                        verbose=1,
-                    )
+
+clf = braindecodeObject(
+    fun_model=ShallowFBCSPNet,
+    criterion=torch.nn.CrossEntropyLoss,
+    optimizer=torch.optim.Adam,
+    optimizer__lr=LEARNING_RATE,
+    batch_size=BATCH_SIZE,
+    max_epochs=EPOCH,
+    train_split=ValidSplit(0.2),
+    device=device,
+    callbacks=[
+        EarlyStopping(monitor="valid_loss", patience=PATIENCE),
+        EpochScoring(
+            scoring="accuracy", on_train=True, name="train_acc", lower_is_better=False
+        ),
+        EpochScoring(
+            scoring="accuracy", on_train=False, name="valid_acc", lower_is_better=False
+        ),
+    ],
+    verbose=1,
+)
 print(clf)
 
 ##
