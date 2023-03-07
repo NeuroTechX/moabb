@@ -1,0 +1,17 @@
+name: EEGNetV4
+
+paradigms:
+  - LeftRightImagery
+  - MotorImagery
+
+pipeline:
+  - name: Transformer
+    from: moabb.pipelines.utilis_pytorch
+
+  - name: EEGClassifier
+    from: braindecode.classifier
+    parameters:
+      module: EEGNetv4
+      from: braindecode.models.eegnet
+      parameters:
+

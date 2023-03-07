@@ -115,3 +115,4 @@ analysis/*
 
 # mac os x stuff
 *DS_store*
+/examples/pipelines_BrainDecode/
