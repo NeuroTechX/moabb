@@ -1,0 +1,12 @@
+name: ExamplePyTorch
+
+paradigms:
+  - LeftRightImagery
+  - MotorImagery
+
+pipeline:
+  - name: Transformer
+    from: moabb.pipelines.utilis_pytorch
+
+  - name: BrainDecodeShallowConvNet
+    from: moabb.pipelines.deep_learning_BrainDecode

@@ -91,44 +91,36 @@ create_dataset = Transformer()
 # In order to create a pipeline we need to load a model from BrainDecode.
 # the second step is to define a skorch model using EEGClassifier from BrainDecode
 # that allow to convert the PyTorch model in a scikit-learn classifier.
+from moabb.pipelines.deep_learning_BrainDecode import *
+from braindecode.models import ShallowFBCSPNet
 
-model = ShallowFBCSPNet(
-    in_chans=X.shape[1],
-    n_classes=len(events),
-    input_window_samples=X.shape[2],
-    final_conv_length="auto",
-)
+clf = braindecodeObject(fun_model=ShallowFBCSPNet,
+                        criterion=torch.nn.CrossEntropyLoss,
+                        optimizer=torch.optim.Adam,
+                        optimizer__lr=LEARNING_RATE,
+                        batch_size=BATCH_SIZE,
+                        max_epochs=EPOCH,
+                        train_split=ValidSplit(0.2),
+                        device=device,
+                        callbacks=[
+                            EarlyStopping(monitor="valid_loss", patience=PATIENCE),
+                            EpochScoring(
+                                scoring="accuracy", on_train=True, name="train_acc", lower_is_better=False
+                            ),
+                            EpochScoring(
+                                scoring="accuracy", on_train=False, name="valid_acc", lower_is_better=False
+                            ),
+                        ],
+                        verbose=1,
+                    )
+print(clf)
 
-# Send model to GPU
-if cuda:
-    model.cuda()
-
-# Define a Skorch classifier
-clf = EEGClassifier(
-    module=model,
-    criterion=torch.nn.CrossEntropyLoss,
-    optimizer=torch.optim.Adam,
-    optimizer__lr=LEARNING_RATE,
-    batch_size=BATCH_SIZE,
-    max_epochs=EPOCH,
-    train_split=ValidSplit(0.2),
-    device=device,
-    callbacks=[
-        EarlyStopping(monitor="valid_loss", patience=PATIENCE),
-        EpochScoring(
-            scoring="accuracy", on_train=True, name="train_acc", lower_is_better=False
-        ),
-        EpochScoring(
-            scoring="accuracy", on_train=False, name="valid_acc", lower_is_better=False
-        ),
-    ],
-    verbose=1,  # Not printing the results foe each epoch
-)
+##
 
 # Create the pipelines
 pipes = {}
 pipes["ShallowFBCSPNet"] = Pipeline(
-    [("Braindecode_dataset", create_dataset), ("Net", clf)]
+    [("Braindecode_dataset", create_dataset), ("Net", BrainDecodeShallowConvNet2)]
 )
 
 
