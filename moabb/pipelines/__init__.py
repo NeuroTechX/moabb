@@ -21,3 +21,12 @@ try:
     from .utils_deep_model import EEGNet, TCN_block
 except ModuleNotFoundError as err:
     print("Tensorflow not install, you could not use deep learning pipelines")
+
+try:
+    from .utils_pytorch import InputShapeSetterEEG, get_shape_from_baseconcat
+except ModuleNotFoundError as err:
+    print(
+        "To use the get_shape_from_baseconcar and InputShapeSetterEEG, "
+        "you need to install `braindecode`."
+        "`pip install braindecode` or Please refer to `https://braindecode.org`."
+    )
