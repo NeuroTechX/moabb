@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import mne
 import torch
 from braindecode import EEGClassifier
-from braindecode.models import ShallowFBCSPNet
+from braindecode.models import EEGNetv4
 from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
@@ -23,7 +23,11 @@ from moabb.analysis.plotting import score_plot
 from moabb.datasets import BNCI2014001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import MotorImagery
-from moabb.pipelines.utilis_pytorch import Transformer
+from moabb.pipelines.utils_pytorch import (
+    InputShapeSetterEEG,
+    Transformer,
+    get_shape_from_baseconcat,
+)
 from moabb.utils import setup_seed
 
 
@@ -92,11 +96,10 @@ create_dataset = Transformer()
 # the second step is to define a skorch model using EEGClassifier from BrainDecode
 # that allow to convert the PyTorch model in a scikit-learn classifier.
 
-model = ShallowFBCSPNet(
+model = EEGNetv4(
     in_chans=X.shape[1],
     n_classes=len(events),
     input_window_samples=X.shape[2],
-    final_conv_length="auto",
 )
 
 # Send model to GPU
@@ -121,15 +124,20 @@ clf = EEGClassifier(
         EpochScoring(
             scoring="accuracy", on_train=False, name="valid_acc", lower_is_better=False
         ),
+        InputShapeSetterEEG(
+            param_name_1="in_chans",
+            param_name_2="input_window_samples",
+            param_name_3="n_classes",
+            input_dim_fn=get_shape_from_baseconcat,
+            module_name="module",
+        ),
     ],
     verbose=1,  # Not printing the results foe each epoch
 )
 
 # Create the pipelines
 pipes = {}
-pipes["ShallowFBCSPNet"] = Pipeline(
-    [("Braindecode_dataset", create_dataset), ("Net", clf)]
-)
+pipes["EEGNet"] = Pipeline([("Braindecode_dataset", create_dataset), ("Net", clf)])
 
 
 ##############################################################################
