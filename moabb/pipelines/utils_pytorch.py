@@ -1,7 +1,10 @@
+import inspect
+
 from braindecode.datasets import BaseConcatDataset, create_from_X_y
 from numpy import unique
 from sklearn.base import BaseEstimator, TransformerMixin
 from skorch.callbacks import Callback
+from torch.nn import Module
 
 
 class Transformer(BaseEstimator, TransformerMixin):
@@ -43,6 +46,22 @@ def get_shape_from_baseconcat(X):
         return X.shape
 
 
+def _find_model_from_braindecode(model_name):
+    # soft dependency on braindecode
+    model_list = []
+    import braindecode.models as models
+
+    for ds in inspect.getmembers(models, inspect.isclass):
+        if issubclass(ds[1], Module):
+            model_list.append(ds[1])
+
+    for model in model_list:
+        if model_name == model.__name__:
+            # return an instance of the found model not initialized
+            return model
+    raise ValueError(f"{model_name} not found in braindecode models")
+
+
 class InputShapeSetterEEG(Callback):
     """Sets the input dimension of the PyTorch module to the input dimension
     of the training data.
@@ -54,9 +73,10 @@ class InputShapeSetterEEG(Callback):
 
     Parameters
     ----------
-    param_name : str (default='input_dim')
-      The parameter name is the parameter your model uses to define the
+    params_list : list
+      The list of parameters that define the
       input dimension in its ``__init__`` method.
+      Usually the mandatory parameters from the model.
     input_dim_fn : callable, None (default=None)
       In case your ``X`` value is more complex and deriving the input
       dimension is not as easy as ``X.shape[-1]`` you can pass a callable
@@ -68,16 +88,12 @@ class InputShapeSetterEEG(Callback):
 
     def __init__(
         self,
-        param_name_1="in_chans",
-        param_name_2="input_window_samples",
-        param_name_3="n_classes",
+        params_list=None,
         input_dim_fn=None,
         module_name="module",
     ):
         self.module_name = module_name
-        self.param_name_1 = param_name_1
-        self.param_name_2 = param_name_2
-        self.param_name_3 = param_name_3
+        self.params_list = params_list
         self.input_dim_fn = input_dim_fn
 
     def get_input_dim(self, X):
@@ -97,10 +113,6 @@ class InputShapeSetterEEG(Callback):
         in_chans, input_window_samples = self.get_input_dim(X)
         n_classes = len(unique(y))
 
-        param_name_1 = f"{self.module_name}__{self.param_name_1}"
-        param_name_2 = f"{self.module_name}__{self.param_name_2}"
-        param_name_3 = f"{self.module_name}__{self.param_name_3}"
-
         if (
             params["module"].in_chans
             == in_chans & params["module"].input_window_samples
@@ -108,11 +120,13 @@ class InputShapeSetterEEG(Callback):
             == n_classes
         ):
             return
-
         kwargs = {
-            param_name_1: in_chans,
-            param_name_2: input_window_samples,
-            param_name_3: n_classes,
+            "input_window_samples": input_window_samples,
+            "n_classes": n_classes,
+            "in_chans": in_chans,
         }
 
-        net.set_params(**kwargs)
+        new_module = _find_model_from_braindecode(net.module.__class__.__name__)
+        module_initilized = new_module(**kwargs)
+        net.set_params(**{"module": module_initilized})
+        net.initialize_module()
