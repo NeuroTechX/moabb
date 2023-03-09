@@ -1,4 +1,5 @@
 import inspect
+from functools import partial
 
 from braindecode.datasets import BaseConcatDataset, create_from_X_y
 from numpy import unique
@@ -58,6 +59,9 @@ def _find_model_from_braindecode(model_name):
     for model in model_list:
         if model_name == model.__name__:
             # return an instance of the found model not initialized
+            if model_name == "ShallowFBCSPNet":
+                model = partial(model, final_conv_length="auto")
+
             return model
     raise ValueError(f"{model_name} not found in braindecode models")
 
