@@ -125,9 +125,7 @@ clf = EEGClassifier(
             scoring="accuracy", on_train=False, name="valid_acc", lower_is_better=False
         ),
         InputShapeSetterEEG(
-            param_name_1="in_chans",
-            param_name_2="input_window_samples",
-            param_name_3="n_classes",
+            params_list=["in_chans", "input_window_samples", "n_classes"],
             input_dim_fn=get_shape_from_baseconcat,
             module_name="module",
         ),
