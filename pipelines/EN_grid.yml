@@ -1,11 +1,11 @@
-name: Tangent Space LR
+name: EN Grid
 
 paradigms:
   - LeftRightImagery
   - MotorImagery
 
 citations:
-  - https://doi.org/10.1016/j.neucom.2012.12.039
+  - https://doi.org/10.1109/TBME.2022.3154885
 
 pipeline:
   - name: Covariances
@@ -21,4 +21,16 @@ pipeline:
   - name: LogisticRegression
     from: sklearn.linear_model
     parameters:
-      C: 1.0
+      penalty: "elasticnet"
+      l1_ratio: 0.70
+      intercept_scaling: 1000.0
+      solver: "saga"
+      max_iter: 1000
+
+param_grid:
+  logisticregression__l1_ratio:
+    - 0.20
+    - 0.30
+    - 0.45
+    - 0.65
+    - 0.75

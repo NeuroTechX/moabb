@@ -346,25 +346,27 @@ class MotorImagery(SinglePass):
         If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, n_classes=2, **kwargs):
+    def __init__(self, n_classes=None, **kwargs):
         super().__init__(**kwargs)
         self.n_classes = n_classes
 
         if self.events is None:
             log.warning("Choosing from all possible events")
-        else:
+        elif self.n_classes is not None:
             assert n_classes <= len(self.events), "More classes than events specified"
 
     def is_valid(self, dataset):
         ret = True
         if not dataset.paradigm == "imagery":
             ret = False
-        if self.events is None:
+        elif self.n_classes is None and self.events is None:
+            pass
+        elif self.events is None:
             if not len(dataset.event_id) >= self.n_classes:
                 ret = False
         else:
             overlap = len(set(self.events) & set(dataset.event_id.keys()))
-            if not overlap >= self.n_classes:
+            if self.n_classes is not None and not overlap >= self.n_classes:
                 ret = False
         return ret
 
@@ -373,8 +375,8 @@ class MotorImagery(SinglePass):
         if self.events is None:
             for k, v in dataset.event_id.items():
                 out[k] = v
-                if len(out) == self.n_classes:
-                    break
+            if self.n_classes is None:
+                self.n_classes = len(out)
         else:
             for event in self.events:
                 if event in dataset.event_id.keys():

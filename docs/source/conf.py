@@ -278,6 +278,8 @@ html_theme_options = {
     # Choose Bootstrap version.
     # Values: "3" (default) or "2" (in quotes)
     "bootstrap_version": "3",
+    # Insert analytics script in the documentation pages.
+    "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
