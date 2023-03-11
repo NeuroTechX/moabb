@@ -45,6 +45,7 @@ def create_pipeline_from_config(config):
             params = component["parameters"]
             if "optimizer" in component["parameters"].keys():
                 for optm in component["parameters"]["optimizer"]:
+                    print(optm)
                     mod_optm = __import__(name=optm["from"], fromlist=[optm["name"]])
                     params_optm = optm["parameters"]
                     instance = getattr(mod_optm, optm["name"])(**params_optm)
