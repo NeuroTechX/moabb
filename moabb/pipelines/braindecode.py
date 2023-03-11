@@ -1,12 +1,11 @@
 from braindecode.datasets import WindowsDataset, create_from_X_y
 from mne.epochs import BaseEpochs
-from numpy import array, unique
-from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
+from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class CreateBraindecodeDataset(BaseEstimator, TransformerMixin):
     """
-    Wrapper to create a Braindecode Dataset from a mne Epoched
+    Wrapper to create a Braindecode Dataset from an MNE epoched
     object.
 
     This is a transformer function that allow used to use the
@@ -55,22 +54,3 @@ class CreateBraindecodeDataset(BaseEstimator, TransformerMixin):
         Return True since CreateBraindecodeDataset is stateless.
         """
         return True
-
-
-class BraindecodeClassifierModel(BaseEstimator, ClassifierMixin):
-    def __init__(self, clf: BaseEstimator, kw_args: dict = None):
-        self.clf = clf
-        self.classes_ = None
-        self.kw_args = kw_args
-
-    def fit(self, X: WindowsDataset, y=None) -> BaseEstimator:
-        self.clf.fit(X, y=y, **self.kw_args)
-        self.classes_ = unique(y)
-
-        return self.clf
-
-    def predict(self, X: WindowsDataset) -> array:
-        return self.clf.predict(X)
-
-    def predict_proba(self, X: WindowsDataset) -> array:
-        return self.clf.predict_proba(X)

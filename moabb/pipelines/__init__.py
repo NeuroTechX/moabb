@@ -6,7 +6,7 @@ with a sklearn compatible estimator.
 
 # flake8: noqa
 try:
-    from .braindecode import BraindecodeClassifierModel, CreateBraindecodeDataset
+    from .braindecode import CreateBraindecodeDataset
 except ModuleNotFoundError as err:
     print("Braindecode not install, you could not use those pipelines")
 
