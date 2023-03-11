@@ -34,8 +34,8 @@ optional = true
 tensorflow = ">=1.11.0"
 keras = ">=1.11.0"
 scikeras = "^0.10.0"
-braindecode = "^0.7"
 torch = "^1.13.1"
+braindecode = "^0.7"
 
 [tool.poetry.group.docs]
 optional = true
@@ -48,7 +48,6 @@ numpydoc = "^1.5.0"
 pre-commit = "^2.21.0"
 m2r2 = "^0.3.3"
 tdlda = {git = "https://github.com/jsosulski/tdlda.git", rev = "0.1.0"}
-
 
 
 [build-system]
