@@ -20,6 +20,7 @@ class CreateBraindecodeDataset(BaseEstimator, TransformerMixin):
         kw_args: dict
 
         """
+        self.y = None
         self.kw_args = kw_args
 
     def fit(self, X: BaseEpochs, y=None):
