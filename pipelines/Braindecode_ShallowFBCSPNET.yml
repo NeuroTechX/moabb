@@ -1,0 +1,73 @@
+---
+name: Braindecode_ShallowFBCSPNET
+paradigms:
+  - LeftRightImagery
+  - MotorImagery
+  - P300
+  - SSVEP
+citations:
+  - https://doi.org/10.1002/hbm.23730
+pipeline:
+  - name: CreateBraindecodeDataset
+    from: moabb.pipelines.braindecode
+  - name: EEGClassifier
+    from: braindecode
+    parameters:
+      model:
+        - name: ShallowFBCSPNet
+        - from: braindecode.models
+        - parameters:
+            in_chans: ${dataset.in_chans}
+            n_classes: ${dataset.classes}
+            input_windows_size: ${dataset.input_windows_size}
+            final_conv_length: auto
+      criterion:
+        - name: NLLLoss
+        - from: torch.nn
+      optimizer:
+        - name: AdamW
+        - from: torch.optim
+        - parameters:
+            lr: 0.0009
+            weight_decay: 0.0001
+      max_epochs: 1000
+      batch_size: 32
+      verbose: 1
+      device: ${device}
+      train_split:
+        - name: ValidSplit
+        - from: skorch.dataset
+        - parameters:
+            valid_size: 0.2
+            cv: 5
+            stratified: false
+            random_state: 42
+      random_state: 42
+      validation_split: 0.2
+      callbacks:
+        - name: LRScheduler
+        - from: skorch.callbacks
+        - parameters:
+            - name: CosineAnnealingLR
+            - from: torch.optim.lr_scheduler
+            - parameters:
+                T_max: 999
+        - name: EarlyStopping
+        - from: skorch.callbacks
+        - parameters:
+            monitor: valid_loss
+            patience: 50
+        - name: EpochScoring
+        - from: skorch.callbacks
+        - parameters:
+            - name: accuracy
+            - on_train: true
+            - name: train_acc
+            - lower_is_better: false
+        - name: EpochScoring
+        - from: skorch.callbacks
+        - parameters:
+            - name: accuracy
+            - on_train: false
+            - name: valid_acc
+            - lower_is_better: false
