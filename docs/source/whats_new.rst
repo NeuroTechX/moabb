@@ -26,6 +26,7 @@ Enhancements
 - Add six deep learning models (Tensorflow), and build a tutorial to show to use the deep learning model (:gh:`326` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Add a augmentation model to the pipeline (:gh:`326` by `Igor Carrara`_)
 - Add Google Analytics to the documentation (:gh:`335` by `Bruno Aristimunha`_)
+- Add suport to Braindecode classifier (:gh:`328` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
