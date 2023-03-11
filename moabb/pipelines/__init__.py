@@ -11,7 +11,7 @@ except ModuleNotFoundError as err:
     print("Braindecode not install, you could not use those pipelines")
 
 from .classification import SSVEP_CCA, SSVEP_TRCA
-from .features import FM, ExtendedSSVEPSignal, LogVariance
+from .features import FM, AugmentedDataset, ExtendedSSVEPSignal, LogVariance
 from .utils import FilterBank, create_pipeline_from_config
 
 
