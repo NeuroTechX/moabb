@@ -3,9 +3,13 @@ Pipeline defines all steps required by an algorithm to obtain predictions.
 Pipelines are typically a chain of sklearn compatible transformers and end
 with a sklearn compatible estimator.
 """
-from .braindecode import BraindecodeClassifierModel, CreateBraindecodeDataset
 
 # flake8: noqa
+try:
+    from .braindecode import BraindecodeClassifierModel, CreateBraindecodeDataset
+except ModuleNotFoundError as err:
+    print("Braindecode not install, you could not use those pipelines")
+
 from .classification import SSVEP_CCA, SSVEP_TRCA
 from .features import FM, ExtendedSSVEPSignal, LogVariance
 from .utils import FilterBank, create_pipeline_from_config
@@ -22,4 +26,4 @@ try:
     )
     from .utils_deep_model import EEGNet, TCN_block
 except ModuleNotFoundError as err:
-    print("Tensorflow not install, you could not use deep learning pipelines")
+    print("Tensorflow not install, you could not use those pipelines")
