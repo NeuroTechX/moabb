@@ -7,10 +7,7 @@ from torch.cuda import is_available
 from torch.nn import NLLLoss
 from torch.optim import AdamW
 
-from moabb.pipelines.braindecode import (
-    BraindecodeClassifierModel,
-    CreateBraindecodeDataset,
-)
+from moabb.pipelines.braindecode import CreateBraindecodeDataset
 
 
 # hard-coded for now
@@ -39,6 +36,7 @@ clf = EEGClassifier(
     optimizer__lr=lr,
     optimizer__weight_decay=weight_decay,
     batch_size=batch_size,
+    max_epochs=n_epochs,
     callbacks=[
         "accuracy",
         ("lr_scheduler", LRScheduler("CosineAnnealingLR", T_max=n_epochs - 1)),
@@ -47,11 +45,8 @@ clf = EEGClassifier(
 )
 
 create_dataset = CreateBraindecodeDataset()
-fit_params = {"epochs": 10}
 
-clf_braindecode = BraindecodeClassifierModel(clf, fit_params)
-
-pipe = Pipeline([("Braindecode_dataset", create_dataset), ("Net", clf_braindecode)])
+pipe = Pipeline([("Braindecode_dataset", create_dataset), ("Net", clf)])
 
 pipes = {"ShallowFBCSPNet": pipe}
 
