@@ -96,10 +96,9 @@ create_dataset = Transformer()
 # the second step is to define a skorch model using EEGClassifier from BrainDecode
 # that allow to convert the PyTorch model in a scikit-learn classifier.
 
-model = EEGNetv4(in_chans=X.shape[1],
-                 n_classes=len(events),
-                 input_window_samples=X.shape[2]
-                 )
+model = EEGNetv4(
+    in_chans=X.shape[1], n_classes=len(events), input_window_samples=X.shape[2]
+)
 
 """model = EEGNetv4(in_chans=1,
                  n_classes=2,
