@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import mne
 import torch
 from braindecode import EEGClassifier
-from braindecode.models import ShallowFBCSPNet
+from braindecode.models import EEGNetv4
 from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
@@ -96,12 +96,15 @@ create_dataset = Transformer()
 # the second step is to define a skorch model using EEGClassifier from BrainDecode
 # that allow to convert the PyTorch model in a scikit-learn classifier.
 
-model = ShallowFBCSPNet(
-    in_chans=X.shape[1],
-    n_classes=len(events),
-    input_window_samples=X.shape[2],
-    final_conv_length="auto",
-)
+model = EEGNetv4(in_chans=X.shape[1],
+                 n_classes=len(events),
+                 input_window_samples=X.shape[2]
+                 )
+
+"""model = EEGNetv4(in_chans=1,
+                 n_classes=2,
+                 input_window_samples=100
+                 )"""
 
 # Send model to GPU
 if cuda:
@@ -136,7 +139,7 @@ clf = EEGClassifier(
 
 # Create the pipelines
 pipes = {}
-pipes["ShallowNet"] = Pipeline([("Braindecode_dataset", create_dataset), ("Net", clf)])
+pipes["EEGNetV4"] = Pipeline([("Braindecode_dataset", create_dataset), ("Net", clf)])
 
 
 ##############################################################################
