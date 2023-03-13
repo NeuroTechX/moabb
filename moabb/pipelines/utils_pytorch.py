@@ -1,5 +1,5 @@
-import inspect
 from functools import partial
+from inspect import getmembers, isclass, isroutine
 
 from braindecode.datasets import BaseConcatDataset, create_from_X_y
 from numpy import unique
@@ -42,7 +42,7 @@ def get_shape_from_baseconcat(X):
     if isinstance(X, BaseConcatDataset):
         in_channel = X[0][0].shape[0]
         input_window_samples = X[0][0].shape[1]
-        return in_channel, input_window_samples
+        return {"in_chans": in_channel, "input_window_samples": input_window_samples}
     else:
         return X.shape
 
@@ -52,7 +52,7 @@ def _find_model_from_braindecode(model_name):
     model_list = []
     import braindecode.models as models
 
-    for ds in inspect.getmembers(models, inspect.isclass):
+    for ds in getmembers(models, isclass):
         if issubclass(ds[1], Module):
             model_list.append(ds[1])
 
@@ -113,24 +113,32 @@ class InputShapeSetterEEG(Callback):
         return X.shape[-1]
 
     def on_train_begin(self, net, X, y, **kwargs):
+        # Get the parameters of the neural network
         params = net.get_params()
-        in_chans, input_window_samples = self.get_input_dim(X)
-        n_classes = len(unique(y))
+        # Get the input dimensions from the BaseConcat dataset
+        params_get_from_dataset: dict = self.get_input_dim(X)
+        # Get the number of classes in the output labels
+        params_get_from_dataset["n_classes"] = len(unique(y))
 
-        if (
-            params["module"].in_chans
-            == in_chans & params["module"].input_window_samples
-            == input_window_samples & params["module"].n_classes
-            == n_classes
+        # Get all the parameters of the neural network module
+        all_params_module = getmembers(params["module"], lambda x: not (isroutine(x)))
+        # Filter the parameters to only include the selected ones
+        selected_params_module = list(
+            filter(lambda x: x in self.params_list, all_params_module)
+        )
+
+        # Check if the selected parameters from the model already match the dataset parameters
+        if all(
+            self.params_get_from_dataset[name] == value
+            for name, value in selected_params_module
         ):
             return
-        kwargs = {
-            "input_window_samples": input_window_samples,
-            "n_classes": n_classes,
-            "in_chans": in_chans,
-        }
 
+        # Find the new module based on the current module's class name
         new_module = _find_model_from_braindecode(net.module.__class__.__name__)
-        module_initilized = new_module(**kwargs)
+        # Initialize the new module with the dataset parameters
+        module_initilized = new_module(**params_get_from_dataset)
+        # Set the neural network module to the new initialized module
         net.set_params(**{"module": module_initilized})
+        # Initialize the new module
         net.initialize_module()
