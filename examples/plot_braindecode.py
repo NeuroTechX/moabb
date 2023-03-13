@@ -100,10 +100,7 @@ create_dataset = Transformer()
     in_chans=X.shape[1], n_classes=len(events), input_window_samples=X.shape[2]
 )"""
 
-model = EEGNetv4(in_chans=1,
-                 n_classes=2,
-                 input_window_samples=100
-                 )
+model = EEGNetv4(in_chans=1, n_classes=2, input_window_samples=100)
 
 # Send model to GPU
 if cuda:
