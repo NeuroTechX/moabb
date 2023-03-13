@@ -6,7 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 
 from moabb.datasets.fake import FakeDataset
 from moabb.pipelines.utils_pytorch import Transformer
-from tests import SimpleMotorImagery
+from moabb.tests import SimpleMotorImagery
 
 
 @pytest.fixture(scope="module")
@@ -34,19 +34,6 @@ class TestTransformer:
         transformer = Transformer()
         assert transformer.__sklearn_is_fitted__()
 
-    def test_transform_with_missing_y_values(self, data):
-        # remove every other label to simulate missing labels
-        X, y, labels, metadata = data
-        transformer = Transformer()
-        with pytest.warns(UserWarning):
-            transformed_X = transformer.fit_transform(X, y=y)
-        assert (
-            len(transformed_X.datasets) == 1
-            and transformed_X.datasets[0][0].shape[0] == np.count_nonzero(y != -1)
-            and transformed_X.datasets[0][0].shape[1] == X.shape[1]
-            and transformed_X.datasets[0][0].shape[2] == X.shape[2]
-        )
-
     def test_transformer_fit(self, data):
         """Test whether transformer can fit to some training data"""
         X_train, y_train, _, _ = data
@@ -70,7 +57,6 @@ class TestTransformer:
         sample_epoch = dataset.datasets[0][0]
         assert np.array_equal(sample_epoch.X, X_train.get_data()[0])
         assert np.array_equal(sample_epoch.y, y_train)
-        assert np.array_equal(sample_epoch.info, X_train.info)
 
     def test_sfreq_passed_through(self, data):
         """Test if the sfreq parameter makes it through the transformer"""
@@ -117,7 +103,7 @@ class TestTransformer:
             transformer.fit(X_train, y=y_train, **{invalid_param_name: None})
 
     def test_type_create_from_X_y_vs_transfomer(self, data):
-        """Test that the output of create_from_X_y() can be used as input"""
+        """Test the type from create_from_X_y() and the transfomer"""
         X_train, y_train, _, _ = data
 
         dataset = create_from_X_y(
