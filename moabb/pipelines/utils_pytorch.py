@@ -127,7 +127,6 @@ class InputShapeSetterEEG(Callback):
         selected_params_module = [
             sub[0] for sub in all_params_module if sub[0] in self.params_list
         ]
-
         # Check if the selected parameters are inside the model parameter
         if collections.Counter(params_get_from_dataset.keys()) != collections.Counter(
             selected_params_module

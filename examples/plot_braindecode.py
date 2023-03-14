@@ -95,7 +95,7 @@ create_dataset = Transformer()
 # Initialize the parameter of the model as random value since this parameter will be set dynamically using the
 # callbacks InputShapeSetterEEG, where we have to specify the correct name of the parameter
 
-model = EEGNetv4(in_chans=1, n_classes=2, input_window_samples=100)
+model = EEGNetv4(in_chans=1, n_classes=1, input_window_samples=100)
 
 # Send model to GPU
 if cuda:
