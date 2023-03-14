@@ -143,6 +143,11 @@ def benchmark(
                 f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}"
             )
 
+            if "BrainDecode" in list(prdgms[paradigm].keys())[0]:
+                return_epochs = True
+            else:
+                return_epochs = False
+
             context = eval_type[evaluation](
                 paradigm=p,
                 datasets=d,
@@ -150,6 +155,7 @@ def benchmark(
                 hdf5_path=results,
                 n_jobs=n_jobs,
                 overwrite=overwrite,
+                return_epochs=return_epochs
             )
             paradigm_results = context.process(
                 pipelines=prdgms[paradigm], param_grid=param_grid
