@@ -25,7 +25,9 @@ PATIENCE = 3
 create_dataset = Transformer()
 
 # Set random Model
-model = ShallowFBCSPNet(in_chans=1, n_classes=2, input_window_samples=100, final_conv_length="auto")
+model = ShallowFBCSPNet(
+    in_chans=1, n_classes=2, input_window_samples=100, final_conv_length="auto"
+)
 
 # Define a Skorch classifier
 clf = EEGClassifier(
