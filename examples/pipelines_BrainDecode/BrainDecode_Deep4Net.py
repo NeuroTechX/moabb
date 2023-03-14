@@ -51,15 +51,15 @@ clf = EEGClassifier(
             params_list=["in_chans", "input_window_samples", "n_classes"],
         ),
     ],
-    verbose=VERBOSE,  # Not printing the results foe each epoch
+    verbose=VERBOSE,  # Not printing the results for each epoch
 )
 
 # Create the pipelines
-pipes = Pipeline([("Braindecode_dataset", create_dataset), ("Deep4Net", clf)])
+pipes = Pipeline([("braindecode_dataset", create_dataset), ("Deep4Net", clf)])
 
 # this is what will be loaded
 PIPELINE = {
-    "name": "BrainDecode_Deep4Net",
+    "name": "braindecode_Deep4Net",
     "paradigms": ["LeftRightImagery", "MotorImagery"],
     "pipeline": pipes,
 }

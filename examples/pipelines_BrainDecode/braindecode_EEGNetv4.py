@@ -1,6 +1,6 @@
 import torch
 from braindecode import EEGClassifier
-from braindecode.models import ShallowFBCSPNet
+from braindecode.models import EEGNetv4
 from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
@@ -25,9 +25,7 @@ PATIENCE = 3
 create_dataset = Transformer()
 
 # Set random Model
-model = ShallowFBCSPNet(
-    in_chans=1, n_classes=2, input_window_samples=100, final_conv_length="auto"
-)
+model = EEGNetv4(in_chans=1, n_classes=2, input_window_samples=100)
 
 # Define a Skorch classifier
 clf = EEGClassifier(
@@ -51,15 +49,15 @@ clf = EEGClassifier(
             params_list=["in_chans", "input_window_samples", "n_classes"],
         ),
     ],
-    verbose=VERBOSE,  # Not printing the results foe each epoch
+    verbose=VERBOSE,  # Not printing the results for each epoch
 )
 
 # Create the pipelines
-pipes = Pipeline([("Braindecode_dataset", create_dataset), ("ShallowFBCSPNet", clf)])
+pipes = Pipeline([("braindecode_dataset", create_dataset), ("EEGNetv4", clf)])
 
 # this is what will be loaded
 PIPELINE = {
-    "name": "BrainDecode_ShallowFBCSPNet",
+    "name": "braindecode_EEGNetv4",
     "paradigms": ["LeftRightImagery", "MotorImagery"],
     "pipeline": pipes,
 }

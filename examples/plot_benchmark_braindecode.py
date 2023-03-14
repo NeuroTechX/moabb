@@ -71,7 +71,7 @@ dataset2.subject_list = dataset2.subject_list[:2]
 datasets = [dataset, dataset2]
 
 results = benchmark(
-    pipelines="./pipelines_BrainDecode",
+    pipelines="./pipelines_braindecode",
     evaluations=["CrossSession"],
     paradigms=["LeftRightImagery"],
     include_datasets=datasets,

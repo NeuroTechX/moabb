@@ -49,7 +49,7 @@ clf = EEGClassifier(
             params_list=["in_channels", "input_window_samples", "n_classes"],
         ),
     ],
-    verbose=VERBOSE,  # Not printing the results foe each epoch
+    verbose=VERBOSE,  # Not printing the results for each epoch
 )
 
 # Create the pipelines
@@ -57,7 +57,7 @@ pipes = Pipeline([("Braindecode_dataset", create_dataset), ("EEGInception", clf)
 
 # this is what will be loaded
 PIPELINE = {
-    "name": "BrainDecode_EEGInception",
+    "name": "braindecode_EEGInception",
     "paradigms": ["LeftRightImagery", "MotorImagery"],
     "pipeline": pipes,
 }
