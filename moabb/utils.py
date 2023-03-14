@@ -9,26 +9,49 @@ from mne import set_log_level as sll
 
 
 def setup_seed(seed):
-    try:
-        import tensorflow as tf
-    except ImportError as ierr:
-        raise ImportError("Please install Tensorflow") from ierr
+    """
+    Set the seed for random, numpy, tensorflow and torch.
+    Parameters
+    ----------
+    seed: int
 
-    try:
-        import torch
-    except ImportError as ierr:
-        raise ImportError("Please install Tensorflow") from ierr
+    Returns
+    -------
+    None
+    """
 
     random.seed(seed)
     np.random.seed(seed)
-    tf.random.set_seed(seed)  # tf cpu fix seed
-    os.environ[
-        "TF_DETERMINISTIC_OPS"
-    ] = "1"  # tf gpu fix seed, please `pip install tensorflow-determinism` first
-    torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed(seed)
-        torch.cuda.manual_seed_all(seed)
+
+    try:
+        import tensorflow as tf
+
+        tf.random.set_seed(seed)  # tf cpu fix seed
+        os.environ[
+            "TF_DETERMINISTIC_OPS"
+        ] = "1"  # tf gpu fix seed, please `pip install tensorflow-determinism` first
+        tf.keras.utils.set_random_seed(seed)
+
+    except ImportError:
+        print(
+            "We try to set the tensorflow seeds, but it seems that tensorflow is not installed. "
+            "Please refer to `https://www.tensorflow.org/` to install if you need to use "
+            "this deep learning module."
+        )
+
+    try:
+        import torch
+
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
+    except ImportError:
+        print(
+            "We try to set the torch seeds, but it seems that torch is not installed. "
+            "Please refer to `https://pytorch.org/` to install if you need to use "
+            "this deep learning module."
+        )
 
 
 def set_log_level(level="INFO"):
