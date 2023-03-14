@@ -23,10 +23,7 @@ from moabb.analysis.plotting import score_plot
 from moabb.datasets import BNCI2014001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import MotorImagery
-from moabb.pipelines.utils_pytorch import (
-    InputShapeSetterEEG,
-    Transformer,
-)
+from moabb.pipelines.utils_pytorch import InputShapeSetterEEG, Transformer
 from moabb.utils import setup_seed
 
 
@@ -131,10 +128,7 @@ clf = EEGClassifier(
 
 # Create the pipelines
 pipes = {}
-pipes["EEGNetV4"] = Pipeline([
-    ("Braindecode_dataset", create_dataset),
-    ("Net", clf)
-])
+pipes["EEGNetV4"] = Pipeline([("Braindecode_dataset", create_dataset), ("Net", clf)])
 
 
 ##############################################################################
