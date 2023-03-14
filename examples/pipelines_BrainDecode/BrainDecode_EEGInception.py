@@ -5,10 +5,8 @@ from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
 
-from moabb.pipelines.utils_pytorch import (
-    InputShapeSetterEEG,
-    Transformer,
-)
+from moabb.pipelines.utils_pytorch import InputShapeSetterEEG, Transformer
+
 
 # Set up GPU if it is there
 cuda = torch.cuda.is_available()
@@ -55,10 +53,7 @@ clf = EEGClassifier(
 )
 
 # Create the pipelines
-pipes = Pipeline([
-    ("Braindecode_dataset", create_dataset),
-    ("EEGInception", clf)
-])
+pipes = Pipeline([("Braindecode_dataset", create_dataset), ("EEGInception", clf)])
 
 # this is what will be loaded
 PIPELINE = {

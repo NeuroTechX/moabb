@@ -155,7 +155,7 @@ def benchmark(
                 hdf5_path=results,
                 n_jobs=n_jobs,
                 overwrite=overwrite,
-                return_epochs=return_epochs
+                return_epochs=return_epochs,
             )
             paradigm_results = context.process(
                 pipelines=prdgms[paradigm], param_grid=param_grid
