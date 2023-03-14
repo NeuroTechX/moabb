@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import mne
 import torch
 from braindecode import EEGClassifier
-from braindecode.models import EEGNetv4, EEGInception
+from braindecode.models import EEGNetv4
 from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
@@ -26,7 +26,6 @@ from moabb.paradigms import MotorImagery
 from moabb.pipelines.utils_pytorch import (
     InputShapeSetterEEG,
     Transformer,
-    get_shape_from_baseconcat,
 )
 from moabb.utils import setup_seed
 
