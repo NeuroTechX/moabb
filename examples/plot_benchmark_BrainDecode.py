@@ -87,9 +87,7 @@ results = benchmark(
 # - Shallow Convolutional Network [1]_
 # - Deep Convolutional Network [1]_
 # - EEGNetv4 [2]_
-# - EEGTCNet [3]_
-# - EEGNex [4]_
-# - EEGITNet [5]_
+# - EEGInception [3]_
 #
 # Benchmark prints a summary of the results. Detailed results are saved in a
 # pandas dataframe, and can be used to generate figures. The analysis & figures
@@ -111,18 +109,8 @@ plt.show()
 #    network for EEG-based brain-computer interfaces.
 #    <https://doi.org/10.1088/1741-2552/aace8c>`_
 #    Journal of neural engineering, 15(5), 056013.
-# .. [3] Ingolfsson, T. M., Hersche, M., Wang, X., Kobayashi, N., Cavigelli, L., &
-#    Benini, L. (2020, October). `EEG-TCNet: An accurate temporal convolutional
-#    network for embedded motor-imagery brain-machine interfaces.
-#    <https://doi.org/10.1109/SMC42975.2020.9283028>`_
-#    In 2020 IEEE International Conference on Systems, Man, and Cybernetics (SMC)
-#    (pp. 2958-2965). IEEE.
-# .. [4] Chen, X., Teng, X., Chen, H., Pan, Y., & Geyer, P. (2022). `Toward reliable
-#    signals decoding for electroencephalogram: A benchmark study to EEGNeX.
-#    <https://doi.org/10.48550/arXiv.2207.12369>`_
-#    arXiv preprint arXiv:2207.12369.
-# .. [5] Salami, A., Andreu-Perez, J., & Gillmeister, H. (2022). `EEG-ITNet: An
-#    explainable inception temporal convolutional network for motor imagery
-#    classification
-#    <https://doi.org/10.1109/ACCESS.2022.3161489>`_.
-#    IEEE Access, 10, 36672-36685.
+# .. [3] Santamaria-Vazquez, E., Martinez-Cagigal, V., Vaquerizo-Villar,
+#    F., & Hornero, R. (2020). EEG-inception: A novel deep convolutional neural network
+#    for assistive ERP-based brain-computer interfaces.
+#    <https://doi.org/10.1109/TNSRE.2020.3048106>`_
+#    IEEE Transactions on Neural Systems and Rehabilitation Engineering
