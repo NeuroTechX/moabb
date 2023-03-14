@@ -1,13 +1,15 @@
 """
-====================================================================
-Benchmarking on MOABB with Tensorflow deep net architectures
-====================================================================
-This example shows how to use MOABB to benchmark a set of Deep Learning pipeline (Tensorflow)
+=======================================================================
+Benchmarking on MOABB with BrainDecode (PyTorch) deep net architectures
+=======================================================================
+This example shows how to use MOABB to benchmark a set of Deep Learning pipeline (BrainDecode)
 on all available datasets.
-For this example, we will use only one dataset to keep the computation time low, but this benchmark is designed
+For this example, we will use only 2 dataset to keep the computation time low, but this benchmark is designed
 to easily scale to many datasets.
 """
 # Authors: Igor Carrara <igor.carrara@inria.fr>
+#          Bruno Aristimunha <b.aristimunha@gmail.com>
+#          Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>
 #
 # License: BSD (3-clause)
 
@@ -37,7 +39,7 @@ device = "cuda" if cuda else "cpu"
 print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 
 ###############################################################################
-# In this example, we will use only the dataset ``BNCI2014001``.
+# In this example, we will use only 2 subject from the dataset ``BNCI2014001`` and ``BNCI2014004``.
 #
 # Running the benchmark
 # ---------------------
@@ -81,10 +83,10 @@ results = benchmark(
 )
 
 ###############################################################################
-# The deep learning architectures implemented in MOABB are:
+# The deep learning architectures implemented in MOABB using BrainDecode are:
 # - Shallow Convolutional Network [1]_
 # - Deep Convolutional Network [1]_
-# - EEGNet [2]_
+# - EEGNetv4 [2]_
 # - EEGTCNet [3]_
 # - EEGNex [4]_
 # - EEGITNet [5]_
