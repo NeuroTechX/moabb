@@ -139,6 +139,5 @@ class InputShapeSetterEEG(Callback):
             module_initilized = new_module(**params_get_from_dataset)
             # Set the neural network module to the new initialized module
             net.set_params(module=module_initilized)
-            # net.set_params(**params_get_from_dataset)
             # Initialize the new module
             net.initialize_module()
