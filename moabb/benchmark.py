@@ -143,7 +143,7 @@ def benchmark(
                 f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}"
             )
 
-            if "BrainDecode" in list(prdgms[paradigm].keys())[0]:
+            if "braindecode" in list(prdgms[paradigm].keys())[0]:
                 return_epochs = True
             else:
                 return_epochs = False
