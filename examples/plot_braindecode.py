@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import mne
 import torch
 from braindecode import EEGClassifier
-from braindecode.models import EEGNetv4
+from braindecode.models import EEGNetv4, EEGInception
 from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
@@ -60,7 +60,8 @@ print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 
 
 # Set random seed to be able to reproduce results
-setup_seed(42)
+seed = 42
+setup_seed(seed)
 
 # Ensure that all operations are deterministic on GPU (if used) for reproducibility
 torch.backends.cudnn.deterministic = True
@@ -95,10 +96,8 @@ create_dataset = Transformer()
 # In order to create a pipeline we need to load a model from BrainDecode.
 # the second step is to define a skorch model using EEGClassifier from BrainDecode
 # that allow to convert the PyTorch model in a scikit-learn classifier.
-
-"""model = EEGNetv4(
-    in_chans=X.shape[1], n_classes=len(events), input_window_samples=X.shape[2]
-)"""
+# Initialize the parameter of the model as random value since this parameter will be set dynamically using the
+# callbacks InputShapeSetterEEG, where we have to specify the correct name of the parameter
 
 model = EEGNetv4(in_chans=1, n_classes=2, input_window_samples=100)
 
@@ -114,7 +113,7 @@ clf = EEGClassifier(
     optimizer__lr=LEARNING_RATE,
     batch_size=BATCH_SIZE,
     max_epochs=EPOCH,
-    train_split=ValidSplit(0.2),
+    train_split=ValidSplit(0.2, random_state=seed),
     device=device,
     callbacks=[
         EarlyStopping(monitor="valid_loss", patience=PATIENCE),
@@ -126,8 +125,6 @@ clf = EEGClassifier(
         ),
         InputShapeSetterEEG(
             params_list=["in_chans", "input_window_samples", "n_classes"],
-            input_dim_fn=get_shape_from_baseconcat,
-            module_name="module",
         ),
     ],
     verbose=1,  # Not printing the results foe each epoch
@@ -135,7 +132,10 @@ clf = EEGClassifier(
 
 # Create the pipelines
 pipes = {}
-pipes["EEGNetV4"] = Pipeline([("Braindecode_dataset", create_dataset), ("Net", clf)])
+pipes["EEGNetV4"] = Pipeline([
+    ("Braindecode_dataset", create_dataset),
+    ("Net", clf)
+])
 
 
 ##############################################################################

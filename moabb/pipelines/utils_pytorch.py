@@ -1,5 +1,6 @@
 from functools import partial
 from inspect import getmembers, isclass, isroutine
+import collections
 
 from braindecode.datasets import BaseConcatDataset, create_from_X_y
 from numpy import unique
@@ -37,12 +38,12 @@ class Transformer(BaseEstimator, TransformerMixin):
         return True
 
 
-def get_shape_from_baseconcat(X):
+def get_shape_from_baseconcat(X, param_name):
     """Get the shape of the data after BaseConcatDataset is applied"""
     if isinstance(X, BaseConcatDataset):
         in_channel = X[0][0].shape[0]
         input_window_samples = X[0][0].shape[1]
-        return {"in_chans": in_channel, "input_window_samples": input_window_samples}
+        return {param_name[0]: in_channel, param_name[1]: input_window_samples}
     else:
         return X.shape
 
@@ -93,7 +94,7 @@ class InputShapeSetterEEG(Callback):
     def __init__(
         self,
         params_list=None,
-        input_dim_fn=None,
+        input_dim_fn=get_shape_from_baseconcat,
         module_name="module",
     ):
         self.module_name = module_name
@@ -102,7 +103,7 @@ class InputShapeSetterEEG(Callback):
 
     def get_input_dim(self, X):
         if self.input_dim_fn is not None:
-            return self.input_dim_fn(X)
+            return self.input_dim_fn(X, self.params_list)
         if len(X.shape) < 2:
             raise ValueError(
                 "Expected at least two-dimensional input data for X. "
@@ -123,22 +124,20 @@ class InputShapeSetterEEG(Callback):
         # Get all the parameters of the neural network module
         all_params_module = getmembers(params["module"], lambda x: not (isroutine(x)))
         # Filter the parameters to only include the selected ones
-        selected_params_module = list(
-            filter(lambda x: x in self.params_list, all_params_module)
-        )
+        selected_params_module = [sub[0] for sub in all_params_module if sub[0] in self.params_list]
 
-        # Check if the selected parameters from the model already match the dataset parameters
-        if all(
-            self.params_get_from_dataset[name] == value
-            for name, value in selected_params_module
-        ):
-            return
-
-        # Find the new module based on the current module's class name
-        new_module = _find_model_from_braindecode(net.module.__class__.__name__)
-        # Initialize the new module with the dataset parameters
-        module_initilized = new_module(**params_get_from_dataset)
-        # Set the neural network module to the new initialized module
-        net.set_params(**{"module": module_initilized})
-        # Initialize the new module
-        net.initialize_module()
+        # Check if the selected parameters are inside the model parameter
+        if collections.Counter(params_get_from_dataset.keys()) != collections.Counter(selected_params_module):
+            raise ValueError(
+                "Set the correct input name for the model from BrainDecode."
+            )
+        else:
+            # Find the new module based on the current module's class name
+            new_module = _find_model_from_braindecode(net.module.__class__.__name__)
+            # Initialize the new module with the dataset parameters
+            module_initilized = new_module(**params_get_from_dataset)
+            # Set the neural network module to the new initialized module
+            net.set_params(module=module_initilized)
+            # net.set_params(**params_get_from_dataset)
+            # Initialize the new module
+            net.initialize_module()
