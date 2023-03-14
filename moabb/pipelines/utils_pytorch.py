@@ -1,6 +1,6 @@
+import collections
 from functools import partial
 from inspect import getmembers, isclass, isroutine
-import collections
 
 from braindecode.datasets import BaseConcatDataset, create_from_X_y
 from numpy import unique
@@ -124,13 +124,15 @@ class InputShapeSetterEEG(Callback):
         # Get all the parameters of the neural network module
         all_params_module = getmembers(params["module"], lambda x: not (isroutine(x)))
         # Filter the parameters to only include the selected ones
-        selected_params_module = [sub[0] for sub in all_params_module if sub[0] in self.params_list]
+        selected_params_module = [
+            sub[0] for sub in all_params_module if sub[0] in self.params_list
+        ]
 
         # Check if the selected parameters are inside the model parameter
-        if collections.Counter(params_get_from_dataset.keys()) != collections.Counter(selected_params_module):
-            raise ValueError(
-                "Set the correct input name for the model from BrainDecode."
-            )
+        if collections.Counter(params_get_from_dataset.keys()) != collections.Counter(
+            selected_params_module
+        ):
+            raise ValueError("Set the correct input name for the model from BrainDecode.")
         else:
             # Find the new module based on the current module's class name
             new_module = _find_model_from_braindecode(net.module.__class__.__name__)

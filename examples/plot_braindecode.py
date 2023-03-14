@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import mne
 import torch
 from braindecode import EEGClassifier
-from braindecode.models import EEGNetv4, EEGInception
+from braindecode.models import EEGInception, EEGNetv4
 from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
@@ -132,10 +132,7 @@ clf = EEGClassifier(
 
 # Create the pipelines
 pipes = {}
-pipes["EEGNetV4"] = Pipeline([
-    ("Braindecode_dataset", create_dataset),
-    ("Net", clf)
-])
+pipes["EEGNetV4"] = Pipeline([("Braindecode_dataset", create_dataset), ("Net", clf)])
 
 
 ##############################################################################
