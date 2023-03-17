@@ -61,7 +61,7 @@ print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 # (i.e. set n_jobs=1)
 #
 # In order to allow the benchmark function to work with return_epoch=True (Required to use Braindecode(
-# we need to call each pipeline as "braindecode_xxx...", with zzz the name of the model to be
+# we need to call each pipeline as "braindecode_xxx...", with xxx the name of the model to be
 # handled correctly by the benchmark function.
 
 # Set up reproducibility of Tensorflow
