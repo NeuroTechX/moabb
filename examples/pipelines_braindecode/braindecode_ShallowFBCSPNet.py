@@ -5,7 +5,7 @@ from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
 
-from moabb.pipelines.utils_pytorch import InputShapeSetterEEG, LoadMOABBDataset
+from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader, InputShapeSetterEEG
 
 
 # Set up GPU if it is there
@@ -22,9 +22,9 @@ EPOCH = 10
 PATIENCE = 3
 
 # Create the dataset
-create_dataset = LoadMOABBDataset()
+create_dataset = BraindecodeDatasetLoader()
 
-# Set random Model
+# Set Shallow Filter Bank CSP Net model
 model = ShallowFBCSPNet(
     in_chans=1, n_classes=2, input_window_samples=100, final_conv_length="auto"
 )
@@ -62,4 +62,5 @@ PIPELINE = {
     "name": "braindecode_ShallowFBCSPNet",
     "paradigms": ["LeftRightImagery", "MotorImagery"],
     "pipeline": pipes,
+    "citations": "https://doi.org/10.1002/hbm.23730",
 }

@@ -5,7 +5,7 @@ from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
 
-from moabb.pipelines.utils_pytorch import InputShapeSetterEEG, LoadMOABBDataset
+from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader, InputShapeSetterEEG
 
 
 # Set up GPU if it is there
@@ -22,9 +22,9 @@ EPOCH = 10
 PATIENCE = 3
 
 # Create the dataset
-create_dataset = LoadMOABBDataset()
+create_dataset = BraindecodeDatasetLoader()
 
-# Set random Model
+# Set EEGNetv4 model
 model = EEGNetv4(in_chans=1, n_classes=2, input_window_samples=100)
 
 # Define a Skorch classifier
