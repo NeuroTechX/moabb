@@ -1,3 +1,5 @@
+import unittest
+
 import numpy as np
 import pytest
 from braindecode.datasets import BaseConcatDataset, create_from_X_y
@@ -5,7 +7,7 @@ from mne import EpochsArray, create_info
 from sklearn.preprocessing import LabelEncoder
 
 from moabb.datasets.fake import FakeDataset
-from moabb.pipelines.utils_pytorch import LoadMOABBDataset
+from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader
 from moabb.tests import SimpleMotorImagery
 
 
@@ -22,7 +24,7 @@ def data():
 class TestTransformer:
     def test_transform_input_and_output_shape(self, data):
         X, _, info = data
-        transformer = LoadMOABBDataset()
+        transformer = BraindecodeDatasetLoader()
         braindecode_dataset = transformer.fit_transform(X, y=None)
         assert (
             len(braindecode_dataset) == X.shape[0]
@@ -31,26 +33,26 @@ class TestTransformer:
         )
 
     def test_sklearn_is_fitted(self, data):
-        transformer = LoadMOABBDataset()
+        transformer = BraindecodeDatasetLoader()
         assert transformer.__sklearn_is_fitted__()
 
     def test_transformer_fit(self, data):
         """Test whether transformer can fit to some training data"""
         X_train, y_train, _, _ = data
-        transformer = LoadMOABBDataset()
+        transformer = BraindecodeDatasetLoader()
         assert transformer.fit(X_train, y_train) == transformer
 
     def test_transformer_transform_returns_dataset(self, data):
         """Test whether the output of the transform method is a BaseConcatDataset"""
         X_train, y_train, _, _ = data
-        transformer = LoadMOABBDataset()
+        transformer = BraindecodeDatasetLoader()
         dataset = transformer.fit(X_train, y_train).transform(X_train, y_train)
         assert isinstance(dataset, BaseConcatDataset)
 
     def test_transformer_transform_contents(self, data):
         """Test whether the contents and metadata of a transformed dataset are correct"""
         X_train, y_train, _, _ = data
-        transformer = LoadMOABBDataset()
+        transformer = BraindecodeDatasetLoader()
         dataset = transformer.fit(X_train, y_train).transform(X_train, y_train)
         assert len(dataset.datasets[0].windows.datasets[0]) == len(X_train)
         # test the properties of one epoch - that they match the input MNE Epoch object
@@ -67,7 +69,7 @@ class TestTransformer:
         )  # create some noise data in a 10s window
         epochs = EpochsArray(data, info=info)
         y_train = np.array([0])
-        transformer = LoadMOABBDataset()
+        transformer = BraindecodeDatasetLoader()
         dataset = transformer.fit(epochs, y_train).transform(epochs, y_train)
         assert dataset.datasets[0].windows.datasets[0].sfreq == sfreq
 
@@ -78,26 +80,26 @@ class TestTransformer:
         not affect the returned dataset.
         """
         X_train, _, _, _ = data
-        transformer = LoadMOABBDataset()
+        transformer = BraindecodeDatasetLoader()
         dataset = transformer.fit(X_train).transform(X_train)
         assert isinstance(dataset, BaseConcatDataset)
 
     def test_kw_args_initialization(self):
         """Test initializing the transformer with kw_args"""
         kw_args = {"sampling_rate": 128}
-        transformer = LoadMOABBDataset(kw_args=kw_args)
+        transformer = BraindecodeDatasetLoader(kw_args=kw_args)
         assert transformer.kw_args == kw_args
 
     def test_is_fitted_method(self):
         """Test __sklearn_is_fitted__ returns True"""
-        transformer = LoadMOABBDataset()
+        transformer = BraindecodeDatasetLoader()
         is_fitter = transformer.__sklearn_is_fitted__()
         assert is_fitter
 
     def test_assert_raises_value_error(self, data):
         """Test that an invalid argument gives a ValueError"""
         X_train, y_train, _, _ = data
-        transformer = LoadMOABBDataset()
+        transformer = BraindecodeDatasetLoader()
         invalid_param_name = "invalid"
         with pytest.raises(ValueError):
             transformer.fit(X_train, y=y_train, **{invalid_param_name: None})
@@ -114,7 +116,11 @@ class TestTransformer:
             drop_last_window=False,
             sfreq=X_train.info["sfreq"],
         )
-        transformer = LoadMOABBDataset()
+        transformer = BraindecodeDatasetLoader()
         dataset_trans = transformer.fit(dataset).transform(dataset)
         assert isinstance(dataset_trans, BaseConcatDataset)
         assert type(dataset_trans) == type(dataset)
+
+
+if __name__ == "__main__":
+    unittest.main()
