@@ -1,10 +1,11 @@
 import os.path as osp
 import unittest
+from unittest.mock import MagicMock, patch
 
 from mne import get_config
 
 from moabb.datasets import utils
-from moabb.utils import set_download_dir
+from moabb.utils import set_download_dir, setup_seed
 
 
 class Test_Utils(unittest.TestCase):
@@ -64,6 +65,31 @@ class Test_Utils(unittest.TestCase):
 
         # Set back to usual
         set_download_dir(original_path)
+
+
+class TestSetupSeed(unittest.TestCase):
+    @patch("builtins.print")
+    def test_without_tensorflow(self, mock_print):
+        # Test when tensorflow is not installed
+        with patch.dict("sys.modules", {"tensorflow": None}):
+            self.assertFalse(setup_seed(42))
+            mock_print.assert_any_call(
+                "We try to set the tensorflow seeds, but it seems that tensorflow is not installed. Please refer to `https://www.tensorflow.org/` to install if you need to use this deep learning module."
+            )
+
+    @patch("builtins.print")
+    def test_without_torch(self, mock_print):
+        # Test when torch is not installed
+        with patch.dict("sys.modules", {"torch": None}):
+            self.assertFalse(setup_seed(42))
+            mock_print.assert_any_call(
+                "We try to set the torch seeds, but it seems that torch is not installed. Please refer to `https://pytorch.org/` to install if you need to use this deep learning module."
+            )
+
+    @patch.dict("sys.modules", {"tensorflow": MagicMock(), "torch": MagicMock()})
+    def test_with_tensorflow_and_torch(self):
+        # Test when tensorflow and torch are installed
+        self.assertTrue(setup_seed(42))
 
 
 if __name__ == "__main__":
