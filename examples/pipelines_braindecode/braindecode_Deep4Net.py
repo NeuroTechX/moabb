@@ -24,7 +24,7 @@ PATIENCE = 3
 # Create the dataset
 create_dataset = Transformer()
 
-# Set random Model
+# Set Deep4Net model
 model = ShallowFBCSPNet(
     in_chans=1, n_classes=2, input_window_samples=100, final_conv_length="auto"
 )
