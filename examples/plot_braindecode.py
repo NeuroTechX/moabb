@@ -1,6 +1,6 @@
 """
 =============================================================
-Cross-session motor imagery with deep learning EEGNet V4 model
+Cross-session motor imagery with deep learning EEGNet v4 model
 =============================================================
 This example shows how to use BrainDecode in combination with MOABB evaluation.
 In this example, we use the architecture EEGNetv4.
