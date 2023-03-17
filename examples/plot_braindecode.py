@@ -123,7 +123,7 @@ clf = EEGClassifier(
             params_list=["in_chans", "input_window_samples", "n_classes"],
         ),
     ],
-    verbose=1,  # Not printing the results foe each epoch
+    verbose=1,  # Not printing the results for each epoch
 )
 
 # Create the pipelines
