@@ -9,7 +9,7 @@ from skorch.callbacks import Callback
 from torch.nn import Module
 
 
-class Transformer(BaseEstimator, TransformerMixin):
+class LoadMOABBDataset(BaseEstimator, TransformerMixin):
     """
     Class to Load the data from MOABB in a format compatible with braindecode
     """

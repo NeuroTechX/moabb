@@ -59,6 +59,9 @@ print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 #
 # This code is implemented to run on CPU. If you're using a GPU, do not use multithreading
 # (i.e. set n_jobs=1)
+#
+# In order to allow the benchmark function to work with return_epoch=True (Required to use BrainDecode(
+# we need to call each pipeline as "braindecode_..."
 
 # Set up reproducibility of Tensorflow
 setup_seed(42)

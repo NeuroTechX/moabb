@@ -1,11 +1,11 @@
 import torch
 from braindecode import EEGClassifier
-from braindecode.models import ShallowFBCSPNet
+from braindecode.models import Deep4Net
 from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
 
-from moabb.pipelines.utils_pytorch import InputShapeSetterEEG, Transformer
+from moabb.pipelines.utils_pytorch import InputShapeSetterEEG, LoadMOABBDataset
 
 
 # Set up GPU if it is there
@@ -22,10 +22,10 @@ EPOCH = 10
 PATIENCE = 3
 
 # Create the dataset
-create_dataset = Transformer()
+create_dataset = LoadMOABBDataset()
 
 # Set Deep4Net model
-model = ShallowFBCSPNet(
+model = Deep4Net(
     in_chans=1, n_classes=2, input_window_samples=100, final_conv_length="auto"
 )
 
