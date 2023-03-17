@@ -5,7 +5,7 @@ from mne import EpochsArray, create_info
 from sklearn.preprocessing import LabelEncoder
 
 from moabb.datasets.fake import FakeDataset
-from moabb.pipelines.utils_pytorch import Transformer
+from moabb.pipelines.utils_pytorch import LoadMOABBDataset
 from moabb.tests import SimpleMotorImagery
 
 
