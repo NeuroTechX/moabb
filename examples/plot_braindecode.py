@@ -3,7 +3,7 @@
 Cross-session motor imagery with deep learning EEGNet V4 model
 =============================================================
 This example shows how to use BrainDecode in combination with MOABB evaluation.
-In this example we use the architecture ShallowFBCSPNet.
+In this example, we use the architecture EEGNetv4.
 """
 # Authors: Igor Carrara <igor.carrara@inria.fr>
 #          Bruno Aristimunha <b.aristimunha@gmail.com>
@@ -12,6 +12,7 @@ In this example we use the architecture ShallowFBCSPNet.
 
 import matplotlib.pyplot as plt
 import mne
+import seaborn as sns
 import torch
 from braindecode import EEGClassifier
 from braindecode.models import EEGNetv4
@@ -19,7 +20,6 @@ from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
 
-from moabb.analysis.plotting import score_plot
 from moabb.datasets import BNCI2014001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import MotorImagery
@@ -44,14 +44,14 @@ print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 # Running the benchmark
 # ---------------------
 #
-# This example use the CrossSession evaluation procedure. We focus on the dataset BNCI2014001 and only on 1 subject
-# to reduce the computational time.
+# This example uses the CrossSession evaluation procedure. We focus on the dataset BNCI2014001 and only on 1 subject
+# to reduce computational time.
 #
-# To keep the computational time low the number of epoch is reduced. In a real situation we suggest to use
+# To keep the computational time low, the epoch is reduced. In a real situation, we suggest using the following:
 # EPOCH = 1000
 # PATIENCE = 300
 #
-# This code is implemented to run on CPU. If you're using a GPU, do not use multithreading
+# This code is implemented to run on the CPU. If you're using a GPU, do not use multithreading
 # (i.e. set n_jobs=1)
 
 
@@ -65,9 +65,9 @@ torch.backends.cudnn.benchmark = False
 
 
 # Hyperparameter
-LEARNING_RATE = 0.0625 * 0.01  # result taken from BrainDecode
-WEIGHT_DECAY = 0  # result taken from BrainDecode
-BATCH_SIZE = 64  # result taken from BrainDecode
+LEARNING_RATE = 0.0625 * 0.01  # parameter taken from Braindecode
+WEIGHT_DECAY = 0  # parameter taken from Braindecode
+BATCH_SIZE = 64  # parameter taken from BrainDecode
 EPOCH = 10
 PATIENCE = 3
 fmin = 4
@@ -89,11 +89,12 @@ create_dataset = LoadMOABBDataset()
 ##############################################################################
 # Create Pipelines
 # ----------------
-# In order to create a pipeline we need to load a model from BrainDecode.
-# the second step is to define a skorch model using EEGClassifier from BrainDecode
-# that allow to convert the PyTorch model in a scikit-learn classifier.
-# Initialize the parameter of the model as random value since this parameter will be set dynamically using the
-# callbacks InputShapeSetterEEG, where we have to specify the correct name of the parameter
+# In order to create a pipeline, we need to load a model from braindecode.
+# the second step is to define a skorch model using EEGClassifier from braindecode
+# that allows converting the PyTorch model in a scikit-learn classifier.
+# Initialize the model's parameter as a dummy value since this parameter will be set dynamically using the
+# callbacks InputShapeSetterEEG, where we have to specify the correct name of the parameter.
+# Here, we will use the EEGNet v4 model [1]_ .
 
 model = EEGNetv4(in_chans=1, n_classes=1, input_window_samples=100)
 
@@ -152,5 +153,14 @@ print(results.head())
 ##############################################################################
 # Plot Results
 # ----------------
-score_plot(results)
+plt.figure()
+sns.barplot(data=results, y="score", x="subject", palette="viridis")
 plt.show()
+##############################################################################
+# References
+# ----------
+# .. [1] Lawhern, V. J., Solon, A. J., Waytowich, N. R., Gordon, S. M.,
+#    Hung, C. P., & Lance, B. J. (2018). `EEGNet: a compact convolutional neural
+#    network for EEG-based brain-computer interfaces.
+#    <https://doi.org/10.1088/1741-2552/aace8c>`_
+#    Journal of neural engineering, 15(5), 056013.

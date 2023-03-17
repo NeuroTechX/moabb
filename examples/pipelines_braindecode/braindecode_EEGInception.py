@@ -24,7 +24,7 @@ PATIENCE = 3
 # Create the dataset
 create_dataset = LoadMOABBDataset()
 
-# Set random Model
+# Set EEG Inception model
 model = EEGInception(in_channels=1, n_classes=2, input_window_samples=100)
 
 # Define a Skorch classifier

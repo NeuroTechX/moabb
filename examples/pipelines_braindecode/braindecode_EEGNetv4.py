@@ -24,7 +24,7 @@ PATIENCE = 3
 # Create the dataset
 create_dataset = LoadMOABBDataset()
 
-# Set random Model
+# Set EEGNetv4 model
 model = EEGNetv4(in_chans=1, n_classes=2, input_window_samples=100)
 
 # Define a Skorch classifier

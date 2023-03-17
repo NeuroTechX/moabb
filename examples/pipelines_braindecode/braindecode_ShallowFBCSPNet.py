@@ -24,7 +24,7 @@ PATIENCE = 3
 # Create the dataset
 create_dataset = LoadMOABBDataset()
 
-# Set random Model
+# Set Shallow Filter Bank CSP Net model
 model = ShallowFBCSPNet(
     in_chans=1, n_classes=2, input_window_samples=100, final_conv_length="auto"
 )
