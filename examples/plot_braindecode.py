@@ -23,7 +23,7 @@ from skorch.dataset import ValidSplit
 from moabb.datasets import BNCI2014001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import MotorImagery
-from moabb.pipelines.utils_pytorch import InputShapeSetterEEG, LoadMOABBDataset
+from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader, InputShapeSetterEEG
 from moabb.utils import setup_seed
 
 
@@ -84,7 +84,7 @@ paradigm = MotorImagery(
 subjects = [1]
 X, _, _ = paradigm.get_data(dataset=dataset, subjects=subjects)
 # Define Transformer of Dataset compatible with Brain Decode
-create_dataset = LoadMOABBDataset()
+create_dataset = BraindecodeDatasetLoader()
 
 ##############################################################################
 # Create Pipelines
