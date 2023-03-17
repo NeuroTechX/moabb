@@ -1,6 +1,6 @@
 """
 =============================================================
-Benchmarking on MOABB with BrainDecode deep net architectures
+Cross-session motor imagery with deep learning EEGNet V4 model
 =============================================================
 This example shows how to use BrainDecode in combination with MOABB evaluation.
 In this example we use the architecture ShallowFBCSPNet.
