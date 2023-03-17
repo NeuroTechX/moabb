@@ -62,4 +62,5 @@ PIPELINE = {
     "name": "braindecode_Deep4Net",
     "paradigms": ["LeftRightImagery", "MotorImagery"],
     "pipeline": pipes,
+    "citations": "https://doi.org/10.1002/hbm.23730",
 }
