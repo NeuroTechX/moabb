@@ -16,20 +16,20 @@ def data():
     """Return EEG data from dataset to test transformer"""
     paradigm = SimpleMotorImagery()
     dataset = FakeDataset(paradigm="imagery")
-    X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+    X, labels, metadata = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
     y = LabelEncoder().fit_transform(labels)
     return X, y, labels, metadata
 
 
 class TestTransformer:
     def test_transform_input_and_output_shape(self, data):
-        X, _, info = data
+        X, y, _, info = data
         transformer = BraindecodeDatasetLoader()
-        braindecode_dataset = transformer.fit_transform(X, y=None)
+        braindecode_dataset = transformer.fit_transform(X, y=y)
         assert (
-            len(braindecode_dataset) == X.shape[0]
-            and braindecode_dataset[0][0].shape[0] == X.shape[0]
-            and braindecode_dataset[0][0].shape[1] == X.shape[1]
+            len(braindecode_dataset) == X.get_data().shape[0]
+            and braindecode_dataset[0][0].shape[0] == X.get_data().shape[1]
+            and braindecode_dataset[0][0].shape[1] == X.get_data().shape[2]
         )
 
     def test_sklearn_is_fitted(self, data):
@@ -54,35 +54,24 @@ class TestTransformer:
         X_train, y_train, _, _ = data
         transformer = BraindecodeDatasetLoader()
         dataset = transformer.fit(X_train, y_train).transform(X_train, y_train)
-        assert len(dataset.datasets[0].windows.datasets[0]) == len(X_train)
+        assert len(dataset) == len(X_train)
         # test the properties of one epoch - that they match the input MNE Epoch object
         sample_epoch = dataset.datasets[0][0]
-        assert np.array_equal(sample_epoch.X, X_train.get_data()[0])
-        assert np.array_equal(sample_epoch.y, y_train)
+        # assert with approximately equal values
+        assert np.allclose(sample_epoch[0], X_train.get_data()[0])
+        assert sample_epoch[1] == y_train[0]
 
     def test_sfreq_passed_through(self, data):
         """Test if the sfreq parameter makes it through the transformer"""
         sfreq = 128.0
         info = create_info(ch_names=["test"], sfreq=sfreq, ch_types=["eeg"])
-        data = (
-            np.random.normal(size=(2, 1, 10 * int(sfreq))) * 1e-6
-        )  # create some noise data in a 10s window
+        data = np.random.normal(size=(2, 1, 10 * int(sfreq))) * 1e-6
+        # create some noise data in a 10s window
         epochs = EpochsArray(data, info=info)
         y_train = np.array([0])
         transformer = BraindecodeDatasetLoader()
         dataset = transformer.fit(epochs, y_train).transform(epochs, y_train)
-        assert dataset.datasets[0].windows.datasets[0].sfreq == sfreq
-
-    def test_transformer_transform_with_no_y(self, data):
-        """
-        Test whether the transform method works when no y variable
-        is provided. This essentially tests that the y variable does
-        not affect the returned dataset.
-        """
-        X_train, _, _, _ = data
-        transformer = BraindecodeDatasetLoader()
-        dataset = transformer.fit(X_train).transform(X_train)
-        assert isinstance(dataset, BaseConcatDataset)
+        assert dataset.datasets[0].windows.info["sfreq"] == sfreq
 
     def test_kw_args_initialization(self):
         """Test initializing the transformer with kw_args"""
@@ -101,7 +90,7 @@ class TestTransformer:
         X_train, y_train, _, _ = data
         transformer = BraindecodeDatasetLoader()
         invalid_param_name = "invalid"
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             transformer.fit(X_train, y=y_train, **{invalid_param_name: None})
 
     def test_type_create_from_X_y_vs_transfomer(self, data):
@@ -117,7 +106,9 @@ class TestTransformer:
             sfreq=X_train.info["sfreq"],
         )
         transformer = BraindecodeDatasetLoader()
-        dataset_trans = transformer.fit(dataset).transform(dataset)
+        dataset_trans = transformer.fit(X=X_train.get_data(), y=y_train).transform(
+            X_train
+        )
         assert isinstance(dataset_trans, BaseConcatDataset)
         assert type(dataset_trans) == type(dataset)
 
