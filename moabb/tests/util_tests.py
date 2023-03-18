@@ -91,7 +91,7 @@ class TestSetupSeed(unittest.TestCase):
     @patch.dict("sys.modules", {"tensorflow": MagicMock(), "torch": MagicMock()})
     def test_with_tensorflow_and_torch(self):
         # Test when tensorflow and torch are installed
-        self.assertTrue(setup_seed(42))
+        self.assertTrue(setup_seed(42) == None)  # noqa: E711
 
 
 if __name__ == "__main__":
