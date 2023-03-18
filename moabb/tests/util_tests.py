@@ -8,6 +8,22 @@ from moabb.datasets import utils
 from moabb.utils import set_download_dir, setup_seed
 
 
+class TestDownload(unittest.TestCase):
+    def test_set_download_dir(self):
+        original_path = get_config("MNE_DATA")
+        new_path = osp.join(osp.expanduser("~"), "mne_data_test")
+        set_download_dir(new_path)
+
+        # Check if the mne config has been changed correctly
+        self.assertTrue(get_config("MNE_DATA") == new_path)
+
+        # Check if the folder has been created
+        self.assertTrue(osp.isdir(new_path))
+
+        # Set back to usual
+        set_download_dir(original_path)
+
+
 class Test_Utils(unittest.TestCase):
     def test_channel_intersection_fun(self):
         print(utils.find_intersecting_channels([d() for d in utils.dataset_list])[0])
@@ -51,20 +67,6 @@ class Test_Utils(unittest.TestCase):
                 sess1 = s1[list(s1.keys())[0]]
                 raw = sess1[list(sess1.keys())[0]]
                 self.assertFalse(set(chans) <= set(raw.info["ch_names"]))
-
-    def test_set_download_dir(self):
-        original_path = get_config("MNE_DATA")
-        new_path = osp.join(osp.expanduser("~"), "mne_data_test")
-        set_download_dir(new_path)
-
-        # Check if the mne config has been changed correctly
-        self.assertTrue(get_config("MNE_DATA") == new_path)
-
-        # Check if the folder has been created
-        self.assertTrue(osp.isdir(new_path))
-
-        # Set back to usual
-        set_download_dir(original_path)
 
 
 class TestSetupSeed(unittest.TestCase):
