@@ -22,12 +22,18 @@ Enhancements
 - Adding a comprehensive benchmarking function (:gh:`264` by `Divyesh Narayanan`_ and `Sylvain Chevallier`_)
 - Add meta-information for datasets in documentation (:gh:`317` by `Bruno Aristimunha`_)
 - Add GridSearchCV for different evaluation procedure (:gh:`319` by `Igor Carrara`_)
-- Add six deep learning models (Tensorflow), and build a tutorial to show to used the deep learning model (:gh:`326` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
+- Adding new tutorial to benchmark with GridSearchCV (:gh:`323` by `Igor Carrara`_)
+- Add six deep learning models (Tensorflow), and build a tutorial to show to use the deep learning model (:gh:`326` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Add a augmentation model to the pipeline (:gh:`326` by `Igor Carrara`_)
+- Add Google Analytics to the documentation (:gh:`335` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
-
+- Fix bug for MotorImagery when we handle all events (:gh:`327` by `Igor Carrara`_)
+- Fixing CI to handle with new deep learning dependencies (:gh:`332` and :gh:`326` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
+- Correct CI error due to isort (:gh:`330` by `Bruno Aristimunha`_)
+- Restricting Python <= 3.11 version and adding tensorflow, keras, scikeras, braindecode, skorch and torch, as optional dependence (:gh:`329` by `Bruno Aristimunha`_)
+- Fix numpy variable to handle with the new version of python (:gh:`324` by `Bruno Aristimunha`_)
 - Correct CI error due to black (:gh:`292` by `Sylvain Chevallier`_)
 - Preload Schirrmeister2017 raw files (:gh:`290` by `Pierre Guetschel`_)
 - Incorrect event assignation for Lee2019 in MNE >= 1.0.0 (:gh:`298` by `Sylvain Chevallier`_)
@@ -35,6 +41,7 @@ Bugs
 - Fix downloading path issue for Weibo2014 and Zhou2016, numy error in DemonsP300 (:gh:`315` by `Sylvain Chevallier`_)
 - Fix unzip error for Huebner2017 and Huebner2018 (:gh:`318` by `Sylvain Chevallier`_)
 - Fix n_classes when events set to None (:gh:`337` by `Igor Carrara`_ and `Sylvain Chevallier`_)
+- Change n_jobs=-1 to self.n_jobs in GridSearch (:gh:`344` by `Igor Carrara`_)
 
 API changes
 ~~~~~~~~~~~
