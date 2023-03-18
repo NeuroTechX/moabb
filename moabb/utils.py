@@ -8,21 +8,32 @@ from mne import get_config, set_config
 from mne import set_log_level as sll
 
 
-def setup_seed(seed):
+def _set_random_seed(seed: int) -> None:
     """
-    Set the seed for random, numpy, tensorflow and torch.
+    Set the seed for Python's built-in random module and numpy.
     Parameters
     ----------
     seed: int
-
+        The random seed to use.
     Returns
     -------
     None
     """
-
     random.seed(seed)
     np.random.seed(seed)
 
+
+def _set_tensorflow_seed(seed: int) -> None:
+    """
+    Set the seed for TensorFlow.
+    Parameters
+    ----------
+    seed: int
+        The random seed to use.
+    Returns
+    -------
+    None
+    """
     try:
         import tensorflow as tf
 
@@ -38,7 +49,20 @@ def setup_seed(seed):
             "Please refer to `https://www.tensorflow.org/` to install if you need to use "
             "this deep learning module."
         )
+        return False
 
+
+def _set_torch_seed(seed: int) -> None:
+    """
+    Set the seed for PyTorch.
+    Parameters
+    ----------
+    seed: int
+        The random seed to use.
+    Returns
+    -------
+    None
+    """
     try:
         import torch
 
@@ -52,6 +76,29 @@ def setup_seed(seed):
             "Please refer to `https://pytorch.org/` to install if you need to use "
             "this deep learning module."
         )
+        return False
+
+
+def setup_seed(seed: int) -> None:
+    """
+    Set the seed for random, numpy, TensorFlow and PyTorch.
+    Parameters
+    ----------
+    seed: int
+        The random seed to use.
+    Returns
+    -------
+    None
+    """
+    _set_random_seed(seed)
+    # check if the return is bool
+    tensorflow_return = _set_tensorflow_seed(seed)
+    torch_return = _set_torch_seed(seed)
+
+    if tensorflow_return is False or torch_return is False:
+        return False
+    else:
+        return None
 
 
 def set_log_level(level="INFO"):

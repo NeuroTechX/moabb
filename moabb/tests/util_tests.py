@@ -6,7 +6,12 @@ import pytest
 from mne import get_config
 
 from moabb.datasets import utils
-from moabb.utils import set_download_dir, setup_seed
+from moabb.utils import (
+    _set_tensorflow_seed,
+    _set_torch_seed,
+    set_download_dir,
+    setup_seed,
+)
 
 
 class Test_Utils(unittest.TestCase):
@@ -71,7 +76,7 @@ class Test_Utils(unittest.TestCase):
 def test_setup_seed_without_tensorflow():
     with patch("builtins.print") as mock_print:
         with patch.dict("sys.modules", {"tensorflow": None}):
-            assert not setup_seed(42)
+            assert not _set_tensorflow_seed(42)
             mock_print.assert_any_call(
                 "We try to set the tensorflow seeds, but it seems that tensorflow is not installed. Please refer to `https://www.tensorflow.org/` to install if you need to use this deep learning module."
             )
@@ -80,7 +85,7 @@ def test_setup_seed_without_tensorflow():
 def test_setup_seed_without_torch():
     with patch("builtins.print") as mock_print:
         with patch.dict("sys.modules", {"torch": None}):
-            assert not setup_seed(42)
+            assert not _set_torch_seed(42)
             mock_print.assert_any_call(
                 "We try to set the torch seeds, but it seems that torch is not installed. Please refer to `https://pytorch.org/` to install if you need to use this deep learning module."
             )
@@ -89,7 +94,7 @@ def test_setup_seed_without_torch():
 @pytest.mark.parametrize(
     "tf_installed, torch_installed, expected_result",
     [
-        (True, True, True),
+        (True, True, None),
         (False, True, False),
         (True, False, False),
         (False, False, False),
