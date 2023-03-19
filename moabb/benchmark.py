@@ -44,7 +44,10 @@ def benchmark(
     evaluation.
 
     If particular paradigms are mentioned through select_paradigms, only the pipelines corresponding to those paradigms
-    will be run
+    will be run. If no paradigms are mentioned, all pipelines will be run.
+
+    Pipelines stored in a file named braindecode_xxx.py will be recognized as Braindecode architectures
+    and they will receive epochs as input, instead of numpy array.
 
     To define the include_datasets or exclude_dataset, you could start from the full dataset list,
     using for example the following code:
@@ -143,6 +146,11 @@ def benchmark(
                 f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}"
             )
 
+            if "braindecode" in list(prdgms[paradigm].keys())[0]:
+                return_epochs = True
+            else:
+                return_epochs = False
+
             context = eval_type[evaluation](
                 paradigm=p,
                 datasets=d,
@@ -150,6 +158,7 @@ def benchmark(
                 hdf5_path=results,
                 n_jobs=n_jobs,
                 overwrite=overwrite,
+                return_epochs=return_epochs,
             )
             paradigm_results = context.process(
                 pipelines=prdgms[paradigm], param_grid=param_grid
