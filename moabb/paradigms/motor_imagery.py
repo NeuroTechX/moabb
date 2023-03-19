@@ -62,6 +62,7 @@ class BaseMotorImagery(BaseParadigm):
         baseline=None,
         channels=None,
         resample=None,
+        scoring_name="accuracy",
     ):
         super().__init__()
         self.filters = filters
@@ -69,6 +70,7 @@ class BaseMotorImagery(BaseParadigm):
         self.channels = channels
         self.baseline = baseline
         self.resample = resample
+        self.scoring_name = scoring_name
 
         if tmax is not None:
             if tmin >= tmax:
@@ -106,7 +108,7 @@ class BaseMotorImagery(BaseParadigm):
 
     @property
     def scoring(self):
-        return "accuracy"
+        return self.scoring_name
 
 
 class SinglePass(BaseMotorImagery):
@@ -179,17 +181,15 @@ class LeftRightImagery(SinglePass):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, scoring_name="roc_auc", **kwargs):
         if "events" in kwargs.keys():
             raise (ValueError("LeftRightImagery dont accept events"))
-        super().__init__(events=["left_hand", "right_hand"], **kwargs)
+        super().__init__(
+            events=["left_hand", "right_hand"], scoring_name=scoring_name, **kwargs
+        )
 
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
-
-    @property
-    def scoring(self):
-        return "roc_auc"
 
 
 class FilterBankLeftRightImagery(FilterBank):
@@ -199,17 +199,15 @@ class FilterBankLeftRightImagery(FilterBank):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, scoring_name="roc_auc", **kwargs):
         if "events" in kwargs.keys():
             raise (ValueError("LeftRightImagery dont accept events"))
-        super().__init__(events=["left_hand", "right_hand"], **kwargs)
+        super().__init__(
+            events=["left_hand", "right_hand"], scoring_name=scoring_name, **kwargs
+        )
 
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
-
-    @property
-    def scoring(self):
-        return "roc_auc"
 
 
 class FilterBankMotorImagery(FilterBank):
@@ -410,7 +408,7 @@ class MotorImagery(SinglePass):
         if self.n_classes == 2:
             return "roc_auc"
         else:
-            return "accuracy"
+            return super().scoring_name
 
 
 class FakeImageryParadigm(LeftRightImagery):
