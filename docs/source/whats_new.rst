@@ -25,6 +25,7 @@ Enhancements
 - Adding new tutorial to benchmark with GridSearchCV (:gh:`323` by `Igor Carrara`_)
 - Add six deep learning models (Tensorflow), and build a tutorial to show to use the deep learning model (:gh:`326` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Add a augmentation model to the pipeline (:gh:`326` by `Igor Carrara`_)
+- Add BrainDecode example(:gh:`340` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add Google Analytics to the documentation (:gh:`335` by `Bruno Aristimunha`_)
 
 Bugs
