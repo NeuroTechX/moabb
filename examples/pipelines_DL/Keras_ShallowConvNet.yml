@@ -8,6 +8,7 @@ citations:
   - https://doi.org/10.1002/hbm.23730
 
 pipeline:
+  - engine: keras
   - name: StandardScaler_Epoch
     from: moabb.pipelines.features
 

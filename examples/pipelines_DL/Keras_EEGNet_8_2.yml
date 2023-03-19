@@ -8,6 +8,7 @@ citations:
   - https://doi.org/10.1088/1741-2552/aace8c
 
 pipeline:
+  - engine: keras
   - name: StandardScaler_Epoch
     from: moabb.pipelines.features
 

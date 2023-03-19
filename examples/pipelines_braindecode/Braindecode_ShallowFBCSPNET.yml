@@ -10,8 +10,9 @@ citations:
   - https://doi.org/10.1002/hbm.23730
 
 pipeline:
-  - name: CreateBraindecodeDataset
-    from: moabb.pipelines.braindecode
+  - engine: braindecode
+  - name: BraindecodeDatasetLoader
+    from: moabb.pipelines.utils_pytorch
   - name: EEGClassifier
     from: braindecode
     parameters:
@@ -19,9 +20,9 @@ pipeline:
         - name: ShallowFBCSPNet
         - from: braindecode.models
         - parameters:
-            in_chans: ${dataset.in_chans}
-            n_classes: ${dataset.classes}
-            input_windows_size: ${dataset.input_windows_size}
+            in_chans: 1
+            n_classes: 1
+            input_windows_size: 100
             final_conv_length: auto
       optimizer:
         - name: Adam
@@ -33,7 +34,6 @@ pipeline:
       max_epochs: 2
       batch_size: 32
       verbose: 1
-      device: ${device}
       train_split:
         - name: ValidSplit
         - from: skorch.dataset
