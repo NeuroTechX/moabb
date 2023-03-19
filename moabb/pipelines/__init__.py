@@ -10,6 +10,7 @@ from .classification import SSVEP_CCA, SSVEP_TRCA
 from .features import FM, AugmentedDataset, ExtendedSSVEPSignal, LogVariance
 from .utils import FilterBank, create_pipeline_from_config
 
+
 try:
     from .deep_learning import (
         KerasDeepConvNet,
