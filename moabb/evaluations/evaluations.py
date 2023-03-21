@@ -6,6 +6,7 @@ from typing import Optional, Union
 
 import joblib
 import numpy as np
+from codecarbon import EmissionsTracker
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
@@ -19,7 +20,6 @@ from sklearn.model_selection import (
 from sklearn.model_selection._validation import _fit_and_score, _score
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
-from codecarbon import EmissionsTracker
 
 from moabb.evaluations.base import BaseEvaluation
 
@@ -30,7 +30,8 @@ log = logging.getLogger(__name__)
 Vector = Union[list, tuple, np.ndarray]
 
 # Initialise CodeCarbon
-tracker = EmissionsTracker(save_to_file = False, log_level = "error")
+tracker = EmissionsTracker(save_to_file=False, log_level="error")
+
 
 class WithinSessionEvaluation(BaseEvaluation):
     """Performance evaluation within session (k-fold cross-validation)
@@ -543,7 +544,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                         "n_samples": len(train),
                         "n_channels": nchan,
                         "pipeline": name,
-                        "emission (kg CO₂)": emissions+emissions_grid,
+                        "emission (kg CO₂)": emissions + emissions_grid,
                     }
                     yield res
 
