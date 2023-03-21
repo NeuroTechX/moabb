@@ -10,7 +10,6 @@ citations:
   - https://doi.org/10.1002/hbm.23730
 
 pipeline:
-  - engine: braindecode
   - name: BraindecodeDatasetLoader
     from: moabb.pipelines.utils_pytorch
   - name: EEGClassifier
