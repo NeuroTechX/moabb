@@ -149,7 +149,7 @@ class Results:
                             "score",
                             "time",
                             "samples",
-                            "emission (kg CO₂)",
+                            "emission (g CO₂)",
                             *self.additional_columns,
                         ],
                         dtype=dt,
@@ -174,7 +174,7 @@ class Results:
                             d["score"],
                             d["time"],
                             d["n_samples"],
-                            d["emission (kg CO₂)"],
+                            d["emission (g CO₂)"],
                             *add_cols,
                         ]
                     )
