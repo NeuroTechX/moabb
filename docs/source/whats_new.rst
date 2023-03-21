@@ -25,6 +25,7 @@ Enhancements
 - Adding new tutorial to benchmark with GridSearchCV (:gh:`323` by `Igor Carrara`_)
 - Add six deep learning models (Tensorflow), and build a tutorial to show to use the deep learning model (:gh:`326` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Add a augmentation model to the pipeline (:gh:`326` by `Igor Carrara`_)
+- Add BrainDecode example(:gh:`340` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add Google Analytics to the documentation (:gh:`335` by `Bruno Aristimunha`_)
 
 Bugs
@@ -41,6 +42,7 @@ Bugs
 - Fix downloading path issue for Weibo2014 and Zhou2016, numy error in DemonsP300 (:gh:`315` by `Sylvain Chevallier`_)
 - Fix unzip error for Huebner2017 and Huebner2018 (:gh:`318` by `Sylvain Chevallier`_)
 - Fix n_classes when events set to None (:gh:`337` by `Igor Carrara`_ and `Sylvain Chevallier`_)
+- Change n_jobs=-1 to self.n_jobs in GridSearch (:gh:`344` by `Igor Carrara`_)
 
 API changes
 ~~~~~~~~~~~
