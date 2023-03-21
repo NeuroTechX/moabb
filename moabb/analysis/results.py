@@ -145,7 +145,13 @@ class Results:
                     dset.attrs["channels"] = d1["n_channels"]
                     dset.attrs.create(
                         "columns",
-                        ["score", "time", "samples", "emission (kg CO₂)", *self.additional_columns],
+                        [
+                            "score",
+                            "time",
+                            "samples",
+                            "emission (kg CO₂)",
+                            *self.additional_columns,
+                        ],
                         dtype=dt,
                     )
                 dset = ppline_grp[dname]
@@ -164,7 +170,13 @@ class Results:
                             f" contain only these keys: {d.keys()}."
                         ) from None
                     dset["data"][-1, :] = np.asarray(
-                        [d["score"], d["time"], d["n_samples"], d["emission (kg CO₂)"], *add_cols]
+                        [
+                            d["score"],
+                            d["time"],
+                            d["n_samples"],
+                            d["emission (kg CO₂)"],
+                            *add_cols,
+                        ]
                     )
 
     def to_dataframe(self, pipelines=None):
