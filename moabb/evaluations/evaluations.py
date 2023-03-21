@@ -656,7 +656,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         cv = LeaveOneGroupOut()
 
         # Implement Grid Search
-        emissions_grid = []
+        emissions_grid = {}
         for name, clf in pipelines.items():
             tracker.start()
             name_grid = os.path.join(
