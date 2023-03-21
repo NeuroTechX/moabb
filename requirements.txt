@@ -5,6 +5,7 @@ certifi==2022.12.7; python_version >= "3.7" and python_version < "4"
 charset-normalizer==2.1.1; python_version >= "3.7" and python_version < "4" and python_full_version >= "3.6.0"
 colorama==0.4.6; python_version >= "3.7" and python_full_version < "3.0.0" and platform_system == "Windows" or python_full_version >= "3.7.0" and platform_system == "Windows" and python_version >= "3.7"
 contourpy==1.0.6; python_version >= "3.8"
+codecarbon==2.1.4; python_version >= "3.7"
 coverage==7.0.1; python_version >= "3.7"
 cycler==0.11.0; python_version >= "3.8" \
     --hash=sha256:3a27e95f763a428a739d2add979fa7494c912a32c17c4c38c4d5f082cad165a3 \
