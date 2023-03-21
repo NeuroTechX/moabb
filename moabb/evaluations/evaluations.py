@@ -245,7 +245,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                         "n_samples": len(y_cv),  # not training sample
                         "n_channels": nchan,
                         "pipeline": name,
-                        "emission (g CO₂)": 1000*emissions,
+                        "emission (g CO₂)": 1000 * emissions,
                     }
 
                     yield res
@@ -544,7 +544,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                         "n_samples": len(train),
                         "n_channels": nchan,
                         "pipeline": name,
-                        "emission (g CO₂)": 1000*(emissions + emissions_grid),
+                        "emission (g CO₂)": 1000 * (emissions + emissions_grid),
                     }
                     yield res
 
@@ -702,7 +702,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         "n_samples": len(train),
                         "n_channels": nchan,
                         "pipeline": name,
-                        "emission (g CO₂)": 1000*(emissions + emissions_grid[name]),
+                        "emission (g CO₂)": 1000 * (emissions + emissions_grid[name]),
                     }
 
                     yield res
