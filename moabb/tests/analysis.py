@@ -50,7 +50,7 @@ d1 = {
     "score": 0.9,
     "n_samples": 100,
     "n_channels": 10,
-    "emission (kg CO₂)": 5,
+    "emission (g CO₂)": 5,
 }
 
 d2 = {
@@ -61,7 +61,7 @@ d2 = {
     "score": 0.9,
     "n_samples": 100,
     "n_channels": 10,
-    "emission (kg CO₂)": 10,
+    "emission (g CO₂)": 10,
 }
 
 
@@ -73,7 +73,7 @@ d3 = {
     "score": 0.9,
     "n_samples": 100,
     "n_channels": 10,
-    "emission (kg CO₂)": 0.2,
+    "emission (g CO₂)": 0.2,
 }
 
 d4 = {
@@ -84,7 +84,7 @@ d4 = {
     "score": 0.9,
     "n_samples": 100,
     "n_channels": 10,
-    "emission (kg CO₂)": 1,
+    "emission (g CO₂)": 1,
 }
 
 
