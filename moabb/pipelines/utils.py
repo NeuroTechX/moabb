@@ -43,26 +43,50 @@ def create_pipeline_from_config(config):
         # create the instance
         if "parameters" in component.keys():
             params = component["parameters"]
-            if "optimizer" in component["parameters"].keys():
-                for optm in component["parameters"]["optimizer"]:
-                    print(optm)
-                    mod_optm = __import__(name=optm["from"], fromlist=[optm["name"]])
-                    params_optm = optm["parameters"]
-                    instance = getattr(mod_optm, optm["name"])(**params_optm)
+            if "braindecode" in component["from"]:
+                if "optimizer" in component["parameters"].keys():
+                    mod_optm = __import__(
+                        name=component["parameters"]["optimizer"]["from"],
+                        fromlist=[component["parameters"]["optimizer"]["name"]],
+                    )
+                    params_optm = component["parameters"]["optimizer"]["parameters"]
+                    instance = getattr(
+                        mod_optm, component["parameters"]["optimizer"]["name"]
+                    )(**params_optm)
                     component["parameters"]["optimizer"] = instance
 
-            if "callbacks" in component["parameters"].keys():
-                cb = []
-                for callbacks in component["parameters"]["callbacks"]:
-                    mod_callbacks = __import__(
-                        name=callbacks["from"], fromlist=[callbacks["name"]]
-                    )
-                    params_callbacks = callbacks["parameters"]
-                    instance = getattr(mod_callbacks, callbacks["name"])(
-                        **params_callbacks
-                    )
-                    cb.append(instance)
-                component["parameters"]["callbacks"] = cb
+                if "callbacks" in component["parameters"].keys():
+                    cb = []
+                    for callbacks in component["parameters"]["callbacks"]:
+                        mod_callbacks = __import__(
+                            name=callbacks["from"], fromlist=[callbacks["name"]]
+                        )
+                        params_callbacks = callbacks["parameters"]
+                        instance = getattr(mod_callbacks, callbacks["name"])(
+                            **params_callbacks
+                        )
+                        cb.append(instance)
+                    component["parameters"]["callbacks"] = cb
+            else:
+                if "optimizer" in component["parameters"].keys():
+                    for optm in component["parameters"]["optimizer"]:
+                        mod_optm = __import__(name=optm["from"], fromlist=[optm["name"]])
+                        params_optm = optm["parameters"]
+                        instance = getattr(mod_optm, optm["name"])(**params_optm)
+                        component["parameters"]["optimizer"] = instance
+
+                if "callbacks" in component["parameters"].keys():
+                    cb = []
+                    for callbacks in component["parameters"]["callbacks"]:
+                        mod_callbacks = __import__(
+                            name=callbacks["from"], fromlist=[callbacks["name"]]
+                        )
+                        params_callbacks = callbacks["parameters"]
+                        instance = getattr(mod_callbacks, callbacks["name"])(
+                            **params_callbacks
+                        )
+                        cb.append(instance)
+                    component["parameters"]["callbacks"] = cb
 
         else:
             params = {}
