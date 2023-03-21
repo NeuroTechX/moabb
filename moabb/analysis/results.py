@@ -140,12 +140,12 @@ class Results:
                     dt = h5py.special_dtype(vlen=str)
                     dset.create_dataset("id", (0, 2), dtype=dt, maxshape=(None, 2))
                     dset.create_dataset(
-                        "data", (0, 3 + n_add_cols), maxshape=(None, 3 + n_add_cols)
+                        "data", (0, 4 + n_add_cols), maxshape=(None, 4 + n_add_cols)
                     )
                     dset.attrs["channels"] = d1["n_channels"]
                     dset.attrs.create(
                         "columns",
-                        ["score", "time", "samples", *self.additional_columns],
+                        ["score", "time", "samples", "emission (kg CO₂)", *self.additional_columns],
                         dtype=dt,
                     )
                 dset = ppline_grp[dname]
@@ -164,7 +164,7 @@ class Results:
                             f" contain only these keys: {d.keys()}."
                         ) from None
                     dset["data"][-1, :] = np.asarray(
-                        [d["score"], d["time"], d["n_samples"], *add_cols]
+                        [d["score"], d["time"], d["n_samples"], d["emission (kg CO₂)"], *add_cols]
                     )
 
     def to_dataframe(self, pipelines=None):

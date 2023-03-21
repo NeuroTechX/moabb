@@ -19,6 +19,7 @@ from sklearn.model_selection import (
 from sklearn.model_selection._validation import _fit_and_score, _score
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
+from codecarbon import EmissionsTracker
 
 from moabb.evaluations.base import BaseEvaluation
 
@@ -28,6 +29,8 @@ log = logging.getLogger(__name__)
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
 Vector = Union[list, tuple, np.ndarray]
 
+# Initialise CodeCarbon
+tracker = EmissionsTracker(save_to_file = False, log_level = "error")
 
 class WithinSessionEvaluation(BaseEvaluation):
     """Performance evaluation within session (k-fold cross-validation)
@@ -183,6 +186,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 ix = metadata.session == session
 
                 for name, clf in run_pipes.items():
+                    tracker.start()
                     t_start = time()
                     cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
                     scorer = get_scorer(self.paradigm.scoring)
@@ -228,6 +232,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                             error_score=self.error_score,
                         )
                     score = acc.mean()
+                    emissions = tracker.stop()
                     duration = time() - t_start
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -239,6 +244,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                         "n_samples": len(y_cv),  # not training sample
                         "n_channels": nchan,
                         "pipeline": name,
+                        "emission (kg CO₂)": emissions,
                     }
 
                     yield res
@@ -482,6 +488,7 @@ class CrossSessionEvaluation(BaseEvaluation):
             scorer = get_scorer(self.paradigm.scoring)
 
             for name, clf in run_pipes.items():
+                tracker.start()
                 # we want to store a results per session
                 cv = LeaveOneGroupOut()
 
@@ -501,7 +508,10 @@ class CrossSessionEvaluation(BaseEvaluation):
                     param_grid, name_grid, name, grid_clf, X, y, cv, groups
                 )
 
+                emissions_grid = tracker.stop()
+
                 for train, test in cv.split(X, y, groups):
+                    tracker.start()
                     t_start = time()
                     if isinstance(X, BaseEpochs):
                         cvclf = clone(grid_clf)
@@ -521,6 +531,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                             error_score=self.error_score,
                         )
                         score = result["test_scores"]
+                    emissions = tracker.stop()
                     duration = time() - t_start
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -532,6 +543,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                         "n_samples": len(train),
                         "n_channels": nchan,
                         "pipeline": name,
+                        "emission (kg CO₂)": emissions+emissions_grid,
                     }
                     yield res
 
@@ -643,7 +655,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
         cv = LeaveOneGroupOut()
 
         # Implement Grid Search
+        emissions_grid = []
         for name, clf in pipelines.items():
+            tracker.start()
             name_grid = os.path.join(
                 str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
             )
@@ -651,6 +665,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
             pipelines[name] = self._grid_search(
                 param_grid, name_grid, name, clf, pipelines, X, y, cv, groups
             )
+
+            emissions_grid[name] = tracker.stop()
 
         # Progressbar at subject level
         for train, test in tqdm(
@@ -664,8 +680,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
             # iterate over pipelines
             for name, clf in run_pipes.items():
+                tracker.start()
                 t_start = time()
                 model = deepcopy(clf).fit(X[train], y[train])
+                emissions = tracker.stop()
                 duration = time() - t_start
 
                 # we eval on each session
@@ -683,6 +701,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         "n_samples": len(train),
                         "n_channels": nchan,
                         "pipeline": name,
+                        "emission (kg CO₂)": emissions + emissions_grid[name],
                     }
 
                     yield res
