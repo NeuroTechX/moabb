@@ -50,7 +50,7 @@ d1 = {
     "score": 0.9,
     "n_samples": 100,
     "n_channels": 10,
-    "emission (g CO₂)": 5,
+    "carbon_emission": 5,
 }
 
 d2 = {
