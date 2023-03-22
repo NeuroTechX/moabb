@@ -6,7 +6,7 @@ from typing import Optional, Union
 
 import joblib
 import numpy as np
-from codecarbon import OfflineEmissionsTracker
+from codecarbon import EmissionsTracker
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
@@ -185,9 +185,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                 for name, clf in run_pipes.items():
                     # Initialise CodeCarbon
-                    tracker = OfflineEmissionsTracker(
-                        save_to_file=False, log_level="error", country_iso_code="FRA"
-                    )
+                    tracker = EmissionsTracker(save_to_file=False, log_level="error")
 
                     tracker.start()
                     t_start = time()
@@ -236,6 +234,8 @@ class WithinSessionEvaluation(BaseEvaluation):
                         )
                     score = acc.mean()
                     emissions = tracker.stop()
+                    if emissions is None:
+                        emissions = 0
                     duration = time() - t_start
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -492,9 +492,7 @@ class CrossSessionEvaluation(BaseEvaluation):
 
             for name, clf in run_pipes.items():
                 # Initialise CodeCarbon
-                tracker = OfflineEmissionsTracker(
-                    save_to_file=False, log_level="error", country_iso_code="FRA"
-                )
+                tracker = EmissionsTracker(save_to_file=False, log_level="error")
 
                 tracker.start()
                 # we want to store a results per session
@@ -543,6 +541,10 @@ class CrossSessionEvaluation(BaseEvaluation):
                         )
                         score = result["test_scores"]
                     emissions = tracker.stop()
+
+                    if emissions is None:
+                        emissions = 0
+
                     duration = time() - t_start
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -669,9 +671,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         emissions_grid = {}
 
         # Initialise CodeCarbon
-        tracker = OfflineEmissionsTracker(
-            save_to_file=False, log_level="error", country_iso_code="FRA"
-        )
+        tracker = EmissionsTracker(save_to_file=False, log_level="error")
 
         for name, clf in pipelines.items():
             tracker.start()
@@ -684,7 +684,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
             )
 
             emissions_grid[name] = tracker.stop()
-
+            if emissions_grid[name] is None:
+                emissions_grid[name] = 0
         # Progressbar at subject level
         for train, test in tqdm(
             cv.split(X, y, groups),
@@ -701,6 +702,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 t_start = time()
                 model = deepcopy(clf).fit(X[train], y[train])
                 emissions = tracker.stop()
+                if emissions is None:
+                    emissions = 0
                 duration = time() - t_start
 
                 # we eval on each session
