@@ -245,7 +245,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                         "n_samples": len(y_cv),  # not training sample
                         "n_channels": nchan,
                         "pipeline": name,
-                        "emission (g CO₂)": 1000 * emissions,
+                        "carbon_emission": 1000 * emissions,
                     }
 
                     yield res
