@@ -544,7 +544,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                         "n_samples": len(train),
                         "n_channels": nchan,
                         "pipeline": name,
-                        "emission (g CO₂)": 1000 * (emissions + emissions_grid),
+                        "carbon_emission": 1000 * (emissions + emissions_grid),
                     }
                     yield res
 
