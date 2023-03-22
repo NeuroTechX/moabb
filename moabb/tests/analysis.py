@@ -84,7 +84,7 @@ d4 = {
     "score": 0.9,
     "n_samples": 100,
     "n_channels": 10,
-    "emission (g CO₂)": 1,
+    "carbon_emission": 1,
 }
 
 
