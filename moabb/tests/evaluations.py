@@ -109,7 +109,7 @@ class Test_WithinSess(unittest.TestCase):
 
         # We should get 4 results, 2 sessions 2 subjects
         self.assertEqual(len(results), 4)
-        # We should have 8 columns in the results data frame
+        # We should have 9 columns in the results data frame
         self.assertEqual(len(results[0].keys()), 9)
         # We should check for selected parameters with joblib
         self.assertTrue(os.path.isfile(respath))
