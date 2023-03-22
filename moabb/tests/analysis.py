@@ -73,7 +73,7 @@ d3 = {
     "score": 0.9,
     "n_samples": 100,
     "n_channels": 10,
-    "emission (g CO₂)": 0.2,
+    "carbon_emission": 0.2,
 }
 
 d4 = {
