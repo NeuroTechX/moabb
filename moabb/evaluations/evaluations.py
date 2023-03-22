@@ -185,7 +185,9 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                 for name, clf in run_pipes.items():
                     # Initialise CodeCarbon
-                    tracker = OfflineEmissionsTracker(save_to_file=False, log_level="error", country_iso_code="FRA")
+                    tracker = OfflineEmissionsTracker(
+                        save_to_file=False, log_level="error", country_iso_code="FRA"
+                    )
 
                     tracker.start()
                     t_start = time()
@@ -490,7 +492,9 @@ class CrossSessionEvaluation(BaseEvaluation):
 
             for name, clf in run_pipes.items():
                 # Initialise CodeCarbon
-                tracker = OfflineEmissionsTracker(save_to_file=False, log_level="error", country_iso_code="FRA")
+                tracker = OfflineEmissionsTracker(
+                    save_to_file=False, log_level="error", country_iso_code="FRA"
+                )
 
                 tracker.start()
                 # we want to store a results per session
@@ -662,7 +666,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
         emissions_grid = {}
 
         # Initialise CodeCarbon
-        tracker = OfflineEmissionsTracker(save_to_file=False, log_level="error", country_iso_code="FRA")
+        tracker = OfflineEmissionsTracker(
+            save_to_file=False, log_level="error", country_iso_code="FRA"
+        )
 
         for name, clf in pipelines.items():
             tracker.start()
