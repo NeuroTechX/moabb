@@ -518,6 +518,9 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                 emissions_grid = tracker.stop()
 
+                if emissions_grid is None:
+                    emissions_grid = 0
+
                 for train, test in cv.split(X, y, groups):
                     tracker.start()
                     t_start = time()
