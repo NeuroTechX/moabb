@@ -174,7 +174,7 @@ class Results:
                             d["score"],
                             d["time"],
                             d["n_samples"],
-                            d["emission (g CO₂)"],
+                            d["carbon_emission"],
                             *add_cols,
                         ]
                     )
