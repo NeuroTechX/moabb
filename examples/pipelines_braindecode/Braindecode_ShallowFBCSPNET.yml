@@ -15,13 +15,13 @@ pipeline:
   - name: EEGClassifier
     from: braindecode
     parameters:
-      model:
+      module:
         - name: ShallowFBCSPNet
-        - from: braindecode.models
-        - parameters:
+          from: braindecode.models
+          parameters:
             in_chans: 1
             n_classes: 1
-            input_windows_size: 100
+            input_window_samples: 100
             final_conv_length: auto
       optimizer:
         - name: Adam
@@ -44,29 +44,22 @@ pipeline:
       random_state: 42
       validation_split: 0.2
       callbacks:
-        - name: LRScheduler
-        - from: skorch.callbacks
-        - parameters:
-            - name: CosineAnnealingLR
-            - from: torch.optim.lr_scheduler
-            - parameters:
-                T_max: 999
         - name: EarlyStopping
-        - from: skorch.callbacks
-        - parameters:
+          from: skorch.callbacks
+          parameters:
             monitor: valid_loss
             patience: 50
         - name: EpochScoring
-        - from: skorch.callbacks
-        - parameters:
-            - name: accuracy
-            - on_train: true
-            - name: train_acc
-            - lower_is_better: false
+          from: skorch.callbacks
+          parameters:
+            scoring: accuracy
+            on_train: true
+            name: train_acc
+            lower_is_better: false
         - name: EpochScoring
-        - from: skorch.callbacks
-        - parameters:
-            - name: accuracy
-            - on_train: false
-            - name: valid_acc
-            - lower_is_better: false
+          from: skorch.callbacks
+          parameters:
+            scoring: accuracy
+            on_train: false
+            name: valid_acc
+            lower_is_better: false
