@@ -149,7 +149,7 @@ class Results:
                             "score",
                             "time",
                             "samples",
-                            "emission (g CO₂)",
+                            "carbon_emission",
                             *self.additional_columns,
                         ],
                         dtype=dt,
