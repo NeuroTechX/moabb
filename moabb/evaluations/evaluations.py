@@ -29,10 +29,6 @@ log = logging.getLogger(__name__)
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
 Vector = Union[list, tuple, np.ndarray]
 
-# Initialise CodeCarbon
-tracker = EmissionsTracker(save_to_file=False, log_level="error")
-
-
 class WithinSessionEvaluation(BaseEvaluation):
     """Performance evaluation within session (k-fold cross-validation)
 
@@ -187,6 +183,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                 ix = metadata.session == session
 
                 for name, clf in run_pipes.items():
+                    # Initialise CodeCarbon
+                    tracker = EmissionsTracker(save_to_file=False, log_level="error")
+
                     tracker.start()
                     t_start = time()
                     cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
@@ -489,6 +488,9 @@ class CrossSessionEvaluation(BaseEvaluation):
             scorer = get_scorer(self.paradigm.scoring)
 
             for name, clf in run_pipes.items():
+                # Initialise CodeCarbon
+                tracker = EmissionsTracker(save_to_file=False, log_level="error")
+
                 tracker.start()
                 # we want to store a results per session
                 cv = LeaveOneGroupOut()
@@ -657,6 +659,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
         # Implement Grid Search
         emissions_grid = {}
+
+        # Initialise CodeCarbon
+        tracker = EmissionsTracker(save_to_file=False, log_level="error")
+
         for name, clf in pipelines.items():
             tracker.start()
             name_grid = os.path.join(
