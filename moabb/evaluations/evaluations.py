@@ -140,7 +140,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     param_grid[name],
                     refit=True,
                     cv=cv,
-                    n_jobs=-1,
+                    n_jobs=self.n_jobs,
                     scoring=self.paradigm.scoring,
                     return_train_score=True,
                 )
@@ -437,7 +437,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                     param_grid[name],
                     refit=True,
                     cv=cv,
-                    n_jobs=-1,
+                    n_jobs=self.n_jobs,
                     scoring=self.paradigm.scoring,
                     return_train_score=True,
                 )
@@ -596,7 +596,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     param_grid[name],
                     refit=True,
                     cv=cv,
-                    n_jobs=-1,
+                    n_jobs=self.n_jobs,
                     scoring=self.paradigm.scoring,
                     return_train_score=True,
                 )
