@@ -6,7 +6,7 @@ from typing import Optional, Union
 
 import joblib
 import numpy as np
-from codecarbon import EmissionsTracker
+from codecarbon import OfflineEmissionsTracker
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
@@ -185,7 +185,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                 for name, clf in run_pipes.items():
                     # Initialise CodeCarbon
-                    tracker = EmissionsTracker(save_to_file=False, log_level="error")
+                    tracker = OfflineEmissionsTracker(save_to_file=False, log_level="error", country_iso_code="FRA")
 
                     tracker.start()
                     t_start = time()
@@ -490,7 +490,7 @@ class CrossSessionEvaluation(BaseEvaluation):
 
             for name, clf in run_pipes.items():
                 # Initialise CodeCarbon
-                tracker = EmissionsTracker(save_to_file=False, log_level="error")
+                tracker = OfflineEmissionsTracker(save_to_file=False, log_level="error", country_iso_code="FRA")
 
                 tracker.start()
                 # we want to store a results per session
@@ -662,7 +662,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         emissions_grid = {}
 
         # Initialise CodeCarbon
-        tracker = EmissionsTracker(save_to_file=False, log_level="error")
+        tracker = OfflineEmissionsTracker(save_to_file=False, log_level="error", country_iso_code="FRA")
 
         for name, clf in pipelines.items():
             tracker.start()
