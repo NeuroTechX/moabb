@@ -699,6 +699,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     ix = sessions[test] == session
                     score = _score(model, X[test[ix]], y[test[ix]], scorer)
 
+                    if emissions_grid[name] is None:
+                        emissions_grid[name] = 0
+
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
                         "time": duration,
