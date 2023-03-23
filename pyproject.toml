@@ -28,7 +28,7 @@ tqdm = "^4.64.1"
 coverage = "^7.0.1"
 
 [tool.poetry.group.carbonemission]
-optional = false
+optional = true
 
 [tool.poetry.group.carbonemission.dependencies]
 codecarbon = "2.1.4" # for carbon emission

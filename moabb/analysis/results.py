@@ -13,6 +13,14 @@ from mne.datasets.utils import _get_path
 from sklearn.base import BaseEstimator
 
 
+try:
+    from codecarbon import EmissionsTracker  # noqa
+
+    _carbonfootprint = True
+except ImportError:
+    _carbonfootprint = False
+
+
 def get_string_rep(obj):
     if issubclass(type(obj), BaseEstimator):
         str_repr = repr(obj.get_params())
@@ -117,6 +125,13 @@ class Results:
             else:
                 return res
 
+        col_names = ["score", "time", "samples"]
+        if _carbonfootprint:
+            n_cols = 4
+            col_names.append("carbon_emission")
+        else:
+            n_cols = 3
+
         with h5py.File(self.filepath, "r+") as f:
             for name, data_dict in results.items():
                 digest = get_digest(pipelines[name])
@@ -140,18 +155,14 @@ class Results:
                     dt = h5py.special_dtype(vlen=str)
                     dset.create_dataset("id", (0, 2), dtype=dt, maxshape=(None, 2))
                     dset.create_dataset(
-                        "data", (0, 4 + n_add_cols), maxshape=(None, 4 + n_add_cols)
+                        "data",
+                        (0, n_cols + n_add_cols),
+                        maxshape=(None, n_cols + n_add_cols),
                     )
                     dset.attrs["channels"] = d1["n_channels"]
                     dset.attrs.create(
                         "columns",
-                        [
-                            "score",
-                            "time",
-                            "samples",
-                            "carbon_emission",
-                            *self.additional_columns,
-                        ],
+                        col_names + self.additional_columns,
                         dtype=dt,
                     )
                 dset = ppline_grp[dname]
@@ -169,12 +180,12 @@ class Results:
                             f"were specified in the evaluation, but results"
                             f" contain only these keys: {d.keys()}."
                         ) from None
+                    cols = [d["score"], d["time"], d["n_samples"]]
+                    if _carbonfootprint:
+                        cols.append(d["carbon_emission"])
                     dset["data"][-1, :] = np.asarray(
                         [
-                            d["score"],
-                            d["time"],
-                            d["n_samples"],
-                            d["carbon_emission"],
+                            *cols,
                             *add_cols,
                         ]
                     )
