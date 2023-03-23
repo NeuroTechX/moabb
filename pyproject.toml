@@ -31,7 +31,7 @@ coverage = "^7.0.1"
 optional = true
 
 [tool.poetry.group.carbonemission.dependencies]
-codecarbon = "2.1.4" # for carbon emission
+codecarbon = "^2.1.4" # for carbon emission
 
 [tool.poetry.group.deeplearning]
 optional = true
