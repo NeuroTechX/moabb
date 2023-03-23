@@ -37,7 +37,7 @@ codecarbon = "^2.1.4" # for carbon emission
 optional = true
 
 [tool.poetry.group.deeplearning.dependencies]
-tensorflow = ">=1.11.0"
+tensorflow = "^2.10"
 keras = ">=1.11.0"
 scikeras = "^0.10.0"
 braindecode = "^0.7"
