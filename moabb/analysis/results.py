@@ -182,7 +182,7 @@ class Results:
                         ) from None
                     cols = [d["score"], d["time"], d["n_samples"]]
                     if _carbonfootprint:
-                        cols.append(d["carbon_emission"])
+                        cols.append(*d["carbon_emission"])
                     dset["data"][-1, :] = np.asarray(
                         [
                             *cols,

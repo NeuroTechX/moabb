@@ -54,6 +54,7 @@ d1 = {
     "session": "session_0",
     "score": 0.9,
     "n_samples": 100,
+    "n_channels": 10,
 }
 
 d2 = {
