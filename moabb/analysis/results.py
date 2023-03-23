@@ -111,7 +111,7 @@ class Results:
                     "{:%Y-%m-%d, %H:%M}".format(datetime.now())
                 )
 
-    def add(self, results, pipelines):
+    def add(self, results, pipelines):  # noqa: C901
         """add results"""
 
         def to_list(res):
@@ -182,7 +182,10 @@ class Results:
                         ) from None
                     cols = [d["score"], d["time"], d["n_samples"]]
                     if _carbonfootprint:
-                        cols.append(d["carbon_emission"])
+                        if isinstance(d["carbon_emission"], tuple):
+                            cols.append(*d["carbon_emission"])
+                        else:
+                            cols.append(d["carbon_emission"])
                     dset["data"][-1, :] = np.asarray(
                         [
                             *cols,
