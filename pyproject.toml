@@ -42,6 +42,7 @@ keras = ">=1.11.0"
 scikeras = "^0.10.0"
 braindecode = "^0.7"
 torch = "^1.13.1"
+libclang = "^15.0"
 
 [tool.poetry.group.docs]
 optional = true
