@@ -36,7 +36,8 @@ class BraindecodeDatasetLoader(BaseEstimator, TransformerMixin):
     Class to Load the data from MOABB in a format compatible with braindecode
     """
 
-    def __init__(self, kw_args=None):
+    def __init__(self, drop_last_window=False, kw_args=None):
+        self.drop_last_window = drop_last_window
         self.kw_args = kw_args
 
     def fit(self, X, y=None):
@@ -51,7 +52,8 @@ class BraindecodeDatasetLoader(BaseEstimator, TransformerMixin):
             y=self.y,
             window_size_samples=X.get_data().shape[2],
             window_stride_samples=X.get_data().shape[2],
-            drop_last_window=False,
+            drop_last_window=self.drop_last_window,
+            ch_names=X.info["ch_names"],
             sfreq=X.info["sfreq"],
         )
 
