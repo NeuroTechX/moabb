@@ -43,32 +43,12 @@ def create_pipeline_from_config(config):
         # create the instance
         if "parameters" in component.keys():
             params = component["parameters"]
-            if "braindecode" in component["from"]:
-                if "module" in component["parameters"].keys():
-                    mod_module = __import__(
-                        name=component["parameters"]["module"][0]["from"],
-                        fromlist=[component["parameters"]["module"][0]["name"]],
-                    )
-                    params_module = component["parameters"]["module"][0]["parameters"]
-                    instance = getattr(
-                        mod_module, component["parameters"]["module"][0]["name"]
-                    )(**params_module)
-                    component["parameters"]["module"] = instance
-
-                if "optimizer" in component["parameters"].keys():
-                    mod_optm = __import__(
-                        name=component["parameters"]["optimizer"][1]["from"],
-                        fromlist=[component["parameters"]["optimizer"][0]["name"]],
-                    )
-                    component["parameters"]["optimizer"] = mod_optm
-
-            else:
-                if "optimizer" in component["parameters"].keys():
-                    for optm in component["parameters"]["optimizer"]:
-                        mod_optm = __import__(name=optm["from"], fromlist=[optm["name"]])
-                        params_optm = optm["parameters"]
-                        instance = getattr(mod_optm, optm["name"])(**params_optm)
-                        component["parameters"]["optimizer"] = instance
+            if "optimizer" in component["parameters"].keys():
+                for optm in component["parameters"]["optimizer"]:
+                    mod_optm = __import__(name=optm["from"], fromlist=[optm["name"]])
+                    params_optm = optm["parameters"]
+                    instance = getattr(mod_optm, optm["name"])(**params_optm)
+                    component["parameters"]["optimizer"] = instance
 
             if "callbacks" in component["parameters"].keys():
                 cb = []
