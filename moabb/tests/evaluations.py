@@ -20,6 +20,14 @@ from moabb.evaluations import evaluations as ev
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
+try:
+    from codecarbon import EmissionsTracker  # noqa
+
+    _carbonfootprint = True
+except ImportError:
+    _carbonfootprint = False
+
+
 pipelines = OrderedDict()
 pipelines["C"] = make_pipeline(Covariances("oas"), CSP(8), LDA())
 dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=2)
@@ -64,8 +72,8 @@ class Test_WithinSess(unittest.TestCase):
 
         # We should get 4 results, 2 sessions 2 subjects
         self.assertEqual(len(results), 4)
-        # We should have 8 columns in the results data frame
-        self.assertEqual(len(results[0].keys()), 8)
+        # We should have 9 columns in the results data frame
+        self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
 
     def test_eval_grid_search(self):
         gs_param = {
@@ -109,8 +117,8 @@ class Test_WithinSess(unittest.TestCase):
 
         # We should get 4 results, 2 sessions 2 subjects
         self.assertEqual(len(results), 4)
-        # We should have 8 columns in the results data frame
-        self.assertEqual(len(results[0].keys()), 8)
+        # We should have 9 columns in the results data frame
+        self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
         # We should check for selected parameters with joblib
         self.assertTrue(os.path.isfile(respath))
         res = joblib.load(respath)
