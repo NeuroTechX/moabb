@@ -112,6 +112,12 @@ class TestTransformer:
         assert isinstance(dataset_trans, BaseConcatDataset)
         assert type(dataset_trans) == type(dataset)
 
+    def test_wrong_input(self):
+        """Test that an invalid input raises a ValueError"""
+        transformer = BraindecodeDatasetLoader()
+        with pytest.raises(ValueError):
+            transformer.fit_transform(np.random.normal(size=(2, 1, 10)), y=np.array([0]))
+
 
 if __name__ == "__main__":
     unittest.main()
