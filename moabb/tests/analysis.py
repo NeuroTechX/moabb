@@ -11,7 +11,12 @@ from moabb.evaluations.base import BaseEvaluation
 from moabb.paradigms.base import BaseParadigm
 
 
-# dummy evaluation
+try:
+    from codecarbon import EmissionsTracker  # noqa
+
+    _carbonfootprint = True
+except ImportError:
+    _carbonfootprint = False
 
 
 class DummyEvaluation(BaseEvaluation):
@@ -82,6 +87,12 @@ d4 = {
     "n_samples": 100,
     "n_channels": 10,
 }
+
+if _carbonfootprint:
+    d1["carbon_emission"] = 5
+    d2["carbon_emission"] = 10
+    d3["carbon_emission"] = 0.2
+    d4["carbon_emission"] = 1
 
 
 def to_pipeline_dict(pnames):

@@ -27,15 +27,22 @@ requests = "^2.28.1"
 tqdm = "^4.64.1"
 coverage = "^7.0.1"
 
+[tool.poetry.group.carbonemission]
+optional = true
+
+[tool.poetry.group.carbonemission.dependencies]
+codecarbon = "^2.1.4" # for carbon emission
+
 [tool.poetry.group.deeplearning]
 optional = true
 
 [tool.poetry.group.deeplearning.dependencies]
-tensorflow = ">=1.11.0"
+tensorflow = "^2.10"
 keras = ">=1.11.0"
 scikeras = "^0.10.0"
 braindecode = "^0.7"
 torch = "^1.13.1"
+libclang = "^15.0"
 
 [tool.poetry.group.docs]
 optional = true

@@ -23,6 +23,14 @@ from tqdm import tqdm
 from moabb.evaluations.base import BaseEvaluation
 
 
+try:
+    from codecarbon import EmissionsTracker
+
+    _carbonfootprint = True
+except ImportError:
+    _carbonfootprint = False
+
+
 log = logging.getLogger(__name__)
 
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
@@ -183,6 +191,10 @@ class WithinSessionEvaluation(BaseEvaluation):
                 ix = metadata.session == session
 
                 for name, clf in run_pipes.items():
+                    if _carbonfootprint:
+                        # Initialize CodeCarbon
+                        tracker = EmissionsTracker(save_to_file=False, log_level="error")
+                        tracker.start()
                     t_start = time()
                     cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
                     scorer = get_scorer(self.paradigm.scoring)
@@ -228,6 +240,10 @@ class WithinSessionEvaluation(BaseEvaluation):
                             error_score=self.error_score,
                         )
                     score = acc.mean()
+                    if _carbonfootprint:
+                        emissions = tracker.stop()
+                        if emissions is None:
+                            emissions = np.NaN
                     duration = time() - t_start
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -240,6 +256,8 @@ class WithinSessionEvaluation(BaseEvaluation):
                         "n_channels": nchan,
                         "pipeline": name,
                     }
+                    if _carbonfootprint:
+                        res["carbon_emission"] = (1000 * emissions,)
 
                     yield res
 
@@ -482,6 +500,11 @@ class CrossSessionEvaluation(BaseEvaluation):
             scorer = get_scorer(self.paradigm.scoring)
 
             for name, clf in run_pipes.items():
+                if _carbonfootprint:
+                    # Initialise CodeCarbon
+                    tracker = EmissionsTracker(save_to_file=False, log_level="error")
+                    tracker.start()
+
                 # we want to store a results per session
                 cv = LeaveOneGroupOut()
 
@@ -501,7 +524,14 @@ class CrossSessionEvaluation(BaseEvaluation):
                     param_grid, name_grid, name, grid_clf, X, y, cv, groups
                 )
 
+                if _carbonfootprint:
+                    emissions_grid = tracker.stop()
+                    if emissions_grid is None:
+                        emissions_grid = 0
+
                 for train, test in cv.split(X, y, groups):
+                    if _carbonfootprint:
+                        tracker.start()
                     t_start = time()
                     if isinstance(X, BaseEpochs):
                         cvclf = clone(grid_clf)
@@ -521,6 +551,11 @@ class CrossSessionEvaluation(BaseEvaluation):
                             error_score=self.error_score,
                         )
                         score = result["test_scores"]
+                    if _carbonfootprint:
+                        emissions = tracker.stop()
+                        if emissions is None:
+                            emissions = 0
+
                     duration = time() - t_start
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -533,6 +568,9 @@ class CrossSessionEvaluation(BaseEvaluation):
                         "n_channels": nchan,
                         "pipeline": name,
                     }
+                    if _carbonfootprint:
+                        res["carbon_emission"] = (1000 * (emissions + emissions_grid),)
+
                     yield res
 
     def is_valid(self, dataset):
@@ -643,7 +681,15 @@ class CrossSubjectEvaluation(BaseEvaluation):
         cv = LeaveOneGroupOut()
 
         # Implement Grid Search
+        emissions_grid = {}
+
+        if _carbonfootprint:
+            # Initialise CodeCarbon
+            tracker = EmissionsTracker(save_to_file=False, log_level="error")
+
         for name, clf in pipelines.items():
+            if _carbonfootprint:
+                tracker.start()
             name_grid = os.path.join(
                 str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
             )
@@ -651,6 +697,11 @@ class CrossSubjectEvaluation(BaseEvaluation):
             pipelines[name] = self._grid_search(
                 param_grid, name_grid, name, clf, pipelines, X, y, cv, groups
             )
+
+            if _carbonfootprint:
+                emissions_grid[name] = tracker.stop()
+                if emissions_grid[name] is None:
+                    emissions_grid[name] = 0
 
         # Progressbar at subject level
         for train, test in tqdm(
@@ -664,14 +715,24 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
             # iterate over pipelines
             for name, clf in run_pipes.items():
+                if _carbonfootprint:
+                    tracker.start()
                 t_start = time()
                 model = deepcopy(clf).fit(X[train], y[train])
+                if _carbonfootprint:
+                    emissions = tracker.stop()
+                    if emissions is None:
+                        emissions = 0
                 duration = time() - t_start
 
                 # we eval on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
                     score = _score(model, X[test[ix]], y[test[ix]], scorer)
+
+                    if _carbonfootprint:
+                        if emissions_grid[name] is None:
+                            emissions_grid[name] = 0
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -685,6 +746,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         "pipeline": name,
                     }
 
+                    if _carbonfootprint:
+                        res["carbon_emission"] = (
+                            1000 * (emissions + emissions_grid[name]),
+                        )
                     yield res
 
     def is_valid(self, dataset):
