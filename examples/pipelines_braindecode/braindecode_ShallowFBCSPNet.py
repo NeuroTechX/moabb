@@ -22,7 +22,7 @@ EPOCH = 10
 PATIENCE = 3
 
 # Create the dataset
-create_dataset = BraindecodeDatasetLoader()
+create_dataset = BraindecodeDatasetLoader(drop_last_window=False)
 
 # Set Shallow Filter Bank CSP Net model
 model = ShallowFBCSPNet(

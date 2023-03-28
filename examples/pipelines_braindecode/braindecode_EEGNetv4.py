@@ -22,7 +22,7 @@ EPOCH = 10
 PATIENCE = 3
 
 # Create the dataset
-create_dataset = BraindecodeDatasetLoader()
+create_dataset = BraindecodeDatasetLoader(drop_last_window=False)
 
 # Set EEGNetv4 model
 model = EEGNetv4(in_chans=1, n_classes=2, input_window_samples=100)
