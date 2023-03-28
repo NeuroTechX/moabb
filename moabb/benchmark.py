@@ -21,6 +21,14 @@ from moabb.pipelines.utils import (
 )
 
 
+try:
+    from codecarbon import EmissionsTracker  # noqa
+
+    _carbonfootprint = True
+except ImportError:
+    _carbonfootprint = False
+
+
 log = logging.getLogger(__name__)
 
 
@@ -185,18 +193,23 @@ def _display_results(results):
     for d in results["dataset"].unique():
         for p in results["pipeline"].unique():
             for e in results["evaluation"].unique():
-                tab.append(
-                    {
-                        "dataset": d,
-                        "evaluation": e,
-                        "pipeline": p,
-                        "avg score": results[
-                            (results["dataset"] == d)
-                            & (results["pipeline"] == p)
-                            & (results["evaluation"] == e)
-                        ]["score"].mean(),
-                    }
-                )
+                r = {
+                    "dataset": d,
+                    "evaluation": e,
+                    "pipeline": p,
+                    "avg score": results[
+                        (results["dataset"] == d)
+                        & (results["pipeline"] == p)
+                        & (results["evaluation"] == e)
+                    ]["score"].mean(),
+                }
+                if _carbonfootprint:
+                    r["carbon emission"] = results[
+                        (results["dataset"] == d)
+                        & (results["pipeline"] == p)
+                        & (results["evaluation"] == e)
+                    ]["carbon_emission"].sum()
+                tab.append(r)
     tab = pd.DataFrame(tab)
     print(tab)
 
