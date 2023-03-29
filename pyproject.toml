@@ -40,8 +40,8 @@ optional = true
 tensorflow = "^2.10"
 keras = ">=1.11.0"
 scikeras = "^0.10.0"
-torch = "^1.13.1"
 braindecode = "^0.7"
+torch = "^1.13.1"
 libclang = "^15.0"
 
 [tool.poetry.group.docs]
