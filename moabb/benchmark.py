@@ -161,23 +161,24 @@ def benchmark(
                 else:
                     ppl_with_array[pn] = pv
 
-            # Braindecode pipelines require return_epochs=True
-            context = eval_type[evaluation](
-                paradigm=p,
-                datasets=d,
-                random_state=42,
-                hdf5_path=results,
-                n_jobs=n_jobs,
-                overwrite=overwrite,
-                return_epochs=True,
-            )
-            paradigm_results = context.process(
-                pipelines=ppl_with_epochs, param_grid=param_grid
-            )
-            paradigm_results["paradigm"] = f"{paradigm}"
-            paradigm_results["evaluation"] = f"{evaluation}"
-            eval_results[f"{paradigm}"] = paradigm_results
-            df_eval.append(paradigm_results)
+            if len(ppl_with_epochs) > 0:
+                # Braindecode pipelines require return_epochs=True
+                context = eval_type[evaluation](
+                    paradigm=p,
+                    datasets=d,
+                    random_state=42,
+                    hdf5_path=results,
+                    n_jobs=n_jobs,
+                    overwrite=overwrite,
+                    return_epochs=True,
+                )
+                paradigm_results = context.process(
+                    pipelines=ppl_with_epochs, param_grid=param_grid
+                )
+                paradigm_results["paradigm"] = f"{paradigm}"
+                paradigm_results["evaluation"] = f"{evaluation}"
+                eval_results[f"{paradigm}"] = paradigm_results
+                df_eval.append(paradigm_results)
 
             # Other pipelines, that use numpy arrays
             context = eval_type[evaluation](
