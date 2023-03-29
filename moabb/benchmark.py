@@ -154,11 +154,14 @@ def benchmark(
                 f"Datasets considered for {paradigm} paradigm {[dt.code for dt in d]}"
             )
 
-            if "braindecode" in list(prdgms[paradigm].keys())[0]:
-                return_epochs = True
-            else:
-                return_epochs = False
+            ppl_with_epochs, ppl_with_array = {}, {}
+            for pn, pv in prdgms[paradigm].items():
+                if "braindecode" in pn:
+                    ppl_with_epochs[pn] = pv
+                else:
+                    ppl_with_array[pn] = pv
 
+            # Braindecode pipelines require return_epochs=True
             context = eval_type[evaluation](
                 paradigm=p,
                 datasets=d,
@@ -166,10 +169,27 @@ def benchmark(
                 hdf5_path=results,
                 n_jobs=n_jobs,
                 overwrite=overwrite,
-                return_epochs=return_epochs,
+                return_epochs=True,
             )
             paradigm_results = context.process(
-                pipelines=prdgms[paradigm], param_grid=param_grid
+                pipelines=ppl_with_epochs, param_grid=param_grid
+            )
+            paradigm_results["paradigm"] = f"{paradigm}"
+            paradigm_results["evaluation"] = f"{evaluation}"
+            eval_results[f"{paradigm}"] = paradigm_results
+            df_eval.append(paradigm_results)
+
+            # Other pipelines, that use numpy arrays
+            context = eval_type[evaluation](
+                paradigm=p,
+                datasets=d,
+                random_state=42,
+                hdf5_path=results,
+                n_jobs=n_jobs,
+                overwrite=overwrite,
+            )
+            paradigm_results = context.process(
+                pipelines=ppl_with_array, param_grid=param_grid
             )
             paradigm_results["paradigm"] = f"{paradigm}"
             paradigm_results["evaluation"] = f"{evaluation}"
