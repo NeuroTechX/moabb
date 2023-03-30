@@ -1,4 +1,8 @@
-.. _installation-instructions:
+.. _installation:
+
+===========
+Installation
+===========
 
 MOABB is written in Python 3, specifically for version 3.8 or above.
 
@@ -23,7 +27,7 @@ There are different ways to install MOABB:
             For Beginners
 
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        .. image:: ../_static/M.png
+        .. image:: ../source/_static/moabb_install.png
            :alt: MOABB Installer with pip
 
         **New to Python?** Use our standalone installers that include
@@ -45,14 +49,14 @@ There are different ways to install MOABB:
 
         .. rst-class:: font-weight-bold mb-0
 
-           Building from scratch with and without a development environment
+           Building from src and the dev env
 
         .. rst-class:: card-subtitle text-muted mt-0
 
             For Advanced Users
 
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        .. image:: ../_static/M.png
+        .. image:: https://mne.tools/stable/_images/mne_installer_console.png
            :alt: Terminal Window
 
         **Already familiar with Python?**
@@ -65,9 +69,7 @@ There are different ways to install MOABB:
             :shadow:
             :class: font-weight-bold
 
-            Install from src and the development environment
-
-
+            From src and the dev environment
 
     .. grid-item-card::
         :text-align: center
@@ -81,14 +83,14 @@ There are different ways to install MOABB:
             For Advanced Users
 
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        .. image:: ../_static/M.png
+        .. image:: https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png
            :alt: Terminal Docker
 
         **Already familiar with Docker?**
         Follow our setup instructions for using your docker image!
         +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-        .. button-ref:: using_docker
+        .. button-ref:: _using_docker
             :ref-type: ref
             :color: primary
             :shadow:
@@ -100,7 +102,6 @@ There are different ways to install MOABB:
 .. toctree::
     :hidden:
 
-    installers
-    manual_install
-    advanced
-    docker
+    install_pip
+    install_source
+    using_docker
