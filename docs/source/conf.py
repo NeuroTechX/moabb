@@ -19,7 +19,6 @@ import matplotlib
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import sphinx_bootstrap_theme
 from numpydoc import docscrape, numpydoc  # noqa
 
 # Sort tutorials and examples but filename
@@ -74,6 +73,7 @@ extensions = [
     "gh_substitutions",
     "m2r2",
     "numpydoc",
+    "pydata_sphinx_theme",
 ]
 
 
@@ -208,8 +208,7 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "bootstrap"
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+html_theme = "pydata_sphinx_theme"
 
 
 # Theme options are theme-specific and customize the look and feel of a theme
