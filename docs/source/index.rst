@@ -15,11 +15,11 @@ Public API
    :maxdepth: 2
    :caption: Main classes of MOABB:
 
-   datasets
-   evaluations
-   paradigms
-   pipelines
-   analysis
+   Install <install>
+   Datasets <dataset_summary>
+   API <api>
+   Tutorial <auto_examples/index>
+   Gallery <auto_example/index>
 
 Indices and tables
 ==================
