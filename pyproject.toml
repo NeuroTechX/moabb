@@ -26,7 +26,6 @@ pooch = "^1.6.0"
 requests = "^2.28.1"
 tqdm = "^4.64.1"
 coverage = "^7.0.1"
-pydata-sphinx-theme = "^0.13.2"
 
 [tool.poetry.group.carbonemission]
 optional = true
@@ -52,6 +51,7 @@ optional = true
 Sphinx = "^6.0.0"
 sphinx-gallery = "^0.11.1"
 sphinx-bootstrap-theme = "^0.8.1"
+pydata-sphinx-theme = "^0.13.2"
 numpydoc = "^1.5.0"
 pre-commit = "^2.21.0"
 m2r2 = "^0.3.3"
