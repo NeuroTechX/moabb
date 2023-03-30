@@ -72,47 +72,6 @@ This project will be successful when we read in an abstract “ … the proposed
 obtained a score of 89% on the MOABB (Mother of All BCI Benchmarks), outperforming the
 state of the art by 5% ...”.
 
-## Installation
-
-### Pip installation
-
-To use MOABB, you could simply do: \
-`pip install MOABB` \
-See [Troubleshooting](#Troubleshooting) section if you have a problem.
-
-### Manual installation
-
-You could fork or clone the repository and go to the downloaded directory, then run:
-
-1. install `poetry` (only once per machine):\
-   `curl -sSL https://install.python-poetry.org | python3 -`\
-   or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
-   use [conda forge version](https://anaconda.org/conda-forge/poetry)
-1. (Optional, skip if not sure) Disable automatic environment creation:\
-   `poetry config virtualenvs.create false`
-1. install all dependencies in one command (have to be run in the project directory):\
-   `poetry install`
-
-See
-[contributors' guidelines](https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md)
-for detailed explanation.
-
-### Requirements we use
-
-See `pyproject.toml` file for full list of dependencies
-
-## Running
-
-### Verify Installation
-
-To ensure it is running correctly, you can also run
-
-```
-python -m unittest moabb.tests
-```
-
-once it is installed.
-
 ### Use MOABB
 
 First, you could take a look at our [tutorials](./auto_tutorials/index.html) that cover
