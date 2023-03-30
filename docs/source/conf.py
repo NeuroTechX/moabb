@@ -79,6 +79,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
     "sphinx.ext.mathjax",
+    "sphinx_design",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
     "m2r2",
@@ -164,7 +165,7 @@ def linkcode_resolve(domain, info):  # noqa: C901
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 curdir = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(os.path.join(curdir, "..", "mne")))
+sys.path.append(os.path.abspath(os.path.join(curdir, "..", "moabb")))
 sys.path.append(os.path.abspath(os.path.join(curdir, "sphinxext")))
 
 sphinx_gallery_conf = {
