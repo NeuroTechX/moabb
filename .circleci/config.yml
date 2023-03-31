@@ -38,7 +38,6 @@ jobs:
           command: |
             echo "Do nothing..."
 workflows:
-  version: 2.1
 
   default:
     when:
