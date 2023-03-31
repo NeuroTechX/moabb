@@ -59,6 +59,14 @@ jobs:
           name: DocumentationHTML
           path: docs/build/html/
 
+      - name: GitHub Action step
+        uses: larsoner/circleci-artifacts-redirector-action@master
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          artifact-path: 0/dev/index.html
+          circleci-jobs: fetch_docs_from_github
+          job-title: Check rendered doc here!
+
   deploy_docs:
     if: ${{ github.ref == 'refs/heads/master' }}
     needs: build_docs
