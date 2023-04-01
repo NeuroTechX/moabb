@@ -160,7 +160,7 @@ sphinx_gallery_conf = {
     "show_memory": True,
     "reference_url": dict(moabb=None),
     "filename_pattern": "(/plot_|/tutorial_)",
-    "default_thumb_file": "../image/M.png",
+    "default_thumb_file": "../images/M.png",
     "within_subsection_order": FileNameSortKey,
 }
 
@@ -243,7 +243,7 @@ html_theme_options = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "image/moabb_logo.svg"
+html_logo = "images/moabb_logo.svg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
