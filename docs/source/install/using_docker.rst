@@ -1,4 +1,4 @@
-.. using_docker::using_docker
+.. _using_docker:
 
 Moabb and docker
 ================
