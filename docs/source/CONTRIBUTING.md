@@ -69,7 +69,7 @@ pull request to the master branch referencing the specific issue you addressed.
 1. (Optional, skip if not sure) Disable automatic environment creation:\
    `poetry config virtualenvs.create false`
 1. install all dependencies in one command (have to be run in thibe project directory):\
-   `poetry install`
+   `poetry install --extras [deeplearning, codecarbon]`
 1. install `pre-commit` hooks to git repo:\
    `pre-commit install`
 1. you are ready to code!

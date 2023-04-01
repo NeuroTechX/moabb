@@ -72,13 +72,47 @@ Currently pip install moabb fails when pip version < 21, e.g. with 20.0.2 due to
 package conflict. Newer pip versions resolve this conflict automatically. To fix this you
 can upgrade your pip version using: `pip install -U pip` before installing `moabb`.
 
-## Team
+## Core Team
 
-The founders of the Mother of all BCI Benchmarks are [Alexander Barachant][link_alex_b]
-and [Vinay Jayaram][link_vinay]. This project is under the umbrella of
-[NeuroTechX][link_neurotechx], the international community for NeuroTech enthusiasts. The
-project is currently maintained by [Sylvain Chevallier][link_sylvain], [Bruno
-Aristimunha][link_bruno], [Igor Carrara][link_igor].
+This project is under the umbrella of [NeuroTechX][link_neurotechx], the international
+community for NeuroTech enthusiasts.
+
+The project is currently maintained by:
+
+<table style="text-align: center;">
+  <thead>
+    <tr>
+      <th>Sylvain Chevallier</th>
+      <th>Bruno Aristimunha</th>
+      <th>Igor Carrara</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding: 0 15px;"><img src="https://avatars.githubusercontent.com/u/5824988?s=150&amp;v=4" alt="Sylvain Chevallier"></td>
+      <td style="padding: 0 15px;"><img src="https://avatars.githubusercontent.com/u/42702466?s=150&amp;v=4" alt="Bruno Aristimunha"></td>
+      <td style="padding: 0 15px;"><img src="https://avatars.githubusercontent.com/u/94047258?s=150&amp;v=4" alt="Igor Carrara"></td>
+    </tr>
+  </tbody>
+</table>
+
+The Mother of all BCI Benchmarks was founded by Alexander Barachant and Vinay Jayaram, who
+are experts in the field of Brain-Computer Interfaces (BCI). At moment, both works as
+Research Scientist
+
+<table style="text-align: center;">
+  <thead>
+    <tr>
+      <th>Alexander Barachant</th>
+      <th>Vinay Jayaram</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+<td style="padding: 0 15px;"><img src="http://alexandre.barachant.org/images/avatar.jpg" alt="Alexander Barachant" width="150" height="150"></td>
+<td style="padding: 0 15px;"><img src="https://beetl.ai/static/media/vinay.217f36bc.jpeg" alt="Vinay Jayaram" width="150" height="150"></td></tr>
+  </tbody>
+</table>
 
 ### What do we need?
 
@@ -114,7 +148,7 @@ that you'll join us on this amazing journey to build a comprehensive benchmark o
 BCI algorithms applied on an extensive list of freely available EEG datasets.
 
 [link_alex_b]: http://alexandre.barachant.org/
-[link_vinay]: https://ei.is.tuebingen.mpg.de/~vjayaram
+[link_vinay]: https://www.linkedin.com/in/vinay-jayaram-8635aa25
 [link_neurotechx]: http://neurotechx.com/
 [link_sylvain]: https://sylvchev.github.io/
 [link_bruno]: https://www.linkedin.com/in/bruaristimunha/
