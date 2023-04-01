@@ -1,3 +1,5 @@
+API Reference
+======================
 .. include:: datasets.rst
 .. include:: evaluations.rst
 .. include:: paradigms.rst
