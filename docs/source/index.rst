@@ -1,27 +1,19 @@
 .. mdinclude:: README.md
-.. mdinclude:: CONTRIBUTING.md
 
-What's new
-==========
-.. toctree::
-   :maxdepth: 2
-
-   whats_new
-
-Public API
-==========
+.. include:: cite.rst
 
 .. toctree::
-   :maxdepth: 2
+   :glob:
+   :hidden:
+   :maxdepth: 10
    :caption: Main classes of MOABB:
+   :titlesonly:
 
-   Install <install>
+   Install <install/install>
+   Overview <overview>
+   Getting Started <auto_tutorials/index>
+   How does Moabb work? <main_concepts>
+   Gallery <auto_examples/index>
    Datasets <dataset_summary>
    API <api>
-   Tutorial <auto_examples/index>
-   Gallery <auto_example/index>
-
-Indices and tables
-==================
-
-* :ref:`genindex`
+   What's new <whats_new>
