@@ -3,7 +3,7 @@
 # <p align="center">Mother of all BCI Benchmarks</p>
 
 <p align="center">
-  <img src="_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
+  <img src="https://raw.githubusercontent.com/bruAristimunha/moabb/new_theme/docs/source/_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
   Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
 </p>
 
