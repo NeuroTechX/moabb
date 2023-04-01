@@ -1,10 +1,9 @@
 .. currentmodule:: moabb
 
-# Mother of all BCI Benchmarks
+# <p align="center">Mother of all BCI Benchmarks</p>
 
-![banner](images/M.png)
-
-<p align=center>
+<p align="center">
+  <img src="_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
   Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
 </p>
 
@@ -25,17 +24,6 @@ Thank you for visiting the Mother of all BCI Benchmark documentation and associa
 
 This document is a hub to give you some information about the project. Jump straight to
 one of the sections below, or just scroll down to find out more.
-
-- [What are we doing? (And why?)](#what-are-we-doing)
-- [Installation](#installation)
-- [Running](#running)
-- [Supported datasets](#supported-datasets)
-- [Who are we?](#who-are-we)
-- [Get in touch](#contact-us)
-- [Architecture and main concepts](#architecture-and-main-concepts)
-- [Citing MOABB and related publications](#citing-moabb-and-related-publications)
-
-## What are we doing?
 
 ### The problem
 
@@ -84,25 +72,13 @@ Currently pip install moabb fails when pip version < 21, e.g. with 20.0.2 due to
 package conflict. Newer pip versions resolve this conflict automatically. To fix this you
 can upgrade your pip version using: `pip install -U pip` before installing `moabb`.
 
-## Supported datasets
-
-The list of supported datasets can be found here : https://neurotechx.github.io/moabb/
-
-Detailed information regarding datasets (electrodes, trials, sessions) are indicated on
-the wiki: https://github.com/NeuroTechX/moabb/wiki/Datasets-Support
-
-### Submit a new dataset
-
-you can submit a new dataset by mentioning it to this
-[issue](https://github.com/NeuroTechX/moabb/issues/1). The datasets currently on our radar
-can be seen [here] (https://github.com/NeuroTechX/moabb/wiki/Datasets-Support)
-
-## Who are we?
+## Team
 
 The founders of the Mother of all BCI Benchmarks are [Alexander Barachant][link_alex_b]
 and [Vinay Jayaram][link_vinay]. This project is under the umbrella of
 [NeuroTechX][link_neurotechx], the international community for NeuroTech enthusiasts. The
-project is currently maintained by [Sylvain Chevallier][link_sylvain].
+project is currently maintained by [Sylvain Chevallier][link_sylvain], [Bruno
+Aristimunha][link_bruno], [Igor Carrara][link_igor].
 
 ### What do we need?
 
@@ -119,19 +95,6 @@ professional development of any and all of our contributors. If you're looking t
 code, try out working collaboratively, or translate your skills to the digital domain,
 we're here to help.
 
-### Get involved
-
-If you think you can help in any of the areas listed above (and we bet you can) or in any
-of the many areas that we haven't yet thought of (and here we're _sure_ you can) then
-please check out our
-[contributors' guidelines](https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md)
-and our [roadmap](https://github.com/NeuroTechX/moabb/blob/master/ROADMAP.md).
-
-Please note that it's very important to us that we maintain a positive and supportive
-environment for everyone who wants to participate. When you join us we ask that you follow
-our [code of conduct](https://github.com/NeuroTechX/moabb/blob/master/CODE_OF_CONDUCT.md)
-in all interactions both on and offline.
-
 ## Contact us
 
 If you want to report a problem or suggest an enhancement, we'd love for you to
@@ -144,69 +107,7 @@ happening on a [regular basis](https://github.com/NeuroTechX/moabb/issues/191), 
 the link on the gitter channel. We are also on NeuroTechX Slack channel
 [#moabb][link_neurotechx_signup].
 
-## Architecture and Main Concepts
-
-![architecture](images/architecture.png)
-
-There are 4 main concepts in the MOABB: the datasets, the paradigm, the evaluation, and
-the pipelines. In addition, we offer statistical and visualization utilities to simplify
-the workflow.
-
-### Datasets
-
-A dataset handles and abstracts low-level access to the data. The dataset will read data
-stored locally, in the format in which they have been downloaded, and will convert them
-into an MNE raw object. There are options to pool all the different recording sessions per
-subject or to evaluate them separately.
-
-### Paradigm
-
-A paradigm defines how the raw data will be converted to trials ready to be processed by a
-decoding algorithm. This is a function of the paradigm used, i.e. in motor imagery one can
-have two-class, multi-class, or continuous paradigms; similarly, different preprocessing
-is necessary for ERP vs ERD paradigms.
-
-### Evaluations
-
-An evaluation defines how we go from trials per subject and session to a generalization
-statistic (AUC score, f-score, accuracy, etc) -- it can be either within-recording-session
-accuracy, across-session within-subject accuracy, across-subject accuracy, or other
-transfer learning settings.
-
-### Pipelines
-
-Pipeline defines all steps required by an algorithm to obtain predictions. Pipelines are
-typically a chain of sklearn compatible transformers and end with a sklearn compatible
-estimator. See
-[Pipelines](http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html)
-for more info.
-
-### Statistics and visualization
-
-Once an evaluation has been run, the raw results are returned as a DataFrame. This can be
-further processed via the following commands to generate some basic visualization and
-statistical comparisons:
-
-```
-from moabb.analysis import analyze
-
-results = evaluation.process(pipeline_dict)
-analyze(results)
-```
-
-## Citing MOABB and related publications
-
-To cite MOABB, you could use the following paper:
-
-- Vinay Jayaram and Alexandre Barachant. MOABB: trustworthy algorithm benchmarking for
-  BCIs. Journal of neural engineering 15.6 (2018): 066011.
-  [DOI:10.1088/1741-2552](https://doi.org/10.1088/1741-2552/aadea0)
-
-If you publish a paper using MOABB, please contact us on [gitter][link_gitter] or open an
-issue, and we will add your paper to the
-[dedicated wiki page](https://github.com/NeuroTechX/moabb/wiki/MOABB-bibliography).
-
-## Thank You
+## Thank You!
 
 Thank you so much (Danke schön! Merci beaucoup!) for visiting the project and we do hope
 that you'll join us on this amazing journey to build a comprehensive benchmark of popular
@@ -216,6 +117,8 @@ BCI algorithms applied on an extensive list of freely available EEG datasets.
 [link_vinay]: https://ei.is.tuebingen.mpg.de/~vjayaram
 [link_neurotechx]: http://neurotechx.com/
 [link_sylvain]: https://sylvchev.github.io/
+[link_bruno]: https://www.linkedin.com/in/bruaristimunha/
+[link_igor]: https://www.linkedin.com/in/carraraig/
 [link_neurotechx_signup]: https://neurotechx.com/
 [link_gitter]: https://app.gitter.im/#/room/#moabb_dev_community:gitter.im
 [link_moabb_docs]: https://neurotechx.github.io/moabb/
