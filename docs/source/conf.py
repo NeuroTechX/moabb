@@ -160,7 +160,7 @@ sphinx_gallery_conf = {
     "show_memory": True,
     "reference_url": dict(moabb=None),
     "filename_pattern": "(/plot_|/tutorial_)",
-    "default_thumb_file": "../image/moabb_logo.svg",
+    "default_thumb_file": "../image/M.png",
     "within_subsection_order": FileNameSortKey,
 }
 
