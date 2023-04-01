@@ -160,7 +160,7 @@ sphinx_gallery_conf = {
     "show_memory": True,
     "reference_url": dict(moabb=None),
     "filename_pattern": "(/plot_|/tutorial_)",
-    "default_thumb_file": "../_static/moabb_logo.svg",
+    "default_thumb_file": "../image/moabb_logo.svg",
     "within_subsection_order": FileNameSortKey,
 }
 
@@ -243,7 +243,7 @@ html_theme_options = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/moabb_logo.svg"
+html_logo = "image/moabb_logo.svg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -298,7 +298,7 @@ latex_elements = {
     # "figure_align": "htbp",
 }
 
-latex_logo = "_static/moabb_logo.svg"
+latex_logo = "images/moabb_logo.svg"
 latex_toplevel_sectioning = "part"
 
 # Grouping the document tree into LaTeX files. List of tuples
