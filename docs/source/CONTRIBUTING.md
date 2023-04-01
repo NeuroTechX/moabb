@@ -1,6 +1,15 @@
 # Contributing
 
-Contributions are always welcome, no matter how small.
+Contributions are always welcome, no matter how small!
+
+If you think you can help in any of the areas of MOABB (and we bet you can) or in any of
+the many areas that we haven't yet thought of (and here we're _sure_ you can) then please
+check out our [roadmap](https://github.com/NeuroTechX/moabb/blob/master/ROADMAP.md).
+
+Please note that it's very important to us that we maintain a positive and supportive
+environment for everyone who wants to participate. When you join us we ask that you follow
+our [code of conduct](https://github.com/NeuroTechX/moabb/blob/master/CODE_OF_CONDUCT.md)
+in all interactions both on and offline.
 
 The following is a small set of guidelines for how to contribute to the project
 
@@ -96,7 +105,7 @@ For Code Quality verification, we use:
 
 To generate a local version of the documentation:
 
-```
+```bash
 cd docs
 make html
 ```
