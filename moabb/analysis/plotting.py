@@ -113,8 +113,8 @@ def codecarbon_plot(data, order_list=None, pipelines=None):
         y="carbon_emission",
         hue="pipeline",
         palette=PIPELINE_PALETTE,
-        height = 8.5,
-        hue_order=order_list
+        height=8.5,
+        hue_order=order_list,
     ).set(title="CO2 emission per dataset and algorithm")
     fig.set(yscale="log")
     fig.tight_layout()
