@@ -62,7 +62,7 @@ pull request to the master branch referencing the specific issue you addressed.
    use [conda forge version](https://anaconda.org/conda-forge/poetry)
 1. (Optional, skip if not sure) Disable automatic environment creation:\
    `poetry config virtualenvs.create false`
-1. (Optional) Install the optional depedency
+1. (Optional) Install the optional dependency
 1. install all dependencies in one command (have to be run in thibe project directory):\
    `poetry install`
 1. install `pre-commit` hooks to git repo:\
