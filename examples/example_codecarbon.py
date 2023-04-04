@@ -17,8 +17,8 @@ import matplotlib.pyplot as plt
 
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import score_plot
+from moabb.datasets import BNCI2014001, Zhou2016
 from moabb.paradigms import LeftRightImagery
-from moabb.datasets import Zhou2016, BNCI2014001
 
 
 set_log_level("info")
@@ -85,6 +85,8 @@ results = benchmark(
 # pandas dataframe, and can be used to generate figures. The analysis & figures
 # are saved in the ``benchmark`` folder.
 from moabb.analysis.plotting import codecarbon_plot
+
+
 results.head()
 
 codecarbon_plot(results)

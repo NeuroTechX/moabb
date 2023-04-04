@@ -102,8 +102,8 @@ def codecarbon_plot(data, pipelines=None):
 
     if pipelines is not None:
         data = data[data.pipeline.isin(pipelines)]
-    #fig = plt.figure(figsize=(24, 18))
-    #ax = fig.add_subplot(111)
+    # fig = plt.figure(figsize=(24, 18))
+    # ax = fig.add_subplot(111)
     data = data.rename(columns={"carbon emission": "carbon_emission"})
 
     fig = sea.catplot(
@@ -114,10 +114,10 @@ def codecarbon_plot(data, pipelines=None):
         hue="pipeline",
         palette=PIPELINE_PALETTE,
     ).set(title="CO2 emission per dataset and algorithm")
-    #ax.set_title("CO2 emission per dataset and algorithm")
-    #handles, labels = ax.get_legend_handles_labels()
-    #color_dict = {lb: h.get_facecolor()[0] for lb, h in zip(labels, handles)}
-    return fig #, color_dict
+    # ax.set_title("CO2 emission per dataset and algorithm")
+    # handles, labels = ax.get_legend_handles_labels()
+    # color_dict = {lb: h.get_facecolor()[0] for lb, h in zip(labels, handles)}
+    return fig  # , color_dict
 
 
 def paired_plot(data, alg1, alg2):
