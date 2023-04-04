@@ -196,48 +196,50 @@ class Test_Results(unittest.TestCase):
         self.assertTrue(df.shape[0] == 6, df.shape[0])
 
 
-class TestCodecarbonPlot(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.pp_dir = Path.cwd() / Path("moabb/tests/test_pipelines/")
+if _carbonfootprint:
 
-    @classmethod
-    def tearDownClass(cls):
-        rep_dir = Path.cwd() / Path("benchmark/")
-        shutil.rmtree(rep_dir)
+    class TestCodecarbonPlot(unittest.TestCase):
+        @classmethod
+        def setUpClass(cls):
+            cls.pp_dir = Path.cwd() / Path("moabb/tests/test_pipelines/")
 
-    def setUp(self):
-        self.data = benchmark(
-            pipelines=str(self.pp_dir),
-            evaluations=["WithinSession"],
-            include_datasets=["FakeDataset"],
-            results="moabb/results",
-        )
-        self.country = "France"
-        self.pipelines = ["pipeline 1", "pipeline 2"]
-        self.order_list = ["pipeline 2", "pipeline 1"]
+        @classmethod
+        def tearDownClass(cls):
+            rep_dir = Path.cwd() / Path("benchmark/")
+            shutil.rmtree(rep_dir)
 
-    def test_codecarbon_plot_returns_figure(self):
-        fig = codecarbon_plot(self.data)
-        self.assertIsInstance(fig, Figure)
+        def setUp(self):
+            self.data = benchmark(
+                pipelines=str(self.pp_dir),
+                evaluations=["WithinSession"],
+                include_datasets=["FakeDataset"],
+                results="moabb/results",
+            )
+            self.country = "France"
+            self.pipelines = ["pipeline 1", "pipeline 2"]
+            self.order_list = ["pipeline 2", "pipeline 1"]
 
-    def test_codecarbon_plot_title_includes_country(self):
-        fig = codecarbon_plot(self.data, country=self.country)
-        self.assertIn(self.country, fig._suptitle.get_text())
+        def test_codecarbon_plot_returns_figure(self):
+            fig = codecarbon_plot(self.data)
+            self.assertIsInstance(fig, Figure)
 
-    def test_codecarbon_plot_filters_pipelines_correctly(self):
-        fig = codecarbon_plot(self.data, pipelines=self.pipelines)
-        pipelines_in_plot = set(fig.data["pipeline"].tolist())
-        self.assertEqual(pipelines_in_plot, set(self.pipelines))
+        def test_codecarbon_plot_title_includes_country(self):
+            fig = codecarbon_plot(self.data, country=self.country)
+            self.assertIn(self.country, fig._suptitle.get_text())
 
-    def test_codecarbon_plot_orders_pipelines_correctly(self):
-        fig = codecarbon_plot(self.data, order_list=self.order_list)
-        hue_order_in_plot = fig._legend.get_lines()[0].get_data()[1].tolist()
-        self.assertEqual(hue_order_in_plot, self.order_list)
+        def test_codecarbon_plot_filters_pipelines_correctly(self):
+            fig = codecarbon_plot(self.data, pipelines=self.pipelines)
+            pipelines_in_plot = set(fig.data["pipeline"].tolist())
+            self.assertEqual(pipelines_in_plot, set(self.pipelines))
 
-    def test_codecarbon_plot_uses_log_scale_y_axis(self):
-        fig = codecarbon_plot(self.data)
-        self.assertEqual(fig.axes[0].get_yscale(), "log")
+        def test_codecarbon_plot_orders_pipelines_correctly(self):
+            fig = codecarbon_plot(self.data, order_list=self.order_list)
+            hue_order_in_plot = fig._legend.get_lines()[0].get_data()[1].tolist()
+            self.assertEqual(hue_order_in_plot, self.order_list)
+
+        def test_codecarbon_plot_uses_log_scale_y_axis(self):
+            fig = codecarbon_plot(self.data)
+            self.assertEqual(fig.axes[0].get_yscale(), "log")
 
 
 if __name__ == "__main__":
