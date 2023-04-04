@@ -12,8 +12,8 @@
    Install <install/install>
    Overview <overview>
    Getting Started <auto_tutorials/index>
-   How does Moabb work? <main_concepts>
-   Gallery <auto_examples/index>
    Datasets <dataset_summary>
+   How does Moabb work? <main_concepts>
    API <api>
+   Gallery <auto_examples/index>
    What's new <whats_new>
