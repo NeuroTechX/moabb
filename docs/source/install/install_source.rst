@@ -77,7 +77,7 @@ You will need to run this command in the project directory:
 
 .. code-block:: console
 
-   poetry install .
+   poetry install
 
 4. If you want to install with an optional dependency
 
