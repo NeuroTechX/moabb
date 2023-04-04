@@ -16,9 +16,9 @@ to easily scale to many datasets.
 import matplotlib.pyplot as plt
 
 from moabb import benchmark, set_log_level
+from moabb.analysis.plotting import codecarbon_plot
 from moabb.datasets import BNCI2014001, Zhou2016
 from moabb.paradigms import LeftRightImagery
-from moabb.analysis.plotting import codecarbon_plot
 
 
 set_log_level("info")
