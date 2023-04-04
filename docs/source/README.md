@@ -114,6 +114,38 @@ Research Scientist
   </tbody>
 </table>
 
+## Contributors
+
+The MOABB is a community project, and we are always thankful for all the contributors!
+
+<div id="contributors-container"></div>
+
+<script>
+const endpoint = 'https://api.github.com/repos/NeuroTechX/moabb/contributors';
+const container = document.getElementById('contributors-container');
+const filterList = ["bruAristimunha", "sylvchev", "carraraig", "pre-commit[bot]", "dependabot[bot]", "alexandrebarachant", "vinay-jayaram"];
+fetch(endpoint)
+  .then(response => response.json())
+  .then(contributors => {
+    const filteredContributors = contributors.filter(contributor => !filterList.includes(contributor.login));    filteredContributors.forEach(contributor => {
+      const link = document.createElement('a');
+      link.href = contributor.html_url;
+      link.target = '_blank';
+      const img = document.createElement('img');
+      img.src = contributor.avatar_url;
+      img.alt = contributor.login;
+      img.style.width = '150px';
+      img.style.height = '150px';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '50%';
+      link.appendChild(img);
+      container.appendChild(link);
+    });
+  });
+</script>
+
+<div id="contributors-container"></div>
+
 ### What do we need?
 
 **You**! In whatever way you can help.
