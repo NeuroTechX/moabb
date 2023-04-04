@@ -22,10 +22,10 @@ EPOCH = 10
 PATIENCE = 3
 
 # Create the dataset
-create_dataset = BraindecodeDatasetLoader()
+create_dataset = BraindecodeDatasetLoader(drop_last_window=False)
 
 # Set EEG Inception model
-model = EEGInception(in_channels=1, n_classes=2, input_window_samples=100)
+model = EEGInception(in_channels=1, n_classes=2)
 
 # Define a Skorch classifier
 clf = EEGClassifier(
