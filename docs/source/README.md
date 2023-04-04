@@ -123,7 +123,7 @@ The MOABB is a community project, and we are always thankful for all the contrib
 <script>
 const endpoint = 'https://api.github.com/repos/NeuroTechX/moabb/contributors';
 const container = document.getElementById('contributors-container');
-const filterList = ["bruAristimunha", "sylvchev", "carraraig", "pre-commit[bot]", "dependabot[bot]", "alexandrebarachant", "vinay-jayaram"];
+const filterList = ["bruAristimunha", "sylvchev", "carraraig", "pre-commit-ci[bot]", "dependabot[bot]", "alexandrebarachant", "vinay-jayaram"];
 fetch(endpoint)
   .then(response => response.json())
   .then(contributors => {
