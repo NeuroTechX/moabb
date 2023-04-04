@@ -76,6 +76,50 @@ def score_plot(data, pipelines=None):
     return fig, color_dict
 
 
+def codecarbon_plot(data, pipelines=None):
+    """Plot scores for all pipelines and all datasets
+
+    Parameters
+    ----------
+    data: output of Results.to_dataframe()
+        results on datasets
+    pipelines: list of str | None
+        pipelines to include in this plot
+
+    Returns
+    -------
+    fig: Figure
+        Pyplot handle
+    color_dict: dict
+        Dictionary with the facecolor
+    """
+    data = collapse_session_scores(data)
+    unique_ids = data["dataset"].apply(_simplify_names)
+    if len(unique_ids) != len(set(unique_ids)):
+        log.warning("Dataset names are too similar, turning off name shortening")
+    else:
+        data["dataset"] = unique_ids
+
+    if pipelines is not None:
+        data = data[data.pipeline.isin(pipelines)]
+    #fig = plt.figure(figsize=(24, 18))
+    #ax = fig.add_subplot(111)
+    data = data.rename(columns={"carbon emission": "carbon_emission"})
+
+    fig = sea.catplot(
+        kind="bar",
+        data=data,
+        x="dataset",
+        y="carbon_emission",
+        hue="pipeline",
+        palette=PIPELINE_PALETTE,
+    ).set(title="CO2 emission per dataset and algorithm")
+    #ax.set_title("CO2 emission per dataset and algorithm")
+    #handles, labels = ax.get_legend_handles_labels()
+    #color_dict = {lb: h.get_facecolor()[0] for lb, h in zip(labels, handles)}
+    return fig #, color_dict
+
+
 def paired_plot(data, alg1, alg2):
     """Generate a figure with a paired plot
 
