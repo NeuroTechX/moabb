@@ -113,6 +113,8 @@ def codecarbon_plot(data, pipelines=None):
         y="carbon_emission",
         hue="pipeline",
         palette=PIPELINE_PALETTE,
+        height = 8.5,
+        aspect = 11
     ).set(title="CO2 emission per dataset and algorithm")
     # ax.set_title("CO2 emission per dataset and algorithm")
     # handles, labels = ax.get_legend_handles_labels()
