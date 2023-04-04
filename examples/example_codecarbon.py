@@ -96,3 +96,5 @@ order_list = [
 
 codecarbon_plot(results, order_list, country="(France)")
 plt.show()
+
+#![carbon](docs/sources/images/example_codecarbon.png)
