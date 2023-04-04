@@ -4,7 +4,7 @@ Benchmarking with MOABB showing the CO2 footprint
 =================================================
 
 This example shows how to use MOABB to track the CO2 footprint
-using codecarbon repository.
+using `CodeCarbon library<https://codecarbon.io/>`_.
 For this example, we will use only one
 dataset to keep the computation time low, but this benchmark is designed
 to easily scale to many datasets. Due to limitation of online documentation
