@@ -27,8 +27,8 @@ set_log_level("info")
 # Loading the pipelines
 # ---------------------
 #
-# To run this example we use several different pipelines, ML and DL (Keras) and also
-# pipelines that need an optimization of the hyper parameter.
+# To run this example we use several pipelines, ML and DL (Keras) and also
+# pipelines that need an optimization of the hyperparameter.
 # All this different pipelines are stored in ``pipelines_codecarbon``
 
 ###############################################################################
@@ -37,7 +37,7 @@ set_log_level("info")
 #
 # If you want to limit your benchmark on a subset of datasets, you can use the
 # ``include_datasets`` and ``exclude_datasets`` arguments. You will need either
-# to provide the dataset's object, or a the dataset's code. To get the list of
+# to provide the dataset's object, or a dataset's code. To get the list of
 # available dataset's code for a given paradigm, you can use the following command:
 
 paradigm = LeftRightImagery()
@@ -94,7 +94,16 @@ order_list = [
     "Keras_EEGNet_8_2",
 ]
 
+###############################################################################
+# Plotting the results
+# --------------------
+# We can plot the results using the ``codecarbon_plot`` function, generated bellow. This function takes the
+# dataframe returned by the ``benchmark`` function as input, and returns a pyplot figure.
+# The ``order_list`` argument is used to specify the order of the pipelines in
+# the plot.
+
 codecarbon_plot(results, order_list, country="(France)")
 plt.show()
 
-#![carbon](docs/sources/images/example_codecarbon.png)
+# .. image:: ../docs/source/images/example_codecarbon.png
+###############################################################################
