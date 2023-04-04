@@ -190,10 +190,10 @@ each subject and pipeline.
 
  .. code-block:: none
 
-    MAMEM3_SSVEP-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    MAMEM3_SSVEP-WithinSession:  50%|#####     | 1/2 [00:15<00:15, 15.43s/it]    MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:31<00:00, 15.55s/it]    MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:31<00:00, 15.53s/it]
+    MAMEM3_SSVEP-WithinSession:   0%|          | 0/2 [00:00<?, ?it/s]    MAMEM3_SSVEP-WithinSession:  50%|#####     | 1/2 [00:19<00:19, 19.80s/it]    MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:39<00:00, 19.98s/it]    MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:39<00:00, 19.95s/it]
           score      time  samples  ... n_sessions       dataset  pipeline
-    0  0.688889  0.049104     45.0  ...          1  MAMEM3_SSVEP       CCA
-    1  0.266667  0.048826     45.0  ...          1  MAMEM3_SSVEP       CCA
+    0  0.688889  0.048339     45.0  ...          1  MAMEM3_SSVEP       CCA
+    1  0.266667  0.048175     45.0  ...          1  MAMEM3_SSVEP       CCA
 
     [2 rows x 9 columns]
 
@@ -229,7 +229,7 @@ Here we plot the results, indicating the score for each subject
  .. code-block:: none
 
 
-    <AxesSubplot: xlabel='session', ylabel='score'>
+    <Axes: xlabel='session', ylabel='score'>
 
 
 
@@ -261,7 +261,7 @@ And the computation time in seconds
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  31.204 seconds)
+   **Total running time of the script:** ( 0 minutes  40.065 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_within_session_ssvep.py:

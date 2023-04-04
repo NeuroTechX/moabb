@@ -180,7 +180,7 @@ automatically be run with a grid search.
 
  .. code-block:: none
 
-    001-2014-WithinSession:   0%|          | 0/1 [00:00<?, ?it/s]    001-2014-WithinSession: 100%|##########| 1/1 [00:10<00:00, 10.86s/it]    001-2014-WithinSession: 100%|##########| 1/1 [00:10<00:00, 10.86s/it]
+    001-2014-WithinSession:   0%|          | 0/1 [00:00<?, ?it/s]    001-2014-WithinSession: 100%|##########| 1/1 [00:10<00:00, 10.26s/it]    001-2014-WithinSession: 100%|##########| 1/1 [00:10<00:00, 10.26s/it]
 
 
 
@@ -303,7 +303,7 @@ value.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.009 seconds)
+   **Total running time of the script:** ( 0 minutes  10.411 seconds)
 
 
 .. _sphx_glr_download_auto_examples_advanced_examples_plot_grid_search_withinsession.py:

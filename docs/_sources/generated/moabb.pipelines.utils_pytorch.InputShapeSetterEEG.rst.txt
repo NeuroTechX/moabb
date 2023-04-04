@@ -1,0 +1,12 @@
+﻿moabb.pipelines.utils_pytorch.InputShapeSetterEEG
+=================================================
+
+.. currentmodule:: moabb.pipelines.utils_pytorch
+
+.. autofunction:: InputShapeSetterEEG
+
+.. include:: moabb.pipelines.utils_pytorch.InputShapeSetterEEG.examples
+
+.. raw:: html
+
+    <div style='clear:both'></div>

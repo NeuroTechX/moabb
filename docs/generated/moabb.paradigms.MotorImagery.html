@@ -165,7 +165,7 @@
 <h1>moabb.paradigms.MotorImagery<a class="headerlink" href="#moabb-paradigms-motorimagery" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.paradigms.MotorImagery">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.</span></span><span class="sig-name descname"><span class="pre">MotorImagery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/motor_imagery.py#L299-L411"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.MotorImagery" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.</span></span><span class="sig-name descname"><span class="pre">MotorImagery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/motor_imagery.py#L299-L413"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.MotorImagery" title="Permalink to this definition">¶</a></dt>
 <dd><p>N-class motor imagery.</p>
 <p>Metric is ‘roc-auc’ if 2 classes and ‘accuracy’ if more</p>
 <dl class="field-list simple">
@@ -236,7 +236,7 @@ the dataset.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.paradigms.MotorImagery.is_valid">
-<span class="sig-name descname"><span class="pre">is_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/motor_imagery.py#L358-L369"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.MotorImagery.is_valid" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">is_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/motor_imagery.py#L358-L371"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.MotorImagery.is_valid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verify the dataset is compatible with the paradigm.</p>
 <p>This method is called to verify dataset is compatible with the
 paradigm.</p>
@@ -263,7 +263,10 @@ sklearn scorer.</p>
 
 <section id="examples-using-moabb-paradigms-motorimagery">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.paradigms.MotorImagery</span></code><a class="headerlink" href="#examples-using-moabb-paradigms-motorimagery" title="Permalink to this heading">¶</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="A paradigm defines how the raw data will be converted to trials ready to be processed by a deco..."><img alt="Explore Paradigm Object" src="../_images/sphx_glr_plot_explore_paradigm_thumb.png" />
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Cross-session motor imagery with deep learning EEGNet v4 model"><img alt="Cross-session motor imagery with deep learning EEGNet v4 model" src="../_images/sphx_glr_plot_braindecode_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/plot_braindecode.html#sphx-glr-auto-examples-plot-braindecode-py"><span class="std std-ref">Cross-session motor imagery with deep learning EEGNet v4 model</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Cross-session motor imagery with deep learning EEGNet v4 model</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="A paradigm defines how the raw data will be converted to trials ready to be processed by a deco..."><img alt="Explore Paradigm Object" src="../_images/sphx_glr_plot_explore_paradigm_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/plot_explore_paradigm.html#sphx-glr-auto-examples-plot-explore-paradigm-py"><span class="std std-ref">Explore Paradigm Object</span></a></p>
   <div class="sphx-glr-thumbnail-title">Explore Paradigm Object</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to make a model selection in pipelines for finding the best model..."><img alt="GridSearch within a session" src="../_images/sphx_glr_plot_grid_search_withinsession_thumb.png" />
@@ -292,7 +295,7 @@ sklearn scorer.</p>
     </p>
     <p>
         &copy; Copyright 2018-2023 MOABB contributors.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
     </p>
   </div>
 </footer>

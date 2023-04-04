@@ -69,6 +69,23 @@ subjects and sessions available in the dataset.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_benchmark_braindecode_thumb.png
+    :alt: Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures
+
+  :ref:`sphx_glr_auto_examples_plot_benchmark_braindecode.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use MOABB to benchmark a set of pipelines on all available datasets. ...">
 
 .. only:: html
@@ -81,6 +98,23 @@ subjects and sessions available in the dataset.
 .. raw:: html
 
       <div class="sphx-glr-thumbnail-title">Benchmarking with MOABB with Grid Search</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Cross-session motor imagery with deep learning EEGNet v4 model">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_braindecode_thumb.png
+    :alt: Cross-session motor imagery with deep learning EEGNet v4 model
+
+  :ref:`sphx_glr_auto_examples_plot_braindecode.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Cross-session motor imagery with deep learning EEGNet v4 model</div>
     </div>
 
 
@@ -197,7 +231,9 @@ subjects and sessions available in the dataset.
    /auto_examples/changing_download_directory
    /auto_examples/plot_benchmark
    /auto_examples/plot_benchmark_DL
+   /auto_examples/plot_benchmark_braindecode
    /auto_examples/plot_benchmark_grid_search
+   /auto_examples/plot_braindecode
    /auto_examples/plot_cross_session_motor_imagery
    /auto_examples/plot_cross_session_multiple_datasets
    /auto_examples/plot_cross_subject_ssvep

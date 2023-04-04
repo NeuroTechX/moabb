@@ -196,14 +196,14 @@ each subject / session of the dataset, and for each pipeline.
 
  .. code-block:: none
 
-    Zhou 2016-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    Zhou 2016-CrossSession:  50%|#####     | 1/2 [00:03<00:03,  3.91s/it]    Zhou 2016-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.43s/it]    Zhou 2016-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.51s/it]
-    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession:  50%|#####     | 1/2 [00:03<00:03,  3.69s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.73s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.73s/it]
+    Zhou 2016-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    Zhou 2016-CrossSession:  50%|#####     | 1/2 [00:03<00:03,  3.85s/it]    Zhou 2016-CrossSession: 100%|##########| 2/2 [00:06<00:00,  3.32s/it]    Zhou 2016-CrossSession: 100%|##########| 2/2 [00:06<00:00,  3.40s/it]
+    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession:  50%|#####     | 1/2 [00:03<00:03,  3.72s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.70s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:07<00:00,  3.70s/it]
           score      time  samples  ... n_sessions    dataset  pipeline
-    0  0.956597  0.222012    144.0  ...          2   001-2014   CSP+LDA
-    1  0.930941  0.274904    144.0  ...          2   001-2014   CSP+LDA
-    2  0.649691  0.211888    144.0  ...          2   001-2014   CSP+LDA
-    3  0.526813  0.294698    144.0  ...          2   001-2014   CSP+LDA
-    4  0.851412  0.227394    200.0  ...          3  Zhou 2016   CSP+LDA
+    0  0.956597  0.254488    144.0  ...          2   001-2014   CSP+LDA
+    1  0.930941  0.272397    144.0  ...          2   001-2014   CSP+LDA
+    2  0.649691  0.218781    144.0  ...          2   001-2014   CSP+LDA
+    3  0.526813  0.270040    144.0  ...          2   001-2014   CSP+LDA
+    4  0.851412  0.301107    200.0  ...          3  Zhou 2016   CSP+LDA
 
     [5 rows x 9 columns]
 
@@ -247,7 +247,7 @@ Here we plot the results, indicating the score for each session and subject
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  14.805 seconds)
+   **Total running time of the script:** ( 0 minutes  14.612 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_cross_session_multiple_datasets.py:

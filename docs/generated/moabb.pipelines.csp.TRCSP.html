@@ -125,8 +125,6 @@
 <li><a class="reference internal" href="#">moabb.pipelines.csp.TRCSP</a><ul>
 <li><a class="reference internal" href="#moabb.pipelines.csp.TRCSP"><code class="docutils literal notranslate"><span class="pre">TRCSP</span></code></a><ul>
 <li><a class="reference internal" href="#moabb.pipelines.csp.TRCSP.fit"><code class="docutils literal notranslate"><span class="pre">TRCSP.fit()</span></code></a></li>
-<li><a class="reference internal" href="#moabb.pipelines.csp.TRCSP.fit_transform"><code class="docutils literal notranslate"><span class="pre">TRCSP.fit_transform()</span></code></a></li>
-<li><a class="reference internal" href="#moabb.pipelines.csp.TRCSP.transform"><code class="docutils literal notranslate"><span class="pre">TRCSP.transform()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -172,7 +170,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#moabb.pipelines.csp.TRCSP.fit" title="moabb.pipelines.csp.TRCSP.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X, y)</p></td>
 <td><p>Train spatial filters.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#moabb.pipelines.csp.TRCSP.fit_transform" title="moabb.pipelines.csp.TRCSP.fit_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_transform</span></code></a>(X[, y])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_transform</span></code>(X[, y])</p></td>
 <td><p>Fit to data, then transform it.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>([deep])</p></td>
@@ -184,7 +182,7 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code>(**params)</p></td>
 <td><p>Set the parameters of this estimator.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#moabb.pipelines.csp.TRCSP.transform" title="moabb.pipelines.csp.TRCSP.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(X)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code>(X)</p></td>
 <td><p>Apply spatial filters.</p></td>
 </tr>
 </tbody>
@@ -193,47 +191,6 @@
 <dt class="sig sig-object py" id="moabb.pipelines.csp.TRCSP.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/csp.py#L16-L63"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.csp.TRCSP.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Train spatial filters. Only deals with two class</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="moabb.pipelines.csp.TRCSP.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_set_output.py#L820-L851"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.csp.TRCSP.fit_transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fit to data, then transform it.</p>
-<p>Fits transformer to <cite>X</cite> and <cite>y</cite> with optional parameters <cite>fit_params</cite>
-and returns a transformed version of <cite>X</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>array-like of shape (n_samples, n_features)</em>) – Input samples.</p></li>
-<li><p><strong>y</strong> (<em>array-like of shape (n_samples,) or (n_samples, n_outputs),                 default=None</em>) – Target values (None for unsupervised transformations).</p></li>
-<li><p><strong>**fit_params</strong> (<em>dict</em>) – Additional fit parameters.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>X_new</strong> – Transformed array.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray array of shape (n_samples, n_features_new)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="moabb.pipelines.csp.TRCSP.transform">
-<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_set_output.py#L206-L235"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.csp.TRCSP.transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply spatial filters.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>ndarray, shape (n_trials, n_channels, n_channels)</em>) – Set of covariance matrices.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>Xf</strong> – Set of spatialy filtered log-variance or covariance depending
-on the ‘log’ input parameter.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray, shape (n_trials, n_filters)</p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
@@ -260,7 +217,7 @@ on the ‘log’ input parameter.</p>
     </p>
     <p>
         &copy; Copyright 2018-2023 MOABB contributors.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
     </p>
   </div>
 </footer>

@@ -207,11 +207,11 @@ dimensions Nt x (Nc.Ns)</p>
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;fit.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;fit.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;transform.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;transform.&quot;&quot;&quot;</span>
         <span class="k">return</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.reshape.html#numpy.reshape" title="numpy.reshape" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">reshape</span></a><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -263,85 +263,381 @@ be overwritten if necessary.</p>
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
 
-  0%|                                      | 32.8k/18.5M [00:00&lt;01:43, 179kB/s]
+  0%|                                     | 8.19k/18.5M [00:00&lt;04:37, 66.6kB/s]
 
-  0%|▏                                     | 88.1k/18.5M [00:00&lt;00:53, 342kB/s]
+  0%|                                      | 24.6k/18.5M [00:00&lt;02:59, 103kB/s]
 
-  1%|▍                                      | 193k/18.5M [00:00&lt;00:30, 609kB/s]
+  0%|                                     | 35.8k/18.5M [00:00&lt;03:10, 97.1kB/s]
 
-  2%|▊                                     | 409k/18.5M [00:00&lt;00:15, 1.15MB/s]
+  0%|                                     | 46.1k/18.5M [00:00&lt;03:21, 91.8kB/s]
 
-  5%|█▋                                    | 841k/18.5M [00:00&lt;00:08, 2.21MB/s]
+  0%|                                     | 56.3k/18.5M [00:00&lt;03:31, 87.4kB/s]
 
-  9%|███▍                                 | 1.70M/18.5M [00:00&lt;00:03, 4.27MB/s]
+  0%|▏                                    | 65.5k/18.5M [00:00&lt;03:41, 83.2kB/s]
 
- 18%|██████▊                              | 3.42M/18.5M [00:00&lt;00:01, 8.29MB/s]
+  0%|▏                                    | 80.9k/18.5M [00:00&lt;03:12, 96.0kB/s]
 
- 33%|████████████▎                        | 6.17M/18.5M [00:00&lt;00:00, 14.2MB/s]
+  1%|▏                                     | 96.3k/18.5M [00:01&lt;02:57, 104kB/s]
 
- 50%|██████████████████▍                  | 9.21M/18.5M [00:00&lt;00:00, 19.1MB/s]
+  1%|▏                                      | 113k/18.5M [00:01&lt;02:43, 112kB/s]
 
- 66%|████████████████████████▎            | 12.2M/18.5M [00:01&lt;00:00, 22.2MB/s]
+  1%|▎                                      | 128k/18.5M [00:01&lt;02:39, 115kB/s]
 
- 82%|██████████████████████████████▏      | 15.1M/18.5M [00:01&lt;00:00, 24.3MB/s]
+  1%|▎                                      | 144k/18.5M [00:01&lt;02:33, 120kB/s]
 
- 98%|████████████████████████████████████▏| 18.1M/18.5M [00:01&lt;00:00, 26.0MB/s]
+  1%|▎                                      | 161k/18.5M [00:01&lt;02:28, 123kB/s]
+
+  1%|▍                                      | 184k/18.5M [00:01&lt;02:22, 129kB/s]
+
+  1%|▍                                      | 209k/18.5M [00:01&lt;02:04, 148kB/s]
+
+  1%|▍                                      | 224k/18.5M [00:01&lt;02:10, 140kB/s]
+
+  1%|▌                                      | 249k/18.5M [00:02&lt;01:56, 156kB/s]
+
+  1%|▌                                      | 272k/18.5M [00:02&lt;01:50, 165kB/s]
+
+  2%|▌                                      | 296k/18.5M [00:02&lt;01:46, 172kB/s]
+
+  2%|▋                                      | 321k/18.5M [00:02&lt;01:41, 179kB/s]
+
+  2%|▋                                      | 344k/18.5M [00:02&lt;01:40, 182kB/s]
+
+  2%|▊                                      | 369k/18.5M [00:02&lt;01:37, 186kB/s]
+
+  2%|▊                                      | 400k/18.5M [00:02&lt;01:28, 206kB/s]
+
+  2%|▉                                      | 432k/18.5M [00:02&lt;01:22, 220kB/s]
+
+  3%|▉                                      | 465k/18.5M [00:03&lt;01:17, 232kB/s]
+
+  3%|█                                      | 497k/18.5M [00:03&lt;01:15, 238kB/s]
+
+  3%|█                                      | 528k/18.5M [00:03&lt;01:14, 242kB/s]
+
+  3%|█▏                                     | 568k/18.5M [00:03&lt;01:07, 265kB/s]
+
+  3%|█▎                                     | 600k/18.5M [00:03&lt;01:08, 262kB/s]
+
+  3%|█▎                                     | 640k/18.5M [00:03&lt;01:04, 278kB/s]
+
+  4%|█▍                                     | 680k/18.5M [00:03&lt;01:01, 290kB/s]
+
+  4%|█▌                                     | 728k/18.5M [00:03&lt;00:56, 318kB/s]
+
+  4%|█▋                                     | 776k/18.5M [00:04&lt;00:52, 337kB/s]
+
+  4%|█▋                                     | 824k/18.5M [00:04&lt;00:50, 351kB/s]
+
+  5%|█▊                                     | 881k/18.5M [00:04&lt;00:46, 380kB/s]
+
+  5%|█▉                                     | 936k/18.5M [00:04&lt;00:44, 398kB/s]
+
+  5%|██                                    | 1.01M/18.5M [00:04&lt;00:38, 452kB/s]
+
+  6%|██▏                                   | 1.07M/18.5M [00:04&lt;00:37, 466kB/s]
+
+  6%|██▎                                   | 1.14M/18.5M [00:04&lt;00:34, 500kB/s]
+
+  7%|██▌                                   | 1.22M/18.5M [00:04&lt;00:32, 540kB/s]
+
+  7%|██▋                                   | 1.30M/18.5M [00:05&lt;00:30, 569kB/s]
+
+  8%|██▊                                   | 1.39M/18.5M [00:05&lt;00:28, 608kB/s]
+
+  8%|███                                   | 1.49M/18.5M [00:05&lt;00:26, 655kB/s]
+
+  9%|███▏                                  | 1.58M/18.5M [00:05&lt;00:24, 685kB/s]
+
+  9%|███▍                                  | 1.70M/18.5M [00:05&lt;00:22, 749kB/s]
+
+ 10%|███▋                                  | 1.81M/18.5M [00:05&lt;00:21, 790kB/s]
+
+ 10%|███▉                                  | 1.93M/18.5M [00:05&lt;00:19, 839kB/s]
+
+ 11%|████▏                                 | 2.06M/18.5M [00:05&lt;00:18, 893kB/s]
+
+ 12%|████▍                                 | 2.19M/18.5M [00:06&lt;00:17, 951kB/s]
+
+ 13%|████▋                                | 2.34M/18.5M [00:06&lt;00:16, 1.01MB/s]
+
+ 13%|████▉                                | 2.49M/18.5M [00:06&lt;00:15, 1.07MB/s]
+
+ 14%|█████▎                               | 2.65M/18.5M [00:06&lt;00:14, 1.13MB/s]
+
+ 15%|█████▌                               | 2.82M/18.5M [00:06&lt;00:13, 1.21MB/s]
+
+ 16%|█████▉                               | 3.00M/18.5M [00:06&lt;00:12, 1.27MB/s]
+
+ 17%|██████▍                              | 3.19M/18.5M [00:06&lt;00:11, 1.35MB/s]
+
+ 18%|██████▊                              | 3.39M/18.5M [00:06&lt;00:10, 1.42MB/s]
+
+ 19%|███████▏                             | 3.60M/18.5M [00:07&lt;00:09, 1.50MB/s]
+
+ 21%|███████▋                             | 3.82M/18.5M [00:07&lt;00:09, 1.58MB/s]
+
+ 22%|████████                             | 4.06M/18.5M [00:07&lt;00:08, 1.66MB/s]
+
+ 23%|████████▌                            | 4.30M/18.5M [00:07&lt;00:08, 1.75MB/s]
+
+ 25%|█████████                            | 4.55M/18.5M [00:07&lt;00:07, 1.83MB/s]
+
+ 26%|█████████▋                           | 4.82M/18.5M [00:07&lt;00:07, 1.93MB/s]
+
+ 28%|██████████▏                          | 5.11M/18.5M [00:07&lt;00:06, 2.03MB/s]
+
+ 29%|██████████▊                          | 5.41M/18.5M [00:07&lt;00:06, 2.13MB/s]
+
+ 31%|███████████▍                         | 5.72M/18.5M [00:08&lt;00:05, 2.24MB/s]
+
+ 33%|████████████                         | 6.05M/18.5M [00:08&lt;00:05, 2.36MB/s]
+
+ 35%|████████████▊                        | 6.39M/18.5M [00:08&lt;00:04, 2.46MB/s]
+
+ 36%|█████████████▍                       | 6.75M/18.5M [00:08&lt;00:04, 2.59MB/s]
+
+ 39%|██████████████▎                      | 7.14M/18.5M [00:08&lt;00:04, 2.72MB/s]
+
+ 41%|███████████████                      | 7.54M/18.5M [00:08&lt;00:03, 2.86MB/s]
+
+ 43%|███████████████▉                     | 7.96M/18.5M [00:08&lt;00:03, 3.01MB/s]
+
+ 45%|████████████████▊                    | 8.40M/18.5M [00:08&lt;00:03, 3.16MB/s]
+
+ 48%|█████████████████▋                   | 8.86M/18.5M [00:09&lt;00:02, 3.30MB/s]
+
+ 50%|██████████████████▋                  | 9.34M/18.5M [00:09&lt;00:02, 3.47MB/s]
+
+ 53%|███████████████████▋                 | 9.85M/18.5M [00:09&lt;00:02, 3.64MB/s]
+
+ 56%|████████████████████▋                | 10.4M/18.5M [00:09&lt;00:02, 3.82MB/s]
+
+ 59%|█████████████████████▊               | 10.9M/18.5M [00:09&lt;00:01, 4.02MB/s]
+
+ 62%|███████████████████████              | 11.5M/18.5M [00:09&lt;00:01, 4.22MB/s]
+
+ 66%|████████████████████████▎            | 12.2M/18.5M [00:09&lt;00:01, 4.43MB/s]
+
+ 69%|█████████████████████████▌           | 12.8M/18.5M [00:09&lt;00:01, 4.65MB/s]
+
+ 73%|██████████████████████████▉          | 13.5M/18.5M [00:10&lt;00:01, 4.88MB/s]
+
+ 77%|████████████████████████████▎        | 14.2M/18.5M [00:10&lt;00:00, 5.13MB/s]
+
+ 81%|█████████████████████████████▊       | 14.9M/18.5M [00:10&lt;00:00, 5.37MB/s]
+
+ 85%|███████████████████████████████▍     | 15.7M/18.5M [00:10&lt;00:00, 5.66MB/s]
+
+ 89%|█████████████████████████████████    | 16.6M/18.5M [00:10&lt;00:00, 5.93MB/s]
+
+ 94%|██████████████████████████████████▊  | 17.4M/18.5M [00:10&lt;00:00, 6.23MB/s]
+
+ 99%|████████████████████████████████████▋| 18.3M/18.5M [00:10&lt;00:00, 6.54MB/s]
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 32.5GB/s]
+100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 47.6GB/s]
 
-009-2014-WithinSession:  50%|#####     | 1/2 [00:09&lt;00:09,  9.40s/it]
-
-  0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
-
-  0%|                                      | 32.8k/18.5M [00:00&lt;01:44, 176kB/s]
-
-  1%|▏                                     | 96.3k/18.5M [00:00&lt;00:49, 374kB/s]
-
-  1%|▍                                      | 209k/18.5M [00:00&lt;00:27, 659kB/s]
-
-  2%|▉                                     | 432k/18.5M [00:00&lt;00:14, 1.21MB/s]
-
-  5%|█▊                                    | 889k/18.5M [00:00&lt;00:07, 2.32MB/s]
-
- 10%|███▌                                 | 1.80M/18.5M [00:00&lt;00:03, 4.50MB/s]
-
- 20%|███████▏                             | 3.62M/18.5M [00:00&lt;00:01, 8.79MB/s]
-
- 36%|█████████████▍                       | 6.74M/18.5M [00:00&lt;00:00, 15.7MB/s]
-
- 52%|███████████████████▎                 | 9.65M/18.5M [00:00&lt;00:00, 19.7MB/s]
-
- 67%|████████████████████████▉            | 12.5M/18.5M [00:01&lt;00:00, 22.3MB/s]
-
- 82%|██████████████████████████████▌      | 15.3M/18.5M [00:01&lt;00:00, 23.9MB/s]
-
- 98%|████████████████████████████████████▏| 18.1M/18.5M [00:01&lt;00:00, 25.1MB/s]
+009-2014-WithinSession:  50%|#####     | 1/2 [00:21&lt;00:21, 21.52s/it]
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 34.4GB/s]
 
-009-2014-WithinSession: 100%|##########| 2/2 [00:18&lt;00:00,  9.16s/it]
-009-2014-WithinSession: 100%|##########| 2/2 [00:18&lt;00:00,  9.20s/it]
+  0%|                                     | 8.19k/18.5M [00:00&lt;04:37, 66.7kB/s]
+
+  0%|                                      | 24.6k/18.5M [00:00&lt;03:00, 103kB/s]
+
+  0%|                                     | 34.8k/18.5M [00:00&lt;03:16, 94.3kB/s]
+
+  0%|                                     | 45.1k/18.5M [00:00&lt;03:27, 89.3kB/s]
+
+  0%|                                     | 56.3k/18.5M [00:00&lt;03:26, 89.4kB/s]
+
+  0%|▏                                    | 72.7k/18.5M [00:00&lt;03:21, 91.5kB/s]
+
+  0%|▏                                     | 88.1k/18.5M [00:00&lt;03:03, 101kB/s]
+
+  1%|▏                                      | 104k/18.5M [00:01&lt;02:47, 110kB/s]
+
+  1%|▎                                      | 121k/18.5M [00:01&lt;02:38, 116kB/s]
+
+  1%|▎                                      | 136k/18.5M [00:01&lt;02:35, 118kB/s]
+
+  1%|▎                                      | 153k/18.5M [00:01&lt;02:31, 122kB/s]
+
+  1%|▎                                      | 176k/18.5M [00:01&lt;02:09, 141kB/s]
+
+  1%|▍                                      | 193k/18.5M [00:01&lt;02:12, 138kB/s]
+
+  1%|▍                                      | 216k/18.5M [00:01&lt;01:59, 153kB/s]
+
+  1%|▍                                      | 232k/18.5M [00:01&lt;02:05, 146kB/s]
+
+  1%|▌                                      | 256k/18.5M [00:02&lt;01:55, 159kB/s]
+
+  2%|▌                                      | 281k/18.5M [00:02&lt;01:47, 170kB/s]
+
+  2%|▋                                      | 304k/18.5M [00:02&lt;01:44, 175kB/s]
+
+  2%|▋                                      | 329k/18.5M [00:02&lt;01:40, 181kB/s]
+
+  2%|▊                                      | 360k/18.5M [00:02&lt;01:29, 203kB/s]
+
+  2%|▊                                      | 384k/18.5M [00:02&lt;01:31, 198kB/s]
+
+  2%|▉                                      | 417k/18.5M [00:02&lt;01:23, 217kB/s]
+
+  2%|▉                                      | 440k/18.5M [00:02&lt;01:26, 208kB/s]
+
+  3%|▉                                      | 472k/18.5M [00:03&lt;01:21, 222kB/s]
+
+  3%|█                                      | 512k/18.5M [00:03&lt;01:11, 251kB/s]
+
+  3%|█▏                                     | 545k/18.5M [00:03&lt;01:10, 254kB/s]
+
+  3%|█▏                                     | 585k/18.5M [00:03&lt;01:05, 273kB/s]
+
+  3%|█▎                                     | 625k/18.5M [00:03&lt;01:02, 287kB/s]
+
+  4%|█▍                                     | 665k/18.5M [00:03&lt;01:00, 296kB/s]
+
+  4%|█▍                                     | 705k/18.5M [00:03&lt;00:58, 303kB/s]
+
+  4%|█▌                                     | 753k/18.5M [00:03&lt;00:54, 327kB/s]
+
+  4%|█▋                                     | 801k/18.5M [00:04&lt;00:51, 344kB/s]
+
+  5%|█▊                                     | 849k/18.5M [00:04&lt;00:49, 356kB/s]
+
+  5%|█▉                                     | 904k/18.5M [00:04&lt;00:46, 381kB/s]
+
+  5%|██                                     | 969k/18.5M [00:04&lt;00:41, 421kB/s]
+
+  6%|██                                    | 1.02M/18.5M [00:04&lt;00:40, 427kB/s]
+
+  6%|██▏                                   | 1.10M/18.5M [00:04&lt;00:36, 473kB/s]
+
+  6%|██▍                                   | 1.17M/18.5M [00:04&lt;00:34, 502kB/s]
+
+  7%|██▌                                   | 1.24M/18.5M [00:04&lt;00:33, 523kB/s]
+
+  7%|██▋                                   | 1.33M/18.5M [00:05&lt;00:29, 577kB/s]
+
+  8%|██▉                                   | 1.42M/18.5M [00:05&lt;00:27, 615kB/s]
+
+  8%|███                                   | 1.51M/18.5M [00:05&lt;00:25, 661kB/s]
+
+  9%|███▎                                  | 1.61M/18.5M [00:05&lt;00:24, 692kB/s]
+
+  9%|███▌                                  | 1.71M/18.5M [00:05&lt;00:22, 732kB/s]
+
+ 10%|███▊                                  | 1.83M/18.5M [00:05&lt;00:20, 799kB/s]
+
+ 11%|████                                  | 1.95M/18.5M [00:05&lt;00:19, 848kB/s]
+
+ 11%|████▎                                 | 2.08M/18.5M [00:05&lt;00:18, 899kB/s]
+
+ 12%|████▌                                 | 2.22M/18.5M [00:06&lt;00:17, 952kB/s]
+
+ 13%|████▊                                 | 2.35M/18.5M [00:06&lt;00:16, 989kB/s]
+
+ 14%|█████                                | 2.50M/18.5M [00:06&lt;00:15, 1.06MB/s]
+
+ 14%|█████▎                               | 2.66M/18.5M [00:06&lt;00:14, 1.12MB/s]
+
+ 15%|█████▋                               | 2.84M/18.5M [00:06&lt;00:13, 1.20MB/s]
+
+ 16%|██████                               | 3.02M/18.5M [00:06&lt;00:12, 1.26MB/s]
+
+ 17%|██████▍                              | 3.21M/18.5M [00:06&lt;00:11, 1.34MB/s]
+
+ 18%|██████▊                              | 3.40M/18.5M [00:06&lt;00:10, 1.40MB/s]
+
+ 19%|███████▏                             | 3.61M/18.5M [00:07&lt;00:10, 1.48MB/s]
+
+ 21%|███████▋                             | 3.83M/18.5M [00:07&lt;00:09, 1.57MB/s]
+
+ 22%|████████                             | 4.06M/18.5M [00:07&lt;00:08, 1.65MB/s]
+
+ 23%|████████▌                            | 4.30M/18.5M [00:07&lt;00:08, 1.73MB/s]
+
+ 25%|█████████                            | 4.56M/18.5M [00:07&lt;00:07, 1.82MB/s]
+
+ 26%|█████████▋                           | 4.83M/18.5M [00:07&lt;00:07, 1.92MB/s]
+
+ 28%|██████████▏                          | 5.11M/18.5M [00:07&lt;00:06, 2.02MB/s]
+
+ 29%|██████████▊                          | 5.41M/18.5M [00:07&lt;00:06, 2.12MB/s]
+
+ 31%|███████████▍                         | 5.73M/18.5M [00:08&lt;00:05, 2.24MB/s]
+
+ 33%|████████████                         | 6.06M/18.5M [00:08&lt;00:05, 2.35MB/s]
+
+ 35%|████████████▊                        | 6.39M/18.5M [00:08&lt;00:04, 2.45MB/s]
+
+ 36%|█████████████▌                       | 6.76M/18.5M [00:08&lt;00:04, 2.59MB/s]
+
+ 39%|██████████████▎                      | 7.14M/18.5M [00:08&lt;00:04, 2.71MB/s]
+
+ 41%|███████████████                      | 7.54M/18.5M [00:08&lt;00:03, 2.86MB/s]
+
+ 43%|███████████████▉                     | 7.95M/18.5M [00:08&lt;00:03, 3.00MB/s]
+
+ 45%|████████████████▊                    | 8.39M/18.5M [00:08&lt;00:03, 3.15MB/s]
+
+ 48%|█████████████████▋                   | 8.85M/18.5M [00:09&lt;00:02, 3.30MB/s]
+
+ 50%|██████████████████▋                  | 9.34M/18.5M [00:09&lt;00:02, 3.47MB/s]
+
+ 53%|███████████████████▋                 | 9.84M/18.5M [00:09&lt;00:02, 3.63MB/s]
+
+ 56%|████████████████████▋                | 10.4M/18.5M [00:09&lt;00:02, 3.82MB/s]
+
+ 59%|█████████████████████▊               | 10.9M/18.5M [00:09&lt;00:01, 4.01MB/s]
+
+ 62%|███████████████████████              | 11.5M/18.5M [00:09&lt;00:01, 4.20MB/s]
+
+ 66%|████████████████████████▎            | 12.1M/18.5M [00:09&lt;00:01, 4.44MB/s]
+
+ 69%|█████████████████████████▌           | 12.8M/18.5M [00:09&lt;00:01, 4.64MB/s]
+
+ 73%|██████████████████████████▉          | 13.5M/18.5M [00:10&lt;00:01, 4.87MB/s]
+
+ 77%|████████████████████████████▎        | 14.2M/18.5M [00:10&lt;00:00, 5.13MB/s]
+
+ 81%|█████████████████████████████▊       | 14.9M/18.5M [00:10&lt;00:00, 5.39MB/s]
+
+ 85%|███████████████████████████████▍     | 15.7M/18.5M [00:10&lt;00:00, 5.65MB/s]
+
+ 89%|█████████████████████████████████    | 16.6M/18.5M [00:10&lt;00:00, 5.94MB/s]
+
+ 94%|██████████████████████████████████▊  | 17.4M/18.5M [00:10&lt;00:00, 6.22MB/s]
+
+ 99%|████████████████████████████████████▌| 18.3M/18.5M [00:10&lt;00:00, 6.53MB/s]
+
+  0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 31.3GB/s]
+
+009-2014-WithinSession: 100%|##########| 2/2 [00:41&lt;00:00, 20.80s/it]
+009-2014-WithinSession: 100%|##########| 2/2 [00:41&lt;00:00, 20.91s/it]
 </pre></div>
 </div>
 </section>
 <section id="plot-results">
 <h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this heading">¶</a></h2>
 <p>Here we plot the results to compare the two pipelines</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 
 <span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
     <span class="n">y</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span>
     <span class="n">x</span><span class="o">=</span><span class="s2">&quot;pipeline&quot;</span><span class="p">,</span>
-    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+    <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span>
     <span class="n">jitter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
     <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">pointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;pipeline&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">pointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;pipeline&quot;</span><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="o">=</span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">)</span>
 
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;ROC AUC&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylim.html#matplotlib.axes.Axes.set_ylim" title="matplotlib.axes.Axes.set_ylim" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span></a><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -349,7 +645,7 @@ be overwritten if necessary.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_within_session_p300_001.png" srcset="../_images/sphx_glr_plot_within_session_p300_001.png" alt="plot within session p300" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  18.569 seconds)</p>
+<img src="../_images/sphx_glr_plot_within_session_p300_001.png" srcset="../_images/sphx_glr_plot_within_session_p300_001.png" alt="plot within session p300" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  41.989 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-within-session-p300-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/39844aaaee383c2803c6ac93e64037d5/plot_within_session_p300.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_within_session_p300.py</span></code></a></p>
@@ -382,7 +678,7 @@ be overwritten if necessary.</p>
     </p>
     <p>
         &copy; Copyright 2018-2023 MOABB contributors.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.0.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
     </p>
   </div>
 </footer>

@@ -144,15 +144,13 @@ be overwritten if necessary.
 
  .. code-block:: none
 
-    /home/runner/work/moabb/moabb/moabb/analysis/results.py:80: RuntimeWarning: Setting non-standard config type: "MOABB_RESULTS"
-      set_config("MOABB_RESULTS", osp.join(osp.expanduser("~"), "mne_data"))
-    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession:  50%|#####     | 1/2 [00:04<00:04,  4.13s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:08<00:00,  4.19s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:08<00:00,  4.18s/it]
+    001-2014-CrossSession:   0%|          | 0/2 [00:00<?, ?it/s]    001-2014-CrossSession:  50%|#####     | 1/2 [00:04<00:04,  4.30s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:08<00:00,  4.20s/it]    001-2014-CrossSession: 100%|##########| 2/2 [00:08<00:00,  4.22s/it]
           score      time  samples subject  ... channels  n_sessions   dataset pipeline
-    0  0.962963  0.225047    144.0       1  ...       22           2  001-2014    RG+LR
-    1  0.950424  0.202444    144.0       1  ...       22           2  001-2014    RG+LR
-    2  0.585648  0.209331    144.0       2  ...       22           2  001-2014    RG+LR
-    3  0.574846  0.202798    144.0       2  ...       22           2  001-2014    RG+LR
-    4  0.955440  0.207526    144.0       1  ...       22           2  001-2014  CSP+LDA
+    0  0.962963  0.209680    144.0       1  ...       22           2  001-2014    RG+LR
+    1  0.950424  0.208307    144.0       1  ...       22           2  001-2014    RG+LR
+    2  0.585648  0.252669    144.0       2  ...       22           2  001-2014    RG+LR
+    3  0.574846  0.208072    144.0       2  ...       22           2  001-2014    RG+LR
+    4  0.955440  0.341733    144.0       1  ...       22           2  001-2014  CSP+LDA
 
     [5 rows x 9 columns]
 
@@ -224,7 +222,7 @@ points are in its quadrant.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.548 seconds)
+   **Total running time of the script:** ( 0 minutes  8.635 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_cross_session_motor_imagery.py:
