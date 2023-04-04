@@ -10,11 +10,11 @@ dataset to keep the computation time low, but this benchmark is designed
 to easily scale to many datasets.
 """
 # Authors: Igor Carrara <igor.carrara@inria.fr>
+#          Bruno Aristimunha <b.aristimunha@gmail.com>
 #
 # License: BSD (3-clause)
 
-import matplotlib.pyplot as plt
-
+###############################################################################
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import codecarbon_plot
 from moabb.datasets import BNCI2014001, Zhou2016
@@ -103,7 +103,13 @@ order_list = [
 # the plot.
 
 codecarbon_plot(results, order_list, country="(France)")
-plt.show()
 
-# .. image:: ../docs/source/images/example_codecarbon.png
+###############################################################################
+# The result expected will be the following image, but varying depending on the machine
+# and the country used to run the example.
+#
+# .. image:: ../images/example_codecarbon.png
+#    :align: center
+#    :alt: carbon_example
+#
 ###############################################################################
