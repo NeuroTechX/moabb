@@ -92,5 +92,5 @@ order_list = ["CSP + SVM",
               "CSP + LDA Grid",
               "Keras_EEGNet_8_2"]
 
-codecarbon_plot(results, order_list)
+codecarbon_plot(results, order_list, country="(France)")
 plt.show()
