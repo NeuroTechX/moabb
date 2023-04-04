@@ -168,7 +168,7 @@ def benchmark(  # noqa: C901
                     datasets=d,
                     random_state=42,
                     hdf5_path=results,
-                    n_jobs=n_jobs,
+                    n_jobs=1,
                     overwrite=overwrite,
                     return_epochs=True,
                 )
