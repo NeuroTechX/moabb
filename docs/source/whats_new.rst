@@ -29,6 +29,7 @@ Enhancements
 - Add Google Analytics to the documentation (:gh:`335` by `Bruno Aristimunha`_)
 - Add suport to Braindecode classifier (:gh:`328` by `Bruno Aristimunha`_)
 - Add CodeCarbon to track emission CO₂ (:gh:`350` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
+- Add CodeCarbon example (:gh:`356` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 
 Bugs
 ~~~~

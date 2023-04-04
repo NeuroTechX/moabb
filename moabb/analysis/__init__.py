@@ -8,6 +8,7 @@ from moabb.analysis.meta_analysis import (  # noqa: E501
     compute_dataset_statistics,
     find_significant_differences,
 )
+from moabb.analysis.plotting import codecarbon_plot  # noqa: F401
 from moabb.analysis.results import Results  # noqa: F401
 
 
