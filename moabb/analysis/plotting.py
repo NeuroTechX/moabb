@@ -77,12 +77,18 @@ def score_plot(data, pipelines=None):
 
 
 def codecarbon_plot(data, order_list=None, pipelines=None, country=""):
-    """Plot scores for all pipelines and all datasets
+    """Plot code carbon consume for the results from the benchmark
 
     Parameters
     ----------
     data: output of Results.to_dataframe()
         results on datasets
+    order_list: list of str | None
+        order of pipelines to include in this plot
+    pipelines: list of str | None
+        pipelines to include in this plot
+    country: str
+        country to include in the title
     pipelines: list of str | None
         pipelines to include in this plot
 
@@ -90,8 +96,6 @@ def codecarbon_plot(data, order_list=None, pipelines=None, country=""):
     -------
     fig: Figure
         Pyplot handle
-    color_dict: dict
-        Dictionary with the facecolor
     """
     data = collapse_session_scores(data)
     unique_ids = data["dataset"].apply(_simplify_names)
@@ -102,8 +106,7 @@ def codecarbon_plot(data, order_list=None, pipelines=None, country=""):
 
     if pipelines is not None:
         data = data[data.pipeline.isin(pipelines)]
-    # fig = plt.figure(figsize=(24, 18))
-    # ax = fig.add_subplot(111)
+
     data = data.rename(columns={"carbon emission": "carbon_emission"})
 
     fig = sea.catplot(
@@ -120,10 +123,8 @@ def codecarbon_plot(data, order_list=None, pipelines=None, country=""):
     fig.tight_layout()
     fig.set_ylabels(r"$CO_2$ emission (Log Scale)")
     fig.set_xlabels("Dataset")
-    # ax.set_title("CO2 emission per dataset and algorithm")
-    # handles, labels = ax.get_legend_handles_labels()
-    # color_dict = {lb: h.get_facecolor()[0] for lb, h in zip(labels, handles)}
-    return fig  # , color_dict
+
+    return fig
 
 
 def paired_plot(data, alg1, alg2):
