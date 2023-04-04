@@ -76,7 +76,7 @@ def score_plot(data, pipelines=None):
     return fig, color_dict
 
 
-def codecarbon_plot(data, pipelines=None):
+def codecarbon_plot(data, order_list=None, pipelines=None):
     """Plot scores for all pipelines and all datasets
 
     Parameters
@@ -114,8 +114,10 @@ def codecarbon_plot(data, pipelines=None):
         hue="pipeline",
         palette=PIPELINE_PALETTE,
         height = 8.5,
-        aspect = 11
+        hue_order=order_list
     ).set(title="CO2 emission per dataset and algorithm")
+    fig.set(yscale="log")
+    fig.tight_layout()
     # ax.set_title("CO2 emission per dataset and algorithm")
     # handles, labels = ax.get_legend_handles_labels()
     # color_dict = {lb: h.get_facecolor()[0] for lb, h in zip(labels, handles)}

@@ -86,5 +86,11 @@ results = benchmark(
 # are saved in the ``benchmark`` folder.
 results.head()
 
-codecarbon_plot(results)
+order_list = ["CSP + SVM",
+              "Tangent Space LR",
+              "EN Grid",
+              "CSP + LDA Grid",
+              "Keras_EEGNet_8_2"]
+
+codecarbon_plot(results, order_list)
 plt.show()
