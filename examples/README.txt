@@ -1,4 +1,4 @@
-Simple examples
+Examples
 -----------------
 
 These examples demonstrate how to use MOABB, and its main concepts the
