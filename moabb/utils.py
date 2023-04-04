@@ -102,11 +102,11 @@ def setup_seed(seed: int) -> None:
 
 
 def set_log_level(level="INFO"):
-    """Set lot level.
+    """Set log level
 
     Set the general log level.
     Use one of the levels supported by python logging, i.e.:
-        DEBUG, INFO, WARNING, ERROR, CRITICAL
+    DEBUG, INFO, WARNING, ERROR, CRITICAL
     """
     VALID_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
     level = level.upper()

@@ -2,6 +2,7 @@ from collections import Counter
 from functools import partial
 from inspect import getmembers, isclass, isroutine
 
+import mne
 from braindecode.datasets import BaseConcatDataset, create_from_X_y
 from numpy import unique
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -9,25 +10,50 @@ from skorch.callbacks import Callback
 from torch.nn import Module
 
 
+# check if the data format is numpy or mne epoch
+def _check_data_format(X):
+    """
+    Check if the data format is compatible with braindecode.
+    Expect values in the format of MNE objects.
+    Parameters
+    ----------
+    X: BaseConcatDataset
+
+    Returns
+    -------
+
+    """
+    if not isinstance(X, mne.EpochsArray):
+        raise ValueError(
+            "The data format is not supported. "
+            "Please use the option return_epochs=True"
+            "inside the Evaluations module."
+        )
+
+
 class BraindecodeDatasetLoader(BaseEstimator, TransformerMixin):
     """
     Class to Load the data from MOABB in a format compatible with braindecode
     """
 
-    def __init__(self, kw_args=None):
+    def __init__(self, drop_last_window=False, kw_args=None):
+        self.drop_last_window = drop_last_window
         self.kw_args = kw_args
 
     def fit(self, X, y=None):
+        _check_data_format(X)
         self.y = y
         return self
 
     def transform(self, X, y=None):
+        _check_data_format(X)
         dataset = create_from_X_y(
-            X.get_data(),
+            X=X.get_data(),
             y=self.y,
             window_size_samples=X.get_data().shape[2],
             window_stride_samples=X.get_data().shape[2],
-            drop_last_window=False,
+            drop_last_window=self.drop_last_window,
+            ch_names=X.info["ch_names"],
             sfreq=X.info["sfreq"],
         )
 
