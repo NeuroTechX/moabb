@@ -35,6 +35,7 @@ class FakeDataset(BaseDataset):
         n_sessions=2,
         n_runs=2,
         n_subjects=10,
+        code="FakeDataset",
         paradigm="imagery",
         channels=("C3", "Cz", "C4"),
     ):
@@ -42,16 +43,15 @@ class FakeDataset(BaseDataset):
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         self.channels = channels
         super().__init__(
-            list(range(1, n_subjects + 1)),
-            n_sessions,
-            event_id,
-            "FakeDataset",
-            [0, 3],
-            paradigm,
+            subjects=list(range(1, n_subjects + 1)),
+            sessions_per_subject=n_sessions,
+            events=event_id,
+            code=code,
+            interval=[0, 3],
+            paradigm=paradigm,
         )
 
     def _get_single_subject_data(self, subject):
-
         data = dict()
         for session in range(self.n_sessions):
             data[f"session_{session}"] = {

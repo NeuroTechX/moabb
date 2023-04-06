@@ -14,6 +14,15 @@ SSVEPEXO_URL = "https://zenodo.org/record/2392979/files/"
 class SSVEPExo(BaseDataset):
     """SSVEP Exo dataset
 
+    .. admonition:: Dataset summary
+
+
+        ========  =======  =======  ==========  =================  ===============  ===============  ===========
+        Name        #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
+        ========  =======  =======  ==========  =================  ===============  ===============  ===========
+        SSVEPExo       12        8           4                 16  2s               256Hz                      1
+        ========  =======  =======  ==========  =================  ===============  ===============  ===========
+
     SSVEP dataset from E. Kalunga PhD in University of Versailles [1]_.
 
     The datasets contains recording from 12 male and female subjects aged
@@ -53,7 +62,7 @@ class SSVEPExo(BaseDataset):
             subjects=list(range(1, 13)),
             sessions_per_subject=1,
             events={"13": 2, "17": 3, "21": 4, "rest": 1},
-            code="SSVEP Exoskeleton",
+            code="Exoskeleton_SSVEP",
             interval=[2, 4],
             paradigm="ssvep",
             doi="10.1016/j.neucom.2016.01.007",
@@ -72,7 +81,6 @@ class SSVEPExo(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-
         runs = {s + 1: n for s, n in enumerate([2] * 6 + [3] + [2] * 2 + [4, 2, 5])}
 
         if subject not in self.subject_list:

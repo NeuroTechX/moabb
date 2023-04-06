@@ -5,17 +5,27 @@ import unittest
 import warnings
 from collections import OrderedDict
 
+import joblib
 import numpy as np
 import sklearn.base
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
 
 from moabb.analysis.results import get_string_rep
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import evaluations as ev
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
+
+
+try:
+    from codecarbon import EmissionsTracker  # noqa
+
+    _carbonfootprint = True
+except ImportError:
+    _carbonfootprint = False
 
 
 pipelines = OrderedDict()
@@ -42,7 +52,9 @@ class Test_WithinSess(unittest.TestCase):
 
     def setUp(self):
         self.eval = ev.WithinSessionEvaluation(
-            paradigm=FakeImageryParadigm(), datasets=[dataset]
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
         )
 
     def test_mne_labels(self):
@@ -56,12 +68,80 @@ class Test_WithinSess(unittest.TestCase):
             os.remove(path)
 
     def test_eval_results(self):
-        results = [r for r in self.eval.evaluate(dataset, pipelines)]
+        results = [r for r in self.eval.evaluate(dataset, pipelines, param_grid=None)]
 
-        # We should get 4 results, 2 session 2 subject
+        # We should get 4 results, 2 sessions 2 subjects
         self.assertEqual(len(results), 4)
-        # We should have 8 columns in the results data frame
-        self.assertEqual(len(results[0].keys()), 8)
+        # We should have 9 columns in the results data frame
+        self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
+
+    def test_eval_grid_search(self):
+        gs_param = {
+            "Within": os.path.join(
+                "res_test",
+                "GridSearch_WithinSession",
+                str(dataset.code),
+                "subject1",
+                "session_0",
+                "C",
+                "Grid_Search_WithinSession.pkl",
+            ),
+            "CrossSess": os.path.join(
+                "res_test",
+                "GridSearch_CrossSession",
+                str(dataset.code),
+                "1",
+                "C",
+                "Grid_Search_CrossSession.pkl",
+            ),
+            "CrossSubj": os.path.join(
+                "res_test",
+                "GridSearch_CrossSubject",
+                str(dataset.code),
+                "C",
+                "Grid_Search_CrossSubject.pkl",
+            ),
+        }
+        if isinstance(self.eval, ev.WithinSessionEvaluation):
+            respath = gs_param["Within"]
+        elif isinstance(self.eval, ev.CrossSessionEvaluation):
+            respath = gs_param["CrossSess"]
+        elif isinstance(self.eval, ev.CrossSubjectEvaluation):
+            respath = gs_param["CrossSubj"]
+
+        # Test grid search
+        param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
+        results = [
+            r for r in self.eval.evaluate(dataset, pipelines, param_grid=param_grid)
+        ]
+
+        # We should get 4 results, 2 sessions 2 subjects
+        self.assertEqual(len(results), 4)
+        # We should have 9 columns in the results data frame
+        self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
+        # We should check for selected parameters with joblib
+        self.assertTrue(os.path.isfile(respath))
+        res = joblib.load(respath)
+        self.assertIsInstance(res, GridSearchCV)
+
+    def test_lambda_warning(self):
+        def explicit_kernel(x):
+            return x**3
+
+        c1 = DummyClassifier(kernel=lambda x: x**2)
+        c2 = DummyClassifier(kernel=lambda x: 5 * x)
+
+        c3 = DummyClassifier(kernel=explicit_kernel)
+
+        self.assertFalse(repr(c1) == repr(c2))
+        if platform.system() != "Windows":
+            with self.assertWarns(RuntimeWarning):
+                self.assertTrue(get_string_rep(c1) == get_string_rep(c2))
+
+        # I do not know an elegant way to check for no warnings
+        with warnings.catch_warnings(record=True) as w:
+            get_string_rep(c3)
+            self.assertTrue(len(w) == 0)
 
 
 class Test_WithinSessLearningCurve(unittest.TestCase):
@@ -80,7 +160,9 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
             data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
             n_perms=np.array([2, 2]),
         )
-        results = [r for r in learning_curve_eval.evaluate(dataset, pipelines)]
+        results = [
+            r for r in learning_curve_eval.evaluate(dataset, pipelines, param_grid=None)
+        ]
         keys = results[0].keys()
         self.assertEqual(len(keys), 10)  # 8 + 2 new for learning curve
         self.assertTrue("permutation" in keys)
@@ -104,7 +186,7 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
     def test_data_sanity(self):
         # need this helper to iterate over the generator
         def run_evaluation(eval, dataset, pipelines):
-            list(eval.evaluate(dataset, pipelines))
+            list(eval.evaluate(dataset, pipelines, param_grid=None))
 
         # E.g. if number of samples too high -> expect error
         kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], n_perms=[2, 2])
@@ -119,6 +201,8 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
         self.assertRaises(
             ValueError, run_evaluation, too_many_samples, dataset, pipelines
         )
+
+    def test_eval_grid_search(self):
         pass
 
     def test_datasize_parameters(self):
@@ -160,7 +244,9 @@ class Test_AdditionalColumns(unittest.TestCase):
 class Test_CrossSubj(Test_WithinSess):
     def setUp(self):
         self.eval = ev.CrossSubjectEvaluation(
-            paradigm=FakeImageryParadigm(), datasets=[dataset]
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
         )
 
     def test_compatible_dataset(self):
@@ -176,7 +262,9 @@ class Test_CrossSubj(Test_WithinSess):
 class Test_CrossSess(Test_WithinSess):
     def setUp(self):
         self.eval = ev.CrossSessionEvaluation(
-            paradigm=FakeImageryParadigm(), datasets=[dataset]
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            hdf5_path="res_test",
         )
 
     def test_compatible_dataset(self):
@@ -186,32 +274,6 @@ class Test_CrossSess(Test_WithinSess):
         # do not raise
         ds = FakeDataset(["left_hand", "right_hand"], n_sessions=2)
         self.assertTrue(self.eval.is_valid(dataset=ds))
-
-
-class Test_LambdaWarning(Test_WithinSess):
-    def setUp(self):
-        self.eval = ev.WithinSessionEvaluation(
-            paradigm=FakeImageryParadigm(), datasets=[dataset]
-        )
-
-    def test_lambda_warning(self):
-        def explicit_kernel(x):
-            return x**3
-
-        c1 = DummyClassifier(kernel=lambda x: x**2)
-        c2 = DummyClassifier(kernel=lambda x: 5 * x)
-
-        c3 = DummyClassifier(kernel=explicit_kernel)
-
-        self.assertFalse(repr(c1) == repr(c2))
-        if platform.system() != "Windows":
-            with self.assertWarns(RuntimeWarning):
-                self.assertTrue(get_string_rep(c1) == get_string_rep(c2))
-
-        # I do not know an elegant way to check for no warnings
-        with warnings.catch_warnings(record=True) as w:
-            get_string_rep(c3)
-            self.assertTrue(len(w) == 0)
 
 
 if __name__ == "__main__":

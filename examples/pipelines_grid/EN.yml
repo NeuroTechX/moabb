@@ -1,10 +1,9 @@
-name: Tangent Space SVM
-
+name: EN
 paradigms:
   - LeftRightImagery
 
 citations:
-  - https://doi.org/10.1016/j.neucom.2012.12.039
+  - https://doi.org/10.1109/TBME.2022.3154885
 
 pipeline:
   - name: Covariances
@@ -17,7 +16,11 @@ pipeline:
     parameters:
       metric: "riemann"
 
-  - name: SVC
-    from: sklearn.svm
+  - name: LogisticRegression
+    from: sklearn.linear_model
     parameters:
-      kernel: "linear"
+      penalty: "elasticnet"
+      l1_ratio: 0.15
+      intercept_scaling: 1000.0
+      solver: "saga"
+      max_iter: 1000

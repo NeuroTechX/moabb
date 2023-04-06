@@ -13,6 +13,14 @@ from mne.datasets.utils import _get_path
 from sklearn.base import BaseEstimator
 
 
+try:
+    from codecarbon import EmissionsTracker  # noqa
+
+    _carbonfootprint = True
+except ImportError:
+    _carbonfootprint = False
+
+
 def get_string_rep(obj):
     if issubclass(type(obj), BaseEstimator):
         str_repr = repr(obj.get_params())
@@ -26,6 +34,7 @@ def get_string_rep(obj):
             " issues you can use named functions defined using the def"
             " keyword instead.",
             RuntimeWarning,
+            stacklevel=2,
         )
     str_no_addresses = re.sub("0x[a-z0-9]*", "0x__", str_repr)
     return str_no_addresses.replace("\n", "").encode("utf8")
@@ -102,7 +111,7 @@ class Results:
                     "{:%Y-%m-%d, %H:%M}".format(datetime.now())
                 )
 
-    def add(self, results, pipelines):
+    def add(self, results, pipelines):  # noqa: C901
         """add results"""
 
         def to_list(res):
@@ -115,6 +124,13 @@ class Results:
                 )
             else:
                 return res
+
+        col_names = ["score", "time", "samples"]
+        if _carbonfootprint:
+            n_cols = 4
+            col_names.append("carbon_emission")
+        else:
+            n_cols = 3
 
         with h5py.File(self.filepath, "r+") as f:
             for name, data_dict in results.items():
@@ -139,12 +155,14 @@ class Results:
                     dt = h5py.special_dtype(vlen=str)
                     dset.create_dataset("id", (0, 2), dtype=dt, maxshape=(None, 2))
                     dset.create_dataset(
-                        "data", (0, 3 + n_add_cols), maxshape=(None, 3 + n_add_cols)
+                        "data",
+                        (0, n_cols + n_add_cols),
+                        maxshape=(None, n_cols + n_add_cols),
                     )
                     dset.attrs["channels"] = d1["n_channels"]
                     dset.attrs.create(
                         "columns",
-                        ["score", "time", "samples", *self.additional_columns],
+                        col_names + self.additional_columns,
                         dtype=dt,
                     )
                 dset = ppline_grp[dname]
@@ -162,8 +180,17 @@ class Results:
                             f"were specified in the evaluation, but results"
                             f" contain only these keys: {d.keys()}."
                         ) from None
+                    cols = [d["score"], d["time"], d["n_samples"]]
+                    if _carbonfootprint:
+                        if isinstance(d["carbon_emission"], tuple):
+                            cols.append(*d["carbon_emission"])
+                        else:
+                            cols.append(d["carbon_emission"])
                     dset["data"][-1, :] = np.asarray(
-                        [d["score"], d["time"], d["n_samples"], *add_cols]
+                        [
+                            *cols,
+                            *add_cols,
+                        ]
                     )
 
     def to_dataframe(self, pipelines=None):
@@ -176,7 +203,6 @@ class Results:
 
         with h5py.File(self.filepath, "r") as f:
             for digest, p_group in f.items():
-
                 # skip if not in pipeline list
                 if (pipelines is not None) & (digest not in digests):
                     continue

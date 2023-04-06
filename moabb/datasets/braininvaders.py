@@ -384,8 +384,6 @@ class bi2012(BaseDataset):
     Dataset following the setup from [1]_ carried-out at University of
     Grenoble Alpes.
 
-    **Dataset Description**
-
     This dataset contains electroencephalographic (EEG) recordings of 25 subjects testing
     the Brain Invaders, a visual P300 Brain-Computer Interface inspired by the famous vintage
     video game Space Invaders (Taito, Tokyo, Japan). The visual P300 is an event-related
@@ -393,18 +391,18 @@ class bi2012(BaseDataset):
     data were recorded by 16 electrodes in an experiment that took place in the GIPSA-lab,
     Grenoble, France, in 2012). A full description of the experiment is available in [1]_.
 
-    **Authors**
+    :Principal Investigator: B.Sc. Gijsbrecht Franciscus Petrus Van Veen
 
-    Principal Investigator: B.Sc. Gijsbrecht Franciscus Petrus Van Veen
-    Technical Supervisors: Ph.D. Alexandre Barachant, Eng. Anton Andreev, Eng. Grégoire Cattan,
-                           Eng. Pedro. L. C. Rodrigues
-    Scientific Supervisor: Ph.D. Marco Congedo
+    :Technical Supervisors: Ph.D. Alexandre Barachant, Eng. Anton Andreev, Eng. Grégoire Cattan,
+                            Eng. Pedro. L. C. Rodrigues
 
-    **ID of the dataset**
-    BI.EEG.2012-GIPSA
+    :Scientific Supervisor: Ph.D. Marco Congedo
+
+    :ID of the dataset: BI.EEG.2012-GIPSA
 
     Notes
     -----
+
     .. versionadded:: 0.4.6
 
     References
@@ -442,10 +440,17 @@ class bi2012(BaseDataset):
 class bi2013a(BaseDataset):
     """P300 dataset bi2013a from a "Brain Invaders" experiment
 
+    .. admonition:: Dataset summary
+
+
+        =======  =======  =======  =================  ===============  ===============  =================
+        Name       #Subj    #Chan  #Trials / class    Trials length    Sampling rate    #Sessions
+        =======  =======  =======  =================  ===============  ===============  =================
+        bi2013a       24       16  3200 NT / 640 T    1s               512Hz            (1-7)8 s|(8-24)1s
+        =======  =======  =======  =================  ===============  ===============  =================
+
     Dataset following the setup from [1]_ carried-out at University of
     Grenoble Alpes.
-
-    **Dataset Description**
 
     This dataset concerns an experiment carried out at GIPSA-lab
     (University of Grenoble Alpes, CNRS, Grenoble-INP) in 2013.
@@ -486,11 +491,9 @@ class bi2013a(BaseDataset):
     * Reference: left ear-lobe.
     * Ground: N/A.
 
-    **Authors**
-
-    Principal Investigators: Erwan Vaineau, Dr. Alexandre Barachant
-    Scientific Supervisor :  Dr. Marco Congedo
-    Technical Supervisor : Anton Andreev
+    :Principal Investigators: Erwan Vaineau, Dr. Alexandre Barachant
+    :Scientific Supervisor:  Dr. Marco Congedo
+    :Technical Supervisor: Anton Andreev
 
     References
     ----------
@@ -499,10 +502,12 @@ class bi2013a(BaseDataset):
            Cattan, G. & Congedo, M. (2019). Brain invaders adaptive
            versus non-adaptive P300 brain-computer interface dataset.
            arXiv preprint arXiv:1904.09111.
+
     .. [2] Barachant A, Congedo M (2014) A Plug & Play P300 BCI using
            Information Geometry.
            arXiv:1409.0107.
-    .. [7] Congedo M, Goyat M, Tarrin N, Ionescu G, Rivet B,Varnet L, Rivet B,
+
+    .. [3] Congedo M, Goyat M, Tarrin N, Ionescu G, Rivet B,Varnet L, Rivet B,
            Phlypo R, Jrad N, Acquadro M, Jutten C (2011) “Brain Invaders”: a
            prototype of an open-source P300-based video game working with the
            OpenViBE platform. Proc. IBCI Conf., Graz, Austria, 280-283.
@@ -537,8 +542,6 @@ class bi2013a(BaseDataset):
 class bi2014a(BaseDataset):
     """P300 dataset bi2014a from a "Brain Invaders" experiment
 
-    **Dataset Description**
-
     This dataset contains electroencephalographic (EEG) recordings of 71 subjects
     playing to a visual P300 Brain-Computer Interface (BCI) videogame named Brain Invaders.
     The interface uses the oddball paradigm on a grid of 36 symbols (1 Target, 35 Non-Target)
@@ -547,15 +550,14 @@ class bi2014a(BaseDataset):
     at GIPSA-lab, Grenoble, France, in 2014. A full description of the experiment is available
     at [1]_. The ID of this dataset is bi2014a.
 
-    **Authors**
-
-    Investigators: Eng. Louis Korczowski, B. Sc. Ekaterina Ostaschenko
-    Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
-                       M. Sc. Violette Gautheret
-    Scientific Supervisor: Ph.D. Marco Congedo
+    :Investigators: Eng. Louis Korczowski, B. Sc. Ekaterina Ostaschenko
+    :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
+                        M. Sc. Violette Gautheret
+    :Scientific Supervisor: Ph.D. Marco Congedo
 
     Notes
     -----
+
     .. versionadded:: 0.4.6
 
     References
@@ -591,8 +593,6 @@ class bi2014a(BaseDataset):
 class bi2014b(BaseDataset):
     """P300 dataset bi2014b from a "Brain Invaders" experiment
 
-    **Dataset Description**
-
     This dataset contains electroencephalographic (EEG) recordings of 38 subjects playing in
     pair (19 pairs) to the multi-user version of a visual P300-based Brain-Computer Interface (BCI)
     named Brain Invaders. The interface uses the oddball paradigm on a grid of 36 symbols (1 Target,
@@ -602,15 +602,14 @@ class bi2014b(BaseDataset):
     (Solo1, Solo2, Collaboration). The experiment took place at GIPSA-lab, Grenoble, France, in 2014.
     A full description of the experiment is available at [1]_. The ID of this dataset is bi2014b.
 
-    **Authors**
-
-    Investigators: Eng. Louis Korczowski, B. Sc. Ekaterina Ostaschenko
-    Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
-                       M. Sc. Violette Gautheret
-    Scientific Supervisor: Ph.D. Marco Congedo
+    :Investigators: Eng. Louis Korczowski, B. Sc. Ekaterina Ostaschenko
+    :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
+                        M. Sc. Violette Gautheret
+    :Scientific Supervisor: Ph.D. Marco Congedo
 
     Notes
     -----
+
     .. versionadded:: 0.4.6
 
     References
@@ -646,8 +645,6 @@ class bi2014b(BaseDataset):
 class bi2015a(BaseDataset):
     """P300 dataset bi2015a from a "Brain Invaders" experiment
 
-    **Dataset Description**
-
     This dataset contains electroencephalographic (EEG) recordings
     of 43 subjects playing to a visual P300 Brain-Computer Interface (BCI)
     videogame named Brain Invaders. The interface uses the oddball paradigm
@@ -658,15 +655,14 @@ class bi2015a(BaseDataset):
     A full description of the experiment is available at [1]_. The ID of this
     dataset is bi2015a.
 
-    **Authors**
-
-    Investigators: Eng. Louis Korczowski, B. Sc. Martine Cederhout
-    Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
-                       M. Sc. Violette Gautheret
-    Scientific Supervisor: Ph.D. Marco Congedo
+    :Investigators: Eng. Louis Korczowski, B. Sc. Martine Cederhout
+    :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
+                        M. Sc. Violette Gautheret
+    :Scientific Supervisor: Ph.D. Marco Congedo
 
     Notes
     -----
+
     .. versionadded:: 0.4.6
 
     References
@@ -702,8 +698,6 @@ class bi2015a(BaseDataset):
 class bi2015b(BaseDataset):
     """P300 dataset bi2015b from a "Brain Invaders" experiment
 
-    **Dataset Description**
-
     This dataset contains electroencephalographic (EEG) recordings
     of 44 subjects playing in pair to the multi-user version of a visual
     P300 Brain-Computer Interface (BCI) named Brain Invaders. The interface
@@ -717,15 +711,14 @@ class bi2015b(BaseDataset):
     A full description of the experiment is available at [1]_. The ID of this
     dataset is bi2015a.
 
-    **Authors**
-
-    Investigators: Eng. Louis Korczowski, B. Sc. Martine Cederhout
-    Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
-                       M. Sc. Violette Gautheret
-    Scientific Supervisor: Ph.D. Marco Congedo
+    :Investigators: Eng. Louis Korczowski, B. Sc. Martine Cederhout
+    :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
+                        M. Sc. Violette Gautheret
+    :Scientific Supervisor: Ph.D. Marco Congedo
 
     Notes
     -----
+
     .. versionadded:: 0.4.6
 
     References

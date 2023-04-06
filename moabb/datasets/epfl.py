@@ -18,6 +18,15 @@ EPFLP300_URL = "http://documents.epfl.ch/groups/m/mm/mmspg/www/BCI/p300/"
 class EPFLP300(BaseDataset):
     """P300 dataset from Hoffmann et al 2008.
 
+    .. admonition:: Dataset summary
+
+
+        ========  =======  =======  =================  ===============  ===============  ===========
+        Name        #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ========  =======  =======  =================  ===============  ===============  ===========
+        EPFLP300        8       32  2753 NT / 551 T    1s               2048Hz                     4
+        ========  =======  =======  =================  ===============  ===============  ===========
+
     Dataset from the paper [1]_.
 
     **Dataset Description**
@@ -73,7 +82,6 @@ class EPFLP300(BaseDataset):
         )
 
     def _get_single_run_data(self, file_path):
-
         # data from the .mat
         data = loadmat(file_path)
         signals = data["data"]
@@ -148,7 +156,6 @@ class EPFLP300(BaseDataset):
         sessions = {}
 
         for file_path in sorted(file_path_list):
-
             session_name = "session_" + file_path.split(os.sep)[-2].replace("session", "")
 
             if session_name not in sessions.keys():
@@ -162,7 +169,6 @@ class EPFLP300(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 

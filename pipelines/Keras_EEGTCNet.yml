@@ -1,0 +1,40 @@
+name: Keras_EEGTCNet
+
+paradigms:
+  - LeftRightImagery
+  - MotorImagery
+
+citations:
+  - https://doi.org/10.1109/SMC42975.2020.9283028
+
+pipeline:
+  - name: StandardScaler_Epoch
+    from: moabb.pipelines.features
+
+  - name: KerasEEGTCNet
+    from: moabb.pipelines.deep_learning
+    parameters:
+      loss: "sparse_categorical_crossentropy"
+      optimizer:
+        - name: Adam
+          from: tensorflow.keras.optimizers.legacy
+          parameters:
+            learning_rate: 0.0009
+      epochs: 1000
+      batch_size: 64
+      verbose: 0
+      random_state: 42
+      validation_split: 0.2
+      callbacks:
+        - name: EarlyStopping
+          from: tensorflow.keras.callbacks
+          parameters:
+            monitor: "val_loss"
+            patience: 300
+
+        - name: ReduceLROnPlateau
+          from: tensorflow.keras.callbacks
+          parameters:
+            monitor: "val_loss"
+            patience: 300
+            factor: 0.5

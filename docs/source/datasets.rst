@@ -40,7 +40,7 @@ ERP Datasets
     :toctree: generated/
     :template: class.rst
 
-    bi2012a
+    bi2012
     bi2013a
     bi2014a
     bi2014b
