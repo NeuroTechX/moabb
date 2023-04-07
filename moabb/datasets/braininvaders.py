@@ -151,7 +151,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
         elif ds.code == "Virtual Reality dataset":
-            data = loadmat(file_path)['data']
+            data = loadmat(os.path.join(file_path, os.listdir(file_path)[0]))['data']
 
             chnames = ['Fp1', 'Fp2', 'Fc5', 'Fz', 'Fc6', 'T7', 'Cz', 'T8',
                        'P7','P3', 'Pz', 'P4', 'P8', 'O1', 'Oz', 'O2']
@@ -162,7 +162,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             X = np.concatenate([S, stim[:, None]], axis=1).T
 
             info = mne.create_info(ch_names=chnames + ['stim'], sfreq=512,
-                                   ch_types=chtypes, montage='standard_1020' if self.useMontagePosition else None,
+                                   ch_types=chtypes,
                                    verbose=False)
 
         info = mne.create_info(
@@ -782,7 +782,7 @@ class VirtualReality(BaseDataset):
     VR.EEG.2018-GIPSA
     '''
 
-    def __init__(self, VR=True, PC=False, useMontagePosition=True):
+    def __init__(self, VR=True, PC=False):
         super().__init__(
             subjects=list(range(1, 20+1)),
             sessions_per_subject=1,
@@ -794,7 +794,6 @@ class VirtualReality(BaseDataset):
 
         self.VR = VR
         self.PC = PC
-        self.useMontagePosition = useMontagePosition
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
