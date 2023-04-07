@@ -154,16 +154,14 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             data = loadmat(os.path.join(file_path, os.listdir(file_path)[0]))['data']
 
             chnames = ['Fp1', 'Fp2', 'Fc5', 'Fz', 'Fc6', 'T7', 'Cz', 'T8',
-                       'P7','P3', 'Pz', 'P4', 'P8', 'O1', 'Oz', 'O2']
+                       'P7','P3', 'Pz', 'P4', 'P8', 'O1', 'Oz', 'O2', 'stim']
 
             S = data[:, 1:17]
             stim = 2 * data[:, 18] + 1 * data[:, 19]
             chtypes = ['eeg'] * 16 + ['stim']
             X = np.concatenate([S, stim[:, None]], axis=1).T
 
-            info = mne.create_info(ch_names=chnames + ['stim'], sfreq=512,
-                                   ch_types=chtypes,
-                                   verbose=False)
+            sfreq = 512
 
         info = mne.create_info(
             ch_names=chnames,
