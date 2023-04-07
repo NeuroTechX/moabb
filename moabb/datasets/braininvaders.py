@@ -766,7 +766,7 @@ class VirtualReality(BaseDataset):
 
     Notes
     -----
-    .. versionadded:: 0.4.7
+    .. versionadded:: 0.5.0
 
     References
     ----------
