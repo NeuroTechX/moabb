@@ -20,7 +20,15 @@ from .bnci import (
     BNCI2015003,
     BNCI2015004,
 )
-from .braininvaders import bi2012, bi2013a, bi2014a, bi2014b, bi2015a, bi2015b, VirtualReality
+from .braininvaders import (
+    VirtualReality,
+    bi2012,
+    bi2013a,
+    bi2014a,
+    bi2014b,
+    bi2015a,
+    bi2015b,
+)
 from .epfl import EPFLP300
 from .gigadb import Cho2017
 from .huebner_llp import Huebner2017, Huebner2018

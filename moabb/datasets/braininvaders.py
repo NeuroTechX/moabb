@@ -1,10 +1,10 @@
 import glob
-from hmac import digest_size
 import os
 import os.path as osp
 import shutil
 import zipfile as z
 from distutils.dir_util import copy_tree
+from hmac import digest_size
 
 import mne
 import numpy as np
@@ -22,7 +22,7 @@ BI2014a_URL = "https://zenodo.org/record/3266223/files/"
 BI2014b_URL = "https://zenodo.org/record/3267302/files/"
 BI2015a_URL = "https://zenodo.org/record/3266930/files/"
 BI2015b_URL = "https://zenodo.org/record/3268762/files/"
-VIRTUALREALITY_URL = 'https://zenodo.org/record/2605205/files/'
+VIRTUALREALITY_URL = "https://zenodo.org/record/2605205/files/"
 
 
 def _bi_get_subject_data(ds, subject):  # noqa: C901
@@ -44,7 +44,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
         elif ds.code == "Brain Invaders 2015a":
             session_name = f'session_{file_path.split("_")[-1][1:2]}'
         elif ds.code == "Virtual Reality dataset":
-            session_name = file_path.split('.')[0].split('_')[-1]
+            session_name = file_path.split(".")[0].split("_")[-1]
 
         if session_name not in sessions.keys():
             sessions[session_name] = {}
@@ -151,14 +151,31 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
         elif ds.code == "Virtual Reality dataset":
-            data = loadmat(os.path.join(file_path, os.listdir(file_path)[0]))['data']
+            data = loadmat(os.path.join(file_path, os.listdir(file_path)[0]))["data"]
 
-            chnames = ['Fp1', 'Fp2', 'Fc5', 'Fz', 'Fc6', 'T7', 'Cz', 'T8',
-                       'P7','P3', 'Pz', 'P4', 'P8', 'O1', 'Oz', 'O2', 'stim']
+            chnames = [
+                "Fp1",
+                "Fp2",
+                "Fc5",
+                "Fz",
+                "Fc6",
+                "T7",
+                "Cz",
+                "T8",
+                "P7",
+                "P3",
+                "Pz",
+                "P4",
+                "P8",
+                "O1",
+                "Oz",
+                "O2",
+                "stim",
+            ]
 
             S = data[:, 1:17]
             stim = 2 * data[:, 18] + 1 * data[:, 19]
-            chtypes = ['eeg'] * 16 + ['stim']
+            chtypes = ["eeg"] * 16 + ["stim"]
             X = np.concatenate([S, stim[:, None]], axis=1).T
 
             sfreq = 512
@@ -181,23 +198,27 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
 
             sessions[session_name][run_name] = raw
         else:
-            idx_blockStart = np.where(data[:,20] > 0)[0]
-            idx_repetEndin = np.where(data[:,21] > 0)[0]
+            idx_blockStart = np.where(data[:, 20] > 0)[0]
+            idx_repetEndin = np.where(data[:, 21] > 0)[0]
 
             sessions[session_name] = {}
             for bi, idx_bi in enumerate(idx_blockStart):
                 start = idx_bi
                 end = idx_repetEndin[4::5][bi]
-                Xbi = X[:,start:end]
+                Xbi = X[:, start:end]
 
-                idx_repetEndin_local = idx_repetEndin[bi*5:(bi*5+5)] - idx_blockStart[bi]
+                idx_repetEndin_local = (
+                    idx_repetEndin[bi * 5 : (bi * 5 + 5)] - idx_blockStart[bi]
+                )
                 idx_repetEndin_local = np.concatenate([[0], idx_repetEndin_local])
                 for j in range(5):
                     start = idx_repetEndin_local[j]
-                    end = idx_repetEndin_local[j+1]
-                    Xbij = Xbi[:,start:end]
+                    end = idx_repetEndin_local[j + 1]
+                    Xbij = Xbi[:, start:end]
                     raw = mne.io.RawArray(data=Xbij, info=info, verbose=False)
-                    sessions[session_name]['block_' + str(bi+1) + '-repetition_' + str(j+1)] = raw
+                    sessions[session_name][
+                        "block_" + str(bi + 1) + "-repetition_" + str(j + 1)
+                    ] = raw
 
     return sessions
 
@@ -369,8 +390,10 @@ def _bi_data_path(  # noqa: C901
         ]
     elif ds.code == "Virtual Reality dataset":
         subject_paths = []
-        url = '{:s}subject_{:02d}_{:s}.mat'.format(VIRTUALREALITY_URL, subject, "VR" if ds.VR else ds.PC)
-        file_path = dl.data_path(url, 'VIRTUALREALITY')
+        url = "{:s}subject_{:02d}_{:s}.mat".format(
+            VIRTUALREALITY_URL, subject, "VR" if ds.VR else ds.PC
+        )
+        file_path = dl.data_path(url, "VIRTUALREALITY")
         subject_paths.append(file_path)
 
     return subject_paths
@@ -748,21 +771,22 @@ class bi2015b(BaseDataset):
     ):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
+
 class VirtualReality(BaseDataset):
-    '''
+    """
     We describe the experimental procedures for a dataset that we have made publicly
     available at https://doi.org/10.5281/zenodo.2605204 in mat (Mathworks, Natick, USA)
-    and csv formats. This dataset contains electroencephalographic recordings on 21 
+    and csv formats. This dataset contains electroencephalographic recordings on 21
     subjects doing a visual P300 experiment on PC (personal computer) and VR (virtual
-    reality). The visual P300 is an event-related potential elicited by a visual 
-    stimulation, peaking 240-600 ms after stimulus onset. The experiment was designed 
-    in order to compare the use of a P300-based brain-computer interface on a PC and 
-    with a virtual reality headset, concerning the physiological, subjective and 
+    reality). The visual P300 is an event-related potential elicited by a visual
+    stimulation, peaking 240-600 ms after stimulus onset. The experiment was designed
+    in order to compare the use of a P300-based brain-computer interface on a PC and
+    with a virtual reality headset, concerning the physiological, subjective and
     performance aspects. The brain-computer interface is based on electroencephalography
-    (EEG). EEG data were recorded thanks to 16 electrodes. The virtual reality headset 
-    consisted of a passive head-mounted display, that is, a head-mounted display which 
+    (EEG). EEG data were recorded thanks to 16 electrodes. The virtual reality headset
+    consisted of a passive head-mounted display, that is, a head-mounted display which
     does not include any electronics at the exception of a smartphone. A full description
-    of the experiment is available at https://hal.archives-ouvertes.fr/hal-02078533. 
+    of the experiment is available at https://hal.archives-ouvertes.fr/hal-02078533.
 
     Notes
     -----
@@ -774,17 +798,18 @@ class VirtualReality(BaseDataset):
     ‘Dataset of an EEG-based BCI experiment in Virtual Reality and on a Personal Computer’ (2019)
     doi: 10.5281/zenodo.2605204.
 
-    '''
+    """
 
     def __init__(self, VR=True, PC=False):
         super().__init__(
-            subjects=list(range(1, 20+1)),
+            subjects=list(range(1, 20 + 1)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code='Virtual Reality dataset',
+            code="Virtual Reality dataset",
             interval=[0, 1.0],
-            paradigm='p300',
-            doi='https://doi.org/10.5281/zenodo.2605204')
+            paradigm="p300",
+            doi="https://doi.org/10.5281/zenodo.2605204",
+        )
 
         self.VR = VR
         self.PC = PC
@@ -793,8 +818,9 @@ class VirtualReality(BaseDataset):
         """return data for a single subject"""
         return _bi_get_subject_data(self, subject)
 
-    def data_path(self, subject, path=None, force_update=False,
-                  update_path=None, verbose=None):
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
     def get_block_repetition(X, labels, meta, block_list, repetition_list):
@@ -804,9 +830,24 @@ class VirtualReality(BaseDataset):
         meta_select = []
         for block in block_list:
             for repetition in repetition_list:
-                X_select.append(X[meta['run'] == 'block_' + str(block) + '-repetition_' + str(repetition)])
-                labels_select.append(labels[meta['run'] == 'block_' + str(block) + '-repetition_' + str(repetition)])
-                meta_select.append(meta[meta['run'] == 'block_' + str(block) + '-repetition_' + str(repetition)])
+                X_select.append(
+                    X[
+                        meta["run"]
+                        == "block_" + str(block) + "-repetition_" + str(repetition)
+                    ]
+                )
+                labels_select.append(
+                    labels[
+                        meta["run"]
+                        == "block_" + str(block) + "-repetition_" + str(repetition)
+                    ]
+                )
+                meta_select.append(
+                    meta[
+                        meta["run"]
+                        == "block_" + str(block) + "-repetition_" + str(repetition)
+                    ]
+                )
         X_select = np.concatenate(X_select)
         labels_select = np.concatenate(labels_select)
         meta_select = np.concatenate(meta_select)
