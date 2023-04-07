@@ -763,21 +763,17 @@ class VirtualReality(BaseDataset):
     consisted of a passive head-mounted display, that is, a head-mounted display which 
     does not include any electronics at the exception of a smartphone. A full description
     of the experiment is available at https://hal.archives-ouvertes.fr/hal-02078533. 
-    This experiment was carried out at GIPSA-lab (University of Grenoble Alpes, CNRS,
-    Grenoble-INP) in 2018, and promoted by the IHMTEK Company (Interaction Homme-Machine
-    Technologie).The study was approved by the Ethical Committee of the University of 
-    Grenoble Alpes (Comité d’Ethique pour la Recherche Non-Interventionnelle). 
-    The ID of this dataset is VR.EEG.2018-GIPSA.
-    **Full description of the experiment and dataset**
-    https://hal.archives-ouvertes.fr/hal-02078533
 
- 
-    **Authors**
-    Principal Investigator: Eng. Grégoire Cattan
-    Technical Supervisors: Eng. Anton Andreev, Eng. Pedro L. C. Rodrigues
-    Scientific Supervisor: Dr. Marco Congedo
-    **ID of the dataset**
-    VR.EEG.2018-GIPSA
+    Notes
+    -----
+    .. versionadded:: 0.4.7
+
+    References
+    ----------
+    G. Cattan, A. Andreev, P. L. C. Rodrigues, and M. Congedo,
+    ‘Dataset of an EEG-based BCI experiment in Virtual Reality and on a Personal Computer’ (2019)
+    doi: 10.5281/zenodo.2605204.
+
     '''
 
     def __init__(self, VR=True, PC=False):
