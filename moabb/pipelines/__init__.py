@@ -6,7 +6,7 @@ with a sklearn compatible estimator.
 
 # flake8: noqa
 
-from .classification import SSVEP_CCA, SSVEP_TRCA
+from .classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
 from .features import FM, AugmentedDataset, ExtendedSSVEPSignal, LogVariance
 from .utils import FilterBank, create_pipeline_from_config
 
