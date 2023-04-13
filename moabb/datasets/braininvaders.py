@@ -3,8 +3,8 @@ import os
 import os.path as osp
 import shutil
 import zipfile as z
+import pandas as pd
 from distutils.dir_util import copy_tree
-from hmac import digest_size
 
 import mne
 import numpy as np
@@ -823,8 +823,8 @@ class VirtualReality(BaseDataset):
     ):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
-    def get_block_repetition(X, labels, meta, block_list, repetition_list):
-        # X, labels, meta = paradigm.get_data(dataset, subjects=[subject])
+    def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
+        X, labels, meta = paradigm.get_data(self, subjects)
         X_select = []
         labels_select = []
         meta_select = []
