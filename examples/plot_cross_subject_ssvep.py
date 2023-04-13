@@ -89,7 +89,8 @@ freqs = paradigm.used_events(dataset)
 # frequency and applying a logistic regression in the tangent plane.
 # The second pipeline relies on the above defined CCA classifier.
 # The third pipeline relies on the TRCA algorithm,
-# and the fourth uses the MsetCCA algorithm.
+# and the fourth uses the MsetCCA algorithm. Both CCA based methods
+# (i.e. CCA and MsetCCA) used 3 CCA components.
 
 pipelines_fb = {}
 pipelines_fb["RG+LogReg"] = make_pipeline(
@@ -100,7 +101,9 @@ pipelines_fb["RG+LogReg"] = make_pipeline(
 )
 
 pipelines = {}
-pipelines["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=3))
+pipelines["CCA"] = make_pipeline(
+    SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=2, n_components=3)
+)
 
 pipelines_TRCA = {}
 pipelines_TRCA["TRCA"] = make_pipeline(
@@ -108,7 +111,7 @@ pipelines_TRCA["TRCA"] = make_pipeline(
 )
 
 pipelines_MSET_CCA = {}
-pipelines_MSET_CCA["MSET_CCA"] = make_pipeline(SSVEP_MsetCCA(freqs=freqs))
+pipelines_MSET_CCA["MSET_CCA"] = make_pipeline(SSVEP_MsetCCA(freqs=freqs, n_components=3))
 
 ##############################################################################
 # Evaluation
@@ -121,7 +124,7 @@ pipelines_MSET_CCA["MSET_CCA"] = make_pipeline(SSVEP_MsetCCA(freqs=freqs))
 # will not run again the evaluation unless a parameter has changed. Results can
 # be overwritten if necessary.
 
-overwrite = False  # set to True if we want to overwrite cached results
+overwrite = True  # set to True if we want to overwrite cached results
 
 evaluation = CrossSubjectEvaluation(
     paradigm=paradigm, datasets=dataset, overwrite=overwrite

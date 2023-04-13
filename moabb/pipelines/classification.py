@@ -27,9 +27,10 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
            https://doi.org/10.1088/1741-2560/6/4/046002
     """
 
-    def __init__(self, interval, freqs, n_harmonics=3):
+    def __init__(self, interval, freqs, n_harmonics=3, n_components=1):
         self.Yf = dict()
-        self.cca = CCA(n_components=1)
+        self.n_components = n_components
+        self.cca = CCA(n_components=self.n_components)
         self.interval = interval
         self.slen = interval[1] - interval[0]
         self.freqs = freqs
@@ -514,11 +515,12 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
 
 class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
-    def __init__(self, freqs, n_filters=1):
+    def __init__(self, freqs, n_filters=1, n_components=1):
         self.n_filters = n_filters
         self.freqs = freqs
+        self.n_components = n_components
         self.Ym = dict()
-        self.cca = CCA(n_components=3)
+        self.cca = CCA(n_components=n_components)
         self.one_hot = {}
 
     def fit(self, X, y, sample_weight=None):
