@@ -3,11 +3,11 @@ import os
 import os.path as osp
 import shutil
 import zipfile as z
-import pandas as pd
 from distutils.dir_util import copy_tree
 
 import mne
 import numpy as np
+import pandas as pd
 import yaml
 from mne.channels import make_standard_montage
 from scipy.io import loadmat
