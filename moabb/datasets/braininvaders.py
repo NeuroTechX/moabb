@@ -801,9 +801,9 @@ class VirtualReality(BaseDataset):
 
     References
     ----------
-    .. [1] G. Cattan, A. Andreev, P. L. C. Rodrigues, and M. Congedo (2019). 
-            Dataset of an EEG-based BCI experiment in Virtual Reality and 
-            on a Personal Computer. Research Report, GIPSA-lab; IHMTEK.  
+    .. [1] G. Cattan, A. Andreev, P. L. C. Rodrigues, and M. Congedo (2019).
+            Dataset of an EEG-based BCI experiment in Virtual Reality and
+            on a Personal Computer. Research Report, GIPSA-lab; IHMTEK.
             https://doi.org/10.5281/zenodo.2605204
 
     """
