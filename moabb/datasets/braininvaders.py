@@ -391,7 +391,9 @@ def _bi_data_path(  # noqa: C901
     elif ds.code == "Virtual Reality dataset":
         subject_paths = []
         url = "{:s}subject_{:02d}_{:s}.mat".format(
-            VIRTUALREALITY_URL, subject, "VR" if ds.virtual_reality else ds.personal_computer
+            VIRTUALREALITY_URL,
+            subject,
+            "VR" if ds.virtual_reality else ds.personal_computer,
         )
         file_path = dl.data_path(url, "VIRTUALREALITY")
         subject_paths.append(file_path)
