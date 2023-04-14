@@ -391,7 +391,7 @@ def _bi_data_path(  # noqa: C901
     elif ds.code == "Virtual Reality dataset":
         subject_paths = []
         url = "{:s}subject_{:02d}_{:s}.mat".format(
-            VIRTUALREALITY_URL, subject, "VR" if ds.VR else ds.PC
+            VIRTUALREALITY_URL, subject, "VR" if ds.virtual_reality else ds.personal_computer
         )
         file_path = dl.data_path(url, "VIRTUALREALITY")
         subject_paths.append(file_path)
@@ -790,10 +790,10 @@ class VirtualReality(BaseDataset):
     Parameters
     ----------
 
-    VR: bool (default True)
+    virtual_reality: bool (default True)
         if True, return runs corresponding to P300 experiment on virtual reality.
 
-    PC: bool (default False)
+    personal_computer: bool (default False)
         if True, return runs corresponding to P300 experiment on personal computer.
     Notes
     -----
@@ -808,7 +808,7 @@ class VirtualReality(BaseDataset):
 
     """
 
-    def __init__(self, VR=True, PC=False):
+    def __init__(self, virtual_reality=True, personal_computer=False):
         super().__init__(
             subjects=list(range(1, 20 + 1)),
             sessions_per_subject=1,
@@ -819,8 +819,8 @@ class VirtualReality(BaseDataset):
             doi="https://doi.org/10.5281/zenodo.2605204",
         )
 
-        self.VR = VR
-        self.PC = PC
+        self.virtual_reality = virtual_reality
+        self.personal_computer = personal_computer
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
