@@ -776,7 +776,7 @@ class VirtualReality(BaseDataset):
     """
     We describe the experimental procedures for a dataset that we have made publicly
     available at https://doi.org/10.5281/zenodo.2605204 in mat (Mathworks, Natick, USA)
-    and csv formats. This dataset contains electroencephalographic recordings on 21
+    and csv formats [1]_. This dataset contains electroencephalographic recordings on 21
     subjects doing a visual P300 experiment on PC (personal computer) and VR (virtual
     reality). The visual P300 is an event-related potential elicited by a visual
     stimulation, peaking 240-600 ms after stimulus onset. The experiment was designed
