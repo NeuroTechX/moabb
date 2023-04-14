@@ -18,6 +18,7 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
+- Add VirtualReality BrainInvaders dataset (:gh:`358` by `Gregoire Cattan`_)
 - Switch to python-3.8, update dependencies, fix code link in doc, add `code coverage <https://app.codecov.io/gh/NeuroTechX/moabb>`__ (:gh:`315` by `Sylvain Chevallier`_)
 - Adding a comprehensive benchmarking function (:gh:`264` by `Divyesh Narayanan`_ and `Sylvain Chevallier`_)
 - Add meta-information for datasets in documentation (:gh:`317` by `Bruno Aristimunha`_)
