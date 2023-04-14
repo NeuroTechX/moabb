@@ -67,21 +67,21 @@ class Test_Datasets(unittest.TestCase):
             if mne.get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:
                 self.assertRaises(AttributeError, ds.get_data, [1])
 
+
 class Test_VirtualReality_Dataset(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(TestingClass, self).__init__(*args, **kwargs)
         self.generate_mock_data()
-        
 
     def generate_mock_data(self):
         sessions = {}
-        for session in range(1, 10+1):
+        for session in range(1, 10 + 1):
             sessions[session] = {}
-            for block in range(1, 5+1):
-                for repetition in range(1, 12+1):
+            for block in range(1, 5 + 1):
+                for repetition in range(1, 12 + 1):
                     sessions[session][
                         "block_" + str(block) + "-repetition_" + repetition
-                    ] = str(session) + str(block) + str(repetition)
+                    ] = (str(session) + str(block) + str(repetition))
         self.mock_data = sessions
 
     def test_canary(self):
