@@ -2,7 +2,7 @@ import unittest
 
 import mne
 
-from moabb.datasets import Shin2017A, Shin2017B
+from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
 from moabb.datasets.fake import FakeDataset
 
 
@@ -66,3 +66,29 @@ class Test_Datasets(unittest.TestCase):
             # if the data is already downloaded:
             if mne.get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:
                 self.assertRaises(AttributeError, ds.get_data, [1])
+
+class Test_VirtualReality_Dataset(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super(TestingClass, self).__init__(*args, **kwargs)
+        self.generate_mock_data()
+        
+
+    def generate_mock_data(self):
+        sessions = {}
+        for session in range(1, 10+1):
+            sessions[session] = {}
+            for block in range(1, 5+1):
+                for repetition in range(1, 12+1):
+                    sessions[session][
+                        "block_" + str(block) + "-repetition_" + repetition
+                    ] = str(session) + str(block) + str(repetition)
+        self.mock_data = sessions
+
+    def test_canary(self):
+        assert not VirtualReality() == None
+
+    def test_get_block_repetition(self):
+        ds = VirtualReality()
+        ds._get_single_subject_data = lambda: self.mock_data
+        ret = ds.get_block_repetition(P300(), [1], [2], [3])
+        assert ret == "123"
