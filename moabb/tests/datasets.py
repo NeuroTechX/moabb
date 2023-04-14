@@ -4,6 +4,7 @@ import mne
 
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
 from moabb.datasets.fake import FakeDataset
+from moabb.paradigms import P300
 
 
 _ = mne.set_log_level("CRITICAL")
@@ -70,7 +71,7 @@ class Test_Datasets(unittest.TestCase):
 
 class Test_VirtualReality_Dataset(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(TestingClass, self).__init__(*args, **kwargs)
+        super(unittest.TestCase, self).__init__(*args, **kwargs)
         self.generate_mock_data()
 
     def generate_mock_data(self):
@@ -85,7 +86,7 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         self.mock_data = sessions
 
     def test_canary(self):
-        assert not VirtualReality() == None
+        assert VirtualReality() is not None
 
     def test_get_block_repetition(self):
         ds = VirtualReality()
