@@ -777,13 +777,13 @@ class bi2015b(BaseDataset):
 class VirtualReality(BaseDataset):
     """Dataset of an EEG-based BCI experiment in Virtual Reality and on a Personal Computer
     .. admonition:: Dataset summary
-        ================ ======= ======= ================ =============== =============== =========== 
-         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions  
-        ================ ======= ======= ================ =============== =============== =========== 
-         VirtualReality   24      16      600 NT / 120 T   1s              512Hz           2          
-        ================ ======= ======= ================ =============== =============== =========== 
+        ================ ======= ======= ================ =============== =============== ===========
+         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
+        ================ ======= ======= ================ =============== =============== ===========
+         VirtualReality   24      16      600 NT / 120 T   1s              512Hz           2
+        ================ ======= ======= ================ =============== =============== ===========
 
- 
+
     We describe the experimental procedures for a dataset that we have made publicly
     available at https://doi.org/10.5281/zenodo.2605204 in mat (Mathworks, Natick, USA)
     and csv formats [1]_. This dataset contains electroencephalographic recordings on 21
