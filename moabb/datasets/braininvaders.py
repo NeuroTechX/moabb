@@ -154,23 +154,9 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             data = loadmat(os.path.join(file_path, os.listdir(file_path)[0]))["data"]
 
             chnames = [
-                "Fp1",
-                "Fp2",
-                "Fc5",
-                "Fz",
-                "Fc6",
-                "T7",
-                "Cz",
-                "T8",
-                "P7",
-                "P3",
-                "Pz",
-                "P4",
-                "P8",
-                "O1",
-                "Oz",
-                "O2",
-                "stim",
+                "Fp1", "Fp2", "Fc5", "Fz", "Fc6",
+                "T7", "Cz", "T8", "P7", "P3", "Pz",
+                "P4", "P8", "O1", "Oz", "O2", "stim",
             ]
 
             S = data[:, 1:17]
