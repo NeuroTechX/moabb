@@ -17,6 +17,26 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
     Classification is made by taking the frequency with the max correlation,
     as proposed in [1]_.
 
+    Parameters
+    ----------
+    interval : list of lenght 2
+        List of form [tmin, tmax]. With tmin and tmax as defined in the SSVEP
+        paradigm :meth:`moabb.paradigms.SSVEP`
+
+    freqs : dict with n_classes keys
+        Frequencies corresponding to the SSVEP stimulation frequencies.
+        They are used to identify SSVEP classes presents in the data.
+
+    n_harmonics: int
+        Number of stimulation frequency's harmonics to be used in the genration
+        of the CCA reference signal.
+
+    n_components: int
+        Number of CCA components to be used.
+
+        .. versionadded:: 0.4.7
+
+
     References
     ----------
 
@@ -515,6 +535,36 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
 
 class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
+    """Classifier based on MsetCCA for SSVEP
+
+     The MsetCCA method learns multiple linear transforms to extract
+     SSVEP common features from multiple sets of EEG data. These are then used
+     to compute the reference signal used in CCA [1]_.
+
+    Parameters
+    ----------
+    freqs : dict with n_classes keys
+        Frequencies corresponding to the SSVEP stimulation frequencies.
+        They are used to identify SSVEP classes presents in the data.
+
+    n_filters: int
+        Number of multisets spatial filters used per sample data.
+        It corresponds to the number of eigen vectors taken the solution of the
+        MAXVAR objective function as formulated in Eq.5 in [1]_.
+
+    n_components: int
+        Number of CCA components to be used.
+
+
+    References
+    ----------
+
+    .. [1] Zhang, Y.U., Zhou, G., Jin, J., Wang, X. and Cichocki, A. (2014). Frequency
+           recognition in SSVEP-based BCI using multiset canonical correlation analysis.
+           International journal of neural systems, 24(04), p.1450013.
+           https://doi.org/10.1142/S0129065714500130
+    """
+
     def __init__(self, freqs, n_filters=1, n_components=1):
         self.n_filters = n_filters
         self.freqs = freqs
@@ -566,9 +616,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         # get Z
         Z = np.zeros((n_trials, self.n_filters, n_times))
         for trial in range(n_trials):
-            Z[trial, :, :] = (
-                W[trial, :, :].T @ X_white[trial, :, :]
-            )  # (KxC) x (CxP) => KxP
+            Z[trial, :, :] = W[trial, :, :].T @ X_white[trial, :, :]
 
         # Get Ym
         for m_class in self.classes:
