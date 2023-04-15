@@ -789,7 +789,7 @@ class VirtualReality(BaseDataset):
     consisted of a passive head-mounted display, that is, a head-mounted display which
     does not include any electronics at the exception of a smartphone. A full description
     of the experiment is available at https://hal.archives-ouvertes.fr/hal-02078533.
-    
+
     Parameters
     ----------
 
