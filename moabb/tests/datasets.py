@@ -3,7 +3,7 @@ import unittest
 import mne
 
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
-from moabb.datasets.fake import FakeDataset
+from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.paradigms import P300
 
 
@@ -71,25 +71,16 @@ class Test_Datasets(unittest.TestCase):
 
 class Test_VirtualReality_Dataset(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(unittest.TestCase, self).__init__(*args, **kwargs)
-        self.generate_mock_data()
-
-    def generate_mock_data(self):
-        sessions = {}
-        for session in range(1, 10 + 1):
-            sessions[session] = {}
-            for block in range(1, 5 + 1):
-                for repetition in range(1, 12 + 1):
-                    sessions[session][
-                        "block_" + str(block) + "-repetition_" + repetition
-                    ] = (str(session) + str(block) + str(repetition))
-        self.mock_data = sessions
+        super().__init__(*args, **kwargs)
 
     def test_canary(self):
         assert VirtualReality() is not None
 
-    def test_get_block_repetition(self):
-        ds = VirtualReality()
-        ds._get_single_subject_data = lambda: self.mock_data
-        ret = ds.get_block_repetition(P300(), [1], [2], [3])
-        assert ret == "123"
+    def test_get_block_repetition(self):          
+        ds = FakeVirtualRealityDataset()
+        subject = 5
+        block = 3
+        repetition = 4
+        _, _, ret = ds.get_block_repetition(P300(), [subject], [block], [repetition])
+        assert ret.subject.unique()[0] == subject
+        assert ret.run.unique()[0] == f"block_{block}-repetition_{repetition}"
