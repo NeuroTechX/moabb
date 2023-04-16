@@ -48,7 +48,7 @@ P300/ERP
    BNCI2014009, 10, 16, 1440 NT / 288 T, 0.8s, 256Hz, 3
    BNCI2015003, 10, 8, 1500 NT / 300 T, 0.8s, 256Hz, 1
    bi2012, 25, 16, 6140 NT / 128 T, 1s, 512Hz, 2
-   bi2013a, 24, 16, 3200 NT / 640 T, 1s, 512Hz, 8 for subjects 1-7, else 1
+   bi2013a, 24, 16, 3200 NT / 640 T, 1s, 512Hz, 8 for subjects 1-7 else 1
    bi2014a, 71, 16, , 1s, 512Hz, up to 3
    bi2014b, 38, 32, , 1s, 512Hz, 3
    bi2015a, 50, 32, , 1s, 512Hz, 3
