@@ -84,6 +84,8 @@ Base & Utils
     :template: class.rst
 
     base.BaseDataset
+    fake.FakeDataset
+    fake.FakeVirtualRealityDataset
 
 
 .. autosummary::
