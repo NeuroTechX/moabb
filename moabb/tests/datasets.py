@@ -76,7 +76,7 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
     def test_canary(self):
         assert VirtualReality() is not None
 
-    def test_get_block_repetition(self):          
+    def test_get_block_repetition(self):
         ds = FakeVirtualRealityDataset()
         subject = 5
         block = 3

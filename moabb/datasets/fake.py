@@ -86,31 +86,36 @@ class FakeDataset(BaseDataset):
     ):
         pass
 
+
 class FakeVirtualRealityDataset(FakeDataset):
     """Fake VirtualReality dataset for test purpose.
 
-        .. versionadded:: 0.5.0
+    .. versionadded:: 0.5.0
     """
+
     def __init__(self):
         self.n_blocks = 5
         self.n_repetitions = 12
-        super().__init__(n_sessions=1,
-                         n_runs=self.n_blocks * self.n_repetitions,
-                         n_subjects=21,
-                         code="FakeVirtualRealityDataset",
-                         event_list=dict(Target=2, NonTarget=1),
-                         paradigm="p300")
-        
+        super().__init__(
+            n_sessions=1,
+            n_runs=self.n_blocks * self.n_repetitions,
+            n_subjects=21,
+            code="FakeVirtualRealityDataset",
+            event_list=dict(Target=2, NonTarget=1),
+            paradigm="p300",
+        )
+
     def _get_single_subject_data(self, subject):
         data = dict()
         for session in range(self.n_sessions):
             data[f"{session}"] = {}
             for block in range(self.n_blocks):
                 for repetition in range(self.n_repetitions):
-                    data[f"{session}"][f"block_{block}-repetition_{repetition}"] = \
-                        self._generate_raw()
+                    data[f"{session}"][
+                        f"block_{block}-repetition_{repetition}"
+                    ] = self._generate_raw()
         return data
-        
+
     def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
         """Select data for all provided subjects, blocks and repetitions.
         Each subject has 5 blocks of 12 repetitions.
@@ -142,4 +147,6 @@ class FakeVirtualRealityDataset(FakeDataset):
         data: Dict
             dict containing the raw data
         """
-        return VirtualReality.get_block_repetition(self, paradigm, subjects, block_list, repetition_list)
+        return VirtualReality.get_block_repetition(
+            self, paradigm, subjects, block_list, repetition_list
+        )
