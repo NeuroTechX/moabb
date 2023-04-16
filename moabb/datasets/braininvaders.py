@@ -403,6 +403,12 @@ def _bi_data_path(  # noqa: C901
 
 class bi2012(BaseDataset):
     """P300 dataset bi2012 from a "Brain Invaders" experiment
+    .. admonition:: Dataset summary
+        ================ ======= ======= ================ =============== =============== ===========
+         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
+        ================ ======= ======= ================ =============== =============== ===========
+         bi2013a           25      16     6140 NT / 128 T       1s              512Hz          2
+        ================ ======= ======= ================ =============== =============== ===========
 
     Dataset following the setup from [1]_ carried-out at University of
     Grenoble Alpes.
@@ -564,6 +570,12 @@ class bi2013a(BaseDataset):
 
 class bi2014a(BaseDataset):
     """P300 dataset bi2014a from a "Brain Invaders" experiment
+    .. admonition:: Dataset summary
+        ================ ======= ======= ================ =============== =============== ===========
+         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
+        ================ ======= ======= ================ =============== =============== ===========
+         bi2014a           71      16        5 NT x 1 T         1s              512Hz       up to 3
+        ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings of 71 subjects
     playing to a visual P300 Brain-Computer Interface (BCI) videogame named Brain Invaders.
@@ -615,6 +627,12 @@ class bi2014a(BaseDataset):
 
 class bi2014b(BaseDataset):
     """P300 dataset bi2014b from a "Brain Invaders" experiment
+    .. admonition:: Dataset summary
+        ================ ======= ======= ================ =============== =============== ===========
+         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
+        ================ ======= ======= ================ =============== =============== ===========
+         bi2014b           38      32        5 NT x 1 T         1s              512Hz           3
+        ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings of 38 subjects playing in
     pair (19 pairs) to the multi-user version of a visual P300-based Brain-Computer Interface (BCI)
@@ -667,6 +685,12 @@ class bi2014b(BaseDataset):
 
 class bi2015a(BaseDataset):
     """P300 dataset bi2015a from a "Brain Invaders" experiment
+    .. admonition:: Dataset summary
+        ================ ======= ======= ================ =============== =============== ===========
+         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
+        ================ ======= ======= ================ =============== =============== ===========
+         bi2015a           50      32        5 NT x 1 T         1s              512Hz           3
+        ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings
     of 43 subjects playing to a visual P300 Brain-Computer Interface (BCI)
@@ -720,6 +744,12 @@ class bi2015a(BaseDataset):
 
 class bi2015b(BaseDataset):
     """P300 dataset bi2015b from a "Brain Invaders" experiment
+       .. admonition:: Dataset summary
+        ================ ======= ======= ================ =============== =============== ===========
+         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
+        ================ ======= ======= ================ =============== =============== ===========
+         bi2015b           44      32        5 NT x 1 T         1s              512Hz           2
+        ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings
     of 44 subjects playing in pair to the multi-user version of a visual
@@ -800,12 +830,11 @@ class VirtualReality(BaseDataset):
 
     Parameters
     ----------
-
     virtual_reality: bool (default True)
         if True, return runs corresponding to P300 experiment on virtual reality.
-
     personal_computer: bool (default False)
         if True, return runs corresponding to P300 experiment on personal computer.
+
     Notes
     -----
     .. versionadded:: 0.5.0
@@ -843,6 +872,35 @@ class VirtualReality(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
     def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
+        """Select data for all provided subjects, blocks and repetitions.
+        Each subject has 5 blocks of 12 repetitions.
+
+        The returned data is a dictionary with the folowing structure::
+
+            data = {'subject_id' :
+                        {'session_id':
+                            {'run_id': raw}
+                        }
+                    }
+
+        See also
+        --------
+        BaseDataset.get_data
+
+        Parameters
+        ----------
+        subjects: List of int
+            List of subject number
+        block_list: List of int
+            List of block number (from 1 to 5)
+        repetition_list: List of int
+            List of repetition number inside a block (from 1 to 12)
+
+        Returns
+        -------
+        data: Dict
+            dict containing the raw data
+        """
         X, labels, meta = paradigm.get_data(self, subjects)
         X_select = []
         labels_select = []
