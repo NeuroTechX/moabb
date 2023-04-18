@@ -54,6 +54,9 @@ P300/ERP
    bi2015a, 50, 32, , 1s, 512Hz, 3
    bi2015b, 44, 32, , 1s, 512Hz, 2
    VirtualReality, 24, 16, 600 NT / 120 T, 1s, 512Hz, 2
+   Huebner2017, 13, 31, , 0.9s, 1000Hz, 1
+   Huebner2018, 12, 31, , 0.9s, 1000Hz, 1
+   Sosulski2019, 13, 32, 75 NT / 15 T, 1000Hz, 1
    EPFLP300, 8, 32, 2753 NT / 551 T, 1s, 2048Hz, 4
    Lee2019_ERP, 54, 62, 6900 NT / 1380 T, 1s, 1000Hz, 2
 
