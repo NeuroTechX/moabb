@@ -569,16 +569,15 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         self.n_filters = n_filters
         self.freqs = freqs
         self.n_components = n_components
-        self.Ym = dict()
         self.cca = CCA(n_components=n_components)
-        self.one_hot = {}
 
     def fit(self, X, y, sample_weight=None):
         """
         Compute the optimized reference signal at each stimulus frequency
         """
-        self.classes = np.unique(y)
-        for i, k in enumerate(self.classes):
+        self.classes_ = np.unique(y)
+        self.one_hot = {}
+        for i, k in enumerate(self.classes_):
             self.one_hot[k] = i
         n_trials, n_channels, n_times = X.shape
         # Whiten signal X
@@ -619,7 +618,8 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
             Z[trial, :, :] = W[trial, :, :].T @ X_white[trial, :, :]
 
         # Get Ym
-        for m_class in self.classes:
+        self.Ym = dict()
+        for m_class in self.classes_:
             self.Ym[m_class] = (
                 Z[y == m_class, :, :].transpose(2, 0, 1).reshape(-1, n_times)
             )
@@ -628,10 +628,14 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
 
     def predict(self, X):
         """Predict is made by taking the maximum correlation coefficient"""
+
+        # Check is fit had been called
+        check_is_fitted(self)
+
         y = []
         for x in X:
             corr_f = {}
-            for f in self.classes:
+            for f in self.classes_:
                 S_x, S_y = self.cca.fit_transform(x.T, self.Ym[f].T)
                 corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0, 1]
             y.append(self.one_hot[max(corr_f, key=corr_f.get)])
@@ -639,9 +643,13 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
 
     def predict_proba(self, X):
         """Probabilty could be computed from the correlation coefficient"""
-        P = np.zeros(shape=(len(X), len(self.classes)))
+
+        # Check is fit had been called
+        check_is_fitted(self)
+
+        P = np.zeros(shape=(len(X), len(self.classes_)))
         for i, x in enumerate(X):
-            for j, f in enumerate(self.classes):
+            for j, f in enumerate(self.classes_):
                 S_x, S_y = self.cca.fit_transform(x.T, self.Ym[f].T)
                 P[i, j] = np.corrcoef(S_x.T, S_y.T)[0, 1]
         return P / np.resize(P.sum(axis=1), P.T.shape).T
