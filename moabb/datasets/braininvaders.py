@@ -43,7 +43,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             session_name = "session_" + session_number
         elif ds.code == "Brain Invaders 2015a":
             session_name = f'session_{file_path.split("_")[-1][1:2]}'
-        elif ds.code == "Virtual Reality dataset":
+        elif ds.code == "P300-VR":
             session_name = file_path.split(".")[0].split("_")[-1]
 
         if session_name not in sessions.keys():
@@ -848,7 +848,7 @@ class VirtualReality(BaseDataset):
 
     """
 
-    def __init__(self, virtual_reality=True, screen_display=False):
+    def __init__(self, virtual_reality=False, screen_display=True):
         super().__init__(
             subjects=list(range(1, 20 + 1)),
             sessions_per_subject=1,
