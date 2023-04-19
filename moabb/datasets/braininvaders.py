@@ -805,7 +805,7 @@ class bi2015b(BaseDataset):
 
 
 class VirtualReality(BaseDataset):
-    """Dataset of an EEG-based BCI experiment in Virtual Reality and on a Personal Computer
+    """Dataset of an EEG-based BCI experiment in Virtual Reality using P300
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
