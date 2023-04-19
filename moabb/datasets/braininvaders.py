@@ -830,9 +830,9 @@ class VirtualReality(BaseDataset):
 
     Parameters
     ----------
-    virtual_reality: bool (default True)
+    virtual_reality: bool (default False)
         if True, return runs corresponding to P300 experiment on virtual reality.
-    personal_computer: bool (default False)
+    screen_display: bool (default True)
         if True, return runs corresponding to P300 experiment on personal computer.
 
     Notes
