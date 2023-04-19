@@ -848,7 +848,7 @@ class VirtualReality(BaseDataset):
 
     """
 
-    def __init__(self, virtual_reality=True, personal_computer=False):
+    def __init__(self, virtual_reality=True, screen_display=False):
         super().__init__(
             subjects=list(range(1, 20 + 1)),
             sessions_per_subject=1,
