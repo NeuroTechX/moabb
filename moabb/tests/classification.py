@@ -1,18 +1,23 @@
 import unittest
 
-import numpy as np
 from sklearn.utils.validation import NotFittedError, check_is_fitted
 
+from moabb.datasets.fake import FakeDataset
+from moabb.paradigms import SSVEP
 from moabb.pipelines import SSVEP_MsetCCA
 
 
 class TestSSVEP_MsetCCA(unittest.TestCase):
     def setUp(self):
-        self.freqs = {1: 6.66, 2: 7.5, 3: 8.57}  # Example frequency dictionary
+        # Use moabb generated dataset for test
+        dataset = FakeDataset(n_sessions=1, n_runs=1, n_subjects=1, paradigm="ssvep")
+        paradigm = SSVEP(n_classes=3)
+        X, y, _ = paradigm.get_data(dataset)
+        self.freqs = paradigm.used_events(dataset)
         self.n_filters = 2
-        self.n_components = 3
-        self.X = np.random.rand(10, 8, 100)  # Example input data
-        self.y = np.random.choice(list(self.freqs.keys()), size=10)  # Example labels
+        self.n_components = 2
+        self.X = X
+        self.y = y
         self.clf = SSVEP_MsetCCA(
             freqs=self.freqs, n_filters=self.n_filters, n_components=self.n_components
         )
