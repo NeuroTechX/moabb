@@ -860,7 +860,7 @@ class VirtualReality(BaseDataset):
         )
 
         self.virtual_reality = virtual_reality
-        self.personal_computer = personal_computer
+        self.personal_computer = screen_display
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
