@@ -853,7 +853,7 @@ class VirtualReality(BaseDataset):
             subjects=list(range(1, 20 + 1)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="Virtual Reality dataset",
+            code="P300-VR",
             interval=[0, 1.0],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2605204",
