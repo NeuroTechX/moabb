@@ -308,3 +308,4 @@ API changes
 .. _Jan Sosulski: https://github.com/jsosulski
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Ludovic Darmet: https://github.com/ludovicdmt
+.. _Emmanuel Kalunga: https://github.com/emmanuelkalunga
