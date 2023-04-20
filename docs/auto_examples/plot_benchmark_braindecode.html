@@ -1,166 +1,581 @@
+
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" data-theme="light">
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures &#8212; moabb 0.4.6 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-5WJBKDMSTE');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_benchmark_braindecode';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-<meta charset='utf-8'>
-<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
-<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
-<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="next" title="Benchmarking with MOABB with Grid Search" href="plot_benchmark_grid_search.html" />
+    <link rel="prev" title="Benchmarking on MOABB with Tensorflow deep net architectures" href="plot_benchmark_DL.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
 
-  </head><body>
-
-  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="../index.html">
-          MOABB</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
-      </div>
-
-        <div class="collapse navbar-collapse nav-collapse">
-          <ul class="nav navbar-nav">
-            
-                <li><a href="../whats_new.html">What's new</a></li>
-                <li><a href="../dataset_summary.html">Datasets</a></li>
-                <li><a href="../api.html">API</a></li>
-                <li><a href="index.html">Gallery</a></li>
-                <li><a href="../auto_tutorials/index.html">Tutorials</a></li>
-            
-            
-              <li class="dropdown globaltoc-container">
-  <a role="button"
-     id="dLabelGlobalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="../index.html">MOABB <b class="caret"></b></a>
-  <ul class="dropdown-menu globaltoc"
-      role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul>
-<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s new</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#develop-branch">Develop branch</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-6-stable-pypi">Version - 0.4.6  (Stable - PyPi)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-5">Version - 0.4.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-4">Version - 0.4.4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-3">Version - 0.4.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-2">Version - 0.4.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-1">Version - 0.4.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-4-0">Version - 0.4.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-3-0">Version 0.3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-2-1">Version 0.2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../whats_new.html#version-0-2-0">Version 0.2.0</a></li>
-</ul>
-</li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../datasets.html#erp-datasets">ERP Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../datasets.html#ssvep-datasets">SSVEP Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../datasets.html#base-utils">Base &amp; Utils</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../evaluations.html">Evaluations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../evaluations.html#id1">Evaluations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../evaluations.html#base-utils">Base &amp; Utils</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../paradigms.html">Paradigms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#motor-imagery-paradigms">Motor Imagery Paradigms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#p300-paradigms">P300 Paradigms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#ssvep-paradigms">SSVEP Paradigms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../paradigms.html#base-utils">Base &amp; Utils</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../pipelines.html">Pipelines</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../pipelines.html#id1">Pipelines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pipelines.html#base-utils">Base &amp; Utils</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../analysis.html">Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../analysis.html#plotting">Plotting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../analysis.html#statistics">Statistics</a></li>
-</ul>
-</li>
-</ul>
-</ul>
-</li>
-              
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a><ul>
-<li><a class="reference internal" href="#running-the-benchmark">Running the benchmark</a></li>
-<li><a class="reference internal" href="#references">References</a></li>
-</ul>
-</li>
-</ul>
-</ul>
-</li>
-              
-            
-            
-            
-            
-            
-          </ul>
-
-          
-            
-<form class="navbar-form navbar-right" action="../search.html" method="get">
- <div class="form-group">
-  <input type="text" name="q" class="form-control" placeholder="Search" />
- </div>
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
-          
-        </div>
-    </div>
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
   </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
-<div class="container">
-  <div class="row">
-    <div class="body col-md-12 content" role="main">
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    
+    
+    
+    <img src="../_static/moabb_logo.svg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/moabb_logo.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
       
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install/install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../overview.html">
+                        Overview
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_tutorials/index.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../main_concepts.html">
+                        How does Moabb work?
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../whats_new.html">
+                        What's new
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install/install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../overview.html">
+                        Overview
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../auto_tutorials/index.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../main_concepts.html">
+                        How does Moabb work?
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../whats_new.html">
+                        What's new
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../auto_tutorials/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking mulitple pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="changing_download_directory.html">Change Download Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Benchmarking with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_braindecode.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_cross_session_motor_imagery.html">Cross-Session Motor Imagery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_within_session_ssvep.html">Within Session SSVEP</a></li>
+</ul>
+</li>
+
+
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.AlexMI.html">moabb.datasets.AlexMI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.BNCI2014001.html">moabb.datasets.BNCI2014001</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.BNCI2014002.html">moabb.datasets.BNCI2014002</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.BNCI2014004.html">moabb.datasets.BNCI2014004</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.BNCI2015001.html">moabb.datasets.BNCI2015001</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.BNCI2015004.html">moabb.datasets.BNCI2015004</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Cho2017.html">moabb.datasets.Cho2017</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Lee2019_MI.html">moabb.datasets.Lee2019_MI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.MunichMI.html">moabb.datasets.MunichMI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Ofner2017.html">moabb.datasets.Ofner2017</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.PhysionetMI.html">moabb.datasets.PhysionetMI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Schirrmeister2017.html">moabb.datasets.Schirrmeister2017</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Shin2017A.html">moabb.datasets.Shin2017A</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Shin2017B.html">moabb.datasets.Shin2017B</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Weibo2014.html">moabb.datasets.Weibo2014</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Zhou2016.html">moabb.datasets.Zhou2016</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.bi2012.html">moabb.datasets.bi2012</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.bi2013a.html">moabb.datasets.bi2013a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.bi2014a.html">moabb.datasets.bi2014a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.bi2014b.html">moabb.datasets.bi2014b</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.bi2015a.html">moabb.datasets.bi2015a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.bi2015b.html">moabb.datasets.bi2015b</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.VirtualReality.html">moabb.datasets.VirtualReality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.BNCI2014008.html">moabb.datasets.BNCI2014008</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.BNCI2014009.html">moabb.datasets.BNCI2014009</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.BNCI2015003.html">moabb.datasets.BNCI2015003</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.DemonsP300.html">moabb.datasets.DemonsP300</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.EPFLP300.html">moabb.datasets.EPFLP300</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Huebner2017.html">moabb.datasets.Huebner2017</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Huebner2018.html">moabb.datasets.Huebner2018</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Lee2019_ERP.html">moabb.datasets.Lee2019_ERP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Sosulski2019.html">moabb.datasets.Sosulski2019</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.SSVEPExo.html">moabb.datasets.SSVEPExo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Nakanishi2015.html">moabb.datasets.Nakanishi2015</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Wang2016.html">moabb.datasets.Wang2016</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.MAMEM1.html">moabb.datasets.MAMEM1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.MAMEM2.html">moabb.datasets.MAMEM2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.MAMEM3.html">moabb.datasets.MAMEM3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.fake.FakeVirtualRealityDataset.html">moabb.datasets.fake.FakeVirtualRealityDataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.data_path.html">moabb.datasets.download.data_path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.data_dl.html">moabb.datasets.download.data_dl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.fs_issue_request.html">moabb.datasets.download.fs_issue_request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.fs_get_file_list.html">moabb.datasets.download.fs_get_file_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.fs_get_file_hash.html">moabb.datasets.download.fs_get_file_hash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.fs_get_file_id.html">moabb.datasets.download.fs_get_file_id</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.fs_get_file_name.html">moabb.datasets.download.fs_get_file_name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.utils.dataset_search.html">moabb.datasets.utils.dataset_search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.utils.find_intersecting_channels.html">moabb.datasets.utils.find_intersecting_channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.WithinSessionEvaluation.html">moabb.evaluations.WithinSessionEvaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.CrossSessionEvaluation.html">moabb.evaluations.CrossSessionEvaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.CrossSubjectEvaluation.html">moabb.evaluations.CrossSubjectEvaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.base.BaseEvaluation.html">moabb.evaluations.base.BaseEvaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.MotorImagery.html">moabb.paradigms.MotorImagery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.LeftRightImagery.html">moabb.paradigms.LeftRightImagery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FilterBankLeftRightImagery.html">moabb.paradigms.FilterBankLeftRightImagery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FilterBankMotorImagery.html">moabb.paradigms.FilterBankMotorImagery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.SinglePass.html">moabb.paradigms.SinglePass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.P300.html">moabb.paradigms.P300</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.SSVEP.html">moabb.paradigms.SSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FilterBankSSVEP.html">moabb.paradigms.FilterBankSSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.motor_imagery.BaseMotorImagery.html">moabb.paradigms.motor_imagery.BaseMotorImagery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.motor_imagery.SinglePass.html">moabb.paradigms.motor_imagery.SinglePass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.motor_imagery.FilterBank.html">moabb.paradigms.motor_imagery.FilterBank</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.p300.BaseP300.html">moabb.paradigms.p300.BaseP300</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.ssvep.BaseSSVEP.html">moabb.paradigms.ssvep.BaseSSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.base.BaseParadigm.html">moabb.paradigms.base.BaseParadigm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.LogVariance.html">moabb.pipelines.features.LogVariance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.FM.html">moabb.pipelines.features.FM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.ExtendedSSVEPSignal.html">moabb.pipelines.features.ExtendedSSVEPSignal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.AugmentedDataset.html">moabb.pipelines.features.AugmentedDataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.StandardScaler_Epoch.html">moabb.pipelines.features.StandardScaler_Epoch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.csp.TRCSP.html">moabb.pipelines.csp.TRCSP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.classification.SSVEP_CCA.html">moabb.pipelines.classification.SSVEP_CCA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasDeepConvNet.html">moabb.pipelines.deep_learning.KerasDeepConvNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasEEGITNet.html">moabb.pipelines.deep_learning.KerasEEGITNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasEEGNet_8_2.html">moabb.pipelines.deep_learning.KerasEEGNet_8_2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasEEGNeX.html">moabb.pipelines.deep_learning.KerasEEGNeX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasEEGTCNet.html">moabb.pipelines.deep_learning.KerasEEGTCNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasShallowConvNet.html">moabb.pipelines.deep_learning.KerasShallowConvNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.utils.create_pipeline_from_config.html">moabb.pipelines.utils.create_pipeline_from_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.utils.FilterBank.html">moabb.pipelines.utils.FilterBank</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.utils_deep_model.EEGNet.html">moabb.pipelines.utils_deep_model.EEGNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.utils_deep_model.EEGNet_TC.html">moabb.pipelines.utils_deep_model.EEGNet_TC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.utils_deep_model.TCN_block.html">moabb.pipelines.utils_deep_model.TCN_block</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html">moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.utils_pytorch.InputShapeSetterEEG.html">moabb.pipelines.utils_pytorch.InputShapeSetterEEG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.analysis.plotting.score_plot.html">moabb.analysis.plotting.score_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.analysis.plotting.paired_plot.html">moabb.analysis.plotting.paired_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.analysis.plotting.summary_plot.html">moabb.analysis.plotting.summary_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.analysis.plotting.meta_analysis_plot.html">moabb.analysis.plotting.meta_analysis_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.analysis.meta_analysis.find_significant_differences.html">moabb.analysis.meta_analysis.find_significant_differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.analysis.meta_analysis.compute_dataset_statistics.html">moabb.analysis.meta_analysis.compute_dataset_statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.analysis.meta_analysis.combine_effects.html">moabb.analysis.meta_analysis.combine_effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.analysis.meta_analysis.combine_pvalues.html">moabb.analysis.meta_analysis.combine_pvalues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.analysis.meta_analysis.collapse_session_scores.html">moabb.analysis.meta_analysis.collapse_session_scores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.benchmark.html">moabb.benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.set_log_level.html">moabb.set_log_level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.setup_seed.html">moabb.setup_seed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.set_download_dir.html">moabb.set_download_dir</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../overview.html" class="nav-link">Documentation overview</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-benchmark-braindecode-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="benchmarking-on-moabb-with-braindecode-pytorch-deep-net-architectures">
-<span id="sphx-glr-auto-examples-plot-benchmark-braindecode-py"></span><h1>Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures<a class="headerlink" href="#benchmarking-on-moabb-with-braindecode-pytorch-deep-net-architectures" title="Permalink to this heading">¶</a></h1>
+<span id="sphx-glr-auto-examples-plot-benchmark-braindecode-py"></span><h1>Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures<a class="headerlink" href="#benchmarking-on-moabb-with-braindecode-pytorch-deep-net-architectures" title="Permalink to this heading">#</a></h1>
 <p>This example shows how to use MOABB to benchmark a set of Braindecode pipelines (deep learning
 architectures) on all available datasets.
 For this example, we will use only 2 datasets to keep the computation time low, but this benchmark is designed
@@ -177,13 +592,13 @@ to easily scale to many datasets.</p>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">absl.logging</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ERROR</span></a><span class="p">,</span> <span class="n">set_verbosity</span>
 
-<span class="kn">from</span> <span class="nn">moabb</span> <span class="kn">import</span> <span class="n">benchmark</span><span class="p">,</span> <span class="n">set_log_level</span>
-<span class="kn">from</span> <span class="nn">moabb.analysis.plotting</span> <span class="kn">import</span> <span class="n">score_plot</span>
-<span class="kn">from</span> <span class="nn">moabb.datasets</span> <span class="kn">import</span> <span class="n">BNCI2014001</span><span class="p">,</span> <span class="n">BNCI2014004</span>
-<span class="kn">from</span> <span class="nn">moabb.utils</span> <span class="kn">import</span> <span class="n">setup_seed</span>
+<span class="kn">from</span> <span class="nn">moabb</span> <span class="kn">import</span> <a href="../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">,</span> <a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a>
+<span class="kn">from</span> <span class="nn">moabb.analysis.plotting</span> <span class="kn">import</span> <a href="../generated/moabb.analysis.plotting.score_plot.html#moabb.analysis.plotting.score_plot" title="moabb.analysis.plotting.score_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">score_plot</span></a>
+<span class="kn">from</span> <span class="nn">moabb.datasets</span> <span class="kn">import</span> <a href="../generated/moabb.datasets.BNCI2014001.html#moabb.datasets.BNCI2014001" title="moabb.datasets.BNCI2014001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014001</span></a><span class="p">,</span> <a href="../generated/moabb.datasets.BNCI2014004.html#moabb.datasets.BNCI2014004" title="moabb.datasets.BNCI2014004" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014004</span></a>
+<span class="kn">from</span> <span class="nn">moabb.utils</span> <span class="kn">import</span> <a href="../generated/moabb.setup_seed.html#moabb.setup_seed" title="moabb.setup_seed" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">setup_seed</span></a>
 
 
-<span class="n">set_log_level</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
+<a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
 <span class="c1"># Avoid output Warning</span>
 <span class="n">set_verbosity</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ERROR</span></a><span class="p">)</span>
 <a href="https://docs.python.org/3/library/os.html#os.environ" title="os.environ" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-data"><span class="n">os</span><span class="o">.</span><span class="n">environ</span></a><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;3&quot;</span>
@@ -192,7 +607,7 @@ to easily scale to many datasets.</p>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Torch Version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># Set up GPU if it is there</span>
-<a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="o">.</span><span class="n">is_available</span><span class="p">()</span>
+<a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.cuda.is_available.html#torch.cuda.is_available" title="torch.cuda.is_available" class="sphx-glr-backref-module-torch-cuda sphx-glr-backref-type-py-function"><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">device</span></a> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GPU is&quot;</span><span class="p">,</span> <span class="s2">&quot;AVAILABLE&quot;</span> <span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a> <span class="k">else</span> <span class="s2">&quot;NOT AVAILABLE&quot;</span><span class="p">)</span>
 </pre></div>
@@ -203,7 +618,7 @@ GPU is NOT AVAILABLE
 </div>
 <p>In this example, we will use only 2 subjects from the dataset <code class="docutils literal notranslate"><span class="pre">BNCI2014001</span></code> and <code class="docutils literal notranslate"><span class="pre">BNCI2014004</span></code>.</p>
 <section id="running-the-benchmark">
-<h2>Running the benchmark<a class="headerlink" href="#running-the-benchmark" title="Permalink to this heading">¶</a></h2>
+<h2>Running the benchmark<a class="headerlink" href="#running-the-benchmark" title="Permalink to this heading">#</a></h2>
 <p>The benchmark is run using the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> function. You need to specify the
 folder containing the pipelines, the kind of evaluation, and the paradigm
 to use. By default, the benchmark will use all available datasets for all
@@ -220,16 +635,16 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
 we need to call each pipeline as “braindecode_xxx…”, with xxx the name of the model to be
 handled correctly by the benchmark function.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up reproducibility of Tensorflow</span>
-<span class="n">setup_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<a href="../generated/moabb.setup_seed.html#moabb.setup_seed" title="moabb.setup_seed" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">setup_seed</span></a><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 
 <span class="c1"># Restrict this example only to the first two subjects of BNCI2014001</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">BNCI2014001</span><span class="p">()</span>
-<span class="n">dataset2</span> <span class="o">=</span> <span class="n">BNCI2014004</span><span class="p">()</span>
+<a href="../generated/moabb.datasets.BNCI2014001.html#moabb.datasets.BNCI2014001" title="moabb.datasets.BNCI2014001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../generated/moabb.datasets.BNCI2014001.html#moabb.datasets.BNCI2014001" title="moabb.datasets.BNCI2014001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014001</span></a><span class="p">()</span>
+<a href="../generated/moabb.datasets.BNCI2014004.html#moabb.datasets.BNCI2014004" title="moabb.datasets.BNCI2014004" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset2</span></a> <span class="o">=</span> <a href="../generated/moabb.datasets.BNCI2014004.html#moabb.datasets.BNCI2014004" title="moabb.datasets.BNCI2014004" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014004</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span></a><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset2</span><span class="o">.</span><span class="n">subject_list</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset2</span><span class="o">.</span><span class="n">subject_list</span></a><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">dataset</span><span class="p">,</span> <span class="n">dataset2</span><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a> <span class="o">=</span> <span class="p">[</span><a href="../generated/moabb.datasets.BNCI2014001.html#moabb.datasets.BNCI2014001" title="moabb.datasets.BNCI2014001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="../generated/moabb.datasets.BNCI2014004.html#moabb.datasets.BNCI2014004" title="moabb.datasets.BNCI2014004" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset2</span></a><span class="p">]</span>
 
-<span class="n">results</span> <span class="o">=</span> <span class="n">benchmark</span><span class="p">(</span>
+<span class="n">results</span> <span class="o">=</span> <a href="../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">(</span>
     <span class="n">pipelines</span><span class="o">=</span><span class="s2">&quot;./pipelines_braindecode&quot;</span><span class="p">,</span>
     <span class="n">evaluations</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CrossSession&quot;</span><span class="p">],</span>
     <span class="n">paradigms</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;LeftRightImagery&quot;</span><span class="p">],</span>
@@ -247,18 +662,18 @@ Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4688        0.6933       0.5172        0.6931  0.4561
-      2       0.4531        0.6933       0.5172        0.6931  0.3799
-      3       0.4531        0.6933       0.5172        0.6931  0.3926
+      1       0.5938        0.6926       0.4828        0.6932  0.4053
+      2       0.6094        0.6929       0.4828        0.6932  0.3405
+      3       0.5000        0.6932       0.4828        0.6932  0.3232
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4062        0.6933       0.4828        0.6931  0.3332
-      2       0.5000        0.6930       0.5172        0.6931  0.3635
-      3       0.5156        0.6933       0.5172        0.6931  0.3591
+      1       0.5156        0.6932       0.4828        0.6932  0.3497
+      2       0.5625        0.6930       0.4828        0.6932  0.3462
+      3       0.6250        0.6928       0.4828        0.6932  0.3383
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
@@ -267,1189 +682,951 @@ Re-initializing optimizer.
   return F.conv2d(input, weight, bias, self.stride,
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.3438        0.7798       0.4828        0.6932  1.3684
-      2       0.5469        0.7512       0.4828        0.6932  1.2176
-      3       0.5625        0.7286       0.4828        0.6932  1.1564
+      1       0.5312        0.7290       0.4828        0.6932  1.6331
+      2       0.5625        0.6976       0.4828        0.6932  1.1616
+      3       0.4531        0.7646       0.4828        0.6932  1.1416
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4688        0.7585       0.5172        0.6931  1.1328
-      2       0.5938        0.6700       0.5172        0.6931  1.1149
-      3       0.5469        0.7348       0.5172        0.6931  1.0248
-      4       0.5000        0.7239       0.5172        0.6930  1.0232
-      5       0.5156        0.7270       0.5172        0.6930  1.0182
-      6       0.5312        0.7038       0.5172        0.6930  1.0790
+      1       0.4844        0.7431       0.4828        0.6932  0.9838
+      2       0.5781        0.7002       0.4828        0.6933  0.9862
+      3       0.4531        0.7483       0.4828        0.6934  0.9674
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4688       27.7238       0.4828       23.0197  1.1689
-      2       0.4219       25.3798       0.4828       19.5681  1.1615
-      3       0.3594       20.9908       0.4828       16.1227  1.1306
-      4       0.4531       16.6282       0.4828       12.7135  1.1309
-      5       0.5156       13.1177       0.4828        9.4177  1.1248
-      6       0.5312       11.1069       0.4828        6.2422  1.1344
-      7       0.4219       15.1638       0.4828        3.1580  1.1236
-      8       0.3906       12.4019       0.4828        0.7508  1.1212
-      9       0.5469        8.5225       0.5172        1.8336  1.1230
-     10       0.4531        8.7748       0.5172        3.7591  1.1233
+      1       0.4688       31.2294       0.4828       25.5928  1.1933
+      2       0.5312       25.1466       0.4828       22.1413  1.1860
+      3       0.5000       22.2743       0.4828       18.7141  1.1877
+      4       0.4219       24.9063       0.4828       15.3106  1.7165
+      5       0.5000       18.8718       0.4828       11.9077  1.2372
+      6       0.5000       14.0553       0.4828        8.5192  1.1920
+      7       0.5938        9.4381       0.4828        5.3061  1.1928
+      8       0.5625       11.5030       0.4828        2.3629  1.1887
+      9       0.3906       12.9324       0.5172        0.7117  1.2021
+     10       0.4531       12.1505       0.5172        2.3711  1.1990
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4531       13.2854       0.5172        0.9602  1.1133
-      2       0.5938        7.8604       0.4828        1.0337  1.1228
-      3       0.5312        9.7065       0.4828        2.1438  1.1216
+      1       0.4531       18.7450       0.4828       12.8282  1.2082
+      2       0.5312       13.4837       0.4828        9.4254  1.2057
+      3       0.5312       10.3246       0.4828        6.3896  1.1982
+      4       0.3906       16.2439       0.4828        3.3260  1.2048
+      5       0.4531       15.0198       0.4828        0.8792  1.1978
+      6       0.4531       11.3259       0.5172        1.7566  1.2039
+      7       0.4531       11.2400       0.5172        3.9089  1.2001
 Stopping since valid_loss has not improved in the last 3 epochs.
 
-001-2014-CrossSession:  50%|#####     | 1/2 [00:47&lt;00:47, 47.93s/it]Re-initializing module because the following parameters were re-set: module.
+001-2014-CrossSession:  50%|#####     | 1/2 [00:51&lt;00:51, 51.95s/it]Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156        0.6931       0.5172        0.6931  0.3909
-      2       0.5469        0.6929       0.5172        0.6931  0.3754
-      3       0.5156        0.6932       0.5172        0.6931  0.3718
+      1       0.3906        0.6933       0.5172        0.6931  0.3096
+      2       0.5000        0.6931       0.5172        0.6931  0.3018
+      3       0.5781        0.6930       0.5172        0.6931  0.3146
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5625        0.6927       0.5172        0.6931  0.3664
-      2       0.5625        0.6931       0.5172        0.6931  0.3693
-      3       0.6406        0.6924       0.4828        0.6932  0.3764
+      1       0.5469        0.6936       0.5172        0.6931  0.3194
+      2       0.4062        0.6935       0.5172        0.6931  0.2872
+      3       0.4844        0.6937       0.5172        0.6931  0.3306
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5938        0.6882       0.5172        0.6931  1.0259
-      2       0.6562        0.6543       0.5172        0.6931  0.9102
-      3       0.6094        0.6568       0.5172        0.6931  1.0374
+      1       0.5312        0.7123       0.5172        0.6931  0.9917
+      2       0.5469        0.7049       0.5172        0.6930  1.0026
+      3       0.4844        0.7450       0.5172        0.6930  0.9915
+      4       0.5469        0.6997       0.5172        0.6929  0.9928
+      5       0.5156        0.7428       0.5172        0.6929  1.0065
+      6       0.4844        0.7440       0.5172        0.6929  0.9779
+      7       0.4531        0.7543       0.5172        0.6928  0.9751
+      8       0.5781        0.7044       0.5172        0.6928  0.9446
+      9       0.4375        0.7587       0.5172        0.6928  1.0163
+     10       0.5938        0.6994       0.5172        0.6927  1.0032
+Re-initializing module because the following parameters were re-set: module.
+Re-initializing criterion.
+Re-initializing optimizer.
+  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
+-------  -----------  ------------  -----------  ------------  ------
+      1       0.5156        0.7392       0.5172        0.6931  0.9996
+      2       0.6406        0.6601       0.5172        0.6931  0.9928
+      3       0.4844        0.7292       0.5172        0.6931  1.0432
+      4       0.4375        0.7747       0.5172        0.6930  0.9594
+      5       0.5156        0.7088       0.5172        0.6930  0.9880
+      6       0.4531        0.7531       0.5172        0.6930  0.9680
+      7       0.5000        0.7286       0.5172        0.6929  1.0379
+      8       0.4844        0.7239       0.5172        0.6929  1.0030
+      9       0.4375        0.7664       0.5172        0.6929  1.0075
+     10       0.5312        0.7102       0.5172        0.6929  0.9385
+Re-initializing module because the following parameters were re-set: module.
+Re-initializing criterion.
+Re-initializing optimizer.
+  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
+-------  -----------  ------------  -----------  ------------  ------
+      1       0.4219       19.2134       0.5172        9.6243  1.2647
+      2       0.4531       15.0921       0.5172        6.4345  1.4637
+      3       0.4531       11.4304       0.5172        3.2574  1.2712
+      4       0.5156       10.8915       0.5172        0.7841  1.2244
+      5       0.4375        9.8575       0.4828        1.7057  2.2880
+      6       0.3906       12.9085       0.4828        3.3699  1.2694
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4688        0.7668       0.4828        0.6932  0.9630
-      2       0.4062        0.7538       0.4828        0.6933  0.9993
-      3       0.5469        0.7062       0.4828        0.6933  1.0410
-Stopping since valid_loss has not improved in the last 3 epochs.
-Re-initializing module because the following parameters were re-set: module.
-Re-initializing criterion.
-Re-initializing optimizer.
-  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
--------  -----------  ------------  -----------  ------------  ------
-      1       0.4844       14.3689       0.5172        6.7214  1.1636
-      2       0.5469       10.5937       0.5172        4.6868  1.1379
-      3       0.5312        9.3564       0.5172        2.4372  1.1440
-      4       0.4531       12.7838       0.5172        0.7123  1.1413
-      5       0.4531       10.4121       0.4828        2.0288  1.1366
-      6       0.4531       12.3265       0.4828        4.2991  1.1363
-Stopping since valid_loss has not improved in the last 3 epochs.
-Re-initializing module because the following parameters were re-set: module.
-Re-initializing criterion.
-Re-initializing optimizer.
-  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
--------  -----------  ------------  -----------  ------------  ------
-      1       0.5469       22.5475       0.4828       21.0031  1.1513
-      2       0.4844       20.9980       0.4828       17.5455  1.1303
-      3       0.4844       16.7448       0.4828       14.1628  1.1298
-      4       0.5469       16.8429       0.4828       10.8096  1.1368
-      5       0.5000       14.8197       0.4828        7.4715  1.1371
-      6       0.5625        9.8160       0.4828        4.2562  1.1394
-      7       0.4219       13.6924       0.4828        1.2905  1.1332
-      8       0.5625        9.2381       0.5172        1.4640  1.1298
-      9       0.4844       11.6585       0.5172        3.5749  1.1470
+      1       0.5469       12.4200       0.4828        0.7023  1.1752
+      2       0.6094       10.4529       0.5172        1.3683  1.2037
+      3       0.6406        8.0046       0.5172        2.4566  1.1566
 Stopping since valid_loss has not improved in the last 3 epochs.
 
-001-2014-CrossSession: 100%|##########| 2/2 [01:34&lt;00:00, 47.36s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [01:34&lt;00:00, 47.45s/it]
+001-2014-CrossSession: 100%|##########| 2/2 [01:47&lt;00:00, 53.82s/it]
+001-2014-CrossSession: 100%|##########| 2/2 [01:47&lt;00:00, 53.54s/it]
 
 004-2014-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
 
   0%|                                              | 0.00/34.2M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/34.2M [00:00&lt;08:33, 66.6kB/s]
+  0%|                                      | 32.8k/34.2M [00:00&lt;03:30, 162kB/s]
 
-  0%|                                      | 24.6k/34.2M [00:00&lt;05:27, 105kB/s]
+  0%|                                      | 96.3k/34.2M [00:00&lt;01:36, 354kB/s]
 
-  0%|                                     | 35.8k/34.2M [00:00&lt;05:49, 97.7kB/s]
+  1%|▏                                      | 209k/34.2M [00:00&lt;00:53, 633kB/s]
 
-  0%|                                     | 46.1k/34.2M [00:00&lt;06:14, 91.3kB/s]
+  1%|▍                                     | 432k/34.2M [00:00&lt;00:28, 1.17MB/s]
 
-  0%|                                     | 56.3k/34.2M [00:00&lt;06:28, 87.8kB/s]
+  3%|▉                                     | 889k/34.2M [00:00&lt;00:14, 2.26MB/s]
 
-  0%|                                      | 72.7k/34.2M [00:00&lt;05:33, 102kB/s]
+  5%|█▉                                   | 1.80M/34.2M [00:00&lt;00:07, 4.38MB/s]
 
-  0%|                                     | 82.9k/34.2M [00:00&lt;05:57, 95.5kB/s]
+ 11%|███▉                                 | 3.62M/34.2M [00:00&lt;00:03, 8.59MB/s]
 
-  0%|                                     | 96.3k/34.2M [00:01&lt;05:45, 98.8kB/s]
+ 19%|███████▏                             | 6.66M/34.2M [00:00&lt;00:01, 15.1MB/s]
 
-  0%|▏                                      | 113k/34.2M [00:01&lt;05:13, 109kB/s]
+ 27%|██████████▏                          | 9.40M/34.2M [00:01&lt;00:01, 18.4MB/s]
 
-  0%|▏                                      | 128k/34.2M [00:01&lt;05:01, 113kB/s]
+ 35%|████████████▊                        | 11.8M/34.2M [00:01&lt;00:01, 19.9MB/s]
 
-  0%|▏                                      | 144k/34.2M [00:01&lt;04:48, 118kB/s]
+ 43%|███████████████▊                     | 14.6M/34.2M [00:01&lt;00:00, 22.2MB/s]
 
-  0%|▏                                      | 168k/34.2M [00:01&lt;04:04, 139kB/s]
+ 52%|███████████████████▏                 | 17.7M/34.2M [00:01&lt;00:00, 24.6MB/s]
 
-  1%|▏                                      | 184k/34.2M [00:01&lt;04:08, 137kB/s]
+ 60%|██████████████████████▏              | 20.5M/34.2M [00:01&lt;00:00, 25.2MB/s]
 
-  1%|▏                                      | 201k/34.2M [00:01&lt;04:12, 135kB/s]
+ 68%|█████████████████████████▏           | 23.2M/34.2M [00:01&lt;00:00, 25.7MB/s]
 
-  1%|▎                                      | 224k/34.2M [00:01&lt;03:45, 151kB/s]
+ 76%|████████████████████████████▏        | 26.0M/34.2M [00:01&lt;00:00, 26.1MB/s]
 
-  1%|▎                                      | 249k/34.2M [00:02&lt;03:26, 164kB/s]
+ 85%|███████████████████████████████▎     | 28.9M/34.2M [00:01&lt;00:00, 26.8MB/s]
 
-  1%|▎                                      | 272k/34.2M [00:02&lt;03:18, 171kB/s]
-
-  1%|▎                                      | 296k/34.2M [00:02&lt;03:12, 176kB/s]
-
-  1%|▎                                      | 321k/34.2M [00:02&lt;03:06, 182kB/s]
-
-  1%|▍                                      | 344k/34.2M [00:02&lt;03:04, 184kB/s]
-
-  1%|▍                                      | 377k/34.2M [00:02&lt;02:43, 207kB/s]
-
-  1%|▍                                      | 409k/34.2M [00:02&lt;02:33, 221kB/s]
-
-  1%|▌                                      | 440k/34.2M [00:02&lt;02:26, 230kB/s]
-
-  1%|▌                                      | 472k/34.2M [00:03&lt;02:22, 237kB/s]
-
-  1%|▌                                      | 505k/34.2M [00:03&lt;02:17, 244kB/s]
-
-  2%|▌                                      | 537k/34.2M [00:03&lt;02:16, 247kB/s]
-
-  2%|▋                                      | 568k/34.2M [00:03&lt;02:14, 249kB/s]
-
-  2%|▋                                      | 608k/34.2M [00:03&lt;02:04, 270kB/s]
-
-  2%|▋                                      | 648k/34.2M [00:03&lt;01:58, 284kB/s]
-
-  2%|▊                                      | 688k/34.2M [00:03&lt;01:53, 294kB/s]
-
-  2%|▊                                      | 736k/34.2M [00:03&lt;01:44, 321kB/s]
-
-  2%|▉                                      | 784k/34.2M [00:04&lt;01:38, 340kB/s]
-
-  2%|▉                                      | 833k/34.2M [00:04&lt;01:34, 352kB/s]
-
-  3%|█                                      | 881k/34.2M [00:04&lt;01:32, 362kB/s]
-
-  3%|█                                      | 944k/34.2M [00:04&lt;01:22, 405kB/s]
-
-  3%|█                                     | 1.00M/34.2M [00:04&lt;01:19, 418kB/s]
-
-  3%|█▏                                    | 1.07M/34.2M [00:04&lt;01:11, 464kB/s]
-
-  3%|█▎                                    | 1.14M/34.2M [00:04&lt;01:09, 479kB/s]
-
-  4%|█▎                                    | 1.22M/34.2M [00:04&lt;01:02, 526kB/s]
-
-  4%|█▍                                    | 1.30M/34.2M [00:05&lt;00:58, 559kB/s]
-
-  4%|█▌                                    | 1.38M/34.2M [00:05&lt;00:54, 601kB/s]
-
-  4%|█▋                                    | 1.47M/34.2M [00:05&lt;00:51, 631kB/s]
-
-  5%|█▋                                    | 1.57M/34.2M [00:05&lt;00:48, 671kB/s]
-
-  5%|█▊                                    | 1.67M/34.2M [00:05&lt;00:45, 718kB/s]
-
-  5%|█▉                                    | 1.78M/34.2M [00:05&lt;00:42, 770kB/s]
-
-  6%|██                                    | 1.90M/34.2M [00:05&lt;00:39, 825kB/s]
-
-  6%|██▏                                   | 2.02M/34.2M [00:05&lt;00:37, 863kB/s]
-
-  6%|██▍                                   | 2.16M/34.2M [00:06&lt;00:34, 930kB/s]
-
-  7%|██▌                                   | 2.30M/34.2M [00:06&lt;00:32, 993kB/s]
-
-  7%|██▋                                  | 2.45M/34.2M [00:06&lt;00:30, 1.04MB/s]
-
-  8%|██▊                                  | 2.61M/34.2M [00:06&lt;00:28, 1.11MB/s]
-
-  8%|███                                  | 2.78M/34.2M [00:06&lt;00:26, 1.17MB/s]
-
-  9%|███▏                                 | 2.94M/34.2M [00:06&lt;00:25, 1.23MB/s]
-
-  9%|███▍                                 | 3.14M/34.2M [00:06&lt;00:23, 1.32MB/s]
-
- 10%|███▌                                 | 3.33M/34.2M [00:06&lt;00:22, 1.38MB/s]
-
- 10%|███▊                                 | 3.54M/34.2M [00:07&lt;00:20, 1.46MB/s]
-
- 11%|████                                 | 3.75M/34.2M [00:07&lt;00:19, 1.54MB/s]
-
- 12%|████▎                                | 3.98M/34.2M [00:07&lt;00:18, 1.63MB/s]
-
- 12%|████▌                                | 4.22M/34.2M [00:07&lt;00:17, 1.72MB/s]
-
- 13%|████▊                                | 4.47M/34.2M [00:07&lt;00:16, 1.80MB/s]
-
- 14%|█████                                | 4.74M/34.2M [00:07&lt;00:15, 1.89MB/s]
-
- 15%|█████▍                               | 5.02M/34.2M [00:07&lt;00:14, 1.99MB/s]
-
- 16%|█████▋                               | 5.31M/34.2M [00:07&lt;00:13, 2.10MB/s]
-
- 16%|██████                               | 5.62M/34.2M [00:08&lt;00:13, 2.20MB/s]
-
- 17%|██████▍                              | 5.94M/34.2M [00:08&lt;00:12, 2.30MB/s]
-
- 18%|██████▊                              | 6.28M/34.2M [00:08&lt;00:11, 2.43MB/s]
-
- 19%|███████▏                             | 6.63M/34.2M [00:08&lt;00:10, 2.55MB/s]
-
- 20%|███████▌                             | 7.00M/34.2M [00:08&lt;00:10, 2.67MB/s]
-
- 22%|███████▉                             | 7.39M/34.2M [00:08&lt;00:09, 2.81MB/s]
-
- 23%|████████▍                            | 7.81M/34.2M [00:08&lt;00:08, 2.94MB/s]
-
- 24%|████████▉                            | 8.23M/34.2M [00:08&lt;00:08, 3.09MB/s]
-
- 25%|█████████▍                           | 8.69M/34.2M [00:09&lt;00:07, 3.25MB/s]
-
- 27%|█████████▉                           | 9.17M/34.2M [00:09&lt;00:07, 3.41MB/s]
-
- 28%|██████████▍                          | 9.66M/34.2M [00:09&lt;00:06, 3.59MB/s]
-
- 30%|███████████                          | 10.2M/34.2M [00:09&lt;00:06, 3.78MB/s]
-
- 31%|███████████▌                         | 10.7M/34.2M [00:09&lt;00:05, 3.95MB/s]
-
- 33%|████████████▏                        | 11.3M/34.2M [00:09&lt;00:05, 4.15MB/s]
-
- 35%|████████████▉                        | 11.9M/34.2M [00:09&lt;00:05, 4.34MB/s]
-
- 37%|█████████████▌                       | 12.6M/34.2M [00:09&lt;00:04, 4.57MB/s]
-
- 39%|██████████████▎                      | 13.2M/34.2M [00:10&lt;00:04, 4.80MB/s]
-
- 41%|███████████████                      | 13.9M/34.2M [00:10&lt;00:04, 5.02MB/s]
-
- 43%|███████████████▊                     | 14.7M/34.2M [00:10&lt;00:03, 5.28MB/s]
-
- 45%|████████████████▋                    | 15.4M/34.2M [00:10&lt;00:03, 5.55MB/s]
-
- 48%|█████████████████▌                   | 16.2M/34.2M [00:10&lt;00:03, 5.81MB/s]
-
- 50%|██████████████████▌                  | 17.1M/34.2M [00:10&lt;00:02, 6.11MB/s]
-
- 53%|███████████████████▍                 | 18.0M/34.2M [00:10&lt;00:02, 6.42MB/s]
-
- 55%|████████████████████▍                | 18.9M/34.2M [00:10&lt;00:02, 6.75MB/s]
-
- 58%|█████████████████████▌               | 19.9M/34.2M [00:11&lt;00:02, 7.10MB/s]
-
- 61%|██████████████████████▋              | 21.0M/34.2M [00:11&lt;00:01, 7.44MB/s]
-
- 64%|███████████████████████▊             | 22.1M/34.2M [00:11&lt;00:01, 7.80MB/s]
-
- 68%|█████████████████████████            | 23.2M/34.2M [00:11&lt;00:01, 8.20MB/s]
-
- 71%|██████████████████████████▍          | 24.4M/34.2M [00:11&lt;00:01, 8.59MB/s]
-
- 75%|███████████████████████████▋         | 25.6M/34.2M [00:11&lt;00:00, 9.01MB/s]
-
- 79%|█████████████████████████████▏       | 27.0M/34.2M [00:11&lt;00:00, 9.48MB/s]
-
- 83%|██████████████████████████████▋      | 28.4M/34.2M [00:11&lt;00:00, 9.95MB/s]
-
- 87%|████████████████████████████████▏    | 29.8M/34.2M [00:12&lt;00:00, 10.4MB/s]
-
- 92%|█████████████████████████████████▉   | 31.3M/34.2M [00:12&lt;00:00, 11.0MB/s]
-
- 96%|███████████████████████████████████▋ | 32.9M/34.2M [00:12&lt;00:00, 11.5MB/s]
+ 93%|██████████████████████████████████▍  | 31.8M/34.2M [00:01&lt;00:00, 27.3MB/s]
 
   0%|                                              | 0.00/34.2M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 34.2M/34.2M [00:00&lt;00:00, 51.8GB/s]
+100%|█████████████████████████████████████| 34.2M/34.2M [00:00&lt;00:00, 64.0GB/s]
 
 
   0%|                                              | 0.00/18.6M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/18.6M [00:00&lt;04:53, 63.4kB/s]
+  0%|                                      | 16.4k/18.6M [00:00&lt;01:54, 162kB/s]
 
-  0%|                                     | 24.6k/18.6M [00:00&lt;03:08, 98.4kB/s]
+  0%|                                      | 32.8k/18.6M [00:00&lt;01:54, 162kB/s]
 
-  0%|                                     | 34.8k/18.6M [00:00&lt;03:28, 89.0kB/s]
+  0%|                                      | 49.2k/18.6M [00:00&lt;01:54, 162kB/s]
 
-  0%|                                     | 44.0k/18.6M [00:00&lt;03:45, 82.1kB/s]
+  0%|▏                                     | 65.5k/18.6M [00:00&lt;01:54, 162kB/s]
 
-  0%|                                     | 56.3k/18.6M [00:00&lt;03:36, 85.7kB/s]
+  0%|▏                                     | 81.9k/18.6M [00:00&lt;02:33, 120kB/s]
 
-  0%|▏                                    | 72.7k/18.6M [00:00&lt;03:07, 99.0kB/s]
+  1%|▏                                     | 96.3k/18.6M [00:00&lt;02:27, 125kB/s]
 
-  0%|▏                                    | 82.9k/18.6M [00:00&lt;03:20, 92.5kB/s]
+  1%|▏                                      | 113k/18.6M [00:00&lt;02:16, 136kB/s]
 
-  1%|▏                                    | 96.3k/18.6M [00:01&lt;03:15, 94.9kB/s]
+  1%|▎                                      | 128k/18.6M [00:00&lt;02:11, 140kB/s]
 
-  1%|▏                                      | 113k/18.6M [00:01&lt;02:57, 104kB/s]
+  1%|▎                                      | 144k/18.6M [00:01&lt;02:05, 147kB/s]
 
-  1%|▎                                      | 128k/18.6M [00:01&lt;02:50, 108kB/s]
+  1%|▎                                      | 161k/18.6M [00:01&lt;02:01, 151kB/s]
 
-  1%|▎                                      | 144k/18.6M [00:01&lt;02:42, 114kB/s]
+  1%|▍                                      | 184k/18.6M [00:01&lt;01:44, 175kB/s]
 
-  1%|▎                                      | 161k/18.6M [00:01&lt;02:37, 117kB/s]
+  1%|▍                                      | 203k/18.6M [00:01&lt;01:43, 177kB/s]
 
-  1%|▍                                      | 184k/18.6M [00:01&lt;02:16, 135kB/s]
+  1%|▍                                      | 221k/18.6M [00:01&lt;01:42, 179kB/s]
 
-  1%|▍                                      | 201k/18.6M [00:01&lt;02:18, 132kB/s]
+  1%|▌                                      | 241k/18.6M [00:01&lt;01:40, 183kB/s]
 
-  1%|▍                                      | 224k/18.6M [00:01&lt;02:05, 146kB/s]
+  1%|▌                                      | 264k/18.6M [00:01&lt;01:32, 197kB/s]
 
-  1%|▌                                      | 249k/18.6M [00:02&lt;01:55, 158kB/s]
+  2%|▌                                      | 285k/18.6M [00:01&lt;01:31, 200kB/s]
 
-  1%|▌                                      | 265k/18.6M [00:02&lt;02:03, 149kB/s]
+  2%|▋                                      | 305k/18.6M [00:01&lt;01:31, 200kB/s]
 
-  2%|▌                                      | 296k/18.6M [00:02&lt;01:45, 174kB/s]
+  2%|▋                                      | 329k/18.6M [00:01&lt;01:26, 210kB/s]
 
-  2%|▋                                      | 321k/18.6M [00:02&lt;01:53, 161kB/s]
+  2%|▋                                      | 352k/18.6M [00:02&lt;01:24, 217kB/s]
 
-  2%|▋                                      | 352k/18.6M [00:02&lt;01:39, 184kB/s]
+  2%|▊                                      | 377k/18.6M [00:02&lt;01:21, 225kB/s]
 
-  2%|▊                                      | 377k/18.6M [00:02&lt;01:38, 184kB/s]
+  2%|▊                                      | 400k/18.6M [00:02&lt;01:20, 227kB/s]
 
-  2%|▊                                      | 409k/18.6M [00:02&lt;01:30, 201kB/s]
+  2%|▉                                      | 432k/18.6M [00:02&lt;01:11, 253kB/s]
 
-  2%|▉                                      | 440k/18.6M [00:03&lt;01:25, 213kB/s]
+  2%|▉                                      | 458k/18.6M [00:02&lt;01:11, 253kB/s]
 
-  3%|▉                                      | 472k/18.6M [00:03&lt;01:22, 221kB/s]
+  3%|█                                      | 483k/18.6M [00:02&lt;01:11, 253kB/s]
 
-  3%|█                                      | 505k/18.6M [00:03&lt;01:18, 229kB/s]
+  3%|█                                      | 512k/18.6M [00:02&lt;01:08, 263kB/s]
 
-  3%|█▏                                     | 545k/18.6M [00:03&lt;01:11, 251kB/s]
+  3%|█▏                                     | 539k/18.6M [00:02&lt;01:08, 263kB/s]
 
-  3%|█▏                                     | 577k/18.6M [00:03&lt;01:12, 248kB/s]
+  3%|█▏                                     | 568k/18.6M [00:02&lt;01:06, 273kB/s]
 
-  3%|█▎                                     | 616k/18.6M [00:03&lt;01:08, 264kB/s]
+  3%|█▎                                     | 600k/18.6M [00:02&lt;01:03, 285kB/s]
 
-  4%|█▍                                     | 665k/18.6M [00:03&lt;01:00, 294kB/s]
+  3%|█▎                                     | 633k/18.6M [00:03&lt;01:00, 297kB/s]
 
-  4%|█▍                                     | 705k/18.6M [00:03&lt;01:00, 297kB/s]
+  4%|█▍                                     | 665k/18.6M [00:03&lt;00:59, 302kB/s]
 
-  4%|█▌                                     | 761k/18.6M [00:04&lt;00:53, 336kB/s]
+  4%|█▍                                     | 696k/18.6M [00:03&lt;00:58, 306kB/s]
 
-  4%|█▋                                     | 808k/18.6M [00:04&lt;00:51, 342kB/s]
+  4%|█▌                                     | 728k/18.6M [00:03&lt;00:57, 308kB/s]
 
-  5%|█▊                                     | 864k/18.6M [00:04&lt;00:48, 368kB/s]
+  4%|█▌                                     | 761k/18.6M [00:03&lt;00:56, 313kB/s]
 
-  5%|█▉                                     | 921k/18.6M [00:04&lt;00:45, 392kB/s]
+  4%|█▋                                     | 801k/18.6M [00:03&lt;00:52, 338kB/s]
 
-  5%|██                                     | 984k/18.6M [00:04&lt;00:41, 420kB/s]
+  4%|█▊                                     | 835k/18.6M [00:03&lt;00:52, 337kB/s]
 
-  6%|██▏                                   | 1.06M/18.6M [00:04&lt;00:38, 459kB/s]
+  5%|█▊                                     | 872k/18.6M [00:03&lt;00:50, 348kB/s]
 
-  6%|██▎                                   | 1.14M/18.6M [00:04&lt;00:35, 497kB/s]
+  5%|█▉                                     | 908k/18.6M [00:03&lt;00:50, 350kB/s]
 
-  7%|██▍                                   | 1.22M/18.6M [00:05&lt;00:32, 529kB/s]
+  5%|█▉                                     | 944k/18.6M [00:03&lt;00:50, 352kB/s]
 
-  7%|██▋                                   | 1.30M/18.6M [00:05&lt;00:30, 571kB/s]
+  5%|██                                     | 980k/18.6M [00:04&lt;00:49, 352kB/s]
 
-  7%|██▊                                   | 1.39M/18.6M [00:05&lt;00:28, 608kB/s]
+  5%|██                                    | 1.02M/18.6M [00:04&lt;00:49, 356kB/s]
 
-  8%|███                                   | 1.50M/18.6M [00:05&lt;00:26, 654kB/s]
+  6%|██▏                                   | 1.06M/18.6M [00:04&lt;00:47, 368kB/s]
 
-  9%|███▎                                  | 1.60M/18.6M [00:05&lt;00:24, 704kB/s]
+  6%|██▏                                   | 1.10M/18.6M [00:04&lt;00:46, 376kB/s]
 
-  9%|███▍                                  | 1.71M/18.6M [00:05&lt;00:22, 748kB/s]
+  6%|██▎                                   | 1.14M/18.6M [00:04&lt;00:45, 382kB/s]
 
- 10%|███▊                                  | 1.84M/18.6M [00:05&lt;00:20, 805kB/s]
+  6%|██▍                                   | 1.18M/18.6M [00:04&lt;00:42, 411kB/s]
 
- 11%|████                                  | 1.97M/18.6M [00:05&lt;00:19, 866kB/s]
+  7%|██▌                                   | 1.23M/18.6M [00:04&lt;00:42, 412kB/s]
 
- 11%|████▎                                 | 2.10M/18.6M [00:06&lt;00:17, 917kB/s]
+  7%|██▌                                   | 1.27M/18.6M [00:04&lt;00:41, 413kB/s]
 
- 12%|████▌                                 | 2.25M/18.6M [00:06&lt;00:16, 971kB/s]
+  7%|██▋                                   | 1.31M/18.6M [00:04&lt;00:41, 420kB/s]
 
- 13%|████▊                                | 2.40M/18.6M [00:06&lt;00:15, 1.03MB/s]
+  7%|██▊                                   | 1.36M/18.6M [00:04&lt;00:40, 422kB/s]
 
- 14%|█████                                | 2.57M/18.6M [00:06&lt;00:14, 1.10MB/s]
+  8%|██▊                                   | 1.40M/18.6M [00:05&lt;00:40, 429kB/s]
 
- 15%|█████▍                               | 2.74M/18.6M [00:06&lt;00:13, 1.17MB/s]
+  8%|██▉                                   | 1.45M/18.6M [00:05&lt;00:38, 440kB/s]
 
- 16%|█████▊                               | 2.92M/18.6M [00:06&lt;00:12, 1.22MB/s]
+  8%|███                                   | 1.50M/18.6M [00:05&lt;00:37, 451kB/s]
 
- 17%|██████▏                              | 3.12M/18.6M [00:06&lt;00:11, 1.31MB/s]
+  8%|███▏                                  | 1.54M/18.6M [00:05&lt;00:37, 459kB/s]
 
- 18%|██████▌                              | 3.33M/18.6M [00:07&lt;00:10, 1.39MB/s]
+  9%|███▎                                  | 1.59M/18.6M [00:05&lt;00:36, 464kB/s]
 
- 19%|███████                              | 3.54M/18.6M [00:07&lt;00:10, 1.47MB/s]
+  9%|███▎                                  | 1.64M/18.6M [00:05&lt;00:36, 468kB/s]
 
- 20%|███████▍                             | 3.77M/18.6M [00:07&lt;00:09, 1.54MB/s]
+  9%|███▍                                  | 1.69M/18.6M [00:05&lt;00:35, 471kB/s]
 
- 22%|███████▉                             | 4.02M/18.6M [00:07&lt;00:08, 1.64MB/s]
+  9%|███▌                                  | 1.74M/18.6M [00:05&lt;00:33, 496kB/s]
 
- 23%|████████▍                            | 4.26M/18.6M [00:07&lt;00:08, 1.72MB/s]
+ 10%|███▋                                  | 1.80M/18.6M [00:05&lt;00:33, 497kB/s]
 
- 24%|█████████                            | 4.54M/18.6M [00:07&lt;00:07, 1.82MB/s]
+ 10%|███▊                                  | 1.85M/18.6M [00:05&lt;00:33, 504kB/s]
 
- 26%|█████████▌                           | 4.82M/18.6M [00:07&lt;00:07, 1.91MB/s]
+ 10%|███▉                                  | 1.90M/18.6M [00:06&lt;00:32, 521kB/s]
 
- 27%|██████████▏                          | 5.11M/18.6M [00:07&lt;00:06, 2.01MB/s]
+ 11%|████                                  | 1.96M/18.6M [00:06&lt;00:31, 527kB/s]
 
- 29%|██████████▊                          | 5.42M/18.6M [00:08&lt;00:06, 2.10MB/s]
+ 11%|████                                  | 2.01M/18.6M [00:06&lt;00:31, 527kB/s]
 
- 31%|███████████▍                         | 5.74M/18.6M [00:08&lt;00:05, 2.22MB/s]
+ 11%|████▏                                 | 2.07M/18.6M [00:06&lt;00:30, 549kB/s]
 
- 33%|████████████                         | 6.08M/18.6M [00:08&lt;00:05, 2.32MB/s]
+ 11%|████▎                                 | 2.14M/18.6M [00:06&lt;00:28, 573kB/s]
 
- 35%|████████████▊                        | 6.44M/18.6M [00:08&lt;00:04, 2.44MB/s]
+ 12%|████▌                                 | 2.21M/18.6M [00:06&lt;00:26, 617kB/s]
 
- 37%|█████████████▌                       | 6.82M/18.6M [00:08&lt;00:04, 2.57MB/s]
+ 12%|████▋                                 | 2.28M/18.6M [00:06&lt;00:25, 645kB/s]
 
- 39%|██████████████▎                      | 7.21M/18.6M [00:08&lt;00:04, 2.69MB/s]
+ 13%|████▊                                 | 2.36M/18.6M [00:06&lt;00:23, 689kB/s]
 
- 41%|███████████████▏                     | 7.62M/18.6M [00:08&lt;00:03, 2.83MB/s]
+ 13%|████▉                                 | 2.44M/18.6M [00:06&lt;00:22, 719kB/s]
 
- 43%|████████████████                     | 8.06M/18.6M [00:08&lt;00:03, 2.98MB/s]
+ 14%|█████▏                                | 2.53M/18.6M [00:06&lt;00:21, 765kB/s]
 
- 46%|████████████████▉                    | 8.52M/18.6M [00:09&lt;00:03, 3.13MB/s]
+ 14%|█████▎                                | 2.62M/18.6M [00:07&lt;00:20, 797kB/s]
 
- 48%|█████████████████▉                   | 9.00M/18.6M [00:09&lt;00:02, 3.28MB/s]
+ 15%|█████▌                                | 2.71M/18.6M [00:07&lt;00:18, 844kB/s]
 
- 51%|██████████████████▉                  | 9.50M/18.6M [00:09&lt;00:02, 3.45MB/s]
+ 15%|█████▊                                | 2.82M/18.6M [00:07&lt;00:17, 897kB/s]
 
- 54%|███████████████████▉                 | 10.0M/18.6M [00:09&lt;00:02, 3.62MB/s]
+ 16%|█████▉                                | 2.92M/18.6M [00:07&lt;00:16, 940kB/s]
 
- 57%|█████████████████████                | 10.6M/18.6M [00:09&lt;00:02, 3.79MB/s]
+ 16%|██████▏                               | 3.02M/18.6M [00:07&lt;00:16, 968kB/s]
 
- 60%|██████████████████████▏              | 11.2M/18.6M [00:09&lt;00:01, 4.28MB/s]
+ 17%|██████▎                              | 3.14M/18.6M [00:07&lt;00:14, 1.03MB/s]
 
- 62%|███████████████████████              | 11.6M/18.6M [00:09&lt;00:01, 4.04MB/s]
+ 18%|██████▍                              | 3.26M/18.6M [00:07&lt;00:14, 1.08MB/s]
 
- 65%|████████████████████████▏            | 12.2M/18.6M [00:10&lt;00:01, 4.12MB/s]
+ 18%|██████▊                              | 3.39M/18.6M [00:07&lt;00:13, 1.14MB/s]
 
- 69%|█████████████████████████▌           | 12.8M/18.6M [00:10&lt;00:01, 4.40MB/s]
+ 19%|███████                              | 3.53M/18.6M [00:07&lt;00:12, 1.20MB/s]
 
- 73%|██████████████████████████▉          | 13.5M/18.6M [00:10&lt;00:01, 4.67MB/s]
+ 20%|███████▎                             | 3.66M/18.6M [00:07&lt;00:12, 1.24MB/s]
 
- 77%|████████████████████████████▎        | 14.2M/18.6M [00:10&lt;00:00, 4.93MB/s]
+ 20%|███████▌                             | 3.81M/18.6M [00:08&lt;00:11, 1.30MB/s]
 
- 81%|█████████████████████████████▊       | 15.0M/18.6M [00:10&lt;00:00, 5.19MB/s]
+ 21%|███████▉                             | 3.96M/18.6M [00:08&lt;00:10, 1.36MB/s]
 
- 85%|███████████████████████████████▍     | 15.8M/18.6M [00:10&lt;00:00, 5.47MB/s]
+ 22%|████████▏                            | 4.12M/18.6M [00:08&lt;00:10, 1.43MB/s]
 
- 89%|█████████████████████████████████    | 16.6M/18.6M [00:10&lt;00:00, 5.73MB/s]
+ 23%|████████▌                            | 4.28M/18.6M [00:08&lt;00:09, 1.47MB/s]
 
- 94%|██████████████████████████████████▉  | 17.5M/18.6M [00:10&lt;00:00, 6.04MB/s]
+ 24%|████████▊                            | 4.46M/18.6M [00:08&lt;00:09, 1.55MB/s]
 
- 99%|████████████████████████████████████▋| 18.4M/18.6M [00:11&lt;00:00, 6.32MB/s]
+ 25%|█████████▏                           | 4.63M/18.6M [00:08&lt;00:08, 1.61MB/s]
+
+ 26%|█████████▌                           | 4.82M/18.6M [00:08&lt;00:08, 1.70MB/s]
+
+ 27%|█████████▉                           | 5.02M/18.6M [00:08&lt;00:07, 1.76MB/s]
+
+ 28%|██████████▍                          | 5.22M/18.6M [00:08&lt;00:07, 1.85MB/s]
+
+ 29%|██████████▊                          | 5.43M/18.6M [00:08&lt;00:06, 1.91MB/s]
+
+ 30%|███████████▎                         | 5.66M/18.6M [00:09&lt;00:06, 2.00MB/s]
+
+ 32%|███████████▋                         | 5.89M/18.6M [00:09&lt;00:06, 2.09MB/s]
+
+ 33%|████████████▏                        | 6.13M/18.6M [00:09&lt;00:05, 2.18MB/s]
+
+ 34%|████████████▋                        | 6.38M/18.6M [00:09&lt;00:05, 2.26MB/s]
+
+ 36%|█████████████▏                       | 6.64M/18.6M [00:09&lt;00:05, 2.36MB/s]
+
+ 37%|█████████████▋                       | 6.90M/18.6M [00:09&lt;00:04, 2.44MB/s]
+
+ 39%|██████████████▎                      | 7.18M/18.6M [00:09&lt;00:04, 2.54MB/s]
+
+ 40%|██████████████▊                      | 7.47M/18.6M [00:09&lt;00:04, 2.64MB/s]
+
+ 42%|███████████████▍                     | 7.77M/18.6M [00:09&lt;00:03, 2.72MB/s]
+
+ 43%|████████████████                     | 8.08M/18.6M [00:10&lt;00:03, 2.83MB/s]
+
+ 45%|████████████████▋                    | 8.41M/18.6M [00:10&lt;00:03, 2.95MB/s]
+
+ 47%|█████████████████▍                   | 8.74M/18.6M [00:10&lt;00:03, 3.05MB/s]
+
+ 49%|██████████████████                   | 9.09M/18.6M [00:10&lt;00:02, 3.17MB/s]
+
+ 51%|██████████████████▊                  | 9.45M/18.6M [00:10&lt;00:02, 3.29MB/s]
+
+ 53%|███████████████████▌                 | 9.82M/18.6M [00:10&lt;00:02, 3.40MB/s]
+
+ 55%|████████████████████▎                | 10.2M/18.6M [00:10&lt;00:02, 3.52MB/s]
+
+ 57%|█████████████████████                | 10.6M/18.6M [00:10&lt;00:02, 3.63MB/s]
+
+ 59%|█████████████████████▉               | 11.0M/18.6M [00:10&lt;00:02, 3.78MB/s]
+
+ 61%|██████████████████████▋              | 11.4M/18.6M [00:10&lt;00:01, 3.91MB/s]
+
+ 64%|███████████████████████▌             | 11.9M/18.6M [00:11&lt;00:01, 4.02MB/s]
+
+ 66%|████████████████████████▌            | 12.3M/18.6M [00:11&lt;00:01, 4.17MB/s]
+
+ 69%|█████████████████████████▍           | 12.8M/18.6M [00:11&lt;00:01, 4.30MB/s]
+
+ 71%|██████████████████████████▍          | 13.3M/18.6M [00:11&lt;00:01, 4.44MB/s]
+
+ 74%|███████████████████████████▍         | 13.8M/18.6M [00:11&lt;00:01, 4.58MB/s]
+
+ 77%|████████████████████████████▍        | 14.3M/18.6M [00:11&lt;00:00, 4.74MB/s]
+
+ 80%|█████████████████████████████▍       | 14.8M/18.6M [00:11&lt;00:00, 4.90MB/s]
+
+ 83%|██████████████████████████████▌      | 15.4M/18.6M [00:11&lt;00:00, 5.05MB/s]
+
+ 86%|███████████████████████████████▋     | 15.9M/18.6M [00:11&lt;00:00, 5.20MB/s]
+
+ 89%|████████████████████████████████▊    | 16.5M/18.6M [00:11&lt;00:00, 5.36MB/s]
+
+ 92%|█████████████████████████████████▉   | 17.0M/18.6M [00:12&lt;00:00, 5.39MB/s]
+
+ 95%|███████████████████████████████████  | 17.6M/18.6M [00:12&lt;00:00, 5.54MB/s]
+
+ 98%|████████████████████████████████████▎| 18.3M/18.6M [00:12&lt;00:00, 5.76MB/s]
 
   0%|                                              | 0.00/18.6M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.6M/18.6M [00:00&lt;00:00, 47.8GB/s]
+100%|█████████████████████████████████████| 18.6M/18.6M [00:00&lt;00:00, 30.5GB/s]
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5179        0.6931       0.4250        0.6932  0.5366
-      2       0.4866        0.6932       0.4250        0.6933  0.4926
-      3       0.4866        0.6931       0.4250        0.6933  0.5060
+      1       0.4643        0.6932       0.5750        0.6931  0.5375
+      2       0.5201        0.6931       0.4250        0.6932  0.5352
+      3       0.5268        0.6931       0.4250        0.6933  0.5293
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5022        0.6932       0.4667        0.6932  0.5080
-      2       0.4777        0.6932       0.4667        0.6932  0.5173
-      3       0.5045        0.6931       0.4667        0.6933  0.5137
+      1       0.4643        0.6932       0.5333        0.6931  0.5032
+      2       0.4978        0.6932       0.5333        0.6931  0.5117
+      3       0.4955        0.6932       0.4667        0.6931  0.4977
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5201        0.6932       0.5089        0.6931  0.5115
-      2       0.4754        0.6933       0.5089        0.6931  0.5119
-      3       0.5134        0.6931       0.4911        0.6931  0.5061
+      1       0.4754        0.6932       0.5089        0.6931  0.5251
+      2       0.5357        0.6931       0.5089        0.6931  0.5281
+      3       0.4754        0.6932       0.5089        0.6931  0.5380
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5045        0.6931       0.5446        0.6931  0.5113
-      2       0.4777        0.6931       0.4554        0.6932  0.4955
-      3       0.5089        0.6931       0.4554        0.6932  0.4943
+      1       0.5022        0.6931       0.4554        0.6932  0.5020
+      2       0.5089        0.6931       0.4554        0.6932  0.5003
+      3       0.5000        0.6931       0.4554        0.6932  0.5011
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4821        0.6932       0.4464        0.6933  0.5042
-      2       0.5067        0.6932       0.4464        0.6933  0.4997
-      3       0.5089        0.6930       0.4464        0.6934  0.4993
+      1       0.5335        0.6931       0.4464        0.6932  0.5217
+      2       0.5134        0.6931       0.4464        0.6933  0.5256
+      3       0.4866        0.6932       0.4464        0.6933  0.5272
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5335        0.7015       0.4250        0.6937  1.4248
-      2       0.5067        0.7196       0.4250        0.6941  1.3974
-      3       0.5156        0.7154       0.4250        0.6946  1.3757
+      1       0.4821        0.7380       0.4250        0.6938  1.4930
+      2       0.5000        0.7287       0.4250        0.6945  1.4905
+      3       0.5000        0.7392       0.4250        0.6950  1.5779
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4911        0.7278       0.4667        0.6948  1.3861
-      2       0.5246        0.7138       0.4667        0.6968  1.4088
-      3       0.5737        0.6972       0.4667        0.6989  1.4228
+      1       0.4821        0.7385       0.4667        0.6935  1.3483
+      2       0.4978        0.7417       0.4667        0.6938  1.3616
+      3       0.4888        0.7421       0.4667        0.6941  1.3513
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5179        0.7321       0.4911        0.6933  1.3907
-      2       0.4621        0.7514       0.4911        0.6935  1.3910
-      3       0.5000        0.7256       0.4911        0.6937  1.3952
+      1       0.4933        0.7339       0.5089        0.6930  1.4557
+      2       0.5112        0.7275       0.5089        0.6930  1.4363
+      3       0.4933        0.7475       0.5089        0.6933  1.4868
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5201        0.7175       0.4554        0.6937  1.4129
-      2       0.5424        0.7148       0.4554        0.6944  1.4023
-      3       0.4777        0.7348       0.4554        0.6950  1.3961
+      1       0.5000        0.7235       0.4554        0.6948  1.4420
+      2       0.5067        0.7246       0.4554        0.6966  1.5087
+      3       0.5223        0.7151       0.4554        0.6984  1.4705
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4576        0.7532       0.4464        0.6932  1.3859
-      2       0.5045        0.7298       0.4464        0.6933  1.3947
-      3       0.5112        0.7287       0.4464        0.6934  1.4183
+      1       0.4888        0.7415       0.4464        0.6935  1.3555
+      2       0.4799        0.7505       0.4464        0.6938  1.3734
+      3       0.4888        0.7329       0.4464        0.6941  1.3536
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5424       11.0493       0.5750        3.7544  1.2517
-      2       0.5089       10.1792       0.4250        1.6010  1.2193
-      3       0.5112       10.7445       0.4250        3.2716  1.2279
-      4       0.4911       10.4823       0.4250        1.8648  1.1850
-      5       0.4866       10.6709       0.5750        1.2825  1.1826
-      6       0.5201        8.6806       0.4250        2.2831  1.2519
-      7       0.5022       10.2316       0.4250        0.8276  1.2057
-      8       0.4821       10.8644       0.5750        0.7082  1.1584
-      9       0.5379        9.8387       0.4250        1.7220  1.2368
-     10       0.5022       10.4484       0.4250        1.1341  1.1741
-Re-initializing module because the following parameters were re-set: module.
-Re-initializing criterion.
-Re-initializing optimizer.
-  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
--------  -----------  ------------  -----------  ------------  ------
-      1       0.5335       13.8588       0.4667        2.8252  1.2597
-      2       0.5201       11.5918       0.4667        8.3938  1.2114
-      3       0.5268       11.1948       0.5333        1.8819  1.1814
-      4       0.4911       11.4412       0.5333        2.6285  1.1799
-      5       0.5268       10.7095       0.4667        0.8521  1.3417
-      6       0.4754       10.6279       0.4667        2.1753  1.1761
-      7       0.5067       11.3995       0.4667        0.8495  1.2273
-      8       0.5357        9.9013       0.4667        0.8434  1.2615
-      9       0.5112       10.5304       0.4667        0.7513  1.2422
-     10       0.5000       10.7219       0.5333        0.8741  1.2185
-Re-initializing module because the following parameters were re-set: module.
-Re-initializing criterion.
-Re-initializing optimizer.
-  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
--------  -----------  ------------  -----------  ------------  ------
-      1       0.5491       10.0756       0.5089        6.5308  1.2465
-      2       0.5179       10.8071       0.4911        1.0260  1.2197
-      3       0.5112       10.7274       0.4911        4.5077  1.1591
-      4       0.4777       11.5107       0.5089        0.8681  1.1930
-      5       0.5089       10.3990       0.5089        3.2467  1.1496
-      6       0.4732       11.5879       0.4911        0.9915  1.1997
+      1       0.5112       10.3990       0.4250        2.5078  1.3074
+      2       0.4732       11.4418       0.4250        0.8404  1.2378
+      3       0.4933       11.1803       0.5750        0.8793  1.1891
+      4       0.5045       11.2507       0.4250        4.4888  1.1382
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5112       21.2787       0.5446        4.9825  1.1968
-      2       0.4442       13.7347       0.4554        9.5433  1.2366
-      3       0.4777       14.2992       0.4554        4.5921  1.1893
-      4       0.5112       10.4999       0.5446        2.9736  1.1991
-      5       0.5201       10.7346       0.5446        2.0220  1.1618
-      6       0.4955       12.3382       0.4554        2.0137  1.1755
-      7       0.5134       11.2431       0.4554        1.8499  1.1626
-      8       0.5000       11.1055       0.4554        1.4709  1.1839
-      9       0.4754       11.5610       0.4554        1.1035  1.1094
-     10       0.4933       10.2712       0.5446        2.0003  1.1739
+      1       0.4866       14.9841       0.4667        3.0763  1.2302
+      2       0.5045       11.5354       0.4667        4.6827  1.1583
+      3       0.4442       12.3490       0.5333        2.9666  1.2450
+      4       0.5067       10.1422       0.4667        0.7054  1.3077
+      5       0.4799       10.6730       0.4667        1.1718  1.2106
+      6       0.5268        9.8983       0.5333        0.6910  1.1718
+      7       0.5424       10.9139       0.4667        1.2592  1.2757
+      8       0.5290        9.9967       0.4667        0.8220  1.2562
+Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4777       12.9240       0.4464        5.8364  1.1342
-      2       0.5089       11.0484       0.4464        3.5424  1.1696
-      3       0.4933       11.1745       0.5536        2.3947  1.2065
-      4       0.5000       10.0113       0.5536        0.6922  1.2093
-      5       0.4844       11.7437       0.4464        3.6550  1.1901
-      6       0.5558        9.4569       0.5536        0.9188  1.1593
+      1       0.5134       11.1284       0.4911        0.7910  1.1970
+      2       0.4866       10.3726       0.5089        2.3467  1.2961
+      3       0.4955       11.6658       0.5089        2.8579  1.2301
+Stopping since valid_loss has not improved in the last 3 epochs.
+Re-initializing module because the following parameters were re-set: module.
+Re-initializing criterion.
+Re-initializing optimizer.
+  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
+-------  -----------  ------------  -----------  ------------  ------
+      1       0.5201       11.2405       0.4554        5.5794  1.2496
+      2       0.4933       11.8854       0.4554        1.4726  1.2413
+      3       0.5000       10.8030       0.5446        1.9111  1.2981
+      4       0.5067       11.0678       0.4554        1.1039  1.2229
+      5       0.4978       11.4522       0.4554        2.2003  1.2436
+      6       0.4688       11.9256       0.5446        0.6892  1.2062
+      7       0.4866       11.0816       0.5446        0.8870  1.1453
+      8       0.5223       10.3163       0.4554        0.7456  1.2341
+Stopping since valid_loss has not improved in the last 3 epochs.
+Re-initializing module because the following parameters were re-set: module.
+Re-initializing criterion.
+Re-initializing optimizer.
+  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
+-------  -----------  ------------  -----------  ------------  ------
+      1       0.5290        9.6870       0.4464        2.0270  1.3218
+      2       0.5357        8.8311       0.5536        0.6874  1.3282
+      3       0.4821       10.9733       0.5536        1.5736  1.1359
+      4       0.5000       11.0706       0.5536        0.6882  1.2342
 Stopping since valid_loss has not improved in the last 3 epochs.
 
-004-2014-CrossSession:  50%|#####     | 1/2 [02:56&lt;02:56, 176.60s/it]
+004-2014-CrossSession:  50%|#####     | 1/2 [02:38&lt;02:38, 158.38s/it]
 
   0%|                                              | 0.00/33.1M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/33.1M [00:00&lt;08:14, 66.8kB/s]
+  0%|                                      | 32.8k/33.1M [00:00&lt;03:23, 162kB/s]
 
-  0%|                                      | 24.6k/33.1M [00:00&lt;05:20, 103kB/s]
+  0%|                                      | 96.3k/33.1M [00:00&lt;01:33, 354kB/s]
 
-  0%|                                     | 35.8k/33.1M [00:00&lt;05:37, 98.0kB/s]
+  1%|▏                                      | 209k/33.1M [00:00&lt;00:51, 633kB/s]
 
-  0%|                                     | 46.1k/33.1M [00:00&lt;06:01, 91.5kB/s]
+  1%|▍                                     | 432k/33.1M [00:00&lt;00:27, 1.17MB/s]
 
-  0%|                                     | 56.3k/33.1M [00:00&lt;06:15, 87.9kB/s]
+  3%|█                                     | 889k/33.1M [00:00&lt;00:14, 2.26MB/s]
 
-  0%|                                     | 72.7k/33.1M [00:00&lt;06:00, 91.4kB/s]
+  5%|██                                   | 1.80M/33.1M [00:00&lt;00:07, 4.38MB/s]
 
-  0%|                                      | 88.1k/33.1M [00:00&lt;05:27, 101kB/s]
+ 11%|████                                 | 3.62M/33.1M [00:00&lt;00:03, 8.58MB/s]
 
-  0%|                                       | 104k/33.1M [00:01&lt;05:00, 110kB/s]
+ 20%|███████▍                             | 6.62M/33.1M [00:00&lt;00:01, 14.9MB/s]
 
-  0%|▏                                      | 121k/33.1M [00:01&lt;04:43, 116kB/s]
+ 29%|██████████▌                          | 9.46M/33.1M [00:01&lt;00:01, 18.9MB/s]
 
-  0%|▏                                      | 136k/33.1M [00:01&lt;04:39, 118kB/s]
+ 37%|█████████████▌                       | 12.1M/33.1M [00:01&lt;00:00, 21.0MB/s]
 
-  0%|▏                                      | 153k/33.1M [00:01&lt;04:30, 122kB/s]
+ 45%|████████████████▌                    | 14.8M/33.1M [00:01&lt;00:00, 22.6MB/s]
 
-  1%|▏                                      | 176k/33.1M [00:01&lt;03:52, 142kB/s]
+ 53%|███████████████████▋                 | 17.6M/33.1M [00:01&lt;00:00, 23.9MB/s]
 
-  1%|▏                                      | 193k/33.1M [00:01&lt;03:57, 138kB/s]
+ 62%|██████████████████████▊              | 20.4M/33.1M [00:01&lt;00:00, 24.9MB/s]
 
-  1%|▎                                      | 216k/33.1M [00:01&lt;03:34, 153kB/s]
+ 70%|█████████████████████████▉           | 23.2M/33.1M [00:01&lt;00:00, 25.4MB/s]
 
-  1%|▎                                      | 232k/33.1M [00:01&lt;03:44, 146kB/s]
+ 78%|████████████████████████████▉        | 25.9M/33.1M [00:01&lt;00:00, 25.8MB/s]
 
-  1%|▎                                      | 256k/33.1M [00:02&lt;03:26, 159kB/s]
+ 87%|████████████████████████████████     | 28.6M/33.1M [00:01&lt;00:00, 26.0MB/s]
 
-  1%|▎                                      | 281k/33.1M [00:02&lt;03:13, 170kB/s]
-
-  1%|▎                                      | 304k/33.1M [00:02&lt;03:07, 175kB/s]
-
-  1%|▍                                      | 329k/33.1M [00:02&lt;03:00, 181kB/s]
-
-  1%|▍                                      | 360k/33.1M [00:02&lt;02:41, 203kB/s]
-
-  1%|▍                                      | 384k/33.1M [00:02&lt;02:45, 198kB/s]
-
-  1%|▍                                      | 417k/33.1M [00:02&lt;02:30, 217kB/s]
-
-  1%|▌                                      | 449k/33.1M [00:02&lt;02:23, 228kB/s]
-
-  1%|▌                                      | 480k/33.1M [00:03&lt;02:18, 235kB/s]
-
-  2%|▌                                      | 512k/33.1M [00:03&lt;02:15, 241kB/s]
-
-  2%|▋                                      | 545k/33.1M [00:03&lt;02:10, 248kB/s]
-
-  2%|▋                                      | 585k/33.1M [00:03&lt;02:01, 268kB/s]
-
-  2%|▋                                      | 625k/33.1M [00:03&lt;01:54, 283kB/s]
-
-  2%|▊                                      | 665k/33.1M [00:03&lt;01:50, 293kB/s]
-
-  2%|▊                                      | 705k/33.1M [00:03&lt;01:47, 302kB/s]
-
-  2%|▉                                      | 753k/33.1M [00:03&lt;01:38, 327kB/s]
-
-  2%|▉                                      | 801k/33.1M [00:04&lt;01:33, 344kB/s]
-
-  3%|█                                      | 849k/33.1M [00:04&lt;01:30, 356kB/s]
-
-  3%|█                                      | 904k/33.1M [00:04&lt;01:24, 380kB/s]
-
-  3%|█▏                                     | 961k/33.1M [00:04&lt;01:19, 402kB/s]
-
-  3%|█▏                                    | 1.02M/33.1M [00:04&lt;01:13, 433kB/s]
-
-  3%|█▎                                    | 1.09M/33.1M [00:04&lt;01:09, 458kB/s]
-
-  4%|█▎                                    | 1.16M/33.1M [00:04&lt;01:04, 492kB/s]
-
-  4%|█▍                                    | 1.24M/33.1M [00:04&lt;00:59, 532kB/s]
-
-  4%|█▌                                    | 1.31M/33.1M [00:05&lt;00:57, 550kB/s]
-
-  4%|█▌                                    | 1.41M/33.1M [00:05&lt;00:51, 613kB/s]
-
-  5%|█▋                                    | 1.50M/33.1M [00:05&lt;00:49, 640kB/s]
-
-  5%|█▊                                    | 1.60M/33.1M [00:05&lt;00:45, 697kB/s]
-
-  5%|█▉                                    | 1.70M/33.1M [00:05&lt;00:42, 735kB/s]
-
-  5%|██                                    | 1.82M/33.1M [00:05&lt;00:39, 783kB/s]
-
-  6%|██▏                                   | 1.94M/33.1M [00:05&lt;00:37, 835kB/s]
-
-  6%|██▎                                   | 2.06M/33.1M [00:05&lt;00:34, 889kB/s]
-
-  7%|██▌                                   | 2.20M/33.1M [00:06&lt;00:32, 947kB/s]
-
-  7%|██▋                                   | 2.34M/33.1M [00:06&lt;00:30, 992kB/s]
-
-  8%|██▊                                  | 2.49M/33.1M [00:06&lt;00:28, 1.06MB/s]
-
-  8%|██▉                                  | 2.65M/33.1M [00:06&lt;00:27, 1.12MB/s]
-
-  9%|███▏                                 | 2.82M/33.1M [00:06&lt;00:25, 1.19MB/s]
-
-  9%|███▎                                 | 3.00M/33.1M [00:06&lt;00:23, 1.27MB/s]
-
- 10%|███▌                                 | 3.18M/33.1M [00:06&lt;00:22, 1.33MB/s]
-
- 10%|███▊                                 | 3.38M/33.1M [00:06&lt;00:21, 1.41MB/s]
-
- 11%|████                                 | 3.59M/33.1M [00:07&lt;00:19, 1.48MB/s]
-
- 12%|████▎                                | 3.81M/33.1M [00:07&lt;00:18, 1.56MB/s]
-
- 12%|████▌                                | 4.04M/33.1M [00:07&lt;00:17, 1.62MB/s]
-
- 13%|████▊                                | 4.29M/33.1M [00:07&lt;00:16, 1.72MB/s]
-
- 14%|█████                                | 4.54M/33.1M [00:07&lt;00:15, 1.82MB/s]
-
- 15%|█████▍                               | 4.82M/33.1M [00:07&lt;00:14, 1.92MB/s]
-
- 15%|█████▋                               | 5.10M/33.1M [00:07&lt;00:13, 2.01MB/s]
-
- 16%|██████                               | 5.39M/33.1M [00:07&lt;00:13, 2.12MB/s]
-
- 17%|██████▍                              | 5.70M/33.1M [00:08&lt;00:12, 2.23MB/s]
-
- 18%|██████▊                              | 6.03M/33.1M [00:08&lt;00:11, 2.34MB/s]
-
- 19%|███████▏                             | 6.38M/33.1M [00:08&lt;00:10, 2.46MB/s]
-
- 20%|███████▌                             | 6.74M/33.1M [00:08&lt;00:10, 2.59MB/s]
-
- 22%|███████▉                             | 7.11M/33.1M [00:08&lt;00:09, 2.76MB/s]
-
- 23%|████████▍                            | 7.51M/33.1M [00:08&lt;00:08, 2.84MB/s]
-
- 24%|████████▊                            | 7.93M/33.1M [00:08&lt;00:08, 3.03MB/s]
-
- 25%|█████████▎                           | 8.37M/33.1M [00:08&lt;00:07, 3.17MB/s]
-
- 27%|█████████▉                           | 8.82M/33.1M [00:09&lt;00:07, 3.32MB/s]
-
- 28%|██████████▍                          | 9.31M/33.1M [00:09&lt;00:06, 3.42MB/s]
-
- 30%|██████████▉                          | 9.82M/33.1M [00:09&lt;00:06, 3.67MB/s]
-
- 31%|███████████▌                         | 10.4M/33.1M [00:09&lt;00:05, 3.85MB/s]
-
- 33%|████████████▏                        | 10.9M/33.1M [00:09&lt;00:05, 3.96MB/s]
-
- 35%|████████████▊                        | 11.5M/33.1M [00:09&lt;00:05, 4.24MB/s]
-
- 37%|█████████████▌                       | 12.1M/33.1M [00:09&lt;00:04, 4.44MB/s]
-
- 39%|██████████████▎                      | 12.8M/33.1M [00:09&lt;00:04, 4.66MB/s]
-
- 41%|███████████████                      | 13.4M/33.1M [00:10&lt;00:04, 4.81MB/s]
-
- 43%|███████████████▊                     | 14.2M/33.1M [00:10&lt;00:03, 5.07MB/s]
-
- 45%|████████████████▋                    | 14.9M/33.1M [00:10&lt;00:03, 5.40MB/s]
-
- 47%|█████████████████▌                   | 15.7M/33.1M [00:10&lt;00:03, 5.66MB/s]
-
- 50%|██████████████████▍                  | 16.5M/33.1M [00:10&lt;00:02, 5.93MB/s]
-
- 53%|███████████████████▍                 | 17.4M/33.1M [00:10&lt;00:02, 6.15MB/s]
-
- 55%|████████████████████▍                | 18.3M/33.1M [00:10&lt;00:02, 6.48MB/s]
-
- 58%|█████████████████████▌               | 19.2M/33.1M [00:10&lt;00:02, 6.91MB/s]
-
- 61%|██████████████████████▋              | 20.2M/33.1M [00:11&lt;00:01, 7.23MB/s]
-
- 64%|███████████████████████▊             | 21.3M/33.1M [00:11&lt;00:01, 7.59MB/s]
-
- 68%|█████████████████████████            | 22.4M/33.1M [00:11&lt;00:01, 7.95MB/s]
-
- 71%|██████████████████████████▎          | 23.6M/33.1M [00:11&lt;00:01, 8.32MB/s]
-
- 75%|███████████████████████████▋         | 24.8M/33.1M [00:11&lt;00:00, 8.74MB/s]
-
- 79%|█████████████████████████████▏       | 26.0M/33.1M [00:11&lt;00:00, 9.18MB/s]
-
- 83%|██████████████████████████████▋      | 27.4M/33.1M [00:11&lt;00:00, 9.65MB/s]
-
- 87%|████████████████████████████████▏    | 28.8M/33.1M [00:11&lt;00:00, 10.1MB/s]
-
- 92%|█████████████████████████████████▉   | 30.3M/33.1M [00:12&lt;00:00, 10.6MB/s]
-
- 96%|███████████████████████████████████▌ | 31.8M/33.1M [00:12&lt;00:00, 11.1MB/s]
+ 95%|███████████████████████████████████▏ | 31.4M/33.1M [00:01&lt;00:00, 26.3MB/s]
 
   0%|                                              | 0.00/33.1M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 33.1M/33.1M [00:00&lt;00:00, 47.4GB/s]
+100%|█████████████████████████████████████| 33.1M/33.1M [00:00&lt;00:00, 70.1GB/s]
 
 
   0%|                                              | 0.00/16.5M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/16.5M [00:00&lt;04:19, 63.8kB/s]
+  0%|                                      | 16.4k/16.5M [00:00&lt;01:42, 161kB/s]
 
-  0%|                                      | 24.6k/16.5M [00:00&lt;02:45, 100kB/s]
+  0%|                                      | 32.8k/16.5M [00:00&lt;02:39, 104kB/s]
 
-  0%|                                     | 34.8k/16.5M [00:00&lt;03:03, 89.8kB/s]
+  0%|                                      | 45.1k/16.5M [00:00&lt;02:30, 110kB/s]
 
-  0%|                                     | 44.0k/16.5M [00:00&lt;03:21, 81.9kB/s]
+  0%|▏                                     | 57.3k/16.5M [00:00&lt;02:24, 114kB/s]
 
-  0%|▏                                    | 56.3k/16.5M [00:00&lt;03:11, 86.0kB/s]
+  0%|▏                                     | 72.7k/16.5M [00:00&lt;02:29, 110kB/s]
 
-  0%|▏                                    | 72.7k/16.5M [00:00&lt;02:46, 99.1kB/s]
+  1%|▏                                     | 88.1k/16.5M [00:00&lt;02:14, 122kB/s]
 
-  1%|▏                                    | 82.9k/16.5M [00:00&lt;02:58, 92.1kB/s]
+  1%|▏                                      | 104k/16.5M [00:00&lt;02:02, 134kB/s]
 
-  1%|▏                                    | 96.3k/16.5M [00:01&lt;02:53, 95.0kB/s]
+  1%|▎                                      | 121k/16.5M [00:00&lt;01:55, 142kB/s]
 
-  1%|▎                                      | 113k/16.5M [00:01&lt;02:37, 104kB/s]
+  1%|▎                                      | 136k/16.5M [00:01&lt;01:53, 145kB/s]
 
-  1%|▎                                      | 128k/16.5M [00:01&lt;02:32, 108kB/s]
+  1%|▎                                      | 153k/16.5M [00:01&lt;01:49, 150kB/s]
 
-  1%|▎                                      | 144k/16.5M [00:01&lt;02:25, 113kB/s]
+  1%|▍                                      | 176k/16.5M [00:01&lt;01:33, 175kB/s]
 
-  1%|▍                                      | 168k/16.5M [00:01&lt;02:03, 133kB/s]
+  1%|▍                                      | 195k/16.5M [00:01&lt;01:32, 177kB/s]
 
-  1%|▍                                      | 184k/16.5M [00:01&lt;02:05, 130kB/s]
+  1%|▌                                      | 216k/16.5M [00:01&lt;01:27, 188kB/s]
 
-  1%|▍                                      | 201k/16.5M [00:01&lt;02:07, 129kB/s]
+  1%|▌                                      | 236k/16.5M [00:01&lt;01:26, 189kB/s]
 
-  1%|▌                                      | 224k/16.5M [00:01&lt;01:53, 144kB/s]
+  2%|▌                                      | 256k/16.5M [00:01&lt;01:24, 193kB/s]
 
-  2%|▌                                      | 249k/16.5M [00:02&lt;01:43, 157kB/s]
+  2%|▋                                      | 281k/16.5M [00:01&lt;01:18, 208kB/s]
 
-  2%|▋                                      | 272k/16.5M [00:02&lt;01:39, 163kB/s]
+  2%|▋                                      | 304k/16.5M [00:01&lt;01:15, 215kB/s]
 
-  2%|▋                                      | 296k/16.5M [00:02&lt;01:36, 168kB/s]
+  2%|▊                                      | 329k/16.5M [00:01&lt;01:12, 224kB/s]
 
-  2%|▊                                      | 321k/16.5M [00:02&lt;01:33, 174kB/s]
+  2%|▊                                      | 360k/16.5M [00:02&lt;01:04, 251kB/s]
 
-  2%|▊                                      | 344k/16.5M [00:02&lt;01:32, 175kB/s]
+  2%|▉                                      | 386k/16.5M [00:02&lt;01:04, 251kB/s]
 
-  2%|▉                                      | 377k/16.5M [00:02&lt;01:21, 198kB/s]
+  3%|▉                                      | 417k/16.5M [00:02&lt;01:00, 267kB/s]
 
-  2%|▉                                      | 400k/16.5M [00:02&lt;01:23, 193kB/s]
+  3%|█                                      | 449k/16.5M [00:02&lt;00:57, 281kB/s]
 
-  3%|█                                      | 432k/16.5M [00:03&lt;01:17, 207kB/s]
+  3%|█▏                                     | 477k/16.5M [00:02&lt;00:57, 281kB/s]
 
-  3%|█                                      | 465k/16.5M [00:03&lt;01:12, 220kB/s]
+  3%|█▏                                     | 512k/16.5M [00:02&lt;00:53, 300kB/s]
 
-  3%|█▏                                     | 497k/16.5M [00:03&lt;01:10, 226kB/s]
+  3%|█▎                                     | 545k/16.5M [00:02&lt;00:52, 308kB/s]
 
-  3%|█▎                                     | 537k/16.5M [00:03&lt;01:04, 249kB/s]
+  4%|█▍                                     | 585k/16.5M [00:02&lt;00:48, 332kB/s]
 
-  3%|█▎                                     | 577k/16.5M [00:03&lt;01:00, 265kB/s]
+  4%|█▍                                     | 625k/16.5M [00:02&lt;00:45, 351kB/s]
 
-  4%|█▍                                     | 608k/16.5M [00:03&lt;01:01, 259kB/s]
+  4%|█▌                                     | 665k/16.5M [00:02&lt;00:43, 364kB/s]
 
-  4%|█▌                                     | 648k/16.5M [00:03&lt;00:58, 272kB/s]
+  4%|█▋                                     | 713k/16.5M [00:03&lt;00:39, 398kB/s]
 
-  4%|█▋                                     | 696k/16.5M [00:03&lt;00:52, 300kB/s]
+  5%|█▊                                     | 761k/16.5M [00:03&lt;00:37, 421kB/s]
 
-  5%|█▊                                     | 744k/16.5M [00:04&lt;00:49, 319kB/s]
+  5%|█▉                                     | 808k/16.5M [00:03&lt;00:36, 434kB/s]
 
-  5%|█▊                                     | 793k/16.5M [00:04&lt;00:47, 333kB/s]
+  5%|██                                     | 856k/16.5M [00:03&lt;00:35, 446kB/s]
 
-  5%|██                                     | 849k/16.5M [00:04&lt;00:43, 362kB/s]
+  6%|██▏                                    | 912k/16.5M [00:03&lt;00:32, 480kB/s]
 
-  5%|██▏                                    | 904k/16.5M [00:04&lt;00:41, 379kB/s]
+  6%|██▎                                    | 969k/16.5M [00:03&lt;00:30, 503kB/s]
 
-  6%|██▎                                    | 969k/16.5M [00:04&lt;00:37, 413kB/s]
+  6%|██▎                                   | 1.02M/16.5M [00:03&lt;00:30, 517kB/s]
 
-  6%|██▍                                   | 1.04M/16.5M [00:04&lt;00:34, 452kB/s]
+  7%|██▍                                   | 1.08M/16.5M [00:03&lt;00:29, 529kB/s]
 
-  7%|██▌                                   | 1.11M/16.5M [00:04&lt;00:32, 480kB/s]
+  7%|██▋                                   | 1.14M/16.5M [00:03&lt;00:27, 562kB/s]
 
-  7%|██▋                                   | 1.19M/16.5M [00:04&lt;00:29, 518kB/s]
+  7%|██▊                                   | 1.22M/16.5M [00:03&lt;00:25, 606kB/s]
 
-  8%|██▉                                   | 1.28M/16.5M [00:05&lt;00:27, 563kB/s]
+  8%|██▉                                   | 1.29M/16.5M [00:04&lt;00:24, 635kB/s]
 
-  8%|███▏                                  | 1.37M/16.5M [00:05&lt;00:25, 595kB/s]
+  8%|███▏                                  | 1.36M/16.5M [00:04&lt;00:22, 662kB/s]
 
-  9%|███▎                                  | 1.46M/16.5M [00:05&lt;00:23, 635kB/s]
+  9%|███▎                                  | 1.44M/16.5M [00:04&lt;00:21, 700kB/s]
 
- 10%|███▌                                  | 1.58M/16.5M [00:05&lt;00:21, 699kB/s]
+  9%|███▍                                  | 1.52M/16.5M [00:04&lt;00:20, 727kB/s]
 
- 10%|███▊                                  | 1.68M/16.5M [00:05&lt;00:20, 728kB/s]
+ 10%|███▋                                  | 1.61M/16.5M [00:04&lt;00:19, 771kB/s]
 
- 11%|████▏                                 | 1.80M/16.5M [00:05&lt;00:18, 783kB/s]
+ 10%|███▉                                  | 1.70M/16.5M [00:04&lt;00:18, 800kB/s]
 
- 12%|████▍                                 | 1.93M/16.5M [00:05&lt;00:17, 840kB/s]
+ 11%|████                                  | 1.79M/16.5M [00:04&lt;00:17, 843kB/s]
 
- 12%|████▋                                 | 2.06M/16.5M [00:06&lt;00:16, 898kB/s]
+ 11%|████▎                                 | 1.89M/16.5M [00:04&lt;00:16, 876kB/s]
 
- 13%|█████                                 | 2.21M/16.5M [00:06&lt;00:14, 958kB/s]
+ 12%|████▌                                 | 1.99M/16.5M [00:04&lt;00:15, 923kB/s]
 
- 14%|█████▎                               | 2.36M/16.5M [00:06&lt;00:13, 1.02MB/s]
+ 13%|████▊                                 | 2.10M/16.5M [00:04&lt;00:14, 978kB/s]
 
- 15%|█████▋                               | 2.52M/16.5M [00:06&lt;00:13, 1.08MB/s]
+ 13%|████▉                                | 2.22M/16.5M [00:05&lt;00:13, 1.04MB/s]
 
- 16%|██████                               | 2.70M/16.5M [00:06&lt;00:11, 1.15MB/s]
+ 14%|█████▏                               | 2.34M/16.5M [00:05&lt;00:13, 1.08MB/s]
 
- 17%|██████▍                              | 2.87M/16.5M [00:06&lt;00:11, 1.21MB/s]
+ 15%|█████▌                               | 2.47M/16.5M [00:05&lt;00:12, 1.14MB/s]
 
- 19%|██████▊                              | 3.06M/16.5M [00:06&lt;00:10, 1.29MB/s]
+ 16%|█████▊                               | 2.61M/16.5M [00:05&lt;00:11, 1.20MB/s]
 
- 20%|███████▎                             | 3.26M/16.5M [00:06&lt;00:09, 1.35MB/s]
+ 17%|██████▏                              | 2.75M/16.5M [00:05&lt;00:10, 1.27MB/s]
 
- 21%|███████▊                             | 3.48M/16.5M [00:07&lt;00:09, 1.44MB/s]
+ 18%|██████▍                              | 2.90M/16.5M [00:05&lt;00:10, 1.32MB/s]
 
- 22%|████████▎                            | 3.70M/16.5M [00:07&lt;00:08, 1.52MB/s]
+ 18%|██████▊                              | 3.05M/16.5M [00:05&lt;00:09, 1.37MB/s]
 
- 24%|████████▊                            | 3.94M/16.5M [00:07&lt;00:07, 1.59MB/s]
+ 19%|███████▏                             | 3.22M/16.5M [00:05&lt;00:09, 1.46MB/s]
 
- 25%|█████████▍                           | 4.19M/16.5M [00:07&lt;00:07, 1.70MB/s]
+ 20%|███████▌                             | 3.38M/16.5M [00:05&lt;00:08, 1.52MB/s]
 
- 27%|█████████▉                           | 4.45M/16.5M [00:07&lt;00:06, 1.77MB/s]
+ 22%|███████▉                             | 3.56M/16.5M [00:06&lt;00:08, 1.59MB/s]
 
- 29%|██████████▌                          | 4.72M/16.5M [00:07&lt;00:06, 1.87MB/s]
+ 23%|████████▍                            | 3.75M/16.5M [00:06&lt;00:07, 1.68MB/s]
 
- 30%|███████████▏                         | 5.02M/16.5M [00:07&lt;00:05, 1.97MB/s]
+ 24%|████████▊                            | 3.95M/16.5M [00:06&lt;00:07, 1.77MB/s]
 
- 32%|███████████▉                         | 5.31M/16.5M [00:08&lt;00:05, 2.07MB/s]
+ 25%|█████████▎                           | 4.16M/16.5M [00:06&lt;00:06, 1.86MB/s]
 
- 34%|████████████▌                        | 5.63M/16.5M [00:08&lt;00:05, 2.18MB/s]
+ 26%|█████████▊                           | 4.38M/16.5M [00:06&lt;00:06, 1.94MB/s]
 
- 36%|█████████████▎                       | 5.97M/16.5M [00:08&lt;00:04, 2.29MB/s]
+ 28%|██████████▎                          | 4.60M/16.5M [00:06&lt;00:05, 2.03MB/s]
 
- 38%|██████████████▏                      | 6.32M/16.5M [00:08&lt;00:04, 2.40MB/s]
+ 29%|██████████▊                          | 4.84M/16.5M [00:06&lt;00:05, 2.13MB/s]
 
- 40%|██████████████▉                      | 6.69M/16.5M [00:08&lt;00:03, 2.52MB/s]
+ 31%|███████████▍                         | 5.10M/16.5M [00:06&lt;00:05, 2.25MB/s]
 
- 43%|███████████████▊                     | 7.07M/16.5M [00:08&lt;00:03, 2.64MB/s]
+ 32%|███████████▉                         | 5.36M/16.5M [00:06&lt;00:04, 2.36MB/s]
 
- 45%|████████████████▋                    | 7.48M/16.5M [00:08&lt;00:03, 2.77MB/s]
+ 34%|████████████▌                        | 5.64M/16.5M [00:06&lt;00:04, 2.48MB/s]
 
- 48%|█████████████████▋                   | 7.90M/16.5M [00:08&lt;00:02, 2.91MB/s]
+ 36%|█████████████▎                       | 5.93M/16.5M [00:07&lt;00:04, 2.59MB/s]
 
- 51%|██████████████████▋                  | 8.35M/16.5M [00:09&lt;00:02, 3.06MB/s]
+ 38%|█████████████▉                       | 6.24M/16.5M [00:07&lt;00:03, 2.74MB/s]
 
- 53%|███████████████████▋                 | 8.82M/16.5M [00:09&lt;00:02, 3.21MB/s]
+ 40%|██████████████▋                      | 6.56M/16.5M [00:07&lt;00:03, 2.87MB/s]
 
- 56%|████████████████████▊                | 9.32M/16.5M [00:09&lt;00:02, 3.38MB/s]
+ 42%|███████████████▍                     | 6.90M/16.5M [00:07&lt;00:03, 3.01MB/s]
 
- 60%|██████████████████████               | 9.84M/16.5M [00:09&lt;00:01, 3.55MB/s]
+ 44%|████████████████▏                    | 7.25M/16.5M [00:07&lt;00:02, 3.15MB/s]
 
- 63%|███████████████████████▏             | 10.4M/16.5M [00:09&lt;00:01, 3.70MB/s]
+ 46%|█████████████████                    | 7.62M/16.5M [00:07&lt;00:02, 3.32MB/s]
 
- 66%|████████████████████████▌            | 11.0M/16.5M [00:09&lt;00:01, 3.90MB/s]
+ 48%|█████████████████▉                   | 8.01M/16.5M [00:07&lt;00:02, 3.47MB/s]
 
- 70%|█████████████████████████▊           | 11.6M/16.5M [00:09&lt;00:01, 4.10MB/s]
+ 51%|██████████████████▊                  | 8.42M/16.5M [00:07&lt;00:02, 3.66MB/s]
 
- 74%|███████████████████████████▏         | 12.2M/16.5M [00:09&lt;00:01, 4.29MB/s]
+ 54%|███████████████████▊                 | 8.86M/16.5M [00:07&lt;00:01, 3.84MB/s]
 
- 78%|████████████████████████████▋        | 12.8M/16.5M [00:10&lt;00:00, 4.52MB/s]
+ 56%|████████████████████▊                | 9.30M/16.5M [00:07&lt;00:01, 4.02MB/s]
 
- 82%|██████████████████████████████▎      | 13.5M/16.5M [00:10&lt;00:00, 4.73MB/s]
+ 59%|█████████████████████▊               | 9.78M/16.5M [00:08&lt;00:01, 4.21MB/s]
 
- 86%|███████████████████████████████▉     | 14.3M/16.5M [00:10&lt;00:00, 4.97MB/s]
+ 62%|██████████████████████▉              | 10.3M/16.5M [00:08&lt;00:01, 4.42MB/s]
 
- 91%|█████████████████████████████████▌   | 15.0M/16.5M [00:10&lt;00:00, 5.22MB/s]
+ 65%|████████████████████████▏            | 10.8M/16.5M [00:08&lt;00:01, 4.66MB/s]
 
- 96%|███████████████████████████████████▍ | 15.8M/16.5M [00:10&lt;00:00, 5.48MB/s]
+ 69%|█████████████████████████▍           | 11.3M/16.5M [00:08&lt;00:01, 4.88MB/s]
+
+ 72%|██████████████████████████▋          | 11.9M/16.5M [00:08&lt;00:00, 5.13MB/s]
+
+ 76%|████████████████████████████         | 12.5M/16.5M [00:08&lt;00:00, 5.40MB/s]
+
+ 80%|█████████████████████████████▍       | 13.2M/16.5M [00:08&lt;00:00, 5.68MB/s]
+
+ 84%|██████████████████████████████▉      | 13.8M/16.5M [00:08&lt;00:00, 5.95MB/s]
+
+ 88%|████████████████████████████████▌    | 14.5M/16.5M [00:08&lt;00:00, 6.25MB/s]
+
+ 92%|██████████████████████████████████▏  | 15.3M/16.5M [00:08&lt;00:00, 6.55MB/s]
+
+ 97%|███████████████████████████████████▉ | 16.0M/16.5M [00:09&lt;00:00, 6.86MB/s]
 
   0%|                                              | 0.00/16.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 16.5M/16.5M [00:00&lt;00:00, 23.8GB/s]
+100%|█████████████████████████████████████| 16.5M/16.5M [00:00&lt;00:00, 18.2GB/s]
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5067        0.6931       0.4286        0.6933  0.5117
-      2       0.5201        0.6930       0.4286        0.6934  0.5162
-      3       0.5179        0.6930       0.4286        0.6935  0.5052
+      1       0.5000        0.6931       0.4286        0.6933  0.4949
+      2       0.5179        0.6930       0.4286        0.6935  0.4990
+      3       0.5179        0.6931       0.4286        0.6936  0.4821
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4933        0.6932       0.3929        0.6934  0.5191
-      2       0.5201        0.6931       0.3929        0.6936  0.5124
-      3       0.5312        0.6930       0.3929        0.6938  0.4923
+      1       0.5290        0.6931       0.3929        0.6936  0.4826
+      2       0.5312        0.6930       0.3929        0.6937  0.4838
+      3       0.5246        0.6930       0.3929        0.6938  0.4816
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4870        0.6932       0.5096        0.6931  0.4350
-      2       0.4635        0.6932       0.5096        0.6931  0.4262
-      3       0.4792        0.6932       0.5096        0.6931  0.4342
+      1       0.4896        0.6931       0.4904        0.6932  0.4451
+      2       0.4635        0.6931       0.4904        0.6932  2.3300
+      3       0.5026        0.6932       0.4904        0.6932  0.4350
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4911        0.6931       0.4196        0.6933  0.4965
-      2       0.5022        0.6931       0.4196        0.6934  0.5129
-      3       0.5179        0.6930       0.4196        0.6935  0.5305
+      1       0.5402        0.6931       0.5804        0.6931  0.4935
+      2       0.5045        0.6931       0.4196        0.6932  0.5085
+      3       0.5022        0.6931       0.4196        0.6934  0.4917
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4922        0.6932       0.5096        0.6931  0.4331
-      2       0.5000        0.6931       0.5096        0.6931  0.4403
-      3       0.4766        0.6931       0.5096        0.6931  0.4401
+      1       0.4557        0.6932       0.4904        0.6932  0.4290
+      2       0.5286        0.6931       0.4904        0.6932  0.4350
+      3       0.4974        0.6932       0.4904        0.6932  0.4342
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5759        0.6953       0.4286        0.6942  1.3751
-      2       0.4911        0.7307       0.4286        0.6952  1.4103
-      3       0.5268        0.7095       0.4286        0.6962  1.3929
+      1       0.4888        0.7233       0.5714        0.6924  1.3916
+      2       0.5156        0.7306       0.5714        0.6918  1.4343
+      3       0.5022        0.7262       0.5714        0.6912  1.4220
+      4       0.5201        0.7114       0.5714        0.6907  1.4241
+      5       0.4955        0.7398       0.5714        0.6902  1.4154
+      6       0.5067        0.7245       0.5714        0.6898  1.4275
+      7       0.4487        0.7581       0.5714        0.6894  1.4355
+      8       0.5089        0.7139       0.5714        0.6892  1.4546
+      9       0.5089        0.7267       0.5714        0.6889  1.4344
+     10       0.5379        0.7066       0.5714        0.6886  1.3968
+Re-initializing module because the following parameters were re-set: module.
+Re-initializing criterion.
+Re-initializing optimizer.
+  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
+-------  -----------  ------------  -----------  ------------  ------
+      1       0.5067        0.7165       0.6071        0.6918  1.4607
+      2       0.5045        0.7220       0.6071        0.6906  1.4693
+      3       0.4442        0.7554       0.6071        0.6894  1.4273
+      4       0.4554        0.7569       0.6071        0.6885  1.4172
+      5       0.5067        0.7155       0.6071        0.6877  1.4122
+      6       0.4777        0.7355       0.6071        0.6870  1.4067
+      7       0.5714        0.6807       0.6071        0.6864  1.4315
+      8       0.5424        0.7050       0.6071        0.6858  1.4466
+      9       0.5268        0.7165       0.6071        0.6853  1.4025
+     10       0.5045        0.7341       0.6071        0.6849  1.4422
+Re-initializing module because the following parameters were re-set: module.
+Re-initializing criterion.
+Re-initializing optimizer.
+  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
+-------  -----------  ------------  -----------  ------------  ------
+      1       0.4870        0.7388       0.4904        0.6934  1.2549
+      2       0.4974        0.7213       0.4904        0.6937  1.1898
+      3       0.5156        0.7322       0.4904        0.6942  1.2474
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4978        0.7330       0.3929        0.6932  1.3854
-      2       0.4933        0.7355       0.6071        0.6931  1.3687
-      3       0.5089        0.7253       0.6071        0.6929  1.3754
-      4       0.5067        0.7219       0.6071        0.6927  1.3867
-      5       0.4598        0.7523       0.6071        0.6924  1.3866
-      6       0.5000        0.7251       0.6071        0.6923  1.3852
-      7       0.5067        0.7262       0.6071        0.6921  1.3904
-      8       0.4911        0.7241       0.6071        0.6918  1.3825
-      9       0.5246        0.7151       0.6071        0.6914  1.4244
-     10       0.5201        0.7257       0.6071        0.6912  1.4182
+      1       0.4955        0.7331       0.5804        0.6923  1.3430
+      2       0.5223        0.7171       0.5804        0.6915  1.3456
+      3       0.5045        0.7230       0.5804        0.6907  1.3522
+      4       0.5156        0.7244       0.5804        0.6900  1.3279
+      5       0.5089        0.7267       0.5804        0.6894  1.3527
+      6       0.5179        0.7127       0.5804        0.6888  1.3226
+      7       0.4955        0.7169       0.5804        0.6883  1.3335
+      8       0.5134        0.7143       0.5804        0.6878  1.3328
+      9       0.4554        0.7482       0.5804        0.6874  1.3382
+     10       0.4933        0.7236       0.5804        0.6870  1.3401
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4349        0.7710       0.4904        0.6932  1.2151
-      2       0.4479        0.7473       0.4904        0.6932  1.1974
-      3       0.5339        0.7193       0.4904        0.6932  1.2159
+      1       0.4948        0.7301       0.5096        0.6931  1.2424
+      2       0.5026        0.7313       0.5096        0.6930  1.2223
+      3       0.4271        0.7682       0.5096        0.6930  1.2546
+      4       0.4922        0.7469       0.5096        0.6930  1.2493
+      5       0.4870        0.7303       0.5096        0.6930  1.2480
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5000        0.7335       0.5804        0.6925  1.3824
-      2       0.5112        0.7303       0.5804        0.6918  1.3923
-      3       0.4978        0.7258       0.5804        0.6912  1.3719
-      4       0.5156        0.7282       0.5804        0.6906  1.3680
-      5       0.4911        0.7330       0.5804        0.6901  1.3824
-      6       0.4933        0.7423       0.5804        0.6897  1.3610
-      7       0.5067        0.7333       0.5804        0.6893  1.3838
-      8       0.4598        0.7463       0.5804        0.6889  1.3682
-      9       0.5045        0.7283       0.5804        0.6886  1.3695
-     10       0.5268        0.7195       0.5804        0.6883  1.3944
-Re-initializing module because the following parameters were re-set: module.
-Re-initializing criterion.
-Re-initializing optimizer.
-  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
--------  -----------  ------------  -----------  ------------  ------
-      1       0.5391        0.7133       0.4904        0.6933  1.1952
-      2       0.5026        0.7293       0.4904        0.6934  1.2228
-      3       0.4635        0.7394       0.4904        0.6935  1.1866
+      1       0.4754       12.6081       0.4286        4.1990  1.1147
+      2       0.5223        9.4466       0.4286        0.7467  1.1546
+      3       0.5179        9.8456       0.5714        0.9930  1.1663
+      4       0.4866       11.1060       0.4286        3.9363  1.1169
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4554       13.7919       0.4286        5.0878  1.1526
-      2       0.5089       10.0146       0.4286        5.7833  1.1789
-      3       0.5156       10.0169       0.5714        2.2557  1.2814
-      4       0.4866       10.3277       0.5714        0.6830  1.2035
-      5       0.4933       11.4789       0.4286        3.7386  1.2508
-      6       0.5000       10.6434       0.5714        1.6693  1.1650
+      1       0.5402       13.4360       0.6071        1.6639  1.1050
+      2       0.4888       11.0525       0.6071        4.2040  1.1010
+      3       0.5022       11.7385       0.3929        3.2819  1.0960
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4777       11.5781       0.3929        2.2902  1.1778
-      2       0.5000       10.4667       0.3929        2.5137  1.2104
-      3       0.4866       10.6992       0.6071        0.6879  1.2026
-      4       0.4777       11.0634       0.3929        4.0117  1.2245
-      5       0.4754       12.2909       0.3929        0.8913  1.2035
+      1       0.5000       12.6429       0.5096        4.0335  1.0274
+      2       0.4792       10.3419       0.5096        1.5848  1.0824
+      3       0.5365        8.7418       0.4904        1.7011  1.1225
+      4       0.5000       10.6012       0.4904        0.7484  1.0978
+      5       0.5312        9.4539       0.4904        0.9295  1.0875
+      6       0.5078       10.7077       0.4904        2.4652  1.0375
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5443       10.0522       0.4904        3.1062  1.0309
-      2       0.4948       11.4515       0.5096        0.9209  1.0317
-      3       0.5078       12.2582       0.5096        1.2280  1.0998
-      4       0.5208       10.5910       0.4904        0.9577  1.0337
+      1       0.5156       10.2632       0.4196        2.5480  1.2251
+      2       0.5290        9.6816       0.4196        0.7127  1.1659
+      3       0.4732       12.1545       0.4196        3.3871  1.1871
+      4       0.4710       11.0382       0.5804        1.0644  1.2903
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4777       12.7330       0.5804        2.7648  1.2093
-      2       0.4844       13.0894       0.5804        2.7496  1.1691
-      3       0.4777       11.9441       0.4196        3.9712  1.1458
-      4       0.5312       11.1100       0.4196        2.2121  1.2486
-      5       0.4821       10.7821       0.5804        1.3499  1.2324
-      6       0.4754       11.3505       0.4196        0.9696  1.1289
-      7       0.5022       10.4662       0.4196        0.7427  1.1232
-      8       0.5312        9.4586       0.5804        0.9615  1.2572
-      9       0.5446        9.8984       0.4196        0.8478  1.1462
-     10       0.5156       10.4911       0.4196        0.6979  1.2593
-Re-initializing module because the following parameters were re-set: module.
-Re-initializing criterion.
-Re-initializing optimizer.
-  epoch    train_acc    train_loss    valid_acc    valid_loss     dur
--------  -----------  ------------  -----------  ------------  ------
-      1       0.5286       11.4544       0.4904        3.5658  1.0086
-      2       0.5052       11.5136       0.4904        2.5173  1.0698
-      3       0.4688       12.3420       0.5096        1.9070  1.0510
-      4       0.4818       11.1149       0.4904        0.6980  0.9762
-      5       0.4688       11.4455       0.5096        1.0166  1.0085
-      6       0.4714       12.8390       0.4904        1.2014  1.0501
+      1       0.5078       12.4263       0.5096        4.3489  1.0467
+      2       0.4740       12.8246       0.5096        3.7737  1.0376
+      3       0.5104       11.4802       0.4904        3.2443  1.0094
+      4       0.4792       12.2532       0.4904        1.2473  1.0545
+      5       0.5000       10.9356       0.5096        2.2038  1.0616
+      6       0.5677        8.9943       0.5096        0.7797  1.0970
+      7       0.4896       10.8674       0.4904        2.3729  1.0344
+      8       0.5312        9.6920       0.4904        1.0092  0.9771
 Stopping since valid_loss has not improved in the last 3 epochs.
 
-004-2014-CrossSession: 100%|##########| 2/2 [05:49&lt;00:00, 174.30s/it]
-004-2014-CrossSession: 100%|##########| 2/2 [05:49&lt;00:00, 174.64s/it]
+004-2014-CrossSession: 100%|##########| 2/2 [05:31&lt;00:00, 166.89s/it]
+004-2014-CrossSession: 100%|##########| 2/2 [05:31&lt;00:00, 165.61s/it]
     dataset    evaluation                     pipeline  avg score
-0  001-2014  CrossSession     braindecode_EEGInception   0.479962
-1  001-2014  CrossSession         braindecode_EEGNetv4   0.480638
-2  001-2014  CrossSession  braindecode_ShallowFBCSPNet   0.477648
-3  004-2014  CrossSession     braindecode_EEGInception   0.478361
-4  004-2014  CrossSession         braindecode_EEGNetv4   0.491451
+0  001-2014  CrossSession     braindecode_EEGInception   0.451968
+1  001-2014  CrossSession         braindecode_EEGNetv4   0.498481
+2  001-2014  CrossSession  braindecode_ShallowFBCSPNet   0.510995
+3  004-2014  CrossSession     braindecode_EEGInception   0.499258
+4  004-2014  CrossSession         braindecode_EEGNetv4   0.484528
 5  004-2014  CrossSession  braindecode_ShallowFBCSPNet   0.500000
 </pre></div>
 </div>
@@ -1463,8 +1640,8 @@ Stopping since valid_loss has not improved in the last 3 epochs.
 <p>Benchmark prints a summary of the results. Detailed results are saved in a
 pandas dataframe, and can be used to generate figures. The analysis &amp; figures
 are saved in the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> folder.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_plot</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/moabb.analysis.plotting.score_plot.html#moabb.analysis.plotting.score_plot" title="moabb.analysis.plotting.score_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">score_plot</span></a><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_plot_benchmark_braindecode_001.png" srcset="../_images/sphx_glr_plot_benchmark_braindecode_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/plotting.py:59: UserWarning: The palette list has more values (6) than needed (3), which may not be intended.
@@ -1473,7 +1650,7 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
 </div>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id5" role="note">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
@@ -1499,7 +1676,8 @@ for assistive ERP-based brain-computer interfaces.</a>
 IEEE Transactions on Neural Systems and Rehabilitation Engineering</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 7 minutes  24.596 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 7 minutes  19.508 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  760 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-braindecode-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/284aff1e2748c45a1efdc5d7071c4a77/plot_benchmark_braindecode.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark_braindecode.py</span></code></a></p>
@@ -1513,28 +1691,100 @@ IEEE Transactions on Neural Systems and Rehabilitation Engineering</p>
 </section>
 
 
-    </div>
-      
-  </div>
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot_benchmark_DL.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Benchmarking on MOABB with Tensorflow deep net architectures</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="plot_benchmark_grid_search.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Benchmarking with MOABB with Grid Search</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
 </div>
-<footer class="footer">
-  <div class="container">
-    <p class="pull-right">
-      <a href="#">Back to top</a>
-      
-        <br/>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-benchmark">Running the benchmark</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
         
-<div id="sourcelink">
-  <a href="../_sources/auto_examples/plot_benchmark_braindecode.rst.txt"
-     rel="nofollow">Source</a>
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2018-2023 MOABB contributors.
+      <br/>
+    
+  </p>
 </div>
       
-    </p>
-    <p>
-        &copy; Copyright 2018-2023 MOABB contributors.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
-    </p>
-  </div>
-</footer>
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
   </body>
 </html>

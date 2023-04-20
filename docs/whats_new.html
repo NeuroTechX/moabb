@@ -1,230 +1,433 @@
+
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" data-theme="light">
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>What’s new &#8212; moabb 0.4.6 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="_static/style.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/design-tabs.js"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-5WJBKDMSTE');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'whats_new';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Datasets" href="datasets.html" />
-    <link rel="prev" title="Mother of all BCI Benchmarks" href="index.html" />
-<meta charset='utf-8'>
-<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
-<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js"></script>
-<script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="prev" title="Architecture and Main Concepts" href="main_concepts.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
 
-  </head><body>
-
-  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="index.html">
-          MOABB</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4.6</b></span>
-      </div>
-
-        <div class="collapse navbar-collapse nav-collapse">
-          <ul class="nav navbar-nav">
-            
-                <li><a href="#">What's new</a></li>
-                <li><a href="dataset_summary.html">Datasets</a></li>
-                <li><a href="api.html">API</a></li>
-                <li><a href="auto_examples/index.html">Gallery</a></li>
-                <li><a href="auto_tutorials/index.html">Tutorials</a></li>
-            
-            
-              <li class="dropdown globaltoc-container">
-  <a role="button"
-     id="dLabelGlobalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="index.html">MOABB <b class="caret"></b></a>
-  <ul class="dropdown-menu globaltoc"
-      role="menu"
-      aria-labelledby="dLabelGlobalToc"><ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">What’s new</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#develop-branch">Develop branch</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-4-6-stable-pypi">Version - 0.4.6  (Stable - PyPi)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-4-5">Version - 0.4.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-4-4">Version - 0.4.4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-4-3">Version - 0.4.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-4-2">Version - 0.4.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-4-1">Version - 0.4.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-4-0">Version - 0.4.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-3-0">Version 0.3.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-2-1">Version 0.2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-2-0">Version 0.2.0</a></li>
-</ul>
-</li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Main classes of MOABB:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#motor-imagery-datasets">Motor Imagery Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#erp-datasets">ERP Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#ssvep-datasets">SSVEP Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#base-utils">Base &amp; Utils</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="evaluations.html">Evaluations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="evaluations.html#id1">Evaluations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="evaluations.html#base-utils">Base &amp; Utils</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="paradigms.html">Paradigms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="paradigms.html#motor-imagery-paradigms">Motor Imagery Paradigms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="paradigms.html#p300-paradigms">P300 Paradigms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="paradigms.html#ssvep-paradigms">SSVEP Paradigms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="paradigms.html#base-utils">Base &amp; Utils</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pipelines.html">Pipelines</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pipelines.html#id1">Pipelines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pipelines.html#base-utils">Base &amp; Utils</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#plotting">Plotting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#statistics">Statistics</a></li>
-</ul>
-</li>
-</ul>
-</ul>
-</li>
-              
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">What’s new</a><ul>
-<li><a class="reference internal" href="#develop-branch">Develop branch</a><ul>
-<li><a class="reference internal" href="#enhancements">Enhancements</a></li>
-<li><a class="reference internal" href="#bugs">Bugs</a></li>
-<li><a class="reference internal" href="#api-changes">API changes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#version-0-4-6-stable-pypi">Version - 0.4.6  (Stable - PyPi)</a><ul>
-<li><a class="reference internal" href="#id1">Enhancements</a></li>
-<li><a class="reference internal" href="#id2">Bugs</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#version-0-4-5">Version - 0.4.5</a><ul>
-<li><a class="reference internal" href="#id3">Enhancements</a></li>
-<li><a class="reference internal" href="#id4">Bugs</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#version-0-4-4">Version - 0.4.4</a><ul>
-<li><a class="reference internal" href="#id5">Enhancements</a></li>
-<li><a class="reference internal" href="#id6">Bugs</a></li>
-<li><a class="reference internal" href="#id7">API changes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#version-0-4-3">Version - 0.4.3</a><ul>
-<li><a class="reference internal" href="#id8">Enhancements</a></li>
-<li><a class="reference internal" href="#id9">Bugs</a></li>
-<li><a class="reference internal" href="#id10">API changes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#version-0-4-2">Version - 0.4.2</a><ul>
-<li><a class="reference internal" href="#id11">Enhancements</a></li>
-<li><a class="reference internal" href="#id12">Bugs</a></li>
-<li><a class="reference internal" href="#id13">API changes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#version-0-4-1">Version - 0.4.1</a><ul>
-<li><a class="reference internal" href="#id14">Enhancements</a></li>
-<li><a class="reference internal" href="#id15">Bugs</a></li>
-<li><a class="reference internal" href="#id16">API changes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#version-0-4-0">Version - 0.4.0</a><ul>
-<li><a class="reference internal" href="#id17">Enhancements</a></li>
-<li><a class="reference internal" href="#id18">Bugs</a></li>
-<li><a class="reference internal" href="#id19">API changes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#version-0-3-0">Version 0.3.0</a><ul>
-<li><a class="reference internal" href="#id20">Enhancements</a></li>
-<li><a class="reference internal" href="#id21">Bugs</a></li>
-<li><a class="reference internal" href="#id22">API changes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#version-0-2-1">Version 0.2.1</a><ul>
-<li><a class="reference internal" href="#id23">Enhancements</a></li>
-<li><a class="reference internal" href="#id24">Bugs</a></li>
-<li><a class="reference internal" href="#id25">API changes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#version-0-2-0">Version 0.2.0</a><ul>
-<li><a class="reference internal" href="#id26">Enhancements</a></li>
-<li><a class="reference internal" href="#id27">Bugs</a></li>
-<li><a class="reference internal" href="#id28">API changes</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</ul>
-</li>
-              
-            
-            
-            
-            
-            
-          </ul>
-
-          
-            
-<form class="navbar-form navbar-right" action="search.html" method="get">
- <div class="form-group">
-  <input type="text" name="q" class="form-control" placeholder="Search" />
- </div>
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
-          
-        </div>
-    </div>
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
   </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
-<div class="container">
-  <div class="row">
-    <div class="body col-md-12 content" role="main">
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+    
+    
+    
+    <img src="_static/moabb_logo.svg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="_static/moabb_logo.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
       
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="install/install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="overview.html">
+                        Overview
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auto_tutorials/index.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="main_concepts.html">
+                        How does Moabb work?
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        What's new
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="install/install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="overview.html">
+                        Overview
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auto_tutorials/index.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="main_concepts.html">
+                        How does Moabb work?
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        What's new
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">What’s new</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section id="what-s-new">
-<span id="whats-new"></span><h1>What’s new<a class="headerlink" href="#what-s-new" title="Permalink to this heading">¶</a></h1>
+<span id="whats-new"></span><h1>What’s new<a class="headerlink" href="#what-s-new" title="Permalink to this heading">#</a></h1>
 <section id="develop-branch">
-<span id="current"></span><h2>Develop branch<a class="headerlink" href="#develop-branch" title="Permalink to this heading">¶</a></h2>
+<span id="current"></span><h2>Develop branch<a class="headerlink" href="#develop-branch" title="Permalink to this heading">#</a></h2>
 <section id="enhancements">
-<h3>Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this heading">¶</a></h3>
+<h3>Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
+<li><p>Add VirtualReality BrainInvaders dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/358">#358</a> by <a class="reference external" href="https://github.com/gcattan">Gregoire Cattan</a>)</p></li>
 <li><p>Switch to python-3.8, update dependencies, fix code link in doc, add <a class="reference external" href="https://app.codecov.io/gh/NeuroTechX/moabb">code coverage</a> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/315">#315</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Adding a comprehensive benchmarking function (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/264">#264</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Add meta-information for datasets in documentation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/317">#317</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
@@ -234,11 +437,13 @@
 <li><p>Add a augmentation model to the pipeline (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/326">#326</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>)</p></li>
 <li><p>Add BrainDecode example(<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/340">#340</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Add Google Analytics to the documentation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/335">#335</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Add suport to Braindecode classifier (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/328">#328</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Add CodeCarbon to track emission CO₂ (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/350">#350</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>, <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Add CodeCarbon example (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/356">#356</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 </ul>
 </section>
 <section id="bugs">
-<h3>Bugs<a class="headerlink" href="#bugs" title="Permalink to this heading">¶</a></h3>
+<h3>Bugs<a class="headerlink" href="#bugs" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Fix bug for MotorImagery when we handle all events (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/327">#327</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>)</p></li>
 <li><p>Fixing CI to handle with new deep learning dependencies (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/332">#332</a> and <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/326">#326</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>, <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
@@ -256,23 +461,23 @@
 </ul>
 </section>
 <section id="api-changes">
-<h3>API changes<a class="headerlink" href="#api-changes" title="Permalink to this heading">¶</a></h3>
+<h3>API changes<a class="headerlink" href="#api-changes" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-4-6-stable-pypi">
-<h2>Version - 0.4.6  (Stable - PyPi)<a class="headerlink" href="#version-0-4-6-stable-pypi" title="Permalink to this heading">¶</a></h2>
+<h2>Version - 0.4.6  (Stable - PyPi)<a class="headerlink" href="#version-0-4-6-stable-pypi" title="Permalink to this heading">#</a></h2>
 <section id="id1">
-<h3>Enhancements<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
+<h3>Enhancements<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Add P300 BrainInvaders datasets (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/283">#283</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Add explicit warning when lambda function are used to parametrize pipelines (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/278">#278</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 </ul>
 </section>
 <section id="id2">
-<h3>Bugs<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<h3>Bugs<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Correct default path for ERP visualization (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/279">#279</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 <li><p>Correct documentation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/282">#282</a> and <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/284">#284</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
@@ -280,9 +485,9 @@
 </section>
 </section>
 <section id="version-0-4-5">
-<h2>Version - 0.4.5<a class="headerlink" href="#version-0-4-5" title="Permalink to this heading">¶</a></h2>
+<h2>Version - 0.4.5<a class="headerlink" href="#version-0-4-5" title="Permalink to this heading">#</a></h2>
 <section id="id3">
-<h3>Enhancements<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3>Enhancements<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Progress bars, pooch, tqdm (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/258">#258</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Adding test and example for set_download_dir (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/249">#249</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a>)</p></li>
@@ -293,7 +498,7 @@
 </ul>
 </section>
 <section id="id4">
-<h3>Bugs<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<h3>Bugs<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Removing dependency on mne method for PhysionetMI data downloading, renaming runs (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/257">#257</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a>)</p></li>
 <li><p>Correcting events management in Schirrmeister2017, renaming session and run (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/255">#255</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
@@ -303,15 +508,15 @@
 </section>
 </section>
 <section id="version-0-4-4">
-<h2>Version - 0.4.4<a class="headerlink" href="#version-0-4-4" title="Permalink to this heading">¶</a></h2>
+<h2>Version - 0.4.4<a class="headerlink" href="#version-0-4-4" title="Permalink to this heading">#</a></h2>
 <section id="id5">
-<h3>Enhancements<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
+<h3>Enhancements<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Add TRCA algorithm for SSVEP (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/238">#238</a> by <a class="reference external" href="https://github.com/ludovicdmt">Ludovic Darmet</a>)</p></li>
 </ul>
 </section>
 <section id="id6">
-<h3>Bugs<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
+<h3>Bugs<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Remove unused argument from dataset_search (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/243">#243</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a>)</p></li>
 <li><p>Remove MNE call to <cite>_fetch_dataset</cite> and use MOABB <cite>_fetch_file</cite> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/235">#235</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
@@ -319,7 +524,7 @@
 </ul>
 </section>
 <section id="id7">
-<h3>API changes<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
+<h3>API changes<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Minimum supported Python version is now 3.7</p></li>
 <li><p>MOABB now depends on scikit-learn &gt;= 1.0</p></li>
@@ -327,15 +532,15 @@
 </section>
 </section>
 <section id="version-0-4-3">
-<h2>Version - 0.4.3<a class="headerlink" href="#version-0-4-3" title="Permalink to this heading">¶</a></h2>
+<h2>Version - 0.4.3<a class="headerlink" href="#version-0-4-3" title="Permalink to this heading">#</a></h2>
 <section id="id8">
-<h3>Enhancements<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
+<h3>Enhancements<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Rewrite Lee2019 to add P300 and SSVEP datasets (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/217">#217</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 </ul>
 </section>
 <section id="id9">
-<h3>Bugs<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h3>
+<h3>Bugs<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Avoid information leakage for MNE Epochs pipelines in evaluation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/222">#222</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Correct error in set_download_dir (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/225">#225</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
@@ -343,59 +548,59 @@
 </ul>
 </section>
 <section id="id10">
-<h3>API changes<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h3>
+<h3>API changes<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>ch_names argument added to init of moabb.datasets.fake.FakeDataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/229">#229</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-4-2">
-<h2>Version - 0.4.2<a class="headerlink" href="#version-0-4-2" title="Permalink to this heading">¶</a></h2>
+<h2>Version - 0.4.2<a class="headerlink" href="#version-0-4-2" title="Permalink to this heading">#</a></h2>
 <section id="id11">
-<h3>Enhancements<a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h3>
+<h3>Enhancements<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 <section id="id12">
-<h3>Bugs<a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h3>
+<h3>Bugs<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Correct error when downloading Weibo dataset  (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/212">#212</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 </ul>
 </section>
 <section id="id13">
-<h3>API changes<a class="headerlink" href="#id13" title="Permalink to this heading">¶</a></h3>
+<h3>API changes<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-4-1">
-<h2>Version - 0.4.1<a class="headerlink" href="#version-0-4-1" title="Permalink to this heading">¶</a></h2>
+<h2>Version - 0.4.1<a class="headerlink" href="#version-0-4-1" title="Permalink to this heading">#</a></h2>
 <section id="id14">
-<h3>Enhancements<a class="headerlink" href="#id14" title="Permalink to this heading">¶</a></h3>
+<h3>Enhancements<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 <section id="id15">
-<h3>Bugs<a class="headerlink" href="#id15" title="Permalink to this heading">¶</a></h3>
+<h3>Bugs<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Correct path error for first time launch (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/204">#204</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Fix optional dependencies issues for PyPi (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/205">#205</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 </ul>
 </section>
 <section id="id16">
-<h3>API changes<a class="headerlink" href="#id16" title="Permalink to this heading">¶</a></h3>
+<h3>API changes<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Remove update_path on all datasets, <cite>update_path</cite> parameter in <cite>dataset.data_path()</cite> is deprecated (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/207">#207</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-4-0">
-<h2>Version - 0.4.0<a class="headerlink" href="#version-0-4-0" title="Permalink to this heading">¶</a></h2>
+<h2>Version - 0.4.0<a class="headerlink" href="#version-0-4-0" title="Permalink to this heading">#</a></h2>
 <section id="id17">
-<h3>Enhancements<a class="headerlink" href="#id17" title="Permalink to this heading">¶</a></h3>
+<h3>Enhancements<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Implementation for learning curves (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/155">#155</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 <li><p>Adding Neiry Demons P300 dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/156">#156</a> by <a class="reference external" href="https://github.com/v-goncharenko">Vladislav Goncharenko</a>)</p></li>
@@ -421,7 +626,7 @@
 </ul>
 </section>
 <section id="id18">
-<h3>Bugs<a class="headerlink" href="#id18" title="Permalink to this heading">¶</a></h3>
+<h3>Bugs<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Restore basic logging (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/177">#177</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 <li><p>Correct wrong type of results dataframe columns (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/188">#188</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
@@ -429,16 +634,16 @@
 </ul>
 </section>
 <section id="id19">
-<h3>API changes<a class="headerlink" href="#id19" title="Permalink to this heading">¶</a></h3>
+<h3>API changes<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Drop <cite>update_path</cite> from moabb.download.data_path and moabb.download.data_dl</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-3-0">
-<h2>Version 0.3.0<a class="headerlink" href="#version-0-3-0" title="Permalink to this heading">¶</a></h2>
+<h2>Version 0.3.0<a class="headerlink" href="#version-0-3-0" title="Permalink to this heading">#</a></h2>
 <section id="id20">
-<h3>Enhancements<a class="headerlink" href="#id20" title="Permalink to this heading">¶</a></h3>
+<h3>Enhancements<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Expose sklearn error_score parameter (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/70">#70</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 <li><p>Adds a <code class="docutils literal notranslate"><span class="pre">unit_factor</span></code> attribute to base_paradigms (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/72">#72</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
@@ -459,7 +664,7 @@
 </ul>
 </section>
 <section id="id21">
-<h3>Bugs<a class="headerlink" href="#id21" title="Permalink to this heading">¶</a></h3>
+<h3>Bugs<a class="headerlink" href="#id21" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Use stim_channels or check annotation when loading files in Paradigm  (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/72">#72</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
 <li><p>Correct MNE issues (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/76">#76</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
@@ -477,16 +682,16 @@
 </ul>
 </section>
 <section id="id22">
-<h3>API changes<a class="headerlink" href="#id22" title="Permalink to this heading">¶</a></h3>
+<h3>API changes<a class="headerlink" href="#id22" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-2-1">
-<h2>Version 0.2.1<a class="headerlink" href="#version-0-2-1" title="Permalink to this heading">¶</a></h2>
+<h2>Version 0.2.1<a class="headerlink" href="#version-0-2-1" title="Permalink to this heading">#</a></h2>
 <section id="id23">
-<h3>Enhancements<a class="headerlink" href="#id23" title="Permalink to this heading">¶</a></h3>
+<h3>Enhancements<a class="headerlink" href="#id23" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Add Tikhonov regularized CSP in <code class="docutils literal notranslate"><span class="pre">moabb.pipelines.csp</span></code> from the paper (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/60">#60</a> by <a class="reference external" href="https://github.com/vinay-jayaram">Vinay Jayaram</a>)</p></li>
 <li><p>update to MNE version 0.19 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/73">#73</a> by <a class="reference external" href="https://github.com/jsosulski">Jan Sosulski</a>)</p></li>
@@ -494,7 +699,7 @@
 </ul>
 </section>
 <section id="id24">
-<h3>Bugs<a class="headerlink" href="#id24" title="Permalink to this heading">¶</a></h3>
+<h3>Bugs<a class="headerlink" href="#id24" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Update GigaDB Cho2017 URL (<a class="reference external" href="https://github.com/plcrodrigues">Pedro L. C. Rodrigues</a> and <a class="reference external" href="https://github.com/vinay-jayaram">Vinay Jayaram</a>)</p></li>
 <li><p>Fix braininvaders ERP data (<a class="reference external" href="https://github.com/plcrodrigues">Pedro L. C. Rodrigues</a>)</p></li>
@@ -503,16 +708,16 @@
 </ul>
 </section>
 <section id="id25">
-<h3>API changes<a class="headerlink" href="#id25" title="Permalink to this heading">¶</a></h3>
+<h3>API changes<a class="headerlink" href="#id25" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 </section>
 <section id="version-0-2-0">
-<h2>Version 0.2.0<a class="headerlink" href="#version-0-2-0" title="Permalink to this heading">¶</a></h2>
+<h2>Version 0.2.0<a class="headerlink" href="#version-0-2-0" title="Permalink to this heading">#</a></h2>
 <section id="id26">
-<h3>Enhancements<a class="headerlink" href="#id26" title="Permalink to this heading">¶</a></h3>
+<h3>Enhancements<a class="headerlink" href="#id26" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>MOABB corresponding to the paper version by <a class="reference external" href="https://github.com/vinay-jayaram">Vinay Jayaram</a> and <a class="reference external" href="https://github.com/alexandrebarachant">Alexandre Barachant</a></p></li>
 <li><p>Creating P300 paradigm and BNCI datasets (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/53">#53</a> by <a class="reference external" href="https://github.com/plcrodrigues">Pedro L. C. Rodrigues</a>)</p></li>
@@ -522,13 +727,13 @@
 </ul>
 </section>
 <section id="id27">
-<h3>Bugs<a class="headerlink" href="#id27" title="Permalink to this heading">¶</a></h3>
+<h3>Bugs<a class="headerlink" href="#id27" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
 </section>
 <section id="id28">
-<h3>API changes<a class="headerlink" href="#id28" title="Permalink to this heading">¶</a></h3>
+<h3>API changes<a class="headerlink" href="#id28" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>None</p></li>
 </ul>
@@ -537,28 +742,153 @@
 </section>
 
 
-    </div>
-      
-  </div>
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="main_concepts.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Architecture and Main Concepts</p>
+      </div>
+    </a>
+</div></div>
+  
 </div>
-<footer class="footer">
-  <div class="container">
-    <p class="pull-right">
-      <a href="#">Back to top</a>
-      
-        <br/>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#develop-branch">Develop branch</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enhancements">Enhancements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bugs">Bugs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#api-changes">API changes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-6-stable-pypi">Version - 0.4.6  (Stable - PyPi)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Enhancements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Bugs</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-5">Version - 0.4.5</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Enhancements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Bugs</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-4">Version - 0.4.4</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Enhancements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Bugs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">API changes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-3">Version - 0.4.3</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Enhancements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Bugs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">API changes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-2">Version - 0.4.2</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Enhancements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Bugs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">API changes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-1">Version - 0.4.1</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Enhancements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Bugs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">API changes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-4-0">Version - 0.4.0</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Enhancements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Bugs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">API changes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-3-0">Version 0.3.0</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Enhancements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">Bugs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">API changes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-2-1">Version 0.2.1</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">Enhancements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">Bugs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">API changes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-0-2-0">Version 0.2.0</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">Enhancements</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">Bugs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">API changes</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
         
-<div id="sourcelink">
-  <a href="_sources/whats_new.rst.txt"
-     rel="nofollow">Source</a>
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2018-2023 MOABB contributors.
+      <br/>
+    
+  </p>
 </div>
       
-    </p>
-    <p>
-        &copy; Copyright 2018-2023 MOABB contributors.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
-    </p>
-  </div>
-</footer>
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
   </body>
 </html>
