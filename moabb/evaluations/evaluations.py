@@ -477,25 +477,26 @@ class CrossSessionEvaluation(BaseEvaluation):
             return grid_clf
 
     # flake8: noqa: C901
-    def evaluate(self, dataset, pipelines, param_grid, n_jobs=-1):
+    def evaluate(self, dataset, pipelines, param_grid):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
         # Progressbar at subject level
-        results = Parallel(n_jobs=n_jobs)(
+        results = []
+        for result in Parallel(n_jobs=self.n_jobs)(
             delayed(self.process_subject)(subject, param_grid, pipelines, dataset)
             for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-CrossSession")
-        )
+        ):
+            results.extend(result)
 
-        for result in results:
-            yield result
+        return results
 
     def process_subject(self, subject, param_grid, pipelines, dataset):
         # check if we already have result for this subject/pipeline
         # we might need a better granularity, if we query the DB
         run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
         if len(run_pipes) == 0:
-            log.info(f"Subject {subject} already processed")
-            pass
+            print(f"Subject {subject} already processed")
+            return []
 
         # get the data
         X, y, metadata = self.paradigm.get_data(
@@ -509,6 +510,7 @@ class CrossSessionEvaluation(BaseEvaluation):
         groups = metadata.session.values
         scorer = get_scorer(self.paradigm.scoring)
 
+        results = []
         for name, clf in run_pipes.items():
             if _carbonfootprint:
                 # Initialise CodeCarbon
@@ -581,7 +583,8 @@ class CrossSessionEvaluation(BaseEvaluation):
                 if _carbonfootprint:
                     res["carbon_emission"] = (1000 * (emissions + emissions_grid),)
 
-                return res
+                results.append(res)
+        return results
 
     def is_valid(self, dataset):
         return dataset.n_sessions > 1
