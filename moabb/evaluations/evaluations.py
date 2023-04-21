@@ -494,7 +494,8 @@ class CrossSessionEvaluation(BaseEvaluation):
         # we might need a better granularity, if we query the DB
         run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
         if len(run_pipes) == 0:
-            return
+            log.info(f"Subject {subject} already processed")
+            pass
 
         # get the data
         X, y, metadata = self.paradigm.get_data(
