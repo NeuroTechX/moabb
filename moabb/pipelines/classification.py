@@ -1,6 +1,8 @@
 import numpy as np
 import scipy.linalg as linalg
+from joblib import Parallel, delayed
 from pyriemann.estimation import Covariances
+from pyriemann.utils.covariance import covariances
 from pyriemann.utils.mean import mean_covariance
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.cross_decomposition import CCA
@@ -534,6 +536,26 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         return y_pred
 
 
+def _whitening(X):
+    """utility function to whiten EEG signal
+
+    Parameters
+    ----------
+    X: ndarray of shape (n_channels, n_samples)
+    """
+    n_channels, n_samples = X.shape
+    X_white = X.copy()
+
+    X_white = X_white - np.mean(X_white, axis=1, keepdims=True)
+    C = covariances(X_white.reshape((1, n_channels, n_samples)), estimator="sch")[
+        0
+    ]  # Shrunk covariance matrix
+    eig_val, eig_vec = linalg.eigh(C)
+    V = linalg.sqrtm(linalg.inv(np.diag(eig_val))) @ eig_vec.T
+    X_white = V @ X_white
+    return X_white
+
+
 class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
     """Classifier based on MsetCCA for SSVEP
 
@@ -565,7 +587,8 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
            https://doi.org/10.1142/S0129065714500130
     """
 
-    def __init__(self, freqs, n_filters=1, n_components=1):
+    def __init__(self, freqs, n_filters=1, n_components=1, n_jobs=1):
+        self.n_jobs = n_jobs
         self.n_filters = n_filters
         self.freqs = freqs
         self.n_components = n_components
@@ -580,17 +603,13 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         for i, k in enumerate(self.classes_):
             self.one_hot[k] = i
         n_trials, n_channels, n_times = X.shape
-        # Whiten signal X
-        X_white = np.zeros_like(X)
-        for trial in range(n_trials):
-            X_white[trial, :, :] = X[trial, :, :]
-            X_white[trial, :, :] = X_white[trial, :, :] - np.mean(
-                X_white[trial, :, :], axis=1, keepdims=True
-            )
-            C = np.cov(X_white[trial, :, :])
-            eig_val, eig_vec = linalg.eigh(C)
-            V = linalg.sqrtm(linalg.inv(np.diag(eig_val + 1e-10))) @ eig_vec.T
-            X_white[trial, :, :] = V @ X_white[trial, :, :]
+
+        # Whiten signal in parallel
+        if self.n_jobs == 1:
+            X_white = [_whitening(X_i) for X_i in X]
+        else:
+            X_white = Parallel(n_jobs=self.n_jobs)(delayed(_whitening)(X_i) for X_i in X)
+        X_white = np.stack(X_white, axis=0)
 
         Y = X_white.transpose(2, 0, 1).reshape(-1, n_times)
         # R = np.cov(Y)
@@ -611,11 +630,16 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
 
         # Normalise W
         W = W / np.linalg.norm(W, axis=0, keepdims=True)
+        print(f"[DEBUG] W.shape: {W.shape}")
 
-        # get Z
-        Z = np.zeros((n_trials, self.n_filters, n_times))
-        for trial in range(n_trials):
-            Z[trial, :, :] = W[trial, :, :].T @ X_white[trial, :, :]
+        # get Z in parallel
+        if self.n_jobs == 1:
+            Z = [np.dot(W_i.T, X_white_i) for W_i, X_white_i in zip(W, X_white)]
+        else:
+            Z = Parallel(n_jobs=self.n_jobs)(
+                delayed(np.dot)(W_i.T, X_white_i) for W_i, X_white_i in zip(W, X_white)
+            )
+        Z = np.stack(Z, axis=0)
 
         # Get Ym
         self.Ym = dict()
