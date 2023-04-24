@@ -34,6 +34,7 @@ Enhancements
 
 Bugs
 ~~~~
+- Fix circular import with braindecode (:gh:`363` by `Bruno Aristimunha`_)
 - Fix bug for MotorImagery when we handle all events (:gh:`327` by `Igor Carrara`_)
 - Fixing CI to handle with new deep learning dependencies (:gh:`332` and :gh:`326` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Correct CI error due to isort (:gh:`330` by `Bruno Aristimunha`_)

@@ -3,7 +3,8 @@ from functools import partial
 from inspect import getmembers, isclass, isroutine
 
 import mne
-from braindecode.datasets import BaseConcatDataset, create_from_X_y
+from braindecode.datasets.base import BaseConcatDataset
+from braindecode.datasets.xy import create_from_X_y
 from numpy import unique
 from sklearn.base import BaseEstimator, TransformerMixin
 from skorch.callbacks import Callback
