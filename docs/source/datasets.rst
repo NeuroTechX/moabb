@@ -46,6 +46,7 @@ ERP Datasets
     bi2014b
     bi2015a
     bi2015b
+    VirtualReality
     BNCI2014008
     BNCI2014009
     BNCI2015003
@@ -83,6 +84,8 @@ Base & Utils
     :template: class.rst
 
     base.BaseDataset
+    fake.FakeDataset
+    fake.FakeVirtualRealityDataset
 
 
 .. autosummary::

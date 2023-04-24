@@ -2,8 +2,9 @@ import unittest
 
 import mne
 
-from moabb.datasets import Shin2017A, Shin2017B
-from moabb.datasets.fake import FakeDataset
+from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
+from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
+from moabb.paradigms import P300
 
 
 _ = mne.set_log_level("CRITICAL")
@@ -66,3 +67,20 @@ class Test_Datasets(unittest.TestCase):
             # if the data is already downloaded:
             if mne.get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:
                 self.assertRaises(AttributeError, ds.get_data, [1])
+
+
+class Test_VirtualReality_Dataset(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def test_canary(self):
+        assert VirtualReality() is not None
+
+    def test_get_block_repetition(self):
+        ds = FakeVirtualRealityDataset()
+        subject = 5
+        block = 3
+        repetition = 4
+        _, _, ret = ds.get_block_repetition(P300(), [subject], [block], [repetition])
+        assert ret.subject.unique()[0] == subject
+        assert ret.run.unique()[0] == f"block_{block}-repetition_{repetition}"
