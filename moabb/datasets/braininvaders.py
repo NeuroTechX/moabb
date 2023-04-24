@@ -403,6 +403,7 @@ def _bi_data_path(  # noqa: C901
 
 class bi2012(BaseDataset):
     """P300 dataset bi2012 from a "Brain Invaders" experiment
+
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
@@ -570,6 +571,7 @@ class bi2013a(BaseDataset):
 
 class bi2014a(BaseDataset):
     """P300 dataset bi2014a from a "Brain Invaders" experiment
+
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
@@ -627,6 +629,7 @@ class bi2014a(BaseDataset):
 
 class bi2014b(BaseDataset):
     """P300 dataset bi2014b from a "Brain Invaders" experiment
+
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
@@ -685,6 +688,7 @@ class bi2014b(BaseDataset):
 
 class bi2015a(BaseDataset):
     """P300 dataset bi2015a from a "Brain Invaders" experiment
+
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
@@ -744,6 +748,7 @@ class bi2015a(BaseDataset):
 
 class bi2015b(BaseDataset):
     """P300 dataset bi2015b from a "Brain Invaders" experiment
+
        .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
@@ -806,6 +811,7 @@ class bi2015b(BaseDataset):
 
 class VirtualReality(BaseDataset):
     """Dataset of an EEG-based BCI experiment in Virtual Reality using P300
+
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions

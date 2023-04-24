@@ -19,8 +19,16 @@ class Sosulski2019(BaseDataset):
 
     Dataset [1]_, study on spatial transfer between SOAs [2]_, actual paradigm / online optimization [3]_.
 
-    **Dataset Description**
+    .. admonition:: Dataset summary
 
+
+        =============  =======  =======  =================  ===============  ===============  ===========
+        Name             #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        =============  =======  =======  =================  ===============  ===============  ===========
+        Sosulski2019       13       32   75 NT / 15 T                        1000Hz                     1
+        =============  =======  =======  =================  ===============  ===============  ===========
+
+    **Dataset description**
     This dataset contains multiple small trials of an auditory oddball paradigm. The paradigm presented two different
     sinusoidal tones. A low-pitched (500 Hz, 40 ms duration) non-target tone and a high-pitched (1000 Hz,
     40 ms duration) target tone. Subjects were instructed to attend to the high-pitched target tones and ignore the
