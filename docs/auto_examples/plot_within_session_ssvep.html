@@ -661,12 +661,12 @@ each subject and pipeline.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>MAMEM3_SSVEP-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-MAMEM3_SSVEP-WithinSession:  50%|#####     | 1/2 [00:15&lt;00:15, 15.82s/it]
-MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:31&lt;00:00, 16.00s/it]
-MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:31&lt;00:00, 15.98s/it]
+MAMEM3_SSVEP-WithinSession:  50%|#####     | 1/2 [00:27&lt;00:27, 27.58s/it]
+MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:54&lt;00:00, 27.47s/it]
+MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:54&lt;00:00, 27.48s/it]
       score      time  samples  ... n_sessions       dataset  pipeline
-0  0.688889  0.052984     45.0  ...          1  MAMEM3_SSVEP       CCA
-1  0.266667  0.051750     45.0  ...          1  MAMEM3_SSVEP       CCA
+0  0.688889  0.096012     45.0  ...          1  MAMEM3_SSVEP       CCA
+1  0.266667  0.088393     45.0  ...          1  MAMEM3_SSVEP       CCA
 
 [2 rows x 9 columns]
 </pre></div>
@@ -675,7 +675,7 @@ MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:31&lt;00:00, 15.98s/it]
 <section id="plot-results">
 <h2>Plot Results<a class="headerlink" href="#plot-results" title="Permalink to this heading">#</a></h2>
 <p>Here we plot the results, indicating the score for each subject</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">()</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -683,13 +683,13 @@ MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:31&lt;00:00, 15.98s/it]
 </pre></div>
 </div>
 <p>And the computation time in seconds</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Reds&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Time (s)&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Reds&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_ylabel.html#matplotlib.axes.Axes.set_ylabel" title="matplotlib.axes.Axes.set_ylabel" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span></a><span class="p">(</span><span class="s2">&quot;Time (s)&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  34.439 seconds)</p>
+<img src="../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  58.361 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-within-session-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -795,7 +795,7 @@ MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:31&lt;00:00, 15.98s/it]
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.2.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
 </p></div>
       
     </div>
