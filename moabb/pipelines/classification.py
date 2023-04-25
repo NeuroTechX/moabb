@@ -551,7 +551,7 @@ def _whitening(X):
         0
     ]  # Shrunk covariance matrix
     eig_val, eig_vec = linalg.eigh(C)
-    V = linalg.sqrtm(linalg.inv(np.diag(eig_val))) @ eig_vec.T
+    V = (np.abs(eig_val) ** -.5)[:, np.newaxis] * eig_vec.T
     X_white = V @ X_white
     return X_white
 
@@ -632,14 +632,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         W = W / np.linalg.norm(W, axis=0, keepdims=True)
         print(f"[DEBUG] W.shape: {W.shape}")
 
-        # get Z in parallel
-        if self.n_jobs == 1:
-            Z = [np.dot(W_i.T, X_white_i) for W_i, X_white_i in zip(W, X_white)]
-        else:
-            Z = Parallel(n_jobs=self.n_jobs)(
-                delayed(np.dot)(W_i.T, X_white_i) for W_i, X_white_i in zip(W, X_white)
-            )
-        Z = np.stack(Z, axis=0)
+        Z = W.transpose((0, 2, 1)) @ X_white
 
         # Get Ym
         self.Ym = dict()
