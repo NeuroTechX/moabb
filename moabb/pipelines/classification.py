@@ -33,11 +33,6 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         Number of stimulation frequency's harmonics to be used in the genration
         of the CCA reference signal.
 
-    n_components: int
-        Number of CCA components to be used.
-
-        .. versionadded:: 0.4.7
-
 
     References
     ----------
@@ -49,10 +44,9 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
            https://doi.org/10.1088/1741-2560/6/4/046002
     """
 
-    def __init__(self, interval, freqs, n_harmonics=3, n_components=1):
+    def __init__(self, interval, freqs, n_harmonics=3):
         self.Yf = dict()
-        self.n_components = n_components
-        self.cca = CCA(n_components=self.n_components)
+        self.cca = CCA(n_components=1)
         self.interval = interval
         self.slen = interval[1] - interval[0]
         self.freqs = freqs
@@ -574,9 +568,6 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         It corresponds to the number of eigen vectors taken the solution of the
         MAXVAR objective function as formulated in Eq.5 in [1]_.
 
-    n_components: int
-        Number of CCA components to be used.
-
 
     References
     ----------
@@ -587,12 +578,11 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
            https://doi.org/10.1142/S0129065714500130
     """
 
-    def __init__(self, freqs, n_filters=1, n_components=1, n_jobs=1):
+    def __init__(self, freqs, n_filters=1, n_jobs=1):
         self.n_jobs = n_jobs
         self.n_filters = n_filters
         self.freqs = freqs
-        self.n_components = n_components
-        self.cca = CCA(n_components=n_components)
+        self.cca = CCA(n_components=1)
 
     def fit(self, X, y, sample_weight=None):
         """
@@ -630,16 +620,8 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
 
         # Normalise W
         W = W / np.linalg.norm(W, axis=0, keepdims=True)
-        print(f"[DEBUG] W.shape: {W.shape}")
 
-        # get Z in parallel
-        if self.n_jobs == 1:
-            Z = [np.dot(W_i.T, X_white_i) for W_i, X_white_i in zip(W, X_white)]
-        else:
-            Z = Parallel(n_jobs=self.n_jobs)(
-                delayed(np.dot)(W_i.T, X_white_i) for W_i, X_white_i in zip(W, X_white)
-            )
-        Z = np.stack(Z, axis=0)
+        Z = W.transpose((0, 2, 1)) @ X_white
 
         # Get Ym
         self.Ym = dict()

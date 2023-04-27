@@ -15,12 +15,9 @@ class TestSSVEP_MsetCCA(unittest.TestCase):
         X, y, _ = paradigm.get_data(dataset)
         self.freqs = paradigm.used_events(dataset)
         self.n_filters = 2
-        self.n_components = 2
         self.X = X
         self.y = y
-        self.clf = SSVEP_MsetCCA(
-            freqs=self.freqs, n_filters=self.n_filters, n_components=self.n_components
-        )
+        self.clf = SSVEP_MsetCCA(freqs=self.freqs, n_filters=self.n_filters)
 
     def test_fit(self):
         self.clf.fit(self.X, self.y)

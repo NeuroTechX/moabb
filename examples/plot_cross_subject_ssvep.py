@@ -101,9 +101,7 @@ pipelines_fb["RG+LogReg"] = make_pipeline(
 )
 
 pipelines = {}
-pipelines["CCA"] = make_pipeline(
-    SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=2, n_components=3)
-)
+pipelines["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=2))
 
 pipelines_TRCA = {}
 pipelines_TRCA["TRCA"] = make_pipeline(
@@ -111,7 +109,7 @@ pipelines_TRCA["TRCA"] = make_pipeline(
 )
 
 pipelines_MSET_CCA = {}
-pipelines_MSET_CCA["MSET_CCA"] = make_pipeline(SSVEP_MsetCCA(freqs=freqs, n_components=3))
+pipelines_MSET_CCA["MSET_CCA"] = make_pipeline(SSVEP_MsetCCA(freqs=freqs))
 
 ##############################################################################
 # Evaluation
@@ -124,7 +122,7 @@ pipelines_MSET_CCA["MSET_CCA"] = make_pipeline(SSVEP_MsetCCA(freqs=freqs, n_comp
 # will not run again the evaluation unless a parameter has changed. Results can
 # be overwritten if necessary.
 
-overwrite = True  # set to True if we want to overwrite cached results
+overwrite = False  # set to True if we want to overwrite cached results
 
 evaluation = CrossSubjectEvaluation(
     paradigm=paradigm, datasets=dataset, overwrite=overwrite
