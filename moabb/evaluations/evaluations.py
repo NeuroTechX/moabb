@@ -175,102 +175,92 @@ class WithinSessionEvaluation(BaseEvaluation):
     # flake8: noqa: C901
     def _evaluate(self, dataset, pipelines, param_grid):
         # Progress Bar at subject level
-        results = []
-        for result in Parallel(n_jobs=self.n_jobs)(
-            delayed(self._evaluate_subject)(subject, dataset, pipelines, param_grid)
-            for subject in tqdm(
-                dataset.subject_list, desc=f"{dataset.code}-WithinSession"
+        for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-WithinSession"):
+            # check if we already have result for this subject/pipeline
+            # we might need a better granularity, if we query the DB
+            run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
+            if len(run_pipes) == 0:
+                continue
+
+            # get the data
+            X, y, metadata = self.paradigm.get_data(
+                dataset, [subject], self.return_epochs, self.return_raws
             )
-        ):
-            results.extend(result)
 
-        return results
+            # iterate over sessions
+            for session in np.unique(metadata.session):
+                ix = metadata.session == session
 
-    def _evaluate_subject(self, subject, dataset, pipelines, param_grid):
-        # check if we already have result for this subject/pipeline
-        # we might need a better granularity, if we query the DB
-        run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
-        if len(run_pipes) == 0:
-            return
-        # get the data
-        X, y, metadata = self.paradigm.get_data(
-            dataset, [subject], self.return_epochs, self.return_raws
-        )
-
-        # iterate over sessions
-        for session in np.unique(metadata.session):
-            ix = metadata.session == session
-
-            for name, clf in run_pipes.items():
-                if _carbonfootprint:
-                    # Initialize CodeCarbon
-                    tracker = EmissionsTracker(save_to_file=False, log_level="error")
-                    tracker.start()
-                t_start = time()
-                cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
-                scorer = get_scorer(self.paradigm.scoring)
-                le = LabelEncoder()
-                y_cv = le.fit_transform(y[ix])
-                X_ = X[ix]
-                y_ = y[ix] if self.mne_labels else y_cv
-
-                grid_clf = clone(clf)
-
-                name_grid = os.path.join(
-                    str(self.hdf5_path),
-                    "GridSearch_WithinSession",
-                    dataset.code,
-                    "subject" + str(subject),
-                    str(session),
-                    str(name),
-                )
-
-                # Implement Grid Search
-                grid_clf = self._grid_search(
-                    param_grid, name_grid, name, grid_clf, X_, y_, cv
-                )
-
-                if isinstance(X, BaseEpochs):
+                for name, clf in run_pipes.items():
+                    if _carbonfootprint:
+                        # Initialize CodeCarbon
+                        tracker = EmissionsTracker(save_to_file=False, log_level="error")
+                        tracker.start()
+                    t_start = time()
+                    cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
                     scorer = get_scorer(self.paradigm.scoring)
-                    acc = list()
+                    le = LabelEncoder()
+                    y_cv = le.fit_transform(y[ix])
                     X_ = X[ix]
                     y_ = y[ix] if self.mne_labels else y_cv
-                    for train, test in cv.split(X_, y_):
-                        cvclf = clone(grid_clf)
-                        cvclf.fit(X_[train], y_[train])
-                        acc.append(scorer(cvclf, X_[test], y_[test]))
-                    acc = np.array(acc)
-                else:
-                    acc = cross_val_score(
-                        grid_clf,
-                        X[ix],
-                        y_cv,
-                        cv=cv,
-                        scoring=self.paradigm.scoring,
-                        n_jobs=self.n_jobs,
-                        error_score=self.error_score,
-                    )
-                score = acc.mean()
-                if _carbonfootprint:
-                    emissions = tracker.stop()
-                    if emissions is None:
-                        emissions = np.NaN
-                duration = time() - t_start
-                nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
-                res = {
-                    "time": duration / 5.0,  # 5 fold CV
-                    "dataset": dataset,
-                    "subject": subject,
-                    "session": session,
-                    "score": score,
-                    "n_samples": len(y_cv),  # not training sample
-                    "n_channels": nchan,
-                    "pipeline": name,
-                }
-                if _carbonfootprint:
-                    res["carbon_emission"] = (1000 * emissions,)
 
-                yield res
+                    grid_clf = clone(clf)
+
+                    name_grid = os.path.join(
+                        str(self.hdf5_path),
+                        "GridSearch_WithinSession",
+                        dataset.code,
+                        "subject" + str(subject),
+                        str(session),
+                        str(name),
+                    )
+
+                    # Implement Grid Search
+                    grid_clf = self._grid_search(
+                        param_grid, name_grid, name, grid_clf, X_, y_, cv
+                    )
+
+                    if isinstance(X, BaseEpochs):
+                        scorer = get_scorer(self.paradigm.scoring)
+                        acc = list()
+                        X_ = X[ix]
+                        y_ = y[ix] if self.mne_labels else y_cv
+                        for train, test in cv.split(X_, y_):
+                            cvclf = clone(grid_clf)
+                            cvclf.fit(X_[train], y_[train])
+                            acc.append(scorer(cvclf, X_[test], y_[test]))
+                        acc = np.array(acc)
+                    else:
+                        acc = cross_val_score(
+                            grid_clf,
+                            X[ix],
+                            y_cv,
+                            cv=cv,
+                            scoring=self.paradigm.scoring,
+                            n_jobs=self.n_jobs,
+                            error_score=self.error_score,
+                        )
+                    score = acc.mean()
+                    if _carbonfootprint:
+                        emissions = tracker.stop()
+                        if emissions is None:
+                            emissions = np.NaN
+                    duration = time() - t_start
+                    nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+                    res = {
+                        "time": duration / 5.0,  # 5 fold CV
+                        "dataset": dataset,
+                        "subject": subject,
+                        "session": session,
+                        "score": score,
+                        "n_samples": len(y_cv),  # not training sample
+                        "n_channels": nchan,
+                        "pipeline": name,
+                    }
+                    if _carbonfootprint:
+                        res["carbon_emission"] = (1000 * emissions,)
+
+                    yield res
 
     def get_data_size_subsets(self, y):
         if self.data_size is None:
