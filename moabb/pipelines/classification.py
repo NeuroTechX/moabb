@@ -626,9 +626,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         # Get Ym
         self.Ym = dict()
         for m_class in self.classes_:
-            self.Ym[m_class] = (
-                Z[y == m_class].transpose(2, 0, 1).reshape(-1, n_times)
-            )
+            self.Ym[m_class] = Z[y == m_class].transpose(2, 0, 1).reshape(-1, n_times)
 
         return self
 
