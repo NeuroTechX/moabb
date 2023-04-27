@@ -108,6 +108,14 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
     """
     Learning from label proportions for a visual matrix speller (ERP) dataset from Hübner et al 2017 [1]_.
 
+    .. admonition:: Dataset summary
+
+
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Huebner2017       13       31                     0.9s             1000Hz                     1
+        ===========  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**
 
@@ -166,6 +174,17 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
 class Huebner2018(_BaseVisualMatrixSpellerDataset):
     """
     Mixture of LLP and EM for a visual matrix speller (ERP) dataset from Hübner et al 2018 [1]_.
+
+    .. admonition:: Dataset summary
+
+
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Huebner2018       12       31                     0.9s             1000Hz                     1
+        ===========  =======  =======  =================  ===============  ===============  ===========
+
+    **Dataset description**
 
     Within a single session, a subject was asked to spell the beginning of a sentence in each of three blocks.The text
     consists of the 35 symbols “Franzy jagt im Taxi quer durch das ”. Each block, one of the three decoding

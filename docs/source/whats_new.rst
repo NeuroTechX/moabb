@@ -18,6 +18,7 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
+- Add VirtualReality BrainInvaders dataset (:gh:`358` by `Gregoire Cattan`_)
 - Switch to python-3.8, update dependencies, fix code link in doc, add `code coverage <https://app.codecov.io/gh/NeuroTechX/moabb>`__ (:gh:`315` by `Sylvain Chevallier`_)
 - Adding a comprehensive benchmarking function (:gh:`264` by `Divyesh Narayanan`_ and `Sylvain Chevallier`_)
 - Add meta-information for datasets in documentation (:gh:`317` by `Bruno Aristimunha`_)
@@ -34,6 +35,7 @@ Enhancements
 
 Bugs
 ~~~~
+- Fix circular import with braindecode (:gh:`363` by `Bruno Aristimunha`_)
 - Fix bug for MotorImagery when we handle all events (:gh:`327` by `Igor Carrara`_)
 - Fixing CI to handle with new deep learning dependencies (:gh:`332` and :gh:`326` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Correct CI error due to isort (:gh:`330` by `Bruno Aristimunha`_)
@@ -288,8 +290,8 @@ API changes
 ~~~~~~~~~~~
 - None
 
-
-
+.. _Emmanuel Kalunga: https://github.com/emmanuelkalunga
+.. _Gregoire Cattan: https://github.com/gcattan
 .. _Igor Carrara: https://github.com/carraraig
 .. _Bruno Aristimunha: https://github.com/bruAristimunha
 .. _Alexandre Barachant: https://github.com/alexandrebarachant
@@ -308,4 +310,3 @@ API changes
 .. _Jan Sosulski: https://github.com/jsosulski
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Ludovic Darmet: https://github.com/ludovicdmt
-.. _Emmanuel Kalunga: https://github.com/emmanuelkalunga

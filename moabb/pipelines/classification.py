@@ -545,7 +545,7 @@ def _whitening(X):
         0
     ]  # Shrunk covariance matrix
     eig_val, eig_vec = linalg.eigh(C)
-    V = linalg.sqrtm(linalg.inv(np.diag(eig_val))) @ eig_vec.T
+    V = (np.abs(eig_val) ** -0.5)[:, np.newaxis] * eig_vec.T
     X_white = V @ X_white
     return X_white
 
