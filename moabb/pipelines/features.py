@@ -90,10 +90,14 @@ class AugmentedDataset(BaseEstimator, TransformerMixin):
 
             for i in np.arange(X.shape[0]):
                 X_p = X[i][:, : -self.order * self.lag]
-                for p in np.arange(1, self.order):
-                    X_p = np.append(
-                        X_p, X[i][:, p * self.lag : -(self.order - p) * self.lag], axis=0
-                    )
+                X_p = np.concatenate(
+                    [X_p]
+                    + [
+                        X[i][:, p * self.lag : -(self.order - p) * self.lag]
+                        for p in range(1, self.order)
+                    ],
+                    axis=0,
+                )
                 X_fin.append(X_p)
             X_fin = np.array(X_fin)
 
