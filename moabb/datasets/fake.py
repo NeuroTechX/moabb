@@ -39,10 +39,12 @@ class FakeDataset(BaseDataset):
         code="FakeDataset",
         paradigm="imagery",
         channels=("C3", "Cz", "C4"),
+        seed=None,
     ):
         self.n_runs = n_runs
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         self.channels = channels
+        self.seed = seed
         super().__init__(
             subjects=list(range(1, n_subjects + 1)),
             sessions_per_subject=n_sessions,
@@ -53,6 +55,8 @@ class FakeDataset(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
+        if self.seed is not None:
+            np.random.seed(self.seed + subject)
         data = dict()
         for session in range(self.n_sessions):
             data[f"session_{session}"] = {
@@ -93,7 +97,7 @@ class FakeVirtualRealityDataset(FakeDataset):
     .. versionadded:: 0.5.0
     """
 
-    def __init__(self):
+    def __init__(self, seed=None):
         self.n_blocks = 5
         self.n_repetitions = 12
         super().__init__(
@@ -103,9 +107,12 @@ class FakeVirtualRealityDataset(FakeDataset):
             code="FakeVirtualRealityDataset",
             event_list=dict(Target=2, NonTarget=1),
             paradigm="p300",
+            seed=seed,
         )
 
     def _get_single_subject_data(self, subject):
+        if self.seed is not None:
+            np.random.seed(self.seed + subject)
         data = dict()
         for session in range(self.n_sessions):
             data[f"{session}"] = {}
