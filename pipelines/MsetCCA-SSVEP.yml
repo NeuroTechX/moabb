@@ -1,0 +1,10 @@
+name: MsetCCA-SSVEP
+paradigms:
+  - SSVEP
+
+citations:
+  - https://doi.org/10.1142/S0129065714500130
+
+pipeline:
+  - name: SSVEP_MsetCCA
+    from: moabb.pipelines

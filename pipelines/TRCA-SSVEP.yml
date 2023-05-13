@@ -1,0 +1,9 @@
+name: TRCA-SSVEP
+paradigms:
+  - SSVEP
+
+pipeline:
+  - name: SSVEP_TRCA
+    from: moabb.pipelines
+    parameters:
+      n_fbands: 5
