@@ -197,6 +197,10 @@ class BaseParadigm(metaclass=ABCMeta):
                 else:
                     X.append(dataset.unit_factor * epochs.get_data())
 
+            # overwrite events in case epochs have been dropped:
+            # (assuming all filters produce the same number of epochs...)
+            events = epochs.events
+
         inv_events = {k: v for v, k in event_id.items()}
         labels = np.array([inv_events[e] for e in events[:, -1]])
 

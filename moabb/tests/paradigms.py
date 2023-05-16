@@ -110,6 +110,26 @@ class Test_MotorImagery(unittest.TestCase):
         dataset = FakeDataset(paradigm="imagery")
         self.assertRaises(AssertionError, paradigm.get_data, dataset)
 
+    def test_BaseImagery_droppedevent(self):
+        dataset = FakeDataset(paradigm="imagery")
+        tmax = dataset.interval[1]
+        # with regular windows, all epochs should be valid:
+        paradigm1 = SimpleMotorImagery(tmax=tmax)
+        # with large windows, some epochs will have to be dropped:
+        paradigm2 = SimpleMotorImagery(tmax=10 * tmax)
+        # with epochs:
+        epochs1, labels1, metadata1 = paradigm1.get_data(dataset, return_epochs=True)
+        epochs2, labels2, metadata2 = paradigm2.get_data(dataset, return_epochs=True)
+        self.assertEqual(len(epochs1), len(labels1), len(metadata1))
+        self.assertEqual(len(epochs2), len(labels2), len(metadata2))
+        self.assertGreater(len(epochs1), len(epochs2))
+        # with np.array:
+        X1, labels1, metadata1 = paradigm1.get_data(dataset)
+        X2, labels2, metadata2 = paradigm2.get_data(dataset)
+        self.assertEqual(len(X1), len(labels1), len(metadata1))
+        self.assertEqual(len(X2), len(labels2), len(metadata2))
+        self.assertGreater(len(X1), len(X2))
+
     def test_LeftRightImagery_paradigm(self):
         # with a good dataset
         paradigm = LeftRightImagery()
@@ -253,6 +273,26 @@ class Test_P300(unittest.TestCase):
         raw._data[-1] *= 0
         self.assertIsNone(paradigm.process_raw(raw, dataset))
 
+    def test_BaseP300_droppedevent(self):
+        dataset = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])
+        tmax = dataset.interval[1]
+        # with regular windows, all epochs should be valid:
+        paradigm1 = SimpleP300(tmax=tmax)
+        # with large windows, some epochs will have to be dropped:
+        paradigm2 = SimpleP300(tmax=10 * tmax)
+        # with epochs:
+        epochs1, labels1, metadata1 = paradigm1.get_data(dataset, return_epochs=True)
+        epochs2, labels2, metadata2 = paradigm2.get_data(dataset, return_epochs=True)
+        self.assertEqual(len(epochs1), len(labels1), len(metadata1))
+        self.assertEqual(len(epochs2), len(labels2), len(metadata2))
+        self.assertGreater(len(epochs1), len(epochs2))
+        # with np.array:
+        X1, labels1, metadata1 = paradigm1.get_data(dataset)
+        X2, labels2, metadata2 = paradigm2.get_data(dataset)
+        self.assertEqual(len(X1), len(labels1), len(metadata1))
+        self.assertEqual(len(X2), len(labels2), len(metadata2))
+        self.assertGreater(len(X1), len(X2))
+
     def test_P300_specifyevent(self):
         # we cant pass event to this class
         self.assertRaises(ValueError, P300, events=["a"])
@@ -366,6 +406,26 @@ class Test_SSVEP(unittest.TestCase):
 
     def test_BaseSSVEP_moreclassesthanevent(self):
         self.assertRaises(AssertionError, BaseSSVEP, n_classes=3, events=["13.", "14."])
+
+    def test_BaseSSVEP_droppedevent(self):
+        dataset = FakeDataset(paradigm="ssvep")
+        tmax = dataset.interval[1]
+        # with regular windows, all epochs should be valid:
+        paradigm1 = BaseSSVEP(tmax=tmax)
+        # with large windows, some epochs will have to be dropped:
+        paradigm2 = BaseSSVEP(tmax=10 * tmax)
+        # with epochs:
+        epochs1, labels1, metadata1 = paradigm1.get_data(dataset, return_epochs=True)
+        epochs2, labels2, metadata2 = paradigm2.get_data(dataset, return_epochs=True)
+        self.assertEqual(len(epochs1), len(labels1), len(metadata1))
+        self.assertEqual(len(epochs2), len(labels2), len(metadata2))
+        self.assertGreater(len(epochs1), len(epochs2))
+        # with np.array:
+        X1, labels1, metadata1 = paradigm1.get_data(dataset)
+        X2, labels2, metadata2 = paradigm2.get_data(dataset)
+        self.assertEqual(len(X1), len(labels1), len(metadata1))
+        self.assertEqual(len(X2), len(labels2), len(metadata2))
+        self.assertGreater(len(X1), len(X2))
 
     def test_SSVEP_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap
