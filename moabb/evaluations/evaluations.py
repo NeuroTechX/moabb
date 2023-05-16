@@ -408,7 +408,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         if self.calculate_learning_curve:
             yield from self._evaluate_learning_curve(dataset, pipelines)
         else:
-            yield from self._evaluate(dataset, pipelines, param_grid)
+            return self._evaluate(dataset, pipelines, param_grid)
 
     def is_valid(self, dataset):
         return True
