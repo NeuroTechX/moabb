@@ -155,6 +155,7 @@ jobs:
       publish_dir: ./docs/build/html
       cname: moabb.neurotechx.com/
 
+
       # Previous test with moabb GH pages, official docs point to moabb.github.io
       ###########################################################################
       # Since we want the URL to be neurotechx.github.io/docs/ the html output needs to be put in a ./docs subfolder of the publish_dir
