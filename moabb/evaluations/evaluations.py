@@ -270,7 +270,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 if _carbonfootprint:
                     res["carbon_emission"] = (1000 * emissions,)
 
-                yield res
+                return res
 
     def get_data_size_subsets(self, y):
         if self.data_size is None:
@@ -408,7 +408,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         if self.calculate_learning_curve:
             yield from self._evaluate_learning_curve(dataset, pipelines)
         else:
-            return self._evaluate(dataset, pipelines, param_grid)
+            yield from self._evaluate(dataset, pipelines, param_grid)
 
     def is_valid(self, dataset):
         return True
