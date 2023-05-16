@@ -176,30 +176,31 @@ class WithinSessionEvaluation(BaseEvaluation):
             return grid_clf
 
     # flake8: noqa: C901
+
     def _evaluate(self, dataset, pipelines, param_grid):
-        # Progress Bar at subject level
-        results = []
-        for result in Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
-            delayed(self.process_subject)(subject, param_grid, pipelines, dataset)
+        results = Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
+            delayed(self._evaluate_subject)(dataset, pipelines, param_grid, subject)
             for subject in tqdm(
                 dataset.subject_list, desc=f"{dataset.code}-WithinSession"
             )
-        ):
-            results.extend(result)
-        return results
+        )
 
-    def process_subject(self, subject, param_grid, pipelines, dataset):
+        # Concatenate the results from all subjects
+        yield from [res for subject_results in results for res in subject_results]
+
+    def _evaluate_subject(self, dataset, pipelines, param_grid, subject):
+        # Progress Bar at subject level
         # check if we already have result for this subject/pipeline
         # we might need a better granularity, if we query the DB
         run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
         if len(run_pipes) == 0:
-            return
+            return []
 
         # get the data
         X, y, metadata = self.paradigm.get_data(
             dataset, [subject], self.return_epochs, self.return_raws
         )
-
+        subject_results = []
         # iterate over sessions
         for session in np.unique(metadata.session):
             ix = metadata.session == session
@@ -272,8 +273,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                 }
                 if _carbonfootprint:
                     res["carbon_emission"] = (1000 * emissions,)
+                subject_results.append(res)
 
-                return res
+        return subject_results
 
     def get_data_size_subsets(self, y):
         if self.data_size is None:
