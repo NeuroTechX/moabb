@@ -197,6 +197,10 @@ class BaseParadigm(metaclass=ABCMeta):
                 else:
                     X.append(dataset.unit_factor * epochs.get_data())
 
+            # overwrite events in case epochs have been dropped:
+            # (assuming all filters produce the same number of epochs...)
+            events = epochs.events
+
         inv_events = {k: v for v, k in event_id.items()}
         labels = np.array([inv_events[e] for e in events[:, -1]])
 
@@ -282,6 +286,13 @@ class BaseParadigm(metaclass=ABCMeta):
 
                     # grow X and labels in a memory efficient way. can be slow
                     if return_epochs:
+                        x.metadata = (
+                            met.copy()
+                            if len(self.filters) == 1
+                            else pd.concat(
+                                [met.copy()] * len(self.filters), ignore_index=True
+                            )
+                        )
                         X.append(x)
                     elif return_raws:
                         X.append(x)

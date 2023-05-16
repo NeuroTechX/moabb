@@ -6,9 +6,9 @@ What's new
 ==========
 
 .. NOTE: there are 3 separate sections for changes, based on type:
-   - "Enhancements" for new features
-   - "Bugs" for bug fixes
-   - "API changes" for backward-incompatible changes
+- "Enhancements" for new features
+- "Bugs" for bug fixes
+- "API changes" for backward-incompatible changes
 .. _current:
 
 
@@ -32,6 +32,7 @@ Enhancements
 - Add CodeCarbon to track emission CO₂ (:gh:`350` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Add CodeCarbon example (:gh:`356` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add MsetCCA method for SSVEP classification, parametrise CCA `n_components` in CCA based methods (:gh:`359` by `Emmanuel Kalunga`_ and `Sylvain Chevallier`_)
+- Set epochs' `metadata` field in `get_data` (:gh:`371` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
@@ -49,6 +50,7 @@ Bugs
 - Fix unzip error for Huebner2017 and Huebner2018 (:gh:`318` by `Sylvain Chevallier`_)
 - Fix n_classes when events set to None (:gh:`337` by `Igor Carrara`_ and `Sylvain Chevallier`_)
 - Change n_jobs=-1 to self.n_jobs in GridSearch (:gh:`344` by `Igor Carrara`_)
+- Fix dropped epochs issue (:gh:`371` by `Pierre Guetschel`_)
 
 API changes
 ~~~~~~~~~~~
