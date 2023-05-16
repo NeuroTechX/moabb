@@ -179,7 +179,7 @@ class WithinSessionEvaluation(BaseEvaluation):
     def _evaluate(self, dataset, pipelines, param_grid):
         # Progress Bar at subject level
         results = []
-        for result in Parallel(n_jobs=self.n_jobs_evaluation)(
+        for result in Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
             delayed(self.process_subject)(subject, param_grid, pipelines, dataset)
             for subject in tqdm(
                 dataset.subject_list, desc=f"{dataset.code}-WithinSession"
@@ -193,7 +193,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         # we might need a better granularity, if we query the DB
         run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
         if len(run_pipes) == 0:
-            return []
+            return
 
         # get the data
         X, y, metadata = self.paradigm.get_data(
@@ -498,7 +498,7 @@ class CrossSessionEvaluation(BaseEvaluation):
             raise AssertionError("Dataset is not appropriate for evaluation")
         # Progressbar at subject level
         results = []
-        for result in Parallel(n_jobs=self.n_jobs_evaluation)(
+        for result in Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
             delayed(self.process_subject)(subject, param_grid, pipelines, dataset)
             for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-CrossSession")
         ):
