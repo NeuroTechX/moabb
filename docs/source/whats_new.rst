@@ -51,6 +51,7 @@ Bugs
 - Fix n_classes when events set to None (:gh:`337` by `Igor Carrara`_ and `Sylvain Chevallier`_)
 - Change n_jobs=-1 to self.n_jobs in GridSearch (:gh:`344` by `Igor Carrara`_)
 - Fix dropped epochs issue (:gh:`371` by `Pierre Guetschel`_)
+- Fix redundancy website issue (:gh:`372` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
