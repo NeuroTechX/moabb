@@ -237,12 +237,15 @@ class WithinSessionEvaluation(BaseEvaluation):
                 if isinstance(X, BaseEpochs):
                     scorer = get_scorer(self.paradigm.scoring)
                     acc = list()
+                    model_list = list()
                     X_ = X[ix]
                     y_ = y[ix] if self.mne_labels else y_cv
                     for train, test in cv.split(X_, y_):
                         cvclf = clone(grid_clf)
                         cvclf.fit(X_[train], y_[train])
                         acc.append(scorer(cvclf, X_[test], y_[test]))
+                        model_list.append(deepcopy(cvclf))
+
                     acc = np.array(acc)
                 else:
                     acc = cross_val_score(
@@ -261,6 +264,23 @@ class WithinSessionEvaluation(BaseEvaluation):
                         emissions = np.NaN
                 duration = time() - t_start
                 nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+
+                name_save = os.path.join(
+                    str(self.hdf5_path),
+                    "TrainedModels_WithinSession",
+                    dataset.code,
+                    "subject" + str(subject),
+                    str(session),
+                    str(name),
+                )
+
+                for id_cv, model in enumerate(model_list):
+                    os.makedirs(name_save, exist_ok=True)
+                    joblib.dump(
+                        model,
+                        os.path.join(name_save, f"cv{id_cv}.pkl"),
+                    )
+
                 res = {
                     "time": duration / 5.0,  # 5 fold CV
                     "dataset": dataset,
