@@ -144,16 +144,16 @@ jobs:
           git commit -m "GH Actions update of GH pages ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)"
           git push origin gh-pages
 
-      - name: Deploy to moabb.neurotechx.com/
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop'}}
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          external_repository: NeuroTechX/moabb.github.io
-          destination_dir: docs/
-          publish_branch: master
-          publish_dir: ./docs/build/html
-          cname: moabb.neurotechx.com/
+  deploy_neurotechx_subpages:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop'}}
+    uses: peaceiris/actions-gh-pages@v3
+    with:
+      deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+      external_repository: NeuroTechX/moabb.github.io
+      destination_dir: docs/
+      publish_branch: master
+      publish_dir: ./docs/build/html
+      cname: moabb.neurotechx.com/
 
       # Previous test with moabb GH pages, official docs point to moabb.github.io
       ###########################################################################
