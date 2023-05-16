@@ -72,6 +72,9 @@ class WithinSessionEvaluation(BaseEvaluation):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
+    n_jobs_evaluation: int, default=1
+        Number of jobs for evaluation, processing in parallel the within session,
+        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -176,7 +179,7 @@ class WithinSessionEvaluation(BaseEvaluation):
     def _evaluate(self, dataset, pipelines, param_grid):
         # Progress Bar at subject level
         results = []
-        for result in Parallel(n_jobs=self.n_jobs)(
+        for result in Parallel(n_jobs=self.n_jobs_evaluation)(
             delayed(self.process_subject)(subject, param_grid, pipelines, dataset)
             for subject in tqdm(
                 dataset.subject_list, desc=f"{dataset.code}-WithinSession"
@@ -432,6 +435,9 @@ class CrossSessionEvaluation(BaseEvaluation):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
+    n_jobs_evaluation: int, default=1
+        Number of jobs for evaluation, processing in parallel the within session,
+        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -492,7 +498,7 @@ class CrossSessionEvaluation(BaseEvaluation):
             raise AssertionError("Dataset is not appropriate for evaluation")
         # Progressbar at subject level
         results = []
-        for result in Parallel(n_jobs=self.n_jobs)(
+        for result in Parallel(n_jobs=self.n_jobs_evaluation)(
             delayed(self.process_subject)(subject, param_grid, pipelines, dataset)
             for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-CrossSession")
         ):
@@ -617,6 +623,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
+    n_jobs_evaluation: int, default=1
+        Number of jobs for evaluation, processing in parallel the within session,
+        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
