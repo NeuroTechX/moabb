@@ -1,6 +1,8 @@
 import numpy as np
 import scipy.linalg as linalg
+from joblib import Parallel, delayed
 from pyriemann.estimation import Covariances
+from pyriemann.utils.covariance import covariances
 from pyriemann.utils.mean import mean_covariance
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.cross_decomposition import CCA
@@ -16,6 +18,21 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
     sinusoids to act as reference.
     Classification is made by taking the frequency with the max correlation,
     as proposed in [1]_.
+
+    Parameters
+    ----------
+    interval : list of lenght 2
+        List of form [tmin, tmax]. With tmin and tmax as defined in the SSVEP
+        paradigm :meth:`moabb.paradigms.SSVEP`
+
+    freqs : dict with n_classes keys
+        Frequencies corresponding to the SSVEP stimulation frequencies.
+        They are used to identify SSVEP classes presents in the data.
+
+    n_harmonics: int
+        Number of stimulation frequency's harmonics to be used in the genration
+        of the CCA reference signal.
+
 
     References
     ----------
@@ -511,3 +528,132 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
             y_pred[trial_n] = rho
 
         return y_pred
+
+
+def _whitening(X):
+    """utility function to whiten EEG signal
+
+    Parameters
+    ----------
+    X: ndarray of shape (n_channels, n_samples)
+    """
+    n_channels, n_samples = X.shape
+    X_white = X.copy()
+
+    X_white = X_white - np.mean(X_white, axis=1, keepdims=True)
+    C = covariances(X_white.reshape((1, n_channels, n_samples)), estimator="sch")[
+        0
+    ]  # Shrunk covariance matrix
+    eig_val, eig_vec = linalg.eigh(C)
+    V = (np.abs(eig_val) ** -0.5)[:, np.newaxis] * eig_vec.T
+    X_white = V @ X_white
+    return X_white
+
+
+class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
+    """Classifier based on MsetCCA for SSVEP
+
+     The MsetCCA method learns multiple linear transforms to extract
+     SSVEP common features from multiple sets of EEG data. These are then used
+     to compute the reference signal used in CCA [1]_.
+
+    Parameters
+    ----------
+    freqs : dict with n_classes keys
+        Frequencies corresponding to the SSVEP stimulation frequencies.
+        They are used to identify SSVEP classes presents in the data.
+
+    n_filters: int
+        Number of multisets spatial filters used per sample data.
+        It corresponds to the number of eigen vectors taken the solution of the
+        MAXVAR objective function as formulated in Eq.5 in [1]_.
+
+
+    References
+    ----------
+
+    .. [1] Zhang, Y.U., Zhou, G., Jin, J., Wang, X. and Cichocki, A. (2014). Frequency
+           recognition in SSVEP-based BCI using multiset canonical correlation analysis.
+           International journal of neural systems, 24(04), p.1450013.
+           https://doi.org/10.1142/S0129065714500130
+    """
+
+    def __init__(self, freqs, n_filters=1, n_jobs=1):
+        self.n_jobs = n_jobs
+        self.n_filters = n_filters
+        self.freqs = freqs
+        self.cca = CCA(n_components=1)
+
+    def fit(self, X, y, sample_weight=None):
+        """
+        Compute the optimized reference signal at each stimulus frequency
+        """
+        self.classes_ = np.unique(y)
+        self.one_hot = {}
+        for i, k in enumerate(self.classes_):
+            self.one_hot[k] = i
+        n_trials, n_channels, n_times = X.shape
+
+        # Whiten signal in parallel
+        if self.n_jobs == 1:
+            X_white = [_whitening(X_i) for X_i in X]
+        else:
+            X_white = Parallel(n_jobs=self.n_jobs)(delayed(_whitening)(X_i) for X_i in X)
+        X_white = np.stack(X_white, axis=0)
+
+        Y = X_white.transpose(2, 0, 1).reshape(-1, n_times)
+        # R = np.cov(Y)
+        # or more similar to the article:
+        R = Y @ Y.T
+        # S = np.diag(np.diag(R)) # This does not match the definition in the article
+        # S exactly as defined in the article
+        mask = np.kron(
+            np.eye(n_trials), np.ones((n_channels, n_channels))
+        )  # block diagonal mask
+        S = R * mask
+
+        # Get W
+        _, tempW = linalg.eigh(
+            R - S, S, subset_by_index=[R.shape[1] - self.n_filters, R.shape[1] - 1]
+        )
+        W = np.reshape(tempW, (n_trials, n_channels, self.n_filters))
+
+        # Normalise W
+        W = W / np.linalg.norm(W, axis=0, keepdims=True)
+
+        Z = W.transpose((0, 2, 1)) @ X_white
+
+        # Get Ym
+        self.Ym = dict()
+        for m_class in self.classes_:
+            self.Ym[m_class] = Z[y == m_class].transpose(2, 0, 1).reshape(-1, n_times)
+
+        return self
+
+    def predict(self, X):
+        """Predict is made by taking the maximum correlation coefficient"""
+
+        # Check is fit had been called
+        check_is_fitted(self)
+
+        y = []
+        for x in X:
+            corr_f = {}
+            for f in self.classes_:
+                S_x, S_y = self.cca.fit_transform(x.T, self.Ym[f].T)
+                corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0, 1]
+            y.append(self.one_hot[max(corr_f, key=corr_f.get)])
+        return y
+
+    def predict_proba(self, X):
+        """Probabilty could be computed from the correlation coefficient"""
+
+        # Check is fit had been called
+        check_is_fitted(self)
+
+        P = np.zeros(shape=(len(X), len(self.classes_)))
+        for i, x in enumerate(X):
+            for j, f in enumerate(self.classes_):
+                S_x, S_y = self.cca.fit_transform(x.T, self.Ym[f].T)
+                P[i, j] = np.corrcoef(S_x.T, S_y.T)[0, 1]
+        return P / np.resize(P.sum(axis=1), P.T.shape).T

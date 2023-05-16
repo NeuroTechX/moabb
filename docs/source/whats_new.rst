@@ -6,9 +6,9 @@ What's new
 ==========
 
 .. NOTE: there are 3 separate sections for changes, based on type:
-   - "Enhancements" for new features
-   - "Bugs" for bug fixes
-   - "API changes" for backward-incompatible changes
+- "Enhancements" for new features
+- "Bugs" for bug fixes
+- "API changes" for backward-incompatible changes
 .. _current:
 
 
@@ -31,6 +31,8 @@ Enhancements
 - Add suport to Braindecode classifier (:gh:`328` by `Bruno Aristimunha`_)
 - Add CodeCarbon to track emission CO₂ (:gh:`350` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Add CodeCarbon example (:gh:`356` by `Igor Carrara`_ and `Bruno Aristimunha`_)
+- Add MsetCCA method for SSVEP classification, parametrise CCA `n_components` in CCA based methods (:gh:`359` by `Emmanuel Kalunga`_ and `Sylvain Chevallier`_)
+- Set epochs' `metadata` field in `get_data` (:gh:`371` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
@@ -48,6 +50,8 @@ Bugs
 - Fix unzip error for Huebner2017 and Huebner2018 (:gh:`318` by `Sylvain Chevallier`_)
 - Fix n_classes when events set to None (:gh:`337` by `Igor Carrara`_ and `Sylvain Chevallier`_)
 - Change n_jobs=-1 to self.n_jobs in GridSearch (:gh:`344` by `Igor Carrara`_)
+- Fix dropped epochs issue (:gh:`371` by `Pierre Guetschel`_)
+- Fix redundancy website issue (:gh:`372` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -289,8 +293,8 @@ API changes
 ~~~~~~~~~~~
 - None
 
-
-
+.. _Emmanuel Kalunga: https://github.com/emmanuelkalunga
+.. _Gregoire Cattan: https://github.com/gcattan
 .. _Igor Carrara: https://github.com/carraraig
 .. _Bruno Aristimunha: https://github.com/bruAristimunha
 .. _Alexandre Barachant: https://github.com/alexandrebarachant
@@ -309,4 +313,3 @@ API changes
 .. _Jan Sosulski: https://github.com/jsosulski
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Ludovic Darmet: https://github.com/ludovicdmt
-.. _Gregoire Cattan: https://github.com/gcattan
