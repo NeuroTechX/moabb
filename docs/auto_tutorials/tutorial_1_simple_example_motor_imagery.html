@@ -481,6 +481,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.StandardScaler_Epoch.html">moabb.pipelines.features.StandardScaler_Epoch</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.csp.TRCSP.html">moabb.pipelines.csp.TRCSP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.classification.SSVEP_CCA.html">moabb.pipelines.classification.SSVEP_CCA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.classification.SSVEP_TRCA.html">moabb.pipelines.classification.SSVEP_TRCA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.classification.SSVEP_MsetCCA.html">moabb.pipelines.classification.SSVEP_MsetCCA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasDeepConvNet.html">moabb.pipelines.deep_learning.KerasDeepConvNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasEEGITNet.html">moabb.pipelines.deep_learning.KerasEEGITNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasEEGNet_8_2.html">moabb.pipelines.deep_learning.KerasEEGNet_8_2</a></li>
@@ -663,7 +665,7 @@ paradigm (note that BNCI2014001 is in it)</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://neurotechx.github.io/moabb/generated/moabb.paradigms.motor_imagery.BaseMotorImagery.html#moabb.paradigms.motor_imagery.BaseMotorImagery.datasets" title="moabb.paradigms.motor_imagery.BaseMotorImagery.datasets" class="sphx-glr-backref-module-moabb-paradigms-motor_imagery sphx-glr-backref-type-py-property"><span class="n">paradigm</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014001 object at 0x7f8e78eedbb0&gt;, &lt;moabb.datasets.bnci.BNCI2014004 object at 0x7f8e78eeda90&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f8e78eedd30&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f8e78eede20&gt;, &lt;moabb.datasets.mpi_mi.MunichMI object at 0x7f8e78eed5b0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f8e78eed640&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f8e78eed5e0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f8e78eedca0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f8e78eedfa0&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7f8e78eedb20&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014001 object at 0x7fa1c5c8c340&gt;, &lt;moabb.datasets.bnci.BNCI2014004 object at 0x7fa1c5c8c4c0&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fa1c151c1f0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fa1c151c130&gt;, &lt;moabb.datasets.mpi_mi.MunichMI object at 0x7fa0ffbafb80&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fa1c151c220&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fa1c151cf70&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fa1c151cd60&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fa1c151cb80&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7fa0ffe17e50&gt;]
 </pre></div>
 </div>
 <p>The data from a list of subjects could be preprocessed and return as a 3D
@@ -710,10 +712,10 @@ partition and the remaining one as testing partition.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-001-2014-WithinSession:  33%|###3      | 1/3 [00:06&lt;00:13,  6.88s/it]
-001-2014-WithinSession:  67%|######6   | 2/3 [00:13&lt;00:06,  6.65s/it]
-001-2014-WithinSession: 100%|##########| 3/3 [00:19&lt;00:00,  6.58s/it]
-001-2014-WithinSession: 100%|##########| 3/3 [00:19&lt;00:00,  6.62s/it]
+001-2014-WithinSession:  33%|###3      | 1/3 [00:07&lt;00:14,  7.45s/it]
+001-2014-WithinSession:  67%|######6   | 2/3 [00:14&lt;00:07,  7.28s/it]
+001-2014-WithinSession: 100%|##########| 3/3 [00:21&lt;00:00,  7.16s/it]
+001-2014-WithinSession: 100%|##########| 3/3 [00:21&lt;00:00,  7.21s/it]
 </pre></div>
 </div>
 <p>The results are stored in locally, to avoid recomputing the results each time.
@@ -741,8 +743,8 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  29.749 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  623 MB</p>
+<img src="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  32.641 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  633 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-1-simple-example-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/b446bb6bcfa12c42d029c4259163f668/tutorial_1_simple_example_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_1_simple_example_motor_imagery.py</span></code></a></p>

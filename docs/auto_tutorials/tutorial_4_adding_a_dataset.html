@@ -481,6 +481,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.StandardScaler_Epoch.html">moabb.pipelines.features.StandardScaler_Epoch</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.csp.TRCSP.html">moabb.pipelines.csp.TRCSP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.classification.SSVEP_CCA.html">moabb.pipelines.classification.SSVEP_CCA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.classification.SSVEP_TRCA.html">moabb.pipelines.classification.SSVEP_TRCA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.classification.SSVEP_MsetCCA.html">moabb.pipelines.classification.SSVEP_MsetCCA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasDeepConvNet.html">moabb.pipelines.deep_learning.KerasDeepConvNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasEEGITNet.html">moabb.pipelines.deep_learning.KerasEEGITNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasEEGNet_8_2.html">moabb.pipelines.deep_learning.KerasEEGNet_8_2</a></li>
@@ -729,75 +731,65 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:06, 431kB/s]
-  8%|███                                    | 213k/2.77M [00:00&lt;00:04, 579kB/s]
- 21%|████████▏                             | 593k/2.77M [00:00&lt;00:01, 1.56MB/s]
- 32%|████████████▏                         | 885k/2.77M [00:00&lt;00:01, 1.55MB/s]
- 47%|█████████████████▎                   | 1.29M/2.77M [00:00&lt;00:00, 1.78MB/s]
- 60%|██████████████████████▎              | 1.66M/2.77M [00:00&lt;00:00, 2.21MB/s]
- 73%|███████████████████████████▏         | 2.03M/2.77M [00:01&lt;00:00, 2.10MB/s]
- 88%|████████████████████████████████▍    | 2.42M/2.77M [00:01&lt;00:00, 2.51MB/s]
-2.77MB [00:01, 2.71MB/s]
+  1%|▍                                     | 32.8k/2.77M [00:00&lt;00:13, 207kB/s]
+  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:10, 265kB/s]
+  4%|█▌                                     | 115k/2.77M [00:00&lt;00:11, 236kB/s]
+  8%|███                                    | 213k/2.77M [00:00&lt;00:06, 384kB/s]
+ 16%|██████▏                                | 442k/2.77M [00:00&lt;00:03, 758kB/s]
+ 33%|████████████▌                         | 918k/2.77M [00:00&lt;00:01, 1.50MB/s]
+ 67%|████████████████████████▊            | 1.85M/2.77M [00:01&lt;00:00, 2.90MB/s]
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 4.62GB/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 2.54GB/s]
 
 Example dataset-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-Example dataset-WithinSession:  33%|###3      | 1/3 [00:00&lt;00:00,  6.01it/s]
+Example dataset-WithinSession:  33%|###3      | 1/3 [00:00&lt;00:00,  5.15it/s]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
 
-  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:06, 427kB/s]
+  1%|▍                                     | 32.8k/2.77M [00:00&lt;00:13, 203kB/s]
 
-  7%|██▌                                    | 180k/2.77M [00:00&lt;00:05, 476kB/s]
+  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:10, 262kB/s]
 
- 19%|███████                               | 513k/2.77M [00:00&lt;00:01, 1.34MB/s]
+  4%|█▌                                     | 115k/2.77M [00:00&lt;00:11, 235kB/s]
 
- 30%|███████████▎                          | 819k/2.77M [00:00&lt;00:01, 1.46MB/s]
+  8%|███                                    | 213k/2.77M [00:00&lt;00:06, 382kB/s]
 
- 45%|████████████████▌                    | 1.24M/2.77M [00:00&lt;00:00, 2.15MB/s]
+ 16%|██████▏                                | 442k/2.77M [00:00&lt;00:03, 756kB/s]
 
- 56%|████████████████████▊                | 1.56M/2.77M [00:00&lt;00:00, 1.96MB/s]
+ 32%|████████████▏                         | 885k/2.77M [00:00&lt;00:01, 1.43MB/s]
 
- 70%|█████████████████████████▊           | 1.93M/2.77M [00:01&lt;00:00, 2.38MB/s]
-
- 83%|██████████████████████████████▋      | 2.29M/2.77M [00:01&lt;00:00, 2.19MB/s]
-
- 92%|██████████████████████████████████   | 2.54M/2.77M [00:01&lt;00:00, 2.25MB/s]
+ 65%|███████████████████████▉             | 1.79M/2.77M [00:01&lt;00:00, 2.78MB/s]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 1.88GB/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 1.71GB/s]
 
-Example dataset-WithinSession:  67%|######6   | 2/3 [00:02&lt;00:01,  1.63s/it]
+Example dataset-WithinSession:  67%|######6   | 2/3 [00:03&lt;00:02,  2.06s/it]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
 
-  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:06, 427kB/s]
+  1%|▍                                     | 32.8k/2.77M [00:00&lt;00:13, 204kB/s]
 
-  9%|███▋                                   | 262k/2.77M [00:00&lt;00:03, 726kB/s]
+  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:10, 263kB/s]
 
- 23%|████████▉                             | 649k/2.77M [00:00&lt;00:01, 1.68MB/s]
+  4%|█▌                                     | 115k/2.77M [00:00&lt;00:11, 236kB/s]
 
- 35%|█████████████▎                        | 967k/2.77M [00:00&lt;00:01, 1.67MB/s]
+  9%|███▍                                   | 246k/2.77M [00:00&lt;00:05, 463kB/s]
 
- 48%|█████████████████▊                   | 1.33M/2.77M [00:00&lt;00:00, 2.18MB/s]
+ 19%|███████▍                               | 524k/2.77M [00:00&lt;00:02, 918kB/s]
 
- 62%|██████████████████████▊              | 1.70M/2.77M [00:00&lt;00:00, 2.08MB/s]
+ 39%|██████████████▍                      | 1.08M/2.77M [00:00&lt;00:00, 1.78MB/s]
 
- 74%|███████████████████████████▌         | 2.06M/2.77M [00:01&lt;00:00, 2.42MB/s]
-
- 88%|████████████████████████████████▋    | 2.44M/2.77M [00:01&lt;00:00, 2.25MB/s]
-
-2.77MB [00:01, 2.47MB/s]
+ 79%|█████████████████████████████▏       | 2.18M/2.77M [00:01&lt;00:00, 3.42MB/s]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 4.61GB/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 1.65GB/s]
 
-Example dataset-WithinSession: 100%|##########| 3/3 [00:05&lt;00:00,  2.00s/it]
-Example dataset-WithinSession: 100%|##########| 3/3 [00:05&lt;00:00,  1.75s/it]
+Example dataset-WithinSession: 100%|##########| 3/3 [00:06&lt;00:00,  2.24s/it]
+Example dataset-WithinSession: 100%|##########| 3/3 [00:06&lt;00:00,  2.00s/it]
    score      time  samples  ... n_sessions          dataset  pipeline
-0    1.0  0.018340     40.0  ...          1  Example dataset       MDM
-1    1.0  0.029527     40.0  ...          1  Example dataset       MDM
-2    1.0  0.016503     40.0  ...          1  Example dataset       MDM
+0    1.0  0.020785     40.0  ...          1  Example dataset       MDM
+1    1.0  0.030110     40.0  ...          1  Example dataset       MDM
+2    1.0  0.018179     40.0  ...          1  Example dataset       MDM
 
 [3 rows x 9 columns]
 </pre></div>
@@ -809,7 +801,7 @@ Example dataset-WithinSession: 100%|##########| 3/3 [00:05&lt;00:00,  1.75s/it]
 your data on public server (like Zenodo or Figshare) and signal that you
 want to add your dataset to MOABB in the  <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">dedicated issue</a>.  # noqa: E501
 You could then follow the instructions on <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">how to contribute</a>  # noqa: E501</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  9.409 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.110 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">

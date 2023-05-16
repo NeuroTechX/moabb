@@ -481,6 +481,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.StandardScaler_Epoch.html">moabb.pipelines.features.StandardScaler_Epoch</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.csp.TRCSP.html">moabb.pipelines.csp.TRCSP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.classification.SSVEP_CCA.html">moabb.pipelines.classification.SSVEP_CCA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.classification.SSVEP_TRCA.html">moabb.pipelines.classification.SSVEP_TRCA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.classification.SSVEP_MsetCCA.html">moabb.pipelines.classification.SSVEP_MsetCCA</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasDeepConvNet.html">moabb.pipelines.deep_learning.KerasDeepConvNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasEEGITNet.html">moabb.pipelines.deep_learning.KerasEEGITNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.deep_learning.KerasEEGNet_8_2.html">moabb.pipelines.deep_learning.KerasEEGNet_8_2</a></li>
@@ -653,15 +655,15 @@ be overwritten if necessary.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-001-2014-CrossSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.89s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.67s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.70s/it]
+001-2014-CrossSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.65s/it]
+001-2014-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.45s/it]
+001-2014-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.48s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.962963  0.290719    144.0       1  ...       22           2  001-2014    RG+LR
-1  0.950424  0.279043    144.0       1  ...       22           2  001-2014    RG+LR
-2  0.585648  0.290483    144.0       2  ...       22           2  001-2014    RG+LR
-3  0.574846  0.277162    144.0       2  ...       22           2  001-2014    RG+LR
-4  0.955440  0.430996    144.0       1  ...       22           2  001-2014  CSP+LDA
+0  0.962963  0.358195    144.0       1  ...       22           2  001-2014    RG+LR
+1  0.950424  0.348406    144.0       1  ...       22           2  001-2014    RG+LR
+2  0.585648  0.414943    144.0       2  ...       22           2  001-2014    RG+LR
+3  0.574846  0.334795    144.0       2  ...       22           2  001-2014    RG+LR
+4  0.955440  0.451632    144.0       1  ...       22           2  001-2014  CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -707,8 +709,8 @@ points are in its quadrant.</p>
   sns.stripplot(
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.052 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  341 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.730 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  367 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/82e3e6cb009bb9a9c444c6cff254cea8/plot_cross_session_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_motor_imagery.py</span></code></a></p>

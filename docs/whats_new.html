@@ -422,11 +422,17 @@ document.write(`
                   
   <section id="what-s-new">
 <span id="whats-new"></span><h1>What’s new<a class="headerlink" href="#what-s-new" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>“Enhancements” for new features</p></li>
+<li><p>“Bugs” for bug fixes</p></li>
+<li><p>“API changes” for backward-incompatible changes</p></li>
+</ul>
 <section id="develop-branch">
 <span id="current"></span><h2>Develop branch<a class="headerlink" href="#develop-branch" title="Permalink to this heading">#</a></h2>
 <section id="enhancements">
 <h3>Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
+<li><p>Speeding the augmentation model (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/365">#365</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Add VirtualReality BrainInvaders dataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/358">#358</a> by <a class="reference external" href="https://github.com/gcattan">Gregoire Cattan</a>)</p></li>
 <li><p>Switch to python-3.8, update dependencies, fix code link in doc, add <a class="reference external" href="https://app.codecov.io/gh/NeuroTechX/moabb">code coverage</a> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/315">#315</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Adding a comprehensive benchmarking function (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/264">#264</a> by <a class="reference external" href="https://github.com/Div12345">Divyesh Narayanan</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
@@ -435,11 +441,13 @@ document.write(`
 <li><p>Add new tutorial to benchmark with GridSearchCV (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/323">#323</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>)</p></li>
 <li><p>Add six deep learning models (Tensorflow), and build a tutorial to show to use the deep learning model (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/326">#326</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>, <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Add a augmentation model to the pipeline (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/326">#326</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>)</p></li>
-<li><p>Add BrainDecode example(<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/340">#340</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Add BrainDecode example (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/340">#340</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Add Google Analytics to the documentation (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/335">#335</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Add suport to Braindecode classifier (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/328">#328</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Add CodeCarbon to track emission CO₂ (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/350">#350</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>, <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Add CodeCarbon example (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/356">#356</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Add MsetCCA method for SSVEP classification, parametrise CCA <cite>n_components</cite> in CCA based methods (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/359">#359</a> by <a class="reference external" href="https://github.com/emmanuelkalunga">Emmanuel Kalunga</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
+<li><p>Set epochs’ <cite>metadata</cite> field in <cite>get_data</cite> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/371">#371</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 </ul>
 </section>
 <section id="bugs">
@@ -459,6 +467,7 @@ document.write(`
 <li><p>Fix unzip error for Huebner2017 and Huebner2018 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/318">#318</a> by <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Fix n_classes when events set to None (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/337">#337</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a> and <a class="reference external" href="https://github.com/sylvchev">Sylvain Chevallier</a>)</p></li>
 <li><p>Change n_jobs=-1 to self.n_jobs in GridSearch (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/344">#344</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>)</p></li>
+<li><p>Fix dropped epochs issue (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/371">#371</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 </ul>
 </section>
 <section id="api-changes">

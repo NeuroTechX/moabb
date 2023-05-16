@@ -58,7 +58,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.pipelines.classification.SSVEP_CCA';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.pipelines.deep_learning.KerasDeepConvNet" href="moabb.pipelines.deep_learning.KerasDeepConvNet.html" />
+    <link rel="next" title="moabb.pipelines.classification.SSVEP_TRCA" href="moabb.pipelines.classification.SSVEP_TRCA.html" />
     <link rel="prev" title="moabb.pipelines.csp.TRCSP" href="moabb.pipelines.csp.TRCSP.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -431,12 +431,24 @@ document.write(`
 <h1>moabb.pipelines.classification.SSVEP_CCA<a class="headerlink" href="#moabb-pipelines-classification-ssvep-cca" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_CCA">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.pipelines.classification.</span></span><span class="sig-name descname"><span class="pre">SSVEP_CCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_harmonics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L12-L82"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_CCA" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.pipelines.classification.</span></span><span class="sig-name descname"><span class="pre">SSVEP_CCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_harmonics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L14-L99"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_CCA" title="Permalink to this definition">#</a></dt>
 <dd><p>Classifier based on Canonical Correlation Analysis for SSVEP</p>
 <p>A CCA is computed from the set of training signals and some pure
 sinusoids to act as reference.
 Classification is made by taking the frequency with the max correlation,
 as proposed in <a class="reference internal" href="#rc3fd88100f85-1" id="id1">[1]</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>interval</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em> of </em><em>lenght 2</em>) – List of form [tmin, tmax]. With tmin and tmax as defined in the SSVEP
+paradigm <a class="reference internal" href="moabb.paradigms.SSVEP.html#moabb.paradigms.SSVEP" title="moabb.paradigms.SSVEP"><code class="xref py py-meth docutils literal notranslate"><span class="pre">moabb.paradigms.SSVEP()</span></code></a></p></li>
+<li><p><strong>freqs</strong> (<em>dict with n_classes keys</em>) – Frequencies corresponding to the SSVEP stimulation frequencies.
+They are used to identify SSVEP classes presents in the data.</p></li>
+<li><p><strong>n_harmonics</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – Number of stimulation frequency’s harmonics to be used in the genration
+of the CCA reference signal.</p></li>
+</ul>
+</dd>
+</dl>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="rc3fd88100f85-1" role="doc-biblioentry">
@@ -450,20 +462,20 @@ engineering, 6(4), 046002.
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_CCA.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L41-L60"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_CCA.fit" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L58-L77"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_CCA.fit" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute reference sinusoid signal</p>
 <p>These sinusoid are generated for each frequency in the dataset</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_CCA.predict">
-<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L62-L72"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_CCA.predict" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L79-L89"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_CCA.predict" title="Permalink to this definition">#</a></dt>
 <dd><p>Predict is made by taking the maximum correlation coefficient</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_CCA.predict_proba">
-<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L74-L82"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_CCA.predict_proba" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/classification.py#L91-L99"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_CCA.predict_proba" title="Permalink to this definition">#</a></dt>
 <dd><p>Probabilty could be computed from the correlation coefficient</p>
 </dd></dl>
 
@@ -492,11 +504,11 @@ engineering, 6(4), 046002.
       </div>
     </a>
     <a class="right-next"
-       href="moabb.pipelines.deep_learning.KerasDeepConvNet.html"
+       href="moabb.pipelines.classification.SSVEP_TRCA.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.pipelines.deep_learning.KerasDeepConvNet</p>
+        <p class="prev-next-title">moabb.pipelines.classification.SSVEP_TRCA</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
