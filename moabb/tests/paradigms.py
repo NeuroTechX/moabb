@@ -130,6 +130,13 @@ class Test_MotorImagery(unittest.TestCase):
         self.assertEqual(len(X2), len(labels2), len(metadata2))
         self.assertGreater(len(X1), len(X2))
 
+    def test_BaseImagery_epochsmetadata(self):
+        dataset = FakeDataset(paradigm="imagery")
+        paradigm = SimpleMotorImagery()
+        epochs, _, metadata = paradigm.get_data(dataset, return_epochs=True)
+        # does not work with multiple filters:
+        self.assertTrue(metadata.equals(epochs.metadata))
+
     def test_LeftRightImagery_paradigm(self):
         # with a good dataset
         paradigm = LeftRightImagery()
@@ -293,6 +300,13 @@ class Test_P300(unittest.TestCase):
         self.assertEqual(len(X2), len(labels2), len(metadata2))
         self.assertGreater(len(X1), len(X2))
 
+    def test_BaseP300_epochsmetadata(self):
+        dataset = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])
+        paradigm = SimpleP300()
+        epochs, _, metadata = paradigm.get_data(dataset, return_epochs=True)
+        # does not work with multiple filters:
+        self.assertTrue(metadata.equals(epochs.metadata))
+
     def test_P300_specifyevent(self):
         # we cant pass event to this class
         self.assertRaises(ValueError, P300, events=["a"])
@@ -426,6 +440,13 @@ class Test_SSVEP(unittest.TestCase):
         self.assertEqual(len(X1), len(labels1), len(metadata1))
         self.assertEqual(len(X2), len(labels2), len(metadata2))
         self.assertGreater(len(X1), len(X2))
+
+    def test_BaseSSVEP_epochsmetadata(self):
+        dataset = FakeDataset(paradigm="ssvep")
+        paradigm = BaseSSVEP()
+        epochs, _, metadata = paradigm.get_data(dataset, return_epochs=True)
+        # does not work with multiple filters:
+        self.assertTrue(metadata.equals(epochs.metadata))
 
     def test_SSVEP_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap

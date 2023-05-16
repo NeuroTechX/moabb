@@ -286,6 +286,13 @@ class BaseParadigm(metaclass=ABCMeta):
 
                     # grow X and labels in a memory efficient way. can be slow
                     if return_epochs:
+                        x.metadata = (
+                            met.copy()
+                            if len(self.filters) == 1
+                            else pd.concat(
+                                [met.copy()] * len(self.filters), ignore_index=True
+                            )
+                        )
                         X.append(x)
                     elif return_raws:
                         X.append(x)
