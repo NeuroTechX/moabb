@@ -2,7 +2,7 @@
 Comparison of the classification accuracy of the ERPCovariances and XdawnCovariances using
 Minimum Distance to Mean (MDM) and Tangent Space classifiers
 
-Based on: /home/sara/Work/moabb/examples/plot_within_session_p300.py
+Based on: https://github.com/NeuroTechX/moabb/blob/develop/examples/plot_within_session_p300.py
 """
 
 import matplotlib.pyplot as plt
