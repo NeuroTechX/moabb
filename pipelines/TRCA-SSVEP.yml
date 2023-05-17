@@ -10,5 +10,5 @@ pipeline:
     from: moabb.pipelines.classification
     parameters:
       n_fbands: 5
-      interval: [ 2, 4 ]
+      interval: [2, 4]
       freqs: { "13": 2, "17": 3, "21": 4 }
