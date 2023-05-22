@@ -1,0 +1,12 @@
+name: MsetCCA-SSVEP
+paradigms:
+  - SSVEP
+
+citations:
+  - https://doi.org/10.1142/S0129065714500130
+
+pipeline:
+  - name: SSVEP_MsetCCA
+    from: moabb.pipelines.classification
+    parameters:
+      freqs: { "13": 2, "17": 3, "21": 4 }
