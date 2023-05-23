@@ -13,16 +13,16 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-18.04, windows-latest, macOS-latest]
-        python-version: ["3.7", "3.8", "3.9"]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        python-version: ["3.8", "3.9"]
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -35,7 +35,7 @@ jobs:
       - name: Load cached venv
         if: runner.os != 'Windows'
         id: cached-poetry-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key:
@@ -46,15 +46,21 @@ jobs:
         if: |
           (runner.os != 'Windows') &&
           (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
-        run: poetry install --no-interaction --no-root --no-dev
+        run: poetry install --no-interaction --no-root --with deeplearning
 
-      - name: Install library
-        run: poetry install --no-interaction --no-dev
+      - name: Install library (Linux/OSX)
+        if: ${{ runner.os != 'Windows' }}
+        run: poetry install --no-interaction --with deeplearning
+
+      - name: Install library (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        run: poetry install --no-interaction
 
       - name: Run tests
         run: |
           source $VENV
-          poetry run python -m unittest moabb.tests
+          poetry run coverage run -m unittest moabb.tests
+          poetry run coverage xml
 
       - name: Run pipelines
         run: |
@@ -62,9 +68,10 @@ jobs:
           poetry run python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         if: success()
         with:
           verbose: true
           directory: /home/runner/work/moabb/moabb
-          files: ./.coverage
+          files: ./.coverage,coverage.xml
+          env_vars: OS,PYTHON

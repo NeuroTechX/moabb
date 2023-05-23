@@ -17,6 +17,15 @@ GIN_URL = (
 class Schirrmeister2017(BaseDataset):
     """High-gamma dataset discribed in Schirrmeister et al. 2017
 
+    .. admonition:: Dataset summary
+
+
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
+        Name                 #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
+        Schirrmeister2017       14      128           4                120  4s            500Hz                      1
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
+
     Dataset from [1]_
 
     Our “High-Gamma Dataset” is a 128-electrode dataset (of which we later only use
@@ -82,7 +91,7 @@ class Schirrmeister2017(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         train_raw, test_raw = [
-            mne.io.read_raw_edf(path, infer_types=True)
+            mne.io.read_raw_edf(path, infer_types=True, preload=True)
             for path in self.data_path(subject)
         ]
 

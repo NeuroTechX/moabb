@@ -1,0 +1,19 @@
+name: FgMDM
+
+paradigms:
+  - LeftRightImagery
+  - MotorImagery
+
+citations:
+  - https://doi.org/10.1007/978-3-642-15995-4_78
+
+pipeline:
+  - name: Covariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: oas
+
+  - name: FgMDM
+    from: pyriemann.classification
+    parameters:
+      metric: "riemann"

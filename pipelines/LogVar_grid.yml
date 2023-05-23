@@ -1,4 +1,4 @@
-name: Log Variance SVM
+name: Log Variance SVM grid
 
 paradigms:
   - LeftRightImagery
@@ -11,3 +11,15 @@ pipeline:
     from: sklearn.svm
     parameters:
       kernel: "linear"
+
+param_grid:
+  svc__C:
+    - 0.01
+    - 0.05
+    - 0.1
+    - 0.5
+    - 1
+    - 5
+    - 10
+    - 50
+    - 100

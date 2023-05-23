@@ -150,16 +150,6 @@ class Lee2019(BaseDataset):
             stim_chan[:, None], ["STI 014"], "stim", sfreq, verbose="WARNING"
         )
 
-        # Add events
-        event_arr = [
-            event_times_in_samples,
-            [0] * len(event_times_in_samples),
-            event_id,
-        ]
-        raw.info["events"] = [
-            dict(list=np.array(event_arr).T, channels=None),
-        ]
-
         # Add EMG and stim channels
         raw = raw.add_channels([emg_raw, stim_raw])
         return raw
@@ -239,6 +229,15 @@ class Lee2019(BaseDataset):
 class Lee2019_MI(Lee2019):
     """BMI/OpenBMI dataset for MI.
 
+    .. admonition:: Dataset summary
+
+
+        ==========  =======  =======  ==========  =================  ============  ===============  ===========
+        Name          #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        ==========  =======  =======  ==========  =================  ============  ===============  ===========
+        Lee2019_MI       55       62           2                100  4s            1000Hz                     2
+        ==========  =======  =======  ==========  =================  ============  ===============  ===========
+
     Dataset from Lee et al 2019 [1]_.
 
     **Dataset Description**
@@ -300,6 +299,15 @@ class Lee2019_MI(Lee2019):
 class Lee2019_ERP(Lee2019):
     """BMI/OpenBMI dataset for P300.
 
+    .. admonition:: Dataset summary
+
+
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ===========  =======  =======  =================  ===============  ===============  ===========
+        Lee2019_ERP       54       62  6900 NT / 1380 T   1s               1000Hz                     2
+        ===========  =======  =======  =================  ===============  ===============  ===========
+
     Dataset from Lee et al 2019 [1]_.
 
     **Dataset Description**
@@ -335,7 +343,7 @@ class Lee2019_ERP(Lee2019):
     and gazing at the next target character. The participant
     was instructed to attend to the target symbol by counting the
     number of times each target character had been flashed.
-        In the training session, subjects were asked to copy-spell
+    In the training session, subjects were asked to copy-spell
     a given sentence, "NEURAL NETWORKS AND DEEP LEARNING"
     (33 characters including spaces) by gazing at the target character
     on the screen. The training session was performed in the offline
@@ -380,6 +388,15 @@ class Lee2019_ERP(Lee2019):
 
 class Lee2019_SSVEP(Lee2019):
     """BMI/OpenBMI dataset for SSVEP.
+
+    .. admonition:: Dataset summary
+
+
+        =============  =======  =======  ==========  =================  ===============  ===============  ===========
+        Name             #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
+        =============  =======  =======  ==========  =================  ===============  ===============  ===========
+        Lee2019_SSVEP       24       16           4                 25  1s               1000Hz                     1
+        =============  =======  =======  ==========  =================  ===============  ===============  ===========
 
     Dataset from Lee et al 2019 [1]_.
 

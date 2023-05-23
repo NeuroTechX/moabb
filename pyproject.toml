@@ -1,41 +1,65 @@
 [tool.poetry]
 name = "moabb"
-version = "0.4.6"
+version = "0.5.0"
 description = "Mother of All BCI Benchmarks"
 authors = ["Alexandre Barachant", "Vinay Jayaram"]
-maintainers = ["Sylvain Chevallier <sylvain.chevallier@uvsq.fr>"]
+maintainers = ["Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>"]
 readme = "README.md"
 repository = "https://github.com/NeuroTechX/moabb"
-documentation = "http://moabb.neurotechx.com/docs/index.html"
+documentation = "https://neurotechx.github.io/moabb"
 keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
 license = "BSD-3-Clause"
 
 [tool.poetry.dependencies]
-python = "^3.7"
-numpy = "^1.19.0"
-scipy = "^1.5"
-mne = ">=0.19"
-pandas = "^1.0"
-h5py = "^3.0"
-scikit-learn = "^1.0"
-pyriemann = ">=0.2.6"
-matplotlib = "^3.0"
-seaborn = ">=0.9"
-PyYAML = "^5.0"
-pooch = "^1.6"
-requests = "^2.15.1"
-coverage = "^5.5"
-tqdm = "^4.62"
+python = ">=3.8, <3.11"
+numpy = "^1.22"
+scipy = "^1.9.3"
+mne = "^1.3.0"
+pandas = "^1.5.2"
+h5py = "^3.7.0"
+scikit-learn = "^1.2.0"
+matplotlib = "^3.6.2"
+seaborn = "^0.12.1"
+pyriemann = "^0.3"
+PyYAML = "^6.0"
+pooch = "^1.6.0"
+requests = "^2.28.1"
+tqdm = "^4.64.1"
+coverage = "^7.0.1"
+memory-profiler = "^0.61.0"
 
-[tool.poetry.dev-dependencies]
-Sphinx = "^3.3"
-sphinx-gallery = "^0.8.2"
-sphinx-bootstrap-theme = "^0.8"
-numpydoc = "^1.1.0"
-m2r2 = "^0.2.7"
-mistune = "<2"
-pre-commit = "^2.11.1"
+[tool.poetry.group.carbonemission]
+optional = true
+
+[tool.poetry.group.carbonemission.dependencies]
+codecarbon = "^2.1.4" # for carbon emission
+
+[tool.poetry.group.deeplearning]
+optional = true
+
+[tool.poetry.group.deeplearning.dependencies]
+tensorflow = "^2.10"
+keras = ">=1.11.0"
+scikeras = "^0.10.0"
+braindecode = "^0.7"
+torch = "^1.13.1"
+libclang = "^15.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+Sphinx = "^5.3.0"
+sphinx-gallery = "^0.11.1"
+sphinx-bootstrap-theme = "^0.8.1"
+pydata-sphinx-theme = "^0.13.2"
+numpydoc = "^1.5.0"
+pre-commit = "^2.21.0"
+m2r2 = "^0.3.0"
 tdlda = {git = "https://github.com/jsosulski/tdlda.git", rev = "0.1.0"}
+sphinx-design = "^0.3.0"
+sphinx-rtd-theme = "^1.2.0"
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -43,7 +67,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 90
-target-version = ["py36"]
+target-version = ["py38"]
 
 [tool.isort]
 src_paths = ["moabb"]

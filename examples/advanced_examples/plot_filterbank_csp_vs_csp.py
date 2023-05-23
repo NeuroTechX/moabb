@@ -57,7 +57,7 @@ pipelines_fb["FBCSP+LDA"] = make_pipeline(FilterBank(CSP(n_components=4)), LDA()
 # The first one is a standard `LeftRightImagery` with a 8 to 35 Hz broadband
 # filter.
 #
-# The second is a `FilterBankLeftRightImagery` with a bank of 6 filter, ranging
+# The second is a `FilterBankLeftRightImagery` with a bank of 2 filters, ranging
 # from 8 to 35 Hz.
 
 # Because this is being auto-generated we only use 2 subjects
@@ -75,8 +75,8 @@ evaluation = CrossSessionEvaluation(
 )
 results = evaluation.process(pipelines)
 
-# Bank of 6 filters, by 4 Hz increment
-filters = [[8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 35]]
+# Bank of 2 filters
+filters = [[8, 24], [16, 32]]
 paradigm = FilterBankLeftRightImagery(filters=filters)
 evaluation = CrossSessionEvaluation(
     paradigm=paradigm, datasets=datasets, suffix="examples", overwrite=overwrite
@@ -111,7 +111,7 @@ sns.stripplot(
     zorder=1,
     palette="Set1",
 )
-sns.pointplot(data=results, y="score", x="pipeline", ax=axes[0], zorder=1, palette="Set1")
+sns.pointplot(data=results, y="score", x="pipeline", ax=axes[0], palette="Set1")
 
 axes[0].set_ylabel("ROC AUC")
 axes[0].set_ylim(0.5, 1)

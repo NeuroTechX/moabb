@@ -22,6 +22,15 @@ NAKAHISHI_URL = "https://github.com/mnakanishi/12JFPM_SSVEP/raw/master/data/"
 class Nakanishi2015(BaseDataset):
     """SSVEP Nakanishi 2015 dataset
 
+    .. admonition:: Dataset summary
+
+
+        =============  =======  =======  ==========  =================  ===============  ===============  ===========
+        Name             #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
+        =============  =======  =======  ==========  =================  ===============  ===============  ===========
+        Nakanishi2015        9        8          12                 15  4.15s            256Hz                      1
+        =============  =======  =======  ==========  =================  ===============  ===============  ===========
+
     This dataset contains 12-class joint frequency-phase modulated steady-state
     visual evoked potentials (SSVEPs) acquired from 10 subjects used to
     estimate an online performance of brain-computer interface (BCI) in the
@@ -54,7 +63,7 @@ class Nakanishi2015(BaseDataset):
                 "12.75": 11,
                 "14.75": 12,
             },
-            code="SSVEP Nakanishi",
+            code="Nakanishi_SSVEP",
             interval=[0.15, 4.3],
             paradigm="ssvep",
             doi="doi.org/10.1371/journal.pone.0140703",

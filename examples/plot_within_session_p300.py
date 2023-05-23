@@ -58,7 +58,7 @@ class Vectorizer(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        """transform. """
+        """transform."""
         return np.reshape(X, (X.shape[0], -1))
 
 
@@ -129,9 +129,9 @@ sns.stripplot(
     zorder=1,
     palette="Set1",
 )
-sns.pointplot(data=results, y="score", x="pipeline", ax=ax, zorder=1, palette="Set1")
+sns.pointplot(data=results, y="score", x="pipeline", ax=ax, palette="Set1")
 
 ax.set_ylabel("ROC AUC")
 ax.set_ylim(0.5, 1)
 
-fig.show()
+plt.show()

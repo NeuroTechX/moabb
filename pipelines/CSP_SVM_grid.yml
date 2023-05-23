@@ -1,0 +1,42 @@
+name: CSP + SVM Grid
+
+paradigms:
+  - LeftRightImagery
+  - MotorImagery
+
+citations:
+  - https://doi.org/10.1007/BF01129656
+  - https://doi.org/10.1109/MSP.2008.4408441
+
+pipeline:
+  - name: Covariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: oas
+
+  - name: CSP
+    from: pyriemann.spatialfilters
+    parameters:
+      nfilter: 6
+
+  - name: SVC
+    from: sklearn.svm
+    parameters:
+      kernel: "linear"
+
+param_grid:
+  csp__nfilter:
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+  svc__C:
+    - 0.5
+    - 1
+    - 1.5
+  svc__kernel:
+    - "rbf"
+    - "linear"

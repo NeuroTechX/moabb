@@ -8,6 +8,7 @@ from moabb.analysis.meta_analysis import (  # noqa: E501
     compute_dataset_statistics,
     find_significant_differences,
 )
+from moabb.analysis.plotting import codecarbon_plot  # noqa: F401
 from moabb.analysis.results import Results  # noqa: F401
 
 
@@ -19,7 +20,7 @@ def analyze(results, out_path, name="analysis", plot=False):
 
     Given a results dataframe, generates a folder with
     results and a dataframe of the exact data used to generate those results,
-    aswell as introspection to return information on the computer
+    as well as introspection to return information on the computer
 
     parameters
     ----------
@@ -44,8 +45,6 @@ def analyze(results, out_path, name="analysis", plot=False):
 
     unique_ids = [plt._simplify_names(x) for x in results.pipeline.unique()]
     simplify = True
-    print(unique_ids)
-    print(set(unique_ids))
     if len(unique_ids) != len(set(unique_ids)):
         log.warning("Pipeline names are too similar, turning off name shortening")
         simplify = False

@@ -1,15 +1,28 @@
+import importlib
+import logging
+import os
+from collections import OrderedDict
 from copy import deepcopy
+from glob import glob
 
 import numpy as np
 import scipy.signal as scp
+import yaml
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import make_pipeline
+
+from moabb.analysis.results import get_string_rep
+
+
+log = logging.getLogger(__name__)
 
 
 def create_pipeline_from_config(config):
     """Create a pipeline from a config file.
 
-    takes a config dict as input and return the coresponding pipeline.
+    takes a config dict as input and return the corresponding pipeline.
+
+    If the pipeline is a Tensorflow pipeline it convert also the optimizer function and the callbacks.
 
     Parameters
     ----------
@@ -30,6 +43,26 @@ def create_pipeline_from_config(config):
         # create the instance
         if "parameters" in component.keys():
             params = component["parameters"]
+            if "optimizer" in component["parameters"].keys():
+                for optm in component["parameters"]["optimizer"]:
+                    mod_optm = __import__(name=optm["from"], fromlist=[optm["name"]])
+                    params_optm = optm["parameters"]
+                    instance = getattr(mod_optm, optm["name"])(**params_optm)
+                    component["parameters"]["optimizer"] = instance
+
+            if "callbacks" in component["parameters"].keys():
+                cb = []
+                for callbacks in component["parameters"]["callbacks"]:
+                    mod_callbacks = __import__(
+                        name=callbacks["from"], fromlist=[callbacks["name"]]
+                    )
+                    params_callbacks = callbacks["parameters"]
+                    instance = getattr(mod_callbacks, callbacks["name"])(
+                        **params_callbacks
+                    )
+                    cb.append(instance)
+                component["parameters"]["callbacks"] = cb
+
         else:
             params = {}
         instance = getattr(mod, component["name"])(**params)
@@ -37,6 +70,142 @@ def create_pipeline_from_config(config):
 
     pipeline = make_pipeline(*components)
     return pipeline
+
+
+def parse_pipelines_from_directory(dir_path):
+    """
+    Takes in the path to a directory with pipeline configuration files and returns a dictionary
+    of pipelines.
+    Parameters
+    ----------
+    dir_path: str
+        Path to directory containing pipeline config .yml or .py files
+
+    Returns
+    -------
+    pipeline_configs: dict
+        Generated pipeline config dictionaries. Each entry has structure:
+        'name': string
+        'pipeline': sklearn.BaseEstimator
+        'paradigms': list of class names that are compatible with said pipeline
+    """
+    assert os.path.isdir(
+        os.path.abspath(dir_path)
+    ), "Given pipeline path {} is not valid".format(dir_path)
+
+    # get list of config files
+    yaml_files = glob(os.path.join(dir_path, "*.yml"))
+
+    pipeline_configs = []
+    for yaml_file in yaml_files:
+        with open(yaml_file, "r") as _file:
+            content = _file.read()
+
+            # load config
+            config_dict = yaml.load(content, Loader=yaml.FullLoader)
+            ppl = create_pipeline_from_config(config_dict["pipeline"])
+            if "param_grid" in config_dict:
+                pipeline_configs.append(
+                    {
+                        "paradigms": config_dict["paradigms"],
+                        "pipeline": ppl,
+                        "name": config_dict["name"],
+                        "param_grid": config_dict["param_grid"],
+                    }
+                )
+            else:
+                pipeline_configs.append(
+                    {
+                        "paradigms": config_dict["paradigms"],
+                        "pipeline": ppl,
+                        "name": config_dict["name"],
+                    }
+                )
+
+    # we can do the same for python defined pipeline
+    # TODO for python pipelines
+    python_files = glob(os.path.join(dir_path, "*.py"))
+
+    for python_file in python_files:
+        spec = importlib.util.spec_from_file_location("custom", python_file)
+        foo = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(foo)
+
+        pipeline_configs.append(foo.PIPELINE)
+    return pipeline_configs
+
+
+def generate_paradigms(pipeline_configs, context=None, logger=log):
+    """
+    Takes in a dictionary of pipelines configurations as returned by
+    parse_pipelines_from_directory and returns a dictionary of unique paradigms with all pipeline
+    configurations compatible with that paradigm.
+    Parameters
+    ----------
+    pipeline_configs:
+        dictionary of pipeline configurations
+    context:
+        TODO:add description
+    logger:
+        logger
+
+    Returns
+    -------
+    paradigms: dict
+        Dictionary of dictionaries with the unique paradigms and the configuration of the
+        pipelines compatible with the paradigm
+
+    """
+    context = context or {}
+    paradigms = OrderedDict()
+    for config in pipeline_configs:
+        if "paradigms" not in config.keys():
+            logger.error("{} must have a 'paradigms' key.".format(config))
+            continue
+
+        # iterate over paradigms
+
+        for paradigm in config["paradigms"]:
+            # check if it is in the context parameters file
+            if len(context) > 0:
+                if paradigm not in context.keys():
+                    logger.debug(context)
+                    logger.warning(
+                        "Paradigm {} not in context file {}".format(
+                            paradigm, context.keys()
+                        )
+                    )
+
+            if isinstance(config["pipeline"], BaseEstimator):
+                pipeline = deepcopy(config["pipeline"])
+            else:
+                logger.error(config["pipeline"])
+                raise (ValueError("pipeline must be a sklearn estimator"))
+
+            # append the pipeline in the paradigm list
+            if paradigm not in paradigms.keys():
+                paradigms[paradigm] = {}
+
+            # FIXME name are not unique
+            logger.debug("Pipeline: \n\n {} \n".format(get_string_rep(pipeline)))
+            paradigms[paradigm][config["name"]] = pipeline
+
+    return paradigms
+
+
+def generate_param_grid(pipeline_configs, context=None, logger=log):
+    context = context or {}
+    param_grid = {}
+    for config in pipeline_configs:
+        if "paradigms" not in config:
+            logger.error("{} must have a 'paradigms' key.".format(config))
+            continue
+
+        # iterate over paradigms
+        if "param_grid" in config:
+            param_grid[config["name"]] = config["param_grid"]
+
+    return param_grid
 
 
 class FilterBank(BaseEstimator, TransformerMixin):

@@ -17,10 +17,18 @@ SPOT_PILOT_P300_URL = (
 class Sosulski2019(BaseDataset):
     """P300 dataset from initial spot study.
 
-    Dataset [1], study on spatial transfer between SOAs [2], actual paradigm / online optimization [3].
+    Dataset [1]_, study on spatial transfer between SOAs [2]_, actual paradigm / online optimization [3]_.
 
-    **Dataset Description**
+    .. admonition:: Dataset summary
 
+
+        =============  =======  =======  =================  ===============  ===============  ===========
+        Name             #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        =============  =======  =======  =================  ===============  ===============  ===========
+        Sosulski2019       13       32   75 NT / 15 T                        1000Hz                     1
+        =============  =======  =======  =================  ===============  ===============  ===========
+
+    **Dataset description**
     This dataset contains multiple small trials of an auditory oddball paradigm. The paradigm presented two different
     sinusoidal tones. A low-pitched (500 Hz, 40 ms duration) non-target tone and a high-pitched (1000 Hz,
     40 ms duration) target tone. Subjects were instructed to attend to the high-pitched target tones and ignore the
@@ -49,20 +57,30 @@ class Sosulski2019(BaseDataset):
     only scalp EEG and the EOG channel is available in all subjects. The markers in the marker file indicate the
     onset of target tones (21) and non-target tones (1).
 
-    WARNING: Note that this wrapper currently only loads the second part of the experiment and uses pseudo-sessions
-    to achieve the functionality to handle different conditions in MOABB. As a result, the statistical testing
-    features of MOABB cannot be used for this dataset.
+    .. caution::
+
+       Note that this wrapper currently only loads the second part of the experiment and uses pseudo-sessions
+       to achieve the functionality to handle different conditions in MOABB. As a result, the statistical testing
+       features of MOABB cannot be used for this dataset.
 
     References
     ----------
 
     .. [1] Sosulski, J., Tangermann, M.: Electroencephalogram signals recorded from 13 healthy subjects during an
-    auditory oddball paradigm under different stimulus onset asynchrony conditions. Dataset. DOI: 10.6094/UNIFR/154576
+           auditory oddball paradigm under different stimulus onset asynchrony conditions.
+           Dataset. DOI: 10.6094/UNIFR/154576
+
     .. [2] Sosulski, J., Tangermann, M.: Spatial filters for auditory evoked potentials transfer between different
-    experimental conditions. Graz BCI Conference. 2019.
-    .. [3] Sosulski, J., Hübner, D., Klein, A., Tangermann, M.:  Online Optimization of Stimulation Speed in an Auditory Brain-Computer Interface under Time Constraints. arXiv preprint. 2021.
+           experimental conditions. Graz BCI Conference. 2019.
+
+    .. [3] Sosulski, J., Hübner, D., Klein, A., Tangermann, M.:  Online Optimization of Stimulation Speed in
+           an Auditory Brain-Computer Interface under Time Constraints. arXiv preprint. 2021.
+
+    Notes
+    -----
 
     .. versionadded:: 0.4.5
+
     """
 
     def __init__(
@@ -153,7 +171,6 @@ class Sosulski2019(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 

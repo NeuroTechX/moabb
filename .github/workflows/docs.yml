@@ -5,8 +5,6 @@ on:
     branches: [master, develop]
   pull_request:
     branches: [master, develop]
-    paths:
-      - "docs/**"
 
 jobs:
   build_docs:
@@ -14,30 +12,30 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-latest]
         python-version: ["3.9"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Create local data folder
         run: |
           mkdir ~/mne_data
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install Poetry
-        uses: snok/install-poetry@v1.1.6
+        uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
       - name: Cache datasets and docs
         id: cached-dataset-docs
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
           path: |
@@ -46,10 +44,10 @@ jobs:
 
       - name: Install dependencies
         if: steps.cached-dataset-docs.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
+        run: poetry install --no-interaction --no-root --with docs,deeplearning
 
       - name: Install library
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction --with docs,deeplearning
 
       - name: Build docs
         run: |
@@ -68,10 +66,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Create local data folder
         run: |
@@ -79,7 +77,7 @@ jobs:
 
       - name: Cache datasets and docs
         id: cached-dataset-docs
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
           path: |
@@ -87,7 +85,7 @@ jobs:
             docs/build
 
       - name: Checkout moabb.github.io
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: "NeuroTechX/moabb.github.io"
           path: moabb-ghio
@@ -111,10 +109,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Create local data folder
         run: |
@@ -122,7 +120,7 @@ jobs:
 
       - name: Cache datasets and docs
         id: cached-dataset-docs
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
           path: |
@@ -130,7 +128,7 @@ jobs:
             docs/build
 
       - name: Checkout gh pages
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: gh-pages
           path: moabb-ghpages
@@ -145,6 +143,17 @@ jobs:
           git add -A
           git commit -m "GH Actions update of GH pages ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)"
           git push origin gh-pages
+
+      - name: Deploy to moabb.neurotechx.com/
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop'}}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: NeuroTechX/moabb.github.io
+          destination_dir: docs/
+          publish_branch: master
+          publish_dir: ./docs/build/html
+          cname: moabb.neurotechx.com/
 
       # Previous test with moabb GH pages, official docs point to moabb.github.io
       ###########################################################################

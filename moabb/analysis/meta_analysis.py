@@ -23,7 +23,11 @@ def collapse_session_scores(df):
         Aggregated results, samples are index, columns are pipelines,
         and values are scores
     """
-    return df.groupby(["pipeline", "dataset", "subject"]).mean().reset_index()
+    return (
+        df.groupby(["pipeline", "dataset", "subject"])
+        .mean(numeric_only=True)
+        .reset_index()
+    )
 
 
 def compute_pvals_wilcoxon(df, order=None):

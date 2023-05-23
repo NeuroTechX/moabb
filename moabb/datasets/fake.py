@@ -4,6 +4,7 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.braininvaders import VirtualReality
 
 
 class FakeDataset(BaseDataset):
@@ -35,6 +36,7 @@ class FakeDataset(BaseDataset):
         n_sessions=2,
         n_runs=2,
         n_subjects=10,
+        code="FakeDataset",
         paradigm="imagery",
         channels=("C3", "Cz", "C4"),
     ):
@@ -42,16 +44,15 @@ class FakeDataset(BaseDataset):
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         self.channels = channels
         super().__init__(
-            list(range(1, n_subjects + 1)),
-            n_sessions,
-            event_id,
-            "FakeDataset",
-            [0, 3],
-            paradigm,
+            subjects=list(range(1, n_subjects + 1)),
+            sessions_per_subject=n_sessions,
+            events=event_id,
+            code=code,
+            interval=[0, 3],
+            paradigm=paradigm,
         )
 
     def _get_single_subject_data(self, subject):
-
         data = dict()
         for session in range(self.n_sessions):
             data[f"session_{session}"] = {
@@ -84,3 +85,68 @@ class FakeDataset(BaseDataset):
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         pass
+
+
+class FakeVirtualRealityDataset(FakeDataset):
+    """Fake VirtualReality dataset for test purpose.
+
+    .. versionadded:: 0.5.0
+    """
+
+    def __init__(self):
+        self.n_blocks = 5
+        self.n_repetitions = 12
+        super().__init__(
+            n_sessions=1,
+            n_runs=self.n_blocks * self.n_repetitions,
+            n_subjects=21,
+            code="FakeVirtualRealityDataset",
+            event_list=dict(Target=2, NonTarget=1),
+            paradigm="p300",
+        )
+
+    def _get_single_subject_data(self, subject):
+        data = dict()
+        for session in range(self.n_sessions):
+            data[f"{session}"] = {}
+            for block in range(self.n_blocks):
+                for repetition in range(self.n_repetitions):
+                    data[f"{session}"][
+                        f"block_{block}-repetition_{repetition}"
+                    ] = self._generate_raw()
+        return data
+
+    def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
+        """Select data for all provided subjects, blocks and repetitions.
+        Each subject has 5 blocks of 12 repetitions.
+
+        The returned data is a dictionary with the folowing structure::
+
+            data = {'subject_id' :
+                        {'session_id':
+                            {'run_id': raw}
+                        }
+                    }
+
+        See also
+        --------
+        BaseDataset.get_data
+        VirtualReality.get_block_repetition
+
+        Parameters
+        ----------
+        subjects: List of int
+            List of subject number
+        block_list: List of int
+            List of block number (from 1 to 5)
+        repetition_list: List of int
+            List of repetition number inside a block (from 1 to 12)
+
+        Returns
+        -------
+        data: Dict
+            dict containing the raw data
+        """
+        return VirtualReality.get_block_repetition(
+            self, paradigm, subjects, block_list, repetition_list
+        )

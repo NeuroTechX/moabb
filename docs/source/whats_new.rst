@@ -6,9 +6,9 @@ What's new
 ==========
 
 .. NOTE: there are 3 separate sections for changes, based on type:
-   - "Enhancements" for new features
-   - "Bugs" for bug fixes
-   - "API changes" for backward-incompatible changes
+- "Enhancements" for new features
+- "Bugs" for bug fixes
+- "API changes" for backward-incompatible changes
 .. _current:
 
 
@@ -30,8 +30,55 @@ API changes
 
 - None
 
-Version - 0.4.6  (Stable - PyPi)
+
+Version - 0.5.0  (Stable - PyPi)
 ---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- Speeding the augmentation model (:gh:`365` by `Bruno Aristimunha`_)
+- Add VirtualReality BrainInvaders dataset (:gh:`358` by `Gregoire Cattan`_)
+- Switch to python-3.8, update dependencies, fix code link in doc, add `code coverage <https://app.codecov.io/gh/NeuroTechX/moabb>`__ (:gh:`315` by `Sylvain Chevallier`_)
+- Adding a comprehensive benchmarking function (:gh:`264` by `Divyesh Narayanan`_ and `Sylvain Chevallier`_)
+- Add meta-information for datasets in documentation (:gh:`317` by `Bruno Aristimunha`_)
+- Add GridSearchCV for different evaluation procedure (:gh:`319` by `Igor Carrara`_)
+- Add new tutorial to benchmark with GridSearchCV (:gh:`323` by `Igor Carrara`_)
+- Add six deep learning models (Tensorflow), and build a tutorial to show to use the deep learning model (:gh:`326` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
+- Add a augmentation model to the pipeline (:gh:`326` by `Igor Carrara`_)
+- Add BrainDecode example (:gh:`340` by `Igor Carrara`_ and `Bruno Aristimunha`_)
+- Add Google Analytics to the documentation (:gh:`335` by `Bruno Aristimunha`_)
+- Add suport to Braindecode classifier (:gh:`328` by `Bruno Aristimunha`_)
+- Add CodeCarbon to track emission CO₂ (:gh:`350` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
+- Add CodeCarbon example (:gh:`356` by `Igor Carrara`_ and `Bruno Aristimunha`_)
+- Add MsetCCA method for SSVEP classification, parametrise CCA `n_components` in CCA based methods (:gh:`359` by `Emmanuel Kalunga`_ and `Sylvain Chevallier`_)
+- Set epochs' `metadata` field in `get_data` (:gh:`371` by `Pierre Guetschel`_)
+
+Bugs
+~~~~
+- Fix circular import with braindecode (:gh:`363` by `Bruno Aristimunha`_)
+- Fix bug for MotorImagery when we handle all events (:gh:`327` by `Igor Carrara`_)
+- Fixing CI to handle with new deep learning dependencies (:gh:`332` and :gh:`326` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
+- Correct CI error due to isort (:gh:`330` by `Bruno Aristimunha`_)
+- Restricting Python <= 3.11 version and adding tensorflow, keras, scikeras, braindecode, skorch and torch, as optional dependence (:gh:`329` by `Bruno Aristimunha`_)
+- Fix numpy variable to handle with the new version of python (:gh:`324` by `Bruno Aristimunha`_)
+- Correct CI error due to black (:gh:`292` by `Sylvain Chevallier`_)
+- Preload Schirrmeister2017 raw files (:gh:`290` by `Pierre Guetschel`_)
+- Incorrect event assignation for Lee2019 in MNE >= 1.0.0 (:gh:`298` by `Sylvain Chevallier`_)
+- Correct usage of name simplification function in analyze (:gh:`306` by `Divyesh Narayanan`_)
+- Fix downloading path issue for Weibo2014 and Zhou2016, numy error in DemonsP300 (:gh:`315` by `Sylvain Chevallier`_)
+- Fix unzip error for Huebner2017 and Huebner2018 (:gh:`318` by `Sylvain Chevallier`_)
+- Fix n_classes when events set to None (:gh:`337` by `Igor Carrara`_ and `Sylvain Chevallier`_)
+- Change n_jobs=-1 to self.n_jobs in GridSearch (:gh:`344` by `Igor Carrara`_)
+- Fix dropped epochs issue (:gh:`371` by `Pierre Guetschel`_)
+- Fix redundancy website issue (:gh:`372` by `Bruno Aristimunha`_)
+
+API changes
+~~~~~~~~~~~
+
+- None
+
+Version - 0.4.6
+---------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -265,8 +312,10 @@ API changes
 ~~~~~~~~~~~
 - None
 
-
-
+.. _Emmanuel Kalunga: https://github.com/emmanuelkalunga
+.. _Gregoire Cattan: https://github.com/gcattan
+.. _Igor Carrara: https://github.com/carraraig
+.. _Bruno Aristimunha: https://github.com/bruAristimunha
 .. _Alexandre Barachant: https://github.com/alexandrebarachant
 .. _Quentin Barthelemy: https://github.com/qbarthelemy
 .. _Erik Bjäreholt: https://github.com/ErikBjare
