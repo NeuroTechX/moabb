@@ -102,6 +102,10 @@ def benchmark(  # noqa: C901
     -------
     eval_results: DataFrame
         Results of benchmark for all considered paradigms
+
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
     # set logs
     if evaluations is None:
