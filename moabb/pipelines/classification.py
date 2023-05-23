@@ -175,7 +175,10 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     Code based on the Matlab implementation from authors of [1]_
     (https://github.com/mnakanishi/TRCA-SSVEP).
 
-        .. versionadded:: 0.4.4
+
+    Notes
+    -----
+    .. versionadded:: 0.4.4
     """
 
     def __init__(
@@ -576,6 +579,10 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
            recognition in SSVEP-based BCI using multiset canonical correlation analysis.
            International journal of neural systems, 24(04), p.1450013.
            https://doi.org/10.1142/S0129065714500130
+
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(self, freqs, n_filters=1, n_jobs=1):

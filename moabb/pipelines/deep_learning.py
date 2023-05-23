@@ -82,6 +82,10 @@ class KerasShallowConvNet(KerasClassifier):
            K., Tangermann, M., ... & Ball, T. (2017). Deep learning with convolutional neural networks
            for EEG decoding and visualization. Human brain mapping, 38(11), 5391-5420.
            https://doi.org/10.1002/hbm.23730
+
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(
@@ -162,6 +166,10 @@ class KerasDeepConvNet(KerasClassifier):
            K., Tangermann, M., ... & Ball, T. (2017). Deep learning with convolutional neural networks
            for EEG decoding and visualization. Human brain mapping, 38(11), 5391-5420.
            https://doi.org/10.1002/hbm.23730
+
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(
@@ -266,6 +274,10 @@ class KerasEEGNet_8_2(KerasClassifier):
            a compact convolutional neural network for EEG-based brain–computer interfaces. Journal of neural
            engineering, 15(5), 056013.
            https://doi.org/10.1088/1741-2552/aace8c
+
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(
@@ -347,6 +359,10 @@ class KerasEEGTCNet(KerasClassifier):
            EEG-TCNet: An accurate temporal convolutional network for embedded motor-imagery brain–machine interfaces.
            In 2020 IEEE International Conference on Systems, Man, and Cybernetics (SMC) (pp. 2958-2965). IEEE.
            https://doi.org/10.1109/SMC42975.2020.9283028
+
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(
@@ -437,6 +453,9 @@ class KerasEEGNeX(KerasClassifier):
            electroencephalogram: A benchmark study to EEGNeX. arXiv preprint arXiv:2207.12369.
            https://doi.org/10.48550/arXiv.2207.12369
 
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(
@@ -575,6 +594,9 @@ class KerasEEGITNet(KerasClassifier):
            convolutional network for motor imagery classification. IEEE Access, 10, 36672-36685.
            https://doi.org/10.1109/ACCESS.2022.3161489
 
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(

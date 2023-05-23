@@ -17,6 +17,25 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+
+- None
+
+Bugs
+~~~~
+
+- None
+
+API changes
+~~~~~~~~~~~
+
+- None
+
+
+Version - 0.5.0  (Stable - PyPi)
+---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
 - Speeding the augmentation model (:gh:`365` by `Bruno Aristimunha`_)
 - Add VirtualReality BrainInvaders dataset (:gh:`358` by `Gregoire Cattan`_)
 - Switch to python-3.8, update dependencies, fix code link in doc, add `code coverage <https://app.codecov.io/gh/NeuroTechX/moabb>`__ (:gh:`315` by `Sylvain Chevallier`_)
@@ -58,8 +77,8 @@ API changes
 
 - None
 
-Version - 0.4.6  (Stable - PyPi)
----------------------------------
+Version - 0.4.6
+---------------
 
 Enhancements
 ~~~~~~~~~~~~
