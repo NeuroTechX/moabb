@@ -48,14 +48,13 @@ jobs:
           (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
         run: poetry install --no-interaction --no-root --with deeplearning
 
-      - name: Install dependencies
-        if: |
-          (runner.os != 'Windows') &&
-          (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
-        run: poetry install --no-interaction --no-root --with deeplearning
+      - name: Install library (Linux/OSX)
+        if: ${{ runner.os != 'Windows' }}
+        run: poetry install --no-interaction --with deeplearning
 
-      - name: Install library
-        run: poetry install --no-interaction  --with deeplearning
+      - name: Install library (Windows)
+        if: ${{ runner.os == 'Windows' }}
+        run: poetry install --no-interaction
 
       - name: Run tests
         run: |

@@ -852,6 +852,7 @@ class VirtualReality(BaseDataset):
             on a Personal Computer. Research Report, GIPSA-lab; IHMTEK.
             https://doi.org/10.5281/zenodo.2605204
 
+    .. versionadded:: 0.5.0
     """
 
     def __init__(self, virtual_reality=False, screen_display=True):
