@@ -23,11 +23,11 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from mne.decoding import Vectorizer
 from pyriemann.estimation import Xdawn, XdawnCovariances
 from pyriemann.tangentspace import TangentSpace
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
-from mne.decoding import Vectorizer
 
 import moabb
 from moabb.datasets import BNCI2014009
