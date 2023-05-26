@@ -21,7 +21,6 @@ We will use the P300 paradigm, which uses the AUC as metric.
 import warnings
 
 import matplotlib.pyplot as plt
-import numpy as np
 import seaborn as sns
 from mne.decoding import Vectorizer
 from pyriemann.estimation import Xdawn, XdawnCovariances
