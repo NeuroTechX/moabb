@@ -146,6 +146,20 @@ fetch(endpoint)
 
 <div id="contributors-container"></div>
 
+#### Special acknowledge for the extra MOABB contributors:
+
+<table style="text-align: center;">
+  <thead>
+    <tr>
+      <th>Pedro Rodrigues</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+<td style="padding: 0 15px;"><img src="https://avatars.githubusercontent.com/u/4588557?v=4" alt=" Pedro L. C. Rodrigues" width="150" height="150"></td>
+  </tbody>
+</table>
+
 ### What do we need?
 
 **You**! In whatever way you can help.
