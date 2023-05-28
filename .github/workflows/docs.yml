@@ -91,17 +91,6 @@ jobs:
           path: moabb-ghio
           token: ${{ secrets.MOABB_GHIO }}
 
-  deploy_neurotechx_subpages:
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop'}}
-    uses: peaceiris/actions-gh-pages@v3 # testing
-    with:
-      deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-      external_repository: NeuroTechX/moabb.github.io
-      destination_dir: docs/
-      publish_branch: master
-      publish_dir: ./docs/build/html
-      cname: moabb.neurotechx.com/
-
   deploy_gh_pages:
     if: ${{ github.ref == 'refs/heads/develop' }}
     needs: build_docs
@@ -132,6 +121,16 @@ jobs:
         with:
           ref: gh-pages
           path: moabb-ghpages
+
+      - name: Deploy Neurotechx Subpage
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: NeuroTechX/moabb.github.io
+          destination_dir: docs/
+          publish_branch: master
+          publish_dir: ./docs/build/html
+          cname: moabb.neurotechx.com/
 
       - name: Deploy on gh-pages
         run: |
