@@ -115,6 +115,12 @@ if __name__ == "__main__":
 
                 try:
                     info_dataset = get_meta_info(dataset, dataset_name, parad_obj)
+                    print(
+                        "Saving the meta information for the dataset in the file: ",
+                        dataset_path,
+                    )
+                    info_dataset.to_csv(dataset_path)
+                    metainfo.append(info_dataset)
 
                 except Exception as ex:
                     print(f"Error with {dataset} with {parad_name} paradigm")
@@ -126,16 +132,16 @@ if __name__ == "__main__":
                             info_dataset = get_meta_info(
                                 dataset, dataset_name, parad_obj_2
                             )
+                            print(
+                                "Saving the meta information for the dataset in the file: ",
+                                dataset_path,
+                            )
+                            info_dataset.to_csv(dataset_path)
+                            metainfo.append(info_dataset)
+
                         except Exception as ex:
                             print(f"Error with {dataset}")
                             print(f"{ex}")
-                finally:
-                    print(
-                        "Saving the meta information for the dataset in the file: ",
-                        dataset_path,
-                    )
-                    info_dataset.to_csv(dataset_path)
-                    metainfo.append(info_dataset)
 
         paradigm_df = pd.concat(metainfo, axis=1).T
 
