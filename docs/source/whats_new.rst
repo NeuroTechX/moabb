@@ -18,7 +18,7 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
-- None
+- Adding second deployment of the documentation (:gh:`374` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
