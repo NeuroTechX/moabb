@@ -11,6 +11,20 @@ from moabb.datasets.utils import dataset_search
 from moabb.utils import set_download_dir
 
 
+columns_name = [
+    "Dataset",
+    "#Subj",
+    "#Chan",
+    "#Classes",
+    "trials/events",
+    "Window Size (s)",
+    "Freq (Hz)",
+    "#Session",
+    "#Runs",
+    "Total_trials",
+]
+
+
 def parser_init():
     parser = ArgumentParser(description="Getting the meta-information script for MOABB")
 
@@ -90,18 +104,7 @@ def get_meta_info(dataset, dataset_name, parad_obj, parad_name):
             runs,
             session * runs * total_trials * subjects,
         ],
-        index=[
-            "Dataset",
-            "#Subj",
-            "#Chan",
-            "#Classes",
-            "trials/events",
-            "Window Size",
-            "Freq",
-            "#Session",
-            "#Runs",
-            "Total_trials",
-        ],
+        index=columns_name,
     )
 
     return info_dataset
@@ -178,19 +181,7 @@ if __name__ == "__main__":
 
         paradigm_df = pd.concat(metainfo, axis=1).T
 
-        paradigm_df.columns = [
-            "Dataset",
-            "#Subj",
-            "#Chan",
-            "#Classes",
-            "trials/events",
-            "Window Size (s)",
-            "Freq (Hz)",
-            "#Session",
-            "#Runs",
-            "Total_trials",
-        ]
-
+        paradigm_df.columns = columns_name
         paradigm_path = f"{mne_path.parent}/metainfo/metainfo_{parad_name}.csv"
         print(f"Saving the meta information for the paradigm {paradigm_path}")
 
