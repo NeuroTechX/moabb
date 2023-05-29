@@ -18,7 +18,7 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
-- None
+- Adding extra thank you section in the documentation (:gh:`390` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
