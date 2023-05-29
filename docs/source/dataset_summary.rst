@@ -49,10 +49,10 @@ P300/ERP
    BNCI2015003, 10, 8, 1500 NT / 300 T, 0.8s, 256Hz, 1
    bi2012, 25, 16, 6140 NT / 128 T, 1s, 512Hz, 2
    bi2013a, 24, 16, 3200 NT / 640 T, 1s, 512Hz, 8 for subjects 1-7 else 1
-   bi2014a, 71, 16, , 1s, 512Hz, up to 3
-   bi2014b, 38, 32, , 1s, 512Hz, 3
-   bi2015a, 50, 32, , 1s, 512Hz, 3
-   bi2015b, 44, 32, , 1s, 512Hz, 2
+   bi2014a, 64, 16, 990 NT / 198 T, 1s, 512Hz, up to 3
+   bi2014b, 37, 32, 200 NT / 40 T, 1s, 512Hz, 3
+   bi2015a, 43, 32, 4131 NT / 825 T, 1s, 512Hz, 3
+   bi2015b, 44, 32, 2160 NT / 480 T, 1s, 512Hz, 2
    VirtualReality, 24, 16, 600 NT / 120 T, 1s, 512Hz, 2
    Huebner2017, 13, 31, , 0.9s, 1000Hz, 1
    Huebner2018, 12, 31, , 0.9s, 1000Hz, 1
@@ -68,13 +68,13 @@ SSVEP
    :header: Dataset, #Subj, #Chan, #Classes, #Trials / class, Trials length, Sampling rate, #Sessions
    :class: sortable
 
-   Lee2019_SSVEP,24,16,4,25,1s,1000Hz,1
+   Lee2019_SSVEP,54,16,4,25,1s,1000Hz,1
    SSVEPExo,12,8,4,16,2s,256Hz,1
    MAMEM1,10,256,5,12-15,3s,250Hz,1
    MAMEM2,10,256,5,20-30,3s,250Hz,1
    MAMEM3,10,14,4,20-30,3s,128Hz,1
    Nakanishi2015,9,8,12,15,4.15s,256Hz,1
-   Wang2016,32,62,40,6,5s,250Hz,1
+   Wang2016,34,62,40,6,5s,250Hz,1
 
 
 
