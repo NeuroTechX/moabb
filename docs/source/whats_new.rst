@@ -18,7 +18,8 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
-- None
+- Adding new script to get the meta information of the datasets (:gh:`389` by `Bruno Aristimunha`_)
+- Fixing the dataset description based on the meta information (:gh:`389` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
