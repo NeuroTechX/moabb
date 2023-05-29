@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import mne
+import numpy as np
 import pandas as pd
 
 import moabb
@@ -25,7 +26,30 @@ def parser_init():
     return parser
 
 
-def get_meta_info(dataset, dataset_name, parad_obj):
+def process_trial_freq(trials_per_events, parad_name):
+    """
+    Function to process the trial frequency.
+    Getting the median value if the paradigm is MotorImagery.
+    Parameters
+    ----------
+    trials_per_events: dict
+    parad_name: str
+
+    Returns
+    -------
+
+    """
+    class_per_trial = list(trials_per_events.values())
+
+    if parad_name == "imagery" or parad_name == "ssvep":
+        return f"{int(np.median(class_per_trial))}"
+    elif parad_name == "p300":
+        not_target = max(trials_per_events.values())
+        target = min(trials_per_events.values())
+        return f"NT{not_target} / T {target}"
+
+
+def get_meta_info(dataset, dataset_name, parad_obj, parad_name):
     """
     Function to get the meta-information of a dataset.
     Parameters
@@ -51,6 +75,7 @@ def get_meta_info(dataset, dataset_name, parad_obj):
 
     trials_per_events = mne.count_events(X.events)
     total_trials = int(sum(trials_per_events.values()))
+    trial_class = process_trial_freq(trials_per_events, parad_name)
 
     info_dataset = pd.Series(
         [
@@ -58,8 +83,7 @@ def get_meta_info(dataset, dataset_name, parad_obj):
             subjects,
             nchan,
             classes,
-            trials_per_events,
-            X.event_id,
+            trial_class,
             epoch_size,
             sfreq,
             session,
@@ -71,8 +95,7 @@ def get_meta_info(dataset, dataset_name, parad_obj):
             "#Subj",
             "#Chan",
             "#Classes",
-            "#Trials_per_subject",
-            "trials_ids",
+            "trials/events",
             "Window Size",
             "Freq",
             "#Session",
@@ -114,7 +137,9 @@ if __name__ == "__main__":
                 )
 
                 try:
-                    info_dataset = get_meta_info(dataset, dataset_name, parad_obj)
+                    info_dataset = get_meta_info(
+                        dataset, dataset_name, parad_obj, parad_name
+                    )
                     print(
                         "Saving the meta information for the dataset in the file: ",
                         dataset_path,
@@ -123,14 +148,15 @@ if __name__ == "__main__":
                     metainfo.append(info_dataset)
 
                 except Exception as ex:
-                    print(f"Error with {dataset} with {parad_name} paradigm")
-                    print(f"Error {ex}")
+                    print(f"Error with {dataset} with {parad_name} paradigm", end=" ")
+                    print(f"Error: {ex}")
+
                     if parad_name == "imagery":
                         print("Trying with the LeftRightImagery paradigm")
                         parad_obj_2 = moabb.paradigms.LeftRightImagery()
                         try:
                             info_dataset = get_meta_info(
-                                dataset, dataset_name, parad_obj_2
+                                dataset, dataset_name, parad_obj_2, parad_name
                             )
                             print(
                                 "Saving the meta information for the dataset in the file: ",
@@ -140,8 +166,15 @@ if __name__ == "__main__":
                             metainfo.append(info_dataset)
 
                         except Exception as ex:
-                            print(f"Error with {dataset}")
-                            print(f"{ex}")
+                            print(
+                                f"Error with {dataset} with {parad_name} paradigm",
+                                end=" ",
+                            )
+                            print(f"Error: {ex}")
+            else:
+                print(f"Loading the meta information from {dataset_path}")
+                info_dataset = pd.read_csv(dataset_path)
+                metainfo.append(info_dataset)
 
         paradigm_df = pd.concat(metainfo, axis=1).T
 
