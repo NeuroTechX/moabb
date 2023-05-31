@@ -1,10 +1,10 @@
 import glob
-from logging import warn
 import os
 import os.path as osp
 import shutil
 import zipfile as z
 from distutils.dir_util import copy_tree
+from logging import warn
 
 import mne
 import numpy as np
@@ -392,19 +392,11 @@ def _bi_data_path(  # noqa: C901
     elif ds.code == "P300-VR":
         subject_paths = []
         if ds.virtual_reality:
-            url = "{:s}subject_{:02d}_{:s}.mat".format(
-                VIRTUALREALITY_URL,
-                subject,
-                "VR"
-            )
+            url = "{:s}subject_{:02d}_{:s}.mat".format(VIRTUALREALITY_URL, subject, "VR")
             file_path = dl.data_path(url, "VIRTUALREALITY")
             subject_paths.append(file_path)
         elif ds.personal_computer:
-            url = "{:s}subject_{:02d}_{:s}.mat".format(
-                VIRTUALREALITY_URL,
-                subject,
-                "PC"
-            )
+            url = "{:s}subject_{:02d}_{:s}.mat".format(VIRTUALREALITY_URL, subject, "PC")
             file_path = dl.data_path(url, "VIRTUALREALITY")
             subject_paths.append(file_path)
 
@@ -878,8 +870,10 @@ class VirtualReality(BaseDataset):
 
         self.virtual_reality = virtual_reality
         self.personal_computer = screen_display
-        if(not self.virtual_reality and not self.personal_computer):
-            warn("[P300-VR dataset] virtual_reality and screen display are False. No data will be downloaded, unless you change these parameters after initialization.")
+        if not self.virtual_reality and not self.personal_computer:
+            warn(
+                "[P300-VR dataset] virtual_reality and screen display are False. No data will be downloaded, unless you change these parameters after initialization."
+            )
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
