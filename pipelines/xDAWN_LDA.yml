@@ -9,6 +9,8 @@ citations:
 pipeline:
   - name: Xdawn
     from: pyriemann.spatialfilters
+    parameters:
+      estimator: oas
 
   - name: Vectorizer
     from: mne.decoding

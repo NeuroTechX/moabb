@@ -9,6 +9,8 @@ citations:
 pipeline:
   - name: ERPCovariances
     from: pyriemann.estimation
+    parameters:
+      estimator: oas
 
   - name: MDM
     from: pyriemann.classification

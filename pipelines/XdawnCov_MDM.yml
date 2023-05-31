@@ -10,6 +10,9 @@ citations:
 pipeline:
   - name: XdawnCovariances
     from: pyriemann.estimation
+    parameters:
+      estimator: oas
+      xdawn_estimator: scm
 
   - name: MDM
     from: pyriemann.classification
