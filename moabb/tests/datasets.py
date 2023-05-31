@@ -6,6 +6,7 @@ from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.paradigms import P300
 
+
 _ = mne.set_log_level("CRITICAL")
 
 
