@@ -5,7 +5,7 @@ import mne
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.paradigms import P300
-
+import pytest
 
 _ = mne.set_log_level("CRITICAL")
 
@@ -75,6 +75,10 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
 
     def test_canary(self):
         assert VirtualReality() is not None
+    
+    def test_warning_if_parameters_false(self):
+        with pytest.warns():
+            VirtualReality(virtual_reality=False, screen_display=False)
 
     def test_get_block_repetition(self):
         ds = FakeVirtualRealityDataset()
