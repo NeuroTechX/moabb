@@ -4,7 +4,7 @@ import os.path as osp
 import shutil
 import zipfile as z
 from distutils.dir_util import copy_tree
-from logging import warn
+from warnings import warn
 
 import mne
 import numpy as np
