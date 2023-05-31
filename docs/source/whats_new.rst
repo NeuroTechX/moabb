@@ -23,7 +23,7 @@ Enhancements
 Bugs
 ~~~~
 
-- None
+- Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
