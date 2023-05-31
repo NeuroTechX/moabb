@@ -85,8 +85,8 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         ds = VirtualReality(virtual_reality=True, screen_display=True)
         data_path = ds.data_path(1)
         assert len(data_path) == 2
-        assert 'subject_01_VR.mat' in data_path[0]
-        assert 'subject_01_VPC.mat' in data_path[1]
+        assert "subject_01_VR.mat" in data_path[0]
+        assert "subject_01_VPC.mat" in data_path[1]
 
     def test_get_block_repetition(self):
         ds = FakeVirtualRealityDataset()
