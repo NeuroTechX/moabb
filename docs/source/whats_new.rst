@@ -18,12 +18,13 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
-- None
+- Add example with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 
 Bugs
 ~~~~
 
 - Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
+- Correct downloading with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_)
 
 API changes
 ~~~~~~~~~~~
