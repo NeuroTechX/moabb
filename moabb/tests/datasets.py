@@ -74,7 +74,7 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
 
     def test_canary(self):
         assert VirtualReality() is not None
-    
+
     def test_warning_if_parameters_false(self):
         with self.assertWarns(UserWarning):
             VirtualReality(virtual_reality=False, screen_display=False)
