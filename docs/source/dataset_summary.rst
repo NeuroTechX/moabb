@@ -17,7 +17,7 @@ Motor Imagery
 ======================
 
 .. csv-table::
-   :header: Dataset, #Subj, #Chan, #Classes, #Trials, Window Size (s), Freq (Hz), #Session, #Runs, Total_trials
+   :header: Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, Total_trials
    :class: sortable
 
         AlexMI,8,16,3,20,3,512,1,1,480
