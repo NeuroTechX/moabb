@@ -77,9 +77,6 @@ class Cho2017(BaseDataset):
             doi="10.5524/100295",
         )
 
-        for ii in [32, 46, 49]:
-            self.subject_list.remove(ii)
-
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
         fname = self.data_path(subject)

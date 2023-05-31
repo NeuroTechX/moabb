@@ -20,11 +20,13 @@ Enhancements
 
 - Adding new script to get the meta information of the datasets (:gh:`389` by `Bruno Aristimunha`_)
 - Fixing the dataset description based on the meta information (:gh:`389` by `Bruno Aristimunha`_)
+- Adding second deployment of the documentation (:gh:`374` by `Bruno Aristimunha`_)
+- Adding Parallel evaluation for :func:`moabb.evaluations.WithinSessionEvaluation` , :func:`moabb.evaluations.CrossSessionEvaluation` (:gh:`364` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
 
-- None
+- Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
