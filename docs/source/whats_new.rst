@@ -18,12 +18,12 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
-- None
+- Adding Parallel evaluation for :func:`moabb.evaluations.WithinSessionEvaluation` , :func:`moabb.evaluations.CrossSessionEvaluation` (:gh:`364` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
 
-- None
+- Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
