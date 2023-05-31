@@ -12,6 +12,8 @@ We compare the scores in the VR and PC conditions, using different epoch size.
 # Modified by: Gregoire Cattan <gcattan@hotmail.fr>
 # License: BSD (3-clause)
 
+import warnings
+
 import numpy as np
 import pandas as pd
 from pyriemann.classification import MDM
@@ -24,8 +26,6 @@ from tqdm import tqdm
 
 from moabb.datasets import VirtualReality
 from moabb.paradigms import P300
-
-import warnings
 
 
 warnings.filterwarnings("ignore")
