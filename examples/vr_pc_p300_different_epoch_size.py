@@ -43,12 +43,11 @@ paradigm = P300()
 # change this to include more subjects
 nsubjects = 2
 
-scores_epochs = []
+scores = []
 for tmax in [0.2, 1.0]:
 
 	paradigm.tmax = tmax
-
-	scores = []
+	
 	for subject in tqdm(dataset.subject_list[:nsubjects]):
 		scores_subject = [tmax, subject]
 
@@ -90,8 +89,5 @@ for tmax in [0.2, 1.0]:
 
 		scores.append(scores_subject)
 
-	scores_epochs.append(scores)
-
-print(scores_epochs)
-df = pd.DataFrame(np.array(scores_epochs), columns=['tmax', 'subject', 'VR', 'PC'])
+df = pd.DataFrame(scores, columns=['tmax', 'subject', 'VR', 'PC'])
 print(df)
