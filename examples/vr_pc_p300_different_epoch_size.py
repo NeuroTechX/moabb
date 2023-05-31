@@ -1,17 +1,3 @@
-import numpy as np
-import pandas as pd
-from pyriemann.classification import MDM
-from pyriemann.estimation import ERPCovariances
-from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import KFold
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import LabelEncoder
-from tqdm import tqdm
-
-from moabb.datasets import VirtualReality
-from moabb.paradigms import P300
-
-
 """
 =============================
 Classification of the trials
@@ -25,6 +11,19 @@ We compare the scores in the VR and PC conditions, using different epoch size.
 # Authors: Pedro Rodrigues <pedro.rodrigues01@gmail.com>
 # Modified by: Gregoire Cattan <gcattan@hotmail.fr>
 # License: BSD (3-clause)
+
+import numpy as np
+import pandas as pd
+from pyriemann.classification import MDM
+from pyriemann.estimation import ERPCovariances
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import KFold
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import LabelEncoder
+from tqdm import tqdm
+
+from moabb.datasets import VirtualReality
+from moabb.paradigms import P300
 
 import warnings
 
