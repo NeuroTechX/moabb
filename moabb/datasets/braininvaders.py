@@ -395,7 +395,7 @@ def _bi_data_path(  # noqa: C901
             url = "{:s}subject_{:02d}_{:s}.mat".format(VIRTUALREALITY_URL, subject, "VR")
             file_path = dl.data_path(url, "VIRTUALREALITY")
             subject_paths.append(file_path)
-        elif ds.personal_computer:
+        if ds.personal_computer:
             url = "{:s}subject_{:02d}_{:s}.mat".format(VIRTUALREALITY_URL, subject, "PC")
             file_path = dl.data_path(url, "VIRTUALREALITY")
             subject_paths.append(file_path)
