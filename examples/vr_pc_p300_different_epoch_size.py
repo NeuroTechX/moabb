@@ -1,6 +1,6 @@
 """
 =============================
-Classification of the trials
+Changing epoch size in P300 VR dataset
 =============================
 
 This example shows how to extract the epochs from the P300-VR dataset of a given
