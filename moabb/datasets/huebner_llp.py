@@ -26,7 +26,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
             kwargs["interval"] = [-0.2, 0.7]
 
         super().__init__(
-            events=dict(Target=10002, NonTarget=10001),
+            events=dict(Target=2, NonTarget=1),
             paradigm="p300",
             subjects=(np.arange(n_subjects) + 1).tolist(),
             **kwargs,
@@ -114,7 +114,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
         ===========  =======  =======  =================  ===============  ===============  ===========
         Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
         ===========  =======  =======  =================  ===============  ===============  ===========
-        Huebner2017       13       31                     0.9s             1000Hz                     1
+        Huebner2017       13       31  364 NT / 112 T     0.9s             1000Hz                     1
         ===========  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**
@@ -181,7 +181,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         ===========  =======  =======  =================  ===============  ===============  ===========
         Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
         ===========  =======  =======  =================  ===============  ===============  ===========
-        Huebner2018       12       31                     0.9s             1000Hz                     1
+        Huebner2018       12       31  364 NT / 112 T     0.9s             1000Hz                     1
         ===========  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**

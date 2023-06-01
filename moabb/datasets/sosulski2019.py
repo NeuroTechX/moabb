@@ -25,7 +25,7 @@ class Sosulski2019(BaseDataset):
         =============  =======  =======  =================  ===============  ===============  ===========
         Name             #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
         =============  =======  =======  =================  ===============  ===============  ===========
-        Sosulski2019       13       32   75 NT / 15 T                        1000Hz                     1
+        Sosulski2019       13       31   75 NT / 15 T                        1000Hz             up to 3
         =============  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**
@@ -109,7 +109,7 @@ class Sosulski2019(BaseDataset):
         super().__init__(
             subjects=list(range(1, 13 + 1)),
             sessions_per_subject=1,
-            events=dict(Target=21, NonTarget=1),
+            events=dict(Target=3, NonTarget=2),
             code=code,
             interval=interval,
             paradigm="p300",
