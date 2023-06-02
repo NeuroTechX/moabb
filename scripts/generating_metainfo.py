@@ -185,4 +185,4 @@ if __name__ == "__main__":
         paradigm_path = f"{mne_path.parent}/metainfo/metainfo_{parad_name}.csv"
         print(f"Saving the meta information for the paradigm {paradigm_path}")
 
-        paradigm_df.to_csv(paradigm_path, index=None)
+        paradigm_df.to_csv(prdgm_path, index=None)
