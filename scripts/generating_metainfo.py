@@ -154,7 +154,7 @@ if __name__ == "__main__":
                     print(f"Error with {dataset} with {parad_name} paradigm", end=" ")
                     print(f"Error: {ex}")
 
-                    if parad_name == "imagery":
+                    if prdgm_name == "imagery":
                         print("Trying with the LeftRightImagery paradigm")
                         parad_obj_2 = moabb.paradigms.LeftRightImagery()
                         try:
