@@ -95,7 +95,7 @@ def get_meta_info(dataset, dataset_name, parad_obj, parad_name):
 
     trials_per_events = mne.count_events(X.events)
     total_trials = int(sum(trials_per_events.values()))
-    trial_class = process_trial_freq(trials_per_events, parad_name)
+    trial_class = process_trial_freq(trials_per_events, prdgm_name)
 
     info_dataset = pd.Series(
         [
