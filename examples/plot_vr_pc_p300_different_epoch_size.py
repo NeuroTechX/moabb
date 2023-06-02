@@ -70,7 +70,6 @@ for tmax in [0.2, 1.0]:
             # split in training and testing blocks, and fit/predict.
             # This loop will run 3 times as we are using a 3-folds validation
             for train_idx, test_idx in kf.split(np.arange(12)):
-
                 # Note the use of the `get_block_repetition` method,
                 # to select the appropriate number of blocks and repetitions:
                 # - 8 blocks for training, 4 for testing
@@ -101,4 +100,6 @@ df = pd.DataFrame(scores, columns=["tmax", "subject", "VR", "PC"])
 
 print(df)
 
-df.groupby('tmax').mean().plot(y=['VR','PC'], title='Mean AUC as a function of the epoch size')
+df.groupby("tmax").mean().plot(
+    y=["VR", "PC"], title="Mean AUC as a function of the epoch size"
+)
