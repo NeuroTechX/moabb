@@ -32,7 +32,7 @@ def parser_init():
         "--mne_data",
         dest="mne_data",
         default=Path.home() / "mne_data",
-        type=str,
+        type=Path,
         help="Folder where to save and load the datasets with mne structure.",
     )
 
@@ -57,13 +57,13 @@ def process_trial_freq(trials_per_events, prdgm):
 
     if prdgm == "imagery" or prdgm == "ssvep":
         return f"{int(np.median(class_per_trial))}"
-    elif parad_name == "p300":
+    elif prdgm == "p300":
         not_target = max(trials_per_events.values())
         target = min(trials_per_events.values())
         return f"NT{not_target} / T {target}"
 
 
-def get_meta_info(dataset, dataset_name, paradigm, prdgm_name
+def get_meta_info(dataset, dataset_name, paradigm, prdgm_name):
     """
     Function to get the meta-information of a dataset.
 
@@ -126,12 +126,12 @@ if __name__ == "__main__":
     set_download_dir(mne_path)
 
     paradigms = {}
-    paradigms.update({"imagery": moabb.paradigms.MotorImagery()})
-    paradigms.update({"ssvep": moabb.paradigms.SSVEP()})
-    paradigms.update({"p300": moabb.paradigms.P300()})
+    paradigms["imagery"] = moabb.paradigms.MotorImagery()
+    paradigms["ssvep"] = moabb.paradigms.SSVEP()
+    paradigms["p300"] = moabb.paradigms.P300()
 
-    for parad_name, parad_obj in paradigms.items():
-        dataset_list = dataset_search(paradigm=parad_name)
+    for prdgm_name, paradigm in paradigms.items():
+        dataset_list = dataset_search(paradigm=prdgm_name)
 
         metainfo = []
         for dataset in dataset_list:
@@ -141,13 +141,13 @@ if __name__ == "__main__":
 
             if not dataset_path.exists():
                 print(
-                    f"Trying to get the meta information from the "
-                    f"dataset {dataset} with {parad_name}"
+                    "Trying to get the meta information from the "
+                    f"dataset {dataset} with {prdgm_name}"
                 )
 
                 try:
                     info_dataset = get_meta_info(
-                        dataset, dataset_name, parad_obj, parad_name
+                        dataset, dataset_name, paradigm, prdgm_name
                     )
                     print(
                         "Saving the meta information for the dataset in the file: ",
@@ -157,7 +157,7 @@ if __name__ == "__main__":
                     metainfo.append(info_dataset)
 
                 except Exception as ex:
-                    print(f"Error with {dataset} with {parad_name} paradigm", end=" ")
+                    print(f"Error with {dataset} with {prdgm_name} paradigm", end=" ")
                     print(f"Error: {ex}")
 
                     if prdgm_name == "imagery":
@@ -188,7 +188,7 @@ if __name__ == "__main__":
         paradigm_df = pd.concat(metainfo, axis=1).T
 
         paradigm_df.columns = columns_name
-        prdgm_path = mne_path.parent() / "metainfo" / f"metainfo_{parad_name}.csv"
-        print(f"Saving the meta information for the paradigm {prdgm_path}")
+        dataset_path = mne_path.parent / "metainfo" / f"metainfo_{dataset_name}.csv"
+        print(f"Saving the meta information for the paradigm {dataset_path}")
 
-        paradigm_df.to_csv(prdgm_path, index=None)
+        paradigm_df.to_csv(dataset_path, index=None)
