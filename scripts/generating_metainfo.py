@@ -66,11 +66,17 @@ def process_trial_freq(trials_per_events, prdgm):
 def get_meta_info(dataset, dataset_name, parad_obj, parad_name):
     """
     Function to get the meta-information of a dataset.
+
     Parameters
     ----------
-    dataset: moabb.datasets.base.BaseDataset
+    dataset: BaseDataset
+        Dataset object
     dataset_name: str
-    parad_obj: moabb.paradigms.base.BaseParadigm
+        Dataset name
+    paradigm: BaseParadigm
+         Paradigm object to process the dataset
+    prdgm_name: str
+        Paradigm name
 
     Returns
     -------
