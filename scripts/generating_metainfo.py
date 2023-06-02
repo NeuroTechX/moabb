@@ -39,7 +39,7 @@ def parser_init():
     return parser
 
 
-def process_trial_freq(trials_per_events, parad_name):
+def process_trial_freq(trials_per_events, prdgm):
     """
     Function to process the trial frequency.
     Getting the median value if the paradigm is MotorImagery.
