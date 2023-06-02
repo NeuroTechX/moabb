@@ -139,7 +139,7 @@ if __name__ == "__main__":
 
             dataset_path = f"{mne_path.parent}/metainfo/metainfo_{dataset_name}.csv"
 
-            if not os.path.exists(dataset_path):
+            if not dataset_path.exists():
                 print(
                     f"Trying to get the meta information from the "
                     f"dataset {dataset} with {parad_name}"
