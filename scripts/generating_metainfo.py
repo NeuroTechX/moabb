@@ -1,4 +1,3 @@
-import os.path
 from argparse import ArgumentParser
 from pathlib import Path
 
