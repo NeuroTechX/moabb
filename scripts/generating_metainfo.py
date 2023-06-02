@@ -47,7 +47,7 @@ def process_trial_freq(trials_per_events, prdgm):
     Parameters
     ----------
     trials_per_events: dict
-    parad_name: str
+    prdgm: str
 
     Returns
     -------
