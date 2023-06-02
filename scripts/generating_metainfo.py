@@ -170,7 +170,7 @@ if __name__ == "__main__":
 
                         except Exception as ex:
                             print(
-                                f"Error with {dataset} with {parad_name} paradigm",
+                                f"Error with {dataset} with {prdgm_name} paradigm",
                                 end=" ",
                             )
                             print(f"Error: {ex}")
