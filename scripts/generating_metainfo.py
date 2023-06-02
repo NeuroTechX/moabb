@@ -55,7 +55,7 @@ def process_trial_freq(trials_per_events, prdgm):
     """
     class_per_trial = list(trials_per_events.values())
 
-    if parad_name == "imagery" or parad_name == "ssvep":
+    if prdgm == "imagery" or prdgm == "ssvep":
         return f"{int(np.median(class_per_trial))}"
     elif parad_name == "p300":
         not_target = max(trials_per_events.values())
