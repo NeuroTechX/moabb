@@ -63,7 +63,7 @@ def process_trial_freq(trials_per_events, prdgm):
         return f"NT{not_target} / T {target}"
 
 
-def get_meta_info(dataset, dataset_name, parad_obj, parad_name):
+def get_meta_info(dataset, dataset_name, paradigm, prdgm_name
     """
     Function to get the meta-information of a dataset.
 
