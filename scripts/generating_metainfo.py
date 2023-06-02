@@ -85,7 +85,7 @@ def get_meta_info(dataset, dataset_name, paradigm, prdgm_name
     subjects = len(dataset.subject_list)
     session = dataset.n_sessions
 
-    X, y, metadata = parad_obj.get_data(dataset, [1], return_epochs=True)
+    X, _, metadata = paradigm.get_data(dataset, [1], return_epochs=True)
 
     sfreq = int(X.info["sfreq"])
     nchan = X.info["nchan"]
