@@ -183,6 +183,6 @@ if __name__ == "__main__":
 
         paradigm_df.columns = columns_name
         prdgm_path = mne_path.parent() / "metainfo" / f"metainfo_{parad_name}.csv"
-        print(f"Saving the meta information for the paradigm {paradigm_path}")
+        print(f"Saving the meta information for the paradigm {prdgm_path}")
 
         paradigm_df.to_csv(prdgm_path, index=None)
