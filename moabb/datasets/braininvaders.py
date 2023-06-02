@@ -576,7 +576,7 @@ class bi2014a(BaseDataset):
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         bi2014a           71      16        5 NT x 1 T         1s              512Hz       up to 3
+         bi2014a           64      16        5 NT x 1 T         1s              512Hz       up to 3
         ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings of 71 subjects
@@ -634,7 +634,7 @@ class bi2014b(BaseDataset):
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         bi2014b           38      32        5 NT x 1 T         1s              512Hz           3
+         bi2014b           37      32        5 NT x 1 T         1s              512Hz           3
         ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings of 38 subjects playing in
@@ -693,7 +693,7 @@ class bi2015a(BaseDataset):
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         bi2015a           50      32        5 NT x 1 T         1s              512Hz           3
+         bi2015a           43      32        5 NT x 1 T         1s              512Hz           3
         ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings
