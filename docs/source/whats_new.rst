@@ -25,6 +25,7 @@ Bugs
 ~~~~
 
 - Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
+- Rename event `substraction` to `subtraction` in :func:`moabb.dataset.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
 
 API changes
 ~~~~~~~~~~~
