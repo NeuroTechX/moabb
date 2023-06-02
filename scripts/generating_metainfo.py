@@ -51,7 +51,7 @@ def process_trial_freq(trials_per_events, parad_name):
 
     Returns
     -------
-
+    trial_freq: str
     """
     class_per_trial = list(trials_per_events.values())
 
