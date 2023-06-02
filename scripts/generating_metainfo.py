@@ -43,6 +43,7 @@ def process_trial_freq(trials_per_events, parad_name):
     """
     Function to process the trial frequency.
     Getting the median value if the paradigm is MotorImagery.
+
     Parameters
     ----------
     trials_per_events: dict
