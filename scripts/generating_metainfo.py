@@ -156,7 +156,7 @@ if __name__ == "__main__":
 
                     if prdgm_name == "imagery":
                         print("Trying with the LeftRightImagery paradigm")
-                        parad_obj_2 = moabb.paradigms.LeftRightImagery()
+                        prdgm2 = moabb.paradigms.LeftRightImagery()
                         try:
                             info_dataset = get_meta_info(
                                 dataset, dataset_name, prdgm2, prdgm_name
