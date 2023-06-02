@@ -97,7 +97,7 @@ class Shin2017(BaseDataset):
             n_sessions += 3
 
         if mental_arithmetic:
-            events.update(dict(substraction=3, rest=4))
+            events.update(dict(subtraction=3, rest=4))
             paradigms.append("arithmetic")
             n_sessions += 3
 
