@@ -159,7 +159,7 @@ if __name__ == "__main__":
                         parad_obj_2 = moabb.paradigms.LeftRightImagery()
                         try:
                             info_dataset = get_meta_info(
-                                dataset, dataset_name, parad_obj_2, parad_name
+                                dataset, dataset_name, prdgm2, prdgm_name
                             )
                             print(
                                 "Saving the meta information for the dataset in the file: ",
