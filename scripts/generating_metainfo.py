@@ -31,7 +31,7 @@ def parser_init():
         "-mne_p",
         "--mne_data",
         dest="mne_data",
-        default="/mnt/beegfs/projects/moabb/mne_data/",
+        default=Path.home() / "mne_data",
         type=str,
         help="Folder where to save and load the datasets with mne structure.",
     )
