@@ -7,6 +7,8 @@ This example shows how to extract the epochs from the P300-VR dataset of a given
 subject and then classify them using Riemannian Geometry framework for BCI.
 We compare the scores in the VR and PC conditions, using different epoch size.
 
+This example demonstrates the use of `get_block_repetition`, which allows
+to specify the experimental blocks and repetitions for analysis.
 """
 # Authors: Pedro Rodrigues <pedro.rodrigues01@gmail.com>
 # Modified by: Gregoire Cattan <gcattan@hotmail.fr>
@@ -65,8 +67,14 @@ for tmax in [0.2, 1.0]:
 
             auc = []
 
+            # split in training and testing blocks, and fit/predict.
+            # This loop will run 3 times as we are using a 3-folds validation
             for train_idx, test_idx in kf.split(np.arange(12)):
-                # split in training and testing blocks
+
+                # Note the use of the `get_block_repetition` method,
+                # to select the appropriate number of blocks and repetitions:
+                # - 8 blocks for training, 4 for testing
+                # - only the first two repetitions inside each blocks
                 X_train, y_train, _ = dataset.get_block_repetition(
                     paradigm, [subject], blocks[train_idx], repetitions
                 )
@@ -90,4 +98,7 @@ for tmax in [0.2, 1.0]:
         scores.append(scores_subject)
 
 df = pd.DataFrame(scores, columns=["tmax", "subject", "VR", "PC"])
+
 print(df)
+
+df.groupby('tmax').mean().plot(y=['VR','PC'], title='Mean AUC as a function of the epoch size')
