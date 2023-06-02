@@ -1,0 +1,29 @@
+name: XdawnCovariances + TangentSpace + SVM
+
+paradigms:
+  - P300
+
+citations:
+  - https://dx.doi.org/10.1007/978-3-030-01424-7_65
+
+pipeline:
+  - name: XdawnCovariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: oas
+      xdawn_estimator: scm
+
+  - name: TangentSpace
+    from: pyriemann.tangentspace
+
+  - name: SVC
+    from: sklearn.svm
+
+param_grid:
+  svc__C:
+    - 0.1
+    - 1.0
+    - 10
+  svc__kernel:
+    - "rbf"
+    - "linear"

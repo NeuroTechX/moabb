@@ -1,0 +1,16 @@
+name: ERPCovariances + MDM
+
+paradigms:
+  - P300
+
+citations:
+  - https://doi.org/10.48550/arXiv.1409.0107
+
+pipeline:
+  - name: ERPCovariances
+    from: pyriemann.estimation
+    parameters:
+      estimator: oas
+
+  - name: MDM
+    from: pyriemann.classification
