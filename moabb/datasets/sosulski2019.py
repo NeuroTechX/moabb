@@ -25,7 +25,7 @@ class Sosulski2019(BaseDataset):
         =============  =======  =======  =================  ===============  ===============  ===========
         Name             #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
         =============  =======  =======  =================  ===============  ===============  ===========
-        Sosulski2019       13       31   75 NT / 15 T                        1000Hz             up to 3
+        Sosulski2019       13       31   75 NT / 15 T                        1000Hz                3
         =============  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**
@@ -89,6 +89,7 @@ class Sosulski2019(BaseDataset):
         load_soa_60=False,
         reject_non_iid=False,
         interval=None,
+        description_map={'Stimulus/S 21':'Target', 'Stimulus/S  1':'NonTarget'}
     ):
         """
         :param use_soa_as_sessions: 1800 epochs were recorded at different SOAs each. Depending on
@@ -104,12 +105,13 @@ class Sosulski2019(BaseDataset):
         self.stimulus_modality = "tone_oddball"
         self.n_channels = 31
         self.use_soas_as_sessions = use_soas_as_sessions
+        self.description_map = description_map
         code = "Spot Pilot P300 dataset"
         interval = [-0.2, 1] if interval is None else interval
         super().__init__(
             subjects=list(range(1, 13 + 1)),
             sessions_per_subject=1,
-            events=dict(Target=3, NonTarget=2),
+            events=dict(Target=21, NonTarget=1),
             code=code,
             interval=interval,
             paradigm="p300",
@@ -141,6 +143,7 @@ class Sosulski2019(BaseDataset):
         raw.set_montage("standard_1020")
         if self.reject_non_iid:
             raw.set_annotations(raw.annotations[7:85])  # non-iid rejection
+        raw.annotations.rename(self.description_map)
         return raw
 
     def _get_single_subject_data(self, subject):

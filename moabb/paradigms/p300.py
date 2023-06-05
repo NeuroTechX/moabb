@@ -151,7 +151,9 @@ class BaseP300(BaseParadigm):
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
             try:
-                events, _ = mne.events_from_annotations(raw, event_id=None, verbose=False)
+                events, _ = mne.events_from_annotations(
+                    raw, event_id=event_id, verbose=False
+                )
             except ValueError:
                 log.warning(f"No matching annotations in {raw.filenames}")
                 return
