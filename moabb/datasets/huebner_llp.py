@@ -18,7 +18,11 @@ OPTICAL_MARKER_CODE = 500
 
 class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
     def __init__(
-        self, src_url, n_subjects, raw_slice_offset, use_blocks_as_sessions=True,
+        self,
+        src_url,
+        n_subjects,
+        raw_slice_offset,
+        use_blocks_as_sessions=True,
         description_map={"Stimulus/S   1": "Target", "Stimulus/S   0": "NonTarget"},
         **kwargs,
     ):
