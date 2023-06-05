@@ -18,6 +18,8 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
+- Adding new script to get the meta information of the datasets (:gh:`389` by `Bruno Aristimunha`_)
+- Fixing the dataset description based on the meta information (:gh:`389` by `Bruno Aristimunha`_)
 - Adding second deployment of the documentation (:gh:`374` by `Bruno Aristimunha`_)
 - Adding Parallel evaluation for :func:`moabb.evaluations.WithinSessionEvaluation` , :func:`moabb.evaluations.CrossSessionEvaluation` (:gh:`364` by `Bruno Aristimunha`_)
 - Add example with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
