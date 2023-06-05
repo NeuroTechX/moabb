@@ -18,8 +18,13 @@ OPTICAL_MARKER_CODE = 500
 
 class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
     def __init__(
-        self, src_url, n_subjects, raw_slice_offset, use_blocks_as_sessions=True, 
-        description_map={'Stimulus/S   1':'Target', 'Stimulus/S   0':'NonTarget'}, **kwargs
+        self,
+        src_url,
+        n_subjects,
+        raw_slice_offset,
+        use_blocks_as_sessions=True,
+        description_map={"Stimulus/S   1": "Target", "Stimulus/S   0": "NonTarget"},
+        **kwargs,
     ):
         self.n_channels = 31  # all channels except 5 times x_* CH and EOGvu
         if kwargs["interval"] is None:

@@ -89,7 +89,7 @@ class Sosulski2019(BaseDataset):
         load_soa_60=False,
         reject_non_iid=False,
         interval=None,
-        description_map={'Stimulus/S 21':'Target', 'Stimulus/S  1':'NonTarget'}
+        description_map={"Stimulus/S 21": "Target", "Stimulus/S  1": "NonTarget"},
     ):
         """
         :param use_soa_as_sessions: 1800 epochs were recorded at different SOAs each. Depending on
