@@ -656,13 +656,19 @@ from 8 to 35 Hz.</p>
 <span class="n">results_fb</span> <span class="o">=</span> <a href="../../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines_fb</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-001-2014-CrossSession: 100%|##########| 2/2 [00:00&lt;00:00, 193.66it/s]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+Subject 1 already processed
+Subject 2 already processed
 
-001-2014-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-001-2014-CrossSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.60s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.44s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.47s/it]
+001-2014-CrossSession: 100%|##########| 2/2 [00:00&lt;00:00, 139.10it/s]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    0.0s finished
+
+001-2014-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+
+001-2014-CrossSession:  50%|#####     | 1/2 [00:06&lt;00:06,  6.36s/it]
+001-2014-CrossSession: 100%|##########| 2/2 [00:12&lt;00:00,  6.20s/it]
+001-2014-CrossSession: 100%|##########| 2/2 [00:12&lt;00:00,  6.22s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   12.4s finished
 </pre></div>
 </div>
 <p>After processing the two, we simply concatenate the results.</p>
@@ -707,7 +713,7 @@ points are in its quadrant.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_filterbank_csp_vs_csp_001.png" srcset="../../_images/sphx_glr_plot_filterbank_csp_vs_csp_001.png" alt="plot filterbank csp vs csp" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.268 seconds)</p>
+<img src="../../_images/sphx_glr_plot_filterbank_csp_vs_csp_001.png" srcset="../../_images/sphx_glr_plot_filterbank_csp_vs_csp_001.png" alt="plot filterbank csp vs csp" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.121 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  405 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-filterbank-csp-vs-csp-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
