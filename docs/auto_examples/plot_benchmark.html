@@ -397,6 +397,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_ssvep.html">Within Session SSVEP</a></li>
 </ul>
@@ -694,7 +695,7 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-06-07 14:45:36,050 INFO MainThread moabb.evaluations.base Processing dataset: Zhou 2016
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-06-07 20:15:07,849 INFO MainThread moabb.evaluations.base Processing dataset: Zhou 2016
 
 Zhou 2016-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_data
@@ -705,94 +706,144 @@ All datasets will be downloaded to this location, if anything is already downloa
 
   0%|                                               | 0.00/156M [00:00&lt;?, ?B/s]
 
-  0%|                                       | 51.2k/156M [00:00&lt;07:05, 367kB/s]
+  0%|                                       | 18.4k/156M [00:00&lt;18:40, 139kB/s]
 
-  0%|                                       | 260k/156M [00:00&lt;02:32, 1.02MB/s]
+  0%|                                       | 52.2k/156M [00:00&lt;12:46, 204kB/s]
 
-  1%|▎                                     | 1.11M/156M [00:00&lt;00:46, 3.31MB/s]
+  0%|                                        | 122k/156M [00:00&lt;07:33, 344kB/s]
 
-  2%|▉                                     | 3.71M/156M [00:00&lt;00:16, 9.26MB/s]
+  0%|                                        | 261k/156M [00:00&lt;04:14, 612kB/s]
 
-  5%|█▊                                    | 7.56M/156M [00:00&lt;00:09, 15.7MB/s]
+  0%|▏                                      | 522k/156M [00:00&lt;02:23, 1.08MB/s]
 
-  7%|██▊                                   | 11.4M/156M [00:00&lt;00:06, 21.8MB/s]
+  1%|▏                                      | 853k/156M [00:00&lt;01:41, 1.54MB/s]
 
-  9%|███▎                                  | 13.8M/156M [00:00&lt;00:06, 21.4MB/s]
+  1%|▍                                     | 1.74M/156M [00:00&lt;00:48, 3.16MB/s]
 
- 11%|████▏                                 | 17.5M/156M [00:01&lt;00:05, 25.7MB/s]
+  2%|▋                                     | 2.74M/156M [00:01&lt;00:34, 4.48MB/s]
 
- 13%|████▉                                 | 20.2M/156M [00:01&lt;00:05, 24.9MB/s]
+  3%|█▏                                    | 4.93M/156M [00:01&lt;00:18, 8.11MB/s]
 
- 15%|█████▊                                | 23.7M/156M [00:01&lt;00:05, 25.2MB/s]
+  5%|█▉                                    | 7.82M/156M [00:01&lt;00:12, 12.1MB/s]
 
- 18%|██████▋                               | 27.4M/156M [00:01&lt;00:04, 28.3MB/s]
+  7%|██▌                                   | 10.6M/156M [00:01&lt;00:10, 14.6MB/s]
 
- 19%|███████▎                              | 30.3M/156M [00:01&lt;00:04, 27.1MB/s]
+  8%|███▏                                  | 13.1M/156M [00:01&lt;00:09, 15.8MB/s]
 
- 22%|████████▏                             | 33.6M/156M [00:01&lt;00:04, 27.4MB/s]
+ 10%|███▊                                  | 15.7M/156M [00:01&lt;00:08, 16.9MB/s]
 
- 23%|████████▉                             | 36.6M/156M [00:01&lt;00:04, 28.2MB/s]
+ 12%|████▍                                 | 18.5M/156M [00:01&lt;00:07, 17.8MB/s]
 
- 25%|█████████▋                            | 39.7M/156M [00:01&lt;00:04, 27.7MB/s]
+ 14%|█████▏                                | 21.1M/156M [00:02&lt;00:07, 18.3MB/s]
 
- 27%|██████████▍                           | 42.7M/156M [00:01&lt;00:03, 28.4MB/s]
+ 15%|█████▊                                | 23.8M/156M [00:02&lt;00:07, 18.7MB/s]
 
- 29%|███████████                           | 45.7M/156M [00:02&lt;00:03, 27.8MB/s]
+ 17%|██████▍                               | 26.4M/156M [00:02&lt;00:06, 18.9MB/s]
 
- 31%|███████████▊                          | 48.6M/156M [00:02&lt;00:03, 28.2MB/s]
+ 19%|███████                               | 29.1M/156M [00:02&lt;00:06, 19.1MB/s]
 
- 33%|████████████▌                         | 51.6M/156M [00:02&lt;00:03, 27.9MB/s]
+ 21%|███████▊                              | 32.1M/156M [00:02&lt;00:06, 19.8MB/s]
 
- 35%|█████████████▎                        | 54.5M/156M [00:02&lt;00:03, 28.1MB/s]
+ 22%|████████▍                             | 34.9M/156M [00:02&lt;00:06, 20.1MB/s]
 
- 37%|██████████████                        | 57.6M/156M [00:02&lt;00:03, 27.9MB/s]
+ 24%|█████████▏                            | 37.6M/156M [00:02&lt;00:05, 20.1MB/s]
 
- 39%|██████████████▋                       | 60.5M/156M [00:02&lt;00:03, 28.1MB/s]
+ 26%|█████████▊                            | 40.4M/156M [00:03&lt;00:05, 20.2MB/s]
 
- 42%|███████████████▊                      | 65.0M/156M [00:02&lt;00:02, 31.9MB/s]
+ 28%|██████████▌                           | 43.2M/156M [00:03&lt;00:05, 20.3MB/s]
 
- 45%|████████████████▉                     | 69.6M/156M [00:02&lt;00:02, 35.9MB/s]
+ 29%|███████████▏                          | 45.9M/156M [00:03&lt;00:05, 20.2MB/s]
 
- 47%|█████████████████▉                    | 73.7M/156M [00:02&lt;00:02, 35.9MB/s]
+ 31%|███████████▊                          | 48.7M/156M [00:03&lt;00:05, 20.3MB/s]
 
- 50%|███████████████████                   | 78.1M/156M [00:02&lt;00:02, 38.2MB/s]
+ 33%|████████████▌                         | 51.8M/156M [00:03&lt;00:04, 21.0MB/s]
 
- 53%|████████████████████                  | 82.4M/156M [00:03&lt;00:01, 38.0MB/s]
+ 35%|█████████████▎                        | 54.7M/156M [00:03&lt;00:04, 21.1MB/s]
 
- 56%|█████████████████████▏                | 87.2M/156M [00:03&lt;00:01, 40.9MB/s]
+ 37%|██████████████                        | 57.6M/156M [00:03&lt;00:04, 20.9MB/s]
 
- 58%|██████████████████████▏               | 91.3M/156M [00:03&lt;00:01, 39.1MB/s]
+ 39%|██████████████▋                       | 60.4M/156M [00:03&lt;00:04, 21.0MB/s]
 
- 62%|███████████████████████▍              | 96.3M/156M [00:03&lt;00:01, 41.6MB/s]
+ 41%|███████████████▍                      | 63.5M/156M [00:04&lt;00:04, 21.4MB/s]
 
- 64%|█████████████████████████              | 101M/156M [00:03&lt;00:01, 40.5MB/s]
+ 43%|████████████████▏                     | 66.4M/156M [00:04&lt;00:03, 22.8MB/s]
 
- 67%|██████████████████████████▏            | 105M/156M [00:03&lt;00:01, 41.9MB/s]
+ 44%|████████████████▊                     | 69.0M/156M [00:04&lt;00:03, 23.1MB/s]
 
- 70%|███████████████████████████▎           | 109M/156M [00:03&lt;00:01, 40.7MB/s]
+ 46%|█████████████████▎                    | 71.4M/156M [00:04&lt;00:03, 22.7MB/s]
 
- 73%|████████████████████████████▍          | 114M/156M [00:03&lt;00:01, 41.7MB/s]
+ 47%|█████████████████▉                    | 73.6M/156M [00:04&lt;00:03, 21.5MB/s]
 
- 75%|█████████████████████████████▍         | 118M/156M [00:03&lt;00:00, 40.6MB/s]
+ 49%|██████████████████▍                   | 75.8M/156M [00:04&lt;00:03, 20.7MB/s]
 
- 78%|██████████████████████████████▌        | 122M/156M [00:04&lt;00:00, 41.6MB/s]
+ 50%|███████████████████                   | 78.4M/156M [00:04&lt;00:03, 20.8MB/s]
 
- 81%|███████████████████████████████▌       | 126M/156M [00:04&lt;00:00, 40.5MB/s]
+ 52%|███████████████████▊                  | 81.3M/156M [00:04&lt;00:03, 22.8MB/s]
 
- 84%|████████████████████████████████▋      | 131M/156M [00:04&lt;00:00, 41.8MB/s]
+ 54%|████████████████████▎                 | 83.7M/156M [00:04&lt;00:03, 22.2MB/s]
 
- 87%|█████████████████████████████████▊     | 135M/156M [00:04&lt;00:00, 40.9MB/s]
+ 55%|████████████████████▉                 | 85.9M/156M [00:05&lt;00:03, 22.1MB/s]
 
- 89%|██████████████████████████████████▊    | 140M/156M [00:04&lt;00:00, 41.9MB/s]
+ 56%|█████████████████████▍                | 88.1M/156M [00:05&lt;00:03, 21.1MB/s]
 
- 92%|███████████████████████████████████▉   | 144M/156M [00:04&lt;00:00, 40.9MB/s]
+ 58%|██████████████████████                | 90.4M/156M [00:05&lt;00:03, 21.3MB/s]
 
- 95%|█████████████████████████████████████  | 148M/156M [00:04&lt;00:00, 41.5MB/s]
+ 60%|██████████████████████▌               | 92.9M/156M [00:05&lt;00:02, 22.2MB/s]
 
- 98%|██████████████████████████████████████ | 153M/156M [00:04&lt;00:00, 40.8MB/s]
+ 61%|███████████████████████▏              | 95.2M/156M [00:05&lt;00:02, 21.7MB/s]
+
+ 62%|███████████████████████▋              | 97.4M/156M [00:05&lt;00:02, 21.7MB/s]
+
+ 64%|████████████████████████▏             | 99.6M/156M [00:05&lt;00:02, 21.3MB/s]
+
+ 65%|█████████████████████████▌             | 102M/156M [00:05&lt;00:02, 21.3MB/s]
+
+ 67%|██████████████████████████▏            | 105M/156M [00:05&lt;00:02, 22.0MB/s]
+
+ 69%|██████████████████████████▋            | 107M/156M [00:06&lt;00:02, 22.3MB/s]
+
+ 70%|███████████████████████████▎           | 109M/156M [00:06&lt;00:02, 21.5MB/s]
+
+ 71%|███████████████████████████▊           | 111M/156M [00:06&lt;00:02, 21.0MB/s]
+
+ 73%|████████████████████████████▍          | 114M/156M [00:06&lt;00:01, 21.5MB/s]
+
+ 75%|█████████████████████████████▏         | 117M/156M [00:06&lt;00:01, 22.4MB/s]
+
+ 76%|█████████████████████████████▋         | 119M/156M [00:06&lt;00:01, 21.8MB/s]
+
+ 78%|██████████████████████████████▏        | 121M/156M [00:06&lt;00:01, 21.4MB/s]
+
+ 79%|██████████████████████████████▊        | 123M/156M [00:06&lt;00:01, 21.3MB/s]
+
+ 81%|███████████████████████████████▍       | 126M/156M [00:06&lt;00:01, 23.0MB/s]
+
+ 82%|████████████████████████████████       | 128M/156M [00:07&lt;00:01, 22.2MB/s]
+
+ 84%|████████████████████████████████▌      | 131M/156M [00:07&lt;00:01, 20.9MB/s]
+
+ 85%|█████████████████████████████████▏     | 133M/156M [00:07&lt;00:01, 21.4MB/s]
+
+ 87%|█████████████████████████████████▊     | 135M/156M [00:07&lt;00:00, 21.5MB/s]
+
+ 88%|██████████████████████████████████▍    | 138M/156M [00:07&lt;00:00, 22.4MB/s]
+
+ 90%|██████████████████████████████████▉    | 140M/156M [00:07&lt;00:00, 20.9MB/s]
+
+ 91%|███████████████████████████████████▍   | 142M/156M [00:07&lt;00:00, 20.9MB/s]
+
+ 93%|████████████████████████████████████   | 145M/156M [00:07&lt;00:00, 21.6MB/s]
+
+ 94%|████████████████████████████████████▋  | 147M/156M [00:07&lt;00:00, 22.2MB/s]
+
+ 96%|█████████████████████████████████████▎ | 149M/156M [00:08&lt;00:00, 20.8MB/s]
+
+ 97%|█████████████████████████████████████▊ | 151M/156M [00:08&lt;00:00, 20.1MB/s]
+
+ 99%|██████████████████████████████████████▍| 154M/156M [00:08&lt;00:00, 22.2MB/s]
 
   0%|                                               | 0.00/156M [00:00&lt;?, ?B/s]
-100%|████████████████████████████████████████| 156M/156M [00:00&lt;00:00, 233GB/s]
+100%|████████████████████████████████████████| 156M/156M [00:00&lt;00:00, 190GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
@@ -818,7 +869,7 @@ All datasets will be downloaded to this location, if anything is already downloa
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 
-Zhou 2016-WithinSession:  25%|##5       | 1/4 [00:13&lt;00:41, 13.78s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou 2016-WithinSession:  25%|##5       | 1/4 [00:18&lt;00:56, 18.81s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -839,7 +890,7 @@ Zhou 2016-WithinSession:  25%|##5       | 1/4 [00:13&lt;00:41, 13.78s/it]/home/r
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 
-Zhou 2016-WithinSession:  50%|#####     | 2/4 [00:17&lt;00:15,  7.89s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou 2016-WithinSession:  50%|#####     | 2/4 [00:23&lt;00:20, 10.31s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -856,7 +907,7 @@ Zhou 2016-WithinSession:  50%|#####     | 2/4 [00:17&lt;00:15,  7.89s/it]/home/r
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 
-Zhou 2016-WithinSession:  75%|#######5  | 3/4 [00:21&lt;00:06,  6.04s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou 2016-WithinSession:  75%|#######5  | 3/4 [00:27&lt;00:07,  7.61s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -873,33 +924,33 @@ Zhou 2016-WithinSession:  75%|#######5  | 3/4 [00:21&lt;00:06,  6.04s/it]/home/r
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 
-Zhou 2016-WithinSession: 100%|##########| 4/4 [00:24&lt;00:00,  5.06s/it]
-Zhou 2016-WithinSession: 100%|##########| 4/4 [00:24&lt;00:00,  6.24s/it]
-[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:   25.0s finished
-2023-06-07 14:46:01,005 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_0: Score 0.860
-2023-06-07 14:46:01,013 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_0: Score 0.909
-2023-06-07 14:46:01,019 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_1: Score 0.924
-2023-06-07 14:46:01,023 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_1: Score 0.926
-2023-06-07 14:46:01,028 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_2: Score 0.954
-2023-06-07 14:46:01,032 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_2: Score 0.964
-2023-06-07 14:46:01,037 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_0: Score 0.916
-2023-06-07 14:46:01,041 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_0: Score 0.910
-2023-06-07 14:46:01,046 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_1: Score 0.753
-2023-06-07 14:46:01,050 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_1: Score 0.765
-2023-06-07 14:46:01,054 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_2: Score 0.906
-2023-06-07 14:46:01,059 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_2: Score 0.904
-2023-06-07 14:46:01,063 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_0: Score 0.972
-2023-06-07 14:46:01,068 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_0: Score 0.994
-2023-06-07 14:46:01,072 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_1: Score 0.980
-2023-06-07 14:46:01,077 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_1: Score 0.990
-2023-06-07 14:46:01,081 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_2: Score 0.990
-2023-06-07 14:46:01,085 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_2: Score 0.992
-2023-06-07 14:46:01,090 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_0: Score 0.993
-2023-06-07 14:46:01,094 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_0: Score 0.995
-2023-06-07 14:46:01,098 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_1: Score 0.972
-2023-06-07 14:46:01,103 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_1: Score 0.972
-2023-06-07 14:46:01,108 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_2: Score 0.968
-2023-06-07 14:46:01,112 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_2: Score 0.978
+Zhou 2016-WithinSession: 100%|##########| 4/4 [00:31&lt;00:00,  6.26s/it]
+Zhou 2016-WithinSession: 100%|##########| 4/4 [00:31&lt;00:00,  7.94s/it]
+[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:   31.8s finished
+2023-06-07 20:15:39,619 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_0: Score 0.909
+2023-06-07 20:15:39,629 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_0: Score 0.860
+2023-06-07 20:15:39,636 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_1: Score 0.926
+2023-06-07 20:15:39,641 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_1: Score 0.924
+2023-06-07 20:15:39,647 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_2: Score 0.964
+2023-06-07 20:15:39,652 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_2: Score 0.954
+2023-06-07 20:15:39,657 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_0: Score 0.910
+2023-06-07 20:15:39,662 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_0: Score 0.916
+2023-06-07 20:15:39,668 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_1: Score 0.765
+2023-06-07 20:15:39,673 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_1: Score 0.753
+2023-06-07 20:15:39,678 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_2: Score 0.904
+2023-06-07 20:15:39,683 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_2: Score 0.906
+2023-06-07 20:15:39,688 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_0: Score 0.994
+2023-06-07 20:15:39,693 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_0: Score 0.972
+2023-06-07 20:15:39,698 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_1: Score 0.990
+2023-06-07 20:15:39,704 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_1: Score 0.980
+2023-06-07 20:15:39,709 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_2: Score 0.992
+2023-06-07 20:15:39,714 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_2: Score 0.990
+2023-06-07 20:15:39,719 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_0: Score 0.995
+2023-06-07 20:15:39,724 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_0: Score 0.993
+2023-06-07 20:15:39,729 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_1: Score 0.972
+2023-06-07 20:15:39,735 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_1: Score 0.972
+2023-06-07 20:15:39,740 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_2: Score 0.978
+2023-06-07 20:15:39,745 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_2: Score 0.968
      dataset     evaluation          pipeline  avg score
 0  Zhou 2016  WithinSession         CSP + SVM   0.932315
 1  Zhou 2016  WithinSession  Tangent Space LR   0.941601
@@ -912,13 +963,13 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_benchmark_001.png" srcset="../_images/sphx_glr_plot_benchmark_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-06-07 14:46:01,230 WARNING MainThread moabb.analysis.plotting Dataset names are too similar, turning off name shortening
+<img src="../_images/sphx_glr_plot_benchmark_001.png" srcset="../_images/sphx_glr_plot_benchmark_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-06-07 20:15:39,902 WARNING MainThread moabb.analysis.plotting Dataset names are too similar, turning off name shortening
 /home/runner/work/moabb/moabb/moabb/analysis/plotting.py:59: UserWarning: The palette list has more values (6) than needed (2), which may not be intended.
   sea.stripplot(
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  25.901 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  359 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  32.959 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  332 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5657e54b8c692376a881117a99de998e/plot_benchmark.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark.py</span></code></a></p>

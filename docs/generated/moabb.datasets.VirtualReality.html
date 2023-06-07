@@ -431,7 +431,7 @@ document.write(`
 <h1>moabb.datasets.VirtualReality<a class="headerlink" href="#moabb-datasets-virtualreality" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.VirtualReality">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">VirtualReality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">virtual_reality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">screen_display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L812-L941"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.VirtualReality" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">VirtualReality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">virtual_reality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">screen_display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L814-L947"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.VirtualReality" title="Permalink to this definition">#</a></dt>
 <dd><p>Dataset of an EEG-based BCI experiment in Virtual Reality using P300</p>
 <p>We describe the experimental procedures for a dataset that we have made publicly
 available at <a class="reference external" href="https://doi.org/10.5281/zenodo.2605204">https://doi.org/10.5281/zenodo.2605204</a> in mat (Mathworks, Natick, USA)
@@ -473,7 +473,7 @@ on a Personal Computer. Research Report, GIPSA-lab; IHMTEK.
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.VirtualReality.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L876-L879"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.VirtualReality.data_path" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L882-L885"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.VirtualReality.data_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -504,9 +504,9 @@ list of length one, for compatibility.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.VirtualReality.get_block_repetition">
-<span class="sig-name descname"><span class="pre">get_block_repetition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetition_list</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L881-L941"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.VirtualReality.get_block_repetition" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_block_repetition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetition_list</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L887-L947"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.VirtualReality.get_block_repetition" title="Permalink to this definition">#</a></dt>
 <dd><p>Select data for all provided subjects, blocks and repetitions.
-Each subject has 5 blocks of 12 repetitions.</p>
+Each subject has 12 blocks of 5 repetitions.</p>
 <p>The returned data is a dictionary with the folowing structure:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;subject_id&#39;</span> <span class="p">:</span>
             <span class="p">{</span><span class="s1">&#39;session_id&#39;</span><span class="p">:</span>
@@ -538,7 +538,13 @@ Each subject has 5 blocks of 12 repetitions.</p>
 
 </dd></dl>
 
-<div style='clear:both'></div></section>
+<section id="examples-using-moabb-datasets-virtualreality">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.VirtualReality</span></code><a class="headerlink" href="#examples-using-moabb-datasets-virtualreality" title="Permalink to this heading">#</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to extract the epochs from the P300-VR dataset of a given subject and th..."><img alt="Changing epoch size in P300 VR dataset" src="../_images/sphx_glr_plot_vr_pc_p300_different_epoch_size_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/plot_vr_pc_p300_different_epoch_size.html#sphx-glr-auto-examples-plot-vr-pc-p300-different-epoch-size-py"><span class="std std-ref">Changing epoch size in P300 VR dataset</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Changing epoch size in P300 VR dataset</div>
+</div></div><div style='clear:both'></div></section>
+</section>
 
 
                 </article>
@@ -592,6 +598,7 @@ Each subject has 5 blocks of 12 repetitions.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.VirtualReality.get_block_repetition"><code class="docutils literal notranslate"><span class="pre">VirtualReality.get_block_repetition()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-moabb-datasets-virtualreality">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.VirtualReality</span></code></a></li>
 </ul>
   </nav></div>
 
