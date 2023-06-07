@@ -18,6 +18,8 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
+
+- Adding extra thank you section in the documentation (:gh:`390` by `Bruno Aristimunha`_)
 - Adding new script to get the meta information of the datasets (:gh:`389` by `Bruno Aristimunha`_)
 - Fixing the dataset description based on the meta information (:gh:`389` by `Bruno Aristimunha`_)
 - Adding second deployment of the documentation (:gh:`374` by `Bruno Aristimunha`_)
