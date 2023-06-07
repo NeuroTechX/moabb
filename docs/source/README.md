@@ -146,7 +146,7 @@ fetch(endpoint)
 
 <div id="contributors-container"></div>
 
-#### Special acknowledge for the extra MOABB contributors:
+Special acknowledge for the extra MOABB contributors:
 
 <table style="text-align: center;">
   <thead>
