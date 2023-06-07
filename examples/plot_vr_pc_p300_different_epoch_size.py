@@ -58,7 +58,7 @@ nsubjects = 2
 #
 # We will perform a 3-folds validation for each combination of
 # tmax, subjects and experimental conditions (VR or PC).
-# 
+#
 # Not all the data will be used for this validation.
 # The VirtualReality dataset contains the data from a randomized experiment.
 # We will only be using the two first repetitions of the 12 experimental blocks.
@@ -82,7 +82,6 @@ for tmax in [0.2, 1.0]:
     paradigm.tmax = tmax
 
     for subject in tqdm(dataset.subject_list[:nsubjects]):
-        
         # Note: here we are adding `tmax` to scores_subject,
         # although `tmax` is defined outside the scope of this inner loop.
         # The reason behind is to facilitate the conversion from array to dataframe at the end.
@@ -101,7 +100,6 @@ for tmax in [0.2, 1.0]:
             # Split in training and testing blocks, and fit/predict.
             # This loop will run 3 times as we are using a 3-folds validation
             for train_idx, test_idx in kf.split(np.arange(12)):
- 
                 # Note the use of the `get_block_repetition` method,
                 # to select the appropriate number of blocks and repetitions:
                 # - 8 blocks for training, 4 for testing
@@ -124,7 +122,7 @@ for tmax in [0.2, 1.0]:
                 y_test = le.transform(y_test)
                 y_pred = le.transform(y_pred)
 
-                # We use the roc_auc_score, which is a reliable metric for multi-class problem. 
+                # We use the roc_auc_score, which is a reliable metric for multi-class problem.
                 auc.append(roc_auc_score(y_test, y_pred))
 
             # stock scores
@@ -137,7 +135,7 @@ for tmax in [0.2, 1.0]:
 # ---------------
 #
 # Let's transform or array to a dataframe.
-# We can then print it on the console, and 
+# We can then print it on the console, and
 # plot the mean AUC as a function of the epoch length.
 
 df = pd.DataFrame(scores, columns=["tmax", "subject", "VR", "PC"])
