@@ -63,5 +63,3 @@ class RestingStateToP300Adapter(SinglePass):
     @property
     def scoring(self):
         return "roc_auc"
-
-phmdml = RestingStateToP300Adapter(events=["ON", "OFF"])

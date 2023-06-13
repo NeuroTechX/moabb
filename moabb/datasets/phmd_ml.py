@@ -42,6 +42,7 @@ class HeadMountedDisplay(BaseDataset):
     **ID of the dataset**
     PHMDML.EEG.2017-GIPSA
 
+    TODO: attribute chnames, ctypes
     '''
 
     def __init__(self):
@@ -54,17 +55,7 @@ class HeadMountedDisplay(BaseDataset):
             paradigm="rstate",
             doi="https://doi.org/10.5281/zenodo.2617084 "
         )
-
-    def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
-
-        filepath = self.data_path(subject)[0]
-        data = loadmat(filepath)
-
-        S = data['data'][:, 1:17]
-        stim = data['data'][:, -1]
-
-        chnames = [
+        self.chnames = [
             'Fp1',
             'Fp2',
             'Fc5',
@@ -82,11 +73,21 @@ class HeadMountedDisplay(BaseDataset):
             'Oz',
             'O2',
             'stim']
-        chtypes = ['eeg'] * 16 + ['stim']
+        self.chtypes = ['eeg'] * 16 + ['stim']
+
+    def _get_single_subject_data(self, subject):
+        """return data for a single subject"""
+
+        filepath = self.data_path(subject)[0]
+        data = loadmat(filepath)
+
+        S = data['data'][:, 1:17]
+        stim = data['data'][:, -1]
+
         X = np.concatenate([S, stim[:, None]], axis=1).T
 
-        info = mne.create_info(ch_names=chnames, sfreq=512,
-                               ch_types=chtypes,
+        info = mne.create_info(ch_names=self.chnames, sfreq=512,
+                               ch_types=self.chtypes,
                                verbose=False)
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
 

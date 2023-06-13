@@ -10,3 +10,4 @@ from moabb.paradigms.motor_imagery import *
 # flake8: noqa
 from moabb.paradigms.p300 import *
 from moabb.paradigms.ssvep import *
+from moabb.paradigms.resting_state import *
