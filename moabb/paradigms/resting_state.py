@@ -43,7 +43,7 @@ class RestingStateToP300Adapter(SinglePass):
     """
 
     def __init__(self, fmin=10, fmax=50, tmin=1, tmax=35, resample=128, **kwargs):
-        super().__init__(fmin=fmin, fmax=fmas, tmin=tmin, tmax=tmax, resample=resample, **kwargs)
+        super().__init__(fmin=fmin, fmax=fmax, tmin=tmin, tmax=tmax, resample=resample, **kwargs)
 
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
@@ -57,7 +57,6 @@ class RestingStateToP300Adapter(SinglePass):
             if not set(self.events) <= set(dataset.event_id.keys()):
                 ret = False
 
-        # we should verify list of channels, somehow
         return ret
 
     @property

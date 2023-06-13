@@ -35,7 +35,7 @@ warnings.filterwarnings("ignore")
 #    with epochs from 1 to 35 s after tagging of the event.
 
 dataset = HeadMountedDisplay()
-paradigm = RestingStateToP300Adapter(events=["ON", "OFF"])
+paradigm = RestingStateToP300Adapter(events=["on", "off"])
 
 channel='Cz'
 subject=1
