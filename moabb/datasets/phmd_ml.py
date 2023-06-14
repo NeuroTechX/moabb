@@ -29,7 +29,7 @@ class HeadMountedDisplay(BaseDataset):
     place in the GIPSA-lab, Grenoble, France, in 2017 (Cattan and al, 2018). 
     The ID of this dataset is PHMDML.EEG.2017-GIPSA.
    
-    **Full description of the experiment and dataset**
+    **full description of the experiment**
     https://hal.archives-ouvertes.fr/hal-02085118
     
     **Link to the data**
@@ -43,7 +43,19 @@ class HeadMountedDisplay(BaseDataset):
     **ID of the dataset**
     PHMDML.EEG.2017-GIPSA
 
-    TODO: attribute chnames, ctypes
+    Notes
+    -----
+
+    .. versionadded:: 0.6.0
+
+    References
+    ----------
+
+    .. [1] G. Cattan, P. L. Coelho Rodrigues, and M. Congedo,
+        ‘Passive Head-Mounted Display Music-Listening EEG dataset’,
+        Gipsa-Lab ; IHMTEK, Research Report 2, Mar. 2019. doi: 10.5281/zenodo.2617084.
+
+
     '''
 
     def __init__(self):
@@ -56,7 +68,7 @@ class HeadMountedDisplay(BaseDataset):
             paradigm="rstate",
             doi="https://doi.org/10.5281/zenodo.2617084 "
         )
-        self.chnames = [
+        self._chnames = [
             'Fp1',
             'Fp2',
             'Fc5',
@@ -74,7 +86,7 @@ class HeadMountedDisplay(BaseDataset):
             'Oz',
             'O2',
             'stim']
-        self.chtypes = ['eeg'] * 16 + ['stim']
+        self._chtypes = ['eeg'] * 16 + ['stim']
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
@@ -87,8 +99,8 @@ class HeadMountedDisplay(BaseDataset):
 
         X = np.concatenate([S, stim[:, None]], axis=1).T
 
-        info = mne.create_info(ch_names=self.chnames, sfreq=512,
-                               ch_types=self.chtypes,
+        info = mne.create_info(ch_names=self._chnames, sfreq=512,
+                               ch_types=self._chtypes,
                                verbose=False)
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
         return {"session_0": {"run_0": raw}}
