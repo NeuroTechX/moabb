@@ -19,7 +19,7 @@ class HeadMountedDisplay(BaseDataset):
 
 
         =================  =======  =======  ==========  =================  ============  ===============  ===========
-        Name                 #Subj    #Chan    #Classes    #Block / class    Trials len    Sampling rate    #Sessions
+        Name                 #Subj    #Chan    #Classes    #Blocks/class     Trials len    Sampling rate    #Sessions
         ================== =======  =======  ==========  =================  ============  ===============  ===========
         HeadMountedDisplay      12       16           2                 10   60s            512Hz                   1
         ================== =======  =======  ==========  =================  ============  ===============  ===========
