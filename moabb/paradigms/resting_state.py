@@ -1,5 +1,6 @@
 from moabb.paradigms.p300 import SinglePass
 
+
 class RestingStateToP300Adapter(SinglePass):
     """Adapter to the P300 paradigm for resting state experiments.
 
@@ -43,7 +44,9 @@ class RestingStateToP300Adapter(SinglePass):
     """
 
     def __init__(self, fmin=1, fmax=35, tmin=10, tmax=50, resample=128, **kwargs):
-        super().__init__(fmin=fmin, fmax=fmax, tmin=tmin, tmax=tmax, resample=resample, **kwargs)
+        super().__init__(
+            fmin=fmin, fmax=fmax, tmin=tmin, tmax=tmax, resample=resample, **kwargs
+        )
 
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}

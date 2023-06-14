@@ -15,13 +15,14 @@ and then do a spectral analysis of the signals.
 
 import warnings
 
+import matplotlib.pyplot as plt
 import mne
 import numpy as np
-import matplotlib.pyplot as plt
+from scipy.signal import welch
 
 from moabb.datasets import HeadMountedDisplay
 from moabb.paradigms import RestingStateToP300Adapter
-from scipy.signal import welch
+
 
 warnings.filterwarnings("ignore")
 
@@ -36,11 +37,11 @@ warnings.filterwarnings("ignore")
 #    with epochs from 10 to 50 s after tagging of the event.
 
 # Select channel and subject for the remaining of the example.
-channel = 'Cz'
+channel = "Cz"
 subject = 1
 
 dataset = HeadMountedDisplay()
-events=['on', 'off']
+events = ["on", "off"]
 paradigm = RestingStateToP300Adapter(events=events, channels=[channel])
 
 
@@ -60,14 +61,14 @@ f, S = welch(X, axis=-1, nperseg=1024, fs=paradigm.resample)
 # plot the averaged PSD for each kind of label for the channel selected
 #  at the beginning of the script.
 
-fig, ax = plt.subplots(facecolor='white', figsize=(8.2, 5.1))
+fig, ax = plt.subplots(facecolor="white", figsize=(8.2, 5.1))
 for condition in events:
-	mean_power = np.mean(S[y == condition], axis=0).flatten()
-	ax.plot(f, 10*np.log10(mean_power), label=condition)
+    mean_power = np.mean(S[y == condition], axis=0).flatten()
+    ax.plot(f, 10 * np.log10(mean_power), label=condition)
 
 ax.set_xlim(paradigm.fmin, paradigm.fmax)
-ax.set_ylabel('Spectrum Magnitude (dB)', fontsize=14)
-ax.set_xlabel('Frequency (Hz)', fontsize=14)
-ax.set_title('PSD for Channel ' + channel, fontsize=16)
+ax.set_ylabel("Spectrum Magnitude (dB)", fontsize=14)
+ax.set_xlabel("Frequency (Hz)", fontsize=14)
+ax.set_title("PSD for Channel " + channel, fontsize=16)
 ax.legend()
 fig.show()

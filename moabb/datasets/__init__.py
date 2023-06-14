@@ -35,6 +35,7 @@ from .huebner_llp import Huebner2017, Huebner2018
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .mpi_mi import MunichMI
 from .neiry import DemonsP300
+from .phmd_ml import HeadMountedDisplay
 from .physionet_mi import PhysionetMI
 from .schirrmeister2017 import Schirrmeister2017
 from .sosulski2019 import Sosulski2019
@@ -45,4 +46,3 @@ from .ssvep_wang import Wang2016
 from .upper_limb import Ofner2017
 from .Weibo2014 import Weibo2014
 from .Zhou2016 import Zhou2016
-from .phmd_ml import HeadMountedDisplay
