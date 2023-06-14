@@ -46,8 +46,8 @@ subject=1
 # 1) Get first subject epochs
 # 2) Use welch to estimate power spectral density
 
-X, y = paradigm.get_data(dataset, [subject])
-f, S = welch(X, axis=-1, nperseg=1024, fs=dataset.resample)
+X, y, _ = paradigm.get_data(dataset, [subject])
+f, S = welch(X, axis=-1, nperseg=1024, fs=paradigm.resample)
 
 ###############################################################################
 # Display of the data
@@ -56,8 +56,11 @@ f, S = welch(X, axis=-1, nperseg=1024, fs=dataset.resample)
 # plot the averaged PSD for each kind of label for the channel selected at the beginning of the script
 
 fig, ax = plt.subplots(facecolor='white', figsize=(8.2, 5.1))
-for condition in ['ON', 'OFF']:
-	ax.plot(f, 10*np.log10(np.mean(S[paradigm.events == condition], axis=0)[dataset.chnames.index(channel)]), label=condition)
+for condition in ['on', 'off']:
+	channel_idx = dataset.chnames.index(channel)
+	mean_power = np.mean(S[paradigm.events == condition], axis=0)
+	print(channel_idx, S, paradigm.events == condition)
+	ax.plot(f, 10*np.log10(mean_power[channel_idx]), label=condition)
 ax.set_xlim(0, dataset.fmax)
 ax.set_ylim(-10, +15)
 ax.set_ylabel('Spectrum Manitude (dB)', fontsize=14)

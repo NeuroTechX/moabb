@@ -1,5 +1,6 @@
 import mne
 import numpy as np
+import os
 from . import download as dl
 from .base import BaseDataset
 from scipy.io import loadmat
@@ -79,7 +80,7 @@ class HeadMountedDisplay(BaseDataset):
         """return data for a single subject"""
 
         filepath = self.data_path(subject)[0]
-        data = loadmat(filepath)
+        data = loadmat(os.path.join(filepath, os.listdir(filepath)[0]))
 
         S = data['data'][:, 1:17]
         stim = data['data'][:, -1]
@@ -90,8 +91,7 @@ class HeadMountedDisplay(BaseDataset):
                                ch_types=self.chtypes,
                                verbose=False)
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
-
-        return raw
+        return {"session_0": {"run_0": raw}}
 
     def data_path(self, subject, path=None, force_update=False,
                   update_path=None, verbose=None):
