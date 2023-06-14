@@ -25,6 +25,7 @@ Enhancements
 - Adding second deployment of the documentation (:gh:`374` by `Bruno Aristimunha`_)
 - Adding Parallel evaluation for :func:`moabb.evaluations.WithinSessionEvaluation` , :func:`moabb.evaluations.CrossSessionEvaluation` (:gh:`364` by `Bruno Aristimunha`_)
 - Add example with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
+- Add resting state paradigm with dataset and example (:gh:`393` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 
 Bugs
 ~~~~
