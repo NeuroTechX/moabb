@@ -318,6 +318,13 @@ class SinglePass(BaseP300):
             raise (ValueError("P300 does not take argument filters"))
         super().__init__(filters=[[fmin, fmax]], **kwargs)
 
+    @property
+    def fmax(self):
+        return self.filters[0][1]
+    
+    @property
+    def fmin(self):
+        return self.filters[0][0]
 
 class P300(SinglePass):
     """P300 for Target/NonTarget classification

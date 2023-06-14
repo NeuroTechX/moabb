@@ -31,14 +31,16 @@ warnings.filterwarnings("ignore")
 #
 # 1) Create an instance of the dataset.
 # 2) Create an instance of the resting state paradigm.
-#    By default filtering between 10-50 Hz
-#    with epochs from 1 to 35 s after tagging of the event.
+#    By default filtering between 1-35 Hz
+#    with epochs from 10 to 50 s after tagging of the event.
 
 dataset = HeadMountedDisplay()
-paradigm = RestingStateToP300Adapter(events=["on", "off"])
-
+events=['on', 'off']
 channel='Cz'
 subject=1
+
+paradigm = RestingStateToP300Adapter(events=events, channels=[channel])
+
 
 ###############################################################################
 # Estimate power spectral density
@@ -46,7 +48,7 @@ subject=1
 # 1) Get first subject epochs
 # 2) Use welch to estimate power spectral density
 
-X, y, _ = paradigm.get_data(dataset, [subject])
+X, y, meta = paradigm.get_data(dataset, [subject])
 f, S = welch(X, axis=-1, nperseg=1024, fs=paradigm.resample)
 
 ###############################################################################
@@ -56,15 +58,16 @@ f, S = welch(X, axis=-1, nperseg=1024, fs=paradigm.resample)
 # plot the averaged PSD for each kind of label for the channel selected at the beginning of the script
 
 fig, ax = plt.subplots(facecolor='white', figsize=(8.2, 5.1))
-for condition in ['on', 'off']:
-	channel_idx = dataset.chnames.index(channel)
-	mean_power = np.mean(S[paradigm.events == condition], axis=0)
-	print(channel_idx, S, paradigm.events == condition)
-	ax.plot(f, 10*np.log10(mean_power[channel_idx]), label=condition)
-ax.set_xlim(0, dataset.fmax)
-ax.set_ylim(-10, +15)
-ax.set_ylabel('Spectrum Manitude (dB)', fontsize=14)
+for condition in events:
+	#channel_idx = dataset.chnames.index(channel)
+	mean_power = np.mean(S[y == condition], axis=0).flatten()
+	print(mean_power.shape)
+	ax.plot(f, 10*np.log10(mean_power), label=condition)
+ax.set_xlim(paradigm.fmin, paradigm.fmax)
+#ax.set_ylim(-10, +15)
+ax.set_ylabel('Spectrum Magnitude (dB)', fontsize=14)
 ax.set_xlabel('Frequency (Hz)', fontsize=14)
 ax.set_title('PSD for Channel ' + channel, fontsize=16)
 ax.legend()
 fig.show()
+input()

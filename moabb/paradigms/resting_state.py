@@ -5,22 +5,22 @@ class RestingStateToP300Adapter(SinglePass):
 
     Parameters
     ----------
-    fmin: float (default 10)
+    fmin: float (default 1)
         cutoff frequency (Hz) for the high pass filter
 
-    fmax: float (default 50)
+    fmax: float (default 35)
         cutoff frequency (Hz) for the low pass filter
 
     events: List of str | None (default None)
         event to use for epoching. If None, default to all events defined in
         the dataset.
 
-    tmin: float (default 1.0)
+    tmin: float (default 10s)
         Start time (in second) of the epoch, relative to the dataset specific
         task interval e.g. tmin = 1 would mean the epoch will start 1 second
         after the beginning of the task as defined by the dataset.
 
-    tmax: float | None, (default 35)
+    tmax: float | None, (default 50s)
         End time (in second) of the epoch, relative to the beginning of the
         dataset specific task interval. tmax = 5 would mean the epoch will end
         5 second after the beginning of the task as defined in the dataset. If
@@ -42,7 +42,7 @@ class RestingStateToP300Adapter(SinglePass):
         the dataset.
     """
 
-    def __init__(self, fmin=10, fmax=50, tmin=1, tmax=35, resample=128, **kwargs):
+    def __init__(self, fmin=1, fmax=35, tmin=10, tmax=50, resample=128, **kwargs):
         super().__init__(fmin=fmin, fmax=fmax, tmin=tmin, tmax=tmax, resample=resample, **kwargs)
 
     def used_events(self, dataset):
