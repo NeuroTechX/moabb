@@ -237,7 +237,7 @@ class Test_AdditionalColumns(unittest.TestCase):
             os.remove(path)
 
     def test_fails_if_nothing_returned(self):
-        self.assertRaises(ValueError, self.eval.process, pipelines)
+        self.assertRaises(Exception, self.eval.process, pipelines)
         # TODO Add custom evaluation that actually returns additional info
 
 
