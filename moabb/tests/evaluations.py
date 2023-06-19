@@ -81,7 +81,7 @@ class Test_WithinSess(unittest.TestCase):
                 "res_test",
                 "GridSearch_WithinSession",
                 str(dataset.code),
-                "subject1",
+                "1",
                 "session_0",
                 "C",
                 "Grid_Search_WithinSession.pkl",

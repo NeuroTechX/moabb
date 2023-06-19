@@ -52,7 +52,7 @@ def create_save_path(
     hdf5_path: str,
     code: str,
     subject: int,
-    session: int,
+    session: str,
     name: str,
     grid=False,
     eval_type="WithinSession",
@@ -90,18 +90,18 @@ def create_save_path(
     if grid:
         path_save = (
             Path(hdf5_path)
-            / f"GridSearch{eval_type}"
+            / f"GridSearch_{eval_type}"
             / code
-            / f"subject{str(subject)}"
+            / f"{str(subject)}"
             / str(session)
             / str(name)
         )
     else:
         path_save = (
             Path(hdf5_path)
-            / f"Models{eval_type}"
+            / f"Models_{eval_type}"
             / code
-            / f"subject{str(subject)}"
+            / f"{str(subject)}"
             / str(session)
             / str(name)
         )
