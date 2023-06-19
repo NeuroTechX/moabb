@@ -16,7 +16,6 @@ and then do a spectral analysis of the signals.
 import warnings
 
 import matplotlib.pyplot as plt
-import mne
 import numpy as np
 from scipy.signal import welch
 
