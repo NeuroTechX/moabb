@@ -16,12 +16,14 @@ from sklearn.model_selection import (
     StratifiedKFold,
     StratifiedShuffleSplit,
     cross_val_score,
+    cross_validate,
 )
 from sklearn.model_selection._validation import _fit_and_score, _score
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
+from moabb.evaluations.utils import create_save_path, save_model, save_model_list
 
 
 try:
@@ -83,7 +85,7 @@ class WithinSessionEvaluation(BaseEvaluation):
     suffix: str
         Suffix for the results file.
     hdf5_path: str
-        Specific path for storing the results.
+        Specific path for storing the results and models.
     additional_columns: None
         Adding information to results.
     return_epochs: bool, default=False
@@ -220,13 +222,15 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                 grid_clf = clone(clf)
 
-                name_grid = os.path.join(
-                    str(self.hdf5_path),
-                    "GridSearch_WithinSession",
+                # Create folder for grid search results
+                name_grid = create_save_path(
+                    self.hdf5_path,
                     dataset.code,
-                    "subject" + str(subject),
-                    str(session),
-                    str(name),
+                    subject,
+                    session,
+                    name,
+                    grid=True,
+                    eval_type="WithinSession",
                 )
 
                 # Implement Grid Search
@@ -244,8 +248,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                         cvclf.fit(X_[train], y_[train])
                         acc.append(scorer(cvclf, X_[test], y_[test]))
                     acc = np.array(acc)
+                    score = acc.mean()
                 else:
-                    acc = cross_val_score(
+                    results = cross_validate(
                         grid_clf,
                         X[ix],
                         y_cv,
@@ -253,13 +258,27 @@ class WithinSessionEvaluation(BaseEvaluation):
                         scoring=self.paradigm.scoring,
                         n_jobs=self.n_jobs,
                         error_score=self.error_score,
+                        return_estimator=True,
                     )
-                score = acc.mean()
+                    score = results["test_score"].mean()
                 if _carbonfootprint:
                     emissions = tracker.stop()
                     if emissions is None:
                         emissions = np.NaN
                 duration = time() - t_start
+
+                model_save_path = create_save_path(
+                    self.hdf5_path,
+                    dataset.code,
+                    subject,
+                    session,
+                    name,
+                    grid=False,
+                    eval_type="WithinSession",
+                )
+
+                save_model_list(results["estimator"], save_path=model_save_path)
+
                 nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                 res = {
                     "time": duration / 5.0,  # 5 fold CV
@@ -541,12 +560,14 @@ class CrossSessionEvaluation(BaseEvaluation):
             grid_clf = clone(clf)
 
             # Load result if the folder exist
-            name_grid = os.path.join(
-                str(self.hdf5_path),
-                "GridSearch_CrossSession",
-                dataset.code,
-                str(subject),
-                name,
+            name_grid = create_save_path(
+                hdf5_path=self.hdf5_path,
+                code=dataset.code,
+                subject=subject,
+                session="",
+                name=name,
+                grid=True,
+                eval_type="CrossSession",
             )
 
             # Implement Grid Search
@@ -560,12 +581,14 @@ class CrossSessionEvaluation(BaseEvaluation):
                     emissions_grid = 0
 
             for train, test in cv.split(X, y, groups):
+                model_list = []
                 if _carbonfootprint:
                     tracker.start()
                 t_start = time()
                 if isinstance(X, BaseEpochs):
                     cvclf = clone(grid_clf)
                     cvclf.fit(X[train], y[train])
+                    model_list.append(cvclf)
                     score = scorer(cvclf, X[test], y[test])
                 else:
                     result = _fit_and_score(
@@ -579,14 +602,28 @@ class CrossSessionEvaluation(BaseEvaluation):
                         parameters=None,
                         fit_params=None,
                         error_score=self.error_score,
+                        return_estimator=True,
                     )
                     score = result["test_scores"]
+                    model_list = result["estimator"]
                 if _carbonfootprint:
                     emissions = tracker.stop()
                     if emissions is None:
                         emissions = 0
 
                 duration = time() - t_start
+                model_save_path = create_save_path(
+                    hdf5_path=self.hdf5_path,
+                    code=dataset.code,
+                    subject=subject,
+                    session="",
+                    name=name,
+                    grid=False,
+                    eval_type="CrossSession",
+                )
+
+                save_model_list(model_list=model_list, save_path=model_save_path)
+
                 nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                 res = {
                     "time": duration,
@@ -725,7 +762,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             if _carbonfootprint:
                 tracker.start()
             name_grid = os.path.join(
-                str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
+                str(self.hdf5_path), "GridSearchCrossSubject", dataset.code, name
             )
 
             pipelines[name] = self._grid_search(
@@ -738,15 +775,16 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     emissions_grid[name] = 0
 
         # Progressbar at subject level
-        for train, test in tqdm(
-            cv.split(X, y, groups),
-            total=n_subjects,
-            desc=f"{dataset.code}-CrossSubject",
+        for cv_ind, (train, test) in enumerate(
+            tqdm(
+                cv.split(X, y, groups),
+                total=n_subjects,
+                desc=f"{dataset.code}-CrossSubject",
+            )
         ):
             subject = groups[test[0]]
             # now we can check if this subject has results
             run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
-
             # iterate over pipelines
             for name, clf in run_pipes.items():
                 if _carbonfootprint:
@@ -759,6 +797,17 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         emissions = 0
                 duration = time() - t_start
 
+                model_save_path = create_save_path(
+                    hdf5_path=self.hdf5_path,
+                    code=dataset.code,
+                    subject=subject,
+                    session="",
+                    name=name,
+                    grid=False,
+                    eval_type="CrossSubject",
+                )
+
+                save_model(model=model, save_path=model_save_path, cv_index=cv_ind)
                 # we eval on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
