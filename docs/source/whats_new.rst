@@ -24,6 +24,7 @@ Enhancements
 - Fixing the dataset description based on the meta information (:gh:`389` and `398` by `Bruno Aristimunha`_ and `Sara Sedlar`_)
 - Adding second deployment of the documentation (:gh:`374` by `Bruno Aristimunha`_)
 - Adding Parallel evaluation for :func:`moabb.evaluations.WithinSessionEvaluation` , :func:`moabb.evaluations.CrossSessionEvaluation` (:gh:`364` by `Bruno Aristimunha`_)
+- Adding saving option for the models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 
 Bugs
 ~~~~
