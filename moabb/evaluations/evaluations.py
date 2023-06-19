@@ -762,7 +762,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             if _carbonfootprint:
                 tracker.start()
             name_grid = os.path.join(
-                str(self.hdf5_path), "GridSearchCrossSubject", dataset.code, name
+                str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
             )
 
             pipelines[name] = self._grid_search(
