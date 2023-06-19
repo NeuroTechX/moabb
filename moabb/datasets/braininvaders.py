@@ -4,6 +4,7 @@ import os.path as osp
 import shutil
 import zipfile as z
 from distutils.dir_util import copy_tree
+from warnings import warn
 
 import mne
 import numpy as np
@@ -150,7 +151,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim[idx_nontarget] = 1
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
-        elif ds.code == "Virtual Reality dataset":
+        elif ds.code == "P300-VR":
             data = loadmat(os.path.join(file_path, os.listdir(file_path)[0]))["data"]
 
             chnames = [
@@ -187,7 +188,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             verbose=False,
         )
 
-        if not ds.code == "Virtual Reality dataset":
+        if not ds.code == "P300-VR":
             raw = mne.io.RawArray(data=X, info=info, verbose=False)
             raw.set_montage(make_standard_montage("standard_1020"))
 
@@ -388,15 +389,16 @@ def _bi_data_path(  # noqa: C901
             )
             for i in range(1, 5)
         ]
-    elif ds.code == "Virtual Reality dataset":
+    elif ds.code == "P300-VR":
         subject_paths = []
-        url = "{:s}subject_{:02d}_{:s}.mat".format(
-            VIRTUALREALITY_URL,
-            subject,
-            "VR" if ds.virtual_reality else ds.personal_computer,
-        )
-        file_path = dl.data_path(url, "VIRTUALREALITY")
-        subject_paths.append(file_path)
+        if ds.virtual_reality:
+            url = "{:s}subject_{:02d}_{:s}.mat".format(VIRTUALREALITY_URL, subject, "VR")
+            file_path = dl.data_path(url, "VIRTUALREALITY")
+            subject_paths.append(file_path)
+        if ds.personal_computer:
+            url = "{:s}subject_{:02d}_{:s}.mat".format(VIRTUALREALITY_URL, subject, "PC")
+            file_path = dl.data_path(url, "VIRTUALREALITY")
+            subject_paths.append(file_path)
 
     return subject_paths
 
@@ -868,6 +870,10 @@ class VirtualReality(BaseDataset):
 
         self.virtual_reality = virtual_reality
         self.personal_computer = screen_display
+        if not self.virtual_reality and not self.personal_computer:
+            warn(
+                "[P300-VR dataset] virtual_reality and screen display are False. No data will be downloaded, unless you change these parameters after initialization."
+            )
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
@@ -880,7 +886,7 @@ class VirtualReality(BaseDataset):
 
     def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
         """Select data for all provided subjects, blocks and repetitions.
-        Each subject has 5 blocks of 12 repetitions.
+        Each subject has 12 blocks of 5 repetitions.
 
         The returned data is a dictionary with the folowing structure::
 

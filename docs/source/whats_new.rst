@@ -24,12 +24,14 @@ Enhancements
 - Fixing the dataset description based on the meta information (:gh:`389` and `398` by `Bruno Aristimunha`_ and `Sara Sedlar`_)
 - Adding second deployment of the documentation (:gh:`374` by `Bruno Aristimunha`_)
 - Adding Parallel evaluation for :func:`moabb.evaluations.WithinSessionEvaluation` , :func:`moabb.evaluations.CrossSessionEvaluation` (:gh:`364` by `Bruno Aristimunha`_)
+- Add example with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 - Adding saving option for the models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 
 Bugs
 ~~~~
 
 - Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
+- Correct downloading with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_)
 - Rename event `substraction` to `subtraction` in :func:`moabb.dataset.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
 
 API changes

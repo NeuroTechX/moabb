@@ -76,6 +76,17 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
     def test_canary(self):
         assert VirtualReality() is not None
 
+    def test_warning_if_parameters_false(self):
+        with self.assertWarns(UserWarning):
+            VirtualReality(virtual_reality=False, screen_display=False)
+
+    def test_data_path(self):
+        ds = VirtualReality(virtual_reality=True, screen_display=True)
+        data_path = ds.data_path(1)
+        assert len(data_path) == 2
+        assert "subject_01_VR.mat" in data_path[0]
+        assert "subject_01_PC.mat" in data_path[1]
+
     def test_get_block_repetition(self):
         ds = FakeVirtualRealityDataset()
         subject = 5
