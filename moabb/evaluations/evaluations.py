@@ -467,7 +467,7 @@ class CrossSessionEvaluation(BaseEvaluation):
     suffix: str
         Suffix for the results file.
     hdf5_path: str
-        Specific path for storing the results.
+        Specific path for storing the results and models.
     additional_columns: None
         Adding information to results.
     return_epochs: bool, default=False
@@ -673,7 +673,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
     suffix: str
         Suffix for the results file.
     hdf5_path: str
-        Specific path for storing the results.
+        Specific path for storing the results and models.
     additional_columns: None
         Adding information to results.
     return_epochs: bool, default=False
