@@ -1,8 +1,8 @@
 from os import makedirs
 from pathlib import Path
+from pickle import dump
 from typing import Sequence
 
-from joblib import dump
 from numpy import argmax
 
 
@@ -25,7 +25,9 @@ def save_model(model, save_path: str, cv_index: int):
     """
     # Save the model
     makedirs(save_path, exist_ok=True)
-    return dump(model, Path(save_path) / f"fitted_model_{cv_index}.pkl")
+    with open((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as f:
+        dump(model, f)
+    return
 
 
 def save_model_list(model_list: list, score_list: Sequence, save_path: str):
@@ -44,16 +46,18 @@ def save_model_list(model_list: list, score_list: Sequence, save_path: str):
     # Save the result
     makedirs(save_path, exist_ok=True)
     for i, model in enumerate(model_list):
-        dump(
-            model,
-            Path(save_path) / f"fitted_model_cv_{str(i)}.pkl",
-        )
+        with open((Path(save_path) / f"fitted_model_cv_{str(i)}.pkl"), "wb") as f:
+            dump(
+                model,
+                f,
+            )
     # Saving the best model
     best_model = model_list[argmax(score_list)]
-    dump(
-        best_model,
-        Path(save_path) / "best_model.pkl",
-    )
+    with open((Path(save_path) / "best_model.pkl"), "wb") as f:
+        dump(
+            best_model,
+            f,
+        )
 
 
 def create_save_path(
@@ -67,7 +71,6 @@ def create_save_path(
 ):
     """
     Create a save path based on evaluation parameters.
-
     Parameters
     ----------
     hdf5_path : str
@@ -85,7 +88,6 @@ def create_save_path(
     eval_type : str, optional
        The type of evaluation, either 'WithinSession', 'CrossSession' or 'CrossSubject'.
        Defaults to WithinSession.
-
     Returns
     -------
     path_save: str
