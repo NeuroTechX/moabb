@@ -39,7 +39,7 @@ paradigm = MotorImagery(
 )
 
 # Create a path and folder for every subject
-path = os.path.join(str("Results"))
+path = os.path.join(str("/home/bru/PycharmProjects/moabb/result_ver"))
 os.makedirs(path, exist_ok=True)
 
 ##############################################################################
@@ -145,7 +145,7 @@ search_session_E = joblib.load(
         path,
         "GridSearch_WithinSession",
         "001-2014",
-        "subject1",
+        "1",
         "session_E",
         "GridSearchEN",
         "Grid_Search_WithinSession.pkl",
@@ -165,7 +165,7 @@ search_session_T = joblib.load(
         path,
         "GridSearch_WithinSession",
         "001-2014",
-        "subject1",
+        "1",
         "session_T",
         "GridSearchEN",
         "Grid_Search_WithinSession.pkl",
