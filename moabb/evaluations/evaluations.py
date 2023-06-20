@@ -15,7 +15,6 @@ from sklearn.model_selection import (
     LeaveOneGroupOut,
     StratifiedKFold,
     StratifiedShuffleSplit,
-    cross_val_score,
     cross_validate,
 )
 from sklearn.model_selection._validation import _fit_and_score, _score
@@ -24,7 +23,7 @@ from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
 from moabb.evaluations.utils import create_save_path, save_model, save_model_list
-
+from sklearn.utils import parallel_backend
 
 try:
     from codecarbon import EmissionsTracker
@@ -180,10 +179,11 @@ class WithinSessionEvaluation(BaseEvaluation):
     # flake8: noqa: C901
 
     def _evaluate(self, dataset, pipelines, param_grid):
-        results = Parallel(n_jobs=self.n_jobs_evaluation, verbose=1, backend="loky")(
-            delayed(self._evaluate_subject)(dataset, pipelines, param_grid, subject)
-            for subject in dataset.subject_list
-        )
+        with parallel_backend('threading'):
+            results = Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
+                delayed(self._evaluate_subject)(dataset, pipelines, param_grid, subject)
+                for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-WithinSession")
+            )
 
         # Concatenate the results from all subjects
         yield from [res for subject_results in results for res in subject_results]
@@ -524,11 +524,12 @@ class CrossSessionEvaluation(BaseEvaluation):
             raise AssertionError("Dataset is not appropriate for evaluation")
         # Progressbar at subject level
         results = []
-        for result in Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
-            delayed(self.process_subject)(subject, param_grid, pipelines, dataset)
-            for subject in dataset.subject_list
-        ):
-            results.extend(result)
+        with parallel_backend('threading'):
+            for result in Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
+                delayed(self.process_subject)(subject, param_grid, pipelines, dataset)
+                for subject in dataset.subject_list
+            ):
+                results.extend(result)
 
         return results
 
