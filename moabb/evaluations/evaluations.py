@@ -238,15 +238,16 @@ class WithinSessionEvaluation(BaseEvaluation):
                 grid_clf = self._grid_search(
                     param_grid, name_grid, name, grid_clf, X_, y_, cv
                 )
-                model_save_path = create_save_path(
-                    self.hdf5_path,
-                    dataset.code,
-                    subject,
-                    session,
-                    name,
-                    grid=False,
-                    eval_type="WithinSession",
-                )
+                if self.hdf5_path is not None:
+                    model_save_path = create_save_path(
+                        self.hdf5_path,
+                        dataset.code,
+                        subject,
+                        session,
+                        name,
+                        grid=False,
+                        eval_type="WithinSession",
+                    )
 
                 if isinstance(X, BaseEpochs):
                     scorer = get_scorer(self.paradigm.scoring)
@@ -257,9 +258,12 @@ class WithinSessionEvaluation(BaseEvaluation):
                         cvclf = clone(grid_clf)
                         cvclf.fit(X_[train], y_[train])
                         acc.append(scorer(cvclf, X_[test], y_[test]))
-                        save_model(
-                            model=cvclf, save_path=model_save_path, cv_index=cv_ind
-                        )
+
+                        if self.hdf5_path is not None:
+                            save_model(
+                                model=cvclf, save_path=model_save_path, cv_index=cv_ind
+                            )
+
                     acc = np.array(acc)
                     score = acc.mean()
                 else:
@@ -589,15 +593,16 @@ class CrossSessionEvaluation(BaseEvaluation):
                 if emissions_grid is None:
                     emissions_grid = 0
 
-            model_save_path = create_save_path(
-                hdf5_path=self.hdf5_path,
-                code=dataset.code,
-                subject=subject,
-                session="",
-                name=name,
-                grid=False,
-                eval_type="CrossSession",
-            )
+            if self.hdf5_path is not None:
+                model_save_path = create_save_path(
+                    hdf5_path=self.hdf5_path,
+                    code=dataset.code,
+                    subject=subject,
+                    session="",
+                    name=name,
+                    grid=False,
+                    eval_type="CrossSession",
+                )
 
             for cv_ind, (train, test) in enumerate(cv.split(X, y, groups)):
                 model_list = []
@@ -778,6 +783,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
         for name, clf in pipelines.items():
             if _carbonfootprint:
                 tracker.start()
+
             name_grid = os.path.join(
                 str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
             )
