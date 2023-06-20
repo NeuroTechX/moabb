@@ -57,7 +57,7 @@ def save_model_list(model_list: list, score_list: Sequence, save_path: str):
 
 
 def create_save_path(
-    hdf5_path: str,
+    hdf5_path,
     code: str,
     subject: int,
     session: str,
@@ -91,27 +91,29 @@ def create_save_path(
     path_save: str
        The created save path.
     """
+    if hdf5_path is not None:
+        if eval_type != "WithinSession":
+            session = ""
 
-    if eval_type != "WithinSession":
-        session = ""
+        if grid:
+            path_save = (
+                Path(hdf5_path)
+                / f"GridSearch_{eval_type}"
+                / code
+                / f"{str(subject)}"
+                / str(session)
+                / str(name)
+            )
+        else:
+            path_save = (
+                Path(hdf5_path)
+                / f"Models_{eval_type}"
+                / code
+                / f"{str(subject)}"
+                / str(session)
+                / str(name)
+            )
 
-    if grid:
-        path_save = (
-            Path(hdf5_path)
-            / f"GridSearch_{eval_type}"
-            / code
-            / f"{str(subject)}"
-            / str(session)
-            / str(name)
-        )
+        return str(path_save)
     else:
-        path_save = (
-            Path(hdf5_path)
-            / f"Models_{eval_type}"
-            / code
-            / f"{str(subject)}"
-            / str(session)
-            / str(name)
-        )
-
-    return str(path_save)
+        print("No hdf5_path provided, models will not be saved.")
