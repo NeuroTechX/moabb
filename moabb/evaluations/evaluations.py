@@ -19,11 +19,12 @@ from sklearn.model_selection import (
 )
 from sklearn.model_selection._validation import _fit_and_score, _score
 from sklearn.preprocessing import LabelEncoder
+from sklearn.utils import parallel_backend
 from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
 from moabb.evaluations.utils import create_save_path, save_model, save_model_list
-from sklearn.utils import parallel_backend
+
 
 try:
     from codecarbon import EmissionsTracker
@@ -179,10 +180,12 @@ class WithinSessionEvaluation(BaseEvaluation):
     # flake8: noqa: C901
 
     def _evaluate(self, dataset, pipelines, param_grid):
-        with parallel_backend('threading'):
+        with parallel_backend("threading"):
             results = Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
                 delayed(self._evaluate_subject)(dataset, pipelines, param_grid, subject)
-                for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-WithinSession")
+                for subject in tqdm(
+                    dataset.subject_list, desc=f"{dataset.code}-WithinSession"
+                )
             )
 
         # Concatenate the results from all subjects
@@ -524,7 +527,7 @@ class CrossSessionEvaluation(BaseEvaluation):
             raise AssertionError("Dataset is not appropriate for evaluation")
         # Progressbar at subject level
         results = []
-        with parallel_backend('threading'):
+        with parallel_backend("threading"):
             for result in Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
                 delayed(self.process_subject)(subject, param_grid, pipelines, dataset)
                 for subject in dataset.subject_list
