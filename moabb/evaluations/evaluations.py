@@ -180,11 +180,9 @@ class WithinSessionEvaluation(BaseEvaluation):
     # flake8: noqa: C901
 
     def _evaluate(self, dataset, pipelines, param_grid):
-        results = Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
+        results = Parallel(n_jobs=self.n_jobs_evaluation, verbose=1, backend="loky")(
             delayed(self._evaluate_subject)(dataset, pipelines, param_grid, subject)
-            for subject in tqdm(
-                dataset.subject_list, desc=f"{dataset.code}-WithinSession"
-            )
+            for subject in dataset.subject_list
         )
 
         # Concatenate the results from all subjects
@@ -237,16 +235,28 @@ class WithinSessionEvaluation(BaseEvaluation):
                 grid_clf = self._grid_search(
                     param_grid, name_grid, name, grid_clf, X_, y_, cv
                 )
+                model_save_path = create_save_path(
+                    self.hdf5_path,
+                    dataset.code,
+                    subject,
+                    session,
+                    name,
+                    grid=False,
+                    eval_type="WithinSession",
+                )
 
                 if isinstance(X, BaseEpochs):
                     scorer = get_scorer(self.paradigm.scoring)
                     acc = list()
                     X_ = X[ix]
                     y_ = y[ix] if self.mne_labels else y_cv
-                    for train, test in cv.split(X_, y_):
+                    for cv_ind, (train, test) in enumerate(cv.split(X_, y_)):
                         cvclf = clone(grid_clf)
                         cvclf.fit(X_[train], y_[train])
                         acc.append(scorer(cvclf, X_[test], y_[test]))
+                        save_model(
+                            model=cvclf, save_path=model_save_path, cv_index=cv_ind
+                        )
                     acc = np.array(acc)
                     score = acc.mean()
                 else:
@@ -268,17 +278,11 @@ class WithinSessionEvaluation(BaseEvaluation):
                 duration = time() - t_start
 
                 if self.hdf5_path is not None:
-                    model_save_path = create_save_path(
-                        self.hdf5_path,
-                        dataset.code,
-                        subject,
-                        session,
-                        name,
-                        grid=False,
-                        eval_type="WithinSession",
+                    save_model_list(
+                        results["estimator"],
+                        score_list=results["test_score"],
+                        save_path=model_save_path,
                     )
-
-                    save_model_list(results["estimator"], save_path=model_save_path)
 
                 nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                 res = {
@@ -522,7 +526,7 @@ class CrossSessionEvaluation(BaseEvaluation):
         results = []
         for result in Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
             delayed(self.process_subject)(subject, param_grid, pipelines, dataset)
-            for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-CrossSession")
+            for subject in dataset.subject_list
         ):
             results.extend(result)
 
@@ -581,7 +585,17 @@ class CrossSessionEvaluation(BaseEvaluation):
                 if emissions_grid is None:
                     emissions_grid = 0
 
-            for train, test in cv.split(X, y, groups):
+            model_save_path = create_save_path(
+                hdf5_path=self.hdf5_path,
+                code=dataset.code,
+                subject=subject,
+                session="",
+                name=name,
+                grid=False,
+                eval_type="CrossSession",
+            )
+
+            for cv_ind, (train, test) in enumerate(cv.split(X, y, groups)):
                 model_list = []
                 if _carbonfootprint:
                     tracker.start()
@@ -591,6 +605,11 @@ class CrossSessionEvaluation(BaseEvaluation):
                     cvclf.fit(X[train], y[train])
                     model_list.append(cvclf)
                     score = scorer(cvclf, X[test], y[test])
+
+                    if self.hdf5_path is not None:
+                        save_model(
+                            model=cvclf, save_path=model_save_path, cv_index=cv_ind
+                        )
                 else:
                     result = _fit_and_score(
                         clone(grid_clf),
@@ -614,17 +633,9 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                 duration = time() - t_start
                 if self.hdf5_path is not None:
-                    model_save_path = create_save_path(
-                        hdf5_path=self.hdf5_path,
-                        code=dataset.code,
-                        subject=subject,
-                        session="",
-                        name=name,
-                        grid=False,
-                        eval_type="CrossSession",
+                    save_model_list(
+                        model_list=model_list, score_list=score, save_path=model_save_path
                     )
-
-                    save_model_list(model_list=model_list, save_path=model_save_path)
 
                 nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                 res = {
