@@ -72,14 +72,20 @@ def save_model_list(model_list: list, score_list: Sequence, save_path: str):
     if model_list is None:
         return
     # Save the result
-
-    if any(
-        _check_if_is_keras_model(step)
-        for model in model_list
-        for step in model.named_steps.values()
-    ):
-        print("Keras models are not supported for saving yet.")
-        return
+    if not isinstance(model_list, list):
+        if any(
+            _check_if_is_keras_model(step) for step in model_list.named_steps.values()
+        ):
+            print("Keras models are not supported for saving yet.")
+            return
+    else:
+        if any(
+            _check_if_is_keras_model(step)
+            for model in model_list
+            for step in model.named_steps.values()
+        ):
+            print("Keras models are not supported for saving yet.")
+            return
 
     makedirs(save_path, exist_ok=True)
     for i, model in enumerate(model_list):
