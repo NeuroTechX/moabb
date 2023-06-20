@@ -39,7 +39,7 @@ paradigm = MotorImagery(
 )
 
 # Create a path and folder for every subject
-path = os.path.join(str("/home/bru/PycharmProjects/moabb/result_ver"))
+path = os.path.join(str("Results"))
 os.makedirs(path, exist_ok=True)
 
 ##############################################################################
