@@ -267,17 +267,18 @@ class WithinSessionEvaluation(BaseEvaluation):
                         emissions = np.NaN
                 duration = time() - t_start
 
-                model_save_path = create_save_path(
-                    self.hdf5_path,
-                    dataset.code,
-                    subject,
-                    session,
-                    name,
-                    grid=False,
-                    eval_type="WithinSession",
-                )
+                if self.hdf5_path is not None:
+                    model_save_path = create_save_path(
+                        self.hdf5_path,
+                        dataset.code,
+                        subject,
+                        session,
+                        name,
+                        grid=False,
+                        eval_type="WithinSession",
+                    )
 
-                save_model_list(results["estimator"], save_path=model_save_path)
+                    save_model_list(results["estimator"], save_path=model_save_path)
 
                 nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                 res = {
@@ -612,17 +613,18 @@ class CrossSessionEvaluation(BaseEvaluation):
                         emissions = 0
 
                 duration = time() - t_start
-                model_save_path = create_save_path(
-                    hdf5_path=self.hdf5_path,
-                    code=dataset.code,
-                    subject=subject,
-                    session="",
-                    name=name,
-                    grid=False,
-                    eval_type="CrossSession",
-                )
+                if self.hdf5_path is not None:
+                    model_save_path = create_save_path(
+                        hdf5_path=self.hdf5_path,
+                        code=dataset.code,
+                        subject=subject,
+                        session="",
+                        name=name,
+                        grid=False,
+                        eval_type="CrossSession",
+                    )
 
-                save_model_list(model_list=model_list, save_path=model_save_path)
+                    save_model_list(model_list=model_list, save_path=model_save_path)
 
                 nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                 res = {
@@ -797,17 +799,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         emissions = 0
                 duration = time() - t_start
 
-                model_save_path = create_save_path(
-                    hdf5_path=self.hdf5_path,
-                    code=dataset.code,
-                    subject=subject,
-                    session="",
-                    name=name,
-                    grid=False,
-                    eval_type="CrossSubject",
-                )
+                if self.hdf5_path is not None:
+                    model_save_path = create_save_path(
+                        hdf5_path=self.hdf5_path,
+                        code=dataset.code,
+                        subject=subject,
+                        session="",
+                        name=name,
+                        grid=False,
+                        eval_type="CrossSubject",
+                    )
 
-                save_model(model=model, save_path=model_save_path, cv_index=cv_ind)
+                    save_model(model=model, save_path=model_save_path, cv_index=cv_ind)
                 # we eval on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
