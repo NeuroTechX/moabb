@@ -6,6 +6,29 @@ from joblib import dump
 from numpy import argmax
 
 
+def _check_if_is_keras_model(model):
+    """
+    Check if the model is a Keras model
+    Parameters
+    ----------
+    model: object
+        Model to check
+    Returns
+    -------
+    is_keras_model: bool
+        True if the model is a Keras model
+    """
+    try:
+        from scikeras.wrappers import KerasClassifier
+
+        is_keras_model = isinstance(model, KerasClassifier)
+        return is_keras_model
+    except ImportError:
+        return False
+
+    return False
+
+
 def save_model(model, save_path: str, cv_index: int):
     """
     Save a model fitted to a folder
@@ -24,8 +47,12 @@ def save_model(model, save_path: str, cv_index: int):
         List of filenames where the model is saved
     """
     # Save the model
-    makedirs(save_path, exist_ok=True)
-    return dump(model, Path(save_path) / f"fitted_model_{cv_index}.pkl")
+    if any(_check_if_is_keras_model(step) for step in model.named_steps.values()):
+        print("Keras models are not supported for saving yet.")
+        return
+    else:
+        makedirs(save_path, exist_ok=True)
+        return dump(model, Path(save_path) / f"fitted_model_{cv_index}.pkl")
 
 
 def save_model_list(model_list: list, score_list: Sequence, save_path: str):
@@ -41,7 +68,18 @@ def save_model_list(model_list: list, score_list: Sequence, save_path: str):
     Returns
     -------
     """
+    if model_list is None:
+        return
     # Save the result
+
+    if any(
+        _check_if_is_keras_model(step)
+        for model in model_list
+        for step in model.named_steps.values()
+    ):
+        print("Keras models are not supported for saving yet.")
+        return
+
     makedirs(save_path, exist_ok=True)
     for i, model in enumerate(model_list):
         dump(
