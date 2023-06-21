@@ -43,7 +43,8 @@ setup_seed(42)
 # Loading the Scikit-learn pipelines
 
 with open(
-    "./results/Models_WithinSession/Zhou 2016/1/session_0/CSP + SVM/best_model.pkl", "rb"
+    "./results/Models_WithinSession/Zhou 2016/1/session_0/CSP + SVM/fitted_model_best.pkl",
+    "rb",
 ) as pickle_file:
     CSP_SVM_Trained = load(pickle_file)
 
@@ -52,7 +53,7 @@ with open(
 # We load the single Keras model, if we want we can set in the exact same pipeline.
 
 model_Keras = keras.models.load_model(
-    "./results/Models_WithinSession/001-2014/1/session_E/Keras_DeepConvNet/best_model"
+    "./results/Models_WithinSession/001-2014/1/session_E/Keras_DeepConvNet/kerasdeepconvnet_fitted_model_cv_best.h5"
 )
 # Now we need to instantiate a new SciKeras object since we only saved the Keras model
 Keras_DeepConvNet_Trained = KerasClassifier(model_Keras)
@@ -108,11 +109,12 @@ clf = EEGClassifier(
 
 clf.initialize()
 
-clf.load_params(
-    f_params="./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/best_model.pkl",
-    f_optimizer="./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/best_opt.pkl",
-    f_history="./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/best_history.json",
-)
+f_params = "./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/EEGInception_fitted_cv_best_model.pkl"
+f_optimizer = "./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/EEGInception_fitted_cv_best_optim.pkl"
+f_history = "./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/EEGInception_fitted_cv_best_history.json"
+
+clf.load_params(f_params=f_params, f_optimizer=f_optimizer, f_history=f_history)
+
 
 # Create the dataset
 create_dataset = BraindecodeDatasetLoader(drop_last_window=False)
