@@ -66,17 +66,33 @@ def save_model(model, save_path: str, cv_index: int):
         List of filenames where the model is saved
     """
     # Save the model
-    if any(_check_if_is_keras_model(step) for step in model.named_steps.values()):
-        print("Keras models are not supported for saving yet.")
-        return
-    else:
-        makedirs(save_path, exist_ok=True)
+    makedirs(save_path, exist_ok=True)
 
+    if any(_check_if_is_pytorch_model(j) for j in model.named_steps.values()):
+        from skorch import NeuralNetClassifier
+
+        for step in model.named_steps.values():
+            if isinstance(step, NeuralNetClassifier):
+                step.save_params(
+                    f_params=Path(save_path) / f"fitted_model_cv_{str(cv_index)}.pkl",
+                    f_optimizer=Path(save_path) / f"opt_cv_{str(cv_index)}.pkl",
+                    f_history=Path(save_path) / f"history_cv_{str(cv_index)}.json",
+                )
+
+    elif any(_check_if_is_keras_model(j) for j in model.named_steps.values()):
+        from scikeras.wrappers import KerasClassifier
+
+        for step in model.named_steps.values():
+            if isinstance(step, KerasClassifier):
+                step.model_.save(Path(save_path) / f"fitted_model_cv_{str(cv_index)}")
+
+    else:
         with open((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as f:
             dump(model, f)
         return
 
 
+# flake8: noqa: C901
 def save_model_list(model_list: list, score_list: Sequence, save_path: str):
     """
     Save a list of models fitted to a folder
@@ -93,45 +109,65 @@ def save_model_list(model_list: list, score_list: Sequence, save_path: str):
     if model_list is None:
         return
     # Save the result
-    if not isinstance(model_list, list):
-        if any(
-            _check_if_is_keras_model(step) for step in model_list.named_steps.values()
-        ):
-            print("Keras models are not supported for saving yet.")
-            return
-    else:
-        if any(
-            _check_if_is_keras_model(step)
-            for model in model_list
-            for step in model.named_steps.values()
-        ):
-            print("Keras models are not supported for saving yet.")
-            return
-
     makedirs(save_path, exist_ok=True)
 
-    for i, model in enumerate(model_list):
-        if any(_check_if_is_pytorch_model(step) for step in model.named_steps.values()):
+    if not isinstance(model_list, list):
+        if any(_check_if_is_pytorch_model(j) for j in model_list.named_steps.values()):
             from skorch import NeuralNetClassifier
 
-            for step in model.named_steps.values():
+            for step in model_list.named_steps.values():
                 if isinstance(step, NeuralNetClassifier):
                     step.save_params(
-                        f_params=Path(save_path) / f"fitted_model_cv_{str(i)}.pkl",
-                        f_optimizer=Path(save_path) / f"opt_cv_{str(i)}.pkl",
-                        f_history=Path(save_path) / f"history_cv_{str(i)}.json",
+                        f_params=Path(save_path) / "fitted_model.pkl",
+                        f_optimizer=Path(save_path) / "opt.pkl",
+                        f_history=Path(save_path) / "history.json",
                     )
 
+        elif any(_check_if_is_keras_model(j) for j in model_list.named_steps.values()):
+            from scikeras.wrappers import KerasClassifier
+
+            for step in model_list.named_steps.values():
+                if isinstance(step, KerasClassifier):
+                    step.model_.save(Path(save_path) / "fitted_model")
+
         else:
-            with open((Path(save_path) / f"fitted_model_cv_{str(i)}.pkl"), "wb") as f:
+            with open((Path(save_path) / "fitted_model.pkl"), "wb") as f:
                 dump(
-                    model,
+                    model_list,
                     f,
                 )
+
+    else:
+        for i, model in enumerate(model_list):
+            if any(_check_if_is_pytorch_model(j) for j in model.named_steps.values()):
+                from skorch import NeuralNetClassifier
+
+                for step in model.named_steps.values():
+                    if isinstance(step, NeuralNetClassifier):
+                        step.save_params(
+                            f_params=Path(save_path) / f"fitted_model_cv_{str(i)}.pkl",
+                            f_optimizer=Path(save_path) / f"opt_cv_{str(i)}.pkl",
+                            f_history=Path(save_path) / f"history_cv_{str(i)}.json",
+                        )
+
+            elif any(_check_if_is_keras_model(j) for j in model.named_steps.values()):
+                from scikeras.wrappers import KerasClassifier
+
+                for step in model.named_steps.values():
+                    if isinstance(step, KerasClassifier):
+                        step.model_.save(Path(save_path) / f"fitted_model_cv_{str(i)}")
+
+            else:
+                with open((Path(save_path) / f"fitted_model_cv_{str(i)}.pkl"), "wb") as f:
+                    dump(
+                        model,
+                        f,
+                    )
+
     # Saving the best model
     best_model = model_list[argmax(score_list)]
 
-    if any(_check_if_is_pytorch_model(step) for step in best_model.named_steps.values()):
+    if any(_check_if_is_pytorch_model(j) for j in best_model.named_steps.values()):
         from skorch import NeuralNetClassifier
 
         for step in best_model.named_steps.values():
@@ -141,6 +177,13 @@ def save_model_list(model_list: list, score_list: Sequence, save_path: str):
                     f_optimizer=Path(save_path) / "best_opt.pkl",
                     f_history=Path(save_path) / "best_history.json",
                 )
+
+    elif any(_check_if_is_keras_model(j) for j in best_model.named_steps.values()):
+        from scikeras.wrappers import KerasClassifier
+
+        for step in best_model.named_steps.values():
+            if isinstance(step, KerasClassifier):
+                step.model_.save(Path(save_path) / "best_model")
 
     else:
         with open((Path(save_path) / "best_model.pkl"), "wb") as f:
