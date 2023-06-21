@@ -27,6 +27,27 @@ def _check_if_is_keras_model(model):
         return False
 
 
+def _check_if_is_pytorch_model(model):
+    """
+    Check if the model is a Keras model
+    Parameters
+    ----------
+    model: object
+        Model to check
+    Returns
+    -------
+    is_keras_model: bool
+        True if the model is a Keras model
+    """
+    try:
+        from skorch import NeuralNetClassifier
+
+        is_pytorch_model = isinstance(model, NeuralNetClassifier)
+        return is_pytorch_model
+    except ImportError:
+        return False
+
+
 def save_model(model, save_path: str, cv_index: int):
     """
     Save a model fitted to a folder
@@ -88,19 +109,45 @@ def save_model_list(model_list: list, score_list: Sequence, save_path: str):
             return
 
     makedirs(save_path, exist_ok=True)
+
     for i, model in enumerate(model_list):
-        with open((Path(save_path) / f"fitted_model_cv_{str(i)}.pkl"), "wb") as f:
-            dump(
-                model,
-                f,
-            )
+        if any(_check_if_is_pytorch_model(step) for step in model.named_steps.values()):
+            from skorch import NeuralNetClassifier
+
+            for step in model.named_steps.values():
+                if isinstance(step, NeuralNetClassifier):
+                    step.save_params(
+                        f_params=Path(save_path) / f"fitted_model_cv_{str(i)}.pkl",
+                        f_optimizer=Path(save_path) / f"opt_cv_{str(i)}.pkl",
+                        f_history=Path(save_path) / f"history_cv_{str(i)}.json",
+                    )
+
+        else:
+            with open((Path(save_path) / f"fitted_model_cv_{str(i)}.pkl"), "wb") as f:
+                dump(
+                    model,
+                    f,
+                )
     # Saving the best model
     best_model = model_list[argmax(score_list)]
-    with open((Path(save_path) / "best_model.pkl"), "wb") as f:
-        dump(
-            best_model,
-            f,
-        )
+
+    if any(_check_if_is_pytorch_model(step) for step in best_model.named_steps.values()):
+        from skorch import NeuralNetClassifier
+
+        for step in best_model.named_steps.values():
+            if isinstance(step, NeuralNetClassifier):
+                step.save_params(
+                    f_params=Path(save_path) / "best_model.pkl",
+                    f_optimizer=Path(save_path) / "best_opt.pkl",
+                    f_history=Path(save_path) / "best_history.json",
+                )
+
+    else:
+        with open((Path(save_path) / "best_model.pkl"), "wb") as f:
+            dump(
+                best_model,
+                f,
+            )
 
 
 def create_save_path(
