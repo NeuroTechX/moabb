@@ -367,16 +367,13 @@ class Test_RestingState(unittest.TestCase):
             return_raws=True,
         )
 
-    def test_RestingState_tmintmax(self):
-        self.assertRaises(ValueError, RestingStateToP300Adapter, tmin=10, tmax=50)
-
-    def test_RestingState_fminfmax(self):
-        self.assertRaises(
-            ValueError, SimplePRestingStateToP300Adapter300, fmin=1, fmax=35
-        )
-
-    def test_RestingState_resample(self):
-        self.assertRaises(ValueError, SimplePRestingStateToP300Adapter300, resample=128)
+    def test_RestingState_default_values(self):
+        paradigm = RestingStateToP300Adapter()
+        assert paradigm.tmin == 10
+        assert paradigm.tmax == 50
+        assert paradigm.fim == 1
+        assert paradigm.fmax == 35
+        assert paradigm.resample == 128
 
 
 class Test_SSVEP(unittest.TestCase):
