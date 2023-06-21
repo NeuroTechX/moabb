@@ -332,7 +332,7 @@ class Test_P300(unittest.TestCase):
 
 class Test_RestingState(unittest.TestCase):
     def test_RestingState_paradigm(self):
-        event_list=["Open", "Close"]
+        event_list = ["Open", "Close"]
         paradigm = RestingStateToP300Adapter(events=event_list)
         dataset = FakeDataset(paradigm="rstate", event_list=event_list)
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
