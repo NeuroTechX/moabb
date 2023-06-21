@@ -332,8 +332,9 @@ class Test_P300(unittest.TestCase):
 
 class Test_RestingState(unittest.TestCase):
     def test_RestingState_paradigm(self):
-        paradigm = RestingStateToP300Adapter()
-        dataset = FakeDataset(paradigm="rstate", event_list=["Open", "Close"])
+        event_list=["Open", "Close"]
+        paradigm = RestingStateToP300Adapter(event_list=event_list)
+        dataset = FakeDataset(paradigm="rstate", event_list=event_list)
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # we should have all the same length
@@ -371,7 +372,7 @@ class Test_RestingState(unittest.TestCase):
         paradigm = RestingStateToP300Adapter()
         assert paradigm.tmin == 10
         assert paradigm.tmax == 50
-        assert paradigm.fim == 1
+        assert paradigm.fmin == 1
         assert paradigm.fmax == 35
         assert paradigm.resample == 128
 
