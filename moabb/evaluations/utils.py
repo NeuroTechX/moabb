@@ -82,7 +82,7 @@ def save_model_cv(model, save_path, cv_index):
                 )
             else:
                 with open((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
-                    dump(model, file, protocol=HIGHEST_PROTOCOL)
+                    dump(step, file, protocol=HIGHEST_PROTOCOL)
 
     elif any(_check_if_is_keras_model(j) for j in model.named_steps.values()):
         for step_name in model.named_steps:
@@ -92,7 +92,7 @@ def save_model_cv(model, save_path, cv_index):
                 step.model_.save(Path(save_path) / f"{file_step}.h5")
             else:
                 with open((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
-                    dump(model, file, protocol=HIGHEST_PROTOCOL)
+                    dump(step, file, protocol=HIGHEST_PROTOCOL)
     else:
         with open((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
             dump(model, file, protocol=HIGHEST_PROTOCOL)
