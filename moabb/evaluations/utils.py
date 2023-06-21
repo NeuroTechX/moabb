@@ -1,9 +1,11 @@
-from os import makedirs
+from __future__ import annotations
+
 from pathlib import Path
-from pickle import dump
+from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
 from numpy import argmax
+from sklearn.pipeline import Pipeline
 
 
 def _check_if_is_keras_model(model):
@@ -48,7 +50,7 @@ def _check_if_is_pytorch_model(model):
         return False
 
 
-def save_model(model, save_path: str, cv_index: int):
+def save_model_cv(model, save_path, cv_index):
     """
     Save a model fitted to a folder
     Parameters
@@ -58,7 +60,53 @@ def save_model(model, save_path: str, cv_index: int):
     save_path: str
         Path to save the model, will create if it does not exist
         based on the parameter hdf5_path from the evaluation object.
-    cv_index: int
+    cv_index: str
+        Index of the cross-validation fold used to fit the model
+        or 'best' if the model is the best fitted
+
+    Returns
+    -------
+
+    """
+    if any(_check_if_is_pytorch_model(j) for j in model.named_steps.values()):
+        for step_name, step in model.named_steps.item():
+            file_step = f"{step_name}_fitted_cv_{cv_index}"
+
+            if _check_if_is_pytorch_model(step):
+                step.save_params(
+                    f_params=Path(save_path) / f"{file_step}_model.pkl",
+                    f_optimizer=Path(save_path) / f"{file_step}_optim.pkl",
+                    f_history=Path(save_path) / f"{file_step}_history.json",
+                    f_criterion=Path(save_path) / f"{file_step}_criterion.pkl",
+                )
+            else:
+                with open((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
+                    dump(model, file, protocol=HIGHEST_PROTOCOL)
+
+    elif any(_check_if_is_keras_model(j) for j in model.named_steps.values()):
+        for step_name, step in model.named_steps.item():
+            file_step = f"{step_name}_fitted_model_cv_{cv_index}"
+            if _check_if_is_keras_model(step):
+                step.model_.save(Path(save_path) / f"{file_step}.h5")
+            else:
+                with open((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
+                    dump(model, file, protocol=HIGHEST_PROTOCOL)
+    else:
+        with open((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
+            dump(model, file, protocol=HIGHEST_PROTOCOL)
+
+
+def save_model(model: list | Pipeline, save_path: str, cv_index: str):
+    """
+    Save a model fitted to a folder
+    Parameters
+    ----------
+    model: object
+        Model (pipeline) fitted
+    save_path: str
+        Path to save the model, will create if it does not exist
+        based on the parameter hdf5_path from the evaluation object.
+    cv_index: str
         Index of the cross-validation fold used to fit the model
     Returns
     -------
@@ -66,40 +114,20 @@ def save_model(model, save_path: str, cv_index: int):
         List of filenames where the model is saved
     """
     # Save the model
-    makedirs(save_path, exist_ok=True)
+    Path(save_path).mkdir(parents=True, exist_ok=True)
 
-    if any(_check_if_is_pytorch_model(j) for j in model.named_steps.values()):
-        from skorch import NeuralNetClassifier
-
-        for step in model.named_steps.values():
-            if isinstance(step, NeuralNetClassifier):
-                step.save_params(
-                    f_params=Path(save_path) / f"fitted_model_cv_{str(cv_index)}.pkl",
-                    f_optimizer=Path(save_path) / f"opt_cv_{str(cv_index)}.pkl",
-                    f_history=Path(save_path) / f"history_cv_{str(cv_index)}.json",
-                )
-
-    elif any(_check_if_is_keras_model(j) for j in model.named_steps.values()):
-        from scikeras.wrappers import KerasClassifier
-
-        for step in model.named_steps.values():
-            if isinstance(step, KerasClassifier):
-                step.model_.save(Path(save_path) / f"fitted_model_cv_{str(cv_index)}")
-
-    else:
-        with open((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as f:
-            dump(model, f)
-        return
+    save_model_cv(model, save_path, cv_index)
 
 
-# flake8: noqa: C901
-def save_model_list(model_list: list, score_list: Sequence, save_path: str):
+def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):
     """
     Save a list of models fitted to a folder
     Parameters
     ----------
-    model_list: list
-        List of models (pipelines) fitted
+    model_list: list | Pipeline
+        List of models or model (pipelines) fitted
+    score_list: Sequence
+        List of scores for each model in model_list
     save_path: str
         Path to save the models, will create if it does not exist
         based on the parameter hdf5_path from the evaluation object.
@@ -108,89 +136,18 @@ def save_model_list(model_list: list, score_list: Sequence, save_path: str):
     """
     if model_list is None:
         return
-    # Save the result
-    makedirs(save_path, exist_ok=True)
+
+    Path(save_path).mkdir(parents=True, exist_ok=True)
 
     if not isinstance(model_list, list):
-        if any(_check_if_is_pytorch_model(j) for j in model_list.named_steps.values()):
-            from skorch import NeuralNetClassifier
+        model_list = [model_list]
 
-            for step in model_list.named_steps.values():
-                if isinstance(step, NeuralNetClassifier):
-                    step.save_params(
-                        f_params=Path(save_path) / "fitted_model.pkl",
-                        f_optimizer=Path(save_path) / "opt.pkl",
-                        f_history=Path(save_path) / "history.json",
-                    )
+    for cv_index, model in enumerate(model_list):
+        save_model_cv(model, save_path, str(cv_index))
 
-        elif any(_check_if_is_keras_model(j) for j in model_list.named_steps.values()):
-            from scikeras.wrappers import KerasClassifier
-
-            for step in model_list.named_steps.values():
-                if isinstance(step, KerasClassifier):
-                    step.model_.save(Path(save_path) / "fitted_model")
-
-        else:
-            with open((Path(save_path) / "fitted_model.pkl"), "wb") as f:
-                dump(
-                    model_list,
-                    f,
-                )
-
-    else:
-        for i, model in enumerate(model_list):
-            if any(_check_if_is_pytorch_model(j) for j in model.named_steps.values()):
-                from skorch import NeuralNetClassifier
-
-                for step in model.named_steps.values():
-                    if isinstance(step, NeuralNetClassifier):
-                        step.save_params(
-                            f_params=Path(save_path) / f"fitted_model_cv_{str(i)}.pkl",
-                            f_optimizer=Path(save_path) / f"opt_cv_{str(i)}.pkl",
-                            f_history=Path(save_path) / f"history_cv_{str(i)}.json",
-                        )
-
-            elif any(_check_if_is_keras_model(j) for j in model.named_steps.values()):
-                from scikeras.wrappers import KerasClassifier
-
-                for step in model.named_steps.values():
-                    if isinstance(step, KerasClassifier):
-                        step.model_.save(Path(save_path) / f"fitted_model_cv_{str(i)}")
-
-            else:
-                with open((Path(save_path) / f"fitted_model_cv_{str(i)}.pkl"), "wb") as f:
-                    dump(
-                        model,
-                        f,
-                    )
-
-    # Saving the best model
     best_model = model_list[argmax(score_list)]
 
-    if any(_check_if_is_pytorch_model(j) for j in best_model.named_steps.values()):
-        from skorch import NeuralNetClassifier
-
-        for step in best_model.named_steps.values():
-            if isinstance(step, NeuralNetClassifier):
-                step.save_params(
-                    f_params=Path(save_path) / "best_model.pkl",
-                    f_optimizer=Path(save_path) / "best_opt.pkl",
-                    f_history=Path(save_path) / "best_history.json",
-                )
-
-    elif any(_check_if_is_keras_model(j) for j in best_model.named_steps.values()):
-        from scikeras.wrappers import KerasClassifier
-
-        for step in best_model.named_steps.values():
-            if isinstance(step, KerasClassifier):
-                step.model_.save(Path(save_path) / "best_model")
-
-    else:
-        with open((Path(save_path) / "best_model.pkl"), "wb") as f:
-            dump(
-                best_model,
-                f,
-            )
+    save_model_cv(best_model, save_path, "best")
 
 
 def create_save_path(
