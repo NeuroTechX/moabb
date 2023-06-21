@@ -69,7 +69,8 @@ def save_model_cv(model, save_path, cv_index):
 
     """
     if any(_check_if_is_pytorch_model(j) for j in model.named_steps.values()):
-        for step_name, step in model.named_steps.item():
+        for step_name in model.named_steps:
+            step = model.named_steps[step_name]
             file_step = f"{step_name}_fitted_cv_{cv_index}"
 
             if _check_if_is_pytorch_model(step):
@@ -84,8 +85,9 @@ def save_model_cv(model, save_path, cv_index):
                     dump(model, file, protocol=HIGHEST_PROTOCOL)
 
     elif any(_check_if_is_keras_model(j) for j in model.named_steps.values()):
-        for step_name, step in model.named_steps.item():
+        for step_name in model.named_steps:
             file_step = f"{step_name}_fitted_model_cv_{cv_index}"
+            step = model.named_steps[step_name]
             if _check_if_is_keras_model(step):
                 step.model_.save(Path(save_path) / f"{file_step}.h5")
             else:
