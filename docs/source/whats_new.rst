@@ -26,6 +26,7 @@ Enhancements
 - Adding Parallel evaluation for :func:`moabb.evaluations.WithinSessionEvaluation` , :func:`moabb.evaluations.CrossSessionEvaluation` (:gh:`364` by `Bruno Aristimunha`_)
 - Add example with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 - Adding saving option for the models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
+- Adding example to load different type of models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 
 Bugs
 ~~~~
