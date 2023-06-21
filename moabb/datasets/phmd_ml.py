@@ -99,7 +99,9 @@ class HeadMountedDisplay(BaseDataset):
         filepath = self.data_path(subject)[0]
         data = loadmat(os.path.join(filepath, os.listdir(filepath)[0]))
 
-        S = data["data"][:, 1:17]
+        first_channel = 1
+        last_channel = 17
+        S = data["data"][:, first_channel:last_channel]
         stim = data["data"][:, -1]
 
         X = np.concatenate([S, stim[:, None]], axis=1).T
