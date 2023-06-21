@@ -16,7 +16,7 @@ from moabb.paradigms import (
     FilterBankMotorImagery,
     FilterBankSSVEP,
     LeftRightImagery,
-    RestingStateToP300Adapter
+    RestingStateToP300Adapter,
 )
 
 
@@ -371,7 +371,9 @@ class Test_RestingState(unittest.TestCase):
         self.assertRaises(ValueError, RestingStateToP300Adapter, tmin=10, tmax=50)
 
     def test_RestingState_fminfmax(self):
-        self.assertRaises(ValueError, SimplePRestingStateToP300Adapter300, fmin=1, fmax=35)
+        self.assertRaises(
+            ValueError, SimplePRestingStateToP300Adapter300, fmin=1, fmax=35
+        )
 
     def test_RestingState_resample(self):
         self.assertRaises(ValueError, SimplePRestingStateToP300Adapter300, resample=128)
