@@ -3,8 +3,8 @@
 Spectral analysis of the trials
 ================================
 
-This example demonstrates how to perform spectral 
-analysis on epochs extracted from a specific subject 
+This example demonstrates how to perform spectral
+analysis on epochs extracted from a specific subject
 within the :class:`moabb.datasets.HeadMountedDisplay`  dataset.
 
 """
