@@ -10,4 +10,4 @@ from .evaluations import (
     CrossSubjectEvaluation,
     WithinSessionEvaluation,
 )
-from .utils import create_save_path, save_model, save_model_list
+from .utils import create_save_path, save_model_cv, save_model_list

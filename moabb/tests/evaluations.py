@@ -17,6 +17,7 @@ from sklearn.pipeline import make_pipeline
 from moabb.analysis.results import get_string_rep
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import evaluations as ev
+from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
@@ -26,7 +27,6 @@ try:
     _carbonfootprint = True
 except ImportError:
     _carbonfootprint = False
-
 
 pipelines = OrderedDict()
 pipelines["C"] = make_pipeline(Covariances("oas"), CSP(8), LDA())
@@ -274,6 +274,57 @@ class Test_CrossSess(Test_WithinSess):
         # do not raise
         ds = FakeDataset(["left_hand", "right_hand"], n_sessions=2)
         self.assertTrue(self.eval.is_valid(dataset=ds))
+
+
+class UtilEvaluation(unittest.TestCase):
+    def test_save_model_cv(self):
+        model = DummyClassifier()
+        save_path = "test_save_path"
+        cv_index = 0
+        save_model_cv(model, save_path, cv_index)
+
+        # Assert that the saved model file exists
+        self.assertTrue(os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl")))
+
+    def test_save_model_list(self):
+        model = DummyClassifier()
+        model_list = [model]
+        score_list = [0.8]
+        save_path = "test_save_path"
+        save_model_list(model_list, score_list, save_path)
+
+        # Assert that the saved model file for best model exists
+        self.assertTrue(os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl")))
+
+    def test_create_save_path(self):
+        hdf5_path = "base_path"
+        code = "evaluation_code"
+        subject = 1
+        session = "session_0"
+        name = "evaluation_name"
+        eval_type = "WithinSession"
+        save_path = create_save_path(
+            hdf5_path, code, subject, session, name, eval_type=eval_type
+        )
+
+        expected_path = os.path.join(
+            hdf5_path, "Models_WithinSession", code, "1", "session_0", "evaluation_name"
+        )
+        self.assertEqual(save_path, expected_path)
+
+        grid_save_path = create_save_path(
+            hdf5_path, code, subject, session, name, grid=True, eval_type=eval_type
+        )
+
+        expected_grid_path = os.path.join(
+            hdf5_path,
+            "GridSearch_WithinSession",
+            code,
+            "1",
+            "session_0",
+            "evaluation_name",
+        )
+        self.assertEqual(grid_save_path, expected_grid_path)
 
 
 if __name__ == "__main__":
