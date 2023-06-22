@@ -23,7 +23,7 @@ from sklearn.utils import parallel_backend
 from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
-from moabb.evaluations.utils import create_save_path, save_model, save_model_list
+from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
 
 
 try:
@@ -260,7 +260,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                         acc.append(scorer(cvclf, X_[test], y_[test]))
 
                         if self.hdf5_path is not None:
-                            save_model(
+                            save_model_cv(
                                 model=cvclf, save_path=model_save_path, cv_index=cv_ind
                             )
 
@@ -616,8 +616,8 @@ class CrossSessionEvaluation(BaseEvaluation):
                     score = scorer(cvclf, X[test], y[test])
 
                     if self.hdf5_path is not None:
-                        save_model(
-                            model=cvclf, save_path=model_save_path, cv_index=cv_ind
+                        save_model_cv(
+                            model=cvclf, save_path=model_save_path, cv_index=str(cv_ind)
                         )
                 else:
                     result = _fit_and_score(
@@ -831,7 +831,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         eval_type="CrossSubject",
                     )
 
-                    save_model(model=model, save_path=model_save_path, cv_index=cv_ind)
+                    save_model_cv(
+                        model=model, save_path=model_save_path, cv_index=str(cv_ind)
+                    )
                 # we eval on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session

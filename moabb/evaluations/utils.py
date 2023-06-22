@@ -50,7 +50,7 @@ def _check_if_is_pytorch_model(model):
         return False
 
 
-def save_model_cv(model, save_path, cv_index):
+def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
     """
     Save a model fitted to a folder
     Parameters
@@ -68,10 +68,12 @@ def save_model_cv(model, save_path, cv_index):
     -------
 
     """
+    Path(save_path).mkdir(parents=True, exist_ok=True)
+
     if any(_check_if_is_pytorch_model(j) for j in model.named_steps.values()):
         for step_name in model.named_steps:
             step = model.named_steps[step_name]
-            file_step = f"{step_name}_fitted_cv_{cv_index}"
+            file_step = f"{step_name}_fitted_{cv_index}"
 
             if _check_if_is_pytorch_model(step):
                 step.save_params(
@@ -86,7 +88,7 @@ def save_model_cv(model, save_path, cv_index):
 
     elif any(_check_if_is_keras_model(j) for j in model.named_steps.values()):
         for step_name in model.named_steps:
-            file_step = f"{step_name}_fitted_model_cv_{cv_index}"
+            file_step = f"{step_name}_fitted_model_{cv_index}"
             step = model.named_steps[step_name]
             if _check_if_is_keras_model(step):
                 step.model_.save(Path(save_path) / f"{file_step}.h5")
@@ -96,29 +98,6 @@ def save_model_cv(model, save_path, cv_index):
     else:
         with open((Path(save_path) / f"fitted_model_{cv_index}.pkl"), "wb") as file:
             dump(model, file, protocol=HIGHEST_PROTOCOL)
-
-
-def save_model(model: list | Pipeline, save_path: str, cv_index: str):
-    """
-    Save a model fitted to a folder
-    Parameters
-    ----------
-    model: object
-        Model (pipeline) fitted
-    save_path: str
-        Path to save the model, will create if it does not exist
-        based on the parameter hdf5_path from the evaluation object.
-    cv_index: str
-        Index of the cross-validation fold used to fit the model
-    Returns
-    -------
-    filenames: list
-        List of filenames where the model is saved
-    """
-    # Save the model
-    Path(save_path).mkdir(parents=True, exist_ok=True)
-
-    save_model_cv(model, save_path, cv_index)
 
 
 def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):
