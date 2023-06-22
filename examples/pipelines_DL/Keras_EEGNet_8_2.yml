@@ -8,6 +8,14 @@ citations:
   - https://doi.org/10.1088/1741-2552/aace8c
 
 pipeline:
+  - name: Resampler_Epoch
+    from: moabb.pipelines.features
+    parameters:
+      sfreq: 128
+
+  - name: Convert_Epoch_Array
+    from: moabb.pipelines.features
+
   - name: StandardScaler_Epoch
     from: moabb.pipelines.features
 
@@ -20,8 +28,8 @@ pipeline:
           from: tensorflow.keras.optimizers.legacy
           parameters:
             learning_rate: 0.0009
-      epochs: 2
-      batch_size: 1
+      epochs: 1000
+      batch_size: 64
       verbose: 0
       random_state: 42
       validation_split: 0.2

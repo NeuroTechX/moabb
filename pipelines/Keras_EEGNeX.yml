@@ -8,6 +8,14 @@ citations:
   - https://doi.org/10.48550/arXiv.2207.12369
 
 pipeline:
+  - name: Resampler_Epoch
+    from: moabb.pipelines.features
+    parameters:
+      sfreq: 128
+
+  - name: Convert_Epoch_Array
+    from: moabb.pipelines.features
+
   - name: StandardScaler_Epoch
     from: moabb.pipelines.features
 

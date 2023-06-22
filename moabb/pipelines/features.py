@@ -142,3 +142,18 @@ class Resampler_Epoch(BaseEstimator, TransformerMixin):
         X = X.copy()
         X.resample(self.sfreq)
         return X
+
+
+class Convert_Epoch_Array(BaseEstimator, TransformerMixin):
+    """
+    Function that copies and resamples an epochs object
+    """
+
+    def __init__(self):
+        """Init."""
+
+    def fit(self, X, y):
+        return self
+
+    def transform(self, X: mne.Epochs):
+        return X.get_data()
