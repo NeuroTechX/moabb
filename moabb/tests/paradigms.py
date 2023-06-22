@@ -16,6 +16,7 @@ from moabb.paradigms import (
     FilterBankMotorImagery,
     FilterBankSSVEP,
     LeftRightImagery,
+    RestingStateToP300Adapter,
 )
 
 
@@ -327,6 +328,53 @@ class Test_P300(unittest.TestCase):
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         self.assertIsInstance(epochs, BaseEpochs)
+
+
+class Test_RestingState(unittest.TestCase):
+    def test_RestingState_paradigm(self):
+        event_list = ["Open", "Close"]
+        paradigm = RestingStateToP300Adapter(events=event_list)
+        dataset = FakeDataset(paradigm="rstate", event_list=event_list)
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        # we should have all the same length
+        self.assertEqual(len(X), len(labels), len(metadata))
+        # X must be a 3D Array
+        self.assertEqual(len(X.shape), 3)
+        # labels must contain 2 values (Open/Close)
+        self.assertEqual(len(np.unique(labels)), 2)
+        # metadata must have subjets, sessions, runs
+        self.assertTrue("subject" in metadata.columns)
+        self.assertTrue("session" in metadata.columns)
+        self.assertTrue("run" in metadata.columns)
+        # we should have only one subject in the metadata
+        self.assertEqual(np.unique(metadata.subject), 1)
+        # we should have two sessions in the metadata
+        self.assertEqual(len(np.unique(metadata.session)), 2)
+        # should return epochs
+        epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
+        self.assertIsInstance(epochs, BaseEpochs)
+        # should return raws
+        raws, _, _ = paradigm.get_data(dataset, subjects=[1], return_raws=True)
+        for raw in raws:
+            self.assertIsInstance(raw, BaseRaw)
+        # should raise error
+        self.assertRaises(
+            ValueError,
+            paradigm.get_data,
+            dataset,
+            subjects=[1],
+            return_epochs=True,
+            return_raws=True,
+        )
+
+    def test_RestingState_default_values(self):
+        paradigm = RestingStateToP300Adapter()
+        assert paradigm.tmin == 10
+        assert paradigm.tmax == 50
+        assert paradigm.fmin == 1
+        assert paradigm.fmax == 35
+        assert paradigm.resample == 128
 
 
 class Test_SSVEP(unittest.TestCase):
