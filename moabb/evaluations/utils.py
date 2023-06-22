@@ -50,6 +50,26 @@ def _check_if_is_pytorch_model(model):
         return False
 
 
+def _check_if_is_pytorch_steps(model):
+    skorch_valid = False
+    try:
+        skorch_valid = any(
+            _check_if_is_pytorch_model(j) for j in model.named_steps.values()
+        )
+        return skorch_valid
+    except Exception:
+        return skorch_valid
+
+
+def _check_if_is_keras_steps(model):
+    keras_valid = False
+    try:
+        keras_valid = any(_check_if_is_keras_model(j) for j in model.named_steps.values())
+        return keras_valid
+    except Exception:
+        return keras_valid
+
+
 def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
     """
     Save a model fitted to a folder
@@ -68,9 +88,12 @@ def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
     -------
 
     """
-    Path(save_path).mkdir(parents=True, exist_ok=True)
+    if save_path is None:
+        raise IOError("No path to save the model")
+    else:
+        Path(save_path).mkdir(parents=True, exist_ok=True)
 
-    if any(_check_if_is_pytorch_model(j) for j in model.named_steps.values()):
+    if _check_if_is_pytorch_steps(model):
         for step_name in model.named_steps:
             step = model.named_steps[step_name]
             file_step = f"{step_name}_fitted_{cv_index}"
@@ -86,7 +109,7 @@ def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
                 with open((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
                     dump(step, file, protocol=HIGHEST_PROTOCOL)
 
-    elif any(_check_if_is_keras_model(j) for j in model.named_steps.values()):
+    elif _check_if_is_keras_steps(model):
         for step_name in model.named_steps:
             file_step = f"{step_name}_fitted_model_{cv_index}"
             step = model.named_steps[step_name]
@@ -134,7 +157,7 @@ def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path
 def create_save_path(
     hdf5_path,
     code: str,
-    subject: int,
+    subject: int | str,
     session: str,
     name: str,
     grid=False,
