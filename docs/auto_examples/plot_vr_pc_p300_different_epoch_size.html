@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Within Session P300" href="plot_within_session_p300.html" />
-    <link rel="prev" title="Explore Paradigm Object" href="plot_explore_paradigm.html" />
+    <link rel="prev" title="Spectral analysis of the trials" href="plot_phmd_ml_spectrum.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -397,6 +397,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_ssvep.html">Within Session SSVEP</a></li>
@@ -445,6 +446,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.MAMEM2.html">moabb.datasets.MAMEM2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.MAMEM3.html">moabb.datasets.MAMEM3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.HeadMountedDisplay.html">moabb.datasets.HeadMountedDisplay</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.fake.FakeVirtualRealityDataset.html">moabb.datasets.fake.FakeVirtualRealityDataset</a></li>
@@ -706,20 +708,20 @@ Data will be selected thanks to the <cite>get_block_repetition</cite> method.</p
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0/2 [00:00&lt;?, ?it/s]subject 1, VR, tmax 0.2
 subject 1, PC, tmax 0.2
 
- 50%|#####     | 1/2 [03:14&lt;03:14, 194.21s/it]subject 2, VR, tmax 0.2
+ 50%|#####     | 1/2 [02:00&lt;02:00, 120.92s/it]subject 2, VR, tmax 0.2
 subject 2, PC, tmax 0.2
 
-100%|##########| 2/2 [06:27&lt;00:00, 193.49s/it]
-100%|##########| 2/2 [06:27&lt;00:00, 193.60s/it]
+100%|##########| 2/2 [04:00&lt;00:00, 120.05s/it]
+100%|##########| 2/2 [04:00&lt;00:00, 120.18s/it]
 
   0%|          | 0/2 [00:00&lt;?, ?it/s]subject 1, VR, tmax 1.0
 subject 1, PC, tmax 1.0
 
- 50%|#####     | 1/2 [00:33&lt;00:33, 33.02s/it]subject 2, VR, tmax 1.0
+ 50%|#####     | 1/2 [00:26&lt;00:26, 26.15s/it]subject 2, VR, tmax 1.0
 subject 2, PC, tmax 1.0
 
-100%|##########| 2/2 [01:05&lt;00:00, 32.98s/it]
-100%|##########| 2/2 [01:05&lt;00:00, 32.99s/it]
+100%|##########| 2/2 [00:52&lt;00:00, 26.47s/it]
+100%|##########| 2/2 [00:52&lt;00:00, 26.43s/it]
 </pre></div>
 </div>
 </section>
@@ -746,8 +748,8 @@ plot the mean AUC as a function of the epoch length.</p>
 &lt;Axes: title={&#39;center&#39;: &#39;Mean AUC as a function of the epoch length&#39;}, xlabel=&#39;tmax&#39;&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 7 minutes  34.641 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  84 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 4 minutes  54.253 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  161 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-vr-pc-p300-different-epoch-size-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/ba7a8abb4b7b531ea676fc51a8a8d86f/plot_vr_pc_p300_different_epoch_size.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_vr_pc_p300_different_epoch_size.py</span></code></a></p>
@@ -772,12 +774,12 @@ plot the mean AUC as a function of the epoch length.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="plot_explore_paradigm.html"
+       href="plot_phmd_ml_spectrum.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Explore Paradigm Object</p>
+        <p class="prev-next-title">Spectral analysis of the trials</p>
       </div>
     </a>
     <a class="right-next"

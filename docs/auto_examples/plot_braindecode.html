@@ -397,6 +397,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_ssvep.html">Within Session SSVEP</a></li>
@@ -445,6 +446,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.MAMEM2.html">moabb.datasets.MAMEM2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.MAMEM3.html">moabb.datasets.MAMEM3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.HeadMountedDisplay.html">moabb.datasets.HeadMountedDisplay</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.fake.FakeVirtualRealityDataset.html">moabb.datasets.fake.FakeVirtualRealityDataset</a></li>
@@ -733,53 +735,53 @@ Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5312        0.6930       0.5172        0.6931  0.4343
-      2       0.5156        0.6931       0.4828        0.6932  0.3681
-      3       0.5156        0.6932       0.4828        0.6932  0.3676
+      1       0.5312        0.6930       0.5172        0.6931  0.4108
+      2       0.5156        0.6931       0.4828        0.6932  0.3743
+      3       0.5156        0.6932       0.4828        0.6932  0.3823
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5000        0.6937       0.4828        0.6932  0.3735
-      2       0.6562        0.6926       0.4828        0.6932  0.3637
-      3       0.5156        0.6933       0.4828        0.6932  0.3740
+      1       0.5000        0.6937       0.4828        0.6932  0.3886
+      2       0.6562        0.6926       0.4828        0.6932  0.3824
+      3       0.5156        0.6933       0.4828        0.6932  0.3946
 Stopping since valid_loss has not improved in the last 3 epochs.
 
-001-2014-CrossSession:  50%|#####     | 1/2 [00:11&lt;00:11, 11.91s/it]Re-initializing module because the following parameters were re-set: module.
+001-2014-CrossSession:  50%|#####     | 1/2 [00:10&lt;00:10, 10.59s/it]Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4688        0.6936       0.5172        0.6931  0.3815
-      2       0.4844        0.6935       0.5172        0.6930  0.3645
-      3       0.4531        0.6929       0.5172        0.6930  0.3372
-      4       0.4688        0.6934       0.5172        0.6929  0.3713
-      5       0.6406        0.6913       0.5172        0.6929  0.3702
-      6       0.5312        0.6917       0.5172        0.6929  0.3389
-      7       0.4531        0.6929       0.5172        0.6928  0.3517
-      8       0.4688        0.6928       0.5172        0.6928  0.3900
-      9       0.5156        0.6911       0.5172        0.6928  0.3651
+      1       0.4688        0.6936       0.5172        0.6931  0.3807
+      2       0.4844        0.6935       0.5172        0.6930  0.3948
+      3       0.4531        0.6929       0.5172        0.6930  0.3298
+      4       0.4688        0.6934       0.5172        0.6929  0.3209
+      5       0.6406        0.6913       0.5172        0.6929  0.3904
+      6       0.5312        0.6917       0.5172        0.6929  0.3877
+      7       0.4531        0.6929       0.5172        0.6928  0.3832
+      8       0.4688        0.6928       0.5172        0.6928  0.3774
+      9       0.5156        0.6911       0.5172        0.6928  0.3805
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.6938       0.5172        0.6931  0.3492
-      2       0.5625        0.6925       0.5172        0.6930  0.3840
-      3       0.5312        0.6927       0.5172        0.6930  0.3729
+      1       0.4844        0.6938       0.5172        0.6931  0.3812
+      2       0.5625        0.6925       0.5172        0.6930  0.3880
+      3       0.5312        0.6927       0.5172        0.6930  0.3760
 Stopping since valid_loss has not improved in the last 3 epochs.
 
-001-2014-CrossSession: 100%|##########| 2/2 [00:25&lt;00:00, 13.10s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [00:25&lt;00:00, 12.92s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   25.8s finished
+001-2014-CrossSession: 100%|##########| 2/2 [00:23&lt;00:00, 11.91s/it]
+001-2014-CrossSession: 100%|##########| 2/2 [00:23&lt;00:00, 11.71s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   23.4s finished
       score      time  samples  ... n_sessions   dataset  pipeline
-0  0.462577  4.107580    144.0  ...          2  001-2014  EEGNetV4
-1  0.478106  3.938934    144.0  ...          2  001-2014  EEGNetV4
-2  0.463638  6.461890    144.0  ...          2  001-2014  EEGNetV4
-3  0.555363  3.881271    144.0  ...          2  001-2014  EEGNetV4
+0  0.462577  3.618795    144.0  ...          2  001-2014  EEGNetV4
+1  0.478106  3.587133    144.0  ...          2  001-2014  EEGNetV4
+2  0.463638  6.055435    144.0  ...          2  001-2014  EEGNetV4
+3  0.555363  3.559102    144.0  ...          2  001-2014  EEGNetV4
 
 [4 rows x 9 columns]
 </pre></div>
@@ -804,8 +806,8 @@ network for EEG-based brain-computer interfaces.</a>
 Journal of neural engineering, 15(5), 056013.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  31.503 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  221 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  28.113 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  343 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-braindecode-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/c9b0437022c98a63476dd3cad6cb69c7/plot_braindecode.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_braindecode.py</span></code></a></p>
