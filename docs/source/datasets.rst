@@ -75,6 +75,17 @@ SSVEP Datasets
     Lee2019_SSVEP
 
 
+----------------------
+Resting State Datasets
+----------------------
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    HeadMountedDisplay
+
+
 ------------
 Base & Utils
 ------------
