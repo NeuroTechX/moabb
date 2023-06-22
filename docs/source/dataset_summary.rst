@@ -78,6 +78,19 @@ SSVEP
    Wang2016,34,62,40,6,5s,250Hz,1
 
 
+Resting States
+======================
+
+Include neuro experiments where the participant is not actively doing something.
+For example, recoding the EEG of a subject while s/he is having the eye closed or opened
+is a resting state experiment.
+
+.. csv-table::
+   :header: Dataset, #Subj, #Chan, #Classes, #Blocks / class, Trials length, Sampling rate, #Sessions
+   :class: sortable
+
+   HeadMountedDisplay,12,16,2,10,60s,512Hz,1
+
 
 Submit a new dataset
 ~~~~~~~~~~~~~~~~~~~~
