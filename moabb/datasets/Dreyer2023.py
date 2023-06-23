@@ -9,8 +9,12 @@ import os
 import shutil
 import zipfile
 from functools import partialmethod
+from os.path import dirname, join
 from pathlib import Path
 
+import mne
+from mne.channels import make_standard_montage
+from mne.io import read_raw_gdf
 from pooch import Unzip, retrieve
 
 from moabb.datasets import download as dl
@@ -18,11 +22,6 @@ from moabb.datasets import download as dl
 from .base import BaseDataset
 from .download import get_dataset_path
 
-from pathlib import Path
-from mne.io import read_raw_gdf
-from os.path import join, dirname
-from mne.channels import make_standard_montage
-import mne
 
 DREYER2023_URL = "https://zenodo.org/record/7554429/files/BCI Database.zip"
 
@@ -41,11 +40,11 @@ class Dreyer2023(BaseDataset):
     ===================
     Dataset description
     ===================
-    A large EEG database with users' profile information for motor imagery 
+    A large EEG database with users' profile information for motor imagery
     Brain-Computer Interface research
 
-    Data collectors : Appriou Aurélien; Caselli Damien; Benaroch Camille; 
-                      Yamamoto Sayu Maria; Roc Aline; Lotte Fabien; 
+    Data collectors : Appriou Aurélien; Caselli Damien; Benaroch Camille;
+                      Yamamoto Sayu Maria; Roc Aline; Lotte Fabien;
                       Dreyer Pauline; Pillette Léa
     Data manager : Dreyer Pauline
     Project leader : Lotte Fabien
@@ -57,9 +56,9 @@ class Dreyer2023(BaseDataset):
                "Invalid dataset selection! Existing Dreyer2023 datasets: A, B, and C."
         self.db_id = db_id
         self.db_idx_off = dict(A=0, B=60, C=81)
-        super().__init__(subjects, sessions_per_subject=1, 
-                         events=dict(left_hand=1, right_hand=2), 
-                         code='Dreyer2023',  interval=[3, 8], paradigm='imagery', 
+        super().__init__(subjects, sessions_per_subject=1,
+                         events=dict(left_hand=1, right_hand=2),
+                         code='Dreyer2023',  interval=[3, 8], paradigm='imagery',
                          doi='10.5281/zenodo.7554429')
 
     def _get_single_subject_data(self, subject):
@@ -68,8 +67,8 @@ class Dreyer2023(BaseDataset):
         subj_id = self.db_id + str(subject + self.db_idx_off[self.db_id])
 
         ch_names = ['Fz', 'FCz', 'Cz', 'CPz', 'Pz', 'C1', 'C3', 'C5',
-                    'C2', 'C4', 'C6', 'EOG1', 'EOG2', 'EOG3', 'EMGg', 'EMGd', 
-                    'F4', 'FC2', 'FC4', 'FC6', 'CP2', 'CP4', 'CP6', 'P4', 
+                    'C2', 'C4', 'C6', 'EOG1', 'EOG2', 'EOG3', 'EMGg', 'EMGd',
+                    'F4', 'FC2', 'FC4', 'FC6', 'CP2', 'CP4', 'CP6', 'P4',
                     'F3', 'FC1', 'FC3', 'FC5', 'CP1', 'CP3', 'CP5', 'P3']
 
         ch_types = ["eeg"] * 11 + ["eog"] * 3 + ["emg"] * 2 + ["eeg"] * 16
@@ -79,10 +78,10 @@ class Dreyer2023(BaseDataset):
         # Closed and open eyes baselines
         baselines = {}
         baselines['ce'] = \
-            read_raw_gdf(join(subj_dir, subj_id + '_{0}_baseline.gdf').format('CE'), 
+            read_raw_gdf(join(subj_dir, subj_id + '_{0}_baseline.gdf').format('CE'),
                          eog=['EOG1', 'EOG2', 'EOG3'], misc=['EMGg', 'EMGd'])
         baselines['oe'] = \
-            read_raw_gdf(join(subj_dir, subj_id + '_{0}_baseline.gdf').format('OE'), 
+            read_raw_gdf(join(subj_dir, subj_id + '_{0}_baseline.gdf').format('OE'),
                          eog=['EOG1', 'EOG2', 'EOG3'], misc=['EMGg', 'EMGd'])
 
         # Recordings
@@ -90,13 +89,13 @@ class Dreyer2023(BaseDataset):
         # i - index, n - name, t - type
         for r_i, (r_n, r_t) in enumerate(zip(['R1', 'R2', 'R3', 'R4', 'R5', 'R6'],
                                              ['acquisition'] * 2 + ['onlineT'] * 4)):
-  
+
             # One subject of dataset A has 4 recordings
             if r_i > 3 and self.db_id == 'A' and subject == 59:
                 continue
 
             recordings['run_%d' % r_i] = \
-                read_raw_gdf(join(subj_dir, subj_id + '_{0}_{1}.gdf'.format(r_n, r_t)), 
+                read_raw_gdf(join(subj_dir, subj_id + '_{0}_{1}.gdf'.format(r_n, r_t)),
                              eog=['EOG1', 'EOG2', 'EOG3'], misc=['EMGg', 'EMGd'])
 
         return {"session_0": recordings}
