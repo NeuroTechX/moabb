@@ -28,7 +28,7 @@ pipeline:
           from: tensorflow.keras.optimizers.legacy
           parameters:
             learning_rate: 0.0009
-      epochs: 1000
+      epochs: 300
       batch_size: 64
       verbose: 0
       random_state: 42
@@ -38,11 +38,11 @@ pipeline:
           from: tensorflow.keras.callbacks
           parameters:
             monitor: "val_loss"
-            patience: 300
+            patience: 75
 
         - name: ReduceLROnPlateau
           from: tensorflow.keras.callbacks
           parameters:
             monitor: "val_loss"
-            patience: 300
+            patience: 75
             factor: 0.5
