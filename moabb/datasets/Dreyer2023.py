@@ -4,21 +4,26 @@ It is organized into three A, B, C datasets.
 https://zenodo.org/record/7554429
 """
 
-from functools import partialmethod
 import logging
 import os
 import shutil
-from moabb.datasets import download as dl
-from pooch import Unzip, retrieve
 import zipfile
+from functools import partialmethod
+from pathlib import Path
+
+from pooch import Unzip, retrieve
+
+from moabb.datasets import download as dl
 
 from .base import BaseDataset
 from .download import get_dataset_path
+
 from pathlib import Path
 from mne.io import read_raw_gdf
 from os.path import join, dirname
 from mne.channels import make_standard_montage
 import mne
+
 DREYER2023_URL = "https://zenodo.org/record/7554429/files/BCI Database.zip"
 
 
@@ -96,7 +101,6 @@ class Dreyer2023(BaseDataset):
 
         return {"session_0": recordings}
 
-
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
@@ -109,21 +113,18 @@ class Dreyer2023(BaseDataset):
 
         dlpath = dl.data_dl(DREYER2023_URL, "DREYER_2023", path)
         if not os.path.exists(join(dirname(dlpath), 'BCI Database')):
-            with zipfile.ZipFile(dlpath) as zip_file:
-                zip_file.extractall(dirname(dlpath))
 
         subj_temp_path = join(dirname(dlpath), 'BCI Database', 'Signals/DATA {0}/{0}{1}')
         return subj_temp_path.format(self.db_id, subject + self.db_idx_off[self.db_id])
 
+
 class Dreyer2023A(Dreyer2023):
     __init__ = partialmethod(Dreyer2023.__init__, "A", subjects=list(range(1, 61)))
+
 
 class Dreyer2023B(Dreyer2023):
     __init__ = partialmethod(Dreyer2023.__init__, "B", subjects=list(range(1, 22)))
 
+
 class Dreyer2023C(Dreyer2023):
     __init__ = partialmethod(Dreyer2023.__init__, "C", subjects=list(range(1, 7)))
-
-
-
-
