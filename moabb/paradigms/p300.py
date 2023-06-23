@@ -168,11 +168,15 @@ class BaseP300(BaseParadigm):
 
         # pick events, based on event_id
         try:
-            if type(event_id["Target"]) is list and type(event_id["NonTarget"]) == list:
-                event_id_new = dict(Target=1, NonTarget=0)
-                events = mne.merge_events(events, event_id["Target"], 1)
-                events = mne.merge_events(events, event_id["NonTarget"], 0)
-                event_id = event_id_new
+            if "Target" in event_id and "NonTarget" in event_id:
+                if (
+                    type(event_id["Target"]) is list
+                    and type(event_id["NonTarget"]) == list
+                ):
+                    event_id_new = dict(Target=1, NonTarget=0)
+                    events = mne.merge_events(events, event_id["Target"], 1)
+                    events = mne.merge_events(events, event_id["NonTarget"], 0)
+                    event_id = event_id_new
             events = mne.pick_events(events, include=list(event_id.values()))
         except RuntimeError:
             # skip raw if no event found
@@ -316,6 +320,14 @@ class SinglePass(BaseP300):
         if "filters" in kwargs.keys():
             raise (ValueError("P300 does not take argument filters"))
         super().__init__(filters=[[fmin, fmax]], **kwargs)
+
+    @property
+    def fmax(self):
+        return self.filters[0][1]
+
+    @property
+    def fmin(self):
+        return self.filters[0][0]
 
 
 class P300(SinglePass):

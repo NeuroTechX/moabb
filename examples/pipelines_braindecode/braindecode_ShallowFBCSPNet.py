@@ -19,8 +19,8 @@ WEIGHT_DECAY = 0
 BATCH_SIZE = 64
 SEED = 42
 VERBOSE = 1
-EPOCH = 1000
-PATIENCE = 300
+EPOCH = 5
+PATIENCE = 3
 
 # Create the dataset
 create_dataset = BraindecodeDatasetLoader()
