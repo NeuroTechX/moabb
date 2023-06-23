@@ -1,4 +1,6 @@
 import logging
+import shutil
+import tempfile
 import unittest
 
 import numpy as np
@@ -64,6 +66,52 @@ class Test_MotorImagery(unittest.TestCase):
             return_epochs=True,
             return_raws=True,
         )
+
+    def test_BaseImagery_cache(self):
+        tempdir = tempfile.mkdtemp()
+        paradigm = SimpleMotorImagery()
+        dataset = FakeDataset(paradigm="imagery")
+        with self.assertLogs(logger="moabb.paradigms.base", level="INFO") as cm:
+            _ = paradigm.get_data(
+                dataset,
+                subjects=[1],
+                save_cache=True,
+                use_cache=True,
+                overwrite_cache=False,
+                path=tempdir,
+            )
+        print("\n".join(cm.output))
+        self.assertIn("Attempting to retrieve cache of dataset", cm.output[0])
+        self.assertIn("No cache found at", cm.output[1])
+        self.assertIn("Starting caching dataset", cm.output[2])
+        self.assertIn("Finished caching dataset", cm.output[3])
+        with self.assertLogs(logger="moabb.paradigms.base", level="INFO") as cm:
+            _ = paradigm.get_data(
+                dataset,
+                subjects=[1],
+                save_cache=True,
+                use_cache=True,
+                overwrite_cache=False,
+                path=tempdir,
+            )
+        print("\n".join(cm.output))
+        self.assertIn("Attempting to retrieve cache of dataset", cm.output[0])
+        self.assertIn("Finished reading cache of dataset", cm.output[-1])
+        with self.assertLogs(logger="moabb.paradigms.base", level="INFO") as cm:
+            _ = paradigm.get_data(
+                dataset,
+                subjects=[1],
+                save_cache=True,
+                use_cache=True,
+                overwrite_cache=True,
+                path=tempdir,
+            )
+        print("\n".join(cm.output))
+        self.assertIn("Starting erasing cache of dataset", cm.output[0])
+        self.assertIn("Finished erasing cache of dataset", cm.output[1])
+        self.assertIn("Starting caching dataset", cm.output[2])
+        self.assertIn("Finished caching dataset", cm.output[3])
+        shutil.rmtree(tempdir)
 
     def test_BaseImagery_channel_order(self):
         """test if paradigm return correct channel order, see issue #227"""
