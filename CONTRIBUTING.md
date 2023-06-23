@@ -81,9 +81,10 @@ in your environment - it has to satisfy requirements stated in `pyproject.toml`.
 disable `poetry` you are in charge of this.
 
 _Note 3 (deep learning):_\
-In case you want to install the optional deep learning dependencies 
-(i.e. `poetry install --with deeplearning`), you will need to do the following additional 
-steps if you want `tensorflow` to detect your GPU:
+In case you want to install the optional deep learning dependencies (i.e. `poetry install --with deeplearning`),
+you will need to do the following additional steps if you want `tensorflow` to detect your
+GPU:
+
 ```bash
 # Instructions for tensorflow==2.12
 conda install -c conda-forge cudatoolkit=11.8.0
@@ -94,9 +95,10 @@ source $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
 # Verify install:
 python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
 ```
-Then, at every use, re-run the command 
-`source $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh`
-(you can simply add this line to your `.bashrc`). For more details, please refer to
+
+Then, at every use, re-run the command
+`source $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh` (you can simply add this line to
+your `.bashrc`). For more details, please refer to
 [the official documentation](https://www.tensorflow.org/install/pip).
 
 ### Tools used
