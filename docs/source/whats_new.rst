@@ -35,6 +35,7 @@ Bugs
 - Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
 - Correct downloading with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_)
 - Rename event `substraction` to `subtraction` in :func:`moabb.dataset.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
+- Save parameters of :func:`moabb.dataset.PhysionetMI` (:gh:`403` by `Pierre Guetschel`_)
 - Fixing issue with parallel evaluation (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 
 API changes
