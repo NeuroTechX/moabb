@@ -5,6 +5,10 @@ import abc
 import logging
 from inspect import signature
 
+from mne import pick_channels
+
+from moabb.datasets.bids_interface import BIDSInterface
+
 
 log = logging.getLogger(__name__)
 
@@ -74,7 +78,16 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self.doi = doi
         self.unit_factor = unit_factor
 
-    def get_data(self, subjects=None):
+    def get_data(
+        self,
+        subjects=None,
+        save_cache=True,
+        use_cache=True,
+        overwrite_cache=True,
+        path=None,
+        fmin=None,
+        fmax=None,
+    ):
         """Return the data correspoonding to a list of subjects.
 
         The returned data is a dictionary with the folowing structure::
@@ -94,6 +107,25 @@ class BaseDataset(metaclass=abc.ABCMeta):
         ----------
         subjects: List of int
             List of subject number
+        save_cache: boolean
+            This flag specifies whether to save the processed mne.io.Raw to disk
+        use_cache: boolean
+            This flag specifies whether to use the processed mne.io.Raw from disk
+            in case they exist
+        overwrite_cache: boolean
+            This flag specifies whether to overwrite the processed mne.io.Raw on disk
+            in case they exist
+        path : None | str
+            Location of where to look for the data storing location.
+            If None, the environment variable or config parameter
+            ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
+            "~/mne_data" directory is used. If the dataset
+            is not found under the given path, the data
+            will be automatically downloaded to the specified folder.
+        fmin: float | None
+            The frequency of the highpass filter. If None, the filtering is not applied.
+        fmax: float | None
+            The frequency of the lowpass filter. If None, the filtering is not applied.
 
         Returns
         -------
@@ -110,7 +142,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
         for subject in subjects:
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
-            data[subject] = self._get_single_subject_data(subject)
+            data[subject] = self._get_single_subject_data_using_cache(
+                subject, save_cache, use_cache, overwrite_cache, path, fmin, fmax
+            )
 
         return data
 
@@ -173,6 +207,52 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     update_path=update_path,
                     verbose=verbose,
                 )
+
+    def _get_single_subject_data_using_cache(
+        self, subject, save_cache, use_cache, overwrite_cache, path, fmin, fmax
+    ):
+        """
+        Either load the data of a single subject from disk cache or from the dataset object,
+        then eventually saves or overwrites the cache version depending on the parameters.
+        """
+
+        def filter_raw(raw):
+            picks = pick_channels(  # we keep all the channels
+                raw.info["ch_names"], include=self.channels, ordered=True
+            )
+            return raw.filter(
+                fmin, fmax, method="iir", picks=picks, verbose=False
+            )  # we filter in-place
+
+        interface = BIDSInterface(self, subject, path=path, fmin=fmin, fmax=fmax)
+        if overwrite_cache:
+            interface.erase()
+            use_cache = False  # can't load if it was just erased
+        sessions_data = None
+        if use_cache:
+            sessions_data = interface.load()
+        if sessions_data is not None:
+            save_cache = False  # no need to save if we just loaded it
+        else:
+            interface2 = interface.find_compatible_interface()
+            if interface2 is not None:
+                sessions_data = interface2.load(preload=True)
+            else:
+                sessions_data = self._get_single_subject_data(subject)
+            sessions_data = {
+                session: {run: filter_raw(raw) for run, raw in runs.items()}
+                for session, runs in sessions_data.items()
+            }
+        if save_cache:
+            try:
+                interface.save(sessions_data)
+            except Exception as ex:
+                # ex_type, ex_value, ex_traceback = sys.exc_info()
+                log.warning(
+                    f"Failed to save dataset {self.code}, subject {subject} to BIDS format:\n{ex}"
+                )
+                interface.erase()  # remove partial cache
+        return sessions_data
 
     @abc.abstractmethod
     def _get_single_subject_data(self, subject):

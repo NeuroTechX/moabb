@@ -1,3 +1,5 @@
+import shutil
+import tempfile
 import unittest
 
 import mne
@@ -59,6 +61,55 @@ class Test_Datasets(unittest.TestCase):
 
             # bad subject id must raise error
             self.assertRaises(ValueError, ds.get_data, [1000])
+
+    def test_cache_dataset(self):
+        for paradigm in ["imagery", "p300", "ssvep"]:
+            tempdir = tempfile.mkdtemp()
+            dataset = FakeDataset(paradigm=paradigm)
+            with self.assertLogs(
+                logger="moabb.datasets.bids_interface", level="INFO"
+            ) as cm:
+                _ = dataset.get_data(
+                    subjects=[1],
+                    save_cache=True,
+                    use_cache=True,
+                    overwrite_cache=False,
+                    path=tempdir,
+                )
+            print("\n".join(cm.output))
+            self.assertIn("Attempting to retrieve cache of dataset", cm.output[0])
+            self.assertIn("No cache found at", cm.output[1])
+            self.assertIn("Starting caching dataset", cm.output[2])
+            self.assertIn("Finished caching dataset", cm.output[3])
+            with self.assertLogs(
+                logger="moabb.datasets.bids_interface", level="INFO"
+            ) as cm:
+                _ = dataset.get_data(
+                    subjects=[1],
+                    save_cache=True,
+                    use_cache=True,
+                    overwrite_cache=False,
+                    path=tempdir,
+                )
+            print("\n".join(cm.output))
+            self.assertIn("Attempting to retrieve cache of dataset", cm.output[0])
+            self.assertIn("Finished reading cache of dataset", cm.output[-1])
+            with self.assertLogs(
+                logger="moabb.datasets.bids_interface", level="INFO"
+            ) as cm:
+                _ = dataset.get_data(
+                    subjects=[1],
+                    save_cache=True,
+                    use_cache=True,
+                    overwrite_cache=True,
+                    path=tempdir,
+                )
+            print("\n".join(cm.output))
+            self.assertIn("Starting erasing cache of dataset", cm.output[0])
+            self.assertIn("Finished erasing cache of dataset", cm.output[1])
+            self.assertIn("Starting caching dataset", cm.output[2])
+            self.assertIn("Finished caching dataset", cm.output[3])
+            shutil.rmtree(tempdir)
 
     def test_dataset_accept(self):
         """verify that accept licence is working"""

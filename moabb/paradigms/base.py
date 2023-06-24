@@ -1,18 +1,11 @@
-import json
 import logging
 from abc import ABCMeta, abstractmethod
 
-# import datetime
-from pathlib import Path
-
 import mne
-import mne_bids
 import numpy as np
 import pandas as pd
 
-import moabb
-from moabb.analysis.results import get_digest
-from moabb.datasets import download as dl
+from moabb.paradigms.utils import _find_events
 
 
 log = logging.getLogger(__name__)
@@ -78,49 +71,7 @@ class BaseParadigm(metaclass=ABCMeta):
         if dataset is not None:
             pass
 
-    @staticmethod
-    def _find_events(raw, event_id):
-        # find the events, first check stim_channels then annotations
-        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
-        if len(stim_channels) > 0:
-            events = mne.find_events(raw, shortest_event=0, verbose=False)
-        else:
-            events, _ = mne.events_from_annotations(raw, event_id=event_id, verbose=False)
-        return events
-
-    @property
-    def cached_processing_params(self):
-        return [
-            ("filter", self.filters),
-        ]
-
-    def pre_cache_process_raw(self, raw, dataset):
-        """
-        Part of the processing that is done before caching the data on disk.
-        See pricess_raw for the rest of the processing.
-
-        Parameters
-        ----------
-        raw: mne.Raw instance
-            the raw EEG data.
-        dataset : dataset instance
-            The dataset corresponding to the raw file. mainly use to access
-            dataset specific information.
-
-        Returns
-        -------
-        raw_list: list[mne.Raw]
-            each row of the list correspond to a band in self.filters
-        """
-        raw_list = []
-        for bandpass in self.filters:
-            fmin, fmax = bandpass
-            # filter data
-            raw_f = raw.copy().filter(fmin, fmax, method="iir", verbose=False)
-            raw_list.append(raw_f)
-        return raw_list
-
-    def process_raw(  # noqa: C901
+    def process_raws(  # noqa: C901
         self, raws, dataset, return_epochs=False, return_raws=False
     ):
         """
@@ -172,7 +123,7 @@ class BaseParadigm(metaclass=ABCMeta):
         event_id = self.used_events(dataset)
 
         try:
-            events = self._find_events(raws[0], event_id)
+            events = _find_events(raws[0], event_id)
         except ValueError:
             log.warning(f"No matching annotations in {raws[0].filenames}")
             return
@@ -261,219 +212,6 @@ class BaseParadigm(metaclass=ABCMeta):
         metadata = pd.DataFrame(index=range(len(labels)))
         return X, labels, metadata
 
-    @staticmethod
-    def _subject_moabb_to_bids(subject):
-        return str(subject)
-
-    @staticmethod
-    def _subject_bids_to_moabb(subject):
-        return int(subject)
-
-    @staticmethod
-    def _session_moabb_to_bids(session):
-        return session.removeprefix("session_")
-
-    @staticmethod
-    def _session_bids_to_moabb(session):
-        return "session_" + session
-
-    @staticmethod
-    def _run_moabb_to_bids(run):
-        # Note: the runs are expected to be indexes in the BIDS standard.
-        #       This is not always the case in MOABB.
-        # See: https://bids-specification.readthedocs.io/en/stable/glossary.html#run-entities
-        return run.removeprefix("run_")
-
-    @staticmethod
-    def _run_bids_to_moabb(run):
-        return "run_" + run
-
-    @property
-    def bids_desc(self):
-        return get_digest(self.cached_processing_params)
-
-    @staticmethod
-    def _get_cache_root(dataset, path):
-        code = dataset.code + "-BIDS"
-        mne_path = Path(dl.get_dataset_path(code, path))
-        cache_dir = f"MNE-{code.lower()}-cache"
-        cache_path = mne_path / cache_dir
-        if not cache_path.is_dir():
-            cache_path.mkdir(parents=True)
-        return cache_path
-
-    def _get_bids_lock_path(self, dataset, subject, path):
-        # this file was saved last to ensure that the subject's data was completely saved
-        # this is not an official bids file
-        return mne_bids.BIDSPath(
-            root=self._get_cache_root(dataset, path),
-            subject=self._subject_moabb_to_bids(subject),
-            description=self.bids_desc,
-            extension=".json",
-            suffix="lockfile",  # necessary for unofficial files
-            check=False,
-        )
-
-    def _delete_cache(self, dataset, subject, path):
-        # TODO: this function does not update the scans.tsv files
-        #       should be fixed by https://github.com/mne-tools/mne-bids/pull/547
-        log.info(
-            f"Starting erasing cache of dataset {dataset.code}, subject {subject}..."
-        )
-        paths = mne_bids.find_matching_paths(
-            root=self._get_cache_root(dataset, path),
-            subjects=self._subject_moabb_to_bids(subject),
-            descriptions=self.bids_desc,
-        )
-        for p in paths:
-            log.debug(f"Erasing {p}")
-            p.fpath.unlink()  # remove file
-        log.info(f"Finished erasing cache of dataset {dataset.code}, subject {subject}.")
-
-    def _load_cache(self, dataset, subject, path):
-        log.info(
-            f"Attempting to retrieve cache of dataset {dataset.code}, subject {subject}..."
-        )
-        lock_file = self._get_bids_lock_path(dataset, subject, path)
-        lock_file.mkdir(exist_ok=True)
-        if not lock_file.fpath.exists():
-            log.info(f"No cache found at {str(lock_file.directory)}.")
-            return None
-        paths = mne_bids.find_matching_paths(
-            root=self._get_cache_root(dataset, path),
-            subjects=self._subject_moabb_to_bids(subject),
-            descriptions=self.bids_desc,
-            extensions=".edf",
-        )
-        sessions_data = {}
-        for p in paths:
-            session = sessions_data.setdefault(self._session_bids_to_moabb(p.session), {})
-            log.debug(f"Reading {p.fpath}")
-            run = mne_bids.read_raw_bids(p)
-            session[self._run_bids_to_moabb(p.run)] = run
-        log.info(f"Finished reading cache of dataset {dataset.code}, subject {subject}.")
-        return sessions_data
-
-    def _save_cache(self, dataset, subject, sessions_data, path):
-        log.info(f"Starting caching dataset {dataset.code}, subject {subject} to disk...")
-        mne_bids.make_dataset_description(
-            path=str(self._get_cache_root(dataset, path)),
-            name=dataset.code,
-            dataset_type="derivative",
-            generated_by=[
-                dict(
-                    CodeURL="https://github.com/NeuroTechX/moabb",
-                    Name="moabb",
-                    Description="Mother of All BCI Benchmarks",
-                    Version=moabb.__version__,
-                )
-            ],
-            source_datasets=[
-                dict(
-                    DOI=dataset.doi,
-                )
-            ],
-            verbose=False,
-            overwrite=False,
-        )
-
-        # datetime_now = datetime.datetime.now(tz=datetime.timezone.utc)
-        raws = []
-        for runs in sessions_data.values():
-            for raw in runs.values():
-                raws.append(raw)
-                if raw.info.get("line_freq", None) is None:
-                    # specify line frequency if not present as required by BIDS
-                    raw.info["line_freq"] = 50
-                if raw.info.get("subject_info", None) is None:
-                    # specify subject info as required by BIDS
-                    raw.info["subject_info"] = {
-                        "his_id": subject,
-                    }
-                if raw.info.get("device_info", None) is None:
-                    # specify device info as required by BIDS
-                    raw.info["device_info"] = {"type": "eeg"}
-                if raw.info.get("meas_date", None) is None:
-                    raw.set_meas_date(None)
-        # daysback_min, daysback_max = mne_bids.get_anonymization_daysback(raws)
-        for session, runs in sessions_data.items():
-            for run, raw in runs.items():
-                bids_path = mne_bids.BIDSPath(
-                    root=self._get_cache_root(dataset, path),
-                    subject=self._subject_moabb_to_bids(subject),
-                    session=self._session_moabb_to_bids(session),
-                    task=dataset.paradigm,
-                    run=self._run_moabb_to_bids(run),
-                    description=self.bids_desc,
-                    datatype="eeg",
-                )
-
-                events = self._find_events(raw, dataset.event_id)
-                # By using the same anonymization `daysback` number we can
-                # preserve the longitudinal structure of multiple sessions for a
-                # single subject and the relation between subjects. Be sure to
-                # change or delete this number before putting code online, you
-                # wouldn't want to inadvertently de-anonymize your data.
-                #
-                # Note that we do not need to pass any events, as the dataset is already
-                # equipped with annotations, which will be converted to BIDS events
-                # automatically.
-                log.debug(f"Writing {bids_path}")
-                bids_path.mkdir(exist_ok=True)
-                mne_bids.write_raw_bids(
-                    raw,
-                    bids_path,
-                    # anonymize=dict(daysback=daysback_min + 2117),
-                    events=events,
-                    event_id=dataset.event_id,
-                    format="EDF",
-                    allow_preload=True,
-                    montage=raw.get_montage(),
-                    overwrite=False,  # files should be deleted by _delete_cache in case overwrite_cache is True
-                    verbose="ERROR",
-                )
-        lock_file = self._get_bids_lock_path(dataset, subject, path)
-        log.debug(f"Writing {lock_file}")
-        lock_file.mkdir(exist_ok=True)
-        with lock_file.fpath.open("w") as f:
-            json.dump(self.cached_processing_params, f)
-        log.info(f"Finished caching dataset {dataset.code}, subject {subject} to disk.")
-
-    def _get_single_subject_data(
-        self, dataset, subject, save_cache, use_cache, overwrite_cache, path
-    ):
-        """
-        Either load the data of a single subject from disk cache or from the dataset object,
-        then eventually saves or overwrites the cache version depending on the parameters.
-        """
-        if overwrite_cache:
-            self._delete_cache(dataset, subject, path)
-            use_cache = False  # can't load if it was just erased
-        sessions_data = None
-        if use_cache:
-            sessions_data = self._load_cache(dataset, subject, path)
-        if sessions_data is not None:
-            save_cache = False  # no need to save if we just loaded it
-        else:
-            sessions_data = dataset._get_single_subject_data(subject)
-            sessions_data = {
-                session: {
-                    run: self.pre_cache_process_raw(raw, dataset)
-                    for run, raw in runs.items()
-                }
-                for session, runs in sessions_data.items()
-            }
-        if save_cache:
-            try:
-                self._save_cache(dataset, subject, sessions_data, path)
-            except Exception as ex:
-                # ex_type, ex_value, ex_traceback = sys.exc_info()
-                log.warning(
-                    f"Failed to save dataset {dataset.code}, subject {subject} to BIDS format:\n{ex}"
-                )
-                # self._delete_cache(dataset, subject, path)  # remove partial cache
-        return sessions_data
-
     def get_data(
         self,
         dataset,
@@ -545,18 +283,32 @@ class BaseParadigm(metaclass=ABCMeta):
 
         if subjects is None:
             subjects = dataset.subject_list
+
+        data = [
+            dataset.get_data(
+                subjects, save_cache, use_cache, overwrite_cache, path, fmin, fmax
+            )
+            for fmin, fmax in self.filters
+        ]
+        data = {
+            subject: {
+                session: {
+                    run: [data_i[subject][session][run] for data_i in data]
+                    for run in runs.keys()
+                }
+                for session, runs in sessions.items()
+            }
+            for subject, sessions in data[0].items()
+        }
         self.prepare_process(dataset)
 
         X = [] if (return_epochs or return_raws) else np.array([])
         labels = []
         metadata = []
-        for subject in subjects:
-            sessions = self._get_single_subject_data(
-                dataset, subject, save_cache, use_cache, overwrite_cache, path
-            )
+        for subject, sessions in data.items():
             for session, runs in sessions.items():
-                for run, raw in runs.items():
-                    proc = self.process_raw(raw, dataset, return_epochs, return_raws)
+                for run, raws in runs.items():
+                    proc = self.process_raws(raws, dataset, return_epochs, return_raws)
 
                     if proc is None:
                         # this mean the run did not contain any selected event
