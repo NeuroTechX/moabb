@@ -109,18 +109,19 @@ class BaseParadigm(metaclass=ABCMeta):
 
         Returns
         -------
-        raw: mne.Raw instance
+        raw_list: list[mne.Raw]
+            each row of the list correspond to a band in self.filters
         """
-        X = []
+        raw_list = []
         for bandpass in self.filters:
             fmin, fmax = bandpass
             # filter data
             raw_f = raw.copy().filter(fmin, fmax, method="iir", verbose=False)
-            X.append(raw_f)
-        return mne.concatenate_raws(X)
+            raw_list.append(raw_f)
+        return raw_list
 
     def process_raw(  # noqa: C901
-        self, raw, dataset, return_epochs=False, return_raws=False
+        self, raws, dataset, return_epochs=False, return_raws=False
     ):
         """
         Process one raw data file.
@@ -134,8 +135,8 @@ class BaseParadigm(metaclass=ABCMeta):
 
         Parameters
         ----------
-        raw: mne.Raw instance
-            the raw EEG data.
+        raws: mne.Raw | list[mne.Raw]
+            list of raw objects, each object corresponding to a band in self.filters
         dataset : dataset instance
             The dataset corresponding to the raw file. mainly use to access
             dataset specific information.
@@ -158,6 +159,10 @@ class BaseParadigm(metaclass=ABCMeta):
             A dataframe containing the metadata
 
         """
+        if isinstance(raws, mne.io.BaseRaw):
+            raws = [raws]
+        elif not isinstance(raws, list):
+            raise ValueError("raw must be a mne.io.BaseRaw or a list of mne.io.BaseRaw")
 
         if return_epochs and return_raws:
             message = "Select only return_epochs or return_raws, not both"
@@ -167,17 +172,17 @@ class BaseParadigm(metaclass=ABCMeta):
         event_id = self.used_events(dataset)
 
         try:
-            events = self._find_events(raw, event_id)
+            events = self._find_events(raws[0], event_id)
         except ValueError:
-            log.warning(f"No matching annotations in {raw.filenames}")
+            log.warning(f"No matching annotations in {raws[0].filenames}")
             return
 
         # picks channels
         if self.channels is None:
-            picks = mne.pick_types(raw.info, eeg=True, stim=False)
+            picks = mne.pick_types(raws[0].info, eeg=True, stim=False)
         else:
             picks = mne.pick_channels(
-                raw.info["ch_names"], include=self.channels, ordered=True
+                raws[0].info["ch_names"], include=self.channels, ordered=True
             )
 
         # pick events, based on event_id
@@ -188,7 +193,7 @@ class BaseParadigm(metaclass=ABCMeta):
             return
 
         if return_raws:
-            raw = raw.pick(picks)
+            raws = [raw.pick(picks) for raw in raws]
         else:
             # get interval
             tmin = self.tmin + dataset.interval[0]
@@ -209,24 +214,31 @@ class BaseParadigm(metaclass=ABCMeta):
             else:
                 bmin = tmin
                 bmax = tmax
-            epochs = mne.Epochs(
-                raw,
-                events,
-                event_id=event_id,
-                tmin=bmin,
-                tmax=bmax,
-                proj=False,
-                baseline=baseline,
-                preload=True,
-                verbose=False,
-                picks=picks,
-                event_repeated="drop",
-                on_missing="ignore",
-            )
-            if bmin < tmin or bmax > tmax:
-                epochs.crop(tmin=tmin, tmax=tmax)
-            if self.resample is not None:
-                epochs = epochs.resample(self.resample)
+            X = []
+            for raw in raws:
+                epochs = mne.Epochs(
+                    raw,
+                    events,
+                    event_id=event_id,
+                    tmin=bmin,
+                    tmax=bmax,
+                    proj=False,
+                    baseline=baseline,
+                    preload=True,
+                    verbose=False,
+                    picks=picks,
+                    event_repeated="drop",
+                    on_missing="ignore",
+                )
+                if bmin < tmin or bmax > tmax:
+                    epochs.crop(tmin=tmin, tmax=tmax)
+                if self.resample is not None:
+                    epochs = epochs.resample(self.resample)
+                # rescale to work with uV
+                if return_epochs:
+                    X.append(epochs)
+                else:
+                    X.append(dataset.unit_factor * epochs.get_data())
 
             # overwrite events in case epochs have been dropped:
             # (assuming all filters produce the same number of epochs...)
@@ -236,17 +248,15 @@ class BaseParadigm(metaclass=ABCMeta):
         labels = np.array([inv_events[e] for e in events[:, -1]])
 
         if return_epochs:
-            X = epochs
+            X = mne.concatenate_epochs(X)
         elif return_raws:
-            X = raw
+            X = raws[0] if len(raws) == 1 else raws
+        elif len(self.filters) == 1:
+            # if only one band, return a 3D array
+            X = X[0]
         else:
-            # rescale to work with uV
-            X = dataset.unit_factor * epochs.get_data()
-            if len(self.filters) > 1:
-                # if more than one band, return a 4D array
-                X = X.reshape(
-                    len(self.filters), len(events), X.shape[1], X.shape[2]
-                ).transpose((1, 2, 3, 0))
+            # otherwise return a 4D
+            X = np.array(X).transpose((1, 2, 3, 0))
 
         metadata = pd.DataFrame(index=range(len(labels)))
         return X, labels, metadata
