@@ -144,7 +144,7 @@ class BaseParadigm(metaclass=ABCMeta):
             return
 
         if return_raws:
-            raws = [raw.pick(picks) for raw in raws]
+            raws = [raw_f.pick(picks) for raw_f in raws]
         else:
             # get interval
             tmin = self.tmin + dataset.interval[0]
@@ -166,9 +166,9 @@ class BaseParadigm(metaclass=ABCMeta):
                 bmin = tmin
                 bmax = tmax
             X = []
-            for raw in raws:
+            for raw_f in raws:
                 epochs = mne.Epochs(
-                    raw,
+                    raw_f,
                     events,
                     event_id=event_id,
                     tmin=bmin,
