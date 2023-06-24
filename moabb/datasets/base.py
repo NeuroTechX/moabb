@@ -111,7 +111,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
             This flag specifies whether to save the processed mne.io.Raw to disk
         use_cache: boolean
             This flag specifies whether to use the processed mne.io.Raw from disk
-            in case they exist
+            in case they exist. If True, the Raw objects returned will not be preloaded
+            (this saves some time). Otherwise, they will be preloaded.
         overwrite_cache: boolean
             This flag specifies whether to overwrite the processed mne.io.Raw on disk
             in case they exist
@@ -225,16 +226,19 @@ class BaseDataset(metaclass=abc.ABCMeta):
             )  # we filter in-place
 
         interface = BIDSInterface(self, subject, path=path, fmin=fmin, fmax=fmax)
+
+        # Overwrite:
         if overwrite_cache:
             interface.erase()
-            use_cache = False  # can't load if it was just erased
+
+        # Load:
         sessions_data = None
-        if use_cache:
-            sessions_data = interface.load()
+        if use_cache and not overwrite_cache:  # can't load if it was just erased
+            sessions_data = interface.load(preload=False)
         if sessions_data is not None:
             save_cache = False  # no need to save if we just loaded it
         else:
-            interface2 = interface.find_compatible_interface()
+            interface2 = interface.find_compatible_interface() if use_cache else None
             if interface2 is not None:
                 sessions_data = interface2.load(preload=True)
             else:
@@ -243,6 +247,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
                 session: {run: filter_raw(raw) for run, raw in runs.items()}
                 for session, runs in sessions_data.items()
             }
+
+        # Save:
         if save_cache:
             try:
                 interface.save(sessions_data)
@@ -252,6 +258,12 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     f"Failed to save dataset {self.code}, subject {subject} to BIDS format:\n{ex}"
                 )
                 interface.erase()  # remove partial cache
+            else:
+                if use_cache:
+                    sessions_data = interface.load(preload=False)
+                    assert (
+                        sessions_data is not None
+                    )  # should not happen because save succeeded
         return sessions_data
 
     @abc.abstractmethod

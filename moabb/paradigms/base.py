@@ -249,7 +249,8 @@ class BaseParadigm(metaclass=ABCMeta):
             This flag specifies whether to save the processed mne.io.Raw to disk
         use_cache: boolean
             This flag specifies whether to use the processed mne.io.Raw from disk
-            in case they exist
+            in case they exist. If True, the Raw objects returned will not be preloaded
+            (this saves some time). Otherwise, they will be preloaded.
         overwrite_cache: boolean
             This flag specifies whether to overwrite the processed mne.io.Raw on disk
             in case they exist
