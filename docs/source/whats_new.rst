@@ -37,6 +37,7 @@ Bugs
 - Rename event `substraction` to `subtraction` in :func:`moabb.dataset.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
 - Save parameters of :func:`moabb.dataset.PhysionetMI` (:gh:`403` by `Pierre Guetschel`_)
 - Fixing issue with parallel evaluation (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
+- Fixing SSLError from BCI competition IV (:gh:`404` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
