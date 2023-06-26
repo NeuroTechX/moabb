@@ -397,6 +397,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
@@ -657,18 +658,18 @@ be overwritten if necessary.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-
-001-2014-CrossSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.55s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.44s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.46s/it]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+No hdf5_path provided, models will not be saved.
+No hdf5_path provided, models will not be saved.
+No hdf5_path provided, models will not be saved.
+No hdf5_path provided, models will not be saved.
 [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    8.9s finished
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.962963  0.275514    144.0       1  ...       22           2  001-2014    RG+LR
-1  0.950424  0.244023    144.0       1  ...       22           2  001-2014    RG+LR
-2  0.585648  0.263586    144.0       2  ...       22           2  001-2014    RG+LR
-3  0.574846  0.244518    144.0       2  ...       22           2  001-2014    RG+LR
-4  0.955440  0.351815    144.0       1  ...       22           2  001-2014  CSP+LDA
+0  0.962963  0.316206    144.0       1  ...       22           2  001-2014    RG+LR
+1  0.950424  0.277542    144.0       1  ...       22           2  001-2014    RG+LR
+2  0.585648  0.287301    144.0       2  ...       22           2  001-2014    RG+LR
+3  0.574846  0.277025    144.0       2  ...       22           2  001-2014    RG+LR
+4  0.955440  0.429502    144.0       1  ...       22           2  001-2014  CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -714,8 +715,8 @@ points are in its quadrant.</p>
   sns.stripplot(
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.261 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  307 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.597 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  344 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/82e3e6cb009bb9a9c444c6cff254cea8/plot_cross_session_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_motor_imagery.py</span></code></a></p>

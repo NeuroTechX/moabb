@@ -397,6 +397,7 @@ document.write(`
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
@@ -671,25 +672,20 @@ each subject / session of the dataset, and for each pipeline.</p>
 <span class="n">results</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="s2">&quot;session_E&quot;</span><span class="p">,</span> <span class="s2">&quot;session_T&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;session_0&quot;</span><span class="p">,</span> <span class="s2">&quot;session_1&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Zhou 2016-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-
-Zhou 2016-CrossSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.11s/it]
-Zhou 2016-CrossSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.48s/it]
-Zhou 2016-CrossSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.58s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    7.2s finished
-
-001-2014-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-
-001-2014-CrossSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.79s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.80s/it]
-001-2014-CrossSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.80s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    7.6s finished
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+No hdf5_path provided, models will not be saved.
+No hdf5_path provided, models will not be saved.
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    7.3s finished
+[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+No hdf5_path provided, models will not be saved.
+No hdf5_path provided, models will not be saved.
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    7.4s finished
       score      time  samples  ... n_sessions    dataset  pipeline
-0  0.956597  0.261914    144.0  ...          2   001-2014   CSP+LDA
-1  0.930941  0.288908    144.0  ...          2   001-2014   CSP+LDA
-2  0.649691  0.259553    144.0  ...          2   001-2014   CSP+LDA
-3  0.526813  0.310996    144.0  ...          2   001-2014   CSP+LDA
-4  0.851412  0.386666    200.0  ...          3  Zhou 2016   CSP+LDA
+0  0.956597  0.362885    144.0  ...          2   001-2014   CSP+LDA
+1  0.930941  0.334221    144.0  ...          2   001-2014   CSP+LDA
+2  0.649691  0.340053    144.0  ...          2   001-2014   CSP+LDA
+3  0.526813  0.308946    144.0  ...          2   001-2014   CSP+LDA
+4  0.851412  0.493566    200.0  ...          3  Zhou 2016   CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -710,8 +706,8 @@ Zhou 2016-CrossSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.58s/it]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = 001-2014, dataset = Zhou 2016" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  16.711 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  319 MB</p>
+<img src="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = 001-2014, dataset = Zhou 2016" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  18.499 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  306 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fa1ca889a5b6c6678d3af932651fcf7f/plot_cross_session_multiple_datasets.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_multiple_datasets.py</span></code></a></p>

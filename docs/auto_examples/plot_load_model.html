@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Benchmarking with MOABB &#8212; moabb 0.5.0 documentation</title>
+    <title>Load Model (Scikit, Pytorch, Keras) with MOABB &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_benchmark';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_load_model';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Benchmarking on MOABB with Tensorflow deep net architectures" href="plot_benchmark_DL.html" />
-    <link rel="prev" title="Benchmarking with MOABB showing the CO2 footprint" href="example_codecarbon.html" />
+    <link rel="next" title="Spectral analysis of the trials" href="plot_phmd_ml_spectrum.html" />
+    <link rel="prev" title="Explore Paradigm Object" href="plot_explore_paradigm.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -256,10 +256,6 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fa-solid fa-outdent"></span>
-    </label>
-  
 </div>
 
     </nav>
@@ -388,7 +384,7 @@ document.write(`
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Benchmarking with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
@@ -397,7 +393,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
@@ -558,7 +554,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Benchmarking with MOABB</li>
+    <li class="breadcrumb-item active" aria-current="page">Load Model (Scikit, Pytorch, Keras) with MOABB</li>
   </ul>
 </nav>
 </div>
@@ -577,354 +573,137 @@ document.write(`
                   
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-benchmark-py"><span class="std std-ref">here</span></a>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-load-model-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<section class="sphx-glr-example-title" id="benchmarking-with-moabb">
-<span id="sphx-glr-auto-examples-plot-benchmark-py"></span><h1>Benchmarking with MOABB<a class="headerlink" href="#benchmarking-with-moabb" title="Permalink to this heading">#</a></h1>
-<p>This example shows how to use MOABB to benchmark a set of pipelines
-on all available datasets. For this example, we will use only one
-dataset to keep the computation time low, but this benchmark is designed
-to easily scale to many datasets.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Sylvain Chevallier &lt;sylvain.chevallier@universite-paris-saclay.fr&gt;</span>
+<section class="sphx-glr-example-title" id="load-model-scikit-pytorch-keras-with-moabb">
+<span id="sphx-glr-auto-examples-plot-load-model-py"></span><h1>Load Model (Scikit, Pytorch, Keras) with MOABB<a class="headerlink" href="#load-model-scikit-pytorch-keras-with-moabb" title="Permalink to this heading">#</a></h1>
+<p>This example shows how to use load the pretrained pipeline in MOABB.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Igor Carrara &lt;igor.carrara@inria.fr&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">pickle</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/pickle.html#pickle.load" title="pickle.load" class="sphx-glr-backref-module-pickle sphx-glr-backref-type-py-function"><span class="n">load</span></a>
 
-<span class="kn">from</span> <span class="nn">moabb</span> <span class="kn">import</span> <a href="../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">,</span> <a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a>
-<span class="kn">from</span> <span class="nn">moabb.analysis.plotting</span> <span class="kn">import</span> <a href="../generated/moabb.analysis.plotting.score_plot.html#moabb.analysis.plotting.score_plot" title="moabb.analysis.plotting.score_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">score_plot</span></a>
-<span class="kn">from</span> <span class="nn">moabb.paradigms</span> <span class="kn">import</span> <a href="../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a>
+<span class="kn">import</span> <span class="nn">keras</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">braindecode</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
+<span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html#torch.nn.Sequential" title="torch.nn.Sequential" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">EEGInception</span></a>
+<span class="kn">from</span> <span class="nn">scikeras.wrappers</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">KerasClassifier</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class"><span class="n">Pipeline</span></a>
+<span class="kn">from</span> <span class="nn">skorch.callbacks</span> <span class="kn">import</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">EpochScoring</span>
+<span class="kn">from</span> <span class="nn">skorch.dataset</span> <span class="kn">import</span> <span class="n">ValidSplit</span>
+
+<span class="kn">from</span> <span class="nn">moabb</span> <span class="kn">import</span> <a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a>
+<span class="kn">from</span> <span class="nn">moabb.pipelines.features</span> <span class="kn">import</span> <a href="../generated/moabb.pipelines.features.StandardScaler_Epoch.html#moabb.pipelines.features.StandardScaler_Epoch" title="moabb.pipelines.features.StandardScaler_Epoch" class="sphx-glr-backref-module-moabb-pipelines-features sphx-glr-backref-type-py-class"><span class="n">StandardScaler_Epoch</span></a>
+<span class="kn">from</span> <span class="nn">moabb.pipelines.utils_pytorch</span> <span class="kn">import</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">BraindecodeDatasetLoader</span></a><span class="p">,</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.InputShapeSetterEEG.html#moabb.pipelines.utils_pytorch.InputShapeSetterEEG" title="moabb.pipelines.utils_pytorch.InputShapeSetterEEG" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">InputShapeSetterEEG</span></a>
+<span class="kn">from</span> <span class="nn">moabb.utils</span> <span class="kn">import</span> <a href="../generated/moabb.setup_seed.html#moabb.setup_seed" title="moabb.setup_seed" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">setup_seed</span></a>
 
 
 <a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<section id="loading-the-pipelines">
-<h2>Loading the pipelines<a class="headerlink" href="#loading-the-pipelines" title="Permalink to this heading">#</a></h2>
-<p>The ML pipelines used in benchmark are defined in YAML files, following a
-simple format. It simplifies sharing and reusing pipelines across benchmarks,
-reproducing state-of-the-art results.</p>
-<p>MOABB comes with complete list of pipelines that cover most of the sucessful
-approaches in the literature. You can find them in the
-<a class="reference external" href="https://github.com/NeuroTechX/moabb/tree/develop/pipelines">pipelines folder</a>.
-For this example, we will use a folder with only 2 pipelines, to keep the
-computation time low.</p>
-<p>This is an example of a pipeline defined in YAML, defining on which paradigms it
-can be used, the original publication, and the steps to perform using a
-scikit-learn API. In this case, a CSP + SVM pipeline, the covariance are estimated
-to compute a CSP filter and then a linear SVM is trained on the CSP filtered
-signals.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;sample_pipelines/CSP_SVM.yml&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f</span></a><span class="p">:</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lines</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f</span></a><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-    <span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lines</span></a><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">line</span></a><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<p>In this example, we will use the results computed by the following examples</p>
+<ul class="simple">
+<li><p><a href="#id1"><span class="problematic" id="id2">plot_benchmark_</span></a></p></li>
+<li><p><a href="#id3"><span class="problematic" id="id4">plot_benchmark_braindecode_</span></a></p></li>
+<li><p><a href="#id5"><span class="problematic" id="id6">plot_benchmark_DL_</span></a></p></li>
+</ul>
+<hr class="docutils" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up reproducibility of Tensorflow and PyTorch</span>
+<a href="../generated/moabb.setup_seed.html#moabb.setup_seed" title="moabb.setup_seed" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">setup_seed</span></a><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>name: CSP + SVM
-paradigms:
-  - LeftRightImagery
-
-citations:
-  - https://doi.org/10.1007/BF01129656
-  - https://doi.org/10.1109/MSP.2008.4408441
-
-pipeline:
-  - name: Covariances
-    from: pyriemann.estimation
-    parameters:
-      estimator: oas
-
-  - name: CSP
-    from: pyriemann.spatialfilters
-    parameters:
-      nfilter: 6
-
-  - name: SVC
-    from: sklearn.svm
-    parameters:
-      kernel: &quot;linear&quot;
+<p>Loading the Scikit-learn pipelines</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+    <span class="s2">&quot;./results/Models_WithinSession/Zhou 2016/1/session_0/CSP + SVM/fitted_model_best.pkl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rb&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="k">as</span> <a href="https://docs.python.org/3/library/io.html#io.BufferedReader" title="io.BufferedReader" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pickle_file</span></a><span class="p">:</span>
+    <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">CSP_SVM_Trained</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pickle.html#pickle.load" title="pickle.load" class="sphx-glr-backref-module-pickle sphx-glr-backref-type-py-function"><span class="n">load</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/io.html#io.BufferedReader" title="io.BufferedReader" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pickle_file</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">sample_pipelines</span></code> folder contains a second pipeline, a logistic regression
-performed in the tangent space using Riemannian geometry.</p>
-</section>
-<section id="selecting-the-datasets-optional">
-<h2>Selecting the datasets (optional)<a class="headerlink" href="#selecting-the-datasets-optional" title="Permalink to this heading">#</a></h2>
-<p>If you want to limit your benchmark on a subset of datasets, you can use the
-<code class="docutils literal notranslate"><span class="pre">include_datasets</span></code> and <code class="docutils literal notranslate"><span class="pre">exclude_datasets</span></code> arguments. You will need either
-to provide the dataset’s object, or a the dataset’s code. To get the list of
-available dataset’s code for a given paradigm, you can use the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a> <span class="o">=</span> <a href="../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a><span class="p">()</span>
-<span class="k">for</span> <a href="../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">d</span></a> <span class="ow">in</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.paradigms.motor_imagery.BaseMotorImagery.html#moabb.paradigms.motor_imagery.BaseMotorImagery.datasets" title="moabb.paradigms.motor_imagery.BaseMotorImagery.datasets" class="sphx-glr-backref-module-moabb-paradigms-motor_imagery sphx-glr-backref-type-py-property"><span class="n">paradigm</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">d</span><span class="o">.</span><span class="n">code</span></a><span class="p">)</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014
-004-2014
-Cho2017
-Lee2019_MI
-Grosse-Wentrup 2009
-Physionet Motor Imagery
-Schirrmeister2017
-Shin2017A
-Weibo 2014
-Zhou 2016
-</pre></div>
-</div>
-<p>In this example, we will use only the last dataset, ‘Zhou 2016’.</p>
-</section>
-<section id="running-the-benchmark">
-<h2>Running the benchmark<a class="headerlink" href="#running-the-benchmark" title="Permalink to this heading">#</a></h2>
-<p>The benchmark is run using the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> function. You need to specify the
-folder containing the pipelines to use, the kind of evaluation and the paradigm
-to use. By default, the benchmark will use all available datasets for all
-paradigms listed in the pipelines. You could restrict to specific evaluation and
-paradigm using the <code class="docutils literal notranslate"><span class="pre">evaluations</span></code> and <code class="docutils literal notranslate"><span class="pre">paradigms</span></code> arguments.</p>
-<p>To save computation time, the results are cached. If you want to re-run the
-benchmark, you can set the <code class="docutils literal notranslate"><span class="pre">overwrite</span></code> argument to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-<p>It is possible to indicate the folder to cache the results and the one to save
-the analysis &amp; figures. By default, the results are saved in the <code class="docutils literal notranslate"><span class="pre">results</span></code>
-folder, and the analysis &amp; figures are saved in the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> folder.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <a href="../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">(</span>
-    <span class="n">pipelines</span><span class="o">=</span><span class="s2">&quot;./sample_pipelines/&quot;</span><span class="p">,</span>
-    <span class="n">evaluations</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;WithinSession&quot;</span><span class="p">],</span>
-    <span class="n">paradigms</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;LeftRightImagery&quot;</span><span class="p">],</span>
-    <span class="n">include_datasets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Zhou 2016&quot;</span><span class="p">],</span>
-    <span class="n">results</span><span class="o">=</span><span class="s2">&quot;./results/&quot;</span><span class="p">,</span>
-    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">output</span><span class="o">=</span><span class="s2">&quot;./benchmark/&quot;</span><span class="p">,</span>
+<p>Loading the Keras model
+We load the single Keras model, if we want we can set in the exact same pipeline.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model_Keras</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span>
+    <span class="s2">&quot;./results/Models_WithinSession/001-2014/1/session_E/Keras_DeepConvNet/kerasdeepconvnet_fitted_model_best.h5&quot;</span>
+<span class="p">)</span>
+<span class="c1"># Now we need to instantiate a new SciKeras object since we only saved the Keras model</span>
+<span class="n">Keras_DeepConvNet_Trained</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">KerasClassifier</span></a><span class="p">(</span><span class="n">model_Keras</span><span class="p">)</span>
+<span class="c1"># Create the pipelines</span>
+
+
+<a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipes_keras</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class"><span class="n">Pipeline</span></a><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;StandardScaler_Epoch&quot;</span><span class="p">,</span> <a href="../generated/moabb.pipelines.features.StandardScaler_Epoch.html#moabb.pipelines.features.StandardScaler_Epoch" title="moabb.pipelines.features.StandardScaler_Epoch" class="sphx-glr-backref-module-moabb-pipelines-features sphx-glr-backref-type-py-class"><span class="n">StandardScaler_Epoch</span></a><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;Keras_DeepConvNet_Trained&quot;</span><span class="p">,</span> <span class="n">Keras_DeepConvNet_Trained</span><span class="p">),</span>
+    <span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-06-26 14:35:22,260 INFO MainThread moabb.evaluations.base Processing dataset: Zhou 2016
+<p>Loading the PyTorch model</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set EEG Inception model</span>
+<span class="n">model</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html#torch.nn.Sequential" title="torch.nn.Sequential" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">EEGInception</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
-Zhou 2016-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_data
-All datasets will be downloaded to this location, if anything is already downloaded, please move manually to this location
-/home/runner/work/moabb/moabb/moabb/datasets/download.py:55: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_ZHOU_PATH&quot;
-  set_config(key, get_config(&quot;MNE_DATA&quot;))
+<span class="c1"># Hyperparameter</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LEARNING_RATE</span></a> <span class="o">=</span> <span class="mf">0.0001</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">WEIGHT_DECAY</span></a> <span class="o">=</span> <span class="mi">0</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BATCH_SIZE</span></a> <span class="o">=</span> <span class="mi">64</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">SEED</span></a> <span class="o">=</span> <span class="mi">42</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">VERBOSE</span></a> <span class="o">=</span> <span class="mi">1</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">EPOCH</span></a> <span class="o">=</span> <span class="mi">2</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">PATIENCE</span></a> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># Define a Skorch classifier</span>
+<span class="n">clf</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html#sklearn.base.ClassifierMixin" title="sklearn.base.ClassifierMixin" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
+    <span class="n">module</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">criterion</span><span class="o">=</span><a href="https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html#torch.nn.CrossEntropyLoss" title="torch.nn.CrossEntropyLoss" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span></a><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><a href="https://pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="torch.optim.Adam" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span></a><span class="p">,</span>
+    <span class="n">optimizer__lr</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LEARNING_RATE</span></a><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BATCH_SIZE</span></a><span class="p">,</span>
+    <span class="n">max_epochs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">EPOCH</span></a><span class="p">,</span>
+    <span class="n">train_split</span><span class="o">=</span><span class="n">ValidSplit</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">SEED</span></a><span class="p">),</span>
+    <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;valid_loss&quot;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">PATIENCE</span></a><span class="p">),</span>
+        <span class="n">EpochScoring</span><span class="p">(</span>
+            <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="n">on_train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;train_acc&quot;</span><span class="p">,</span> <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">),</span>
+        <span class="n">EpochScoring</span><span class="p">(</span>
+            <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="n">on_train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;valid_acc&quot;</span><span class="p">,</span> <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">),</span>
+        <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.InputShapeSetterEEG.html#moabb.pipelines.utils_pytorch.InputShapeSetterEEG" title="moabb.pipelines.utils_pytorch.InputShapeSetterEEG" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">InputShapeSetterEEG</span></a><span class="p">(</span>
+            <span class="n">params_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;in_channels&quot;</span><span class="p">,</span> <span class="s2">&quot;input_window_samples&quot;</span><span class="p">,</span> <span class="s2">&quot;n_classes&quot;</span><span class="p">],</span>
+        <span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">verbose</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">VERBOSE</span></a><span class="p">,</span>  <span class="c1"># Not printing the results for each epoch</span>
+<span class="p">)</span>
+
+<span class="n">clf</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f_params</span></a> <span class="o">=</span> <span class="s2">&quot;./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/EEGInception_fitted_best_model.pkl&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f_optimizer</span></a> <span class="o">=</span> <span class="s2">&quot;./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/EEGInception_fitted_best_optim.pkl&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f_history</span></a> <span class="o">=</span> <span class="s2">&quot;./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/EEGInception_fitted_best_history.json&quot;</span>
+
+<span class="n">clf</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f_params</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f_params</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f_optimizer</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f_optimizer</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f_history</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">f_history</span></a><span class="p">)</span>
 
 
-  0%|                                               | 0.00/156M [00:00&lt;?, ?B/s]
+<span class="c1"># Create the dataset</span>
+<a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">create_dataset</span></a> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">BraindecodeDatasetLoader</span></a><span class="p">(</span><span class="n">drop_last_window</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-  0%|                                       | 51.2k/156M [00:00&lt;06:36, 394kB/s]
-
-  0%|                                        | 225k/156M [00:00&lt;02:46, 938kB/s]
-
-  1%|▏                                      | 921k/156M [00:00&lt;00:53, 2.91MB/s]
-
-  2%|▊                                     | 3.35M/156M [00:00&lt;00:17, 8.99MB/s]
-
-  5%|█▊                                    | 7.41M/156M [00:00&lt;00:08, 16.8MB/s]
-
-  7%|██▊                                   | 11.4M/156M [00:00&lt;00:06, 21.3MB/s]
-
- 10%|███▊                                  | 15.4M/156M [00:00&lt;00:05, 24.2MB/s]
-
- 12%|████▋                                 | 19.5M/156M [00:01&lt;00:05, 26.1MB/s]
-
- 15%|█████▋                                | 23.4M/156M [00:01&lt;00:04, 27.4MB/s]
-
- 18%|██████▋                               | 27.4M/156M [00:01&lt;00:04, 28.2MB/s]
-
- 20%|███████▋                              | 31.4M/156M [00:01&lt;00:04, 28.8MB/s]
-
- 23%|████████▌                             | 35.4M/156M [00:01&lt;00:04, 29.2MB/s]
-
- 25%|█████████▌                            | 39.5M/156M [00:01&lt;00:03, 29.6MB/s]
-
- 28%|██████████▌                           | 43.6M/156M [00:01&lt;00:03, 31.2MB/s]
-
- 31%|███████████▊                          | 48.4M/156M [00:01&lt;00:03, 35.4MB/s]
-
- 33%|████████████▋                         | 52.0M/156M [00:02&lt;00:03, 34.7MB/s]
-
- 36%|█████████████▋                        | 56.5M/156M [00:02&lt;00:02, 35.3MB/s]
-
- 39%|██████████████▊                       | 61.1M/156M [00:02&lt;00:02, 38.2MB/s]
-
- 42%|███████████████▊                      | 65.0M/156M [00:02&lt;00:02, 37.1MB/s]
-
- 44%|████████████████▊                     | 69.3M/156M [00:02&lt;00:02, 36.7MB/s]
-
- 47%|█████████████████▉                    | 73.9M/156M [00:02&lt;00:02, 39.3MB/s]
-
- 50%|██████████████████▉                   | 77.8M/156M [00:02&lt;00:02, 38.2MB/s]
-
- 53%|████████████████████                  | 82.2M/156M [00:02&lt;00:01, 37.8MB/s]
-
- 56%|█████████████████████▏                | 86.9M/156M [00:02&lt;00:01, 40.2MB/s]
-
- 58%|██████████████████████▏               | 91.0M/156M [00:03&lt;00:01, 38.7MB/s]
-
- 61%|███████████████████████▎              | 95.6M/156M [00:03&lt;00:01, 40.1MB/s]
-
- 64%|████████████████████████▎             | 99.9M/156M [00:03&lt;00:01, 41.0MB/s]
-
- 67%|██████████████████████████             | 104M/156M [00:03&lt;00:01, 41.3MB/s]
-
- 70%|███████████████████████████▏           | 109M/156M [00:03&lt;00:01, 43.1MB/s]
-
- 72%|████████████████████████████▎          | 113M/156M [00:03&lt;00:01, 41.9MB/s]
-
- 76%|█████████████████████████████▍         | 118M/156M [00:03&lt;00:00, 42.6MB/s]
-
- 78%|██████████████████████████████▌        | 122M/156M [00:03&lt;00:00, 42.7MB/s]
-
- 81%|███████████████████████████████▋       | 127M/156M [00:03&lt;00:00, 43.2MB/s]
-
- 84%|████████████████████████████████▋      | 131M/156M [00:03&lt;00:00, 42.9MB/s]
-
- 87%|█████████████████████████████████▊     | 136M/156M [00:04&lt;00:00, 43.5MB/s]
-
- 90%|██████████████████████████████████▉    | 140M/156M [00:04&lt;00:00, 42.6MB/s]
-
- 92%|████████████████████████████████████   | 144M/156M [00:04&lt;00:00, 42.9MB/s]
-
- 95%|█████████████████████████████████████  | 149M/156M [00:04&lt;00:00, 42.7MB/s]
-
- 98%|██████████████████████████████████████▏| 153M/156M [00:04&lt;00:00, 43.1MB/s]
-
-  0%|                                               | 0.00/156M [00:00&lt;?, ?B/s]
-100%|████████████████████████████████████████| 156M/156M [00:00&lt;00:00, 213GB/s]
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-
-Zhou 2016-WithinSession:  25%|##5       | 1/4 [00:13&lt;00:40, 13.50s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-
-Zhou 2016-WithinSession:  50%|#####     | 2/4 [00:18&lt;00:16,  8.24s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-
-Zhou 2016-WithinSession:  75%|#######5  | 3/4 [00:23&lt;00:06,  6.79s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
-  raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-
-Zhou 2016-WithinSession: 100%|##########| 4/4 [00:27&lt;00:00,  5.89s/it]
-Zhou 2016-WithinSession: 100%|##########| 4/4 [00:27&lt;00:00,  6.91s/it]
-[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:   27.6s finished
-2023-06-26 14:35:49,891 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_0: Score 0.909
-2023-06-26 14:35:49,900 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_0: Score 0.860
-2023-06-26 14:35:49,906 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_1: Score 0.926
-2023-06-26 14:35:49,911 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_1: Score 0.924
-2023-06-26 14:35:49,915 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 1 | session_2: Score 0.964
-2023-06-26 14:35:49,920 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 1 | session_2: Score 0.954
-2023-06-26 14:35:49,925 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_0: Score 0.910
-2023-06-26 14:35:49,929 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_0: Score 0.916
-2023-06-26 14:35:49,934 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_1: Score 0.765
-2023-06-26 14:35:49,938 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_1: Score 0.753
-2023-06-26 14:35:49,943 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 2 | session_2: Score 0.904
-2023-06-26 14:35:49,947 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 2 | session_2: Score 0.906
-2023-06-26 14:35:49,952 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_0: Score 0.994
-2023-06-26 14:35:49,957 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_0: Score 0.972
-2023-06-26 14:35:49,961 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_1: Score 0.990
-2023-06-26 14:35:49,966 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_1: Score 0.980
-2023-06-26 14:35:49,972 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 3 | session_2: Score 0.992
-2023-06-26 14:35:49,980 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 3 | session_2: Score 0.990
-2023-06-26 14:35:49,985 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_0: Score 0.995
-2023-06-26 14:35:49,989 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_0: Score 0.993
-2023-06-26 14:35:49,994 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_1: Score 0.972
-2023-06-26 14:35:49,999 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_1: Score 0.972
-2023-06-26 14:35:50,004 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou 2016 | 4 | session_2: Score 0.978
-2023-06-26 14:35:50,008 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou 2016 | 4 | session_2: Score 0.968
-     dataset     evaluation          pipeline  avg score
-0  Zhou 2016  WithinSession         CSP + SVM   0.932315
-1  Zhou 2016  WithinSession  Tangent Space LR   0.941601
+<span class="c1"># Create the pipelines</span>
+<a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipes_pytorch</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class"><span class="n">Pipeline</span></a><span class="p">([(</span><span class="s2">&quot;Braindecode_dataset&quot;</span><span class="p">,</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">create_dataset</span></a><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;EEGInception&quot;</span><span class="p">,</span> <span class="n">clf</span><span class="p">)])</span>
 </pre></div>
 </div>
-<p>Benchmark prints a summary of the results. Detailed results are saved in a
-pandas dataframe, and can be used to generate figures. The analysis &amp; figures
-are saved in the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> folder.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/moabb.analysis.plotting.score_plot.html#moabb.analysis.plotting.score_plot" title="moabb.analysis.plotting.score_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">score_plot</span></a><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-<a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
-</pre></div>
-</div>
-<img src="../_images/sphx_glr_plot_benchmark_001.png" srcset="../_images/sphx_glr_plot_benchmark_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-06-26 14:35:50,149 WARNING MainThread moabb.analysis.plotting Dataset names are too similar, turning off name shortening
-/home/runner/work/moabb/moabb/moabb/analysis/plotting.py:59: UserWarning: The palette list has more values (6) than needed (2), which may not be intended.
-  sea.stripplot(
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  28.705 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  422 MB</p>
-<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.799 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  9 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-load-model-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/5657e54b8c692376a881117a99de998e/plot_benchmark.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/494ed667ea9b8097b644c706745fa1c7/plot_load_model.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_load_model.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/225d2b2bd0960a1fa6a57be5e1838af9/plot_benchmark.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_benchmark.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/37481ab2a03b5512ec623a24b139e07c/plot_load_model.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_load_model.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</section>
 </section>
 
 
@@ -939,20 +718,20 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="example_codecarbon.html"
+       href="plot_explore_paradigm.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Benchmarking with MOABB showing the CO2 footprint</p>
+        <p class="prev-next-title">Explore Paradigm Object</p>
       </div>
     </a>
     <a class="right-next"
-       href="plot_benchmark_DL.html"
+       href="plot_phmd_ml_spectrum.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Benchmarking on MOABB with Tensorflow deep net architectures</p>
+        <p class="prev-next-title">Spectral analysis of the trials</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -965,22 +744,6 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-the-pipelines">Loading the pipelines</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-the-datasets-optional">Selecting the datasets (optional)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-benchmark">Running the benchmark</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

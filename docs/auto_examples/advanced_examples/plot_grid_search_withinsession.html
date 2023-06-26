@@ -397,6 +397,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_explore_paradigm.html">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plot_load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_within_session_p300.html">Within Session P300</a></li>
@@ -693,9 +694,9 @@ automatically be run with a grid search.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014-WithinSession:   0%|          | 0/1 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 
-001-2014-WithinSession: 100%|##########| 1/1 [00:12&lt;00:00, 12.43s/it]
-001-2014-WithinSession: 100%|##########| 1/1 [00:12&lt;00:00, 12.43s/it]
-[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:   12.4s finished
+001-2014-WithinSession: 100%|##########| 1/1 [00:39&lt;00:00, 39.28s/it]
+001-2014-WithinSession: 100%|##########| 1/1 [00:39&lt;00:00, 39.29s/it]
+[Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:   39.3s finished
 </pre></div>
 </div>
 </section>
@@ -735,7 +736,7 @@ value.</p>
         <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">path</span></a><span class="p">,</span>
         <span class="s2">&quot;GridSearch_WithinSession&quot;</span><span class="p">,</span>
         <span class="s2">&quot;001-2014&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;subject1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;1&quot;</span><span class="p">,</span>
         <span class="s2">&quot;session_E&quot;</span><span class="p">,</span>
         <span class="s2">&quot;GridSearchEN&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Grid_Search_WithinSession.pkl&quot;</span><span class="p">,</span>
@@ -755,7 +756,7 @@ value.</p>
         <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">path</span></a><span class="p">,</span>
         <span class="s2">&quot;GridSearch_WithinSession&quot;</span><span class="p">,</span>
         <span class="s2">&quot;001-2014&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;subject1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;1&quot;</span><span class="p">,</span>
         <span class="s2">&quot;session_T&quot;</span><span class="p">,</span>
         <span class="s2">&quot;GridSearchEN&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Grid_Search_WithinSession.pkl&quot;</span><span class="p">,</span>
@@ -777,8 +778,8 @@ Best Parameter l1_ratio Session_T GridSearchEN  0.3
 Best Parameter l1_ratio Session_T VanillaEN:  0.75
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.906 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  335 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  42.693 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  328 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-grid-search-withinsession-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b298e4b36adf2bb5cb6f65682eec852f/plot_grid_search_withinsession.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_grid_search_withinsession.py</span></code></a></p>
