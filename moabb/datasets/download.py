@@ -1,5 +1,6 @@
 # Author: Alexandre Barachant <alexandre.barachant@gmail.com>
 #         Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
+#         Bruno Aristimunha <b.aristimunha@gmail.com>
 # License: BSD Style.
 
 import json
@@ -11,7 +12,7 @@ import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
 from mne.utils import _url_to_local_path, verbose
-from pooch import file_hash, retrieve
+from pooch import HTTPDownloader, file_hash, retrieve
 from requests.exceptions import HTTPError
 
 
@@ -140,6 +141,8 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
     table = {ord(c): "-" for c in ':*?"<>|'}
     destination = Path(str(path) + destination.split(str(path))[1].translate(table))
 
+    downloader = HTTPDownloader(verify=False)
+
     # Fetch the file
     if not destination.is_file() or force_update:
         if destination.is_file():
@@ -155,6 +158,7 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
         fname=Path(url).name,
         path=str(destination.parent),
         progressbar=True,
+        downloader=downloader,
     )
     return dlpath
 
