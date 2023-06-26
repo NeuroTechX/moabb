@@ -91,6 +91,8 @@ class PhysionetMI(BaseDataset):
             doi="10.1109/TBME.2004.827072",
         )
 
+        self.imagined = imagined
+        self.executed = executed
         self.feet_runs = []
         self.hand_runs = []
 
