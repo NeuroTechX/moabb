@@ -834,9 +834,8 @@ class VirtualReality(BaseDataset):
     does not include any electronics at the exception of a smartphone. A full description
     of the experiment is available at https://hal.archives-ouvertes.fr/hal-02078533.
 
-    /!\ WithinSubjectEvaluation is likely not the best way to evaluate this randomized dataset
-    Instead, you want to compare the performance at the block level. See the example
-    `plot_vr_pc_p300_different_epoch_size`
+    See the example `plot_vr_pc_p300_different_epoch_size` to compare the performance
+    between PC and VR.
 
     Parameters
     ----------
