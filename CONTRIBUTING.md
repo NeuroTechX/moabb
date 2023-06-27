@@ -80,6 +80,27 @@ disable `poetry` environment creation. Also in this case be careful with version
 in your environment - it has to satisfy requirements stated in `pyproject.toml`. In case you
 disable `poetry` you are in charge of this.
 
+_Note 3 (deep learning):_\
+In case you want to install the optional deep learning dependencies (i.e. `poetry install --with deeplearning`),
+you will need to do the following additional steps if you want `tensorflow` to detect your
+GPU:
+
+```bash
+# Instructions for tensorflow==2.12
+conda install -c conda-forge cudatoolkit=11.8.0
+mkdir -p $CONDA_PREFIX/etc/conda/activate.d
+echo 'CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/:$CUDNN_PATH/lib' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+source $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+# Verify install:
+python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+```
+
+Then, at every use, re-run the command
+`source $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh` (you can simply add this line to
+your `.bashrc`). For more details, please refer to
+[the official documentation](https://www.tensorflow.org/install/pip).
+
 ### Tools used
 
 MOABB uses [`poetry`](https://python-poetry.org/) for dependency management. This tool
