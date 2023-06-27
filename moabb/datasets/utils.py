@@ -151,8 +151,10 @@ def _download_all(update_path=True, verbose=None):
         # call download
         ds().download(update_path=True, verbose=verbose, accept=True)
 
+
 def block_rep(block: int, rep: int):
-    return f'block_{block}-repetition_{rep}'
+    return f"block_{block}-repetition_{rep}"
+
 
 def blocks_reps(blocks: list, reps: list):
     return [block_rep(b, r) for b in blocks for r in reps]

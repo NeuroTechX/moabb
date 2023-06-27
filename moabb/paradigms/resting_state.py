@@ -9,8 +9,10 @@ record the EEG of a subject while he is having the eye open or close
 is a resting state experiment.
 """
 
-from moabb.paradigms.p300 import SinglePass
 from scipy.signal import welch
+
+from moabb.paradigms.p300 import SinglePass
+
 
 class RestingStateToP300Adapter(SinglePass):
     """Adapter to the P300 paradigm for resting state experiments.

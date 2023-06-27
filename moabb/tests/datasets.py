@@ -3,8 +3,8 @@ import unittest
 import mne
 
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
-from moabb.datasets.shopping import GoShoppingDataset
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
+from moabb.datasets.shopping import GoShoppingDataset
 from moabb.datasets.utils import block_rep
 from moabb.paradigms import P300
 
@@ -98,41 +98,36 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         assert ret.subject.unique()[0] == subject
         assert ret.run.unique()[0] == block_rep(block, repetition)
 
-class Test_GoShoppingDataset(unittest.TestCase):
 
+class Test_GoShoppingDataset(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         self.paradigm = "p300"
         self.n_sessions = 2
         self.n_subjects = 2
         self.n_runs = 2
         self.ds = FakeDataset(
-                n_sessions=self.n_sessions,
-                n_runs=self.n_runs,
-                n_subjects=self.n_subjects,
-                event_list=["Target", "NonTarget"],
-                paradigm=self.paradigm,
-            )
+            n_sessions=self.n_sessions,
+            n_runs=self.n_runs,
+            n_subjects=self.n_subjects,
+            event_list=["Target", "NonTarget"],
+            paradigm=self.paradigm,
+        )
         super().__init__(*args, **kwargs)
-
 
     def test_fake_dataset(self):
         """this test will insure the basedataset works"""
-        param_list = [
-            (None, None),
-            ('session_0', 'run_0'),
-            (['session_0'], ['run_0'])
-        ]
+        param_list = [(None, None), ("session_0", "run_0"), (["session_0"], ["run_0"])]
         for sessions, runs in param_list:
             with self.subTest():
-                shopping_list = [
-                    (self.ds, 1, sessions, runs)
-                ]
-                shopping_data = GoShoppingDataset(shopping_list,
-                                                events=dict(Target=2, NonTarget=1),
-                                                code="GoShoppingTest",
-                                                interval=[0, 1],
-                                                paradigm=self.paradigm)
-                
+                shopping_list = [(self.ds, 1, sessions, runs)]
+                shopping_data = GoShoppingDataset(
+                    shopping_list,
+                    events=dict(Target=2, NonTarget=1),
+                    code="GoShoppingTest",
+                    interval=[0, 1],
+                    paradigm=self.paradigm,
+                )
+
                 data = shopping_data.get_data()
 
                 # Check data type
@@ -150,53 +145,51 @@ class Test_GoShoppingDataset(unittest.TestCase):
                 self.assertRaises(ValueError, shopping_data.get_data, [1000])
 
     def test_shopping_dataset_composition(self):
-            # Test we can compound two instance of GoShoppingDataset into a new one.
+        # Test we can compound two instance of GoShoppingDataset into a new one.
 
-            # Create an instance of GoShoppingDataset with one subject
-            shopping_list = [
-                    (self.ds, 1, None, None)
-                ]
-            shopping_dataset = GoShoppingDataset(shopping_list,
-                                                events=dict(Target=2, NonTarget=1),
-                                                code="D1",
-                                                interval=[0, 1],
-                                                paradigm=self.paradigm)
-            
-            # Add it two time to a shopping_list
-            shopping_list = [
-                    shopping_dataset,
-                    shopping_dataset
-                ]
-            shopping_data = GoShoppingDataset(shopping_list,
-                                                events=dict(Target=2, NonTarget=1),
-                                                code="GoShoppingTest",
-                                                interval=[0, 1],
-                                                paradigm=self.paradigm)
-            
-            # Assert that the coumpouned dataset has two times more subject than the original one.
-            data = shopping_data.get_data()
-            self.assertEqual(len(data), 2)
+        # Create an instance of GoShoppingDataset with one subject
+        shopping_list = [(self.ds, 1, None, None)]
+        shopping_dataset = GoShoppingDataset(
+            shopping_list,
+            events=dict(Target=2, NonTarget=1),
+            code="D1",
+            interval=[0, 1],
+            paradigm=self.paradigm,
+        )
+
+        # Add it two time to a shopping_list
+        shopping_list = [shopping_dataset, shopping_dataset]
+        shopping_data = GoShoppingDataset(
+            shopping_list,
+            events=dict(Target=2, NonTarget=1),
+            code="GoShoppingTest",
+            interval=[0, 1],
+            paradigm=self.paradigm,
+        )
+
+        # Assert that the coumpouned dataset has two times more subject than the original one.
+        data = shopping_data.get_data()
+        self.assertEqual(len(data), 2)
 
     def test_get_sessions_per_subject(self):
-            # define a new fake dataset with two times more sessions:
-            self.ds2 = FakeDataset(
-                n_sessions=self.n_sessions * 2,
-                n_runs=self.n_runs,
-                n_subjects=self.n_subjects,
-                event_list=["Target", "NonTarget"],
-                paradigm=self.paradigm,
-            )
+        # define a new fake dataset with two times more sessions:
+        self.ds2 = FakeDataset(
+            n_sessions=self.n_sessions * 2,
+            n_runs=self.n_runs,
+            n_subjects=self.n_subjects,
+            event_list=["Target", "NonTarget"],
+            paradigm=self.paradigm,
+        )
 
-            # Add the two datasets to a goshoppingdataset
-            shopping_list = [
-                    (self.ds, 1, None, None),
-                    (self.ds2, 1, None, None)
-                ]
-            shopping_dataset = GoShoppingDataset(shopping_list,
-                                                events=dict(Target=2, NonTarget=1),
-                                                code="GoShoppingTest",
-                                                interval=[0, 1],
-                                                paradigm=self.paradigm)
+        # Add the two datasets to a goshoppingdataset
+        shopping_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
+        shopping_dataset = GoShoppingDataset(
+            shopping_list,
+            events=dict(Target=2, NonTarget=1),
+            code="GoShoppingTest",
+            interval=[0, 1],
+            paradigm=self.paradigm,
+        )
 
-            # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
-            self.assertEqual(shopping_dataset._get_sessions_per_subject(), self.n_sessions)
+        # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
+        self.assertEqual(shopping_dataset._get_sessions_per_subject(), self.n_sessions)

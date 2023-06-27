@@ -1,4 +1,3 @@
-from moabb.datasets.utils import block_rep
 import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
@@ -6,6 +5,7 @@ from mne.io import RawArray
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.braininvaders import VirtualReality
+from moabb.datasets.utils import block_rep
 
 
 class FakeDataset(BaseDataset):

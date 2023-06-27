@@ -7,7 +7,6 @@ from distutils.dir_util import copy_tree
 from warnings import warn
 
 import mne
-from moabb.datasets.utils import block_rep
 import numpy as np
 import pandas as pd
 import yaml
@@ -16,6 +15,7 @@ from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.utils import block_rep
 
 
 BI2012a_URL = "https://zenodo.org/record/2649069/files/"
@@ -218,9 +218,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
                     end = idx_repetEndin_local[j + 1]
                     Xbij = Xbi[:, start:end]
                     raw = mne.io.RawArray(data=Xbij, info=info, verbose=False)
-                    sessions[session_name][
-                        block_rep(bi + 1, j + 1)
-                    ] = raw
+                    sessions[session_name][block_rep(bi + 1, j + 1)] = raw
 
     return sessions
 
@@ -925,24 +923,9 @@ class VirtualReality(BaseDataset):
         for block in block_list:
             for repetition in repetition_list:
                 run = block_rep(block, repetition)
-                X_select.append(
-                    X[
-                        meta["run"]
-                        == run
-                    ]
-                )
-                labels_select.append(
-                    labels[
-                        meta["run"]
-                        == run
-                    ]
-                )
-                meta_select.append(
-                    meta[
-                        meta["run"]
-                        == run
-                    ]
-                )
+                X_select.append(X[meta["run"] == run])
+                labels_select.append(labels[meta["run"] == run])
+                meta_select.append(meta[meta["run"] == run])
         X_select = np.concatenate(X_select)
         labels_select = np.concatenate(labels_select)
         meta_select = np.concatenate(meta_select)

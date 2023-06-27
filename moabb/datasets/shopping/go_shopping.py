@@ -43,7 +43,9 @@ class GoShoppingDataset(BaseDataset):
         Defines what sort of dataset this is
     """
 
-    def __init__(self, shopping_list: list, events: dict, code: str, interval: list, paradigm: str):
+    def __init__(
+        self, shopping_list: list, events: dict, code: str, interval: list, paradigm: str
+    ):
         self._set_shopping_list(shopping_list)
         super().__init__(
             subjects=list(range(1, self.count + 1)),
@@ -95,17 +97,22 @@ class GoShoppingDataset(BaseDataset):
             return sessions_data
         elif isinstance(runs, list):
             for session in sessions_data.keys():
-                sessions_data[session] = {f"{run}": sessions_data[session][run] for run in runs}
+                sessions_data[session] = {
+                    f"{run}": sessions_data[session][run] for run in runs
+                }
             return sessions_data
         else:
             for session in sessions_data.keys():
                 sessions_data[session] = {f"{runs}": sessions_data[session][runs]}
             return sessions_data
-        
-        
 
     def data_path(
-        self, shopped_subject, path=None, force_update=False, update_path=None, verbose=None
+        self,
+        shopped_subject,
+        path=None,
+        force_update=False,
+        update_path=None,
+        verbose=None,
     ):
         dataset, subject, _, _ = self.shopping_list[shopped_subject - 1]
         path = dataset.data_path(subject)
