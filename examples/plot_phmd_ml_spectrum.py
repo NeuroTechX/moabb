@@ -17,7 +17,6 @@ import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.signal import welch
 
 from moabb.datasets import HeadMountedDisplay
 from moabb.paradigms import RestingStateToP300Adapter
