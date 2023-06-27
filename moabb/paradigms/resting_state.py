@@ -10,7 +10,7 @@ is a resting state experiment.
 """
 
 from moabb.paradigms.p300 import SinglePass
-
+from scipy.signal import welch
 
 class RestingStateToP300Adapter(SinglePass):
     """Adapter to the P300 paradigm for resting state experiments.
@@ -75,6 +75,12 @@ class RestingStateToP300Adapter(SinglePass):
                 ret = False
 
         return ret
+
+    def psd(self, subject, dataset):
+        # power spectrum density for ease of use
+        X, y, _ = self.get_data(dataset, [subject])
+        f, S = welch(X, axis=-1, nperseg=1024, fs=self.resample)
+        return (f, S, X, y)
 
     @property
     def scoring(self):

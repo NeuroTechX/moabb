@@ -7,6 +7,7 @@ from distutils.dir_util import copy_tree
 from warnings import warn
 
 import mne
+from moabb.datasets.utils import block_rep
 import numpy as np
 import pandas as pd
 import yaml
@@ -218,7 +219,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
                     Xbij = Xbi[:, start:end]
                     raw = mne.io.RawArray(data=Xbij, info=info, verbose=False)
                     sessions[session_name][
-                        "block_" + str(bi + 1) + "-repetition_" + str(j + 1)
+                        block_rep(bi + 1, j + 1)
                     ] = raw
 
     return sessions
@@ -818,9 +819,8 @@ class VirtualReality(BaseDataset):
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         VirtualReality   24      16      600 NT / 120 T   1s              512Hz           2
+         VirtualReality   21      16      600 NT / 120 T   1s              512Hz           2
         ================ ======= ======= ================ =============== =============== ===========
-
 
     We describe the experimental procedures for a dataset that we have made publicly
     available at https://doi.org/10.5281/zenodo.2605204 in mat (Mathworks, Natick, USA)
@@ -835,6 +835,10 @@ class VirtualReality(BaseDataset):
     consisted of a passive head-mounted display, that is, a head-mounted display which
     does not include any electronics at the exception of a smartphone. A full description
     of the experiment is available at https://hal.archives-ouvertes.fr/hal-02078533.
+
+    /!\ WithinSubjectEvaluation is likely not the best way to evaluate this randomized dataset
+    Instead, you want to compare the performance at the block level. See the example
+    `plot_vr_pc_p300_different_epoch_size`
 
     Parameters
     ----------
@@ -859,7 +863,7 @@ class VirtualReality(BaseDataset):
 
     def __init__(self, virtual_reality=False, screen_display=True):
         super().__init__(
-            subjects=list(range(1, 20 + 1)),
+            subjects=list(range(1, 21 + 1)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
             code="P300-VR",
@@ -920,22 +924,23 @@ class VirtualReality(BaseDataset):
         meta_select = []
         for block in block_list:
             for repetition in repetition_list:
+                run = block_rep(block, repetition)
                 X_select.append(
                     X[
                         meta["run"]
-                        == "block_" + str(block) + "-repetition_" + str(repetition)
+                        == run
                     ]
                 )
                 labels_select.append(
                     labels[
                         meta["run"]
-                        == "block_" + str(block) + "-repetition_" + str(repetition)
+                        == run
                     ]
                 )
                 meta_select.append(
                     meta[
                         meta["run"]
-                        == "block_" + str(block) + "-repetition_" + str(repetition)
+                        == run
                     ]
                 )
         X_select = np.concatenate(X_select)

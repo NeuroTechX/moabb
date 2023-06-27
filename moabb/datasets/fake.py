@@ -1,3 +1,4 @@
+from moabb.datasets.utils import block_rep
 import numpy as np
 from mne import create_info
 from mne.channels import make_standard_montage
@@ -112,7 +113,7 @@ class FakeVirtualRealityDataset(FakeDataset):
             for block in range(self.n_blocks):
                 for repetition in range(self.n_repetitions):
                     data[f"{session}"][
-                        f"block_{block}-repetition_{repetition}"
+                        block_rep(block, repetition)
                     ] = self._generate_raw()
         return data
 
