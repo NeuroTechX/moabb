@@ -27,7 +27,7 @@ pipeline:
         - name: Adam
           from: tensorflow.keras.optimizers.legacy
           parameters:
-            learning_rate: 0.0009
+            learning_rate: 0.001
       epochs: 300
       batch_size: 64
       verbose: 0
