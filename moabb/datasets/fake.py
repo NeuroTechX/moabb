@@ -55,9 +55,9 @@ class FakeDataset(BaseDataset):
             interval=[0, 3],
             paradigm=paradigm,
         )
-        key = f"MNE_DATASETS_{self.code}_PATH"
+        key = "MNE_DATASETS_{:s}-BIDS_PATH".format(self.code.upper())
         temp_dir = get_config(key)
-        if temp_dir is None or not Path(temp_dir).exists():
+        if temp_dir is None or not Path(temp_dir).is_dir():
             temp_dir = tempfile.mkdtemp()
             set_config(key, temp_dir)
 
