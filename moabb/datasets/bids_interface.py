@@ -182,6 +182,7 @@ class BIDSInterface:
         log.info(
             f"Starting caching dataset {self.dataset.code}, subject {self.subject} to disk..."
         )
+        mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
         mne_bids.make_dataset_description(
             path=str(self.root),
             name=self.dataset.code,
