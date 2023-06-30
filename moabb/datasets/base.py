@@ -221,6 +221,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
             picks = pick_channels(  # we keep all the channels
                 raw.info["ch_names"], include=self.channels, ordered=True
             )
+            if fmin is None and fmax is None:
+                return raw.pick(picks=picks, verbose=False)
             return raw.filter(
                 fmin, fmax, method="iir", picks=picks, verbose=False
             )  # we filter in-place
