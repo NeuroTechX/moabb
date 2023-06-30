@@ -1,8 +1,7 @@
+import datetime
 import json
 import logging
 from collections import OrderedDict
-
-# import datetime
 from dataclasses import dataclass
 from functools import total_ordering
 from pathlib import Path
@@ -200,11 +199,10 @@ class BIDSInterface:
                     DOI=self.dataset.doi,
                 )
             ],
-            verbose=False,
             overwrite=False,
         )
 
-        # datetime_now = datetime.datetime.now(tz=datetime.timezone.utc)
+        datetime_now = datetime.datetime.now(tz=datetime.timezone.utc)
         raws = []
         for runs in sessions_data.values():
             for raw in runs.values():
@@ -221,7 +219,7 @@ class BIDSInterface:
                     # specify device info as required by BIDS
                     raw.info["device_info"] = {"type": "eeg"}
                 if raw.info.get("meas_date", None) is None:
-                    raw.set_meas_date(None)
+                    raw.set_meas_date(datetime_now)
         # daysback_min, daysback_max = mne_bids.get_anonymization_daysback(raws)
         for session, runs in sessions_data.items():
             for run, raw in runs.items():
@@ -257,7 +255,6 @@ class BIDSInterface:
                     allow_preload=True,
                     montage=raw.get_montage(),
                     overwrite=False,  # files should be deleted by _delete_cache in case overwrite_cache is True
-                    verbose="ERROR",
                 )
         log.debug(f"Writing {self.lock_file}")
         self.lock_file.mkdir(exist_ok=True)
