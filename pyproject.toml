@@ -28,7 +28,7 @@ tqdm = "^4.64.1"
 coverage = "^7.0.1"
 memory-profiler = "^0.61.0"
 edflib-python = "^1.0.6"
-mne-bids = "^0.12"
+mne-bids = {git = "https://github.com/mne-tools/mne-bids.git", rev = "9bc6fe5"}
 
 [tool.poetry.group.carbonemission]
 optional = true

@@ -143,17 +143,14 @@ class BIDSInterface:
         return interfaces[0]  # We just return one at random
 
     def erase(self):
-        # TODO: this function does not update the scans.tsv files
-        #       should be fixed by https://github.com/mne-tools/mne-bids/pull/547
         log.info(f"Starting erasing cache of {repr(self)}...")
-        paths = mne_bids.find_matching_paths(
+        path = mne_bids.BIDSPath(
             root=self.root,
-            subjects=subject_moabb_to_bids(self.subject),
-            descriptions=self.desc,
+            subject=subject_moabb_to_bids(self.subject),
+            description=self.desc,
+            check=False,
         )
-        for p in paths:
-            log.debug(f"Erasing {p}")
-            p.fpath.unlink()  # remove file
+        path.rm(safe_remove=False)
         log.info(f"Finished erasing cache of {repr(self)}.")
 
     def load(self, preload=False):
