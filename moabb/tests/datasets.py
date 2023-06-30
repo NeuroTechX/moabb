@@ -63,8 +63,8 @@ class Test_Datasets(unittest.TestCase):
             self.assertRaises(ValueError, ds.get_data, [1000])
 
     def test_cache_dataset(self):
+        tempdir = tempfile.mkdtemp()
         for paradigm in ["imagery", "p300", "ssvep"]:
-            tempdir = tempfile.mkdtemp()
             dataset = FakeDataset(paradigm=paradigm)
             with self.assertLogs(
                 logger="moabb.datasets.bids_interface", level="INFO"
@@ -109,7 +109,7 @@ class Test_Datasets(unittest.TestCase):
             self.assertIn("Finished erasing cache of dataset", cm.output[1])
             self.assertIn("Starting caching dataset", cm.output[2])
             self.assertIn("Finished caching dataset", cm.output[3])
-            shutil.rmtree(tempdir)
+        shutil.rmtree(tempdir)
 
     def test_dataset_accept(self):
         """verify that accept licence is working"""
