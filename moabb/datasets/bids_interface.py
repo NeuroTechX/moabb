@@ -81,8 +81,12 @@ class BIDSInterface:
     def __le__(self, other):
         return (
             self._base_comp(other)
-            and (other.fmin is None or self.fmin >= other.fmin)
-            and (other.fmax is None or self.fmax <= other.fmax)
+            and (
+                other.fmin is None or (self.fmin is not None and self.fmin >= other.fmin)
+            )
+            and (
+                other.fmax is None or (self.fmax is not None and self.fmax <= other.fmax)
+            )
         )
 
     @property
