@@ -57,7 +57,7 @@ class Test_Datasets(unittest.TestCase):
             self.assertEqual(len(data[1]["session_0"]), n_runs)
 
             # We should get a raw array at the end
-            self.assertEqual(type(data[1]["session_0"]["run_0"]), mne.io.RawArray)
+            self.assertIsInstance(data[1]["session_0"]["run_0"], mne.io.BaseRaw)
 
             # bad subject id must raise error
             self.assertRaises(ValueError, ds.get_data, [1000])
