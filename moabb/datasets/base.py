@@ -5,7 +5,7 @@ import abc
 import logging
 from inspect import signature
 
-from mne import pick_channels
+from mne import pick_channels, pick_types
 
 from moabb.datasets.bids_interface import BIDSInterface
 
@@ -218,9 +218,12 @@ class BaseDataset(metaclass=abc.ABCMeta):
         """
 
         def filter_raw(raw):
-            picks = pick_channels(  # we keep all the channels
-                raw.info["ch_names"], include=self.channels, ordered=True
-            )
+            if self.channels is None:
+                picks = pick_types(raw.info, eeg=True, stim=False)
+            else:
+                picks = pick_channels(  # we keep all the channels
+                    raw.info["ch_names"], include=self.channels, ordered=True
+                )
             if fmin is None and fmax is None:
                 return raw.pick(picks=picks, verbose=False)
             return raw.filter(
