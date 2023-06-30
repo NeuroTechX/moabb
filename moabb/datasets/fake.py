@@ -1,5 +1,8 @@
+import tempfile
+from pathlib import Path
+
 import numpy as np
-from mne import create_info
+from mne import create_info, get_config, set_config
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 
@@ -52,6 +55,11 @@ class FakeDataset(BaseDataset):
             interval=[0, 3],
             paradigm=paradigm,
         )
+        key = f"MNE_DATASETS_{self.code}_PATH"
+        temp_dir = get_config(key)
+        if temp_dir is None or not Path(temp_dir).exists():
+            temp_dir = tempfile.mkdtemp()
+            set_config(key, temp_dir)
 
     def _get_single_subject_data(self, subject):
         data = dict()
