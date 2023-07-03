@@ -2,6 +2,7 @@ import logging
 import os
 import os.path as osp
 from pathlib import Path
+from typing import Union
 
 import mne
 import pandas as pd
@@ -9,6 +10,7 @@ import yaml
 
 from moabb import paradigms as moabb_paradigms
 from moabb.analysis import analyze
+from moabb.datasets.base import BaseDataset
 from moabb.evaluations import (
     CrossSessionEvaluation,
     CrossSubjectEvaluation,
@@ -28,23 +30,22 @@ try:
 except ImportError:
     _carbonfootprint = False
 
-
 log = logging.getLogger(__name__)
 
 
 def benchmark(  # noqa: C901
-    pipelines="./pipelines/",
-    evaluations=None,
-    paradigms=None,
-    results="./results/",
-    overwrite=False,
-    output="./benchmark/",
-    n_jobs=-1,
-    n_jobs_evaluation=1,
-    plot=False,
-    contexts=None,
-    include_datasets=None,
-    exclude_datasets=None,
+    pipelines: str = "./pipelines/",
+    evaluations: list[str] = None,
+    paradigms: list[str] = None,
+    results: str = "./results/",
+    overwrite: bool = False,
+    output: str = "./benchmark/",
+    n_jobs: int = -1,
+    n_jobs_evaluation: int = 1,
+    plot: bool = False,
+    contexts: str = None,
+    include_datasets: list[Union[str, BaseDataset]] = None,
+    exclude_datasets: list[Union[str, BaseDataset]] = None,
 ):
     """Run benchmarks for selected pipelines and datasets
 
@@ -325,3 +326,9 @@ def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
     else:
         d = datasets
     return d
+
+
+if __name__ == "__main__":
+    import fire
+
+    fire.Fire(benchmark)
