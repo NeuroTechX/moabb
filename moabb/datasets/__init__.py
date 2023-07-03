@@ -31,6 +31,7 @@ from .braininvaders import (
 )
 from .Dreyer2023 import Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
+from .fake import FakeDataset, FakeVirtualRealityDataset
 from .gigadb import Cho2017
 from .huebner_llp import Huebner2017, Huebner2018
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
