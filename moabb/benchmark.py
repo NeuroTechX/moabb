@@ -165,7 +165,7 @@ def benchmark(  # noqa: C901
 
             ppl_with_epochs, ppl_with_array = {}, {}
             for pn, pv in prdgms[paradigm].items():
-                if "braindecode" in pn:
+                if "braindecode" in pn or "Keras" in pn:
                     ppl_with_epochs[pn] = pv
                 else:
                     ppl_with_array[pn] = pv

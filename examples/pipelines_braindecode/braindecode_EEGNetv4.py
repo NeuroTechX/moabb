@@ -5,6 +5,7 @@ from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
 
+from moabb.pipelines.features import Resampler_Epoch
 from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader, InputShapeSetterEEG
 
 
@@ -22,9 +23,9 @@ EPOCH = 10
 PATIENCE = 3
 
 # Create the dataset
-create_dataset = BraindecodeDatasetLoader(drop_last_window=False)
+create_dataset = BraindecodeDatasetLoader()
 
-# Set EEGNetv4 model
+# Set random Model
 model = EEGNetv4(in_chans=1, n_classes=2, input_window_samples=100)
 
 # Define a Skorch classifier
@@ -53,11 +54,17 @@ clf = EEGClassifier(
 )
 
 # Create the pipelines
-pipes = Pipeline([("braindecode_dataset", create_dataset), ("EEGNetv4", clf)])
+pipes = Pipeline(
+    [
+        ("resample", Resampler_Epoch(128)),
+        ("braindecode_dataset", create_dataset),
+        ("EEGNetv4", clf),
+    ]
+)
 
 # this is what will be loaded
 PIPELINE = {
-    "name": "braindecode_EEGNetv4",
+    "name": "braindecode_EEGNetv4_resample",
     "paradigms": ["LeftRightImagery", "MotorImagery"],
     "pipeline": pipes,
     "citations": "https://doi.org/10.1088/1741-2552/aace8c",
