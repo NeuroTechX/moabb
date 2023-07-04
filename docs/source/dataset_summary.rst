@@ -92,11 +92,11 @@ is a resting state experiment.
    HeadMountedDisplay,12,16,2,10,60s,512Hz,1
 
 
-Go-Shopping Datasets
+Compound Datasets
 ======================
 
-Go-Shopping Datasets are datasets compounded with subjects from other datasets.
-It is useful for merging different datasets (including other Go-Shopping datasets),
+Compound Datasets are datasets compounded with subjects from other datasets.
+It is useful for merging different datasets (including other Compound Datasets),
 select a sample of subject inside a dataset (e.g. subject with high/low performance).
 
 .. csv-table::

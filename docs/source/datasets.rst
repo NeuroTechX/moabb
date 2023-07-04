@@ -115,12 +115,12 @@ Base & Utils
 
 
 ====================
-Go-Shopping Datasets
+Compound Datasets
 ====================
 
-.. automodule:: moabb.datasets.shopping
+.. automodule:: moabb.datasets.compound_dataset
 
-.. currentmodule:: moabb.datasets.shopping
+.. currentmodule:: moabb.datasets.compound_dataset
 
 ------------
 ERP Datasets

@@ -7,4 +7,4 @@ from .bi_illiteracy import (
     bi2015b_il,
     biIlliteracy,
 )
-from .go_shopping import GoShoppingDataset
+from .base import CompoundDataset

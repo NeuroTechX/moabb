@@ -4,7 +4,7 @@ import mne
 
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
-from moabb.datasets.shopping import GoShoppingDataset
+from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.utils import block_rep
 from moabb.paradigms import P300
 
@@ -99,7 +99,7 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         assert ret.run.unique()[0] == block_rep(block, repetition)
 
 
-class Test_GoShoppingDataset(unittest.TestCase):
+class Test_CompoundDataset(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         self.paradigm = "p300"
         self.n_sessions = 2
@@ -119,16 +119,16 @@ class Test_GoShoppingDataset(unittest.TestCase):
         param_list = [(None, None), ("session_0", "run_0"), (["session_0"], ["run_0"])]
         for sessions, runs in param_list:
             with self.subTest():
-                shopping_list = [(self.ds, 1, sessions, runs)]
-                shopping_data = GoShoppingDataset(
-                    shopping_list,
+                subjects_list = [(self.ds, 1, sessions, runs)]
+                compound_data = CompoundDataset(
+                    subjects_list,
                     events=dict(Target=2, NonTarget=1),
-                    code="GoShoppingTest",
+                    code="CompoundTest",
                     interval=[0, 1],
                     paradigm=self.paradigm,
                 )
 
-                data = shopping_data.get_data()
+                data = compound_data.get_data()
 
                 # Check data type
                 self.assertTrue(isinstance(data, dict))
@@ -142,33 +142,33 @@ class Test_GoShoppingDataset(unittest.TestCase):
                 self.assertEqual(len(data[1]["session_0"]), expected_runs_number)
 
                 # bad subject id must raise error
-                self.assertRaises(ValueError, shopping_data.get_data, [1000])
+                self.assertRaises(ValueError, compound_data.get_data, [1000])
 
-    def test_shopping_dataset_composition(self):
-        # Test we can compound two instance of GoShoppingDataset into a new one.
+    def test_compound_dataset_composition(self):
+        # Test we can compound two instance of CompoundDataset into a new one.
 
-        # Create an instance of GoShoppingDataset with one subject
-        shopping_list = [(self.ds, 1, None, None)]
-        shopping_dataset = GoShoppingDataset(
-            shopping_list,
+        # Create an instance of CompoundDataset with one subject
+        subjects_list = [(self.ds, 1, None, None)]
+        compound_dataset = CompoundDataset(
+            subjects_list,
             events=dict(Target=2, NonTarget=1),
             code="D1",
             interval=[0, 1],
             paradigm=self.paradigm,
         )
 
-        # Add it two time to a shopping_list
-        shopping_list = [shopping_dataset, shopping_dataset]
-        shopping_data = GoShoppingDataset(
-            shopping_list,
+        # Add it two time to a subjects_list
+        subjects_list = [compound_dataset, compound_dataset]
+        compound_data = CompoundDataset(
+            subjects_list,
             events=dict(Target=2, NonTarget=1),
-            code="GoShoppingTest",
+            code="CompoundTest",
             interval=[0, 1],
             paradigm=self.paradigm,
         )
 
         # Assert that the coumpouned dataset has two times more subject than the original one.
-        data = shopping_data.get_data()
+        data = compound_data.get_data()
         self.assertEqual(len(data), 2)
 
     def test_get_sessions_per_subject(self):
@@ -181,15 +181,15 @@ class Test_GoShoppingDataset(unittest.TestCase):
             paradigm=self.paradigm,
         )
 
-        # Add the two datasets to a goshoppingdataset
-        shopping_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
-        shopping_dataset = GoShoppingDataset(
-            shopping_list,
+        # Add the two datasets to a CompoundDataset
+        subjects_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
+        compound_dataset = CompoundDataset(
+            subjects_list,
             events=dict(Target=2, NonTarget=1),
-            code="GoShoppingTest",
+            code="CompoundTest",
             interval=[0, 1],
             paradigm=self.paradigm,
         )
 
         # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
-        self.assertEqual(shopping_dataset._get_sessions_per_subject(), self.n_sessions)
+        self.assertEqual(compound_dataset._get_sessions_per_subject(), self.n_sessions)

@@ -1,13 +1,13 @@
 from ..braininvaders import VirtualReality, bi2014a, bi2014b, bi2015a, bi2015b
-from .go_shopping import GoShoppingDataset
+from .compound_dataset import CompoundDataset
 
 
-class _base_bi_il(GoShoppingDataset):
-    def __init__(self, shopping_list, dataset=None):
+class _base_bi_il(CompoundDataset):
+    def __init__(self, subjects_list, dataset=None):
         code = "Illiteracy" if dataset is None else f"{dataset.code}+IL"
-        GoShoppingDataset.__init__(
+        CompoundDataset.__init__(
             self,
-            shopping_list=shopping_list,
+            subjects_list=subjects_list,
             events=dict(Target=2, NonTarget=1),
             code=code,
             interval=[0, 1.0],
@@ -22,7 +22,7 @@ class bi2014a_il(_base_bi_il):
 
     def __init__(self):
         dataset = bi2014a()
-        shopping_list = [
+        subjects_list = [
             (dataset, 4, None, None),
             (dataset, 7, None, None),
             (dataset, 33, None, None),
@@ -41,7 +41,7 @@ class bi2014a_il(_base_bi_il):
             (dataset, 55, None, None),
             (dataset, 61, None, None),
         ]
-        _base_bi_il.__init__(self, shopping_list=shopping_list, dataset=dataset)
+        _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 
 
 class bi2014b_il(_base_bi_il):
@@ -51,7 +51,7 @@ class bi2014b_il(_base_bi_il):
 
     def __init__(self):
         dataset = bi2014b()
-        shopping_list = [
+        subjects_list = [
             (dataset, 2, None, None),
             (dataset, 7, None, None),
             (dataset, 10, None, None),
@@ -64,7 +64,7 @@ class bi2014b_il(_base_bi_il):
             (dataset, 35, None, None),
             (dataset, 36, None, None),
         ]
-        _base_bi_il.__init__(self, shopping_list=shopping_list, dataset=dataset)
+        _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 
 
 class bi2015a_il(_base_bi_il):
@@ -74,11 +74,11 @@ class bi2015a_il(_base_bi_il):
 
     def __init__(self):
         dataset = bi2015a()
-        shopping_list = [
+        subjects_list = [
             (dataset, 1, ["session_1", "session_2", "session_3"], None),
             (dataset, 39, ["session_2", "session_3"], None),
         ]
-        _base_bi_il.__init__(self, shopping_list=shopping_list, dataset=dataset)
+        _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 
 
 class bi2015b_il(_base_bi_il):
@@ -88,7 +88,7 @@ class bi2015b_il(_base_bi_il):
 
     def __init__(self):
         dataset = bi2015b()
-        shopping_list = [
+        subjects_list = [
             (dataset, 2, None, None),
             (dataset, 4, None, None),
             (dataset, 6, None, None),
@@ -115,7 +115,7 @@ class bi2015b_il(_base_bi_il):
             (dataset, 42, None, None),
             (dataset, 44, None, None),
         ]
-        _base_bi_il.__init__(self, shopping_list=shopping_list, dataset=dataset)
+        _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 
 
 class VirtualReality_il(_base_bi_il):
@@ -125,13 +125,13 @@ class VirtualReality_il(_base_bi_il):
 
     def __init__(self):
         dataset = VirtualReality(virtual_reality=True, screen_display=True)
-        shopping_list = [
+        subjects_list = [
             (dataset, 4, None, None),
             (dataset, 10, None, None),
             (dataset, 13, "VR", None),
             (dataset, 15, "VR", None),
         ]
-        _base_bi_il.__init__(self, shopping_list=shopping_list, dataset=dataset)
+        _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 
 
 class biIlliteracy(_base_bi_il):
@@ -140,11 +140,11 @@ class biIlliteracy(_base_bi_il):
     """
 
     def __init__(self):
-        shopping_list = [
+        subjects_list = [
             bi2014a_il(),
             bi2014b_il(),
             bi2015a_il(),
             bi2015b_il(),
             VirtualReality_il(),
         ]
-        _base_bi_il.__init__(self, shopping_list=shopping_list)
+        _base_bi_il.__init__(self, subjects_list=subjects_list)
