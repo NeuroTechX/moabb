@@ -1,3 +1,4 @@
+import mne
 import numpy as np
 import scipy.signal as signal
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -124,3 +125,35 @@ class StandardScaler_Epoch(BaseEstimator, TransformerMixin):
         X_fin = np.array(X_fin)
 
         return X_fin
+
+
+class Resampler_Epoch(BaseEstimator, TransformerMixin):
+    """
+    Function that copies and resamples an epochs object
+    """
+
+    def __init__(self, sfreq):
+        self.sfreq = sfreq
+
+    def fit(self, X, y):
+        return self
+
+    def transform(self, X: mne.Epochs):
+        X = X.copy()
+        X.resample(self.sfreq)
+        return X
+
+
+class Convert_Epoch_Array(BaseEstimator, TransformerMixin):
+    """
+    Function that copies and resamples an epochs object
+    """
+
+    def __init__(self):
+        """Init."""
+
+    def fit(self, X, y):
+        return self
+
+    def transform(self, X: mne.Epochs):
+        return X.get_data()
