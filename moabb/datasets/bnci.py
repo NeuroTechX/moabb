@@ -29,6 +29,7 @@ def load_data(
     force_update=False,
     update_path=None,
     base_url=BNCI_URL,
+    only_filenames=False,
     verbose=None,
 ):  # noqa: D301
     """Get paths to local copies of a BNCI dataset files.
@@ -54,6 +55,9 @@ def load_data(
     update_path : bool | None
         If True, set the MNE_DATASETS_BNCI_PATH in mne-python
         config to the given path. If None, the user is prompted.
+    only_filenames : bool
+        If True, return only the local path of the files without
+        loading the data.
     verbose : bool, str, int, or None
         If not None, override default verbose level (see :func:`mne.verbose`
         and :ref:`Logging documentation <tut_logging>` for more).
@@ -103,7 +107,13 @@ def load_data(
         )
 
     return dataset_list[dataset](
-        subject, path, force_update, update_path, baseurl_list[dataset], verbose
+        subject,
+        path,
+        force_update,
+        update_path,
+        baseurl_list[dataset],
+        only_filenames,
+        verbose,
     )
 
 
@@ -114,6 +124,7 @@ def _load_data_001_2014(
     force_update=False,
     update_path=None,
     base_url=BNCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 001-2014 dataset."""
@@ -130,12 +141,18 @@ def _load_data_001_2014(
     ch_types = ["eeg"] * 22 + ["eog"] * 3
 
     sessions = {}
+    filenames = []
     for r in ["T", "E"]:
         url = "{u}001-2014/A{s:02d}{r}.mat".format(u=base_url, s=subject, r=r)
         filename = data_path(url, path, force_update, update_path)
+        filenames += filename
+        if only_filenames:
+            continue
         runs, ev = _convert_mi(filename[0], ch_names, ch_types)
         # FIXME: deal with run with no event (1:3) and name them
         sessions["session_%s" % r] = {"run_%d" % ii: run for ii, run in enumerate(runs)}
+    if only_filenames:
+        return filenames
     return sessions
 
 
@@ -146,6 +163,7 @@ def _load_data_002_2014(
     force_update=False,
     update_path=None,
     base_url=BNCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 002-2014 dataset."""
@@ -153,14 +171,19 @@ def _load_data_002_2014(
         raise ValueError("Subject must be between 1 and 14. Got %d." % subject)
 
     runs = []
+    filenames = []
     for r in ["T", "E"]:
         url = "{u}002-2014/S{s:02d}{r}.mat".format(u=base_url, s=subject, r=r)
         filename = data_path(url, path, force_update, update_path)[0]
-
+        filenames.append(filename)
+        if only_filenames:
+            continue
         # FIXME: electrode position and name are not provided directly.
         raws, _ = _convert_mi(filename, None, ["eeg"] * 15)
         runs.extend(raws)
 
+    if only_filenames:
+        return filenames
     runs = {"run_%d" % ii: run for ii, run in enumerate(runs)}
     return {"session_0": runs}
 
@@ -172,6 +195,7 @@ def _load_data_004_2014(
     force_update=False,
     update_path=None,
     base_url=BNCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 004-2014 dataset."""
@@ -182,12 +206,18 @@ def _load_data_004_2014(
     ch_types = ["eeg"] * 3 + ["eog"] * 3
 
     sessions = []
+    filenames = []
     for r in ["T", "E"]:
         url = "{u}004-2014/B{s:02d}{r}.mat".format(u=base_url, s=subject, r=r)
         filename = data_path(url, path, force_update, update_path)[0]
+        filenames.append(filename)
+        if only_filenames:
+            continue
         raws, _ = _convert_mi(filename, ch_names, ch_types)
         sessions.extend(raws)
 
+    if only_filenames:
+        return filenames
     sessions = {"session_%d" % ii: {"run_0": run} for ii, run in enumerate(sessions)}
     return sessions
 
@@ -199,6 +229,7 @@ def _load_data_008_2014(
     force_update=False,
     update_path=None,
     base_url=BNCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 008-2014 dataset."""
@@ -207,7 +238,8 @@ def _load_data_008_2014(
 
     url = "{u}008-2014/A{s:02d}.mat".format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
-
+    if only_filenames:
+        return [filename]
     run = loadmat(filename, struct_as_record=False, squeeze_me=True)["data"]
     raw, event_id = _convert_run_p300_sl(run, verbose=verbose)
 
@@ -223,6 +255,7 @@ def _load_data_009_2014(
     force_update=False,
     update_path=None,
     base_url=BNCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 009-2014 dataset."""
@@ -233,6 +266,8 @@ def _load_data_009_2014(
     # we load only grid speller data
     url = "{u}009-2014/A{s:02d}S.mat".format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
+    if only_filenames:
+        return [filename]
 
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)["data"]
     sess = []
@@ -259,6 +294,7 @@ def _load_data_001_2015(
     force_update=False,
     update_path=None,
     base_url=BNCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 001-2015 dataset."""
@@ -279,11 +315,17 @@ def _load_data_001_2015(
     ch_types = ["eeg"] * 13
 
     sessions = {}
+    filenames = []
     for r in ses:
         url = "{u}001-2015/S{s:02d}{r}.mat".format(u=base_url, s=subject, r=r)
         filename = data_path(url, path, force_update, update_path)
+        filenames += filename
+        if only_filenames:
+            continue
         runs, ev = _convert_mi(filename[0], ch_names, ch_types)
         sessions["session_%s" % r] = {"run_%d" % ii: run for ii, run in enumerate(runs)}
+    if only_filenames:
+        return filenames
     return sessions
 
 
@@ -294,6 +336,7 @@ def _load_data_003_2015(
     force_update=False,
     update_path=None,
     base_url=BNCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 003-2015 dataset."""
@@ -302,6 +345,8 @@ def _load_data_003_2015(
 
     url = "{u}003-2015/s{s:d}.mat".format(u=base_url, s=subject)
     filename = data_path(url, path, force_update, update_path)[0]
+    if only_filenames:
+        return [filename]
 
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
     data = data["s%d" % subject]
@@ -350,6 +395,7 @@ def _load_data_004_2015(
     force_update=False,
     update_path=None,
     base_url=BNCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 004-2015 dataset."""
@@ -360,6 +406,8 @@ def _load_data_004_2015(
 
     url = "{u}004-2015/{s}.mat".format(u=base_url, s=subjects[subject - 1])
     filename = data_path(url, path, force_update, update_path)[0]
+    if only_filenames:
+        return [filename]
 
     # fmt: off
     ch_names = [
@@ -381,6 +429,7 @@ def _load_data_009_2015(
     force_update=False,
     update_path=None,
     base_url=BBCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 009-2015 dataset."""
@@ -396,6 +445,8 @@ def _load_data_009_2015(
     s = subjects[subject - 1]
     url = "{u}BNCIHorizon2020-AMUSE/AMUSE_VP{s}.mat".format(u=base_url, s=s)
     filename = data_path(url, path, force_update, update_path)[0]
+    if only_filenames:
+        return [filename]
 
     ch_types = ["eeg"] * 60 + ["eog"] * 2
 
@@ -409,6 +460,7 @@ def _load_data_010_2015(
     force_update=False,
     update_path=None,
     base_url=BBCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 010-2015 dataset."""
@@ -425,6 +477,8 @@ def _load_data_010_2015(
     s = subjects[subject - 1]
     url = "{u}BNCIHorizon2020-RSVP/RSVP_VP{s}.mat".format(u=base_url, s=s)
     filename = data_path(url, path, force_update, update_path)[0]
+    if only_filenames:
+        return [filename]
 
     ch_types = ["eeg"] * 63
 
@@ -438,6 +492,7 @@ def _load_data_012_2015(
     force_update=False,
     update_path=None,
     base_url=BBCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 012-2015 dataset."""
@@ -449,6 +504,8 @@ def _load_data_012_2015(
     s = subjects[subject - 1]
     url = "{u}BNCIHorizon2020-PASS2D/PASS2D_VP{s}.mat".format(u=base_url, s=s)
     filename = data_path(url, path, force_update, update_path)[0]
+    if only_filenames:
+        return [filename]
 
     ch_types = ["eeg"] * 63
 
@@ -462,6 +519,7 @@ def _load_data_013_2015(
     force_update=False,
     update_path=None,
     base_url=BNCI_URL,
+    only_filenames=False,
     verbose=None,
 ):
     """Load data for 013-2015 dataset."""
@@ -472,6 +530,8 @@ def _load_data_013_2015(
     for r in ["s1", "s2"]:
         url = "{u}013-2015/Subject{s:02d}_{r}.mat".format(u=base_url, s=subject, r=r)
         data_paths.extend(data_path(url, path, force_update, update_path))
+    if only_filenames:
+        return data_paths
 
     raws = []
     event_id = {}
@@ -674,6 +734,7 @@ class MNEBNCI(BaseDataset):
             update_path=update_path,
             path=path,
             force_update=force_update,
+            only_filenames=True,
         )
 
 
