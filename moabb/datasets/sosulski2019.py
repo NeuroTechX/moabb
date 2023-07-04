@@ -89,7 +89,6 @@ class Sosulski2019(BaseDataset):
         load_soa_60=False,
         reject_non_iid=False,
         interval=None,
-        description_map={"Stimulus/S 21": "Target", "Stimulus/S  1": "NonTarget"},
     ):
         """
         :param use_soa_as_sessions: 1800 epochs were recorded at different SOAs each. Depending on
@@ -105,7 +104,7 @@ class Sosulski2019(BaseDataset):
         self.stimulus_modality = "tone_oddball"
         self.n_channels = 31
         self.use_soas_as_sessions = use_soas_as_sessions
-        self.description_map = description_map
+        self.description_map = {"Stimulus/S 21": "Target", "Stimulus/S  1": "NonTarget"}
         code = "Spot Pilot P300 dataset"
         interval = [-0.2, 1] if interval is None else interval
         super().__init__(

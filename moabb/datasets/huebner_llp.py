@@ -23,7 +23,6 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         n_subjects,
         raw_slice_offset,
         use_blocks_as_sessions=True,
-        description_map={"Stimulus/S   1": "Target", "Stimulus/S   0": "NonTarget"},
         **kwargs,
     ):
         self.n_channels = 31  # all channels except 5 times x_* CH and EOGvu
@@ -41,7 +40,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         self.raw_slice_offset = 2_000 if raw_slice_offset is None else raw_slice_offset
         self._src_url = src_url
         self.use_blocks_as_sessions = use_blocks_as_sessions
-        self.description_map = description_map
+        self.description_map = {"Stimulus/S   1": "Target", "Stimulus/S   0": "NonTarget"}
 
     @staticmethod
     def _filename_trial_info_extraction(vhdr_file_path):
