@@ -278,18 +278,18 @@ class WithinSessionEvaluation(BaseEvaluation):
                         return_estimator=True,
                     )
                     score = results["test_score"].mean()
+                    if self.hdf5_path is not None:
+                        save_model_list(
+                            results["estimator"],
+                            score_list=results["test_score"],
+                            save_path=model_save_path,
+                        )
+
                 if _carbonfootprint:
                     emissions = tracker.stop()
                     if emissions is None:
                         emissions = np.NaN
                 duration = time() - t_start
-
-                if self.hdf5_path is not None:
-                    save_model_list(
-                        results["estimator"],
-                        score_list=results["test_score"],
-                        save_path=model_save_path,
-                    )
 
                 nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                 res = {
