@@ -38,6 +38,9 @@ Bugs
 - Save parameters of :func:`moabb.dataset.PhysionetMI` (:gh:`403` by `Pierre Guetschel`_)
 - Fixing issue with parallel evaluation (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Fixing SSLError from BCI competition IV (:gh:`404` by `Bruno Aristimunha`_)
+- Fixing :func:`moabb.dataset.bnci.MNEBNCI.data_path` that returned the data itself instead of paths (:gh:`412` by `Pierre Guetschel`_)
+- Adding :func:`moabb.datasets.fake` in the init file to use in braindecode object (:gh:`414` by `Bruno Aristimunha`_)
+
 
 API changes
 ~~~~~~~~~~~
