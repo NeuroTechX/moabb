@@ -1,5 +1,5 @@
 from ..braininvaders import VirtualReality, bi2014a, bi2014b, bi2015a, bi2015b
-from .compound_dataset import CompoundDataset
+from .base import CompoundDataset
 
 
 class _base_bi_il(CompoundDataset):
