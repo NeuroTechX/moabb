@@ -3,8 +3,8 @@ import unittest
 import mne
 
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
-from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.compound_dataset import CompoundDataset
+from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.utils import block_rep
 from moabb.paradigms import P300
 

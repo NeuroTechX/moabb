@@ -1,4 +1,5 @@
 # flake8: noqa
+from .base import CompoundDataset
 from .bi_illiteracy import (
     VirtualReality_il,
     bi2014a_il,
@@ -7,4 +8,3 @@ from .bi_illiteracy import (
     bi2015b_il,
     biIlliteracy,
 )
-from .base import CompoundDataset
