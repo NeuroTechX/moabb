@@ -252,7 +252,7 @@ def combine_effects(effects, nsubs):
 
     Parameters
     ----------
-    p: DataFrame
+    effects: DataFrame
         effects for 2 pipelines computed on different datasets
     nsubs: float
         average number of subject per datasets
@@ -260,7 +260,7 @@ def combine_effects(effects, nsubs):
     Returns
     -------
     effect: float
-        Estimatation of the combined p-value
+        Estimatation of the combined effects
     """
     W = np.sqrt(nsubs)
     W = W / W.sum()
@@ -296,8 +296,8 @@ def combine_pvalues(p, nsubs):
 def find_significant_differences(df, perm_cutoff=20):
     """Compute differences between pipelines across datasets
 
-    Compute matrix of p-values for all algorithms over all datasets via
-    combined p-values method
+    Compute matrices of p-values and effects for all algorithms over all datasets via
+    combined p-values and combined effects methods
 
     Parameters
     ----------

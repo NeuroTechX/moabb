@@ -27,7 +27,7 @@ def _simplify_names(x):
         return x
 
 
-def score_plot(data, pipelines=None):
+def score_plot(data, pipelines=None, orientation="vertical"):
     """Plot scores for all pipelines and all datasets
 
     Parameters
@@ -36,6 +36,8 @@ def score_plot(data, pipelines=None):
         results on datasets
     pipelines: list of str | None
         pipelines to include in this plot
+    orientation: str
+        orientation of the score points
 
     Returns
     -------
@@ -53,13 +55,22 @@ def score_plot(data, pipelines=None):
 
     if pipelines is not None:
         data = data[data.pipeline.isin(pipelines)]
-    fig = plt.figure(figsize=(8.5, 11))
-    ax = fig.add_subplot(111)
+
+    if orientation in ["horizontal", "h"]:
+        y, x = "dataset", "score"
+        fig = plt.figure(figsize=(8.5, 11))
+    elif orientation in ["vertical", "v"]:
+        x, y = "dataset", "score"
+        fig = plt.figure(figsize=(11, 8.5))
+    else:
+        raise ValueError("Invalid plot orientation selected!")
+
     # markers = ['o', '8', 's', 'p', '+', 'x', 'D', 'd', '>', '<', '^']
+    ax = fig.add_subplot(111)
     sea.stripplot(
         data=data,
-        y="dataset",
-        x="score",
+        y=y,
+        x=x,
         jitter=0.15,
         palette=PIPELINE_PALETTE,
         hue="pipeline",
@@ -67,12 +78,17 @@ def score_plot(data, pipelines=None):
         ax=ax,
         alpha=0.7,
     )
-    ax.set_xlim([0, 1])
-    ax.axvline(0.5, linestyle="--", color="k", linewidth=2)
+    if orientation in ["horizontal", "h"]:
+        ax.set_xlim([0, 1])
+        ax.axvline(0.5, linestyle="--", color="k", linewidth=2)
+    else:
+        ax.set_ylim([0, 1])
+        ax.axhline(0.5, linestyle="--", color="k", linewidth=2)
     ax.set_title("Scores per dataset and algorithm")
     handles, labels = ax.get_legend_handles_labels()
     color_dict = {lb: h.get_facecolor()[0] for lb, h in zip(labels, handles)}
     plt.tight_layout()
+
     return fig, color_dict
 
 
