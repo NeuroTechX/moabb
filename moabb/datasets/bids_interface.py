@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import mne
 import mne_bids
 
 import moabb
@@ -218,6 +219,7 @@ class BIDSInterface:
                     raw.info["device_info"] = {"type": "eeg"}
                 if raw.info.get("meas_date", None) is None:
                     raw.set_meas_date(datetime_now)
+
         # daysback_min, daysback_max = mne_bids.get_anonymization_daysback(raws)
         for session, runs in sessions_data.items():
             for run, raw in runs.items():
@@ -232,6 +234,8 @@ class BIDSInterface:
                 )
 
                 events = _find_events(raw, self.dataset.event_id)
+                picks = mne.pick_types(info=raw.info, eeg=True, stim=False)
+                raw.pick(picks)
                 # By using the same anonymization `daysback` number we can
                 # preserve the longitudinal structure of multiple sessions for a
                 # single subject and the relation between subjects. Be sure to

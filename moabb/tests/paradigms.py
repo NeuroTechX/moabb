@@ -97,13 +97,18 @@ class Test_MotorImagery(unittest.TestCase):
         # selected event. cetain runs in dataset are event specific.
         paradigm = SimpleMotorImagery(filters=[[7, 12], [12, 24]])
         dataset = FakeDataset(paradigm="imagery")
-        raw = dataset.get_data([1])[1]["session_0"]["run_0"]
+        # no stim channel after loading cache
+        raw = dataset.get_data([1], cache_config=dict(use=False, save=False))[1][
+            "session_0"
+        ]["run_0"]
+        raw.load_data()
+        self.assertEqual("stim", raw.ch_names[-1])
         # add something on the event channel
         raw._data[-1] *= 10
-        self.assertIsNone(paradigm.process_raw(raw, dataset))
+        self.assertIsNone(paradigm.process_raws([raw], dataset))
         # zeros it out
         raw._data[-1] *= 0
-        self.assertIsNone(paradigm.process_raw(raw, dataset))
+        self.assertIsNone(paradigm.process_raws([raw], dataset))
 
     def test_BaseImagery_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap
@@ -273,13 +278,18 @@ class Test_P300(unittest.TestCase):
         # selected event. cetain runs in dataset are event specific.
         paradigm = SimpleP300(filters=[[1, 12], [12, 24]])
         dataset = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])
-        raw = dataset.get_data([1])[1]["session_0"]["run_0"]
+        # no stim channel after loading cache
+        raw = dataset.get_data([1], cache_config=dict(use=False, save=False))[1][
+            "session_0"
+        ]["run_0"]
+        raw.load_data()
+        self.assertEqual("stim", raw.ch_names[-1])
         # add something on the event channel
         raw._data[-1] *= 10
-        self.assertIsNone(paradigm.process_raw(raw, dataset))
+        self.assertIsNone(paradigm.process_raws([raw], dataset))
         # zeros it out
         raw._data[-1] *= 0
-        self.assertIsNone(paradigm.process_raw(raw, dataset))
+        self.assertIsNone(paradigm.process_raws([raw], dataset))
 
     def test_BaseP300_droppedevent(self):
         dataset = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])
@@ -335,7 +345,9 @@ class Test_RestingState(unittest.TestCase):
         event_list = ["Open", "Close"]
         paradigm = RestingStateToP300Adapter(events=event_list)
         dataset = FakeDataset(paradigm="rstate", event_list=event_list)
-        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+        X, labels, metadata = paradigm.get_data(
+            dataset, subjects=[1], cache_config=dict(use=False, save=False)
+        )
 
         # we should have all the same length
         self.assertEqual(len(X), len(labels), len(metadata))

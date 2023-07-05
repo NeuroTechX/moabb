@@ -301,6 +301,7 @@ class BaseParadigm(metaclass=ABCMeta):
                                     fmax,
                                     method="iir",
                                     verbose=False,
+                                    picks="eeg",
                                 )
                             ),
                         )
