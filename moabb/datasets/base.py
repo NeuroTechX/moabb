@@ -39,12 +39,15 @@ class CacheConfig:
         "~/mne_data" directory is used. If the dataset
         is not found under the given path, the data
         will be automatically downloaded to the specified folder.
+    verbose:
+        Verbosity level. See mne.verbose.
     """
 
     save: bool = True
     use: bool = True
-    overwrite: bool = True
+    overwrite: bool = False
     path: Union[str, Path] = None
+    verbose = None
 
     @classmethod
     def make(cls, d: Union[None, dict, "CacheConfig"] = None) -> "CacheConfig":
@@ -273,6 +276,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
             subject,
             path=cache_config.path,
             process_pipeline=process_pipeline,
+            verbose=cache_config.verbose,
         )
 
         # Overwrite:

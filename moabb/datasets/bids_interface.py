@@ -55,6 +55,7 @@ class BIDSInterface:
     subject: int
     path: str = None
     process_pipeline: "Pipeline" = None
+    verbose: str = None
 
     # @classmethod
     # def from_lockfile(cls, lock_file, other_interface):
@@ -165,8 +166,10 @@ class BIDSInterface:
         sessions_data = {}
         for p in paths:
             session = sessions_data.setdefault(session_bids_to_moabb(p.session), {})
-            log.debug(f"Reading {p.fpath}")
-            run = mne_bids.read_raw_bids(p, extra_params=dict(preload=preload))
+            # log.debug(f"Reading {p.fpath}")
+            run = mne_bids.read_raw_bids(
+                p, extra_params=dict(preload=preload), verbose=self.verbose
+            )
             session[run_bids_to_moabb(p.run)] = run
         log.info(f"Finished reading cache of {repr(self)}.")
         return sessions_data
@@ -194,6 +197,7 @@ class BIDSInterface:
                 )
             ],
             overwrite=False,
+            verbose=self.verbose,
         )
 
         datetime_now = datetime.datetime.now(tz=datetime.timezone.utc)
@@ -237,7 +241,7 @@ class BIDSInterface:
                 # Note that we do not need to pass any events, as the dataset is already
                 # equipped with annotations, which will be converted to BIDS events
                 # automatically.
-                log.debug(f"Writing {bids_path}")
+                # log.debug(f"Writing {bids_path}")
                 bids_path.mkdir(exist_ok=True)
                 mne_bids.write_raw_bids(
                     raw,
@@ -249,8 +253,9 @@ class BIDSInterface:
                     allow_preload=True,
                     montage=raw.get_montage(),
                     overwrite=False,  # files should be deleted by _delete_cache in case overwrite_cache is True
+                    verbose=self.verbose,
                 )
-        log.debug(f"Writing {self.lock_file}")
+        # log.debug(f"Writing {self.lock_file}")
         self.lock_file.mkdir(exist_ok=True)
         with self.lock_file.fpath.open("w") as f:
             d = dict(processing_params=str(self.processing_params))
