@@ -285,6 +285,7 @@ class BaseParadigm(metaclass=ABCMeta):
         if subjects is None:
             subjects = dataset.subject_list
 
+        self.prepare_process(dataset)
         data = [
             dataset.get_data(
                 subjects=subjects,
@@ -295,7 +296,11 @@ class BaseParadigm(metaclass=ABCMeta):
                             "filter",
                             FunctionTransformer(
                                 methodcaller(
-                                    "filter", fmin, fmax, method="iir", verbose=False
+                                    "filter",
+                                    fmin,
+                                    fmax,
+                                    method="iir",
+                                    verbose=False,
                                 )
                             ),
                         )
@@ -315,7 +320,6 @@ class BaseParadigm(metaclass=ABCMeta):
             }
             for subject, sessions in data[0].items()
         }
-        self.prepare_process(dataset)
 
         X = [] if (return_epochs or return_raws) else np.array([])
         labels = []
