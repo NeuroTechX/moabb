@@ -218,10 +218,7 @@ class BaseParadigm(metaclass=ABCMeta):
         subjects=None,
         return_epochs=False,
         return_raws=False,
-        save_cache=True,
-        use_cache=True,
-        overwrite_cache=True,
-        path=None,
+        cache_config=None,
     ):
         """
         Return the data for a list of subject.
@@ -245,22 +242,8 @@ class BaseParadigm(metaclass=ABCMeta):
         return_raws: boolean
             To return raw files and events, to ensure compatibility with braindecode.
             Mutually exclusive with return_epochs
-        save_cache: boolean
-            This flag specifies whether to save the processed mne.io.Raw to disk
-        use_cache: boolean
-            This flag specifies whether to use the processed mne.io.Raw from disk
-            in case they exist. If True, the Raw objects returned will not be preloaded
-            (this saves some time). Otherwise, they will be preloaded.
-        overwrite_cache: boolean
-            This flag specifies whether to overwrite the processed mne.io.Raw on disk
-            in case they exist
-        path : None | str
-            Location of where to look for the data storing location.
-            If None, the environment variable or config parameter
-            ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
-            "~/mne_data" directory is used. If the dataset
-            is not found under the given path, the data
-            will be automatically downloaded to the specified folder.
+        cache_config: dict
+            Configuration for caching of datasets. See moabb.datasets.base.CacheConfig for details.
 
         returns
         -------
@@ -286,9 +269,7 @@ class BaseParadigm(metaclass=ABCMeta):
             subjects = dataset.subject_list
 
         data = [
-            dataset.get_data(
-                subjects, save_cache, use_cache, overwrite_cache, path, fmin, fmax
-            )
+            dataset.get_data(subjects, cache_config, fmin, fmax)
             for fmin, fmax in self.filters
         ]
         data = {
