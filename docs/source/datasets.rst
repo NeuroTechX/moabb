@@ -21,6 +21,9 @@ Motor Imagery Datasets
     BNCI2015001
     BNCI2015004
     Cho2017
+    Dreyer2023A
+    Dreyer2023B
+    Dreyer2023C
     Lee2019_MI
     MunichMI
     Ofner2017

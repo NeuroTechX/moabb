@@ -28,6 +28,7 @@ Enhancements
 - Adding saving option for the models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Adding example to load different type of models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Add resting state paradigm with dataset and example (:gh:`400` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
+- Add Dreyer 2023 Left-Right Motor Imagery dataset (:gh:`404` by `Sara Sedlar`_ and `Sylvain Chevallier`_)
 
 Bugs
 ~~~~
