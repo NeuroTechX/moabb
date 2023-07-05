@@ -311,9 +311,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
         if save_cache:
             try:
                 interface.save(sessions_data)
-            except Exception as ex:
+            except Exception:
                 log.warning(
-                    f"Failed to save dataset {self.code}, subject {subject} to BIDS format:\n{' Exception: '.center(50, '#')}\n{''.join(traceback.format_exception(ex))}{'#' * 50}"
+                    f"Failed to save dataset {self.code}, subject {subject} to BIDS format:\n{' Exception: '.center(50, '#')}\n{''.join(traceback.format_exc())}{'#' * 50}"
                 )
 
                 interface.erase()  # remove partial cache
