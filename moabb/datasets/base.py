@@ -3,6 +3,7 @@ Base class for a dataset
 """
 import abc
 import logging
+import traceback
 from dataclasses import dataclass
 from inspect import signature
 from pathlib import Path
@@ -311,10 +312,10 @@ class BaseDataset(metaclass=abc.ABCMeta):
             try:
                 interface.save(sessions_data)
             except Exception as ex:
-                # ex_type, ex_value, ex_traceback = sys.exc_info()
                 log.warning(
-                    f"Failed to save dataset {self.code}, subject {subject} to BIDS format:\n{ex}"
+                    f"Failed to save dataset {self.code}, subject {subject} to BIDS format:\n{' Exception: '.center(50, '#')}\n{''.join(traceback.format_exception(ex))}{'#' * 50}"
                 )
+
                 interface.erase()  # remove partial cache
             else:
                 if cache_config.use:
