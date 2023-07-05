@@ -31,7 +31,7 @@ def subject_bids_to_moabb(subject):
 
 
 def session_moabb_to_bids(session):
-    return session.removeprefix("session_")
+    return session.replace("session_", "")
 
 
 def session_bids_to_moabb(session):
@@ -42,7 +42,7 @@ def run_moabb_to_bids(run):
     # Note: the runs are expected to be indexes in the BIDS standard.
     #       This is not always the case in MOABB.
     # See: https://bids-specification.readthedocs.io/en/stable/glossary.html#run-entities
-    return run.removeprefix("run_")
+    return run.replace("run_", "")
 
 
 def run_bids_to_moabb(run):
