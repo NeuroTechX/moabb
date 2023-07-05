@@ -3,7 +3,10 @@ Base class for a dataset
 """
 import abc
 import logging
+from dataclasses import dataclass
 from inspect import signature
+from pathlib import Path
+from typing import Union
 
 from mne import pick_channels, pick_types
 
@@ -11,6 +14,64 @@ from moabb.datasets.bids_interface import BIDSInterface
 
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class CacheConfig:
+    """
+    Configuration for caching of datasets.
+
+    Parameters
+    ----------
+    save: boolean
+        This flag specifies whether to save the processed mne.io.Raw to disk
+    use: boolean
+        This flag specifies whether to use the processed mne.io.Raw from disk
+        in case they exist. If True, the Raw objects returned will not be preloaded
+        (this saves some time). Otherwise, they will be preloaded.
+    overwrite: boolean
+        This flag specifies whether to overwrite the processed mne.io.Raw on disk
+        in case they exist
+    path : None | str
+        Location of where to look for the data storing location.
+        If None, the environment variable or config parameter
+        ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
+        "~/mne_data" directory is used. If the dataset
+        is not found under the given path, the data
+        will be automatically downloaded to the specified folder.
+    """
+
+    save: bool = True
+    use: bool = True
+    overwrite: bool = True
+    path: Union[str, Path] = None
+
+    @classmethod
+    def make(cls, d: Union[None, dict, "CacheConfig"] = None) -> "CacheConfig":
+        """
+        Create a CacheConfig object from a dict or another CacheConfig object.
+
+        Examples
+        -------
+        Using default parameters:
+
+        >>> CacheConfig.make()
+        CacheConfig(save=True, use=True, overwrite=True, path=None)
+
+        From a dict:
+
+        >>> d = {'save': False}
+        >>> CacheConfig.make(d)
+        CacheConfig(save=False, use=True, overwrite=True, path=None)
+        """
+        if d is None:
+            return cls()
+        elif isinstance(d, dict):
+            return cls(**d)
+        elif isinstance(d, cls):
+            return d
+        else:
+            raise ValueError(f"Expected dict or CacheConfig, got {type(d)}")
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
@@ -81,10 +142,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
     def get_data(
         self,
         subjects=None,
-        save_cache=True,
-        use_cache=True,
-        overwrite_cache=True,
-        path=None,
+        cache_config=None,
         fmin=None,
         fmax=None,
     ):
@@ -107,22 +165,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
         ----------
         subjects: List of int
             List of subject number
-        save_cache: boolean
-            This flag specifies whether to save the processed mne.io.Raw to disk
-        use_cache: boolean
-            This flag specifies whether to use the processed mne.io.Raw from disk
-            in case they exist. If True, the Raw objects returned will not be preloaded
-            (this saves some time). Otherwise, they will be preloaded.
-        overwrite_cache: boolean
-            This flag specifies whether to overwrite the processed mne.io.Raw on disk
-            in case they exist
-        path : None | str
-            Location of where to look for the data storing location.
-            If None, the environment variable or config parameter
-            ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
-            "~/mne_data" directory is used. If the dataset
-            is not found under the given path, the data
-            will be automatically downloaded to the specified folder.
+        cache_config: dict
+            Configuration for caching of datasets. See CacheConfig for details.
         fmin: float | None
             The frequency of the highpass filter. If None, the filtering is not applied.
         fmax: float | None
@@ -139,12 +183,14 @@ class BaseDataset(metaclass=abc.ABCMeta):
         if not isinstance(subjects, list):
             raise (ValueError("subjects must be a list"))
 
+        cache_config = CacheConfig.make(cache_config)
+
         data = dict()
         for subject in subjects:
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
             data[subject] = self._get_single_subject_data_using_cache(
-                subject, save_cache, use_cache, overwrite_cache, path, fmin, fmax
+                subject, cache_config, fmin, fmax
             )
 
         return data
@@ -209,13 +255,13 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     verbose=verbose,
                 )
 
-    def _get_single_subject_data_using_cache(
-        self, subject, save_cache, use_cache, overwrite_cache, path, fmin, fmax
-    ):
+    def _get_single_subject_data_using_cache(self, subject, cache_config, fmin, fmax):
         """
         Either load the data of a single subject from disk cache or from the dataset object,
         then eventually saves or overwrites the cache version depending on the parameters.
         """
+        cache_config = CacheConfig.make(cache_config)
+        save_cache = cache_config.save
 
         def filter_raw(raw):
             if self.channels is None:
@@ -230,20 +276,26 @@ class BaseDataset(metaclass=abc.ABCMeta):
                 fmin, fmax, method="iir", picks=picks, verbose=False
             )  # we filter in-place
 
-        interface = BIDSInterface(self, subject, path=path, fmin=fmin, fmax=fmax)
+        interface = BIDSInterface(
+            self, subject, path=cache_config.path, fmin=fmin, fmax=fmax
+        )
 
         # Overwrite:
-        if overwrite_cache:
+        if cache_config.overwrite:
             interface.erase()
 
         # Load:
         sessions_data = None
-        if use_cache and not overwrite_cache:  # can't load if it was just erased
+        if (
+            cache_config.use and not cache_config.overwrite
+        ):  # can't load if it was just erased
             sessions_data = interface.load(preload=False)
         if sessions_data is not None:
             save_cache = False  # no need to save if we just loaded it
         else:
-            interface2 = interface.find_compatible_interface() if use_cache else None
+            interface2 = (
+                interface.find_compatible_interface() if cache_config.use else None
+            )
             if interface2 is not None:
                 sessions_data = interface2.load(preload=True)
             else:
@@ -264,7 +316,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
                 )
                 interface.erase()  # remove partial cache
             else:
-                if use_cache:
+                if cache_config.use:
                     sessions_data = interface.load(preload=False)
                     assert (
                         sessions_data is not None

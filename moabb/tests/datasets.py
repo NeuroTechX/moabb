@@ -71,10 +71,12 @@ class Test_Datasets(unittest.TestCase):
             ) as cm:
                 _ = dataset.get_data(
                     subjects=[1],
-                    save_cache=True,
-                    use_cache=True,
-                    overwrite_cache=False,
-                    path=tempdir,
+                    cache_config=dict(
+                        save=True,
+                        use=True,
+                        overwrite=False,
+                        path=tempdir,
+                    ),
                 )
             print("\n".join(cm.output))
             self.assertIn("Attempting to retrieve cache of dataset", cm.output[0])
@@ -86,10 +88,12 @@ class Test_Datasets(unittest.TestCase):
             ) as cm:
                 _ = dataset.get_data(
                     subjects=[1],
-                    save_cache=True,
-                    use_cache=True,
-                    overwrite_cache=False,
-                    path=tempdir,
+                    cache_config=dict(
+                        save=True,
+                        use=True,
+                        overwrite=False,
+                        path=tempdir,
+                    ),
                 )
             print("\n".join(cm.output))
             self.assertIn("Attempting to retrieve cache of dataset", cm.output[0])
@@ -99,10 +103,12 @@ class Test_Datasets(unittest.TestCase):
             ) as cm:
                 _ = dataset.get_data(
                     subjects=[1],
-                    save_cache=True,
-                    use_cache=True,
-                    overwrite_cache=True,
-                    path=tempdir,
+                    cache_config=dict(
+                        save=True,
+                        use=True,
+                        overwrite=True,
+                        path=tempdir,
+                    ),
                 )
             print("\n".join(cm.output))
             self.assertIn("Starting erasing cache of dataset", cm.output[0])
