@@ -364,10 +364,20 @@ class Test_RestingState(unittest.TestCase):
         # we should have two sessions in the metadata
         self.assertEqual(len(np.unique(metadata.session)), 2)
         # should return epochs
-        epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
+        epochs, _, _ = paradigm.get_data(
+            dataset,
+            subjects=[1],
+            return_epochs=True,
+            cache_config=dict(use=False, save=False),
+        )
         self.assertIsInstance(epochs, BaseEpochs)
         # should return raws
-        raws, _, _ = paradigm.get_data(dataset, subjects=[1], return_raws=True)
+        raws, _, _ = paradigm.get_data(
+            dataset,
+            subjects=[1],
+            return_raws=True,
+            cache_config=dict(use=False, save=False),
+        )
         for raw in raws:
             self.assertIsInstance(raw, BaseRaw)
         # should raise error
