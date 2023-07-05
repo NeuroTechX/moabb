@@ -1,14 +1,31 @@
 import logging
 from abc import ABCMeta, abstractmethod
+from operator import methodcaller
 
 import mne
 import numpy as np
 import pandas as pd
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer
 
 from moabb.paradigms.utils import _find_events
 
 
 log = logging.getLogger(__name__)
+
+
+# def filter_raw(raw):
+#     if self.channels is None:
+#         picks = pick_types(raw.info, eeg=True, stim=False)
+#     else:
+#         picks = pick_channels(  # we keep all the channels
+#             raw.info["ch_names"], include=self.channels, ordered=True
+#         )
+#     if fmin is None and fmax is None:
+#         return raw.pick(picks=picks, verbose=False)
+#     return raw.filter(
+#         fmin, fmax, method="iir", picks=picks, verbose=False
+#     )  # we filter in-place
 
 
 class BaseParadigm(metaclass=ABCMeta):
@@ -269,9 +286,25 @@ class BaseParadigm(metaclass=ABCMeta):
             subjects = dataset.subject_list
 
         data = [
-            dataset.get_data(subjects, cache_config, fmin, fmax)
+            dataset.get_data(
+                subjects=subjects,
+                cache_config=cache_config,
+                process_pipeline=Pipeline(
+                    [
+                        (
+                            "filter",
+                            FunctionTransformer(
+                                methodcaller(
+                                    "filter", fmin, fmax, method="iir", verbose=False
+                                )
+                            ),
+                        )
+                    ]
+                ),
+            )
             for fmin, fmax in self.filters
         ]
+
         data = {
             subject: {
                 session: {

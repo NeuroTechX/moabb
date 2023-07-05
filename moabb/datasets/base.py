@@ -8,7 +8,7 @@ from inspect import signature
 from pathlib import Path
 from typing import Union
 
-from mne import pick_channels, pick_types
+from sklearn.pipeline import make_pipeline
 
 from moabb.datasets.bids_interface import BIDSInterface
 
@@ -143,8 +143,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self,
         subjects=None,
         cache_config=None,
-        fmin=None,
-        fmax=None,
+        process_pipeline=None,
     ):
         """Return the data correspoonding to a list of subjects.
 
@@ -167,10 +166,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
             List of subject number
         cache_config: dict
             Configuration for caching of datasets. See CacheConfig for details.
-        fmin: float | None
-            The frequency of the highpass filter. If None, the filtering is not applied.
-        fmax: float | None
-            The frequency of the lowpass filter. If None, the filtering is not applied.
+        process_pipeline: sklearn.pipeline.Pipeline | None
+            Pipeline that takes a mne.io.Raw as input, used to process the data.
+            If None, no processing is applied.
 
         Returns
         -------
@@ -185,12 +183,18 @@ class BaseDataset(metaclass=abc.ABCMeta):
 
         cache_config = CacheConfig.make(cache_config)
 
+        process_pipeline = (
+            make_pipeline(None) if process_pipeline is None else process_pipeline
+        )
+
         data = dict()
         for subject in subjects:
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
             data[subject] = self._get_single_subject_data_using_cache(
-                subject, cache_config, fmin, fmax
+                subject,
+                cache_config,
+                process_pipeline,
             )
 
         return data
@@ -255,28 +259,20 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     verbose=verbose,
                 )
 
-    def _get_single_subject_data_using_cache(self, subject, cache_config, fmin, fmax):
+    def _get_single_subject_data_using_cache(
+        self, subject, cache_config, process_pipeline
+    ):
         """
         Either load the data of a single subject from disk cache or from the dataset object,
         then eventually saves or overwrites the cache version depending on the parameters.
         """
         save_cache = cache_config.save
 
-        def filter_raw(raw):
-            if self.channels is None:
-                picks = pick_types(raw.info, eeg=True, stim=False)
-            else:
-                picks = pick_channels(  # we keep all the channels
-                    raw.info["ch_names"], include=self.channels, ordered=True
-                )
-            if fmin is None and fmax is None:
-                return raw.pick(picks=picks, verbose=False)
-            return raw.filter(
-                fmin, fmax, method="iir", picks=picks, verbose=False
-            )  # we filter in-place
-
         interface = BIDSInterface(
-            self, subject, path=cache_config.path, fmin=fmin, fmax=fmax
+            self,
+            subject,
+            path=cache_config.path,
+            process_pipeline=process_pipeline,
         )
 
         # Overwrite:
@@ -292,15 +288,17 @@ class BaseDataset(metaclass=abc.ABCMeta):
         if sessions_data is not None:
             save_cache = False  # no need to save if we just loaded it
         else:
-            interface2 = (
-                interface.find_compatible_interface() if cache_config.use else None
-            )
-            if interface2 is not None:
-                sessions_data = interface2.load(preload=True)
-            else:
-                sessions_data = self._get_single_subject_data(subject)
+            # interface2 = (
+            #     interface.find_compatible_interface() if cache_config.use else None
+            # )
+            # if interface2 is not None:
+            #     sessions_data = interface2.load(preload=True)
+            # else:
+            sessions_data = self._get_single_subject_data(subject)
             sessions_data = {
-                session: {run: filter_raw(raw) for run, raw in runs.items()}
+                session: {
+                    run: process_pipeline.transform(raw) for run, raw in runs.items()
+                }
                 for session, runs in sessions_data.items()
             }
 

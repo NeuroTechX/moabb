@@ -1,9 +1,7 @@
 import datetime
 import json
 import logging
-from collections import OrderedDict
 from dataclasses import dataclass
-from functools import total_ordering
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -16,6 +14,8 @@ from moabb.paradigms.utils import _find_events
 
 
 if TYPE_CHECKING:
+    from sklearn.pipeline import Pipeline
+
     from moabb.datasets.base import BaseDataset
 
 log = logging.getLogger(__name__)
@@ -48,55 +48,49 @@ def run_bids_to_moabb(run):
     return "run_" + run
 
 
+# @total_ordering
 @dataclass
-@total_ordering
 class BIDSInterface:
     dataset: "BaseDataset"
     subject: int
     path: str = None
-    fmin: float = None
-    fmax: float = None
+    process_pipeline: "Pipeline" = None
 
-    @classmethod
-    def from_lockfile(cls, lock_file, other_interface):
-        with lock_file.fpath.open("r") as f:
-            processing_params = json.load(f)
-        return cls(
-            dataset=other_interface.dataset,  # TODO set correct kwargs of dataset
-            subject=other_interface.subject,
-            path=other_interface.path,
-            fmin=processing_params["fmin"],
-            fmax=processing_params["fmax"],
-        )
+    # @classmethod
+    # def from_lockfile(cls, lock_file, other_interface):
+    #     with lock_file.fpath.open("r") as f:
+    #         processing_params = json.load(f)
+    #     return cls(
+    #         dataset=other_interface.dataset,  # TODO set correct kwargs of dataset
+    #         subject=other_interface.subject,
+    #         path=other_interface.path,
+    #         fmin=processing_params["fmin"],
+    #         fmax=processing_params["fmax"],
+    #     )
 
-    def _base_comp(self, other):
-        return self.dataset == other.dataset and self.subject == other.subject
+    # def _base_comp(self, other):
+    #     return self.dataset == other.dataset and self.subject == other.subject
 
-    def __eq__(self, other):
-        return (
-            self._base_comp(other) and self.fmin == other.fmin and self.fmax == other.fmax
-        )
+    # def __eq__(self, other):
+    #     return (
+    #             self._base_comp(other) and self.fmin == other.fmin and self.fmax == other.fmax
+    #     )
 
-    def __le__(self, other):
-        return (
-            self._base_comp(other)
-            and (
-                other.fmin is None or (self.fmin is not None and self.fmin >= other.fmin)
-            )
-            and (
-                other.fmax is None or (self.fmax is not None and self.fmax <= other.fmax)
-            )
-        )
+    # def __le__(self, other):
+    #     return (
+    #             self._base_comp(other)
+    #             and (
+    #                     other.fmin is None or (self.fmin is not None and self.fmin >= other.fmin)
+    #             )
+    #             and (
+    #                     other.fmax is None or (self.fmax is not None and self.fmax <= other.fmax)
+    #             )
+    #     )
 
     @property
     def processing_params(self):
-        return OrderedDict(
-            [
-                ("fmin", self.fmin),
-                ("fmax", self.fmax),
-                # TODO: add dataset kwargs
-            ]
-        )
+        # TODO: add dataset kwargs
+        return self.process_pipeline
 
     @property
     def desc(self):
@@ -128,22 +122,22 @@ class BIDSInterface:
             check=False,
         )
 
-    def find_compatible_interface(self):
-        lock_files = mne_bids.find_matching_paths(
-            root=self.root,
-            subjects=subject_moabb_to_bids(self.subject),
-            # descriptions=self.desc,
-            extensions=".json",
-            suffixes="lockfile",  # necessary for unofficial files
-            check=False,
-        )
-        interfaces = [
-            self.__class__.from_lockfile(lock_file, self) for lock_file in lock_files
-        ]
-        interfaces = [interface for interface in interfaces if interface >= self]
-        if len(interfaces) == 0:
-            return None  # No compatible interface found
-        return interfaces[0]  # We just return one at random
+    # def find_compatible_interface(self):
+    #     lock_files = mne_bids.find_matching_paths(
+    #         root=self.root,
+    #         subjects=subject_moabb_to_bids(self.subject),
+    #         # descriptions=self.desc,
+    #         extensions=".json",
+    #         suffixes="lockfile",  # necessary for unofficial files
+    #         check=False,
+    #     )
+    #     interfaces = [
+    #         self.__class__.from_lockfile(lock_file, self) for lock_file in lock_files
+    #     ]
+    #     interfaces = [interface for interface in interfaces if interface >= self]
+    #     if len(interfaces) == 0:
+    #         return None  # No compatible interface found
+    #     return interfaces[0]  # We just return one at random
 
     def erase(self):
         log.info(f"Starting erasing cache of {repr(self)}...")
@@ -259,5 +253,6 @@ class BIDSInterface:
         log.debug(f"Writing {self.lock_file}")
         self.lock_file.mkdir(exist_ok=True)
         with self.lock_file.fpath.open("w") as f:
-            json.dump(self.processing_params, f)
+            d = dict(processing_params=str(self.processing_params))
+            json.dump(d, f)
         log.info(f"Finished caching {repr(self)} to disk.")
