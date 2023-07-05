@@ -31,7 +31,6 @@ from moabb.paradigms import MotorImagery
 # 1. Defining dataset, selecting subject for analysis and getting data
 ########################################################################################
 dreyer2023 = Dreyer2023A()
-info = dreyer2023.get_subject_info().rename(columns={"score": "score_MR"})
 dreyer2023.subject_list = [1, 5, 7, 45]
 dreyer2023.get_data()
 ########################################################################################
