@@ -260,7 +260,6 @@ class BaseDataset(metaclass=abc.ABCMeta):
         Either load the data of a single subject from disk cache or from the dataset object,
         then eventually saves or overwrites the cache version depending on the parameters.
         """
-        cache_config = CacheConfig.make(cache_config)
         save_cache = cache_config.save
 
         def filter_raw(raw):
