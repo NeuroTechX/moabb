@@ -10,11 +10,13 @@ from moabb.datasets.base import BaseDataset
 
 dataset_list = []
 
+
 def _init_dataset_list():
     for ds in inspect.getmembers(db, inspect.isclass):
         print("ds", ds)
         if issubclass(ds[1], BaseDataset):
             dataset_list.append(ds[1])
+
 
 _init_dataset_list()
 
@@ -58,7 +60,7 @@ def dataset_search(  # noqa: C901
     """
     if len(dataset_list) == 0:
         _init_dataset_list()
-    
+
     channels = set(channels)
     out_data = []
     if events is not None and has_all_events:
