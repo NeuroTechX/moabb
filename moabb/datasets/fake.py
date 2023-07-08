@@ -8,6 +8,7 @@ from mne.io import RawArray
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.braininvaders import VirtualReality
+from moabb.datasets.utils import block_rep
 
 
 class FakeDataset(BaseDataset):
@@ -121,7 +122,7 @@ class FakeVirtualRealityDataset(FakeDataset):
             for block in range(self.n_blocks):
                 for repetition in range(self.n_repetitions):
                     data[f"{session}"][
-                        f"block_{block}-repetition_{repetition}"
+                        block_rep(block, repetition)
                     ] = self._generate_raw()
         return data
 
