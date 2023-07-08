@@ -189,7 +189,9 @@ class Test_CompoundDataset(unittest.TestCase):
 
                 # Check data type
                 self.assertTrue(isinstance(data, dict))
-                self.assertEqual(type(data[1]["session_0"]["run_0"]), mne.io.RawArray)
+                self.assertEqual(
+                    isinstance(data[1]["session_0"]["run_0"], mne.io.RawArray)
+                )
 
                 # Check data size
                 self.assertEqual(len(data), 1)
