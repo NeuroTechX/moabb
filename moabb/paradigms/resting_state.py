@@ -9,6 +9,8 @@ record the EEG of a subject while he is having the eye open or close
 is a resting state experiment.
 """
 
+from scipy.signal import welch
+
 from moabb.paradigms.p300 import SinglePass
 
 
@@ -75,6 +77,12 @@ class RestingStateToP300Adapter(SinglePass):
                 ret = False
 
         return ret
+
+    def psd(self, subject, dataset):
+        # power spectrum density for ease of use
+        X, y, _ = self.get_data(dataset, [subject])
+        f, S = welch(X, axis=-1, nperseg=1024, fs=self.resample)
+        return (f, S, X, y)
 
     @property
     def scoring(self):
