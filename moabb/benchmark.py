@@ -21,6 +21,7 @@ from moabb.pipelines.utils import (
     generate_param_grid,
     parse_pipelines_from_directory,
 )
+from moabb.utils import set_download_dir
 
 
 try:
@@ -46,6 +47,7 @@ def benchmark(  # noqa: C901
     contexts: str = None,
     include_datasets: list[Union[str, BaseDataset]] = None,
     exclude_datasets: list[Union[str, BaseDataset]] = None,
+    mne_data: str = None,
 ):
     """Run benchmarks for selected pipelines and datasets
 
@@ -102,6 +104,8 @@ def benchmark(  # noqa: C901
         and exclude_datasets are specified, raise an error.
     exclude_datasets: list of str or Dataset object
         Datasets to exclude from the benchmark run
+    mne_data: str
+        Folder where to save and load the datasets with mne structure.
 
     Returns
     -------
@@ -124,6 +128,9 @@ def benchmark(  # noqa: C901
 
     mne.set_log_level(False)
     # logging.basicConfig(level=logging.WARNING)
+
+    if mne_data is not None:
+        set_download_dir(mne_data)
 
     output = Path(output)
     if not osp.isdir(output):
