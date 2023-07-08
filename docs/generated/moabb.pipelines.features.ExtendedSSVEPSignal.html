@@ -431,7 +431,7 @@ document.write(`
 <h1>moabb.pipelines.features.ExtendedSSVEPSignal<a class="headerlink" href="#moabb-pipelines-features-extendedssvepsignal" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.pipelines.features.ExtendedSSVEPSignal">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.pipelines.features.</span></span><span class="sig-name descname"><span class="pre">ExtendedSSVEPSignal</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/features.py#L40-L64"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.features.ExtendedSSVEPSignal" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.pipelines.features.</span></span><span class="sig-name descname"><span class="pre">ExtendedSSVEPSignal</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/features.py#L41-L65"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.features.ExtendedSSVEPSignal" title="Permalink to this definition">#</a></dt>
 <dd><p>Prepare FilterBank SSVEP EEG signal for estimating extended covariances</p>
 <p>Riemannian approaches on SSVEP rely on extended covariances matrices, where
 the filtered signals are contenated to estimate a large covariance matrice.</p>
@@ -440,13 +440,13 @@ and should be convert in (n_trials, n_channels*n_freqs, n_times) to
 estimate covariance matrices of (n_channels*n_freqs,  n_channels*n_freqs).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.features.ExtendedSSVEPSignal.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/features.py#L55-L57"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.features.ExtendedSSVEPSignal.fit" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/pipelines/features.py#L56-L58"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.features.ExtendedSSVEPSignal.fit" title="Permalink to this definition">#</a></dt>
 <dd><p>No need to fit for ExtendedSSVEPSignal</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.features.ExtendedSSVEPSignal.transform">
-<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_set_output.py#L59-L64"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.features.ExtendedSSVEPSignal.transform" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_set_output.py#L60-L65"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.features.ExtendedSSVEPSignal.transform" title="Permalink to this definition">#</a></dt>
 <dd><p>Transpose and reshape EEG for extended covmat estimation</p>
 </dd></dl>
 

@@ -383,11 +383,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking mulitple pipelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
@@ -397,7 +399,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
@@ -460,6 +461,12 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.fs_get_file_name.html">moabb.datasets.download.fs_get_file_name</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.utils.dataset_search.html">moabb.datasets.utils.dataset_search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.utils.find_intersecting_channels.html">moabb.datasets.utils.find_intersecting_channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2014a_il.html">moabb.datasets.compound_dataset.bi2014a_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2014b_il.html">moabb.datasets.compound_dataset.bi2014b_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2015a_il.html">moabb.datasets.compound_dataset.bi2015a_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2015b_il.html">moabb.datasets.compound_dataset.bi2015b_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.VirtualReality_il.html">moabb.datasets.compound_dataset.VirtualReality_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.biIlliteracy.html">moabb.datasets.compound_dataset.biIlliteracy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.WithinSessionEvaluation.html">moabb.evaluations.WithinSessionEvaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.CrossSessionEvaluation.html">moabb.evaluations.CrossSessionEvaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.CrossSubjectEvaluation.html">moabb.evaluations.CrossSubjectEvaluation</a></li>
@@ -669,14 +676,14 @@ each subject and pipeline.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>MAMEM3_SSVEP-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 No hdf5_path provided, models will not be saved.
 
-MAMEM3_SSVEP-WithinSession:  50%|#####     | 1/2 [00:20&lt;00:20, 20.39s/it]No hdf5_path provided, models will not be saved.
+MAMEM3_SSVEP-WithinSession:  50%|#####     | 1/2 [00:14&lt;00:14, 14.95s/it]No hdf5_path provided, models will not be saved.
 
-MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:40&lt;00:00, 20.39s/it]
-MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:40&lt;00:00, 20.39s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   40.8s finished
+MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:29&lt;00:00, 14.83s/it]
+MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:29&lt;00:00, 14.85s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   29.7s finished
       score      time  samples  ... n_sessions       dataset  pipeline
-0  0.688889  0.056272     45.0  ...          1  MAMEM3_SSVEP       CCA
-1  0.266667  0.054307     45.0  ...          1  MAMEM3_SSVEP       CCA
+0  0.688889  0.055335     45.0  ...          1  MAMEM3_SSVEP       CCA
+1  0.266667  0.054690     45.0  ...          1  MAMEM3_SSVEP       CCA
 
 [2 rows x 9 columns]
 </pre></div>
@@ -699,7 +706,7 @@ MAMEM3_SSVEP-WithinSession: 100%|##########| 2/2 [00:40&lt;00:00, 20.39s/it]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  45.562 seconds)</p>
+<img src="../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  32.676 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-within-session-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">

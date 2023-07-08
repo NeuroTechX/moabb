@@ -58,7 +58,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_tutorials/tutorial_4_adding_a_dataset';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Examples" href="../auto_examples/index.html" />
+    <link rel="next" title="Tutorial 5: Creating a dataset class" href="tutorial_5_build_a_custom_dataset.html" />
     <link rel="prev" title="Tutorial 3: Benchmarking mulitple pipelines" href="tutorial_3_benchmarking_multiple_pipelines.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -383,11 +383,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking mulitple pipelines</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Tutorial 4: Creating a dataset class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_examples/index.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
@@ -397,7 +399,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_explore_paradigm.html">Explore Paradigm Object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_within_session_p300.html">Within Session P300</a></li>
@@ -460,6 +461,12 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.fs_get_file_name.html">moabb.datasets.download.fs_get_file_name</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.utils.dataset_search.html">moabb.datasets.utils.dataset_search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.utils.find_intersecting_channels.html">moabb.datasets.utils.find_intersecting_channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2014a_il.html">moabb.datasets.compound_dataset.bi2014a_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2014b_il.html">moabb.datasets.compound_dataset.bi2014b_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2015a_il.html">moabb.datasets.compound_dataset.bi2015a_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2015b_il.html">moabb.datasets.compound_dataset.bi2015b_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.VirtualReality_il.html">moabb.datasets.compound_dataset.VirtualReality_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.biIlliteracy.html">moabb.datasets.compound_dataset.biIlliteracy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.WithinSessionEvaluation.html">moabb.evaluations.WithinSessionEvaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.CrossSessionEvaluation.html">moabb.evaluations.CrossSessionEvaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.CrossSubjectEvaluation.html">moabb.evaluations.CrossSubjectEvaluation</a></li>
@@ -737,17 +744,17 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Example dataset-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 No hdf5_path provided, models will not be saved.
 
-Example dataset-WithinSession:  33%|###3      | 1/3 [00:00&lt;00:00,  4.46it/s]No hdf5_path provided, models will not be saved.
+Example dataset-WithinSession:  33%|###3      | 1/3 [00:00&lt;00:00,  4.94it/s]No hdf5_path provided, models will not be saved.
 
-Example dataset-WithinSession:  67%|######6   | 2/3 [00:03&lt;00:01,  1.82s/it]No hdf5_path provided, models will not be saved.
+Example dataset-WithinSession:  67%|######6   | 2/3 [00:02&lt;00:01,  1.43s/it]No hdf5_path provided, models will not be saved.
 
-Example dataset-WithinSession: 100%|##########| 3/3 [00:06&lt;00:00,  2.41s/it]
-Example dataset-WithinSession: 100%|##########| 3/3 [00:06&lt;00:00,  2.09s/it]
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    6.3s finished
+Example dataset-WithinSession: 100%|##########| 3/3 [00:04&lt;00:00,  1.77s/it]
+Example dataset-WithinSession: 100%|##########| 3/3 [00:04&lt;00:00,  1.56s/it]
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    4.7s finished
    score      time  samples  ... n_sessions          dataset  pipeline
-0    1.0  0.031847     40.0  ...          1  Example dataset       MDM
-1    1.0  0.030689     40.0  ...          1  Example dataset       MDM
-2    1.0  0.016013     40.0  ...          1  Example dataset       MDM
+0    1.0  0.028062     40.0  ...          1  Example dataset       MDM
+1    1.0  0.027049     40.0  ...          1  Example dataset       MDM
+2    1.0  0.027306     40.0  ...          1  Example dataset       MDM
 
 [3 rows x 9 columns]
 </pre></div>
@@ -759,8 +766,8 @@ Example dataset-WithinSession: 100%|##########| 3/3 [00:06&lt;00:00,  2.09s/it]
 your data on public server (like Zenodo or Figshare) and signal that you
 want to add your dataset to MOABB in the  <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">dedicated issue</a>.  # noqa: E501
 You could then follow the instructions on <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">how to contribute</a>  # noqa: E501</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.052 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  13 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.847 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1ce8a4c577491f8abfb105c7b1aba3d2/tutorial_4_adding_a_dataset.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_4_adding_a_dataset.py</span></code></a></p>
@@ -794,11 +801,11 @@ You could then follow the instructions on <a class="reference external" href="ht
       </div>
     </a>
     <a class="right-next"
-       href="../auto_examples/index.html"
+       href="tutorial_5_build_a_custom_dataset.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Examples</p>
+        <p class="prev-next-title">Tutorial 5: Creating a dataset class</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

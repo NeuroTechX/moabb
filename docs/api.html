@@ -383,11 +383,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking mulitple pipelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="auto_examples/index.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auto_examples/load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
@@ -397,7 +399,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_explore_paradigm.html">Explore Paradigm Object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auto_examples/plot_within_session_p300.html">Within Session P300</a></li>
@@ -460,6 +461,12 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="generated/moabb.datasets.download.fs_get_file_name.html">moabb.datasets.download.fs_get_file_name</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/moabb.datasets.utils.dataset_search.html">moabb.datasets.utils.dataset_search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/moabb.datasets.utils.find_intersecting_channels.html">moabb.datasets.utils.find_intersecting_channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/moabb.datasets.compound_dataset.bi2014a_il.html">moabb.datasets.compound_dataset.bi2014a_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/moabb.datasets.compound_dataset.bi2014b_il.html">moabb.datasets.compound_dataset.bi2014b_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/moabb.datasets.compound_dataset.bi2015a_il.html">moabb.datasets.compound_dataset.bi2015a_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/moabb.datasets.compound_dataset.bi2015b_il.html">moabb.datasets.compound_dataset.bi2015b_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/moabb.datasets.compound_dataset.VirtualReality_il.html">moabb.datasets.compound_dataset.VirtualReality_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/moabb.datasets.compound_dataset.biIlliteracy.html">moabb.datasets.compound_dataset.biIlliteracy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/moabb.evaluations.WithinSessionEvaluation.html">moabb.evaluations.WithinSessionEvaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/moabb.evaluations.CrossSessionEvaluation.html">moabb.evaluations.CrossSessionEvaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/moabb.evaluations.CrossSubjectEvaluation.html">moabb.evaluations.CrossSubjectEvaluation</a></li>
@@ -778,14 +785,42 @@ on datasets (electrodes, number of trials, sessions, etc.)</p>
 </table>
 </section>
 </section>
+<section id="module-moabb.datasets.compound_dataset">
+<span id="compound-datasets"></span><h2>Compound Datasets<a class="headerlink" href="#module-moabb.datasets.compound_dataset" title="Permalink to this heading">#</a></h2>
+<section id="id3">
+<h3>ERP Datasets<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.bi2014a_il.html#moabb.datasets.compound_dataset.bi2014a_il" title="moabb.datasets.compound_dataset.bi2014a_il"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bi2014a_il</span></code></a>()</p></td>
+<td><p>A selection of subject from bi2014a with AUC &lt; 0.7 with pipeline: ERPCovariances(estimator=&quot;lwf&quot;), MDM(metric=&quot;riemann&quot;)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.bi2014b_il.html#moabb.datasets.compound_dataset.bi2014b_il" title="moabb.datasets.compound_dataset.bi2014b_il"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bi2014b_il</span></code></a>()</p></td>
+<td><p>A selection of subject from bi2014b with AUC &lt; 0.7 with pipeline: ERPCovariances(estimator=&quot;lwf&quot;), MDM(metric=&quot;riemann&quot;)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.bi2015a_il.html#moabb.datasets.compound_dataset.bi2015a_il" title="moabb.datasets.compound_dataset.bi2015a_il"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bi2015a_il</span></code></a>()</p></td>
+<td><p>A selection of subject from bi2015a with AUC &lt; 0.7 with pipeline: ERPCovariances(estimator=&quot;lwf&quot;), MDM(metric=&quot;riemann&quot;)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.bi2015b_il.html#moabb.datasets.compound_dataset.bi2015b_il" title="moabb.datasets.compound_dataset.bi2015b_il"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bi2015b_il</span></code></a>()</p></td>
+<td><p>A selection of subject from bi2015b with AUC &lt; 0.7 with pipeline: ERPCovariances(estimator=&quot;lwf&quot;), MDM(metric=&quot;riemann&quot;)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.VirtualReality_il.html#moabb.datasets.compound_dataset.VirtualReality_il" title="moabb.datasets.compound_dataset.VirtualReality_il"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VirtualReality_il</span></code></a>()</p></td>
+<td><p>A selection of subject from VirtualReality with AUC &lt; 0.7 with pipeline: ERPCovariances(estimator=&quot;lwf&quot;), MDM(metric=&quot;riemann&quot;)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.biIlliteracy.html#moabb.datasets.compound_dataset.biIlliteracy" title="moabb.datasets.compound_dataset.biIlliteracy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">biIlliteracy</span></code></a>()</p></td>
+<td><p>Subjects from braininvaders datasets with AUC &lt; 0.7 with pipeline: ERPCovariances(estimator=&quot;lwf&quot;), MDM(metric=&quot;riemann&quot;)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
 <section id="module-moabb.evaluations">
 <span id="evaluations"></span><h2>Evaluations<a class="headerlink" href="#module-moabb.evaluations" title="Permalink to this heading">#</a></h2>
 <p>An evaluation defines how we go from trials per subject and session to a
 generalization statistic (AUC score, f-score, accuracy, etc) – it can be
 either within-recording-session accuracy, across-session within-subject
 accuracy, across-subject accuracy, or other transfer learning settings.</p>
-<section id="id3">
-<h3>Evaluations<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<section id="id4">
+<h3>Evaluations<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WithinSessionEvaluation</span></code></a>([n_perms, data_size])</p></td>
@@ -800,8 +835,8 @@ accuracy, across-subject accuracy, or other transfer learning settings.</p>
 </tbody>
 </table>
 </section>
-<section id="id4">
-<h3>Base &amp; Utils<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<section id="id5">
+<h3>Base &amp; Utils<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation" title="moabb.evaluations.base.BaseEvaluation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">base.BaseEvaluation</span></code></a>(paradigm[, datasets, ...])</p></td>
@@ -863,8 +898,8 @@ paradigms.</p>
 </tbody>
 </table>
 </section>
-<section id="id5">
-<h3>Base &amp; Utils<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<section id="id6">
+<h3>Base &amp; Utils<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.paradigms.motor_imagery.BaseMotorImagery.html#moabb.paradigms.motor_imagery.BaseMotorImagery" title="moabb.paradigms.motor_imagery.BaseMotorImagery"><code class="xref py py-obj docutils literal notranslate"><span class="pre">motor_imagery.BaseMotorImagery</span></code></a>([filters, ...])</p></td>
@@ -894,8 +929,8 @@ paradigms.</p>
 <p>Pipeline defines all steps required by an algorithm to obtain predictions.
 Pipelines are typically a chain of sklearn compatible transformers and end
 with a sklearn compatible estimator.</p>
-<section id="id6">
-<h3>Pipelines<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<section id="id7">
+<h3>Pipelines<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.features.LogVariance.html#moabb.pipelines.features.LogVariance" title="moabb.pipelines.features.LogVariance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">features.LogVariance</span></code></a>()</p></td>
@@ -920,34 +955,34 @@ with a sklearn compatible estimator.</p>
 <td><p>Classifier based on Canonical Correlation Analysis for SSVEP</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.classification.SSVEP_TRCA.html#moabb.pipelines.classification.SSVEP_TRCA" title="moabb.pipelines.classification.SSVEP_TRCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">classification.SSVEP_TRCA</span></code></a>(interval, freqs[, ...])</p></td>
-<td><p>Classifier based on the Task-Related Component Analysis method <a href="#id18"><span class="problematic" id="id7">[1]_</span></a> for SSVEP.</p></td>
+<td><p>Classifier based on the Task-Related Component Analysis method <a href="#id19"><span class="problematic" id="id8">[1]_</span></a> for SSVEP.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.classification.SSVEP_MsetCCA.html#moabb.pipelines.classification.SSVEP_MsetCCA" title="moabb.pipelines.classification.SSVEP_MsetCCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">classification.SSVEP_MsetCCA</span></code></a>(freqs[, ...])</p></td>
 <td><p>Classifier based on MsetCCA for SSVEP</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasDeepConvNet.html#moabb.pipelines.deep_learning.KerasDeepConvNet" title="moabb.pipelines.deep_learning.KerasDeepConvNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasDeepConvNet</span></code></a>(loss[, ...])</p></td>
-<td><p>Keras implementation of the Deep Convolutional Network as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasDeepConvNet.html#r679315cfbef6-1" id="id8"><span>[R679315cfbef6-1]</span></a>.</p></td>
+<td><p>Keras implementation of the Deep Convolutional Network as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasDeepConvNet.html#r679315cfbef6-1" id="id9"><span>[R679315cfbef6-1]</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGITNet.html#moabb.pipelines.deep_learning.KerasEEGITNet" title="moabb.pipelines.deep_learning.KerasEEGITNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasEEGITNet</span></code></a>(loss[, ...])</p></td>
-<td><p>Keras implementation of the EEGITNet as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGITNet.html#rf5b2ee1af1ae-1" id="id9"><span>[Rf5b2ee1af1ae-1]</span></a>.</p></td>
+<td><p>Keras implementation of the EEGITNet as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGITNet.html#rf5b2ee1af1ae-1" id="id10"><span>[Rf5b2ee1af1ae-1]</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGNet_8_2.html#moabb.pipelines.deep_learning.KerasEEGNet_8_2" title="moabb.pipelines.deep_learning.KerasEEGNet_8_2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasEEGNet_8_2</span></code></a>(loss[, ...])</p></td>
-<td><p>Keras implementation of the EEGNet as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGNet_8_2.html#rd83becb56589-1" id="id10"><span>[Rd83becb56589-1]</span></a>.</p></td>
+<td><p>Keras implementation of the EEGNet as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGNet_8_2.html#rd83becb56589-1" id="id11"><span>[Rd83becb56589-1]</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGNeX.html#moabb.pipelines.deep_learning.KerasEEGNeX" title="moabb.pipelines.deep_learning.KerasEEGNeX"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasEEGNeX</span></code></a>(loss[, optimizer, ...])</p></td>
-<td><p>Keras implementation of the EEGNex as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGNeX.html#r643fa75c3283-1" id="id11"><span>[R643fa75c3283-1]</span></a>.</p></td>
+<td><p>Keras implementation of the EEGNex as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGNeX.html#r643fa75c3283-1" id="id12"><span>[R643fa75c3283-1]</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGTCNet.html#moabb.pipelines.deep_learning.KerasEEGTCNet" title="moabb.pipelines.deep_learning.KerasEEGTCNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasEEGTCNet</span></code></a>(loss[, ...])</p></td>
-<td><p>Keras implementation of the EEGTCNet as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGTCNet.html#r89b58824c471-1" id="id12"><span>[R89b58824c471-1]</span></a>.</p></td>
+<td><p>Keras implementation of the EEGTCNet as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasEEGTCNet.html#r89b58824c471-1" id="id13"><span>[R89b58824c471-1]</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasShallowConvNet.html#moabb.pipelines.deep_learning.KerasShallowConvNet" title="moabb.pipelines.deep_learning.KerasShallowConvNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasShallowConvNet</span></code></a>(loss[, ...])</p></td>
-<td><p>Keras implementation of the Shallow Convolutional Network as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasShallowConvNet.html#r2ccacb732305-1" id="id13"><span>[R2ccacb732305-1]</span></a>.</p></td>
+<td><p>Keras implementation of the Shallow Convolutional Network as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasShallowConvNet.html#r2ccacb732305-1" id="id14"><span>[R2ccacb732305-1]</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="id14">
-<h3>Base &amp; Utils<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
+<section id="id15">
+<h3>Base &amp; Utils<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h3>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.utils.create_pipeline_from_config.html#moabb.pipelines.utils.create_pipeline_from_config" title="moabb.pipelines.utils.create_pipeline_from_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.create_pipeline_from_config</span></code></a>(config)</p></td>
@@ -957,13 +992,13 @@ with a sklearn compatible estimator.</p>
 <td><p>Apply a given indentical pipeline over a bank of filter.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.EEGNet.html#moabb.pipelines.utils_deep_model.EEGNet" title="moabb.pipelines.utils_deep_model.EEGNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils_deep_model.EEGNet</span></code></a>(data, input_layer[, ...])</p></td>
-<td><p>EEGNet block implementation as described in <a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.EEGNet.html#r820c2366bc63-1" id="id15"><span>[R820c2366bc63-1]</span></a>.</p></td>
+<td><p>EEGNet block implementation as described in <a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.EEGNet.html#r820c2366bc63-1" id="id16"><span>[R820c2366bc63-1]</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.EEGNet_TC.html#moabb.pipelines.utils_deep_model.EEGNet_TC" title="moabb.pipelines.utils_deep_model.EEGNet_TC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils_deep_model.EEGNet_TC</span></code></a>(self, input_layer)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.TCN_block.html#moabb.pipelines.utils_deep_model.TCN_block" title="moabb.pipelines.utils_deep_model.TCN_block"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils_deep_model.TCN_block</span></code></a>(input_layer, ...)</p></td>
-<td><p>Temporal Convolutional Network (TCN), TCN_block from <a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.TCN_block.html#r2eea69aed7b6-1" id="id16"><span>[R2eea69aed7b6-1]</span></a>.</p></td>
+<td><p>Temporal Convolutional Network (TCN), TCN_block from <a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.TCN_block.html#r2eea69aed7b6-1" id="id17"><span>[R2eea69aed7b6-1]</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils_pytorch.BraindecodeDatasetLoader</span></code></a>([...])</p></td>
 <td><p>Class to Load the data from MOABB in a format compatible with braindecode</p></td>
@@ -1031,8 +1066,8 @@ with a sklearn compatible estimator.</p>
 </tbody>
 </table>
 </section>
-<section id="id17">
-<h3>Utils<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h3>
+<section id="id18">
+<h3>Utils<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h3>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_log_level</span></code></a>([level])</p></td>
@@ -1107,21 +1142,25 @@ with a sklearn compatible estimator.</p>
 </li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-moabb.datasets.compound_dataset">Compound Datasets</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">ERP Datasets</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-moabb.evaluations">Evaluations</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Evaluations</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Base &amp; Utils</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Evaluations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Base &amp; Utils</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-moabb.paradigms">Paradigms</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motor-imagery-paradigms">Motor Imagery Paradigms</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#p300-paradigms">P300 Paradigms</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ssvep-paradigms">SSVEP Paradigms</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Base &amp; Utils</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Base &amp; Utils</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-moabb.pipelines">Pipelines</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Pipelines</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Base &amp; Utils</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Pipelines</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Base &amp; Utils</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-moabb.analysis">Analysis</a><ul class="nav section-nav flex-column">
@@ -1131,7 +1170,7 @@ with a sklearn compatible estimator.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-moabb">Utils</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmark">Benchmark</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Utils</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Utils</a></li>
 </ul>
 </li>
 </ul>

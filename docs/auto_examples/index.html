@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Change Download Directory" href="changing_download_directory.html" />
-    <link rel="prev" title="Tutorial 4: Creating a dataset class" href="../auto_tutorials/tutorial_4_adding_a_dataset.html" />
+    <link rel="prev" title="Tutorial 5: Creating a dataset class" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -383,11 +383,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking mulitple pipelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Benchmarking with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
@@ -397,7 +399,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
@@ -460,6 +461,12 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.fs_get_file_name.html">moabb.datasets.download.fs_get_file_name</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.utils.dataset_search.html">moabb.datasets.utils.dataset_search</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.utils.find_intersecting_channels.html">moabb.datasets.utils.find_intersecting_channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2014a_il.html">moabb.datasets.compound_dataset.bi2014a_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2014b_il.html">moabb.datasets.compound_dataset.bi2014b_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2015a_il.html">moabb.datasets.compound_dataset.bi2015a_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.bi2015b_il.html">moabb.datasets.compound_dataset.bi2015b_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.VirtualReality_il.html">moabb.datasets.compound_dataset.VirtualReality_il</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.compound_dataset.biIlliteracy.html">moabb.datasets.compound_dataset.biIlliteracy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.WithinSessionEvaluation.html">moabb.evaluations.WithinSessionEvaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.CrossSessionEvaluation.html">moabb.evaluations.CrossSessionEvaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.evaluations.CrossSubjectEvaluation.html">moabb.evaluations.CrossSubjectEvaluation</a></li>
@@ -585,6 +592,9 @@ subjects and sessions available in the dataset.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use MOABB to track the CO2 footprint using `CodeCarbon library &lt;https..."><img alt="Benchmarking with MOABB showing the CO2 footprint" src="../_images/sphx_glr_example_codecarbon_thumb.png" />
 <p><a class="reference internal" href="example_codecarbon.html#sphx-glr-auto-examples-example-codecarbon-py"><span class="std std-ref">Benchmarking with MOABB showing the CO2 footprint</span></a></p>
   <div class="sphx-glr-thumbnail-title">Benchmarking with MOABB showing the CO2 footprint</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use load the pretrained pipeline in MOABB."><img alt="Load Model (Scikit, Pytorch, Keras) with MOABB" src="../_images/sphx_glr_load_model_thumb.png" />
+<p><a class="reference internal" href="load_model.html#sphx-glr-auto-examples-load-model-py"><span class="std std-ref">Load Model (Scikit, Pytorch, Keras) with MOABB</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Load Model (Scikit, Pytorch, Keras) with MOABB</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use MOABB to benchmark a set of pipelines on all available datasets. ..."><img alt="Benchmarking with MOABB" src="../_images/sphx_glr_plot_benchmark_thumb.png" />
 <p><a class="reference internal" href="plot_benchmark.html#sphx-glr-auto-examples-plot-benchmark-py"><span class="std std-ref">Benchmarking with MOABB</span></a></p>
   <div class="sphx-glr-thumbnail-title">Benchmarking with MOABB</div>
@@ -612,9 +622,6 @@ subjects and sessions available in the dataset.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="A paradigm defines how the raw data will be converted to trials ready to be processed by a deco..."><img alt="Explore Paradigm Object" src="../_images/sphx_glr_plot_explore_paradigm_thumb.png" />
 <p><a class="reference internal" href="plot_explore_paradigm.html#sphx-glr-auto-examples-plot-explore-paradigm-py"><span class="std std-ref">Explore Paradigm Object</span></a></p>
   <div class="sphx-glr-thumbnail-title">Explore Paradigm Object</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use load the pretrained pipeline in MOABB."><img alt="Load Model (Scikit, Pytorch, Keras) with MOABB" src="../_images/sphx_glr_plot_load_model_thumb.png" />
-<p><a class="reference internal" href="plot_load_model.html#sphx-glr-auto-examples-plot-load-model-py"><span class="std std-ref">Load Model (Scikit, Pytorch, Keras) with MOABB</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Load Model (Scikit, Pytorch, Keras) with MOABB</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to perform spectral analysis on epochs extracted from a specific ..."><img alt="Spectral analysis of the trials" src="../_images/sphx_glr_plot_phmd_ml_spectrum_thumb.png" />
 <p><a class="reference internal" href="plot_phmd_ml_spectrum.html#sphx-glr-auto-examples-plot-phmd-ml-spectrum-py"><span class="std std-ref">Spectral analysis of the trials</span></a></p>
   <div class="sphx-glr-thumbnail-title">Spectral analysis of the trials</div>
@@ -705,12 +712,12 @@ will be repeated 20 times with different trial subsets.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../auto_tutorials/tutorial_4_adding_a_dataset.html"
+       href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Tutorial 4: Creating a dataset class</p>
+        <p class="prev-next-title">Tutorial 5: Creating a dataset class</p>
       </div>
     </a>
     <a class="right-next"

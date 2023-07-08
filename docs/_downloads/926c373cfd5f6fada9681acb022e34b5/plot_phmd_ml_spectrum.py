@@ -17,7 +17,6 @@ import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.signal import welch
 
 from moabb.datasets import HeadMountedDisplay
 from moabb.paradigms import RestingStateToP300Adapter
@@ -50,8 +49,7 @@ paradigm = RestingStateToP300Adapter(events=events, channels=[channel])
 # 1) Obtain the epochs for the specified subject.
 # 2) Use Welch's method to estimate the power spectral density.
 
-X, y, _ = paradigm.get_data(dataset, [subject])
-f, S = welch(X, axis=-1, nperseg=1024, fs=paradigm.resample)
+f, S, _, y = paradigm.psd(subject, dataset)
 
 ###############################################################################
 # Display of the data
