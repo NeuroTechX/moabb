@@ -191,7 +191,7 @@ the wiki: https://github.com/NeuroTechX/moabb/wiki/Datasets-Support
 
 you can submit a new dataset by mentioning it to this
 [issue](https://github.com/NeuroTechX/moabb/issues/1). The datasets currently on our radar
-can be seen [here] (https://github.com/NeuroTechX/moabb/wiki/Datasets-Support)
+can be seen [here](https://github.com/NeuroTechX/moabb/wiki/Datasets-Support).
 
 ## Who are we?
 
