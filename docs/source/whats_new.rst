@@ -40,7 +40,7 @@ Bugs
 - Fixing SSLError from BCI competition IV (:gh:`404` by `Bruno Aristimunha`_)
 - Fixing :func:`moabb.dataset.bnci.MNEBNCI.data_path` that returned the data itself instead of paths (:gh:`412` by `Pierre Guetschel`_)
 - Adding :func:`moabb.datasets.fake` in the init file to use in braindecode object (:gh:`414` by `Bruno Aristimunha`_)
-
+- Fixing the parallel download issue when the dataset have the same directory (:gh:`421` by `Sara Sedlar`_)
 
 API changes
 ~~~~~~~~~~~
