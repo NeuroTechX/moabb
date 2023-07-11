@@ -28,7 +28,7 @@ tqdm = "^4.64.1"
 coverage = "^7.0.1"
 memory-profiler = "^0.61.0"
 edflib-python = "^1.0.6"
-mne-bids = {git = "https://github.com/mne-tools/mne-bids.git", rev = "9bc6fe5"}
+mne-bids = { git = "https://github.com/mne-tools/mne-bids.git", rev = "9bc6fe5" } # until release is available
 
 [tool.poetry.group.carbonemission]
 optional = true
@@ -58,7 +58,7 @@ pydata-sphinx-theme = "^0.13.2"
 numpydoc = "^1.5.0"
 pre-commit = "^2.21.0"
 m2r2 = "^0.3.0"
-tdlda = {git = "https://github.com/jsosulski/tdlda.git", rev = "0.1.0"}
+tdlda = { git = "https://github.com/jsosulski/tdlda.git", rev = "0.1.0" }
 sphinx-design = "^0.3.0"
 sphinx-rtd-theme = "^1.2.0"
 

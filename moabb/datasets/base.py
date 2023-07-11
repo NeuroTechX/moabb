@@ -5,13 +5,19 @@ import abc
 import logging
 import traceback
 from dataclasses import dataclass
+from enum import Enum
 from inspect import signature
 from pathlib import Path
-from typing import Union
+from typing import Type, Union
 
-from sklearn.pipeline import make_pipeline
+from sklearn.pipeline import Pipeline, make_pipeline
 
-from moabb.datasets.bids_interface import BIDSInterface
+from moabb.datasets.bids_interface import (
+    BIDSInterfaceBase,
+    BIDSInterfaceEpochs,
+    BIDSInterfaceNumpyArray,
+    BIDSInterfaceRawEDF,
+)
 
 
 log = logging.getLogger(__name__)
@@ -44,9 +50,19 @@ class CacheConfig:
         Verbosity level. See mne.verbose.
     """
 
-    save: bool = True
-    use: bool = True
-    overwrite: bool = False
+    save_raw: bool = False
+    save_epochs: bool = False
+    save_array: bool = False
+
+    # use_raw: bool = True
+    # use_epochs: bool = True
+    # use_array: bool = True
+    use: bool = False
+
+    overwrite_raw: bool = False
+    overwrite_epochs: bool = False
+    overwrite_array: bool = False
+
     path: Union[str, Path] = None
     verbose = None
 
@@ -76,6 +92,24 @@ class CacheConfig:
             return d
         else:
             raise ValueError(f"Expected dict or CacheConfig, got {type(d)}")
+
+
+class StepType(Enum):
+    RAW = "raw"
+    EPOCHS = "epochs"
+    ARRAY = "array"
+
+
+_interface_map: dict[StepType, Type[BIDSInterfaceBase]] = {
+    StepType.RAW: BIDSInterfaceRawEDF,
+    StepType.EPOCHS: BIDSInterfaceEpochs,
+    StepType.ARRAY: BIDSInterfaceNumpyArray,
+}
+
+
+def _is_none_pipeline(pipeline):
+    """Check if a pipeline is the result of make_pipeline(None)"""
+    return isinstance(pipeline, Pipeline) and pipeline.steps[0][1] is None
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
@@ -147,7 +181,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self,
         subjects=None,
         cache_config=None,
-        process_pipeline=None,
+        raw_pipeline=None,
+        epochs_pipeline=None,
+        array_pipeline=None,
     ):
         """Return the data correspoonding to a list of subjects.
 
@@ -164,15 +200,29 @@ class BaseDataset(metaclass=abc.ABCMeta):
         EEG cap. A session is constitued of at least one run. A run is a single
         contigous recording. Some dataset break session in multiple runs.
 
+        Processing steps can optionally be applied to the data using the
+        ``*_pipeline`` arguments. These pipelines are applied in the following order:
+        ``raw_pipeline`` -> ``epochs_pipeline`` -> ``array_pipeline``. If a ``*_pipeline`` argument
+        is ``None``, the step will be skipped. Therefor, the ``array_pipeline`` may either
+        receive a ``mne.io.Raw`` or a ``mne.Epochs`` object as input depending on whether
+        ``epochs_pipeline`` is ``None`` or not.
+
         Parameters
         ----------
         subjects: List of int
             List of subject number
         cache_config: dict
             Configuration for caching of datasets. See CacheConfig for details.
-        process_pipeline: sklearn.pipeline.Pipeline | None
-            Pipeline that takes a mne.io.Raw as input, used to process the data.
-            If None, no processing is applied.
+        raw_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin | None
+            Pipeline that necessarily takes a mne.io.Raw as input,
+            and necessarily returns a ``mne.io.Raw`` as output.
+        epochs_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin | None
+            Pipeline that necessarily takes a mne.io.Raw as input,
+            and necessarily returns a ``mne.Epochs`` as output.
+        array_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin | None
+            Pipeline either takes as input a ``mne.Epochs`` if epochs_pipeline
+            is not ``None``, or a ``mne.io.Raw`` otherwise. It necessarily returns
+            a ``numpy.ndarray`` as output.
 
         Returns
         -------
@@ -187,9 +237,15 @@ class BaseDataset(metaclass=abc.ABCMeta):
 
         cache_config = CacheConfig.make(cache_config)
 
-        process_pipeline = (
-            make_pipeline(None) if process_pipeline is None else process_pipeline
-        )
+        steps = []
+        if raw_pipeline is not None:
+            steps.append((StepType.RAW, raw_pipeline))
+        if epochs_pipeline is not None:
+            steps.append((StepType.EPOCHS, epochs_pipeline))
+        if array_pipeline is not None:
+            steps.append((StepType.ARRAY, array_pipeline))
+        if len(steps) == 0:
+            steps.append((StepType.RAW, make_pipeline(None)))
 
         data = dict()
         for subject in subjects:
@@ -198,7 +254,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
             data[subject] = self._get_single_subject_data_using_cache(
                 subject,
                 cache_config,
-                process_pipeline,
+                steps,
             )
 
         return data
@@ -264,66 +320,88 @@ class BaseDataset(metaclass=abc.ABCMeta):
                 )
 
     def _get_single_subject_data_using_cache(
-        self, subject, cache_config, process_pipeline
+        self,
+        subject,
+        cache_config,
+        steps,
     ):
         """
         Either load the data of a single subject from disk cache or from the dataset object,
         then eventually saves or overwrites the cache version depending on the parameters.
         """
-        save_cache = cache_config.save
+        splitted_steps = []  # list of (cached_steps, remaining_steps)
+        if cache_config.use:
+            splitted_steps += [(steps[:i], steps[i:]) for i in range(len(steps), 0, -1)]
+            if _is_none_pipeline(steps[0]):  # case where step was not already "empty"
+                splitted_steps.append(([(StepType.RAW, make_pipeline(None))], steps))
+        splitted_steps.append(([], steps))  # last option: we don't use cache at all
 
-        interface = BIDSInterface(
-            self,
-            subject,
-            path=cache_config.path,
-            process_pipeline=process_pipeline,
-            verbose=cache_config.verbose,
-        )
-
-        # Overwrite:
-        if cache_config.overwrite:
-            interface.erase()
-
-        # Load:
-        sessions_data = None
-        if (
-            cache_config.use and not cache_config.overwrite
-        ):  # can't load if it was just erased
-            sessions_data = interface.load(preload=False)
-        if sessions_data is not None:
-            save_cache = False  # no need to save if we just loaded it
-        else:
-            # interface2 = (
-            #     interface.find_compatible_interface() if cache_config.use else None
-            # )
-            # if interface2 is not None:
-            #     sessions_data = interface2.load(preload=True)
-            # else:
-            sessions_data = self._get_single_subject_data(subject)
-            sessions_data = {
-                session: {
-                    run: process_pipeline.transform(raw) for run, raw in runs.items()
-                }
-                for session, runs in sessions_data.items()
-            }
-
-        # Save:
-        if save_cache:
-            try:
-                interface.save(sessions_data)
-            except Exception:
-                log.warning(
-                    f"Failed to save dataset {self.code}, subject {subject} to BIDS format:\n{' Exception: '.center(50, '#')}\n{''.join(traceback.format_exc())}{'#' * 50}"
+        for cached_steps, remaining_steps in splitted_steps:
+            sessions_data = None
+            # Load and eventually overwrite:
+            if len(cached_steps) == 0:
+                sessions_data = self._get_single_subject_data(subject)
+            else:
+                cache_type = cached_steps[-1][0]
+                interface = _interface_map[cache_type](
+                    self,
+                    subject,
+                    path=cache_config.path,
+                    process_pipeline=Pipeline(cached_steps),
+                    verbose=cache_config.verbose,
                 )
 
-                interface.erase()  # remove partial cache
-            else:
-                if cache_config.use:
-                    sessions_data = interface.load(preload=False)
-                    assert (
-                        sessions_data is not None
-                    )  # should not happen because save succeeded
-        return sessions_data
+                if (
+                    (cache_config.overwrite_raw and cache_type is StepType.RAW)
+                    or (cache_config.overwrite_epochs and cache_type is StepType.EPOCHS)
+                    or (cache_config.overwrite_array and cache_type is StepType.ARRAY)
+                ):
+                    interface.erase()
+                elif cache_config.use:  # can't load if it was just erased
+                    sessions_data = interface.load(
+                        preload=False
+                    )  # None if cache inexistant
+
+            # If no cache was found or if it was erased, try the next option:
+            if sessions_data is None:
+                continue
+
+            # Apply remaining steps and save:
+            for step_idx, (step_type, process_pipeline) in enumerate(remaining_steps):
+                # apply one step:
+                sessions_data = {
+                    session: {
+                        run: process_pipeline.transform(raw) for run, raw in runs.items()
+                    }
+                    for session, runs in sessions_data.items()
+                }
+
+                # save:
+                if (
+                    (cache_config.save_raw and step_type is StepType.RAW)
+                    or (cache_config.save_epochs and step_type is StepType.EPOCHS)
+                    or (cache_config.save_array and step_type is StepType.ARRAY)
+                ):
+                    interface = _interface_map[step_type](
+                        self,
+                        subject,
+                        path=cache_config.path,
+                        process_pipeline=Pipeline(
+                            cached_steps + remaining_steps[: step_idx + 1]
+                        ),
+                        verbose=cache_config.verbose,
+                    )
+                    try:
+                        interface.save(sessions_data)
+                    except Exception:
+                        log.warning(
+                            f"Failed to save {interface.__repr__()} to BIDS format:\n"
+                            f"{' Exception: '.center(50, '#')}\n"
+                            f"{''.join(traceback.format_exc())}{'#' * 50}"
+                        )
+                        interface.erase()  # remove partial cache
+            return sessions_data
+        raise ValueError("should not happen")
 
     @abc.abstractmethod
     def _get_single_subject_data(self, subject):

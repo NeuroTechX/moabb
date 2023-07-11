@@ -74,9 +74,9 @@ class Test_Datasets(unittest.TestCase):
                 _ = dataset.get_data(
                     subjects=[1],
                     cache_config=dict(
-                        save=True,
+                        save_raw=True,
                         use=True,
-                        overwrite=False,
+                        overwrite_raw=False,
                         path=tempdir,
                     ),
                 )
@@ -91,9 +91,9 @@ class Test_Datasets(unittest.TestCase):
                 _ = dataset.get_data(
                     subjects=[1],
                     cache_config=dict(
-                        save=True,
+                        save_raw=True,
                         use=True,
-                        overwrite=False,
+                        overwrite_raw=False,
                         path=tempdir,
                     ),
                 )
@@ -106,9 +106,9 @@ class Test_Datasets(unittest.TestCase):
                 _ = dataset.get_data(
                     subjects=[1],
                     cache_config=dict(
-                        save=True,
+                        save_raw=True,
                         use=True,
-                        overwrite=True,
+                        overwrite_raw=True,
                         path=tempdir,
                     ),
                 )

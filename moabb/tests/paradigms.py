@@ -98,7 +98,7 @@ class Test_MotorImagery(unittest.TestCase):
         paradigm = SimpleMotorImagery(filters=[[7, 12], [12, 24]])
         dataset = FakeDataset(paradigm="imagery")
         # no stim channel after loading cache
-        raw = dataset.get_data([1], cache_config=dict(use=False, save=False))[1][
+        raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1][
             "session_0"
         ]["run_0"]
         raw.load_data()
@@ -279,7 +279,7 @@ class Test_P300(unittest.TestCase):
         paradigm = SimpleP300(filters=[[1, 12], [12, 24]])
         dataset = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])
         # no stim channel after loading cache
-        raw = dataset.get_data([1], cache_config=dict(use=False, save=False))[1][
+        raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1][
             "session_0"
         ]["run_0"]
         raw.load_data()
@@ -346,7 +346,7 @@ class Test_RestingState(unittest.TestCase):
         paradigm = RestingStateToP300Adapter(events=event_list)
         dataset = FakeDataset(paradigm="rstate", event_list=event_list)
         X, labels, metadata = paradigm.get_data(
-            dataset, subjects=[1], cache_config=dict(use=False, save=False)
+            dataset, subjects=[1], cache_config=dict(use=False, save_raw=False)
         )
 
         # we should have all the same length
@@ -368,7 +368,7 @@ class Test_RestingState(unittest.TestCase):
             dataset,
             subjects=[1],
             return_epochs=True,
-            cache_config=dict(use=False, save=False),
+            cache_config=dict(use=False, save_raw=False),
         )
         self.assertIsInstance(epochs, BaseEpochs)
         # should return raws
@@ -376,7 +376,7 @@ class Test_RestingState(unittest.TestCase):
             dataset,
             subjects=[1],
             return_raws=True,
-            cache_config=dict(use=False, save=False),
+            cache_config=dict(use=False, save_raw=False),
         )
         for raw in raws:
             self.assertIsInstance(raw, BaseRaw)

@@ -5,7 +5,6 @@ from operator import methodcaller
 import mne
 import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 
 from moabb.paradigms.utils import _find_events
@@ -290,23 +289,17 @@ class BaseParadigm(metaclass=ABCMeta):
             dataset.get_data(
                 subjects=subjects,
                 cache_config=cache_config,
-                process_pipeline=Pipeline(
-                    [
-                        (
-                            "filter",
-                            FunctionTransformer(
-                                methodcaller(
-                                    "filter",
-                                    fmin,
-                                    fmax,
-                                    method="iir",
-                                    verbose=False,
-                                    picks="eeg",
-                                )
-                            ),
-                        )
-                    ]
+                raw_pipeline=FunctionTransformer(
+                    methodcaller(
+                        "filter",
+                        fmin,
+                        fmax,
+                        method="iir",
+                        verbose=False,
+                        picks="eeg",
+                    )
                 ),
+                # epochs_pipeline=...,
             )
             for fmin, fmax in self.filters
         ]
