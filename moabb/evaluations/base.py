@@ -160,9 +160,7 @@ class BaseEvaluation(ABC):
 
         for dataset in self.datasets:
             log.info("Processing dataset: {}".format(dataset.code))
-            results = self.evaluate(dataset, pipelines, param_grid)
-            for res in results:
-                self.push_result(res, pipelines)
+            _ = self.evaluate(dataset, pipelines, param_grid)
 
         return self.results.to_dataframe(pipelines=pipelines)
 
