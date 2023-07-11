@@ -661,6 +661,8 @@ class CrossSessionEvaluation(BaseEvaluation):
                     res["carbon_emission"] = (1000 * (emissions + emissions_grid),)
 
                 results.append(res)
+                self.push_result(res, pipelines)
+
         return results
 
     def is_valid(self, dataset):
@@ -859,6 +861,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         res["carbon_emission"] = (
                             1000 * (emissions + emissions_grid[name]),
                         )
+                    self.push_result(res, pipelines)
                     yield res
 
     def is_valid(self, dataset):
