@@ -18,7 +18,12 @@ OPTICAL_MARKER_CODE = 500
 
 class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
     def __init__(
-        self, src_url, n_subjects, raw_slice_offset, use_blocks_as_sessions=True, **kwargs
+        self,
+        src_url,
+        n_subjects,
+        raw_slice_offset,
+        use_blocks_as_sessions=True,
+        **kwargs,
     ):
         self.n_channels = 31  # all channels except 5 times x_* CH and EOGvu
         if kwargs["interval"] is None:
@@ -35,6 +40,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         self.raw_slice_offset = 2_000 if raw_slice_offset is None else raw_slice_offset
         self._src_url = src_url
         self.use_blocks_as_sessions = use_blocks_as_sessions
+        self.description_map = {"Stimulus/S   1": "Target", "Stimulus/S   0": "NonTarget"}
 
     @staticmethod
     def _filename_trial_info_extraction(vhdr_file_path):
@@ -68,6 +74,8 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
                 raw_slice_offset=self.raw_slice_offset,
                 verbose=None,
             )
+
+            raw_bvr_list[0].annotations.rename(self.description_map)
 
             if self.use_blocks_as_sessions:
                 session_name = f"{session_name}_block_{block_idx}"
