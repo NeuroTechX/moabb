@@ -147,8 +147,7 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
     if not destination.is_file() or force_update:
         if destination.is_file():
             destination.unlink()
-        if not destination.parent.is_dir():
-            destination.parent.mkdir(parents=True)
+        destination.parent.mkdir(parents=True, exist_ok=True)
         known_hash = None
     else:
         known_hash = file_hash(str(destination))
