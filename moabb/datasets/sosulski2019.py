@@ -104,6 +104,7 @@ class Sosulski2019(BaseDataset):
         self.stimulus_modality = "tone_oddball"
         self.n_channels = 31
         self.use_soas_as_sessions = use_soas_as_sessions
+        self.description_map = {"Stimulus/S 21": "Target", "Stimulus/S  1": "NonTarget"}
         code = "Spot Pilot P300 dataset"
         interval = [-0.2, 1] if interval is None else interval
         super().__init__(
@@ -141,6 +142,7 @@ class Sosulski2019(BaseDataset):
         raw.set_montage("standard_1020")
         if self.reject_non_iid:
             raw.set_annotations(raw.annotations[7:85])  # non-iid rejection
+        raw.annotations.rename(self.description_map)
         return raw
 
     def _get_single_subject_data(self, subject):
