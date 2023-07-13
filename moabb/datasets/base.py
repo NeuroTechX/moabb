@@ -396,6 +396,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     except Exception:
                         log.warning(
                             f"Failed to save {interface.__repr__()} to BIDS format:\n"
+                            f"{' Pipeline: '.center(50, '#')}\n"
+                            f"{interface.process_pipeline.__repr__()}\n"
                             f"{' Exception: '.center(50, '#')}\n"
                             f"{''.join(traceback.format_exc())}{'#' * 50}"
                         )
