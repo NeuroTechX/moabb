@@ -1,0 +1,142 @@
+import logging
+from collections import OrderedDict
+from operator import methodcaller
+from typing import Type
+
+import mne
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.pipeline import FunctionTransformer, Pipeline
+
+
+log = logging.getLogger(__name__)
+
+
+def _is_none_pipeline(pipeline):
+    """Check if a pipeline is the result of make_pipeline(None)"""
+    return isinstance(pipeline, Pipeline) and pipeline.steps[0][1] is None
+
+
+class ForkPipelines(TransformerMixin, BaseEstimator):
+    def __init__(self, transformers: list[tuple[str, Type[TransformerMixin]]]):
+        for _, t in transformers:
+            assert hasattr(t, "transform")
+        self.transformers = transformers
+
+    def transform(self, X, y=None):
+        return OrderedDict([(n, t.transform(X)) for n, t in self.transformers])
+
+    def fit(self, X, y=None):
+        for _, t in self.transformers:
+            t.fit(X)
+
+
+class FixedTransformer(TransformerMixin, BaseEstimator):
+    def fit(self, X, y=None):
+        pass
+
+
+class RawToEvents(FixedTransformer):
+    def __init__(self, event_id):
+        self.event_id = event_id
+
+    def transform(self, raw, y=None):
+        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
+        if len(stim_channels) > 0:
+            events = mne.find_events(raw, shortest_event=0, verbose=False)
+        else:
+            events, _ = mne.events_from_annotations(
+                raw, event_id=self.event_id, verbose=False
+            )
+        try:
+            events = mne.pick_events(events, include=list(self.event_id.values()))
+        except RuntimeError:
+            # skip raw if no event found
+            return
+        return events
+
+
+class EpochsToEvents(FixedTransformer):
+    def transform(self, epochs, y=None):
+        return epochs.events
+
+
+class EventsToLabels(FixedTransformer):
+    def __init__(self, event_id):
+        self.event_id = event_id
+
+    def transform(self, events, y=None):
+        inv_events = {k: v for v, k in self.event_id.items()}
+        labels = [inv_events[e] for e in events[:, -1]]
+        return labels
+
+
+class RawToEpochs(FixedTransformer):
+    def __init__(
+        self,
+        event_id: dict[str, int],
+        tmin: float,
+        tmax: float,
+        baseline: tuple[float, float],
+        channels: list[str] = None,
+    ):
+        self.event_id = event_id
+        self.tmin = tmin
+        self.tmax = tmax
+        self.baseline = baseline
+        self.channels = channels
+
+    def transform(self, raw, y=None):
+        if not isinstance(raw, mne.io.BaseRaw):
+            raise ValueError("raw must be a mne.io.BaseRaw")
+
+        if self.channels is None:
+            picks = mne.pick_types(raw.info, eeg=True, stim=False)
+        else:
+            picks = mne.pick_channels(
+                raw.info["ch_names"], include=self.channels, ordered=True
+            )
+
+        events = RawToEvents(self.event_id).transform(raw)
+
+        epochs = mne.Epochs(
+            raw,
+            events,
+            event_id=self.event_id,
+            tmin=self.tmin,
+            tmax=self.tmax,
+            proj=False,
+            baseline=self.baseline,
+            preload=True,
+            verbose=False,
+            picks=picks,
+            event_repeated="drop",
+            on_missing="ignore",
+        )
+        return epochs
+
+
+def get_filter_pipeline(fmin, fmax):
+    return FunctionTransformer(
+        methodcaller("filter"),
+        kw_args=dict(
+            fmin=fmin,
+            fmax=fmax,
+            method="iir",
+            picks="eeg",
+            verbose=False,
+        ),
+    )
+
+
+def get_crop_pipeline(tmin, tmax):
+    return FunctionTransformer(
+        methodcaller("crop"),
+        kw_args=dict(tmin=tmax, tmax=tmin, verbose=False),
+    )
+
+
+def get_resample_pipeline(sfreq):
+    return FunctionTransformer(
+        methodcaller("resample"),
+        kw_args=dict(sfreq=sfreq, verbose=False),
+    )

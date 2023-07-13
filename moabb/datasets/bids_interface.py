@@ -2,6 +2,7 @@ import abc
 import datetime
 import json
 import logging
+from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -14,7 +15,7 @@ from numpy import save as np_save
 import moabb
 from moabb.analysis.results import get_digest
 from moabb.datasets import download as dl
-from moabb.paradigms.utils import _find_events
+from moabb.datasets.preprocessing import RawToEvents
 
 
 if TYPE_CHECKING:
@@ -167,6 +168,7 @@ class BIDSInterfaceBase(abc.ABC):
             descriptions=self.desc,
             extensions=self._extension,
             check=self._check,
+            suffixes=self._suffix,
         )
         sessions_data = {}
         for p in paths:
@@ -215,6 +217,7 @@ class BIDSInterfaceBase(abc.ABC):
                     datatype="eeg",
                     extension=self._extension,
                     check=self._check,
+                    suffix=self._suffix,
                 )
 
                 bids_path.mkdir(exist_ok=True)
@@ -243,6 +246,10 @@ class BIDSInterfaceBase(abc.ABC):
     @abc.abstractmethod
     def _check(self):
         pass
+
+    @property
+    def _suffix(self):
+        return None
 
 
 class BIDSInterfaceRawEDF(BIDSInterfaceBase):
@@ -276,9 +283,14 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         if raw.info.get("meas_date", None) is None:
             raw.set_meas_date(datetime_now)
 
-        events = _find_events(raw, self.dataset.event_id)
+        # We write all the events listed in the dataset:
+        events = RawToEvents(self.dataset.event_id).transform(raw)
+
+        # Otherwise, the montage would still have the stim channel
+        # which is dropped by mne_bids.write_raw_bids:
         picks = mne.pick_types(info=raw.info, eeg=True, stim=False)
         raw.pick(picks)
+
         # By using the same anonymization `daysback` number we can
         # preserve the longitudinal structure of multiple sessions for a
         # single subject and the relation between subjects. Be sure to
@@ -306,11 +318,15 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
 class BIDSInterfaceEpochs(BIDSInterfaceBase):
     @property
     def _extension(self):
-        return "-epo.fif"
+        return ".fif"
 
     @property
     def _check(self):
         return False
+
+    @property
+    def _suffix(self):
+        return "epo"
 
     def _load_file(self, bids_path, preload):
         epochs = mne.read_epochs(bids_path.fpath, preload=preload, verbose=self.verbose)
@@ -332,8 +348,22 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
     def _load_file(self, bids_path, preload):
         if preload:
             raise ValueError("preload must be False for numpy arrays")
-        x = np_load(bids_path.fpath)
-        return x
+        labels_fname = mne_bids.write._find_matching_sidecar(
+            bids_path,
+            suffix="labels",
+            extension=".tsv",
+            on_error="raise",
+        )
+        X = np_load(bids_path.fpath)
+        y = mne_bids.tsv_handler._from_tsv(labels_fname)["y"]
+        return OrderedDict([("X", X), ("y", y)])
 
-    def _write_file(self, bids_path, x):
-        np_save(bids_path.fpath, x)
+    def _write_file(self, bids_path, Xy):
+        labels_path = bids_path.copy().update(
+            suffix="labels",
+            extension=".tsv",
+        )
+        np_save(bids_path.fpath, Xy["X"])
+        mne_bids.utils._write_tsv(
+            labels_path.fpath, dict(y=Xy["y"]), overwrite=False, verbose=self.verbose
+        )

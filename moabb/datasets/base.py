@@ -18,6 +18,13 @@ from moabb.datasets.bids_interface import (
     BIDSInterfaceNumpyArray,
     BIDSInterfaceRawEDF,
 )
+from moabb.datasets.preprocessing import (
+    EpochsToEvents,
+    EventsToLabels,
+    ForkPipelines,
+    RawToEvents,
+    _is_none_pipeline,
+)
 
 
 log = logging.getLogger(__name__)
@@ -107,11 +114,6 @@ _interface_map: dict[StepType, Type[BIDSInterfaceBase]] = {
 }
 
 
-def _is_none_pipeline(pipeline):
-    """Check if a pipeline is the result of make_pipeline(None)"""
-    return isinstance(pipeline, Pipeline) and pipeline.steps[0][1] is None
-
-
 class BaseDataset(metaclass=abc.ABCMeta):
     """BaseDataset
 
@@ -184,6 +186,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         raw_pipeline=None,
         epochs_pipeline=None,
         array_pipeline=None,
+        event_id=None,
     ):
         """Return the data correspoonding to a list of subjects.
 
@@ -191,7 +194,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
 
             data = {'subject_id' :
                         {'session_id':
-                            {'run_id': raw}
+                            {'run_id': run}
                         }
                     }
 
@@ -223,6 +226,11 @@ class BaseDataset(metaclass=abc.ABCMeta):
             Pipeline either takes as input a ``mne.Epochs`` if epochs_pipeline
             is not ``None``, or a ``mne.io.Raw`` otherwise. It necessarily returns
             a ``numpy.ndarray`` as output.
+            If array_pipeline is not None, each run will be a dict with keys "X" and "y"
+            corresponding respectively to the array itself and the corresponding labels.
+        event_id: dict
+            Event ids to use for generating labels. Only used if ``array_pipeline``
+            is not ``None``. If ``None``, all the events of the dataset will be used.
 
         Returns
         -------
@@ -235,6 +243,13 @@ class BaseDataset(metaclass=abc.ABCMeta):
         if not isinstance(subjects, list):
             raise (ValueError("subjects must be a list"))
 
+        if event_id is None and array_pipeline is not None:
+            log.warning(
+                f"event_id not specified, using all the dataset's "
+                f"events to generate labels: {self.event_id}"
+            )
+            event_id = self.event_id
+
         cache_config = CacheConfig.make(cache_config)
 
         steps = []
@@ -243,7 +258,24 @@ class BaseDataset(metaclass=abc.ABCMeta):
         if epochs_pipeline is not None:
             steps.append((StepType.EPOCHS, epochs_pipeline))
         if array_pipeline is not None:
-            steps.append((StepType.ARRAY, array_pipeline))
+            labels_pipeline = Pipeline(
+                [
+                    (
+                        "events",
+                        RawToEvents(event_id)
+                        if epochs_pipeline is None
+                        else EpochsToEvents(),
+                    ),
+                    ("labels", EventsToLabels(event_id)),
+                ]
+            )
+            array_labels_pipeline = ForkPipelines(
+                [
+                    ("X", array_pipeline),
+                    ("y", labels_pipeline),  # todo: only used events
+                ]
+            )
+            steps.append((StepType.ARRAY, array_labels_pipeline))
         if len(steps) == 0:
             steps.append((StepType.RAW, make_pipeline(None)))
 

@@ -5,26 +5,19 @@ from operator import methodcaller
 import mne
 import numpy as np
 import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 
-from moabb.paradigms.utils import _find_events
+from moabb.datasets.preprocessing import (
+    RawToEpochs,
+    get_crop_pipeline,
+    get_filter_pipeline,
+    get_resample_pipeline,
+)
 
 
 log = logging.getLogger(__name__)
-
-
-# def filter_raw(raw):
-#     if self.channels is None:
-#         picks = pick_types(raw.info, eeg=True, stim=False)
-#     else:
-#         picks = pick_channels(  # we keep all the channels
-#             raw.info["ch_names"], include=self.channels, ordered=True
-#         )
-#     if fmin is None and fmax is None:
-#         return raw.pick(picks=picks, verbose=False)
-#     return raw.filter(
-#         fmin, fmax, method="iir", picks=picks, verbose=False
-#     )  # we filter in-place
 
 
 class BaseParadigm(metaclass=ABCMeta):
@@ -87,153 +80,13 @@ class BaseParadigm(metaclass=ABCMeta):
         if dataset is not None:
             pass
 
-    def process_raws(  # noqa: C901
-        self, raws, dataset, return_epochs=False, return_raws=False
-    ):
-        """
-        Process one raw data file.
-
-        This function apply the preprocessing and eventual epoching on the
-        individual run, and return the data, labels and a dataframe with
-        metadata.
-
-        metadata is a dataframe with as many row as the length of the data
-        and labels.
-
-        Parameters
-        ----------
-        raws: mne.Raw | list[mne.Raw]
-            list of raw objects, each object corresponding to a band in self.filters
-        dataset : dataset instance
-            The dataset corresponding to the raw file. mainly use to access
-            dataset specific information.
-        return_epochs: boolean
-            This flag specifies whether to return only the data array or the
-            complete processed mne.Epochs
-        return_raws: boolean
-            To return raw files and events, to ensure compatibility with braindecode.
-            Mutually exclusive with return_epochs
-
-        returns
-        -------
-        X : Union[np.ndarray, mne.Epochs]
-            the data that will be used as features for the model
-            Note: if return_epochs=True,  this is mne.Epochs
-            if return_epochs=False, this is np.ndarray
-        labels: np.ndarray
-            the labels for training / evaluating the model
-        metadata: pd.DataFrame
-            A dataframe containing the metadata
-
-        """
-        if isinstance(raws, mne.io.BaseRaw):
-            raws = [raws]
-        elif not isinstance(raws, list):
-            raise ValueError("raw must be a mne.io.BaseRaw or a list of mne.io.BaseRaw")
-
-        if return_epochs and return_raws:
-            message = "Select only return_epochs or return_raws, not both"
-            raise ValueError(message)
-
-        # get events id
-        event_id = self.used_events(dataset)
-
-        try:
-            events = _find_events(raws[0], event_id)
-        except ValueError:
-            log.warning(f"No matching annotations in {raws[0].filenames}")
-            return
-
-        # picks channels
-        if self.channels is None:
-            picks = mne.pick_types(raws[0].info, eeg=True, stim=False)
-        else:
-            picks = mne.pick_channels(
-                raws[0].info["ch_names"], include=self.channels, ordered=True
-            )
-
-        # pick events, based on event_id
-        try:
-            events = mne.pick_events(events, include=list(event_id.values()))
-        except RuntimeError:
-            # skip raw if no event found
-            return
-
-        if return_raws:
-            raws = [raw_f.pick(picks) for raw_f in raws]
-        else:
-            # get interval
-            tmin = self.tmin + dataset.interval[0]
-            if self.tmax is None:
-                tmax = dataset.interval[1]
-            else:
-                tmax = self.tmax + dataset.interval[0]
-
-            # epoch data
-            baseline = self.baseline
-            if baseline is not None:
-                baseline = (
-                    self.baseline[0] + dataset.interval[0],
-                    self.baseline[1] + dataset.interval[0],
-                )
-                bmin = baseline[0] if baseline[0] < tmin else tmin
-                bmax = baseline[1] if baseline[1] > tmax else tmax
-            else:
-                bmin = tmin
-                bmax = tmax
-            X = []
-            for raw_f in raws:
-                epochs = mne.Epochs(
-                    raw_f,
-                    events,
-                    event_id=event_id,
-                    tmin=bmin,
-                    tmax=bmax,
-                    proj=False,
-                    baseline=baseline,
-                    preload=True,
-                    verbose=False,
-                    picks=picks,
-                    event_repeated="drop",
-                    on_missing="ignore",
-                )
-                if bmin < tmin or bmax > tmax:
-                    epochs.crop(tmin=tmin, tmax=tmax)
-                if self.resample is not None:
-                    epochs = epochs.resample(self.resample)
-                # rescale to work with uV
-                if return_epochs:
-                    X.append(epochs)
-                else:
-                    X.append(dataset.unit_factor * epochs.get_data())
-
-            # overwrite events in case epochs have been dropped:
-            # (assuming all filters produce the same number of epochs...)
-            events = epochs.events
-
-        inv_events = {k: v for v, k in event_id.items()}
-        labels = np.array([inv_events[e] for e in events[:, -1]])
-
-        if return_epochs:
-            X = mne.concatenate_epochs(X)
-        elif return_raws:
-            X = raws[0] if len(raws) == 1 else raws
-        elif len(self.filters) == 1:
-            # if only one band, return a 3D array
-            X = X[0]
-        else:
-            # otherwise return a 4D
-            X = np.array(X).transpose((1, 2, 3, 0))
-
-        metadata = pd.DataFrame(index=range(len(labels)))
-        return X, labels, metadata
-
     def get_data(
         self,
         dataset,
         subjects=None,
         return_epochs=False,
         return_raws=False,
+        processing_pipeline=None,
         cache_config=None,
     ):
         """
@@ -285,23 +138,20 @@ class BaseParadigm(metaclass=ABCMeta):
             subjects = dataset.subject_list
 
         self.prepare_process(dataset)
+        raw_pipelines = self._get_raw_pipelines()
+        epochs_pipeline = self._get_epochs_pipeline(return_raws)
+        array_pipeline = self._get_array_pipeline(
+            return_epochs, return_raws, processing_pipeline, dataset
+        )
         data = [
             dataset.get_data(
                 subjects=subjects,
                 cache_config=cache_config,
-                raw_pipeline=FunctionTransformer(
-                    methodcaller(
-                        "filter",
-                        fmin,
-                        fmax,
-                        method="iir",
-                        verbose=False,
-                        picks="eeg",
-                    )
-                ),
-                # epochs_pipeline=...,
+                raw_pipeline=raw_pipeline,
+                epochs_pipeline=epochs_pipeline,
+                array_pipeline=array_pipeline,
             )
-            for fmin, fmax in self.filters
+            for raw_pipeline in raw_pipelines
         ]
 
         data = {
@@ -322,7 +172,7 @@ class BaseParadigm(metaclass=ABCMeta):
             for session, runs in sessions.items():
                 for run, raws in runs.items():
                     proc = self.process_raws(raws, dataset, return_epochs, return_raws)
-
+                    # TODO: get the labels and metadata
                     if proc is None:
                         # this mean the run did not contain any selected event
                         # go to next
@@ -354,3 +204,66 @@ class BaseParadigm(metaclass=ABCMeta):
         if return_epochs:
             X = mne.concatenate_epochs(X)
         return X, labels, metadata
+
+    def _get_raw_pipelines(self):
+        return [get_filter_pipeline(fmin, fmax) for fmin, fmax in self.filters]
+
+    def _get_epochs_pipeline(self, return_raws, dataset):
+        if return_raws:
+            return None
+
+        tmin = self.tmin + dataset.interval[0]
+        if self.tmax is None:
+            tmax = dataset.interval[1]
+        else:
+            tmax = self.tmax + dataset.interval[0]
+
+        baseline = self.baseline
+        if baseline is not None:
+            baseline = (
+                self.baseline[0] + dataset.interval[0],
+                self.baseline[1] + dataset.interval[0],
+            )
+            bmin = baseline[0] if baseline[0] < tmin else tmin
+            bmax = baseline[1] if baseline[1] > tmax else tmax
+        else:
+            bmin = tmin
+            bmax = tmax
+        steps = []
+        steps.append(
+            (
+                "epoching",
+                RawToEpochs(
+                    event_id=self.events,
+                    tmin=bmin,
+                    tmax=bmax,
+                    baseline=baseline,
+                    channels=self.channels,
+                ),
+            )
+        )
+        if bmin < tmin or bmax > tmax:
+            steps.append(("crop", get_crop_pipeline(tmin=tmin, tmax=tmax)))
+        if self.resample is not None:
+            steps.append(("resample", get_resample_pipeline(self.resample)))
+        return Pipeline(steps)
+
+    def _get_array_pipeline(
+        self, return_epochs, return_raws, processing_pipeline, dataset
+    ):
+        steps = []
+        if not return_epochs and not return_raws:
+            steps.append(("get_data", FunctionTransformer(methodcaller("get_data"))))
+            steps.append(
+                (
+                    "scaling",
+                    FunctionTransformer(
+                        np.multiply, kw_args=dict(x1=dataset.scaling_factor)
+                    ),
+                )
+            )
+        if processing_pipeline is not None:
+            steps.append(("processing_pipeline", processing_pipeline))
+        if len(steps) == 0:
+            return None, ColumnTransformer
+        return Pipeline(steps)

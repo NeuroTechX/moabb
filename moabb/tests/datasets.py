@@ -1,12 +1,15 @@
 import shutil
 import tempfile
 import unittest
+from operator import methodcaller
 
 import mne
+from sklearn.preprocessing import FunctionTransformer
 
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
+from moabb.datasets.preprocessing import RawToEpochs
 from moabb.datasets.utils import block_rep
 from moabb.paradigms import P300
 
@@ -68,55 +71,85 @@ class Test_Datasets(unittest.TestCase):
         tempdir = tempfile.mkdtemp()
         for paradigm in ["imagery", "p300", "ssvep"]:
             dataset = FakeDataset(paradigm=paradigm)
-            with self.assertLogs(
-                logger="moabb.datasets.bids_interface", level="INFO"
-            ) as cm:
-                _ = dataset.get_data(
-                    subjects=[1],
-                    cache_config=dict(
-                        save_raw=True,
-                        use=True,
-                        overwrite_raw=False,
-                        path=tempdir,
-                    ),
-                )
-            print("\n".join(cm.output))
-            self.assertIn("Attempting to retrieve cache of dataset", cm.output[0])
-            self.assertIn("No cache found at", cm.output[1])
-            self.assertIn("Starting caching dataset", cm.output[2])
-            self.assertIn("Finished caching dataset", cm.output[3])
-            with self.assertLogs(
-                logger="moabb.datasets.bids_interface", level="INFO"
-            ) as cm:
-                _ = dataset.get_data(
-                    subjects=[1],
-                    cache_config=dict(
-                        save_raw=True,
-                        use=True,
-                        overwrite_raw=False,
-                        path=tempdir,
-                    ),
-                )
-            print("\n".join(cm.output))
-            self.assertIn("Attempting to retrieve cache of dataset", cm.output[0])
-            self.assertIn("Finished reading cache of dataset", cm.output[-1])
-            with self.assertLogs(
-                logger="moabb.datasets.bids_interface", level="INFO"
-            ) as cm:
-                _ = dataset.get_data(
-                    subjects=[1],
-                    cache_config=dict(
-                        save_raw=True,
-                        use=True,
-                        overwrite_raw=True,
-                        path=tempdir,
-                    ),
-                )
-            print("\n".join(cm.output))
-            self.assertIn("Starting erasing cache of dataset", cm.output[0])
-            self.assertIn("Finished erasing cache of dataset", cm.output[1])
-            self.assertIn("Starting caching dataset", cm.output[2])
-            self.assertIn("Finished caching dataset", cm.output[3])
+            pipelines_list = [
+                dict(),  # test BIDSInterfaceRawEDF
+                dict(
+                    epochs_pipeline=RawToEpochs(  # test BIDSInterfaceEpochs
+                        event_id=dataset.event_id,
+                        tmin=dataset.interval[0],
+                        tmax=dataset.interval[1],
+                        baseline=tuple(dataset.interval),
+                    )
+                ),
+                dict(
+                    array_pipeline=FunctionTransformer(methodcaller("get_data"))
+                ),  # test BIDSInterfaceNumpyArray
+            ]
+            for pipelines in pipelines_list:
+                with self.assertLogs(
+                    logger="moabb.datasets.bids_interface", level="INFO"
+                ) as cm:
+                    _ = dataset.get_data(
+                        subjects=[1],
+                        cache_config=dict(
+                            save_raw=True,
+                            save_epochs=True,
+                            save_array=True,
+                            use=True,
+                            overwrite_raw=False,
+                            overwrite_epochs=False,
+                            overwrite_array=False,
+                            path=tempdir,
+                        ),
+                        **pipelines,
+                    )
+                print("\n".join(cm.output))
+                self.assertIn("Attempting to retrieve cache of dataset", cm.output[0])
+                self.assertIn("No cache found at", cm.output[1])
+                self.assertIn("Starting caching dataset", cm.output[2])
+                self.assertIn("Finished caching dataset", cm.output[3])
+                with self.assertLogs(
+                    logger="moabb.datasets.bids_interface", level="INFO"
+                ) as cm:
+                    _ = dataset.get_data(
+                        subjects=[1],
+                        cache_config=dict(
+                            save_raw=True,
+                            save_epochs=True,
+                            save_array=True,
+                            use=True,
+                            overwrite_raw=False,
+                            overwrite_epochs=False,
+                            overwrite_array=False,
+                            path=tempdir,
+                        ),
+                        **pipelines,
+                    )
+                print("\n".join(cm.output))
+                self.assertIn("Attempting to retrieve cache of dataset", cm.output[0])
+                self.assertIn("Finished reading cache of dataset", cm.output[-1])
+                with self.assertLogs(
+                    logger="moabb.datasets.bids_interface", level="INFO"
+                ) as cm:
+                    _ = dataset.get_data(
+                        subjects=[1],
+                        cache_config=dict(
+                            save_raw=True,
+                            save_epochs=True,
+                            save_array=True,
+                            use=True,
+                            overwrite_raw=True,
+                            overwrite_epochs=True,
+                            overwrite_array=True,
+                            path=tempdir,
+                        ),
+                        **pipelines,
+                    )
+                print("\n".join(cm.output))
+                self.assertIn("Starting erasing cache of dataset", cm.output[0])
+                self.assertIn("Finished erasing cache of dataset", cm.output[1])
+                self.assertIn("Starting caching dataset", cm.output[2])
+                self.assertIn("Finished caching dataset", cm.output[3])
         shutil.rmtree(tempdir)
 
     def test_dataset_accept(self):
