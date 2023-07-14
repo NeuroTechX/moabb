@@ -5,12 +5,14 @@ from operator import methodcaller
 import mne
 import numpy as np
 import pandas as pd
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
 from moabb.datasets.preprocessing import (
+    EpochsToEvents,
+    EventsToLabels,
     RawToEpochs,
+    RawToEvents,
     get_crop_pipeline,
     get_filter_pipeline,
     get_resample_pipeline,
@@ -80,7 +82,7 @@ class BaseParadigm(metaclass=ABCMeta):
         if dataset is not None:
             pass
 
-    def get_data(
+    def get_data(  # noqa: C901
         self,
         dataset,
         subjects=None,
@@ -139,10 +141,19 @@ class BaseParadigm(metaclass=ABCMeta):
 
         self.prepare_process(dataset)
         raw_pipelines = self._get_raw_pipelines()
-        epochs_pipeline = self._get_epochs_pipeline(return_raws)
+        epochs_pipeline = self._get_epochs_pipeline(return_epochs, return_raws, dataset)
         array_pipeline = self._get_array_pipeline(
-            return_epochs, return_raws, processing_pipeline, dataset
+            return_epochs, return_raws, dataset, processing_pipeline
         )
+        if return_epochs:
+            labels_pipeline = make_pipeline(
+                EpochsToEvents(), EventsToLabels(event_id=dataset.event_id)
+            )
+        if return_raws:
+            labels_pipeline = make_pipeline(
+                RawToEvents(event_id=dataset.event_id),
+                EventsToLabels(event_id=dataset.event_id),
+            )
         data = [
             dataset.get_data(
                 subjects=subjects,
@@ -154,37 +165,55 @@ class BaseParadigm(metaclass=ABCMeta):
             for raw_pipeline in raw_pipelines
         ]
 
-        data = {
-            subject: {
-                session: {
-                    run: [data_i[subject][session][run] for data_i in data]
-                    for run in runs.keys()
-                }
-                for session, runs in sessions.items()
-            }
-            for subject, sessions in data[0].items()
-        }
-
-        X = [] if (return_epochs or return_raws) else np.array([])
+        X = []
         labels = []
         metadata = []
-        for subject, sessions in data.items():
+        for subject, sessions in data[0].items():
             for session, runs in sessions.items():
-                for run, raws in runs.items():
-                    proc = self.process_raws(raws, dataset, return_epochs, return_raws)
-                    # TODO: get the labels and metadata
-                    if proc is None:
+                for run in runs.keys():
+                    proc = [data_i[subject][session][run] for data_i in data]
+                    if any(obj is None for obj in proc):
                         # this mean the run did not contain any selected event
                         # go to next
+                        assert all(obj is None for obj in proc)  # sanity check
                         continue
 
-                    x, lbs, met = proc
+                    if return_epochs:
+                        assert all(len(proc[0]) == len(p) for p in proc[1:])
+                        n = len(proc[0])
+                        lbs = labels_pipeline.transform(proc[0])
+                        x = (
+                            proc[0]
+                            if len(self.filters) == 1
+                            else mne.concatenate_epochs(proc)
+                        )
+                    elif return_raws:
+                        assert all(len(proc[0]) == len(p) for p in proc[1:])
+                        n = 1
+                        lbs = labels_pipeline.transform(
+                            proc[0]
+                        )  # XXX does it make sense to return labels for raws?
+                        x = proc[0] if len(self.filters) == 1 else proc
+                    else:  # return array
+                        assert all(
+                            np.array_equal(proc[0]["X"].shape, p["X"].shape)
+                            for p in proc[1:]
+                        )
+                        assert all(np.array_equal(proc[0]["y"], p["y"]) for p in proc[1:])
+                        n = proc[0]["X"].shape[0]
+                        lbs = proc[0]["y"]
+                        x = (
+                            proc[0]["X"]
+                            if len(self.filters) == 1
+                            else np.array([p["X"] for p in proc]).transpose((1, 2, 3, 0))
+                        )
+
+                    met = pd.DataFrame(index=range(n))
                     met["subject"] = subject
                     met["session"] = session
                     met["run"] = run
                     metadata.append(met)
 
-                    # grow X and labels in a memory efficient way. can be slow
                     if return_epochs:
                         x.metadata = (
                             met.copy()
@@ -193,22 +222,23 @@ class BaseParadigm(metaclass=ABCMeta):
                                 [met.copy()] * len(self.filters), ignore_index=True
                             )
                         )
-                        X.append(x)
-                    elif return_raws:
-                        X.append(x)
-                    else:
-                        X = np.append(X, x, axis=0) if len(X) else x
-                    labels = np.append(labels, lbs, axis=0)
+                    X.append(x)
+                    labels.append(lbs)
 
         metadata = pd.concat(metadata, ignore_index=True)
+        labels = np.concatenate(labels)
         if return_epochs:
             X = mne.concatenate_epochs(X)
+        elif return_raws:
+            pass
+        else:
+            X = np.concatenate(X, axis=0)
         return X, labels, metadata
 
     def _get_raw_pipelines(self):
         return [get_filter_pipeline(fmin, fmax) for fmin, fmax in self.filters]
 
-    def _get_epochs_pipeline(self, return_raws, dataset):
+    def _get_epochs_pipeline(self, return_epochs, return_raws, dataset):
         if return_raws:
             return None
 
@@ -234,7 +264,7 @@ class BaseParadigm(metaclass=ABCMeta):
             (
                 "epoching",
                 RawToEpochs(
-                    event_id=self.events,
+                    event_id=self.used_events(dataset),
                     tmin=bmin,
                     tmax=bmax,
                     baseline=baseline,
@@ -246,10 +276,12 @@ class BaseParadigm(metaclass=ABCMeta):
             steps.append(("crop", get_crop_pipeline(tmin=tmin, tmax=tmax)))
         if self.resample is not None:
             steps.append(("resample", get_resample_pipeline(self.resample)))
+        if return_epochs:  # needed to concatenate epochs
+            steps.append(("load_data", FunctionTransformer(methodcaller("load_data"))))
         return Pipeline(steps)
 
     def _get_array_pipeline(
-        self, return_epochs, return_raws, processing_pipeline, dataset
+        self, return_epochs, return_raws, dataset, processing_pipeline
     ):
         steps = []
         if not return_epochs and not return_raws:
@@ -257,13 +289,11 @@ class BaseParadigm(metaclass=ABCMeta):
             steps.append(
                 (
                     "scaling",
-                    FunctionTransformer(
-                        np.multiply, kw_args=dict(x1=dataset.scaling_factor)
-                    ),
+                    FunctionTransformer(methodcaller("__mul__", dataset.unit_factor)),
                 )
             )
         if processing_pipeline is not None:
             steps.append(("processing_pipeline", processing_pipeline))
         if len(steps) == 0:
-            return None, ColumnTransformer
+            return None
         return Pipeline(steps)

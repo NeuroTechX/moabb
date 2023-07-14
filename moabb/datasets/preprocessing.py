@@ -37,6 +37,7 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
 
 class RawToEvents(FixedTransformer):
     def __init__(self, event_id):
+        assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
 
     def transform(self, raw, y=None):
@@ -79,6 +80,7 @@ class RawToEpochs(FixedTransformer):
         baseline: tuple[float, float],
         channels: list[str] = None,
     ):
+        assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         self.tmin = tmin
         self.tmax = tmax
@@ -117,10 +119,10 @@ class RawToEpochs(FixedTransformer):
 
 def get_filter_pipeline(fmin, fmax):
     return FunctionTransformer(
-        methodcaller("filter"),
-        kw_args=dict(
-            fmin=fmin,
-            fmax=fmax,
+        methodcaller(
+            "filter",
+            l_freq=fmin,
+            h_freq=fmax,
             method="iir",
             picks="eeg",
             verbose=False,
@@ -130,13 +132,11 @@ def get_filter_pipeline(fmin, fmax):
 
 def get_crop_pipeline(tmin, tmax):
     return FunctionTransformer(
-        methodcaller("crop"),
-        kw_args=dict(tmin=tmax, tmax=tmin, verbose=False),
+        methodcaller("crop", tmin=tmax, tmax=tmin, verbose=False),
     )
 
 
 def get_resample_pipeline(sfreq):
     return FunctionTransformer(
-        methodcaller("resample"),
-        kw_args=dict(sfreq=sfreq, verbose=False),
+        methodcaller("resample", sfreq=sfreq, verbose=False),
     )
