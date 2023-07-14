@@ -63,19 +63,15 @@ class BaseMotorImagery(BaseParadigm):
         channels=None,
         resample=None,
     ):
-        super().__init__()
-        self.filters = filters
-        self.events = events
-        self.channels = channels
-        self.baseline = baseline
-        self.resample = resample
-
-        if tmax is not None:
-            if tmin >= tmax:
-                raise (ValueError("tmax must be greater than tmin"))
-
-        self.tmin = tmin
-        self.tmax = tmax
+        super().__init__(
+            filters=filters,
+            events=events,
+            channels=channels,
+            baseline=baseline,
+            resample=resample,
+            tmin=tmin,
+            tmax=tmax,
+        )
 
     def is_valid(self, dataset):
         ret = True

@@ -1,6 +1,7 @@
+import abc
 import logging
-from abc import ABCMeta, abstractmethod
 from operator import methodcaller
+from typing import Optional
 
 import mne
 import numpy as np
@@ -22,30 +23,69 @@ from moabb.datasets.preprocessing import (
 log = logging.getLogger(__name__)
 
 
-class BaseParadigm(metaclass=ABCMeta):
-    """Base Paradigm."""
+class BaseProcessing(metaclass=abc.ABCMeta):
+    """Base Processing.
 
-    @abstractmethod
-    def __init__(self):
-        pass
+    Please use one of the child classes
+
+    Parameters
+    ----------
+
+    filters: list of list (defaults [[7, 35]])
+        bank of bandpass filter to apply.
+
+    tmin: float (default 0.0)
+        Start time (in second) of the epoch, relative to the dataset specific
+        task interval e.g. tmin = 1 would mean the epoch will start 1 second
+        after the beginning of the task as defined by the dataset.
+
+    tmax: float | None, (default None)
+        End time (in second) of the epoch, relative to the beginning of the
+        dataset specific task interval. tmax = 5 would mean the epoch will end
+        5 second after the beginning of the task as defined in the dataset. If
+        None, use the dataset value.
+
+    baseline: None | tuple of length 2
+            The time interval to consider as “baseline” when applying baseline
+            correction. If None, do not apply baseline correction.
+            If a tuple (a, b), the interval is between a and b (in seconds),
+            including the endpoints.
+            Correction is applied by computing the mean of the baseline period
+            and subtracting it from the data (see mne.Epochs)
+
+    channels: list of str | None (default None)
+        list of channel to select. If None, use all EEG channels available in
+        the dataset.
+
+    resample: float | None (default None)
+        If not None, resample the eeg data with the sampling rate provided."""
+
+    def __init__(
+        self,
+        filters: list[tuple[float, float]],
+        tmin: float = 0.0,
+        tmax: Optional[float] = None,
+        baseline: Optional[tuple[float, float]] = None,
+        channels: Optional[list[str]] = None,
+        resample: Optional[float] = None,
+    ):
+        if tmax is not None:
+            if tmin >= tmax:
+                raise (ValueError("tmax must be greater than tmin"))
+        self.filters = filters
+        self.channels = channels
+        self.baseline = baseline
+        self.resample = resample
+        self.tmin = tmin
+        self.tmax = tmax
 
     @property
-    @abstractmethod
-    def scoring(self):
-        """Property that defines scoring metric (e.g. ROC-AUC or accuracy
-        or f-score), given as a sklearn-compatible string or a compatible
-        sklearn scorer.
-
-        """
-        pass
-
-    @property
-    @abstractmethod
+    @abc.abstractmethod
     def datasets(self):
         """Property that define the list of compatible datasets"""
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def is_valid(self, dataset):
         """Verify the dataset is compatible with the paradigm.
 
@@ -81,6 +121,10 @@ class BaseParadigm(metaclass=ABCMeta):
         """
         if dataset is not None:
             pass
+
+    @abc.abstractmethod
+    def used_events(self, dataset):
+        pass
 
     def get_data(  # noqa: C901
         self,
@@ -151,7 +195,7 @@ class BaseParadigm(metaclass=ABCMeta):
             )
         if return_raws:
             labels_pipeline = make_pipeline(
-                RawToEvents(event_id=dataset.event_id),
+                self._get_events_pipeline(dataset),
                 EventsToLabels(event_id=dataset.event_id),
             )
         data = [
@@ -297,3 +341,53 @@ class BaseParadigm(metaclass=ABCMeta):
         if len(steps) == 0:
             return None
         return Pipeline(steps)
+
+    @abc.abstractmethod
+    def _get_events_pipeline(self, dataset):
+        pass
+
+
+class BaseParadigm(BaseProcessing):
+    """Base class for paradigms.
+
+    Parameters
+    ----------
+
+    events: List of str | None (default None)
+        event to use for epoching. If None, default to all events defined in
+        the dataset.
+    """
+
+    def __init__(
+        self,
+        filters,
+        events: Optional[list[str]] = None,
+        tmin=0.0,
+        tmax=None,
+        baseline=None,
+        channels=None,
+        resample=None,
+    ):
+        super().__init__(
+            filters=filters,
+            channels=channels,
+            baseline=baseline,
+            resample=resample,
+            tmin=tmin,
+            tmax=tmax,
+        )
+        self.events = events
+
+    @property
+    @abc.abstractmethod
+    def scoring(self):
+        """Property that defines scoring metric (e.g. ROC-AUC or accuracy
+        or f-score), given as a sklearn-compatible string or a compatible
+        sklearn scorer.
+
+        """
+        pass
+
+    def _get_events_pipeline(self, dataset):
+        event_id = self.used_events(dataset)
+        return RawToEvents(event_id=event_id)

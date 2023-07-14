@@ -1,6 +1,5 @@
 """P300 Paradigms"""
 
-import abc
 import logging
 
 import mne
@@ -67,19 +66,15 @@ class BaseP300(BaseParadigm):
         channels=None,
         resample=None,
     ):
-        super().__init__()
-        self.filters = filters
-        self.events = events
-        self.channels = channels
-        self.baseline = baseline
-        self.resample = resample
-
-        if tmax is not None:
-            if tmin >= tmax:
-                raise (ValueError("tmax must be greater than tmin"))
-
-        self.tmin = tmin
-        self.tmax = tmax
+        super().__init__(
+            filters=filters,
+            events=events,
+            channels=channels,
+            baseline=baseline,
+            resample=resample,
+            tmin=tmin,
+            tmax=tmax,
+        )
 
     def is_valid(self, dataset):
         ret = True
@@ -93,10 +88,6 @@ class BaseP300(BaseParadigm):
 
         # we should verify list of channels, somehow
         return ret
-
-    @abc.abstractmethod
-    def used_events(self, dataset):
-        pass
 
     def process_raw(  # noqa: C901
         self, raw, dataset, return_epochs=False, return_raws=False

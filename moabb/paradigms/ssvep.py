@@ -63,19 +63,17 @@ class BaseSSVEP(BaseParadigm):
         channels=None,
         resample=None,
     ):
-        super().__init__()
-        self.filters = filters
-        self.events = events
+        super().__init__(
+            filters=filters,
+            events=events,
+            channels=channels,
+            baseline=baseline,
+            resample=resample,
+            tmin=tmin,
+            tmax=tmax,
+        )
+
         self.n_classes = n_classes
-        self.baseline = baseline
-        self.channels = channels
-        self.resample = resample
-
-        if tmax is not None and tmin >= tmax:
-            raise (ValueError("tmax must be greater than tmin"))
-        self.tmin = tmin
-        self.tmax = tmax
-
         if self.events is None:
             log.warning(
                 "Choosing the first "
