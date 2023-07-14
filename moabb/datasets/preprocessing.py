@@ -57,6 +57,35 @@ class RawToEvents(FixedTransformer):
         return events
 
 
+class RawToEventsP300(FixedTransformer):
+    def __init__(self, event_id):
+        assert isinstance(event_id, dict)  # not None
+        self.event_id = event_id
+
+    def transform(self, raw, y=None):
+        event_id = self.event_id
+        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
+        if len(stim_channels) > 0:
+            events = mne.find_events(raw, shortest_event=0, verbose=False)
+        else:
+            events, _ = mne.events_from_annotations(raw, event_id=event_id, verbose=False)
+        try:
+            if "Target" in event_id and "NonTarget" in event_id:
+                if (
+                    type(event_id["Target"]) is list
+                    and type(event_id["NonTarget"]) == list
+                ):
+                    event_id_new = dict(Target=1, NonTarget=0)
+                    events = mne.merge_events(events, event_id["Target"], 1)
+                    events = mne.merge_events(events, event_id["NonTarget"], 0)
+                    event_id = event_id_new
+            events = mne.pick_events(events, include=list(event_id.values()))
+        except RuntimeError:
+            # skip raw if no event found
+            return
+        return events
+
+
 class RawToFixedIntervalEvents(FixedTransformer):
     def __init__(
         self,
