@@ -13,7 +13,6 @@ dataset_list = []
 
 def _init_dataset_list():
     for ds in inspect.getmembers(db, inspect.isclass):
-        print("ds", ds)
         if issubclass(ds[1], BaseDataset):
             dataset_list.append(ds[1])
 
