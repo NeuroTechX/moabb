@@ -1,9 +1,10 @@
 import logging
 from collections import OrderedDict
 from operator import methodcaller
-from typing import Type
+from typing import Union
 
 import mne
+import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import FunctionTransformer, Pipeline
 
@@ -17,7 +18,7 @@ def _is_none_pipeline(pipeline):
 
 
 class ForkPipelines(TransformerMixin, BaseEstimator):
-    def __init__(self, transformers: list[tuple[str, Type[TransformerMixin]]]):
+    def __init__(self, transformers: list[tuple[str, Union[Pipeline, TransformerMixin]]]):
         for _, t in transformers:
             assert hasattr(t, "transform")
         self.transformers = transformers
@@ -53,6 +54,38 @@ class RawToEvents(FixedTransformer):
         except RuntimeError:
             # skip raw if no event found
             return
+        return events
+
+
+class RawToFixedIntervalEvents(FixedTransformer):
+    def __init__(
+        self,
+        length_samples,
+        stride_samples,
+        start_offset_samples,
+        stop_offset_samples,
+        marker=1,
+    ):
+        self.length_samples = length_samples
+        self.stride_samples = stride_samples
+        self.start_offset_samples = start_offset_samples
+        self.stop_offset_samples = stop_offset_samples
+        self.marker = marker
+
+    def transform(self, raw: mne.io.BaseRaw, y=None):
+        stop_offset_samples = (
+            raw.n_times if self.stop_offset_samples is None else self.stop_offset_samples
+        )
+        stop_samples = stop_offset_samples - self.length_samples + raw.first_samp
+        onset = np.arange(
+            raw.first_samp + self.start_offset_samples,
+            stop_samples + 1,
+            self.window_stride_samples,
+        )
+        events = np.empty((len(onset), 3), dtype=int)
+        events[:, 0] = onset
+        events[:, 1] = self.length_samples
+        events[:, 2] = self.marker
         return events
 
 
