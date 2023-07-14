@@ -192,13 +192,24 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         )
         if return_epochs:
             labels_pipeline = make_pipeline(
-                EpochsToEvents(), EventsToLabels(event_id=dataset.event_id)
+                EpochsToEvents(),
+                EventsToLabels(event_id=self.used_events(dataset)),
             )
-        if return_raws:
+        elif return_raws:
             labels_pipeline = make_pipeline(
                 self._get_events_pipeline(dataset),
-                EventsToLabels(event_id=dataset.event_id),
+                EventsToLabels(event_id=self.used_events(dataset)),
             )
+        else:  # return array
+            labels_pipeline = EventsToLabels(event_id=self.used_events(dataset))
+
+        if array_pipeline is not None:
+            events_pipeline = (
+                self._get_events_pipeline(dataset) if return_raws else EpochsToEvents()
+            )
+        else:
+            events_pipeline = None
+
         data = [
             dataset.get_data(
                 subjects=subjects,
@@ -206,6 +217,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                 raw_pipeline=raw_pipeline,
                 epochs_pipeline=epochs_pipeline,
                 array_pipeline=array_pipeline,
+                events_pipeline=events_pipeline,
             )
             for raw_pipeline in raw_pipelines
         ]
@@ -244,9 +256,13 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                             np.array_equal(proc[0]["X"].shape, p["X"].shape)
                             for p in proc[1:]
                         )
-                        assert all(np.array_equal(proc[0]["y"], p["y"]) for p in proc[1:])
+                        assert all(
+                            np.array_equal(proc[0]["events"], p["events"])
+                            for p in proc[1:]
+                        )
                         n = proc[0]["X"].shape[0]
-                        lbs = proc[0]["y"]
+                        events = proc[0]["events"]
+                        lbs = labels_pipeline.transform(events)
                         x = (
                             proc[0]["X"]
                             if len(self.filters) == 1

@@ -353,22 +353,25 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
     def _load_file(self, bids_path, preload):
         if preload:
             raise ValueError("preload must be False for numpy arrays")
-        labels_fname = mne_bids.write._find_matching_sidecar(
+        events_fname = mne_bids.write._find_matching_sidecar(
             bids_path,
-            suffix="labels",
-            extension=".tsv",
+            suffix="events",
+            extension=".txt",
             on_error="raise",
         )
         X = np_load(bids_path.fpath)
-        y = mne_bids.tsv_handler._from_tsv(labels_fname)["y"]
-        return OrderedDict([("X", X), ("y", y)])
+        events = mne.read_events(events_fname, verbose=self.verbose)
+        return OrderedDict([("X", X), ("events", events)])
 
-    def _write_file(self, bids_path, Xy):
-        labels_path = bids_path.copy().update(
-            suffix="labels",
-            extension=".tsv",
+    def _write_file(self, bids_path, obj):
+        events_path = bids_path.copy().update(
+            suffix="events",
+            extension=".txt",
         )
-        np_save(bids_path.fpath, Xy["X"])
-        mne_bids.utils._write_tsv(
-            labels_path.fpath, dict(y=Xy["y"]), overwrite=False, verbose=self.verbose
+        np_save(bids_path.fpath, obj["X"])
+        mne.write_events(
+            filename=events_path.fpath,
+            events=obj["events"],
+            overwrite=False,
+            verbose=self.verbose,
         )
