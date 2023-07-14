@@ -111,6 +111,9 @@ class RawToFixedIntervalEvents(FixedTransformer):
             stop_samples + 1,
             self.window_stride_samples,
         )
+        if len(onset) == 0:
+            # skip raw if no event found
+            return
         events = np.empty((len(onset), 3), dtype=int)
         events[:, 0] = onset
         events[:, 1] = self.length_samples
@@ -152,6 +155,8 @@ class RawToEpochs(FixedTransformer):
     def transform(self, X, y=None):
         raw = X["raw"]
         events = X["events"]
+        if events is None or len(events) == 0:
+            raise ValueError("No events found")
         if not isinstance(raw, mne.io.BaseRaw):
             raise ValueError("raw must be a mne.io.BaseRaw")
 

@@ -97,6 +97,9 @@ class Test_MotorImagery(unittest.TestCase):
         # selected event. cetain runs in dataset are event specific.
         paradigm = SimpleMotorImagery(filters=[[7, 12], [12, 24]])
         dataset = FakeDataset(paradigm="imagery")
+        epochs_pipeline = paradigm._get_epochs_pipeline(
+            return_epochs=True, return_raws=False, dataset=dataset
+        )
         # no stim channel after loading cache
         raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1][
             "session_0"
@@ -105,10 +108,12 @@ class Test_MotorImagery(unittest.TestCase):
         self.assertEqual("stim", raw.ch_names[-1])
         # add something on the event channel
         raw._data[-1] *= 10
-        self.assertIsNone(paradigm.process_raws([raw], dataset))
+        with self.assertRaises(ValueError, msg="No events found"):
+            epochs_pipeline.transform(raw)
         # zeros it out
         raw._data[-1] *= 0
-        self.assertIsNone(paradigm.process_raws([raw], dataset))
+        with self.assertRaises(ValueError, msg="No events found"):
+            epochs_pipeline.transform(raw)
 
     def test_BaseImagery_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap
@@ -278,6 +283,9 @@ class Test_P300(unittest.TestCase):
         # selected event. cetain runs in dataset are event specific.
         paradigm = SimpleP300(filters=[[1, 12], [12, 24]])
         dataset = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])
+        epochs_pipeline = paradigm._get_epochs_pipeline(
+            return_epochs=True, return_raws=False, dataset=dataset
+        )
         # no stim channel after loading cache
         raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1][
             "session_0"
@@ -286,10 +294,12 @@ class Test_P300(unittest.TestCase):
         self.assertEqual("stim", raw.ch_names[-1])
         # add something on the event channel
         raw._data[-1] *= 10
-        self.assertIsNone(paradigm.process_raws([raw], dataset))
+        with self.assertRaises(ValueError, msg="No events found"):
+            epochs_pipeline.transform(raw)
         # zeros it out
         raw._data[-1] *= 0
-        self.assertIsNone(paradigm.process_raws([raw], dataset))
+        with self.assertRaises(ValueError, msg="No events found"):
+            epochs_pipeline.transform(raw)
 
     def test_BaseP300_droppedevent(self):
         dataset = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])

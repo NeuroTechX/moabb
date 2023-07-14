@@ -114,6 +114,18 @@ _interface_map: dict[StepType, Type[BIDSInterfaceBase]] = {
 }
 
 
+def apply_step(pipeline, obj):
+    if obj is None:
+        return None
+    try:
+        return pipeline.transform(obj)
+    except ValueError as e:
+        # no events received by RawToEpochs:
+        if "No events found" == str(e):
+            return None
+        raise e
+
+
 class BaseDataset(metaclass=abc.ABCMeta):
     """BaseDataset
 
@@ -373,6 +385,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
             # Load and eventually overwrite:
             if len(cached_steps) == 0:
                 sessions_data = self._get_single_subject_data(subject)
+                assert sessions_data is not None  # should not happen
             else:
                 cache_type = cached_steps[-1][0]
                 interface = _interface_map[cache_type](
@@ -403,7 +416,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
                 # apply one step:
                 sessions_data = {
                     session: {
-                        run: process_pipeline.transform(raw) for run, raw in runs.items()
+                        run: apply_step(process_pipeline, raw)
+                        for run, raw in runs.items()
                     }
                     for session, runs in sessions_data.items()
                 }

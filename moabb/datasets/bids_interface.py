@@ -207,6 +207,11 @@ class BIDSInterfaceBase(abc.ABC):
 
         for session, runs in sessions_data.items():
             for run, obj in runs.items():
+                if obj is None:
+                    log.warning(
+                        f"Skipping caching {repr(self)} session {session} run {run} because it is None."
+                    )
+                    continue
                 bids_path = mne_bids.BIDSPath(
                     root=self.root,
                     subject=subject_moabb_to_bids(self.subject),
