@@ -89,34 +89,40 @@ class RawToEventsP300(FixedTransformer):
 class RawToFixedIntervalEvents(FixedTransformer):
     def __init__(
         self,
-        length_samples,
-        stride_samples,
-        start_offset_samples,
-        stop_offset_samples,
+        length,
+        stride,
+        start_offset,
+        stop_offset,
         marker=1,
     ):
-        self.length_samples = length_samples
-        self.stride_samples = stride_samples
-        self.start_offset_samples = start_offset_samples
-        self.stop_offset_samples = stop_offset_samples
+        self.length = length
+        self.stride = stride
+        self.start_offset = start_offset
+        self.stop_offset = stop_offset
         self.marker = marker
 
     def transform(self, raw: mne.io.BaseRaw, y=None):
+        if not isinstance(raw, mne.io.BaseRaw):
+            raise ValueError
+        sfreq = raw.info["sfreq"]
+        length_samples = int(self.length * sfreq)
+        stride_samples = int(self.stride * sfreq)
+        start_offset_samples = int(self.start_offset * sfreq)
         stop_offset_samples = (
-            raw.n_times if self.stop_offset_samples is None else self.stop_offset_samples
+            raw.n_times if self.stop_offset is None else int(self.start_offset * sfreq)
         )
-        stop_samples = stop_offset_samples - self.length_samples + raw.first_samp
+        stop_samples = stop_offset_samples - length_samples + raw.first_samp
         onset = np.arange(
-            raw.first_samp + self.start_offset_samples,
+            raw.first_samp + start_offset_samples,
             stop_samples + 1,
-            self.window_stride_samples,
+            stride_samples,
         )
         if len(onset) == 0:
             # skip raw if no event found
             return
         events = np.empty((len(onset), 3), dtype=int)
         events[:, 0] = onset
-        events[:, 1] = self.length_samples
+        events[:, 1] = length_samples
         events[:, 2] = self.marker
         return events
 

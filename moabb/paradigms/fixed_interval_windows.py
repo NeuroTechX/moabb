@@ -47,7 +47,7 @@ class FixedIntervalWindowsProcessing(BaseProcessing):
 
     def __init__(
         self,
-        filters=((7, 45)),
+        filters=((7, 45),),
         baseline=None,
         channels=None,
         resample=None,
@@ -73,25 +73,29 @@ class FixedIntervalWindowsProcessing(BaseProcessing):
         self.stop_offset = stop_offset
         self.marker = marker
 
-    def _to_samples(self, key, dataset=None):
+    def _to_samples(self, key):
         value = getattr(self, key)
-        if dataset is None and self.resample is None:
-            raise ValueError(f"{key}_samples: dataset or resample must be specified")
+        if self.resample is None:
+            raise ValueError(f"{key}_samples: must be specified")
+        if value is None:
+            raise ValueError(f"{key}_samples: {key} must be specified")
         return int(value * self.resample)
 
-    def length_samples(self, dataset=None):
-        return self._to_samples("length", dataset)
+    @property
+    def length_samples(self):
+        return self._to_samples("length")
 
-    def stride_samples(self, dataset=None):
-        return self._to_samples("stride", dataset)
+    @property
+    def stride_samples(self):
+        return self._to_samples("stride")
 
-    def start_offset_samples(self, dataset=None):
-        return self._to_samples("start_offset", dataset)
+    @property
+    def start_offset_samples(self):
+        return self._to_samples("start_offset")
 
-    def stop_offset_samples(self, dataset=None):
-        if self.stop_offset is None:
-            return None
-        return self._to_samples("stop_offset", dataset)
+    @property
+    def stop_offset_samples(self):
+        return self._to_samples("stop_offset")
 
     def used_events(self, dataset):
         return {"Window": self.marker}
@@ -105,9 +109,9 @@ class FixedIntervalWindowsProcessing(BaseProcessing):
 
     def _get_events_pipeline(self, dataset):
         return RawToFixedIntervalEvents(
-            length_samples=self.length_samples(dataset),
-            stride_samples=self.stride_samples(dataset),
-            start_offset_samples=self.start_offset_samples(dataset),
-            stop_offset_samples=self.stop_offset_samples(dataset),
+            length=self.length,
+            stride=self.stride,
+            start_offset=self.start_offset,
+            stop_offset=self.stop_offset,
             marker=self.marker,
         )
