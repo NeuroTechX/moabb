@@ -4,12 +4,13 @@ import unittest
 from operator import methodcaller
 
 import mne
+from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
-from moabb.datasets.preprocessing import RawToEpochs
+from moabb.datasets.preprocessing import ForkPipelines, RawToEpochs, RawToEvents
 from moabb.datasets.utils import block_rep
 from moabb.paradigms import P300
 
@@ -74,11 +75,19 @@ class Test_Datasets(unittest.TestCase):
             pipelines_list = [
                 dict(),  # test BIDSInterfaceRawEDF
                 dict(
-                    epochs_pipeline=RawToEpochs(  # test BIDSInterfaceEpochs
-                        event_id=dataset.event_id,
-                        tmin=dataset.interval[0],
-                        tmax=dataset.interval[1],
-                        baseline=tuple(dataset.interval),
+                    epochs_pipeline=make_pipeline(
+                        ForkPipelines(
+                            [
+                                ("raw", make_pipeline(None)),
+                                ("events", RawToEvents(dataset.event_id)),
+                            ]
+                        ),
+                        RawToEpochs(  # test BIDSInterfaceEpochs
+                            event_id=dataset.event_id,
+                            tmin=dataset.interval[0],
+                            tmax=dataset.interval[1],
+                            baseline=tuple(dataset.interval),
+                        ),
                     )
                 ),
                 dict(

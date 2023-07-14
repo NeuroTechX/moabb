@@ -87,7 +87,9 @@ class RawToEpochs(FixedTransformer):
         self.baseline = baseline
         self.channels = channels
 
-    def transform(self, raw, y=None):
+    def transform(self, X, y=None):
+        raw = X["raw"]
+        events = X["events"]
         if not isinstance(raw, mne.io.BaseRaw):
             raise ValueError("raw must be a mne.io.BaseRaw")
 
@@ -97,8 +99,6 @@ class RawToEpochs(FixedTransformer):
             picks = mne.pick_channels(
                 raw.info["ch_names"], include=self.channels, ordered=True
             )
-
-        events = RawToEvents(self.event_id).transform(raw)
 
         epochs = mne.Epochs(
             raw,

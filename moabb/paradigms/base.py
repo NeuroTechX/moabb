@@ -12,6 +12,7 @@ from sklearn.preprocessing import FunctionTransformer
 from moabb.datasets.preprocessing import (
     EpochsToEvents,
     EventsToLabels,
+    ForkPipelines,
     RawToEpochs,
     RawToEvents,
     get_crop_pipeline,
@@ -307,12 +308,20 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         steps.append(
             (
                 "epoching",
-                RawToEpochs(
-                    event_id=self.used_events(dataset),
-                    tmin=bmin,
-                    tmax=bmax,
-                    baseline=baseline,
-                    channels=self.channels,
+                make_pipeline(
+                    ForkPipelines(
+                        [
+                            ("raw", make_pipeline(None)),
+                            ("events", self._get_events_pipeline(dataset)),
+                        ]
+                    ),
+                    RawToEpochs(
+                        event_id=self.used_events(dataset),
+                        tmin=bmin,
+                        tmax=bmax,
+                        baseline=baseline,
+                        channels=self.channels,
+                    ),
                 ),
             )
         )
