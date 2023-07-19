@@ -13,6 +13,7 @@ from moabb.paradigms import (
     BaseMotorImagery,
     BaseP300,
     BaseSSVEP,
+    FilterBankFixedIntervalWindowsProcessing,
     FilterBankLeftRightImagery,
     FilterBankMotorImagery,
     FilterBankSSVEP,
@@ -610,42 +611,51 @@ class Test_SSVEP(unittest.TestCase):
 
 class Test_FixedIntervalWindowsProcessing(unittest.TestCase):
     def test_processing(self):
-        processing = FixedIntervalWindowsProcessing(length=0.51, stride=0.27, resample=99)
-        for paradigm_name in ["ssvep", "p300", "imagery"]:
-            dataset = FakeDataset(paradigm=paradigm_name, n_sessions=1, n_runs=1)
-            X, labels, metadata = processing.get_data(dataset, subjects=[1])
+        processings = [
+            FixedIntervalWindowsProcessing(length=0.51, stride=0.27, resample=99),
+            FilterBankFixedIntervalWindowsProcessing(
+                length=0.51, stride=0.27, resample=99, filters=[[8, 35]]
+            ),
+        ]
+        for processing in processings:
+            for paradigm_name in ["ssvep", "p300", "imagery"]:
+                dataset = FakeDataset(paradigm=paradigm_name, n_sessions=1, n_runs=1)
+                X, labels, metadata = processing.get_data(dataset, subjects=[1])
 
-            # Verify that they have the same length
-            self.assertEqual(len(X), len(labels), len(metadata))
-            # X must be a 3D array
-            self.assertEqual(len(X.shape), 3)
-            # labels must contain 3 values
-            self.assertTrue(all(label == "Window" for label in labels))
-            # metadata must have subjets, sessions, runs
-            self.assertTrue("subject" in metadata.columns)
-            self.assertTrue("session" in metadata.columns)
-            self.assertTrue("run" in metadata.columns)
-            # Only one subject in the metadata
-            self.assertEqual(np.unique(metadata.subject), 1)
-            self.assertEqual(len(np.unique(metadata.session)), 1)
-            # should return epochs
-            epochs, _, _ = processing.get_data(dataset, subjects=[1], return_epochs=True)
-            self.assertIsInstance(epochs, BaseEpochs)
-            # should return raws
-            raws, _, _ = processing.get_data(dataset, subjects=[1], return_raws=True)
-            for raw in raws:
-                self.assertIsInstance(raw, BaseRaw)
-            n_times = 60 * len(dataset.event_id) * 128  # 128 = dataset sfreq
-            n_epochs = ceil(
-                (n_times - int(processing.length * 128)) / int(processing.stride * 128)
-            )  # no start/stop offset
-            self.assertEqual(n_epochs, len(epochs))
-            # should raise error
-            self.assertRaises(
-                ValueError,
-                processing.get_data,
-                dataset,
-                subjects=[1],
-                return_epochs=True,
-                return_raws=True,
-            )
+                # Verify that they have the same length
+                self.assertEqual(len(X), len(labels), len(metadata))
+                # X must be a 3D array
+                self.assertEqual(len(X.shape), 3)
+                # labels must contain 3 values
+                self.assertTrue(all(label == "Window" for label in labels))
+                # metadata must have subjets, sessions, runs
+                self.assertTrue("subject" in metadata.columns)
+                self.assertTrue("session" in metadata.columns)
+                self.assertTrue("run" in metadata.columns)
+                # Only one subject in the metadata
+                self.assertEqual(np.unique(metadata.subject), 1)
+                self.assertEqual(len(np.unique(metadata.session)), 1)
+                # should return epochs
+                epochs, _, _ = processing.get_data(
+                    dataset, subjects=[1], return_epochs=True
+                )
+                self.assertIsInstance(epochs, BaseEpochs)
+                # should return raws
+                raws, _, _ = processing.get_data(dataset, subjects=[1], return_raws=True)
+                for raw in raws:
+                    self.assertIsInstance(raw, BaseRaw)
+                n_times = 60 * len(dataset.event_id) * 128  # 128 = dataset sfreq
+                n_epochs = ceil(
+                    (n_times - int(processing.length * 128))
+                    / int(processing.stride * 128)
+                )  # no start/stop offset
+                self.assertEqual(n_epochs, len(epochs))
+                # should raise error
+                self.assertRaises(
+                    ValueError,
+                    processing.get_data,
+                    dataset,
+                    subjects=[1],
+                    return_epochs=True,
+                    return_raws=True,
+                )
