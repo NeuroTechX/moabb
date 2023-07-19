@@ -12,7 +12,8 @@ The MOABB library allows to convert any dataset to
 BIDS. This example shows how this can be done.
 
 We will use the AlexMI dataset as example
-because it is relatively small.
+because it is relatively small and can be
+downloaded quickly.
 
 """
 # Authors: Pierre Guetschel <pierre.guetschel@gmail.com>
@@ -21,8 +22,6 @@ because it is relatively small.
 
 import shutil
 import tempfile
-
-###############################################################################
 from pathlib import Path
 
 import mne
