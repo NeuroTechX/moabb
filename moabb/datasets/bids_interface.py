@@ -62,37 +62,6 @@ class BIDSInterfaceBase(abc.ABC):
     process_pipeline: "Pipeline" = None
     verbose: str = None
 
-    # @classmethod
-    # def from_lockfile(cls, lock_file, other_interface):
-    #     with lock_file.fpath.open("r") as f:
-    #         processing_params = json.load(f)
-    #     return cls(
-    #         dataset=other_interface.dataset,  # TODO set correct kwargs of dataset
-    #         subject=other_interface.subject,
-    #         path=other_interface.path,
-    #         fmin=processing_params["fmin"],
-    #         fmax=processing_params["fmax"],
-    #     )
-
-    # def _base_comp(self, other):
-    #     return self.dataset == other.dataset and self.subject == other.subject
-
-    # def __eq__(self, other):
-    #     return (
-    #             self._base_comp(other) and self.fmin == other.fmin and self.fmax == other.fmax
-    #     )
-
-    # def __le__(self, other):
-    #     return (
-    #             self._base_comp(other)
-    #             and (
-    #                     other.fmin is None or (self.fmin is not None and self.fmin >= other.fmin)
-    #             )
-    #             and (
-    #                     other.fmax is None or (self.fmax is not None and self.fmax <= other.fmax)
-    #             )
-    #     )
-
     @property
     def processing_params(self):
         # TODO: add dataset kwargs
@@ -127,23 +96,6 @@ class BIDSInterfaceBase(abc.ABC):
             suffix="lockfile",  # necessary for unofficial files
             check=False,
         )
-
-    # def find_compatible_interface(self):
-    #     lock_files = mne_bids.find_matching_paths(
-    #         root=self.root,
-    #         subjects=subject_moabb_to_bids(self.subject),
-    #         # descriptions=self.desc,
-    #         extensions=".json",
-    #         suffixes="lockfile",  # necessary for unofficial files
-    #         check=False,
-    #     )
-    #     interfaces = [
-    #         self.__class__.from_lockfile(lock_file, self) for lock_file in lock_files
-    #     ]
-    #     interfaces = [interface for interface in interfaces if interface >= self]
-    #     if len(interfaces) == 0:
-    #         return None  # No compatible interface found
-    #     return interfaces[0]  # We just return one at random
 
     def erase(self):
         log.info(f"Starting erasing cache of {repr(self)}...")
@@ -285,8 +237,8 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         if raw.info.get("device_info", None) is None:
             # specify device info as required by BIDS
             raw.info["device_info"] = {"type": "eeg"}
-        if raw.info.get("meas_date", None) is None:
-            raw.set_meas_date(datetime_now)
+        # if raw.info.get("meas_date", None) is None:
+        raw.set_meas_date(datetime_now)
 
         # We write all the events listed in the dataset:
         events = RawToEvents(self.dataset.event_id).transform(raw)
