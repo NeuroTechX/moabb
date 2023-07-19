@@ -113,12 +113,12 @@ class RawToFixedIntervalEvents(FixedTransformer):
         stride_samples = int(self.stride * sfreq)
         start_offset_samples = int(self.start_offset * sfreq)
         stop_offset_samples = (
-            raw.n_times if self.stop_offset is None else int(self.start_offset * sfreq)
+            raw.n_times if self.stop_offset is None else int(self.stop_offset * sfreq)
         )
         stop_samples = stop_offset_samples - length_samples + raw.first_samp
         onset = np.arange(
             raw.first_samp + start_offset_samples,
-            stop_samples + 1,
+            stop_samples,
             stride_samples,
         )
         if len(onset) == 0:
