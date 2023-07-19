@@ -48,9 +48,11 @@ class BraindecodeDatasetLoader(BaseEstimator, TransformerMixin):
 
     def transform(self, X, y=None):
         _check_data_format(X)
+        if y is None:
+            y = self.y
         dataset = create_from_X_y(
             X=X.get_data(),
-            y=self.y,
+            y=y,
             window_size_samples=X.get_data().shape[2],
             window_stride_samples=X.get_data().shape[2],
             drop_last_window=self.drop_last_window,
