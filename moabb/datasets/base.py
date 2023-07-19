@@ -367,10 +367,14 @@ class BaseDataset(metaclass=abc.ABCMeta):
         """
         splitted_steps = []  # list of (cached_steps, remaining_steps)
         if cache_config.use:
-            splitted_steps += [(steps[:i], steps[i:]) for i in range(len(steps), 0, -1)]
-            if _is_none_pipeline(steps[0]):  # case where step was not already "empty"
+            splitted_steps += [
+                (steps[:i], steps[i:]) for i in range(len(steps), 0, -1)
+            ]  # [len(steps)...1]
+            if not _is_none_pipeline(steps[0]):  # case where step was not already "empty"
                 splitted_steps.append(([(StepType.RAW, make_pipeline(None))], steps))
-        splitted_steps.append(([], steps))  # last option: we don't use cache at all
+        splitted_steps.append(
+            ([], steps)
+        )  # last option: we don't use cache at all, i.e. i=0
 
         for cached_steps, remaining_steps in splitted_steps:
             sessions_data = None

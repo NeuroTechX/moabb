@@ -14,7 +14,11 @@ log = logging.getLogger(__name__)
 
 def _is_none_pipeline(pipeline):
     """Check if a pipeline is the result of make_pipeline(None)"""
-    return isinstance(pipeline, Pipeline) and pipeline.steps[0][1] is None
+    return (
+        isinstance(pipeline, Pipeline)
+        and pipeline.steps[0][1] is None
+        and len(pipeline) == 1
+    )
 
 
 class ForkPipelines(TransformerMixin, BaseEstimator):
