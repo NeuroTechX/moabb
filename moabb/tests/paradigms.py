@@ -1,4 +1,6 @@
 import logging
+import shutil
+import tempfile
 import unittest
 from math import ceil
 
@@ -150,6 +152,132 @@ class Test_MotorImagery(unittest.TestCase):
         epochs, _, metadata = paradigm.get_data(dataset, return_epochs=True)
         # does not work with multiple filters:
         self.assertTrue(metadata.equals(epochs.metadata))
+
+    def test_BaseImagery_cache(self):
+        tempdir = tempfile.mkdtemp()
+        dataset = FakeDataset(paradigm="imagery", n_sessions=1, n_runs=1)
+        paradigm = SimpleMotorImagery()
+        # We save the full cache (raws, epochs, arrays):
+        from moabb import set_log_level
+
+        set_log_level("INFO")
+        with self.assertLogs(logger="moabb.datasets.bids_interface", level="INFO") as cm:
+            _ = paradigm.get_data(
+                dataset,
+                subjects=[1],
+                cache_config=dict(
+                    use=True,
+                    path=tempdir,
+                    save_raw=True,
+                    save_epochs=True,
+                    save_array=True,
+                    overwrite_raw=False,
+                    overwrite_epochs=False,
+                    overwrite_array=False,
+                ),
+            )
+        print("\n".join(cm.output))
+        expected = [
+            "Attempting to retrieve cache .* datatype-array",
+            "No cache found at",
+            "Attempting to retrieve cache .* datatype-epo",
+            "No cache found at",
+            "Attempting to retrieve cache .* datatype-eeg",
+            "No cache found at",
+            "Attempting to retrieve cache .* datatype-eeg",
+            "No cache found at",
+            "Starting caching .* datatype-eeg",
+            "Finished caching .* datatype-eeg",
+            "Starting caching .* datatype-epo",
+            "Finished caching .* datatype-epo",
+            "Starting caching .* datatype-array",
+            "Finished caching .* datatype-array",
+        ]
+        self.assertEqual(len(expected), len(cm.output))
+        for i, regex in enumerate(expected):
+            self.assertRegex(cm.output[i], regex)
+
+        # Test loading the array cache:
+        with self.assertLogs(logger="moabb.datasets.bids_interface", level="INFO") as cm:
+            _ = paradigm.get_data(
+                dataset,
+                subjects=[1],
+                cache_config=dict(
+                    use=True,
+                    path=tempdir,
+                    save_raw=False,
+                    save_epochs=False,
+                    save_array=False,
+                    overwrite_raw=False,
+                    overwrite_epochs=False,
+                    overwrite_array=False,
+                ),
+            )
+        print("\n".join(cm.output))
+        expected = [
+            "Attempting to retrieve cache .* datatype-array",
+            "Finished reading cache .* datatype-array",
+        ]
+        self.assertEqual(len(expected), len(cm.output))
+        for i, regex in enumerate(expected):
+            self.assertRegex(cm.output[i], regex)
+
+        # Test loading the epochs cache:
+        with self.assertLogs(logger="moabb.datasets.bids_interface", level="INFO") as cm:
+            _ = paradigm.get_data(
+                dataset,
+                subjects=[1],
+                cache_config=dict(
+                    use=True,
+                    path=tempdir,
+                    save_raw=False,
+                    save_epochs=False,
+                    save_array=False,
+                    overwrite_raw=False,
+                    overwrite_epochs=False,
+                    overwrite_array=True,
+                ),
+            )
+        print("\n".join(cm.output))
+        expected = [
+            "Starting erasing cache .* datatype-array",
+            "Finished erasing cache .* datatype-array",
+            "Attempting to retrieve cache .* datatype-epo",
+            "Finished reading cache .* datatype-epo",
+        ]
+        self.assertEqual(len(expected), len(cm.output))
+        for i, regex in enumerate(expected):
+            self.assertRegex(cm.output[i], regex)
+
+        # Test loading the raw cache:
+        with self.assertLogs(logger="moabb.datasets.bids_interface", level="INFO") as cm:
+            _ = paradigm.get_data(
+                dataset,
+                subjects=[1],
+                cache_config=dict(
+                    use=True,
+                    path=tempdir,
+                    save_raw=False,
+                    save_epochs=False,
+                    save_array=False,
+                    overwrite_raw=False,
+                    overwrite_epochs=True,
+                    overwrite_array=False,
+                ),
+            )
+        print("\n".join(cm.output))
+        expected = [
+            "Attempting to retrieve cache .* datatype-array",
+            "No cache found at",
+            "Starting erasing cache .* datatype-epo",
+            "Finished erasing cache .* datatype-epo",
+            "Attempting to retrieve cache .* datatype-eeg",
+            "Finished reading cache .* datatype-eeg",
+        ]
+        self.assertEqual(len(expected), len(cm.output))
+        for i, regex in enumerate(expected):
+            self.assertRegex(cm.output[i], regex)
+        shutil.rmtree(tempdir)
 
     def test_LeftRightImagery_paradigm(self):
         # with a good dataset
