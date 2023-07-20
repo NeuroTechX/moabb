@@ -72,7 +72,7 @@ class BIDSInterfaceBase(abc.ABC):
         return get_digest(self.processing_params)
 
     def __repr__(self):
-        return f"dataset {self.dataset.code}, subject {self.subject}, processing pipeline {self.desc}"
+        return f"{self.dataset.code!r} sub-{self.subject} datatype-{self._datatype} desc-{self.desc:.7}"
 
     @property
     def root(self):
@@ -120,7 +120,9 @@ class BIDSInterfaceBase(abc.ABC):
             descriptions=self.desc,
             extensions=self._extension,
             check=self._check,
-            suffixes=self._suffix,
+            datatypes=self._datatype,
+            suffixes=self._datatype,
+            # task=self.dataset.paradigm,
         )
         sessions_data = {}
         for p in paths:
@@ -132,9 +134,7 @@ class BIDSInterfaceBase(abc.ABC):
         return sessions_data
 
     def save(self, sessions_data):
-        log.info(
-            f"Starting caching dataset {self.dataset.code}, subject {self.subject} to disk..."
-        )
+        log.info(f"Starting caching {repr(self)}...")
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
         mne_bids.make_dataset_description(
             path=str(self.root),
@@ -171,15 +171,15 @@ class BIDSInterfaceBase(abc.ABC):
                     task=self.dataset.paradigm,
                     run=run_moabb_to_bids(run),
                     description=self.desc,
-                    datatype="eeg",
                     extension=self._extension,
+                    datatype=self._datatype,
+                    suffix=self._datatype,
                     check=self._check,
-                    suffix=self._suffix,
                 )
 
                 bids_path.mkdir(exist_ok=True)
                 self._write_file(bids_path, obj)
-        # log.debug(f"Writing {self.lock_file}")
+        log.debug(f"Writing {self.lock_file!r}")
         self.lock_file.mkdir(exist_ok=True)
         with self.lock_file.fpath.open("w") as f:
             d = dict(processing_params=str(self.processing_params))
@@ -205,8 +205,9 @@ class BIDSInterfaceBase(abc.ABC):
         pass
 
     @property
-    def _suffix(self):
-        return None
+    @abc.abstractmethod
+    def _datatype(self):
+        pass
 
 
 class BIDSInterfaceRawEDF(BIDSInterfaceBase):
@@ -217,6 +218,10 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
     @property
     def _check(self):
         return True
+
+    @property
+    def _datatype(self):
+        return "eeg"
 
     def _load_file(self, bids_path, preload):
         raw = mne_bids.read_raw_bids(
@@ -282,7 +287,9 @@ class BIDSInterfaceEpochs(BIDSInterfaceBase):
         return False
 
     @property
-    def _suffix(self):
+    def _datatype(self):
+        # because of mne conventions, we need the suffix to be "epo"
+        # because of mne_bids conventions, we need datatype and suffix to match
         return "epo"
 
     def _load_file(self, bids_path, preload):
@@ -302,15 +309,20 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
     def _check(self):
         return False
 
+    @property
+    def _datatype(self):
+        return "array"
+
     def _load_file(self, bids_path, preload):
         if preload:
             raise ValueError("preload must be False for numpy arrays")
         events_fname = mne_bids.write._find_matching_sidecar(
             bids_path,
             suffix="events",
-            extension=".txt",
+            extension=".eve",  # mne convension
             on_error="raise",
         )
+        log.debug(f"Reading {bids_path.fpath!r}")
         X = np_load(bids_path.fpath)
         events = mne.read_events(events_fname, verbose=self.verbose)
         return OrderedDict([("X", X), ("events", events)])
@@ -318,9 +330,11 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
     def _write_file(self, bids_path, obj):
         events_path = bids_path.copy().update(
             suffix="events",
-            extension=".txt",
+            extension=".eve",
         )
+        log.debug(f"Writing {bids_path.fpath!r}...")
         np_save(bids_path.fpath, obj["X"])
+        log.debug(f"Wrote {bids_path.fpath!r}.")
         mne.write_events(
             filename=events_path.fpath,
             events=obj["events"],
