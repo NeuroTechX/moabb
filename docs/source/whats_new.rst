@@ -44,6 +44,9 @@ Bugs
 - Fixing the parallel download issue when the dataset have the same directory (:gh:`421` by `Sara Sedlar`_)
 - Fixing fixes the problem with the annotation loading for the P300 datasets Sosulski2019, Huebner2017 and Huebner2018 (:gh:`396` by `Sara Sedlar`_)
 - Removing the print in the dataset list (:gh:`423` by `Bruno Aristimunha`_)
+- Fixing bug in :func:`moabb.pipeline.utils_pytorch.BraindecodeDatasetLoader` where incorrect y was used in transform calls (:gh:`426` by `Gabriel Schwartz`_)
+- Fixing one test in :func:`moabb.pipeline.utils_pytorch.BraindecodeDatasetLoader` (:gh:`426` by `Bruno Aristimunha`_)
+
 
 API changes
 ~~~~~~~~~~~
@@ -331,6 +334,7 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
+.. _Gabriel Schwartz: https://github.com/Kaos9001
 .. _Sara Sedlar: https://github.com/Sara04
 .. _Emmanuel Kalunga: https://github.com/emmanuelkalunga
 .. _Gregoire Cattan: https://github.com/gcattan
