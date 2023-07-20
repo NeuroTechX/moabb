@@ -68,6 +68,7 @@ class Test_Datasets(unittest.TestCase):
         tempdir = tempfile.mkdtemp()
         for paradigm in ["imagery", "p300", "ssvep"]:
             dataset = FakeDataset(paradigm=paradigm)
+            # Save cache:
             with self.assertLogs(
                 logger="moabb.datasets.bids_interface", level="INFO"
             ) as cm:
@@ -75,24 +76,25 @@ class Test_Datasets(unittest.TestCase):
                     subjects=[1],
                     cache_config=dict(
                         save_raw=True,
-                        save_epochs=True,
-                        save_array=True,
                         use=True,
                         overwrite_raw=False,
-                        overwrite_epochs=False,
-                        overwrite_array=False,
                         path=tempdir,
                     ),
                 )
             print("\n".join(cm.output))
             expected = [
-                "Attempting to retrieve cache of dataset",
+                "Attempting to retrieve cache .* datatype-eeg",
                 "No cache found at",
-                "Starting caching dataset",
-                "Finished caching dataset",
+                "Attempting to retrieve cache .* datatype-eeg",  # empty pipeline
+                "No cache found at",
+                "Starting caching .* datatype-eeg",
+                "Finished caching .* datatype-eeg",
             ]
-            for i, prefix in enumerate(expected):
-                self.assertIn(prefix, cm.output[i])
+            self.assertEqual(len(expected), len(cm.output))
+            for i, regex in enumerate(expected):
+                self.assertRegex(cm.output[i], regex)
+
+            # Load cache:
             with self.assertLogs(
                 logger="moabb.datasets.bids_interface", level="INFO"
             ) as cm:
@@ -100,18 +102,21 @@ class Test_Datasets(unittest.TestCase):
                     subjects=[1],
                     cache_config=dict(
                         save_raw=True,
-                        save_epochs=True,
-                        save_array=True,
                         use=True,
                         overwrite_raw=False,
-                        overwrite_epochs=False,
-                        overwrite_array=False,
                         path=tempdir,
                     ),
                 )
             print("\n".join(cm.output))
-            self.assertIn("Attempting to retrieve cache of dataset", cm.output[0])
-            self.assertIn("Finished reading cache of dataset", cm.output[-1])
+            expected = [
+                "Attempting to retrieve cache .* datatype-eeg",
+                "Finished reading cache .* datatype-eeg",
+            ]
+            self.assertEqual(len(expected), len(cm.output))
+            for i, regex in enumerate(expected):
+                self.assertRegex(cm.output[i], regex)
+
+            # Overwrite cache:
             with self.assertLogs(
                 logger="moabb.datasets.bids_interface", level="INFO"
             ) as cm:
@@ -119,24 +124,23 @@ class Test_Datasets(unittest.TestCase):
                     subjects=[1],
                     cache_config=dict(
                         save_raw=True,
-                        save_epochs=True,
-                        save_array=True,
                         use=True,
                         overwrite_raw=True,
-                        overwrite_epochs=True,
-                        overwrite_array=True,
                         path=tempdir,
                     ),
                 )
             print("\n".join(cm.output))
             expected = [
-                "Starting erasing cache of dataset",
-                "Finished erasing cache of dataset",
-                "Starting caching dataset",
-                "Finished caching dataset",
+                "Starting erasing cache .* datatype-eeg",
+                "Finished erasing cache .* datatype-eeg",
+                "Starting erasing cache .* datatype-eeg",
+                "Finished erasing cache .* datatype-eeg",
+                "Starting caching .* datatype-eeg",
+                "Finished caching .* datatype-eeg",
             ]
-            for i, prefix in enumerate(expected):
-                self.assertIn(prefix, cm.output[i])
+            self.assertEqual(len(expected), len(cm.output))
+            for i, regex in enumerate(expected):
+                self.assertRegex(cm.output[i], regex)
         shutil.rmtree(tempdir)
 
     def test_dataset_accept(self):
