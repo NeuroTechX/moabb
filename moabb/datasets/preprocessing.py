@@ -1,7 +1,7 @@
 import logging
 from collections import OrderedDict
 from operator import methodcaller
-from typing import Tuple, Union
+from typing import List, Tuple, Union
 
 import mne
 import numpy as np
@@ -22,7 +22,7 @@ def _is_none_pipeline(pipeline):
 
 
 class ForkPipelines(TransformerMixin, BaseEstimator):
-    def __init__(self, transformers: list[Tuple[str, Union[Pipeline, TransformerMixin]]]):
+    def __init__(self, transformers: List[Tuple[str, Union[Pipeline, TransformerMixin]]]):
         for _, t in transformers:
             assert hasattr(t, "transform")
         self.transformers = transformers
@@ -181,7 +181,7 @@ class RawToEpochs(FixedTransformer):
         tmin: float,
         tmax: float,
         baseline: Tuple[float, float],
-        channels: list[str] = None,
+        channels: List[str] = None,
     ):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
