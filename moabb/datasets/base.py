@@ -22,6 +22,7 @@ from moabb.datasets.preprocessing import (
     EpochsToEvents,
     ForkPipelines,
     RawToEvents,
+    SetRawAnnotations,
     _is_none_pipeline,
 )
 
@@ -70,7 +71,7 @@ class CacheConfig:
     overwrite_array: bool = False
 
     path: Union[str, Path] = None
-    verbose = None
+    verbose: str = None
 
     @classmethod
     def make(cls, d: Union[None, dict, "CacheConfig"] = None) -> "CacheConfig":
@@ -268,8 +269,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
         cache_config = CacheConfig.make(cache_config)
 
         steps = []
-        if raw_pipeline is not None:
-            steps.append((StepType.RAW, raw_pipeline))
+
+        raw_pipeline = make_pipeline(SetRawAnnotations(self.event_id), raw_pipeline)
+        steps.append((StepType.RAW, raw_pipeline))
         if epochs_pipeline is not None:
             steps.append((StepType.EPOCHS, epochs_pipeline))
         if array_pipeline is not None:
@@ -379,7 +381,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         for cached_steps, remaining_steps in splitted_steps:
             sessions_data = None
             # Load and eventually overwrite:
-            if len(cached_steps) == 0:
+            if len(cached_steps) == 0:  # last option: we don't use cache at all
                 sessions_data = self._get_single_subject_data(subject)
                 assert sessions_data is not None  # should not happen
             else:

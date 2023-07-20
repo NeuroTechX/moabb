@@ -15,7 +15,6 @@ from numpy import save as np_save
 import moabb
 from moabb.analysis.results import get_digest
 from moabb.datasets import download as dl
-from moabb.datasets.preprocessing import RawToEvents
 
 
 if TYPE_CHECKING:
@@ -230,6 +229,11 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         return raw
 
     def _write_file(self, bids_path, raw):
+        if not raw.annotations:
+            raise ValueError(
+                "Raw object must have annotations to be saved in BIDS format."
+                "Use the SetRawAnnotations pipeline for this."
+            )
         datetime_now = datetime.datetime.now(tz=datetime.timezone.utc)
         if raw.info.get("line_freq", None) is None:
             # specify line frequency if not present as required by BIDS
@@ -242,11 +246,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         if raw.info.get("device_info", None) is None:
             # specify device info as required by BIDS
             raw.info["device_info"] = {"type": "eeg"}
-        # if raw.info.get("meas_date", None) is None:
         raw.set_meas_date(datetime_now)
-
-        # We write all the events listed in the dataset:
-        events = RawToEvents(self.dataset.event_id).transform(raw)
 
         # Otherwise, the montage would still have the stim channel
         # which is dropped by mne_bids.write_raw_bids:
@@ -262,13 +262,10 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         # Note that we do not need to pass any events, as the dataset is already
         # equipped with annotations, which will be converted to BIDS events
         # automatically.
-        # log.debug(f"Writing {bids_path}")
         mne_bids.write_raw_bids(
             raw,
             bids_path,
             # anonymize=dict(daysback=daysback_min + 2117),
-            events=events,
-            event_id=self.dataset.event_id,
             format="EDF",
             allow_preload=True,
             montage=raw.get_montage(),

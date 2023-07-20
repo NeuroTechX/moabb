@@ -40,6 +40,34 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
         pass
 
 
+class SetRawAnnotations(FixedTransformer):
+    def __init__(self, event_id):
+        assert isinstance(event_id, dict)  # not None
+        self.event_id = event_id
+        if len(set(event_id.values())) != len(event_id):
+            raise ValueError("Duplicate event code")
+        self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
+
+    def transform(self, raw, y=None):
+        if raw.annotations:
+            return raw
+        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
+        if len(stim_channels) == 0:
+            raise ValueError("Need either a stim channel or annotations")
+        events = mne.find_events(raw, shortest_event=0, verbose=False)
+        # we don't catch the error if no event found:
+        events = mne.pick_events(events, include=list(self.event_id.values()))
+        annotations = mne.annotations_from_events(
+            events,
+            raw.info["sfreq"],
+            self.event_desc,
+            first_samp=raw.first_samp,
+            verbose=False,
+        )
+        raw.set_annotations(annotations)
+        return raw
+
+
 class RawToEvents(FixedTransformer):
     def __init__(self, event_id):
         assert isinstance(event_id, dict)  # not None
