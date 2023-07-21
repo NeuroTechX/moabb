@@ -1,7 +1,7 @@
 import logging
 from collections import OrderedDict
 from operator import methodcaller
-from typing import List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 import mne
 import numpy as np
@@ -177,7 +177,7 @@ class EventsToLabels(FixedTransformer):
 class RawToEpochs(FixedTransformer):
     def __init__(
         self,
-        event_id: dict[str, int],
+        event_id: Dict[str, int],
         tmin: float,
         tmax: float,
         baseline: Tuple[float, float],
