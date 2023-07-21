@@ -1,7 +1,7 @@
 import abc
 import logging
 from operator import methodcaller
-from typing import Optional
+from typing import List, Optional, Tuple
 
 import mne
 import numpy as np
@@ -63,11 +63,11 @@ class BaseProcessing(metaclass=abc.ABCMeta):
 
     def __init__(
         self,
-        filters: list[tuple[float, float]],
+        filters: List[Tuple[float, float]],
         tmin: float = 0.0,
         tmax: Optional[float] = None,
-        baseline: Optional[tuple[float, float]] = None,
-        channels: Optional[list[str]] = None,
+        baseline: Optional[Tuple[float, float]] = None,
+        channels: Optional[List[str]] = None,
         resample: Optional[float] = None,
     ):
         if tmax is not None:
@@ -386,7 +386,7 @@ class BaseParadigm(BaseProcessing):
     def __init__(
         self,
         filters,
-        events: Optional[list[str]] = None,
+        events: Optional[List[str]] = None,
         tmin=0.0,
         tmax=None,
         baseline=None,

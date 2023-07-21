@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from enum import Enum
 from inspect import signature
 from pathlib import Path
-from typing import Type, Union
+from typing import Dict, Type, Union
 
 from sklearn.pipeline import Pipeline, make_pipeline
 
@@ -74,7 +74,7 @@ class CacheConfig:
     verbose: str = None
 
     @classmethod
-    def make(cls, d: Union[None, dict, "CacheConfig"] = None) -> "CacheConfig":
+    def make(cls, d: Union[None, Dict, "CacheConfig"] = None) -> "CacheConfig":
         """
         Create a CacheConfig object from a dict or another CacheConfig object.
 
@@ -107,7 +107,7 @@ class StepType(Enum):
     ARRAY = "array"
 
 
-_interface_map: dict[StepType, Type[BIDSInterfaceBase]] = {
+_interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
     StepType.RAW: BIDSInterfaceRawEDF,
     StepType.EPOCHS: BIDSInterfaceEpochs,
     StepType.ARRAY: BIDSInterfaceNumpyArray,
