@@ -97,7 +97,7 @@ print_tree(temp_dir / "MNE-alexandre motor imagery-bids-cache")
 # However, MOABB's caching mechanism also offers the possibility to save the data
 # in a pseudo-BIDS after different preprocessing steps. In particular, we can save
 # :func:`mne.Epochs` and ``np.ndarray`` objects.  For more details on the caching system,
-# please refer to the `disk cache tutorial :doc:`plot_disk_cache`.
+# please refer to the tutorial :doc:`./plot_disk_cache`.
 #
 # Cleanup
 # -------
