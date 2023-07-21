@@ -33,6 +33,9 @@ from moabb.datasets import AlexMI
 set_log_level("info")
 
 ###############################################################################
+# Basic usage
+# -----------
+#
 # The conversion of any MOABB dataset to a BIDS-compliant structure can be done
 # by simply calling its ``get_data`` method. Here we will save the BIDS version
 # of the dataset in a temporary folder:
@@ -42,6 +45,9 @@ _ = dataset.get_data(cache_config=dict(path=temp_dir, save_raw=True))
 
 
 ###############################################################################
+# Before / after the folder structure
+# -----------------------------
+#
 # To investigate what was saved, we will first define a function to print
 # the folder structure of a given path:
 def print_tree(p: Path, last=True, header=""):
@@ -60,7 +66,7 @@ def print_tree(p: Path, last=True, header=""):
 
 ###############################################################################
 # Now, we will retrieve the location of the original dataset. It is stored
-# in the MNE data directory, which can be found with the ``'MNE_DATA'`` key:
+# in the MNE data directory, which can be found with the ``"MNE_DATA"`` key:
 mne_data = Path(mne.get_config("MNE_DATA"))
 print(f"MNE data directory: {mne_data}")
 
@@ -90,9 +96,11 @@ print_tree(temp_dir / "MNE-alexandre motor imagery-bids-cache")
 # of MOABB. Only raw EEG files are officially supported by the BIDS specification.
 # However, MOABB's caching mechanism also offers the possibility to save the data
 # in a pseudo-BIDS after different preprocessing steps. In particular, we can save
-# ``mne.Epochs`` and ``np.ndarray`` objects.  For more details on the caching system,
-# please refer to the `disk cache tutorial <examples/example_disk_cache.py>`_.
-
-###############################################################################
+# :func:`mne.Epochs` and ``np.ndarray`` objects.  For more details on the caching system,
+# please refer to the `disk cache tutorial :doc:`example_disk_cache`.
+#
+# Cleanup
+# -------
+#
 # Finally, we can delete the temporary folder:
 shutil.rmtree(temp_dir)

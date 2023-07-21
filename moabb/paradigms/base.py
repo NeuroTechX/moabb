@@ -158,8 +158,8 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         return_raws: boolean
             To return raw files and events, to ensure compatibility with braindecode.
             Mutually exclusive with return_epochs
-        cache_config: dict
-            Configuration for caching of datasets. See moabb.datasets.base.CacheConfig for details.
+        cache_config: dict | CacheConfig
+            Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
 
         returns
         -------

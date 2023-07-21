@@ -217,25 +217,25 @@ class BaseDataset(metaclass=abc.ABCMeta):
         ``*_pipeline`` arguments. These pipelines are applied in the following order:
         ``raw_pipeline`` -> ``epochs_pipeline`` -> ``array_pipeline``. If a ``*_pipeline`` argument
         is ``None``, the step will be skipped. Therefor, the ``array_pipeline`` may either
-        receive a ``mne.io.Raw`` or a ``mne.Epochs`` object as input depending on whether
+        receive a :class:`mne.io.Raw` or a :class:`mne.Epochs` object as input depending on whether
         ``epochs_pipeline`` is ``None`` or not.
 
         Parameters
         ----------
         subjects: List of int
             List of subject number
-        cache_config: dict
-            Configuration for caching of datasets. See CacheConfig for details.
+        cache_config: dict | CacheConfig
+            Configuration for caching of datasets. See ``CacheConfig`` for details.
         raw_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin | None
             Pipeline that necessarily takes a mne.io.Raw as input,
-            and necessarily returns a ``mne.io.Raw`` as output.
+            and necessarily returns a :class:`mne.io.Raw` as output.
         epochs_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin | None
             Pipeline that necessarily takes a mne.io.Raw as input,
-            and necessarily returns a ``mne.Epochs`` as output.
+            and necessarily returns a :class:`mne.Epochs` as output.
         array_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin | None
-            Pipeline either takes as input a ``mne.Epochs`` if epochs_pipeline
-            is not ``None``, or a ``mne.io.Raw`` otherwise. It necessarily returns
-            a ``numpy.ndarray`` as output.
+            Pipeline either takes as input a :class:`mne.Epochs` if epochs_pipeline
+            is not ``None``, or a :class:`mne.io.Raw` otherwise. It necessarily returns
+            a :func:`numpy.ndarray` as output.
             If array_pipeline is not None, each run will be a dict with keys "X" and "y"
             corresponding respectively to the array itself and the corresponding labels.
         events_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin | None

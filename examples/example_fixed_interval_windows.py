@@ -4,7 +4,7 @@ Fixed interval windows processing
 =================================
 
 This example shows how to process a dataset using the
-``FixedIntervalWindowsProcessing`` paradigm. This paradigm
+:class:`moabb.paradigms.FixedIntervalWindowsProcessing` paradigm. This paradigm
 creates epochs at fixed interval, ignoring the stim
 channel and events of the datasets. Therefor, it is
 compatible with all the datasets. Unfortunately,
@@ -20,6 +20,7 @@ it is relatively small and can be downloaded quickly.
 # License: BSD (3-clause)
 
 ###############################################################################
+import matplotlib.pyplot as plt
 import mne
 import numpy as np
 
@@ -34,7 +35,7 @@ set_log_level("info")
 # Process a dataset
 # -----------------
 #
-# To process a dataset with ``FixedIntervalWindowsProcessing``, you can use the
+# To process a dataset with :class:`moabb.paradigms.FixedIntervalWindowsProcessing`, you can use the
 # method as with every other paradigm. The only additional parameters are
 # ``length``, ``stride``, ``start_offset``, and ``stop_offset``. They are all parametrised
 # in seconds. ``length`` is the length of the epochs, ``stride`` is the time between
@@ -43,8 +44,8 @@ set_log_level("info")
 # run start and their last epoch. The default values are ``length=5``, ``stride=10``,
 # ``start_offset=0``, and ``stop_offset=None`` (i.e. end of the run).
 #
-# Here is an example usage of ``FixedIntervalWindowsProcessing`` with the ``Zhou2016``
-# dataset:
+# Here is an example usage of :class:`moabb.paradigms.FixedIntervalWindowsProcessing`
+# with the :class:`moabb.datasets.Zhou2016` dataset:
 dataset = Zhou2016()
 processing = FixedIntervalWindowsProcessing(
     # new parameters:
@@ -76,14 +77,14 @@ print(f"Number of epochs: {len(X)}")
 ###############################################################################
 # .. note::
 #     To apply a bank of bandpass filters, you can use the
-#     ``FixedIntervalWindowsProcessing`` paradigm instead.
+#     :class:`moabb.paradigms.FilterBankFixedIntervalWindowsProcessing` paradigm instead.
 #
 # Print the events
 # ---------------------------------
 #
 # We can print the position of the created epochs within the run next to
 # the original events of the dataset. For this, we will first instantiate
-# a ``MotorImagery`` paradigm to recover the original events of the dataset:
+# a :class:`moabb.paradigms.MotorImagery` paradigm to recover the original events of the dataset:
 paradigm = MotorImagery(
     resample=100,
     fmin=7,
@@ -105,13 +106,14 @@ event_id = dict(**paradigm.used_events(dataset), **processing.used_events(datase
 
 ###############################################################################
 # Finally, we can plot the events. The artificial events created by
-# ``FixedIntervalWindowsProcessing`` are named ``Windows``:
+# :class:`moabb.paradigms.FixedIntervalWindowsProcessing` are named ``"Windows"``:
 fig = mne.viz.plot_events(
     events,
     sfreq=raw.info["sfreq"],
     event_id=event_id,
 )
 fig.subplots_adjust(right=0.7)
+plt.show()
 
 ###############################################################################
 # We can see that the epochs were effectively created at fixed interval
