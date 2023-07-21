@@ -369,13 +369,16 @@ class BaseDataset(metaclass=abc.ABCMeta):
         splitted_steps = []  # list of (cached_steps, remaining_steps)
         if cache_config.use:
             splitted_steps += [
-                (steps[:i], steps[i:]) for i in range(len(steps), -1, -1)
-            ]  # [len(steps)...0]
-        # last option:  if cached_steps is [], we don't use cache, i.e. i=0
+                (steps[:i], steps[i:]) for i in range(len(steps), 0, -1)
+            ]  # [len(steps)...1]
+        splitted_steps.append(
+            ([], steps)
+        )  # last option:  if cached_steps is [], we don't use cache, i.e. i=0
+
         for cached_steps, remaining_steps in splitted_steps:
             sessions_data = None
             # Load and eventually overwrite:
-            if len(cached_steps) == 0:  # last option: we don't use cache at all
+            if len(cached_steps) == 0:  # last option: we don't use cache
                 sessions_data = self._get_single_subject_data(subject)
                 assert sessions_data is not None  # should not happen
             else:
