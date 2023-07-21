@@ -231,7 +231,7 @@ print(f"Without cache: {t_nocache:.2f} seconds")
 #
 # Under the hood, the cache is saved on disk in a Brain Imaging Data Structure
 # (BIDS) compliant format. More details on this structure can be found in the
-#  tutorial :doc:`./example_bids_conversion>`.
+#  tutorial :doc:`./plot_bids_conversion>`.
 #
 # However, there are two particular aspects of the way MOABB saves the data
 # that are not specific to BIDS:
