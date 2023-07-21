@@ -264,4 +264,4 @@ class FakeSSVEPParadigm(BaseSSVEP):
         return [FakeDataset(event_list=["13", "15"], paradigm="ssvep")]
 
     def is_valid(self, dataset):
-        return True
+        return dataset.paradigm == "ssvep"

@@ -192,4 +192,4 @@ class FakeP300Paradigm(P300):
         return [FakeDataset(["Target", "NonTarget"], paradigm="p300")]
 
     def is_valid(self, dataset):
-        return True
+        return dataset.paradigm == "p300"

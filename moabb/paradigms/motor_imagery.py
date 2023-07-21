@@ -417,4 +417,4 @@ class FakeImageryParadigm(LeftRightImagery):
         return [FakeDataset(["left_hand", "right_hand"], paradigm="imagery")]
 
     def is_valid(self, dataset):
-        return True
+        return dataset.paradigm == "imagery"
