@@ -36,15 +36,17 @@ class CacheConfig:
 
     Parameters
     ----------
-    save: boolean
-        This flag specifies whether to save the processed mne.io.Raw to disk
+    save_*: boolean
+        This flag specifies whether to save the output of the corresponding
+         step to disk.
     use: boolean
-        This flag specifies whether to use the processed mne.io.Raw from disk
-        in case they exist. If True, the Raw objects returned will not be preloaded
+        This flag specifies whether to use the disk cache in case it exist.
+        If True, the Raw or Epochs objects returned will not be preloaded
         (this saves some time). Otherwise, they will be preloaded.
-    overwrite: boolean
-        This flag specifies whether to overwrite the processed mne.io.Raw on disk
-        in case they exist
+        If use is False, the save_* and overwrite_* keys will be ignored.
+    overwrite_*: boolean
+        This flag specifies whether to overwrite the disk cache in
+        case it exist.
     path : None | str
         Location of where to look for the data storing location.
         If None, the environment variable or config parameter
@@ -60,9 +62,6 @@ class CacheConfig:
     save_epochs: bool = False
     save_array: bool = False
 
-    # use_raw: bool = True
-    # use_epochs: bool = True
-    # use_array: bool = True
     use: bool = False
 
     overwrite_raw: bool = False
