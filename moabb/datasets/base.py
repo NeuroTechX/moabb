@@ -23,7 +23,6 @@ from moabb.datasets.preprocessing import (
     ForkPipelines,
     RawToEvents,
     SetRawAnnotations,
-    _is_none_pipeline,
 )
 
 
@@ -269,9 +268,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
         cache_config = CacheConfig.make(cache_config)
 
         steps = []
-
-        raw_pipeline = make_pipeline(SetRawAnnotations(self.event_id), raw_pipeline)
-        steps.append((StepType.RAW, raw_pipeline))
+        steps.append((StepType.RAW, SetRawAnnotations(self.event_id)))
+        if raw_pipeline is not None:
+            steps.append((StepType.RAW, raw_pipeline))
         if epochs_pipeline is not None:
             steps.append((StepType.EPOCHS, epochs_pipeline))
         if array_pipeline is not None:
@@ -370,14 +369,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
         splitted_steps = []  # list of (cached_steps, remaining_steps)
         if cache_config.use:
             splitted_steps += [
-                (steps[:i], steps[i:]) for i in range(len(steps), 0, -1)
-            ]  # [len(steps)...1]
-            if not _is_none_pipeline(steps[0]):  # case where step was not already "empty"
-                splitted_steps.append(([(StepType.RAW, make_pipeline(None))], steps))
-        splitted_steps.append(
-            ([], steps)
-        )  # last option: we don't use cache at all, i.e. i=0
-
+                (steps[:i], steps[i:]) for i in range(len(steps), -1, -1)
+            ]  # [len(steps)...0]
+        # last option:  if cached_steps is [], we don't use cache, i.e. i=0
         for cached_steps, remaining_steps in splitted_steps:
             sessions_data = None
             # Load and eventually overwrite:
@@ -422,7 +416,14 @@ class BaseDataset(metaclass=abc.ABCMeta):
 
                 # save:
                 if (
-                    (cache_config.save_raw and step_type is StepType.RAW)
+                    (
+                        cache_config.save_raw
+                        and step_type is StepType.RAW
+                        and (
+                            (step_idx == len(remaining_steps) - 1)
+                            or (remaining_steps[step_idx + 1][0] is not StepType.RAW)
+                        )
+                    )  # we only save the last raw step
                     or (cache_config.save_epochs and step_type is StepType.EPOCHS)
                     or (cache_config.save_array and step_type is StepType.ARRAY)
                 ):

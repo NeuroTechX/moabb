@@ -83,8 +83,6 @@ class Test_Datasets(unittest.TestCase):
                 )
             print("\n".join(cm.output))
             expected = [
-                "Attempting to retrieve cache .* datatype-eeg",
-                "No cache found at",
                 "Attempting to retrieve cache .* datatype-eeg",  # empty pipeline
                 "No cache found at",
                 "Starting caching .* datatype-eeg",
@@ -131,8 +129,6 @@ class Test_Datasets(unittest.TestCase):
                 )
             print("\n".join(cm.output))
             expected = [
-                "Starting erasing cache .* datatype-eeg",
-                "Finished erasing cache .* datatype-eeg",
                 "Starting erasing cache .* datatype-eeg",
                 "Finished erasing cache .* datatype-eeg",
                 "Starting caching .* datatype-eeg",

@@ -182,9 +182,9 @@ class Test_MotorImagery(unittest.TestCase):
             "No cache found at",
             "Attempting to retrieve cache .* datatype-epo",
             "No cache found at",
-            "Attempting to retrieve cache .* datatype-eeg",
+            "Attempting to retrieve cache .* datatype-eeg",  # raw_pipeline
             "No cache found at",
-            "Attempting to retrieve cache .* datatype-eeg",
+            "Attempting to retrieve cache .* datatype-eeg",  # SetRawAnnotations pipeline
             "No cache found at",
             "Starting caching .* datatype-eeg",
             "Finished caching .* datatype-eeg",
