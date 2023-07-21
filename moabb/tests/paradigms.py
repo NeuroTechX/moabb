@@ -486,9 +486,7 @@ class Test_RestingState(unittest.TestCase):
         event_list = ["Open", "Close"]
         paradigm = RestingStateToP300Adapter(events=event_list)
         dataset = FakeDataset(paradigm="rstate", event_list=event_list)
-        X, labels, metadata = paradigm.get_data(
-            dataset, subjects=[1], cache_config=dict(use=False, save_raw=False)
-        )
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # we should have all the same length
         self.assertEqual(len(X), len(labels), len(metadata))
@@ -509,7 +507,6 @@ class Test_RestingState(unittest.TestCase):
             dataset,
             subjects=[1],
             return_epochs=True,
-            cache_config=dict(use=False, save_raw=False),
         )
         self.assertIsInstance(epochs, BaseEpochs)
         # should return raws
@@ -517,7 +514,6 @@ class Test_RestingState(unittest.TestCase):
             dataset,
             subjects=[1],
             return_raws=True,
-            cache_config=dict(use=False, save_raw=False),
         )
         for raw in raws:
             self.assertIsInstance(raw, BaseRaw)
