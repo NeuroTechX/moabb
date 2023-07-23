@@ -2,7 +2,7 @@ import logging
 import os
 import os.path as osp
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 import mne
 import pandas as pd
@@ -36,8 +36,8 @@ log = logging.getLogger(__name__)
 
 def benchmark(  # noqa: C901
     pipelines: str = "./pipelines/",
-    evaluations: list[str] = None,
-    paradigms: list[str] = None,
+    evaluations: List[str] = None,
+    paradigms: List[str] = None,
     results: str = "./results/",
     overwrite: bool = False,
     output: str = "./benchmark/",
@@ -45,8 +45,8 @@ def benchmark(  # noqa: C901
     n_jobs_evaluation: int = 1,
     plot: bool = False,
     contexts: str = None,
-    include_datasets: list[Union[str, BaseDataset]] = None,
-    exclude_datasets: list[Union[str, BaseDataset]] = None,
+    include_datasets: List[Union[str, BaseDataset]] = None,
+    exclude_datasets: List[Union[str, BaseDataset]] = None,
     mne_data: str = None,
 ):
     """Run benchmarks for selected pipelines and datasets
