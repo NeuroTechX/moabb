@@ -22,7 +22,7 @@ the result of the step. This is done by setting the ``cache_config``
 parameter of the paradigm's ``get_data`` method.
 The ``cache_config`` parameter is a dictionary that can take all
 the parameters of ``moabb.datasets.base.CacheConfig`` as keys,
- they are the following: ``use``, ``save_raw``, ``save_epochs``,
+they are the following: ``use``, ``save_raw``, ``save_epochs``,
 ``save_array``, ``overwrite_raw``, ``overwrite_epochs``,
 ``overwrite_array``, and ``path``.  You can also directly pass a
 ``CacheConfig`` object as ``cache_config``.
@@ -231,7 +231,7 @@ print(f"Without cache: {t_nocache:.2f} seconds")
 #
 # Under the hood, the cache is saved on disk in a Brain Imaging Data Structure
 # (BIDS) compliant format. More details on this structure can be found in the
-#  tutorial :doc:`./plot_bids_conversion`.
+# tutorial :doc:`./plot_bids_conversion`.
 #
 # However, there are two particular aspects of the way MOABB saves the data
 # that are not specific to BIDS:

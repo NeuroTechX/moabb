@@ -36,15 +36,15 @@ class CacheConfig:
 
     Parameters
     ----------
-    save_*: boolean
+    save_*: bool
         This flag specifies whether to save the output of the corresponding
-         step to disk.
-    use: boolean
+        step to disk.
+    use: bool
         This flag specifies whether to use the disk cache in case it exist.
         If True, the Raw or Epochs objects returned will not be preloaded
         (this saves some time). Otherwise, they will be preloaded.
         If use is False, the save_* and overwrite_* keys will be ignored.
-    overwrite_*: boolean
+    overwrite_*: bool
         This flag specifies whether to overwrite the disk cache in
         case it exist.
     path : None | str

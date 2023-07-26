@@ -45,7 +45,7 @@ _ = dataset.get_data(cache_config=dict(path=temp_dir, save_raw=True))
 
 
 ###############################################################################
-# Before / after the folder structure
+# Before / after folder structure
 # -----------------------------
 #
 # To investigate what was saved, we will first define a function to print
@@ -80,7 +80,7 @@ print_tree(mne_data / "MNE-alexeeg-data")
 # sessions and runs) is stored in a single folder. This follows no particular
 # standard and can vary from one dataset to another.
 #
-# After conversion, the data is stored in a BIDS-compliant structure:
+# After conversion, the data is stored in a BIDS-compliant way:
 print("After conversion:")
 print_tree(temp_dir / "MNE-alexandre motor imagery-bids-cache")
 
@@ -96,7 +96,7 @@ print_tree(temp_dir / "MNE-alexandre motor imagery-bids-cache")
 # of MOABB. Only raw EEG files are officially supported by the BIDS specification.
 # However, MOABB's caching mechanism also offers the possibility to save the data
 # in a pseudo-BIDS after different preprocessing steps. In particular, we can save
-# :func:`mne.Epochs` and ``np.ndarray`` objects.  For more details on the caching system,
+# :class:`mne.Epochs` and ``np.ndarray`` objects.  For more details on the caching system,
 # please refer to the tutorial :doc:`./plot_disk_cache`.
 #
 # Cleanup
