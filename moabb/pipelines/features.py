@@ -1,6 +1,7 @@
 import mne
 import numpy as np
 import scipy.signal as signal
+from numpy import concatenate, ndarray
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import StandardScaler
 
@@ -76,31 +77,27 @@ class AugmentedDataset(BaseEstimator, TransformerMixin):
            https://doi.org/10.48550/arXiv.2302.04508
     """
 
-    def __init__(self, order=1, lag=1):
+    def __init__(self, order: int = 1, lag: int = 1):
         self.order = order
         self.lag = lag
 
-    def fit(self, X, y):
+    def fit(self, X: ndarray, y: ndarray):
         return self
 
-    def transform(self, X):
+    def transform(self, X: ndarray):
         if self.order == 1:
-            X_fin = X
+            X_fin: ndarray = X
         else:
-            X_fin = []
-
-            for i in np.arange(X.shape[0]):
-                X_p = X[i][:, : -self.order * self.lag]
-                X_p = np.concatenate(
-                    [X_p]
-                    + [
-                        X[i][:, p * self.lag : -(self.order - p) * self.lag]
-                        for p in range(1, self.order)
-                    ],
-                    axis=0,
-                )
-                X_fin.append(X_p)
-            X_fin = np.array(X_fin)
+            X_p = X[:, :, : -self.order * self.lag]
+            X_p = concatenate(
+                [X_p]
+                + [
+                    X[:, :, p * self.lag : -(self.order - p) * self.lag]
+                    for p in range(1, self.order)
+                ],
+                axis=1,
+            )
+            X_fin = X_p
 
         return X_fin
 
