@@ -40,7 +40,7 @@ class CacheConfig:
         This flag specifies whether to save the output of the corresponding
         step to disk.
     use: bool
-        This flag specifies whether to use the disk cache in case it exist.
+        This flag specifies whether to use the disk cache in case it exists.
         If True, the Raw or Epochs objects returned will not be preloaded
         (this saves some time). Otherwise, they will be preloaded.
         If use is False, the save_* and overwrite_* keys will be ignored.
@@ -214,11 +214,12 @@ class BaseDataset(metaclass=abc.ABCMeta):
         contiguous recording. Some dataset break session in multiple runs.
 
         Processing steps can optionally be applied to the data using the
-        ``*_pipeline`` arguments. These pipelines are applied in the following order:
-        ``raw_pipeline`` -> ``epochs_pipeline`` -> ``array_pipeline``. If a ``*_pipeline`` argument
-        is ``None``, the step will be skipped. Therefore, the ``array_pipeline`` may either
-        receive a :class:`mne.io.Raw` or a :class:`mne.Epochs` object as input depending on whether
-        ``epochs_pipeline`` is ``None`` or not.
+        ``*_pipeline`` arguments. These pipelines are applied in the
+        following order: ``raw_pipeline`` -> ``epochs_pipeline`` ->
+        ``array_pipeline``. If a ``*_pipeline`` argument is ``None``,
+        the step will be skipped. Therefore, the ``array_pipeline`` may
+        either receive a :class:`mne.io.Raw` or a :class:`mne.Epochs` object
+        as input depending on whether ``epochs_pipeline`` is ``None`` or not.
 
         Parameters
         ----------
@@ -226,19 +227,25 @@ class BaseDataset(metaclass=abc.ABCMeta):
             List of subject number
         cache_config: dict | CacheConfig
             Configuration for caching of datasets. See ``CacheConfig`` for details.
-        raw_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin | None
+        raw_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin
+            | None
             Pipeline that necessarily takes a mne.io.Raw as input,
             and necessarily returns a :class:`mne.io.Raw` as output.
-        epochs_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin | None
+        epochs_pipeline: sklearn.pipeline.Pipeline |
+            sklearn.base.TransformerMixin | None
             Pipeline that necessarily takes a mne.io.Raw as input,
             and necessarily returns a :class:`mne.Epochs` as output.
-        array_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin | None
-            Pipeline either takes as input a :class:`mne.Epochs` if epochs_pipeline
-            is not ``None``, or a :class:`mne.io.Raw` otherwise. It necessarily returns
-            a :func:`numpy.ndarray` as output.
-            If array_pipeline is not None, each run will be a dict with keys "X" and "y"
-            corresponding respectively to the array itself and the corresponding labels.
-        events_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin | None
+        array_pipeline: sklearn.pipeline.Pipeline |
+            sklearn.base.TransformerMixin | None
+            Pipeline either takes as input a :class:`mne.Epochs` if
+            epochs_pipeline is not ``None``, or a :class:`mne.io.Raw`
+            otherwise. It necessarily returns a :func:`numpy.ndarray`
+            as output.
+            If array_pipeline is not None, each run will be a
+            dict with keys "X" and "y" corresponding respectively to the array
+             itself and the corresponding labels.
+        events_pipeline: sklearn.pipeline.Pipeline |
+            sklearn.base.TransformerMixin | None
             Pipeline used to generate the events. Only used if
             ``array_pipeline`` is not ``None``.
 
@@ -362,8 +369,10 @@ class BaseDataset(metaclass=abc.ABCMeta):
         steps,
     ):
         """
-        Either load the data of a single subject from disk cache or from the dataset object,
-        then eventually saves or overwrites the cache version depending on the parameters.
+        Either load the data of a single subject from disk cache or from the
+        dataset object,
+        then eventually saves or overwrites the cache version depending on the
+        parameters.
         """
         splitted_steps = []  # list of (cached_steps, remaining_steps)
         if cache_config.use:
@@ -442,7 +451,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
                         interface.save(sessions_data)
                     except Exception:
                         log.warning(
-                            f"Failed to save {interface.__repr__()} to BIDS format:\n"
+                            f"Failed to save {interface.__repr__()} "
+                            f"to BIDS format:\n"
                             f"{' Pipeline: '.center(50, '#')}\n"
                             f"{interface.process_pipeline.__repr__()}\n"
                             f"{' Exception: '.center(50, '#')}\n"

@@ -41,10 +41,10 @@ def session_bids_to_moabb(session):
     return "session_" + session
 
 
+# Note: the runs are expected to be indexes in the BIDS standard.
+#       This is not always the case in MOABB.  See:
+# bids-specification.readthedocs.io/en/stable/glossary.html#run-entities
 def run_moabb_to_bids(run):
-    # Note: the runs are expected to be indexes in the BIDS standard.
-    #       This is not always the case in MOABB.
-    # See: https://bids-specification.readthedocs.io/en/stable/glossary.html#run-entities
     return run.replace("run_", "")
 
 
@@ -52,7 +52,6 @@ def run_bids_to_moabb(run):
     return "run_" + run
 
 
-# @total_ordering
 @dataclass
 class BIDSInterfaceBase(abc.ABC):
     dataset: "BaseDataset"
@@ -71,7 +70,10 @@ class BIDSInterfaceBase(abc.ABC):
         return get_digest(self.processing_params)
 
     def __repr__(self):
-        return f"{self.dataset.code!r} sub-{self.subject} datatype-{self._datatype} desc-{self.desc:.7}"
+        return (
+            f"{self.dataset.code!r} sub-{self.subject} "
+            f"datatype-{self._datatype} desc-{self.desc:.7}"
+        )
 
     @property
     def root(self):
@@ -79,14 +81,13 @@ class BIDSInterfaceBase(abc.ABC):
         mne_path = Path(dl.get_dataset_path(code, self.path))
         cache_dir = f"MNE-{code.lower()}-cache"
         cache_path = mne_path / cache_dir
-        # if not cache_path.is_dir():
-        #     cache_path.mkdir(parents=True)
+
         return cache_path
 
     @property
     def lock_file(self):
-        # this file was saved last to ensure that the subject's data was completely saved
-        # this is not an official bids file
+        # this file was saved last to ensure that the subject's data was
+        # completely saved this is not an official bids file
         return mne_bids.BIDSPath(
             root=self.root,
             subject=subject_moabb_to_bids(self.subject),
@@ -160,7 +161,8 @@ class BIDSInterfaceBase(abc.ABC):
             for run, obj in runs.items():
                 if obj is None:
                     log.warning(
-                        f"Skipping caching {repr(self)} session {session} run {run} because it is None."
+                        f"Skipping caching {repr(self)} session "
+                        f"{session} run {run} because it is None."
                     )
                     continue
                 bids_path = mne_bids.BIDSPath(
@@ -259,17 +261,16 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         # change or delete this number before putting code online, you
         # wouldn't want to inadvertently de-anonymize your data.
         #
-        # Note that we do not need to pass any events, as the dataset is already
-        # equipped with annotations, which will be converted to BIDS events
-        # automatically.
+        # Note that we do not need to pass any events, as the dataset
+        # is already equipped with annotations, which will be converted to
+        # BIDS events automatically.
         mne_bids.write_raw_bids(
             raw,
             bids_path,
-            # anonymize=dict(daysback=daysback_min + 2117),
             format="EDF",
             allow_preload=True,
             montage=raw.get_montage(),
-            overwrite=False,  # files should be deleted by _delete_cache in case overwrite_cache is True
+            overwrite=False,
             verbose=self.verbose,
         )
 
