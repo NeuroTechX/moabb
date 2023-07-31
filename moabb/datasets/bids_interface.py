@@ -144,7 +144,7 @@ class BIDSInterfaceBase(abc.ABC):
 
     def erase(self):
         """Erase the cache of the subject."""
-        log.info(f"Starting erasing cache of {repr(self)}...")
+        log.info("Starting erasing cache of %s...", repr(self))
         path = mne_bids.BIDSPath(
             root=self.root,
             subject=subject_moabb_to_bids(self.subject),
@@ -152,14 +152,14 @@ class BIDSInterfaceBase(abc.ABC):
             check=False,
         )
         path.rm(safe_remove=False)
-        log.info(f"Finished erasing cache of {repr(self)}.")
+        log.info("Finished erasing cache of %s.", repr(self))
 
     def load(self, preload=False):
         """Load the cache of the subject."""
-        log.info(f"Attempting to retrieve cache of {repr(self)}...")
+        log.info("Attempting to retrieve cache of %s...", repr(self))
         self.lock_file.mkdir(exist_ok=True)
         if not self.lock_file.fpath.exists():
-            log.info(f"No cache found at {str(self.lock_file.directory)}.")
+            log.info("No cache found at %s.", {str(self.lock_file.directory)})
             return None
         paths = mne_bids.find_matching_paths(
             root=self.root,
@@ -171,17 +171,17 @@ class BIDSInterfaceBase(abc.ABC):
             suffixes=self._datatype,
         )
         sessions_data = {}
-        for p in paths:
-            session_moabb = session_bids_to_moabb(p.session)
+        for path in paths:
+            session_moabb = session_bids_to_moabb(path.session)
             session = sessions_data.setdefault(session_moabb, {})
-            run = self._load_file(p, preload=preload)
-            session[run_bids_to_moabb(p.run)] = run
-        log.info(f"Finished reading cache of {repr(self)}.")
+            run = self._load_file(path, preload=preload)
+            session[run_bids_to_moabb(path.run)] = run
+        log.info("Finished reading cache of %s", {repr(self)})
         return sessions_data
 
     def save(self, sessions_data):
         """Save the cache of the subject."""
-        log.info(f"Starting caching {repr(self)}...")
+        log.info("Starting caching %s", {repr(self)})
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
         mne_bids.make_dataset_description(
             path=str(self.root),
@@ -208,8 +208,8 @@ class BIDSInterfaceBase(abc.ABC):
             for run, obj in runs.items():
                 if obj is None:
                     log.warning(
-                        f"Skipping caching {repr(self)} session "
-                        f"{session} run {run} because it is None."
+                        "Skipping caching %s session " + "%s run %s because it is None.",
+                        (repr(self), session, run),
                     )
                     continue
 
@@ -228,12 +228,12 @@ class BIDSInterfaceBase(abc.ABC):
 
                 bids_path.mkdir(exist_ok=True)
                 self._write_file(bids_path, obj)
-        log.debug(f"Writing {self.lock_file!r}")
+        log.debug("Writing", self.lock_file)
         self.lock_file.mkdir(exist_ok=True)
-        with self.lock_file.fpath.open("w") as f:
-            d = dict(processing_params=str(self.processing_params))
-            json.dump(d, f)
-        log.info(f"Finished caching {repr(self)} to disk.")
+        with self.lock_file.fpath.open("w") as file:
+            dic = dict(processing_params=str(self.processing_params))
+            json.dump(dic, file)
+        log.info("Finished caching %s to disk.", repr(self))
 
     @abc.abstractmethod
     def _load_file(self, bids_path, preload):
@@ -380,7 +380,7 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
             extension=".eve",  # mne convention
             on_error="raise",
         )
-        log.debug(f"Reading {bids_path.fpath!r}")
+        log.debug("Reading %s", bids_path.fpath)
         X = np_load(bids_path.fpath)
         events = mne.read_events(events_fname, verbose=self.verbose)
         return OrderedDict([("X", X), ("events", events)])
@@ -390,9 +390,9 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
             suffix="events",
             extension=".eve",
         )
-        log.debug(f"Writing {bids_path.fpath!r}...")
+        log.debug("Writing %s", bids_path.fpath)
         np_save(bids_path.fpath, obj["X"])
-        log.debug(f"Wrote {bids_path.fpath!r}.")
+        log.debug("Wrote %s", bids_path.fpath)
         mne.write_events(
             filename=events_path.fpath,
             events=obj["events"],
