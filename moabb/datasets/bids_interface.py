@@ -1,3 +1,16 @@
+"""BIDS Interface for MOABB.
+
+========================
+
+This module contains the BIDS interface for MOABB, which allows to convert
+any MOABB dataset to BIDS with Cache.
+We can convert at the Raw, Epochs or Array level.
+"""
+
+# Authors: Pierre Guetschel <pierre.guetschel@gmail.com>
+#
+# License: BSD (3-clause)
+
 import abc
 import datetime
 import json
@@ -25,35 +38,60 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-def subject_moabb_to_bids(subject):
+def subject_moabb_to_bids(subject: int):
+    """Convert the subject number to string (subject)."""
     return str(subject)
 
 
-def subject_bids_to_moabb(subject):
+def subject_bids_to_moabb(subject: str):
+    """Convert the subject string to int(subject)."""
     return int(subject)
 
 
-def session_moabb_to_bids(session):
+def session_moabb_to_bids(session: str):
+    """Replace the session_* to *."""
     return session.replace("session_", "")
 
 
-def session_bids_to_moabb(session):
+def session_bids_to_moabb(session: str):
+    """Replace the * to session_*."""
     return "session_" + session
 
 
 # Note: the runs are expected to be indexes in the BIDS standard.
 #       This is not always the case in MOABB.  See:
 # bids-specification.readthedocs.io/en/stable/glossary.html#run-entities
-def run_moabb_to_bids(run):
+def run_moabb_to_bids(run: str):
+    """Replace the run_* to *."""
     return run.replace("run_", "")
 
 
-def run_bids_to_moabb(run):
+def run_bids_to_moabb(run: str):
+    """Replace the * to run_*."""
     return "run_" + run
 
 
 @dataclass
 class BIDSInterfaceBase(abc.ABC):
+    """Base class for BIDSInterface.
+
+    This dataclass is used to convert a MOABB dataset to MOABB BIDS.
+    It is used by the ``get_data`` method of any MOABB dataset.
+
+    Parameters
+    ----------
+    dataset : BaseDataset
+        The dataset to convert.
+    subject : int
+        The subject to convert.
+    path : str
+        The path to the BIDS dataset.
+    process_pipeline : Pipeline
+        The processing pipeline used to convert the data.
+    verbose : str
+        The verbosity level.
+    """
+
     dataset: "BaseDataset"
     subject: int
     path: str = None
@@ -62,14 +100,17 @@ class BIDSInterfaceBase(abc.ABC):
 
     @property
     def processing_params(self):
+        """Return the processing parameters."""
         # TODO: add dataset kwargs
         return self.process_pipeline
 
     @property
     def desc(self):
+        """Return the description of the processing pipeline."""
         return get_digest(self.processing_params)
 
     def __repr__(self):
+        """Return the representation of the BIDSInterface."""
         return (
             f"{self.dataset.code!r} sub-{self.subject} "
             f"datatype-{self._datatype} desc-{self.desc:.7}"
@@ -77,6 +118,7 @@ class BIDSInterfaceBase(abc.ABC):
 
     @property
     def root(self):
+        """Return the root path of the BIDS dataset."""
         code = self.dataset.code + "-BIDS"
         mne_path = Path(dl.get_dataset_path(code, self.path))
         cache_dir = f"MNE-{code.lower()}-cache"
@@ -86,8 +128,11 @@ class BIDSInterfaceBase(abc.ABC):
 
     @property
     def lock_file(self):
-        # this file was saved last to ensure that the subject's data was
-        # completely saved this is not an official bids file
+        """Return the lock file path.
+
+        this file was saved last to ensure that the subject's data was
+        completely saved this is not an official bids file
+        """
         return mne_bids.BIDSPath(
             root=self.root,
             subject=subject_moabb_to_bids(self.subject),
@@ -98,6 +143,7 @@ class BIDSInterfaceBase(abc.ABC):
         )
 
     def erase(self):
+        """Erase the cache of the subject."""
         log.info(f"Starting erasing cache of {repr(self)}...")
         path = mne_bids.BIDSPath(
             root=self.root,
@@ -109,6 +155,7 @@ class BIDSInterfaceBase(abc.ABC):
         log.info(f"Finished erasing cache of {repr(self)}.")
 
     def load(self, preload=False):
+        """Load the cache of the subject."""
         log.info(f"Attempting to retrieve cache of {repr(self)}...")
         self.lock_file.mkdir(exist_ok=True)
         if not self.lock_file.fpath.exists():
@@ -122,18 +169,17 @@ class BIDSInterfaceBase(abc.ABC):
             check=self._check,
             datatypes=self._datatype,
             suffixes=self._datatype,
-            # task=self.dataset.paradigm,
         )
         sessions_data = {}
         for p in paths:
             session = sessions_data.setdefault(session_bids_to_moabb(p.session), {})
-            # log.debug(f"Reading {p.fpath}")
             run = self._load_file(p, preload=preload)
             session[run_bids_to_moabb(p.run)] = run
         log.info(f"Finished reading cache of {repr(self)}.")
         return sessions_data
 
     def save(self, sessions_data):
+        """Save the cache of the subject."""
         log.info(f"Starting caching {repr(self)}...")
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
         mne_bids.make_dataset_description(
@@ -165,6 +211,7 @@ class BIDSInterfaceBase(abc.ABC):
                         f"{session} run {run} because it is None."
                     )
                     continue
+
                 bids_path = mne_bids.BIDSPath(
                     root=self.root,
                     subject=subject_moabb_to_bids(self.subject),
@@ -212,6 +259,8 @@ class BIDSInterfaceBase(abc.ABC):
 
 
 class BIDSInterfaceRawEDF(BIDSInterfaceBase):
+    """BIDS Interface for Raw EDF files. Selected .edf type only."""
+
     @property
     def _extension(self):
         return ".edf"
@@ -276,6 +325,11 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
 
 
 class BIDSInterfaceEpochs(BIDSInterfaceBase):
+    """This interface is used to cache mne-epochs to disk.
+
+    Pseudo-BIDS format is used to store the data.
+    """
+
     @property
     def _extension(self):
         return ".fif"
@@ -299,6 +353,11 @@ class BIDSInterfaceEpochs(BIDSInterfaceBase):
 
 
 class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
+    """This interface is used to cache numpy arrays to disk.
+
+    MOABB Pseudo-BIDS format is used to store the data.
+    """
+
     @property
     def _extension(self):
         return ".npy"
