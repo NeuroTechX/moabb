@@ -1,6 +1,4 @@
-"""
-Base class for a dataset
-"""
+"""Base class for a dataset."""
 import abc
 import logging
 import traceback
@@ -115,6 +113,7 @@ _interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
 
 
 def apply_step(pipeline, obj):
+    """Apply a pipeline to an object."""
     if obj is None:
         return None
     try:
@@ -127,7 +126,7 @@ def apply_step(pipeline, obj):
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
-    """BaseDataset
+    """Abstract Moabb BaseDataset.
 
     Parameters required for all datasets
 
@@ -177,6 +176,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         doi=None,
         unit_factor=1e6,
     ):
+        """Initialize function for the BaseDataset."""
         try:
             _ = iter(subjects)
         except TypeError:
@@ -365,13 +365,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     verbose=verbose,
                 )
 
-    def _get_single_subject_data_using_cache(
-        self,
-        subject,
-        cache_config,
-        steps,
-    ):
-        """
+    def _get_single_subject_data_using_cache(self, subject, cache_config, steps):
+        """Load a single subject's data using cache.
+
         Either load the data of a single subject from disk cache or from the
         dataset object,
         then eventually saves or overwrites the cache version depending on the
