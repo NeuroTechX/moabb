@@ -316,7 +316,7 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
         events_fname = mne_bids.write._find_matching_sidecar(
             bids_path,
             suffix="events",
-            extension=".eve",  # mne convension
+            extension=".eve",  # mne convention
             on_error="raise",
         )
         log.debug(f"Reading {bids_path.fpath!r}")

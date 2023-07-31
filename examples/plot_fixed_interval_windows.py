@@ -6,7 +6,7 @@ Fixed interval windows processing
 This example shows how to process a dataset using the
 :class:`moabb.paradigms.FixedIntervalWindowsProcessing` paradigm. This paradigm
 creates epochs at fixed interval, ignoring the stim
-channel and events of the datasets. Therefor, it is
+channel and events of the datasets. Therefore, it is
 compatible with all the datasets. Unfortunately,
 this paradigm is not compatible with the MOABB evaluation
 framework. However, it can be used to process datasets

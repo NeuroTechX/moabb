@@ -216,7 +216,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         Processing steps can optionally be applied to the data using the
         ``*_pipeline`` arguments. These pipelines are applied in the following order:
         ``raw_pipeline`` -> ``epochs_pipeline`` -> ``array_pipeline``. If a ``*_pipeline`` argument
-        is ``None``, the step will be skipped. Therefor, the ``array_pipeline`` may either
+        is ``None``, the step will be skipped. Therefore, the ``array_pipeline`` may either
         receive a :class:`mne.io.Raw` or a :class:`mne.Epochs` object as input depending on whether
         ``epochs_pipeline`` is ``None`` or not.
 
@@ -399,7 +399,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
                 elif cache_config.use:  # can't load if it was just erased
                     sessions_data = interface.load(
                         preload=False
-                    )  # None if cache inexistant
+                    )  # None if cache inexistent
 
             # If no cache was found or if it was erased, try the next option:
             if sessions_data is None:

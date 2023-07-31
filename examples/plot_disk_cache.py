@@ -250,7 +250,7 @@ print(f"Without cache: {t_nocache:.2f} seconds")
 #     If it is not present, it means that something went wrong during the
 #     saving process and the cache is incomplete.
 #   * The file contains the un-hashed string representation of the pipeline.
-#     Therefor, it can be used to identify the pipeline used without having
+#     Therefore, it can be used to identify the pipeline used without having
 #     to decode the description key.
 #
 # Cleanup
