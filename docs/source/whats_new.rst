@@ -29,6 +29,7 @@ Enhancements
 - Adding example to load different type of models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Add resting state paradigm with dataset and example (:gh:`400` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 - Speeding the augmentation method by 400% with NumPy vectorization  (:gh:`419` by `Bruno Aristimunha`_)
+- Improving the review processig with more pre-commit bots (:gh:`434` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
