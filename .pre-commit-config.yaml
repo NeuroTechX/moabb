@@ -28,7 +28,6 @@ repos:
       - id: end-of-file-fixer
       - id: check-case-conflict
       - id: forbid-new-submodules
-      - id: double-quote-string-fixer
       - id: pretty-format-json
         args: ["--autofix", "--no-sort-keys", "--indent=4"]
 
