@@ -462,7 +462,7 @@ cross-session or cross-subject.</p></li>
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipelines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_grid</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/evaluations/base.py#L181-L197"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.evaluations.base.BaseEvaluation.evaluate" title="Permalink to this definition">#</a></dt>
 <dd><p>Evaluate results on a single dataset.</p>
 <p>This method return a generator. each results item is a dict with
-the following convension:</p>
+the following conversion:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">Duration</span> <span class="n">of</span> <span class="n">the</span> <span class="n">training</span> <span class="p">,</span>
        <span class="s1">&#39;dataset&#39;</span><span class="p">:</span> <span class="n">dataset</span> <span class="nb">id</span><span class="p">,</span>
        <span class="s1">&#39;subject&#39;</span><span class="p">:</span> <span class="n">subject</span> <span class="nb">id</span><span class="p">,</span>
@@ -483,7 +483,7 @@ the following convension:</p>
 are compatible with the evaluation context.</p>
 <p>This method should return false if the dataset does not match the
 evaluation. This is for example the case if the dataset does not
-contain enought session for a cross-session eval.</p>
+contain enough session for a cross-session eval.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dataset</strong> (<em>dataset instance</em>) – The dataset to verify.</p>
@@ -568,9 +568,9 @@ containing the results of the evaluation.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="We extend the previous example to a case where we want to analyze the score of a classifier wit..."><img alt="Tutorial 2: Using multiple datasets" src="../_images/sphx_glr_tutorial_2_using_mulitple_datasets_thumb.png" />
 <p><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html#sphx-glr-auto-tutorials-tutorial-2-using-mulitple-datasets-py"><span class="std std-ref">Tutorial 2: Using multiple datasets</span></a></p>
   <div class="sphx-glr-thumbnail-title">Tutorial 2: Using multiple datasets</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this last part, we extend the previous example by assessing the classification score of not ..."><img alt="Tutorial 3: Benchmarking mulitple pipelines" src="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_thumb.png" />
-<p><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html#sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"><span class="std std-ref">Tutorial 3: Benchmarking mulitple pipelines</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Tutorial 3: Benchmarking mulitple pipelines</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this last part, we extend the previous example by assessing the classification score of not ..."><img alt="Tutorial 3: Benchmarking multiple pipelines" src="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_thumb.png" />
+<p><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html#sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"><span class="std std-ref">Tutorial 3: Benchmarking multiple pipelines</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Tutorial 3: Benchmarking multiple pipelines</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="Tutorial 4: Creating a dataset class"><img alt="Tutorial 4: Creating a dataset class" src="../_images/sphx_glr_tutorial_4_adding_a_dataset_thumb.png" />
 <p><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html#sphx-glr-auto-tutorials-tutorial-4-adding-a-dataset-py"><span class="std std-ref">Tutorial 4: Creating a dataset class</span></a></p>
   <div class="sphx-glr-thumbnail-title">Tutorial 4: Creating a dataset class</div>

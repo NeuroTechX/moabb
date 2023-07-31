@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Tutorial 3: Benchmarking mulitple pipelines &#8212; moabb 0.5.0 documentation</title>
+    <title>Tutorial 3: Benchmarking multiple pipelines &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -381,7 +381,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Tutorial 3: Benchmarking mulitple pipelines</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Tutorial 3: Benchmarking multiple pipelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
@@ -565,7 +565,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Getting Started</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Tutorial 3: Benchmarking mulitple pipelines</li>
+    <li class="breadcrumb-item active" aria-current="page">Tutorial 3: Benchmarking multiple pipelines</li>
   </ul>
 </nav>
 </div>
@@ -587,8 +587,8 @@ document.write(`
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<section class="sphx-glr-example-title" id="tutorial-3-benchmarking-mulitple-pipelines">
-<span id="sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"></span><h1>Tutorial 3: Benchmarking mulitple pipelines<a class="headerlink" href="#tutorial-3-benchmarking-mulitple-pipelines" title="Permalink to this heading">#</a></h1>
+<section class="sphx-glr-example-title" id="tutorial-3-benchmarking-multiple-pipelines">
+<span id="sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"></span><h1>Tutorial 3: Benchmarking multiple pipelines<a class="headerlink" href="#tutorial-3-benchmarking-multiple-pipelines" title="Permalink to this heading">#</a></h1>
 <p>In this last part, we extend the previous example by assessing the
 classification score of not one but three classification pipelines.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pedro L. C. Rodrigues, Sylvain Chevallier</span>
@@ -654,19 +654,19 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-001-2014-WithinSession:  33%|###3      | 1/3 [00:09&lt;00:18,  9.36s/it]No hdf5_path provided, models will not be saved.
+001-2014-WithinSession:  33%|###3      | 1/3 [00:07&lt;00:14,  7.35s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-001-2014-WithinSession:  67%|######6   | 2/3 [00:18&lt;00:08,  8.96s/it]No hdf5_path provided, models will not be saved.
+001-2014-WithinSession:  67%|######6   | 2/3 [00:14&lt;00:07,  7.21s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-001-2014-WithinSession: 100%|##########| 3/3 [00:26&lt;00:00,  8.82s/it]
-001-2014-WithinSession: 100%|##########| 3/3 [00:26&lt;00:00,  8.90s/it]
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:   26.7s finished
+001-2014-WithinSession: 100%|##########| 3/3 [00:21&lt;00:00,  7.06s/it]
+001-2014-WithinSession: 100%|##########| 3/3 [00:21&lt;00:00,  7.11s/it]
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:   21.3s finished
 
 Zhou 2016-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 No hdf5_path provided, models will not be saved.
@@ -676,23 +676,23 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou 2016-WithinSession:  33%|###3      | 1/3 [00:06&lt;00:13,  6.65s/it]No hdf5_path provided, models will not be saved.
+Zhou 2016-WithinSession:  33%|###3      | 1/3 [00:05&lt;00:11,  5.58s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou 2016-WithinSession:  67%|######6   | 2/3 [00:12&lt;00:06,  6.05s/it]No hdf5_path provided, models will not be saved.
+Zhou 2016-WithinSession:  67%|######6   | 2/3 [00:10&lt;00:05,  5.17s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou 2016-WithinSession: 100%|##########| 3/3 [00:17&lt;00:00,  5.88s/it]
-Zhou 2016-WithinSession: 100%|##########| 3/3 [00:17&lt;00:00,  5.99s/it]
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:   18.0s finished
+Zhou 2016-WithinSession: 100%|##########| 3/3 [00:15&lt;00:00,  5.03s/it]
+Zhou 2016-WithinSession: 100%|##########| 3/3 [00:15&lt;00:00,  5.11s/it]
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:   15.3s finished
 </pre></div>
 </div>
 <p>As <cite>overwrite</cite> is set to False, the results from the previous tutorial are reused and
@@ -719,8 +719,8 @@ for each subject of each dataset.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" srcset="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" alt="dataset = 001-2014, dataset = Zhou 2016" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  47.346 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  161 MB</p>
+<img src="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" srcset="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" alt="dataset = 001-2014, dataset = Zhou 2016" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  38.859 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  293 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fe7c33d68ac9fa4d60c0efbc341f93f3/tutorial_3_benchmarking_multiple_pipelines.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_3_benchmarking_multiple_pipelines.py</span></code></a></p>

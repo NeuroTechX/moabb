@@ -381,7 +381,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking mulitple pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking multiple pipelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
@@ -622,26 +622,29 @@ All this different pipelines are stored in <code class="docutils literal notrans
 <p>If you want to limit your benchmark on a subset of datasets, you can use the
 <code class="docutils literal notranslate"><span class="pre">include_datasets</span></code> and <code class="docutils literal notranslate"><span class="pre">exclude_datasets</span></code> arguments. You will need either
 to provide the dataset’s object, or a dataset’s code. To get the list of
-available dataset’s code for a given paradigm, you can use the following command:</p>
+available dataset’s code for a given paradigm, you can use the following
+command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">paradigm</span> <span class="o">=</span> <a href="../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LeftRightImagery</span></a><span class="p">()</span>
 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">paradigm</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>In this example, we will use only the last dataset, ‘Zhou 2016’, considering only the first subject.</p>
+<p>In this example, we will use only the last dataset, ‘Zhou 2016’, considering
+only the first subject.</p>
 </section>
 <section id="running-the-benchmark">
 <h2>Running the benchmark<a class="headerlink" href="#running-the-benchmark" title="Permalink to this heading">#</a></h2>
 <p>The benchmark is run using the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> function. You need to specify the
 folder containing the pipelines to use, the kind of evaluation and the paradigm
 to use. By default, the benchmark will use all available datasets for all
-paradigms listed in the pipelines. You could restrict to specific evaluation and
-paradigm using the <code class="docutils literal notranslate"><span class="pre">evaluations</span></code> and <code class="docutils literal notranslate"><span class="pre">paradigms</span></code> arguments.</p>
+paradigms listed in the pipelines. You could restrict to specific evaluation
+and paradigm using the <code class="docutils literal notranslate"><span class="pre">evaluations</span></code> and <code class="docutils literal notranslate"><span class="pre">paradigms</span></code> arguments.</p>
 <p>To save computation time, the results are cached. If you want to re-run the
 benchmark, you can set the <code class="docutils literal notranslate"><span class="pre">overwrite</span></code> argument to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-<p>It is possible to indicate the folder to cache the results and the one to save
-the analysis &amp; figures. By default, the results are saved in the <code class="docutils literal notranslate"><span class="pre">results</span></code>
-folder, and the analysis &amp; figures are saved in the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> folder.</p>
+<p>It is possible to indicate the folder to cache the results and the one to
+save the analysis &amp; figures. By default, the results are saved in the
+<code class="docutils literal notranslate"><span class="pre">results</span></code> folder, and the analysis &amp; figures are saved in the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code>
+folder.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <a href="../generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Zhou2016</span></a><span class="p">()</span>
 <span class="n">dataset2</span> <span class="o">=</span> <a href="../generated/moabb.datasets.BNCI2014001.html#moabb.datasets.BNCI2014001" title="moabb.datasets.BNCI2014001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BNCI2014001</span></a><span class="p">()</span>
 <span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">subject_list</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
@@ -677,15 +680,16 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
 </section>
 <section id="plotting-the-results">
 <h2>Plotting the results<a class="headerlink" href="#plotting-the-results" title="Permalink to this heading">#</a></h2>
-<p>We can plot the results using the <code class="docutils literal notranslate"><span class="pre">codecarbon_plot</span></code> function, generated bellow. This function takes the
-dataframe returned by the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code> function as input, and returns a pyplot figure.
+<p>We can plot the results using the <code class="docutils literal notranslate"><span class="pre">codecarbon_plot</span></code> function, generated
+below. This function takes the dataframe returned by the <code class="docutils literal notranslate"><span class="pre">benchmark</span></code>
+function as input, and returns a pyplot figure.
 The <code class="docutils literal notranslate"><span class="pre">order_list</span></code> argument is used to specify the order of the pipelines in
 the plot.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">codecarbon_plot</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">order_list</span><span class="p">,</span> <span class="n">country</span><span class="o">=</span><span class="s2">&quot;(France)&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl>
-<dt>The result expected will be the following image, but varying depending on the machine</dt><dd><p>and the country used to run the example.</p>
+<dt>The result expected will be the following image, but varying depending on the</dt><dd><p>machine and the country used to run the example.</p>
 <img alt="carbon_example" class="align-center" src="../_images/example_codecarbon.png" />
 </dd>
 </dl>

@@ -377,7 +377,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking mulitple pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking multiple pipelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
@@ -691,7 +691,6 @@ We load the single Keras model, if we want we can set in the exact same pipeline
 <span class="n">f_history</span> <span class="o">=</span> <span class="s2">&quot;./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/EEGInception_fitted_best_history.json&quot;</span>
 
 <span class="n">clf</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="n">f_params</span><span class="o">=</span><span class="n">f_params</span><span class="p">,</span> <span class="n">f_optimizer</span><span class="o">=</span><span class="n">f_optimizer</span><span class="p">,</span> <span class="n">f_history</span><span class="o">=</span><span class="n">f_history</span><span class="p">)</span>
-
 
 <span class="c1"># Create the dataset</span>
 <span class="n">create_dataset</span> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">BraindecodeDatasetLoader</span></a><span class="p">(</span><span class="n">drop_last_window</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>

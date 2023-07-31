@@ -381,7 +381,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking mulitple pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking multiple pipelines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
@@ -646,7 +646,6 @@ PATIENCE = 300</p>
 <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">deterministic</span></a> <span class="o">=</span> <span class="kc">True</span>
 <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span></a> <span class="o">=</span> <span class="kc">False</span>
 
-
 <span class="c1"># Hyperparameter</span>
 <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LEARNING_RATE</span></a> <span class="o">=</span> <span class="mf">0.0625</span> <span class="o">*</span> <span class="mf">0.01</span>  <span class="c1"># parameter taken from Braindecode</span>
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">WEIGHT_DECAY</span></a> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># parameter taken from Braindecode</span>
@@ -743,18 +742,18 @@ Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5312        0.6930       0.5172        0.6931  0.4373
-      2       0.5156        0.6931       0.4828        0.6932  0.3951
-      3       0.5156        0.6932       0.4828        0.6932  0.3510
+      1       0.5312        0.6930       0.5172        0.6931  0.4476
+      2       0.5156        0.6931       0.4828        0.6932  0.3900
+      3       0.5156        0.6932       0.4828        0.6932  0.3894
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5000        0.6937       0.4828        0.6932  0.4028
-      2       0.6562        0.6926       0.4828        0.6932  0.3763
-      3       0.5156        0.6933       0.4828        0.6932  0.3660
+      1       0.5000        0.6937       0.4828        0.6932  0.3644
+      2       0.6562        0.6926       0.4828        0.6932  0.3900
+      3       0.5156        0.6933       0.4828        0.6932  0.3948
 Stopping since valid_loss has not improved in the last 3 epochs.
 No hdf5_path provided, models will not be saved.
 Re-initializing module because the following parameters were re-set: module.
@@ -762,31 +761,31 @@ Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4688        0.6936       0.5172        0.6931  0.3725
-      2       0.4844        0.6935       0.5172        0.6930  0.3945
-      3       0.4531        0.6929       0.5172        0.6930  0.3945
-      4       0.4688        0.6934       0.5172        0.6929  0.3795
-      5       0.6406        0.6913       0.5172        0.6929  0.3685
-      6       0.5312        0.6917       0.5172        0.6929  0.3959
-      7       0.4531        0.6929       0.5172        0.6928  0.3736
-      8       0.4688        0.6928       0.5172        0.6928  0.3829
-      9       0.5156        0.6911       0.5172        0.6928  0.3982
+      1       0.4688        0.6936       0.5172        0.6931  0.3867
+      2       0.4844        0.6935       0.5172        0.6930  0.3981
+      3       0.4531        0.6929       0.5172        0.6930  0.3890
+      4       0.4688        0.6934       0.5172        0.6929  0.3869
+      5       0.6406        0.6913       0.5172        0.6929  0.3776
+      6       0.5312        0.6917       0.5172        0.6929  0.3854
+      7       0.4531        0.6929       0.5172        0.6928  0.3812
+      8       0.4688        0.6928       0.5172        0.6928  0.3991
+      9       0.5156        0.6911       0.5172        0.6928  0.3821
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.6938       0.5172        0.6931  0.3471
-      2       0.5625        0.6925       0.5172        0.6930  0.3769
-      3       0.5312        0.6927       0.5172        0.6930  0.3703
+      1       0.4844        0.6938       0.5172        0.6931  0.3812
+      2       0.5625        0.6925       0.5172        0.6930  0.3931
+      3       0.5312        0.6927       0.5172        0.6930  0.3884
 Stopping since valid_loss has not improved in the last 3 epochs.
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   26.6s finished
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   23.6s finished
       score      time  samples  ... n_sessions   dataset  pipeline
-0  0.462577  4.255546    144.0  ...          2  001-2014  EEGNetV4
-1  0.478106  4.074433    144.0  ...          2  001-2014  EEGNetV4
-2  0.463638  6.461572    144.0  ...          2  001-2014  EEGNetV4
-3  0.555363  4.469289    144.0  ...          2  001-2014  EEGNetV4
+0  0.462577  3.794143    144.0  ...          2  001-2014  EEGNetV4
+1  0.478106  3.605643    144.0  ...          2  001-2014  EEGNetV4
+2  0.463638  5.934474    144.0  ...          2  001-2014  EEGNetV4
+3  0.555363  3.909750    144.0  ...          2  001-2014  EEGNetV4
 
 [4 rows x 9 columns]
 </pre></div>
@@ -811,8 +810,8 @@ network for EEG-based brain-computer interfaces.</a>
 Journal of neural engineering, 15(5), 056013.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  32.843 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  178 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  28.701 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  245 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-braindecode-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/c9b0437022c98a63476dd3cad6cb69c7/plot_braindecode.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_braindecode.py</span></code></a></p>
