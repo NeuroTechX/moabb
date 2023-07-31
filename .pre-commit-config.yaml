@@ -39,6 +39,11 @@ repos:
         language_version: python3.8
         args: [--line-length=90, --target-version=py38]
 
+  -   repo: https://github.com/pycqa/pydocstyle
+      rev: 6.3.0  # pick a git hash / tag to point to
+      hooks:
+      -   id: pydocstyle
+
 
   -   repo: https://github.com/asottile/blacken-docs
       rev: 1.15.0
@@ -68,7 +73,7 @@ repos:
           exclude: ^docs/ | ^setup\.py$ |
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.280
+    rev: v0.0.281
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix, --ignore, E501]
