@@ -226,7 +226,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
         subjects: List of int
             List of subject number
         cache_config: dict | CacheConfig
-            Configuration for caching of datasets. See ``CacheConfig`` for details.
+            Configuration for caching of datasets. See ``CacheConfig``
+            for details.
         raw_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin
             | None
             Pipeline that necessarily takes a mne.io.Raw as input,
