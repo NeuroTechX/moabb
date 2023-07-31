@@ -7,7 +7,7 @@ If you want to test features under development or contribute to the library, or 
 
 .. note::
 
-   If you are only trying to install MOABB, we recommend using the pip installation `Installation <https://https://neurotechx.github.io/moabb/installation>`__ for details on that.
+   If you are only trying to install MOABB, we recommend using the pip installation `Installation <https://neurotechx.github.io/moabb/install/install_pip.html#install-pip>`__ for details on that.
 
 .. _system-level:
 
