@@ -208,7 +208,8 @@ class BIDSInterfaceBase(abc.ABC):
             for run, obj in runs.items():
                 if obj is None:
                     log.warning(
-                        "Skipping caching %s session " + "%s run %s because it is None.",
+                        "Skipping caching %s session " + "%s run %s because "
+                        "it is None.",
                         (repr(self), session, run),
                     )
                     continue
