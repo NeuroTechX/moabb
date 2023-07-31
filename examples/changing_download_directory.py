@@ -3,9 +3,8 @@
 Change Download Directory
 ===========================
 
-This is a minimal example to demonstrate how to change the default data download directory to a custom
-path/location.
-"""
+This is a minimal example to demonstrate how to change the default data
+download directory to a custom path/location. """
 # Authors: Divyesh Narayanan <divyesh.narayanan@gmail.com>
 #
 # License: BSD (3-clause)

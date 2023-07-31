@@ -258,7 +258,7 @@ def fs_get_file_id(filelist):
     Returns
     -------
     response : dict
-        keys are filname and values are file_id
+        keys are filename and values are file_id
     """
     return {f["name"]: str(f["id"]) for f in filelist}
 

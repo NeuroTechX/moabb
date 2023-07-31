@@ -54,8 +54,8 @@ class DemonsP300(BaseDataset):
     The player was supposed to feed animals and protect them from demons.
     Game mechanics consisted in demons jumping (visually activating),
     so player have to concentrate on one demon (chosen freely). That produced
-    P300 response in time of the deamon jump. That was the way to trigger fireball
-    torwards a deamon predicted by classifier from EEG data.
+    P300 response in time of the daemon jump. That was the way to trigger fireball
+    towards a daemon predicted by classifier from EEG data.
 
     More info can be found in [1]_ [2]_ [3]_.
 
@@ -66,7 +66,7 @@ class DemonsP300(BaseDataset):
            Raccoons vs Demons: multiclass labeled P300 dataset,
            https://arxiv.org/abs/2005.02251
     .. [2] Goncharenko V., Grigoryan R., and Samokhina A.,
-           Approaches to multiclass classifcation of P300 potential datasets,
+           Approaches to multiclass classification of P300 potential datasets,
            Intelligent Data Processing: Theory and Applications:Book of abstract of
            the 13th International Conference, Moscow, 2020. — Moscow: Russian
            Academy of Sciences, 2020. — 472 p.ISBN 978-5-907366-16-9

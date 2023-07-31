@@ -31,7 +31,7 @@ def collapse_session_scores(df):
 
 
 def compute_pvals_wilcoxon(df, order=None):
-    """Compute Wilcoxon rank-sum test on agregated results
+    """Compute Wilcoxon rank-sum test on aggregated results
 
     Returns kxk matrix of p-values computed via the Wilcoxon rank-sum test,
     order defines the order of rows and columns
@@ -133,7 +133,7 @@ def _pairedttest_random(data, nperms):
 
 
 def compute_pvals_perm(df, order=None):
-    """Compute permutation test on agregated results
+    """Compute permutation test on aggregated results
 
     Returns kxk matrix of p-values computed via permutation test,
     order defines the order of rows and columns

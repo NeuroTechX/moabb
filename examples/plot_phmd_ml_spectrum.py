@@ -42,7 +42,6 @@ dataset = HeadMountedDisplay()
 events = ["on", "off"]
 paradigm = RestingStateToP300Adapter(events=events, channels=[channel])
 
-
 ###############################################################################
 # Estimate Power Spectral Density
 # ---------------

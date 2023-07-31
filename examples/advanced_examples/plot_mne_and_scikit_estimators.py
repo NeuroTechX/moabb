@@ -76,6 +76,7 @@ epochs, labels, meta = paradigm.get_data(
     dataset=dataset, subjects=subject_list, return_epochs=True
 )
 
+
 ##############################################################################
 # A Simple MNE Pipeline
 # ---------------------

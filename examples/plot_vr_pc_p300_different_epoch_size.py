@@ -112,7 +112,7 @@ for tmax in [0.2, 1.0]:
                     paradigm, [subject], blocks[test_idx], repetitions
                 )
 
-                # We use riemannian geometry processing technics with MDM algorithm.
+                # We use riemannian geometry processing techniques with MDM algorithm.
                 pipe = make_pipeline(ERPCovariances(estimator="lwf"), MDM())
                 pipe.fit(X_train, y_train)
                 y_pred = pipe.predict(X_test)

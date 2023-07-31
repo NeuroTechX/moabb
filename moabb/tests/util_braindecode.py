@@ -94,7 +94,7 @@ class TestTransformer:
             transformer.fit(X_train, y=y_train, **{invalid_param_name: None})
 
     def test_type_create_from_X_y_vs_transfomer(self, data):
-        """Test the type from create_from_X_y() and the transfomer"""
+        """Test the type from create_from_X_y() and the transformer"""
         X_train, y_train, _, _ = data
 
         dataset = create_from_X_y(
