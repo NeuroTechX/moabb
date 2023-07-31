@@ -172,7 +172,8 @@ class BIDSInterfaceBase(abc.ABC):
         )
         sessions_data = {}
         for p in paths:
-            session = sessions_data.setdefault(session_bids_to_moabb(p.session), {})
+            session_moabb = session_bids_to_moabb(p.session)
+            session = sessions_data.setdefault(session_moabb, {})
             run = self._load_file(p, preload=preload)
             session[run_bids_to_moabb(p.run)] = run
         log.info(f"Finished reading cache of {repr(self)}.")
