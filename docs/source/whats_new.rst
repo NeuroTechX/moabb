@@ -38,6 +38,7 @@ Enhancements
 - Update :func:`moabb.datasets.fake.FakeDataset`'s code to be unique for each parameter combination (PR :gh:`408` by `Pierre Guetschel`_)
 - Systematically set the annotations when loading data, eventually using the stim channel (PR :gh:`408` by `Pierre Guetschel`_)
 - Allow :func:`moabb.datasets.utils.dataset_search` to search across paradigms ``paradigm=None`` (PR :gh:`408` by `Pierre Guetschel`_)
+- Improving the review processing with more pre-commit bots (:gh:`435` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
@@ -81,7 +82,7 @@ Enhancements
 - Add a augmentation model to the pipeline (:gh:`326` by `Igor Carrara`_)
 - Add BrainDecode example (:gh:`340` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add Google Analytics to the documentation (:gh:`335` by `Bruno Aristimunha`_)
-- Add suport to Braindecode classifier (:gh:`328` by `Bruno Aristimunha`_)
+- Add support to Braindecode classifier (:gh:`328` by `Bruno Aristimunha`_)
 - Add CodeCarbon to track emission CO₂ (:gh:`350` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Add CodeCarbon example (:gh:`356` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add MsetCCA method for SSVEP classification, parametrise CCA `n_components` in CCA based methods (:gh:`359` by `Emmanuel Kalunga`_ and `Sylvain Chevallier`_)
@@ -148,7 +149,7 @@ Bugs
 - Removing dependency on mne method for PhysionetMI data downloading, renaming runs (:gh:`257` by `Divyesh Narayanan`_)
 - Correcting events management in Schirrmeister2017, renaming session and run (:gh:`255` by `Pierre Guetschel`_ and `Sylvain Chevallier`_)
 - Switch session and runs in MAMEM1, 2 and 3 to avoid error in WithinSessionEvaluation (:gh:`256` by `Sylvain Chevallier`_)
-- Correct doctstrings for the documentation, incuding Lee2017 (:gh:`256` by `Sylvain Chevallier`_)
+- Correct doctstrings for the documentation, including Lee2017 (:gh:`256` by `Sylvain Chevallier`_)
 
 
 Version - 0.4.4

@@ -130,7 +130,7 @@ class FakeVirtualRealityDataset(FakeDataset):
         """Select data for all provided subjects, blocks and repetitions.
         Each subject has 5 blocks of 12 repetitions.
 
-        The returned data is a dictionary with the folowing structure::
+        The returned data is a dictionary with the following structure::
 
             data = {'subject_id' :
                         {'session_id':

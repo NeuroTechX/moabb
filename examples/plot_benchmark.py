@@ -29,7 +29,7 @@ set_log_level("info")
 # simple format. It simplifies sharing and reusing pipelines across benchmarks,
 # reproducing state-of-the-art results.
 #
-# MOABB comes with complete list of pipelines that cover most of the sucessful
+# MOABB comes with complete list of pipelines that cover most of the successful
 # approaches in the literature. You can find them in the
 # `pipelines folder <https://github.com/NeuroTechX/moabb/tree/develop/pipelines>`_.
 # For this example, we will use a folder with only 2 pipelines, to keep the

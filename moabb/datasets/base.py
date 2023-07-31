@@ -200,7 +200,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
     ):
         """Return the data correspoonding to a list of subjects.
 
-        The returned data is a dictionary with the folowing structure::
+        The returned data is a dictionary with the following structure::
 
             data = {'subject_id' :
                         {'session_id':
@@ -211,7 +211,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         subjects are on top, then we have sessions, then runs.
         A sessions is a recording done in a single day, without removing the
         EEG cap. A session is constitued of at least one run. A run is a single
-        contigous recording. Some dataset break session in multiple runs.
+        contiguous recording. Some dataset break session in multiple runs.
 
         Processing steps can optionally be applied to the data using the
         ``*_pipeline`` arguments. These pipelines are applied in the following order:
@@ -306,7 +306,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
     ):
         """Download all data from the dataset.
 
-        This function is only usefull to download all the dataset at once.
+        This function is only useful to download all the dataset at once.
 
 
         Parameters
@@ -456,7 +456,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
 
-        The returned data is a dictionary with the folowing structure
+        The returned data is a dictionary with the following structure
 
         data = {'session_id':
                     {'run_id': raw}

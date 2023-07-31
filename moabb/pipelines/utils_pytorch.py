@@ -63,7 +63,7 @@ class BraindecodeDatasetLoader(BaseEstimator, TransformerMixin):
         return dataset
 
     def __sklearn_is_fitted__(self):
-        """Return True since Transfomer is stateless."""
+        """Return True since Transformer is stateless."""
         return True
 
 

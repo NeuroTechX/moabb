@@ -9,4 +9,4 @@ pipeline:
   - name: SSVEP_MsetCCA
     from: moabb.pipelines.classification
     parameters:
-      freqs: { "13": 2, "17": 3, "21": 4 }
+      freqs: {"13":2, "17":3, "21":4}

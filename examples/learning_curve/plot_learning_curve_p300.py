@@ -41,7 +41,6 @@ from moabb.paradigms import P300
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
 
-
 moabb.set_log_level("info")
 
 ##############################################################################
@@ -96,7 +95,6 @@ evaluation = WithinSessionEvaluation(
     suffix="examples_lr",
     overwrite=overwrite,
 )
-
 
 results = evaluation.process(pipelines)
 

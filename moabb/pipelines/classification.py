@@ -21,7 +21,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
     Parameters
     ----------
-    interval : list of lenght 2
+    interval : list of length 2
         List of form [tmin, tmax]. With tmin and tmax as defined in the SSVEP
         paradigm :meth:`moabb.paradigms.SSVEP`
 
@@ -30,7 +30,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         They are used to identify SSVEP classes presents in the data.
 
     n_harmonics: int
-        Number of stimulation frequency's harmonics to be used in the genration
+        Number of stimulation frequency's harmonics to be used in the generation
         of the CCA reference signal.
 
 
@@ -89,7 +89,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         return y
 
     def predict_proba(self, X):
-        """Probabilty could be computed from the correlation coefficient"""
+        """Probability could be computed from the correlation coefficient"""
         P = np.zeros(shape=(len(X), len(self.freqs)))
         for i, x in enumerate(X):
             for j, f in enumerate(self.freqs):
@@ -241,7 +241,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 )
                 cov = np.squeeze(cov)
 
-                # Compute empirical covariance betwwen the two selected trials and sum it
+                # Compute empirical covariance between the two selected trials and sum it
                 if n_channels > 1:
                     S = S + cov[:n_channels, n_channels:] + cov[n_channels:, :n_channels]
 
@@ -453,7 +453,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         return y_pred
 
     def predict_proba(self, X):
-        """Make predictions on unseen data with the asociated probabilities.
+        """Make predictions on unseen data with the associated probabilities.
 
         The new data observation X will be filtered
         with weights previously extracted and compared to the templates to assess
@@ -653,7 +653,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         return y
 
     def predict_proba(self, X):
-        """Probabilty could be computed from the correlation coefficient"""
+        """Probability could be computed from the correlation coefficient"""
 
         # Check is fit had been called
         check_is_fitted(self)

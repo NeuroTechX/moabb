@@ -99,7 +99,7 @@ class Test_MotorImagery(unittest.TestCase):
 
     def test_baseImagery_wrongevent(self):
         # test process_raw return empty list if raw does not contain any
-        # selected event. cetain runs in dataset are event specific.
+        # selected event. certain runs in dataset are event specific.
         paradigm = SimpleMotorImagery(filters=[[7, 12], [12, 24]])
         dataset = FakeDataset(paradigm="imagery")
         epochs_pipeline = paradigm._get_epochs_pipeline(
@@ -292,7 +292,7 @@ class Test_MotorImagery(unittest.TestCase):
         self.assertIsInstance(epochs, BaseEpochs)
 
     def test_LeftRightImagery_noevent(self):
-        # we cant pass event to this class
+        # we can't pass event to this class
         self.assertRaises(ValueError, LeftRightImagery, events=["a"])
 
     def test_LeftRightImagery_badevents(self):
@@ -411,7 +411,7 @@ class Test_P300(unittest.TestCase):
 
     def test_BaseP300_wrongevent(self):
         # test process_raw return empty list if raw does not contain any
-        # selected event. cetain runs in dataset are event specific.
+        # selected event. certain runs in dataset are event specific.
         paradigm = SimpleP300(filters=[[1, 12], [12, 24]])
         dataset = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])
         epochs_pipeline = paradigm._get_epochs_pipeline(
@@ -460,7 +460,7 @@ class Test_P300(unittest.TestCase):
         self.assertTrue(metadata.equals(epochs.metadata))
 
     def test_P300_specifyevent(self):
-        # we cant pass event to this class
+        # we can't pass event to this class
         self.assertRaises(ValueError, P300, events=["a"])
 
     def test_P300_wrongevent(self):

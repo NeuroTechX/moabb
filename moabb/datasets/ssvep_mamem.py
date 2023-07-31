@@ -183,7 +183,7 @@ class MAMEM1(BaseMAMEM):
     EEG signals with 256 channels captured from 11 subjects executing a
     SSVEP-based experimental protocol. Five different frequencies
     (6.66, 7.50, 8.57, 10.00 and 12.00 Hz) have been used for the visual
-    stimulation,and the EGI 300 Geodesic EEG System (GES 300), using a
+    stimulation,and the EGI 300 Geodesic EEG System, using a
     stimulation, HydroCel Geodesic Sensor Net (HCGSN) and a sampling rate of
     250 Hz has been used for capturing the signals.
 
@@ -303,7 +303,7 @@ class MAMEM2(BaseMAMEM):
     EEG signals with 256 channels captured from 11 subjects executing a
     SSVEP-based experimental protocol. Five different frequencies
     (6.66, 7.50, 8.57, 10.00 and 12.00 Hz) have been used for the visual
-    stimulation,and the EGI 300 Geodesic EEG System (GES 300), using a
+    stimulation,and the EGI 300 Geodesic EEG System, using a
     stimulation, HydroCel Geodesic Sensor Net (HCGSN) and a sampling rate of
     250 Hz has been used for capturing the signals.
 
