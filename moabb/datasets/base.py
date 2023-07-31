@@ -72,7 +72,7 @@ class CacheConfig:
     verbose: str = None
 
     @classmethod
-    def make(cls, d: Union[None, Dict, "CacheConfig"] = None) -> "CacheConfig":
+    def make(cls, dic: Union[None, Dict, "CacheConfig"] = None) -> "CacheConfig":
         """
         Create a CacheConfig object from a dict or another CacheConfig object.
 
@@ -85,21 +85,23 @@ class CacheConfig:
 
         From a dict:
 
-        >>> d = {'save': False}
-        >>> CacheConfig.make(d)
+        >>> dic = {'save': False}
+        >>> CacheConfig.make(dic)
         CacheConfig(save=False, use=True, overwrite=True, path=None)
         """
-        if d is None:
+        if dic is None:
             return cls()
-        elif isinstance(d, dict):
-            return cls(**d)
-        elif isinstance(d, cls):
-            return d
+        elif isinstance(dic, dict):
+            return cls(**dic)
+        elif isinstance(dic, cls):
+            return dic
         else:
-            raise ValueError(f"Expected dict or CacheConfig, got {type(d)}")
+            raise ValueError(f"Expected dict or CacheConfig, got {type(dic)}")
 
 
 class StepType(Enum):
+    """Enum for the different steps in the pipeline."""
+
     RAW = "raw"
     EPOCHS = "epochs"
     ARRAY = "array"
@@ -117,11 +119,11 @@ def apply_step(pipeline, obj):
         return None
     try:
         return pipeline.transform(obj)
-    except ValueError as e:
+    except ValueError as error:
         # no events received by RawToEpochs:
-        if "No events found" == str(e):
+        if str(error) == "No events found":
             return None
-        raise e
+        raise error
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
@@ -259,7 +261,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
             subjects = self.subject_list
 
         if not isinstance(subjects, list):
-            raise (ValueError("subjects must be a list"))
+            raise ValueError("subjects must be a list")
 
         if events_pipeline is None and array_pipeline is not None:
             log.warning(
