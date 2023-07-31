@@ -53,7 +53,7 @@ without preloading the whole raw signals, only the necessary
 intervals. Yet, because only the raw data is cached, the epoching
 parameters can be changed without creating a new cache each time.
 However, if your epoching parameters are fixed, you can directly
-cache the epochs or the arrays to speed up the loading  and
+cache the epochs or the arrays to speed up the loading and
 reduce the disk space used.
 
 .. note::
@@ -100,9 +100,10 @@ default_cache_config = dict(
 # You don not need to specify all the keys of ``cache_config``, only the ones
 # you want to change.
 #
-# By default, the cache is saved at the MNE data directory (i.e. when ``path=None``).
-# The MNE data directory can be found with ``mne.get_config('MNE_DATA')``.
-# For this example, we will save it  in a temporary directory instead:
+# By default, the cache is saved at the MNE data directory (i.e. when
+# ``path=None``).  The MNE data directory can be found with
+# ``mne.get_config('MNE_DATA')``. For this example, we will save it  in a
+# temporary directory instead:
 temp_dir = Path(tempfile.mkdtemp())
 
 ###############################################################################
@@ -131,10 +132,11 @@ _ = paradigm.get_data(dataset, subjects, cache_config=cache_config)
 # Time comparison
 # ---------------
 #
-# Now, we will compare the time it takes to load the with different levels of cache.
-# For this, we will use the cache saved in the previous block and overwrite the
-# steps results one by one so that we can compare the time it takes to load the
-# data and compute the missing steps with an increasing number of missing steps.
+# Now, we will compare the time it takes to load the with different levels of
+# cache. For this, we will use the cache saved in the previous block and
+# overwrite the steps results one by one so that we can compare the time it
+# takes to load the data and compute the missing steps with an increasing
+# number of missing steps.
 #
 # Using array cache:
 cache_config = dict(
@@ -207,9 +209,10 @@ print(f"Using raw cache: {t_raw:.2f} seconds")
 print(f"Without cache: {t_nocache:.2f} seconds")
 
 ###############################################################################
-# As you can see, using a raw cache is more than 5 times faster than without cache.
-# This is because when using the raw cache, the data is not preloaded, only the
-# desired epochs are loaded in memory.
+# As you can see, using a raw cache is more than 5 times faster than
+# without cache.
+# This is because when using the raw cache, the data is not preloaded, only
+# the desired epochs are loaded in memory.
 #
 # Using the epochs cache is a little faster than the raw cache. This is because
 # there are several preprocessing steps done after the epoching by the
@@ -219,11 +222,11 @@ print(f"Without cache: {t_nocache:.2f} seconds")
 # and the resampling is done by the ``epochs_pipeline``.
 #
 # Finally, we observe very little difference between array and epochs cache.
-# The main interest of the array cache is when the user passes a computationally
-# heavy but fixed additional preprocessing (for example computing the covariance
-# matrices of the epochs). This can be done by using the ``processing_pipeline``
-# argument. The output of this additional pipeline (necessary a numpy array)
-# will be saved to avoid re-computing it each time.
+# The main interest of the array cache is when the user passes a
+# computationally heavy but fixed additional preprocessing (for example
+# computing the covariance matrices of the epochs). This can be done by using
+# the ``processing_pipeline`` argument. The output of this additional pipeline
+# (necessary a numpy array) will be saved to avoid re-computing it each time.
 #
 #
 # Technical details
