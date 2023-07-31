@@ -47,7 +47,7 @@ pipelines["MDM"] = make_pipeline(ERPCovariances(estimator="lwf"), MDM(metric="ri
 # - the sessions. It can be:
 #   - a session name ('session_0')
 #   - a list of sessions (['session_0', 'session_1'])
-#   - `None` to select all the sessions attributed to a subjet
+#   - `None` to select all the sessions attributed to a subject
 # - the runs. As for sessions, it can be a single run name, a list or `None`` (to select all runs).
 
 

@@ -68,7 +68,7 @@ def load_data(
         List of raw instances for each non consecutive recording. Depending
         on the dataset it could be a BCI run or a different recording session.
     event_id: dict
-        dictonary containing events and their code.
+        dictionary containing events and their code.
     """
     dataset_list = {
         "001-2014": _load_data_001_2014,
@@ -365,7 +365,7 @@ def _load_data_003_2015(
         # flash events on the channel 9
         flashs = run[9:10]
         ix_flash = flashs[0] > 0
-        flashs[0, ix_flash] += 2  # add 2 to avoid overlapp on event id
+        flashs[0, ix_flash] += 2  # add 2 to avoid overlap on event id
         flash_code = np.unique(flashs[0, ix_flash])
 
         if len(flash_code) == 36:
@@ -849,7 +849,7 @@ class BNCI2014002(MNEBNCI):
     .. [1] Steyrl, D., Scherer, R., Faller, J. and Müller-Putz, G.R., 2016.
            Random forests in non-invasive sensorimotor rhythm brain-computer
            interfaces: a practical and convenient non-linear classifier.
-           Biomedical Engineering/Biomedizinische Technik, 61(1), pp.77-86.
+           Biomedical Engineering/Biomedizinische Technique, 61(1), pp.77-86.
 
     """
 
@@ -966,7 +966,7 @@ class BNCI2014008(MNEBNCI):
 
     This dataset represents a complete record of P300 evoked potentials
     using a paradigm originally described by Farwell and Donchin [2]_.
-    In these sessions, 8 users with amyotrophic lateral sclerosis (ALS)
+    In these sessions, 8 users with amyotrophic lateral sclerosis (ALSO)
     focused on one out of 36 different characters. The objective in this
     contest is to predict the correct character in each of the provided
     character selection epochs.
@@ -1037,7 +1037,7 @@ class BNCI2014009(MNEBNCI):
 
     This dataset presents a complete record of P300 evoked potentials
     using two different paradigms: a paradigm based on the P300 Speller in
-    overt attention condition and a paradigm based used in covert attention
+    overt attention condition and a paradigm based used in convert attention
     condition. In these sessions, 10 healthy subjects focused on one out of 36
     different characters. The objective was to predict the correct character
     in each of the provided character selection epochs.
@@ -1110,7 +1110,7 @@ class BNCI2015001(MNEBNCI):
 
     The task for the user was to perform sustained right hand versus both feet
     movement imagery starting from the cue (second 3) to the end of the cross
-    period (sec- ond 8).  A trial started with 3 s of reference period,
+    period (sec- and 8).  A trial started with 3 s of reference period,
     followed by a brisk audible cue and a visual cue (arrow right for right
     hand, arrow down for both feet) from second 3 to 4.25.
     The activity period, where the users received feedback, lasted from

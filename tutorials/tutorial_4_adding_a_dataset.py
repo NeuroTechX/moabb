@@ -146,7 +146,7 @@ class ExampleDataset(BaseDataset):
 # Using the ExampleDataset
 # ------------------------
 #
-# Now that the `ExampleDataset` is defined, it could be instanciated directly.
+# Now that the `ExampleDataset` is defined, it could be instantiated directly.
 # The rest of the code follows the steps described in the previous tutorials.
 
 dataset = ExampleDataset()

@@ -29,7 +29,7 @@ Enhancements
 - Adding example to load different type of models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Add resting state paradigm with dataset and example (:gh:`400` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 - Speeding the augmentation method by 400% with NumPy vectorization  (:gh:`419` by `Bruno Aristimunha`_)
-- Improving the review processig with more pre-commit bots (:gh:`434` by `Bruno Aristimunha`_)
+- Improving the review processing with more pre-commit bots (:gh:`434` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
@@ -71,7 +71,7 @@ Enhancements
 - Add a augmentation model to the pipeline (:gh:`326` by `Igor Carrara`_)
 - Add BrainDecode example (:gh:`340` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add Google Analytics to the documentation (:gh:`335` by `Bruno Aristimunha`_)
-- Add suport to Braindecode classifier (:gh:`328` by `Bruno Aristimunha`_)
+- Add support to Braindecode classifier (:gh:`328` by `Bruno Aristimunha`_)
 - Add CodeCarbon to track emission CO₂ (:gh:`350` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Add CodeCarbon example (:gh:`356` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add MsetCCA method for SSVEP classification, parametrise CCA `n_components` in CCA based methods (:gh:`359` by `Emmanuel Kalunga`_ and `Sylvain Chevallier`_)
@@ -138,7 +138,7 @@ Bugs
 - Removing dependency on mne method for PhysionetMI data downloading, renaming runs (:gh:`257` by `Divyesh Narayanan`_)
 - Correcting events management in Schirrmeister2017, renaming session and run (:gh:`255` by `Pierre Guetschel`_ and `Sylvain Chevallier`_)
 - Switch session and runs in MAMEM1, 2 and 3 to avoid error in WithinSessionEvaluation (:gh:`256` by `Sylvain Chevallier`_)
-- Correct doctstrings for the documentation, incuding Lee2017 (:gh:`256` by `Sylvain Chevallier`_)
+- Correct doctstrings for the documentation, including Lee2017 (:gh:`256` by `Sylvain Chevallier`_)
 
 
 Version - 0.4.4

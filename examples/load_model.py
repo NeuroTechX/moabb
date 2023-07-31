@@ -67,7 +67,6 @@ pipes_keras = Pipeline(
     ]
 )
 
-
 ###############################################################################
 # Loading the PyTorch model
 
@@ -114,7 +113,6 @@ f_optimizer = "./results/Models_CrossSession/001-2014/1/braindecode_EEGInception
 f_history = "./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/EEGInception_fitted_best_history.json"
 
 clf.load_params(f_params=f_params, f_optimizer=f_optimizer, f_history=f_history)
-
 
 # Create the dataset
 create_dataset = BraindecodeDatasetLoader(drop_last_window=False)

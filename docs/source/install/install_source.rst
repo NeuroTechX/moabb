@@ -7,7 +7,7 @@ If you want to test features under development or contribute to the library, or 
 
 .. note::
 
-   If you are only trying to install MOABB, we recommend using the pip installation `Installation <https://https://neurotechx.github.io/moabb/instalation>`__ for details on that.
+   If you are only trying to install MOABB, we recommend using the pip installation `Installation <https://https://neurotechx.github.io/moabb/installation>`__ for details on that.
 
 .. _system-level:
 
@@ -56,7 +56,7 @@ If you want to build from source to work on MOABB itself, then follow these step
 You could also check checkout `poetry installation instruction <https://python-poetry.org/docs/#installation>`__ or
 use `conda forge version <https://anaconda.org/conda-forge/poetry>`__
 
-We need the most updated version of the poetry to ensure the compatiblity with optional dependency.
+We need the most updated version of the poetry to ensure the compatibility with optional dependency.
 
 .. note::
     If you have any group-related errors at the end of this section, you may not run the proper version of poetry.

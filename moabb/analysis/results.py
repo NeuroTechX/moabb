@@ -136,7 +136,7 @@ class Results:
             for name, data_dict in results.items():
                 digest = get_digest(pipelines[name])
                 if digest not in f.keys():
-                    # create pipeline main group if nonexistant
+                    # create pipeline main group if nonexistent
                     f.create_group(digest)
 
                 ppline_grp = f[digest]
@@ -148,7 +148,7 @@ class Results:
                 dname = d1["dataset"].code
                 n_add_cols = len(self.additional_columns)
                 if dname not in ppline_grp.keys():
-                    # create dataset subgroup if nonexistant
+                    # create dataset subgroup if nonexistent
                     dset = ppline_grp.create_group(dname)
                     dset.attrs["n_subj"] = len(d1["dataset"].subject_list)
                     dset.attrs["n_sessions"] = d1["dataset"].n_sessions
