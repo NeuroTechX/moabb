@@ -143,7 +143,7 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
     destination = Path(str(path) + destination.split(str(path))[1].translate(table))
 
     downloader = choose_downloader(url, progressbar=True)
-    if type(downloader).__name__ in ['HTTPDownloader', 'DOIDownloader']:
+    if type(downloader).__name__ in ["HTTPDownloader", "DOIDownloader"]:
         downloader.kwargs.setdefault("verify", False)
 
     # Fetch the file
