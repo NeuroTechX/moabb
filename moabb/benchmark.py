@@ -28,7 +28,6 @@ try:
 except ImportError:
     _carbonfootprint = False
 
-
 log = logging.getLogger(__name__)
 
 
@@ -305,14 +304,14 @@ def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
         else:
             # The case where the class instances have been given
             # can be passed on directly
-            d = include_datasets
+            d = list(include_datasets)
         if exclude_datasets is not None:
             raise AttributeError(
                 "You could not specify both include and exclude datasets"
             )
 
     elif exclude_datasets is not None:
-        d = datasets
+        d = list(datasets)
         # Assert if the inputs are not key_codes i.e. expected to be dataset class objects
         if not isinstance(exclude_datasets[0], str):
             # Convert the input to key_codes
@@ -323,5 +322,5 @@ def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
         for excdat in exclude_datasets:
             del d[datasets_codes.index(excdat)]
     else:
-        d = datasets
+        d = list(datasets)
     return d

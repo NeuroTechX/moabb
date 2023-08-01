@@ -16,17 +16,27 @@ class TestBenchmark(unittest.TestCase):
         rep_dir = Path.cwd() / Path("benchmark/")
         shutil.rmtree(rep_dir)
 
-    def test_benchmark(self):
+    def test_benchmark_strdataset(self):
         res = benchmark(
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
-            include_datasets=["FakeDataset"],
+            include_datasets=[
+                "FakeDataset_imagery_10_2_2__left_hand_right_hand__C3_Cz_C4",
+                "FakeDataset_p300_10_2_2__Target_NonTarget__C3_Cz_C4",
+                "FakeDataset_ssvep_10_2_2__13_15__C3_Cz_C4",
+            ],
         )
         self.assertEqual(len(res), 80)
+
+    def test_benchmark_objdataset(self):
         res = benchmark(
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
-            include_datasets=[FakeDataset()],
+            include_datasets=[
+                FakeDataset(["left_hand", "right_hand"], paradigm="imagery"),
+                FakeDataset(["Target", "NonTarget"], paradigm="p300"),
+                FakeDataset(["13", "15"], paradigm="ssvep"),
+            ],
         )
         self.assertEqual(len(res), 80)
 

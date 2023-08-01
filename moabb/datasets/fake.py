@@ -1,5 +1,8 @@
+import tempfile
+from pathlib import Path
+
 import numpy as np
-from mne import create_info
+from mne import create_info, get_config, set_config
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 
@@ -44,6 +47,7 @@ class FakeDataset(BaseDataset):
         self.n_runs = n_runs
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         self.channels = channels
+        code = f"{code}_{paradigm}_{n_subjects}_{n_sessions}_{n_runs}__{'_'.join(event_list)}__{'_'.join(channels)}"
         super().__init__(
             subjects=list(range(1, n_subjects + 1)),
             sessions_per_subject=n_sessions,
@@ -52,6 +56,11 @@ class FakeDataset(BaseDataset):
             interval=[0, 3],
             paradigm=paradigm,
         )
+        key = "MNE_DATASETS_{:s}-BIDS_PATH".format(self.code.upper())
+        temp_dir = get_config(key)
+        if temp_dir is None or not Path(temp_dir).is_dir():
+            temp_dir = tempfile.mkdtemp()
+            set_config(key, temp_dir)
 
     def _get_single_subject_data(self, subject):
         data = dict()
