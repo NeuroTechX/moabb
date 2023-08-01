@@ -381,7 +381,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking multiple pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
+
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
@@ -390,7 +391,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Benchmarking with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
+
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
@@ -595,8 +597,9 @@ document.write(`
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-vr-pc-p300-different-epoch-size-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<section class="sphx-glr-example-title" id="changing-epoch-size-in-p300-vr-dataset">
-<span id="sphx-glr-auto-examples-plot-vr-pc-p300-different-epoch-size-py"></span><h1>Changing epoch size in P300 VR dataset<a class="headerlink" href="#changing-epoch-size-in-p300-vr-dataset" title="Permalink to this heading">#</a></h1>
+<p class="sphx-glr-example-title" id="sphx-glr-auto-examples-plot-vr-pc-p300-different-epoch-size-py">Example of P300 classification with different epoch size.</p>
+<section id="changing-epoch-size-in-p300-vr-dataset">
+<h1>Changing epoch size in P300 VR dataset<a class="headerlink" href="#changing-epoch-size-in-p300-vr-dataset" title="Permalink to this heading">#</a></h1>
 <p>This example shows how to extract the epochs from the P300-VR dataset of a given
 subject and then classify them using Riemannian Geometry framework for BCI.
 We compare the scores in the VR and PC conditions, using different epoch size.</p>
@@ -724,20 +727,20 @@ Data will be selected thanks to the <cite>get_block_repetition</cite> method.</p
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0/2 [00:00&lt;?, ?it/s]subject 1, VR, tmax 0.2
 subject 1, PC, tmax 0.2
 
- 50%|#####     | 1/2 [03:18&lt;03:18, 198.48s/it]subject 2, VR, tmax 0.2
+ 50%|#####     | 1/2 [02:48&lt;02:48, 168.10s/it]subject 2, VR, tmax 0.2
 subject 2, PC, tmax 0.2
 
-100%|##########| 2/2 [06:33&lt;00:00, 196.57s/it]
-100%|##########| 2/2 [06:33&lt;00:00, 196.86s/it]
+100%|##########| 2/2 [05:34&lt;00:00, 167.19s/it]
+100%|##########| 2/2 [05:34&lt;00:00, 167.32s/it]
 
   0%|          | 0/2 [00:00&lt;?, ?it/s]subject 1, VR, tmax 1.0
 subject 1, PC, tmax 1.0
 
- 50%|#####     | 1/2 [00:29&lt;00:29, 29.58s/it]subject 2, VR, tmax 1.0
+ 50%|#####     | 1/2 [00:37&lt;00:37, 37.55s/it]subject 2, VR, tmax 1.0
 subject 2, PC, tmax 1.0
 
-100%|##########| 2/2 [01:00&lt;00:00, 30.27s/it]
-100%|##########| 2/2 [01:00&lt;00:00, 30.17s/it]
+100%|##########| 2/2 [01:15&lt;00:00, 38.06s/it]
+100%|##########| 2/2 [01:15&lt;00:00, 37.98s/it]
 </pre></div>
 </div>
 </section>
@@ -764,8 +767,8 @@ plot the mean AUC as a function of the epoch length.</p>
 &lt;Axes: title={&#39;center&#39;: &#39;Mean AUC as a function of the epoch length&#39;}, xlabel=&#39;tmax&#39;&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 7 minutes  35.897 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  9 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 6 minutes  53.058 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  11 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-vr-pc-p300-different-epoch-size-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/ba7a8abb4b7b531ea676fc51a8a8d86f/plot_vr_pc_p300_different_epoch_size.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_vr_pc_p300_different_epoch_size.py</span></code></a></p>

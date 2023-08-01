@@ -381,7 +381,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking multiple pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
+
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
@@ -390,7 +391,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../plot_benchmark.html">Benchmarking with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
+
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
@@ -664,16 +666,16 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.89s/it]No hdf5_path provided, models will not be saved.
+Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.37s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou 2016-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.00s/it]
-Zhou 2016-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.14s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    8.3s finished
+Zhou 2016-WithinSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.58s/it]
+Zhou 2016-WithinSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.70s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    9.4s finished
 
 001-2014-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 No hdf5_path provided, models will not be saved.
@@ -681,20 +683,20 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-001-2014-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.40s/it]No hdf5_path provided, models will not be saved.
+001-2014-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.78s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-001-2014-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.35s/it]
-001-2014-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.36s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    8.7s finished
+001-2014-WithinSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.62s/it]
+001-2014-WithinSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.64s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    9.3s finished
       score      time  samples  ... n_sessions    dataset  pipeline
-0  0.867143  0.032836    144.0  ...          2   001-2014     ts+lr
-1  0.871156  0.031787    144.0  ...          2   001-2014     ts+lr
-2  0.517959  0.033123    144.0  ...          2   001-2014     ts+lr
-3  0.583129  0.031925    144.0  ...          2   001-2014     ts+lr
-4  0.841414  0.038860    119.0  ...          3  Zhou 2016     ts+lr
+0  0.867143  0.051178    144.0  ...          2   001-2014     ts+lr
+1  0.871156  0.046602    144.0  ...          2   001-2014     ts+lr
+2  0.517959  0.044573    144.0  ...          2   001-2014     ts+lr
+3  0.583129  0.042750    144.0  ...          2   001-2014     ts+lr
+4  0.841414  0.040679    119.0  ...          3  Zhou 2016     ts+lr
 
 [5 rows x 9 columns]
 </pre></div>
@@ -725,16 +727,16 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.43s/it]No hdf5_path provided, models will not be saved.
+Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.79s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou 2016-WithinSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.82s/it]
-Zhou 2016-WithinSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.91s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    7.8s finished
+Zhou 2016-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.28s/it]
+Zhou 2016-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.35s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    8.7s finished
 
 001-2014-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 No hdf5_path provided, models will not be saved.
@@ -742,20 +744,20 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-001-2014-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.34s/it]No hdf5_path provided, models will not be saved.
+001-2014-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.64s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-001-2014-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.35s/it]
-001-2014-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.35s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    8.7s finished
+001-2014-WithinSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.56s/it]
+001-2014-WithinSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.58s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    9.2s finished
       score      time  samples  ... n_sessions    dataset  pipeline
-0  0.856599  0.034076    144.0  ...          2   001-2014     ts+lr
-1  0.843061  0.033166    144.0  ...          2   001-2014     ts+lr
-2  0.524762  0.033955    144.0  ...          2   001-2014     ts+lr
-3  0.509048  0.032261    144.0  ...          2   001-2014     ts+lr
-4  0.871212  0.038422    119.0  ...          3  Zhou 2016     ts+lr
+0  0.856599  0.051154    144.0  ...          2   001-2014     ts+lr
+1  0.843061  0.043173    144.0  ...          2   001-2014     ts+lr
+2  0.524762  0.052494    144.0  ...          2   001-2014     ts+lr
+3  0.509048  0.041689    144.0  ...          2   001-2014     ts+lr
+4  0.871212  0.037728    119.0  ...          3  Zhou 2016     ts+lr
 
 [5 rows x 9 columns]
 </pre></div>
@@ -769,8 +771,8 @@ regression computed in the tangent space of the covariance matrices.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  41.953 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  358 MB</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  45.573 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  240 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/83c876b60654b8a0b9ebaf6714ef3607/plot_select_electrodes_resample.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_select_electrodes_resample.py</span></code></a></p>

@@ -421,39 +421,39 @@ document.write(`
                   
   <section id="module-moabb.pipelines">
 <span id="pipelines"></span><h1>Pipelines<a class="headerlink" href="#module-moabb.pipelines" title="Permalink to this heading">#</a></h1>
-<p>Pipeline defines all steps required by an algorithm to obtain predictions.
-Pipelines are typically a chain of sklearn compatible transformers and end
-with a sklearn compatible estimator.</p>
+<p>Pipeline defines all steps required by an algorithm to obtain predictions.</p>
+<p>Pipelines are typically a chain of sklearn compatible transformers and
+end with a sklearn compatible estimator.</p>
 <section id="id1">
 <h2>Pipelines<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.features.LogVariance.html#moabb.pipelines.features.LogVariance" title="moabb.pipelines.features.LogVariance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">features.LogVariance</span></code></a>()</p></td>
-<td><p>LogVariance transformer</p></td>
+<td><p>LogVariance transformer.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.features.FM.html#moabb.pipelines.features.FM" title="moabb.pipelines.features.FM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">features.FM</span></code></a>([freq])</p></td>
-<td><p>Transformer to scale sampling frequency</p></td>
+<td><p>Transformer to scale sampling frequency.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.features.ExtendedSSVEPSignal.html#moabb.pipelines.features.ExtendedSSVEPSignal" title="moabb.pipelines.features.ExtendedSSVEPSignal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">features.ExtendedSSVEPSignal</span></code></a>()</p></td>
-<td><p>Prepare FilterBank SSVEP EEG signal for estimating extended covariances</p></td>
+<td><p>Prepare FilterBank SSVEP EEG signal for estimating extended covariances.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.features.AugmentedDataset.html#moabb.pipelines.features.AugmentedDataset" title="moabb.pipelines.features.AugmentedDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">features.AugmentedDataset</span></code></a>([order, lag])</p></td>
-<td><p>This transformation allow to create an embedding version of the current dataset.</p></td>
+<td><p>Dataset augmentation methods in a higher dimensional space.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.features.StandardScaler_Epoch.html#moabb.pipelines.features.StandardScaler_Epoch" title="moabb.pipelines.features.StandardScaler_Epoch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">features.StandardScaler_Epoch</span></code></a>()</p></td>
-<td><p>Function to standardize the X raw data for the DeepLearning Method</p></td>
+<td><p>Function to standardize the X raw data for the DeepLearning Method.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.csp.TRCSP.html#moabb.pipelines.csp.TRCSP" title="moabb.pipelines.csp.TRCSP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">csp.TRCSP</span></code></a>([nfilter, metric, log, alpha])</p></td>
-<td><p>Weighted Tikhonov-regularized CSP as described in Lotte and Guan 2011</p></td>
+<td><p>Weighted Tikhonov-regularized CSP as described in Lotte and Guan 2011.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.classification.SSVEP_CCA.html#moabb.pipelines.classification.SSVEP_CCA" title="moabb.pipelines.classification.SSVEP_CCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">classification.SSVEP_CCA</span></code></a>(interval, freqs[, ...])</p></td>
-<td><p>Classifier based on Canonical Correlation Analysis for SSVEP</p></td>
+<td><p>Classifier based on Canonical Correlation Analysis for SSVEP.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.classification.SSVEP_TRCA.html#moabb.pipelines.classification.SSVEP_TRCA" title="moabb.pipelines.classification.SSVEP_TRCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">classification.SSVEP_TRCA</span></code></a>(interval, freqs[, ...])</p></td>
 <td><p>Classifier based on the Task-Related Component Analysis method <a href="#id11"><span class="problematic" id="id2">[1]_</span></a> for SSVEP.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.classification.SSVEP_MsetCCA.html#moabb.pipelines.classification.SSVEP_MsetCCA" title="moabb.pipelines.classification.SSVEP_MsetCCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">classification.SSVEP_MsetCCA</span></code></a>(freqs[, ...])</p></td>
-<td><p>Classifier based on MsetCCA for SSVEP</p></td>
+<td><p>Classifier based on MsetCCA for SSVEP.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasDeepConvNet.html#moabb.pipelines.deep_learning.KerasDeepConvNet" title="moabb.pipelines.deep_learning.KerasDeepConvNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deep_learning.KerasDeepConvNet</span></code></a>(loss[, ...])</p></td>
 <td><p>Keras implementation of the Deep Convolutional Network as described in <a class="reference internal" href="generated/moabb.pipelines.deep_learning.KerasDeepConvNet.html#r679315cfbef6-1" id="id3"><span>[R679315cfbef6-1]</span></a>.</p></td>
@@ -496,7 +496,7 @@ with a sklearn compatible estimator.</p>
 <td><p>Temporal Convolutional Network (TCN), TCN_block from <a class="reference internal" href="generated/moabb.pipelines.utils_deep_model.TCN_block.html#r2eea69aed7b6-1" id="id10"><span>[R2eea69aed7b6-1]</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils_pytorch.BraindecodeDatasetLoader</span></code></a>([...])</p></td>
-<td><p>Class to Load the data from MOABB in a format compatible with braindecode</p></td>
+<td><p>Class to Load the data from MOABB in a format compatible with braindecode.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.pipelines.utils_pytorch.InputShapeSetterEEG.html#moabb.pipelines.utils_pytorch.InputShapeSetterEEG" title="moabb.pipelines.utils_pytorch.InputShapeSetterEEG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils_pytorch.InputShapeSetterEEG</span></code></a>([...])</p></td>
 <td><p>Sets the input dimension of the PyTorch module to the input dimension of the training data.</p></td>

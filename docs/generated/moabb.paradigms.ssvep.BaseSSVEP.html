@@ -431,8 +431,8 @@ document.write(`
 <h1>moabb.paradigms.ssvep.BaseSSVEP<a class="headerlink" href="#moabb-paradigms-ssvep-basessvep" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.paradigms.ssvep.BaseSSVEP">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.ssvep.</span></span><span class="sig-name descname"><span class="pre">BaseSSVEP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">((7,</span> <span class="pre">45),)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/ssvep.py#L13-L151"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.ssvep.BaseSSVEP" title="Permalink to this definition">#</a></dt>
-<dd><p>Base SSVEP Paradigm</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.ssvep.</span></span><span class="sig-name descname"><span class="pre">BaseSSVEP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">((7,</span> <span class="pre">45),)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/ssvep.py#L13-L172"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.ssvep.BaseSSVEP" title="Permalink to this definition">#</a></dt>
+<dd><p>Base SSVEP Paradigm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -462,53 +462,39 @@ the dataset.</p></li>
 <dl class="py property">
 <dt class="sig sig-object py" id="moabb.paradigms.ssvep.BaseSSVEP.datasets">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">datasets</span></span><a class="headerlink" href="#moabb.paradigms.ssvep.BaseSSVEP.datasets" title="Permalink to this definition">#</a></dt>
-<dd><p>Property that define the list of compatible datasets</p>
+<dd><p>List of datasets valid for the paradigm.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.paradigms.ssvep.BaseSSVEP.is_valid">
-<span class="sig-name descname"><span class="pre">is_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/ssvep.py#L87-L97"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.ssvep.BaseSSVEP.is_valid" title="Permalink to this definition">#</a></dt>
-<dd><p>Verify the dataset is compatible with the paradigm.</p>
-<p>This method is called to verify dataset is compatible with the
-paradigm.</p>
-<p>This method should raise an error if the dataset is not compatible
-with the paradigm. This is for example the case if the
-dataset is an ERP dataset for motor imagery paradigm, or if the
-dataset does not contain any of the required events.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataset</strong> (<em>dataset instance</em>) – The dataset to verify.</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">is_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/ssvep.py#L89-L100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.ssvep.BaseSSVEP.is_valid" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if dataset is valid for the SSVEP paradigm.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.paradigms.ssvep.BaseSSVEP.prepare_process">
-<span class="sig-name descname"><span class="pre">prepare_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/ssvep.py#L121-L130"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.ssvep.BaseSSVEP.prepare_process" title="Permalink to this definition">#</a></dt>
-<dd><p>Prepare processing of raw files</p>
-<blockquote>
-<div><p>This function allows to set parameter of the paradigm class prior to
-the preprocessing (process_raw). Does nothing by default and could be
-overloaded if needed.</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>dataset</strong><span class="classifier">dataset instance</span></dt><dd><p>The dataset corresponding to the raw file. mainly use to access
-dataset specific i</p>
-</dd>
-<dt><strong>nformation.</strong></dt><dd></dd>
-</dl>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">prepare_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/ssvep.py#L125-L144"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.ssvep.BaseSSVEP.prepare_process" title="Permalink to this definition">#</a></dt>
+<dd><p>Prepare dataset for processing, and using events if needed.</p>
+<p>This function is called before the processing function, and is used to
+prepare the dataset for processing. This includes:
+get the events used for the paradigm, and set the filters if needed.
+:param dataset: Dataset to prepare.
+:type dataset: moabb.datasets.base.BaseDataset</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="moabb.paradigms.ssvep.BaseSSVEP.scoring">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scoring</span></span><a class="headerlink" href="#moabb.paradigms.ssvep.BaseSSVEP.scoring" title="Permalink to this definition">#</a></dt>
-<dd><p>Property that defines scoring metric (e.g. ROC-AUC or accuracy
-or f-score), given as a sklearn-compatible string or a compatible
-sklearn scorer.</p>
+<dd><p>Return the default scoring method for this paradigm.</p>
+<p>If n_classes use the roc_auc, else use accuracy. More details
+about this default scoring method can be found in the original
+moabb paper.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.paradigms.ssvep.BaseSSVEP.used_events">
+<span class="sig-name descname"><span class="pre">used_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/ssvep.py#L102-L123"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.ssvep.BaseSSVEP.used_events" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the mne events used for the dataset.</p>
 </dd></dl>
 
 </dd></dl>
@@ -567,6 +553,7 @@ sklearn scorer.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.paradigms.ssvep.BaseSSVEP.is_valid"><code class="docutils literal notranslate"><span class="pre">BaseSSVEP.is_valid()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.paradigms.ssvep.BaseSSVEP.prepare_process"><code class="docutils literal notranslate"><span class="pre">BaseSSVEP.prepare_process()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.paradigms.ssvep.BaseSSVEP.scoring"><code class="docutils literal notranslate"><span class="pre">BaseSSVEP.scoring</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.paradigms.ssvep.BaseSSVEP.used_events"><code class="docutils literal notranslate"><span class="pre">BaseSSVEP.used_events()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures" href="plot_benchmark_braindecode.html" />
-    <link rel="prev" title="Benchmarking with MOABB" href="plot_benchmark.html" />
+    <link rel="prev" title="Examples of how to use MOABB to benchmark pipelines." href="plot_benchmark.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -381,7 +381,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking multiple pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
+
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
@@ -390,7 +391,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Benchmarking with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
+
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
@@ -677,32 +679,32 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>001-2014-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-/home/runner/work/moabb/moabb/moabb/datasets/download.py:55: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_BNCI_PATH&quot;
+/home/runner/work/moabb/moabb/moabb/datasets/download.py:54: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_BNCI_PATH&quot;
   set_config(key, get_config(&quot;MNE_DATA&quot;))
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
-/home/runner/work/moabb/moabb/moabb/paradigms/base.py:292: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
+/home/runner/work/moabb/moabb/moabb/paradigms/base.py:291: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
   X = mne.concatenate_epochs(X)
 
-001-2014-WithinSession:  50%|#####     | 1/2 [09:39&lt;09:39, 579.04s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+001-2014-WithinSession:  50%|#####     | 1/2 [10:46&lt;10:46, 646.45s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
-/home/runner/work/moabb/moabb/moabb/paradigms/base.py:292: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
+/home/runner/work/moabb/moabb/moabb/paradigms/base.py:291: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
   X = mne.concatenate_epochs(X)
 
-001-2014-WithinSession: 100%|##########| 2/2 [19:40&lt;00:00, 592.38s/it]
-001-2014-WithinSession: 100%|##########| 2/2 [19:40&lt;00:00, 590.38s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed: 19.7min finished
+001-2014-WithinSession: 100%|##########| 2/2 [21:43&lt;00:00, 652.89s/it]
+001-2014-WithinSession: 100%|##########| 2/2 [21:43&lt;00:00, 651.92s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed: 21.7min finished
     dataset     evaluation              pipeline  avg score
 0  001-2014  WithinSession  Keras_ShallowConvNet   0.627772
-1  001-2014  WithinSession      Keras_EEGNet_8_2   0.507160
-2  001-2014  WithinSession        Keras_EEGTCNet   0.490714
+1  001-2014  WithinSession      Keras_EEGNet_8_2   0.506922
+2  001-2014  WithinSession        Keras_EEGTCNet   0.490238
 3  001-2014  WithinSession          Keras_EEGNeX   0.560935
-4  001-2014  WithinSession        Keras_EEGITNet   0.548010
-5  001-2014  WithinSession     Keras_DeepConvNet   0.493401
+4  001-2014  WithinSession        Keras_EEGITNet   0.548469
+5  001-2014  WithinSession     Keras_DeepConvNet   0.513333
 </pre></div>
 </div>
 <p>The deep learning architectures implemented in MOABB are:
@@ -761,8 +763,8 @@ classification</a>.
 IEEE Access, 10, 36672-36685.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 19 minutes  42.854 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  913 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 21 minutes  45.310 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  928 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-dl-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/14eea0f23180ed6c51f0ac41b2f0162e/plot_benchmark_DL.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark_DL.py</span></code></a></p>
@@ -792,7 +794,7 @@ IEEE Access, 10, 36672-36685.</p>
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Benchmarking with MOABB</p>
+        <p class="prev-next-title">Examples of how to use MOABB to benchmark pipelines.</p>
       </div>
     </a>
     <a class="right-next"

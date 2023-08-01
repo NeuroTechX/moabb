@@ -432,7 +432,7 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.VirtualReality">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">VirtualReality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">virtual_reality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">screen_display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L813-L934"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.VirtualReality" title="Permalink to this definition">#</a></dt>
-<dd><p>Dataset of an EEG-based BCI experiment in Virtual Reality using P300</p>
+<dd><p>Dataset of an EEG-based BCI experiment in Virtual Reality using P300.</p>
 <p>We describe the experimental procedures for a dataset that we have made publicly
 available at <a class="reference external" href="https://doi.org/10.5281/zenodo.2605204">https://doi.org/10.5281/zenodo.2605204</a> in mat (Mathworks, Natick, USA)
 and csv formats <a class="reference internal" href="#r71832756315b-1" id="id1">[1]</a>. This dataset contains electroencephalographic recordings on 21
@@ -507,8 +507,8 @@ list of length one, for compatibility.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.VirtualReality.get_block_repetition">
 <span class="sig-name descname"><span class="pre">get_block_repetition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetition_list</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L888-L934"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.VirtualReality.get_block_repetition" title="Permalink to this definition">#</a></dt>
-<dd><p>Select data for all provided subjects, blocks and repetitions.
-Each subject has 12 blocks of 5 repetitions.</p>
+<dd><p>Select data for all provided subjects, blocks and repetitions. Each
+subject has 12 blocks of 5 repetitions.</p>
 <p>The returned data is a dictionary with the following structure:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;subject_id&#39;</span> <span class="p">:</span>
             <span class="p">{</span><span class="s1">&#39;session_id&#39;</span><span class="p">:</span>
@@ -542,9 +542,9 @@ Each subject has 12 blocks of 5 repetitions.</p>
 
 <section id="examples-using-moabb-datasets-virtualreality">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.VirtualReality</span></code><a class="headerlink" href="#examples-using-moabb-datasets-virtualreality" title="Permalink to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to extract the epochs from the P300-VR dataset of a given subject and th..."><img alt="Changing epoch size in P300 VR dataset" src="../_images/sphx_glr_plot_vr_pc_p300_different_epoch_size_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/plot_vr_pc_p300_different_epoch_size.html#sphx-glr-auto-examples-plot-vr-pc-p300-different-epoch-size-py"><span class="std std-ref">Changing epoch size in P300 VR dataset</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Changing epoch size in P300 VR dataset</div>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="======================================= Changing epoch size in P300 VR dataset ================..."><img alt="Example of P300 classification with different epoch size." src="../_images/sphx_glr_plot_vr_pc_p300_different_epoch_size_thumb.png" />
+<p><a class="reference external" href="https://neurotechx.github.io/moabb/auto_examples/plot_vr_pc_p300_different_epoch_size.html#sphx-glr-auto-examples-plot-vr-pc-p300-different-epoch-size-py" title="(in moabb v0.5.0)"><span>Changing epoch size in P300 VR dataset</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Example of P300 classification with different epoch size.</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="Tutorial 5: Creating a dataset class"><img alt="Tutorial 5: Creating a dataset class" src="../_images/sphx_glr_tutorial_5_build_a_custom_dataset_thumb.png" />
 <p><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html#sphx-glr-auto-tutorials-tutorial-5-build-a-custom-dataset-py"><span class="std std-ref">Tutorial 5: Creating a dataset class</span></a></p>
   <div class="sphx-glr-thumbnail-title">Tutorial 5: Creating a dataset class</div>

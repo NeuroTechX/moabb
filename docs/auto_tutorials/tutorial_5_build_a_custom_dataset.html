@@ -381,7 +381,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking multiple pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
+
 <li class="toctree-l2"><a class="reference internal" href="tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Tutorial 5: Creating a dataset class</a></li>
 </ul>
@@ -390,7 +391,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark.html">Benchmarking with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
+
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
@@ -718,26 +720,26 @@ The CompoundDataset can be used as a <cite>normal</cite> dataset.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>D3-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 No hdf5_path provided, models will not be saved.
 
-D3-WithinSession:  25%|##5       | 1/4 [00:04&lt;00:14,  4.89s/it]No hdf5_path provided, models will not be saved.
+D3-WithinSession:  25%|##5       | 1/4 [00:05&lt;00:17,  5.70s/it]No hdf5_path provided, models will not be saved.
 
-D3-WithinSession:  50%|#####     | 2/4 [00:09&lt;00:09,  4.63s/it]No hdf5_path provided, models will not be saved.
+D3-WithinSession:  50%|#####     | 2/4 [00:10&lt;00:10,  5.39s/it]No hdf5_path provided, models will not be saved.
 
-D3-WithinSession:  75%|#######5  | 3/4 [04:25&lt;01:59, 119.37s/it]No hdf5_path provided, models will not be saved.
+D3-WithinSession:  75%|#######5  | 3/4 [03:40&lt;01:38, 98.42s/it]No hdf5_path provided, models will not be saved.
 
-D3-WithinSession: 100%|##########| 4/4 [11:30&lt;00:00, 240.13s/it]
-D3-WithinSession: 100%|##########| 4/4 [11:30&lt;00:00, 172.62s/it]
-[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed: 11.5min finished
+D3-WithinSession: 100%|##########| 4/4 [09:30&lt;00:00, 197.93s/it]
+D3-WithinSession: 100%|##########| 4/4 [09:30&lt;00:00, 142.62s/it]
+[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:  9.5min finished
       score       time  samples subject  ... channels  n_sessions  dataset pipeline
-0  0.640000   0.729775    120.0       1  ...       16           1       D3      MDM
-1  0.625000   0.697121    120.0       2  ...       16           1       D3      MDM
-2  0.640700   4.504416    768.0       3  ...       16           1       D3      MDM
-3  0.543309  10.571774   1356.0       4  ...       16           1       D3      MDM
+0  0.640000   0.856939    120.0       1  ...       16           1       D3      MDM
+1  0.625000   0.831126    120.0       2  ...       16           1       D3      MDM
+2  0.640700   5.365748    768.0       3  ...       16           1       D3      MDM
+3  0.543309  11.971770   1356.0       4  ...       16           1       D3      MDM
 
 [4 rows x 9 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 11 minutes  32.087 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  309 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 9 minutes  32.751 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  147 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-5-build-a-custom-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/2181ec70a2dfda567ab84f474c444b13/tutorial_5_build_a_custom_dataset.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_5_build_a_custom_dataset.py</span></code></a></p>

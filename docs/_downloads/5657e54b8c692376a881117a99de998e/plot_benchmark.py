@@ -1,4 +1,4 @@
-"""
+"""Examples of how to use MOABB to benchmark pipelines.
 =======================
 Benchmarking with MOABB
 =======================
