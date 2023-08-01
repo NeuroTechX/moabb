@@ -1,3 +1,4 @@
+"""Util functions for moabb."""
 import logging
 import os
 import os.path as osp
@@ -9,8 +10,8 @@ from mne import set_log_level as sll
 
 
 def _set_random_seed(seed: int) -> None:
-    """
-    Set the seed for Python's built-in random module and numpy.
+    """Set the seed for Python's built-in random module and numpy.
+
     Parameters
     ----------
     seed: int
@@ -24,8 +25,8 @@ def _set_random_seed(seed: int) -> None:
 
 
 def _set_tensorflow_seed(seed: int) -> None:
-    """
-    Set the seed for TensorFlow.
+    """Set the seed for TensorFlow.
+
     Parameters
     ----------
     seed: int
@@ -53,8 +54,8 @@ def _set_tensorflow_seed(seed: int) -> None:
 
 
 def _set_torch_seed(seed: int) -> None:
-    """
-    Set the seed for PyTorch.
+    """Set the seed for PyTorch.
+
     Parameters
     ----------
     seed: int
@@ -80,8 +81,8 @@ def _set_torch_seed(seed: int) -> None:
 
 
 def setup_seed(seed: int) -> None:
-    """
-    Set the seed for random, numpy, TensorFlow and PyTorch.
+    """Set the seed for random, numpy, TensorFlow and PyTorch.
+
     Parameters
     ----------
     seed: int
@@ -102,11 +103,10 @@ def setup_seed(seed: int) -> None:
 
 
 def set_log_level(level="INFO"):
-    """Set log level
+    """Set log level.
 
-    Set the general log level.
-    Use one of the levels supported by python logging, i.e.:
-    DEBUG, INFO, WARNING, ERROR, CRITICAL
+    Set the general log level. Use one of the levels supported by python
+    logging, i.e.: DEBUG, INFO, WARNING, ERROR, CRITICAL
     """
     VALID_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
     level = level.upper()
@@ -120,7 +120,7 @@ def set_log_level(level="INFO"):
 
 
 def set_download_dir(path):
-    """Set the download directory if required to change from default mne path
+    """Set the download directory if required to change from default mne path.
 
     Parameters
     ----------
@@ -129,7 +129,6 @@ def set_download_dir(path):
     path is created
     If None, and MNE_DATA config does not exist, a warning is raised and the
     storage location is set to the MNE default directory
-
     """
     if path is None:
         if get_config("MNE_DATA") is None:

@@ -31,7 +31,7 @@ moabb.set_log_level("info")
 # ----------------
 #
 # The CSP implementation from MNE is used. We selected 8 CSP components, as
-# usually done in the litterature.
+# usually done in the literature.
 #
 # The second pipeline is the filter bank CSP. We use the FilterBank object
 # with a CSP estimator. We set up the CSP to 4 components, to compensate for
@@ -87,7 +87,6 @@ results_fb = evaluation.process(pipelines_fb)
 # After processing the two, we simply concatenate the results.
 
 results = pd.concat([results, results_fb])
-
 
 ##############################################################################
 # Plot Results

@@ -1,6 +1,4 @@
-"""
-Tests to ensure that datasets download correctly
-"""
+"""Tests to ensure that datasets download correctly."""
 import unittest
 
 import mne

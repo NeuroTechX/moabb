@@ -1,6 +1,4 @@
-"""
-BNCI 2014-001 Motor imagery dataset.
-"""
+"""BNCI 2014-001 Motor imagery dataset."""
 
 import numpy as np
 from mne import create_info
@@ -68,7 +66,7 @@ def load_data(
         List of raw instances for each non consecutive recording. Depending
         on the dataset it could be a BCI run or a different recording session.
     event_id: dict
-        dictonary containing events and their code.
+        dictionary containing events and their code.
     """
     dataset_list = {
         "001-2014": _load_data_001_2014,
@@ -365,7 +363,7 @@ def _load_data_003_2015(
         # flash events on the channel 9
         flashs = run[9:10]
         ix_flash = flashs[0] > 0
-        flashs[0, ix_flash] += 2  # add 2 to avoid overlapp on event id
+        flashs[0, ix_flash] += 2  # add 2 to avoid overlap on event id
         flash_code = np.unique(flashs[0, ix_flash])
 
         if len(flash_code) == 36:
@@ -546,10 +544,21 @@ def _load_data_013_2015(
 
 
 def _convert_mi(filename, ch_names, ch_types):
-    """
-    Processes (Graz) motor imagery data from MAT files, returns list of
-    recording runs.
-    """
+    """Process (Graz) motor imagery data from MAT files.
+
+    Parameters
+    ----------
+    filename : str
+        Path to the MAT file.
+    ch_names : list of str
+        List of channel names.
+    ch_types : list of str
+        List of channel types.
+
+    Returns
+    -------
+    raw : instance of RawArray
+        returns list of recording runs."""
     runs = []
     event_id = {}
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
@@ -717,10 +726,10 @@ def _convert_run_epfl(run, verbose=None):
 
 
 class MNEBNCI(BaseDataset):
-    """Base BNCI dataset"""
+    """Base BNCI dataset."""
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         sessions = load_data(subject=subject, dataset=self.code, verbose=False)
         return sessions
 
@@ -783,7 +792,6 @@ class BNCI2014001(MNEBNCI):
 
     References
     ----------
-
     .. [1] Tangermann, M., Müller, K.R., Aertsen, A., Birbaumer, N., Braun, C.,
            Brunner, C., Leeb, R., Mehring, C., Miller, K.J., Mueller-Putz, G.
            and Nolte, G., 2012. Review of the BCI competition IV.
@@ -845,12 +853,10 @@ class BNCI2014002(MNEBNCI):
 
     References
     -----------
-
     .. [1] Steyrl, D., Scherer, R., Faller, J. and Müller-Putz, G.R., 2016.
            Random forests in non-invasive sensorimotor rhythm brain-computer
            interfaces: a practical and convenient non-linear classifier.
-           Biomedical Engineering/Biomedizinische Technik, 61(1), pp.77-86.
-
+           Biomedical Engineering/Biomedizinische Technique, 61(1), pp.77-86.
     """
 
     def __init__(self):
@@ -933,7 +939,6 @@ class BNCI2014004(MNEBNCI):
            G. Pfurtscheller. Brain-computer communication: motivation, aim,
            and impact of exploring a virtual apartment. IEEE Transactions on
            Neural Systems and Rehabilitation Engineering 15, 473–482, 2007
-
     """
 
     def __init__(self):
@@ -949,7 +954,7 @@ class BNCI2014004(MNEBNCI):
 
 
 class BNCI2014008(MNEBNCI):
-    """BNCI 2014-008 P300 dataset
+    """BNCI 2014-008 P300 dataset.
 
     .. admonition:: Dataset summary
 
@@ -966,7 +971,7 @@ class BNCI2014008(MNEBNCI):
 
     This dataset represents a complete record of P300 evoked potentials
     using a paradigm originally described by Farwell and Donchin [2]_.
-    In these sessions, 8 users with amyotrophic lateral sclerosis (ALS)
+    In these sessions, 8 users with amyotrophic lateral sclerosis (ALSO)
     focused on one out of 36 different characters. The objective in this
     contest is to predict the correct character in each of the provided
     character selection epochs.
@@ -1004,7 +1009,6 @@ class BNCI2014008(MNEBNCI):
            toward a mental prosthesis utilizing eventrelated
            brain potentials, Electroencephalogr. Clin. Neurophysiol.,
            vol. 70, n. 6, pagg. 510–523, 1988.
-
     """
 
     def __init__(self):
@@ -1037,7 +1041,7 @@ class BNCI2014009(MNEBNCI):
 
     This dataset presents a complete record of P300 evoked potentials
     using two different paradigms: a paradigm based on the P300 Speller in
-    overt attention condition and a paradigm based used in covert attention
+    overt attention condition and a paradigm based used in convert attention
     condition. In these sessions, 10 healthy subjects focused on one out of 36
     different characters. The objective was to predict the correct character
     in each of the provided character selection epochs.
@@ -1062,12 +1066,10 @@ class BNCI2014009(MNEBNCI):
 
     References
     ----------
-
     .. [1] P Aricò, F Aloise, F Schettini, S Salinari, D Mattia and F Cincotti
            (2013). Influence of P300 latency jitter on event related potential-
            based brain–computer interface performance. Journal of Neural
            Engineering, vol. 11, number 3.
-
     """
 
     def __init__(self):
@@ -1110,7 +1112,7 @@ class BNCI2015001(MNEBNCI):
 
     The task for the user was to perform sustained right hand versus both feet
     movement imagery starting from the cue (second 3) to the end of the cross
-    period (sec- ond 8).  A trial started with 3 s of reference period,
+    period (sec- and 8).  A trial started with 3 s of reference period,
     followed by a brisk audible cue and a visual cue (arrow right for right
     hand, arrow down for both feet) from second 3 to 4.25.
     The activity period, where the users received feedback, lasted from
@@ -1118,12 +1120,10 @@ class BNCI2015001(MNEBNCI):
 
     References
     ----------
-
     .. [1] J. Faller, C. Vidaurre, T. Solis-Escalante, C. Neuper and R.
            Scherer (2012). Autocalibration and recurrent adaptation: Towards a
            plug and play online ERD- BCI.  IEEE Transactions on Neural Systems
            and Rehabilitation Engineering, 20(3), 313-319.
-
     """
 
     def __init__(self):
@@ -1163,12 +1163,10 @@ class BNCI2015003(MNEBNCI):
 
     References
     ----------
-
     .. [1]  C. Guger, S. Daban, E. Sellers, C. Holzner, G. Krausz,
             R. Carabalona, F. Gramatica, and G. Edlinger (2009). How many
             people are able to control a P300-based brain-computer interface
             (BCI)?. Neuroscience Letters, vol. 462, pp. 94–98.
-
     """
 
     def __init__(self):
@@ -1238,12 +1236,10 @@ class BNCI2015004(MNEBNCI):
 
     References
     ----------
-
     .. [1] Scherer R, Faller J, Friedrich EVC, Opisso E, Costa U, Kübler A, et
            al. (2015) Individually Adapted Imagery Improves Brain-Computer
            Interface Performance in End-Users with Disability. PLoS ONE 10(5).
            https://doi.org/10.1371/journal.pone.0123727
-
     """
 
     def __init__(self):

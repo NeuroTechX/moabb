@@ -1,7 +1,8 @@
-"""
-=============================
+""" Example of P300 classification with different epoch size.
+
+=======================================
 Changing epoch size in P300 VR dataset
-=============================
+=======================================
 
 This example shows how to extract the epochs from the P300-VR dataset of a given
 subject and then classify them using Riemannian Geometry framework for BCI.
@@ -112,7 +113,7 @@ for tmax in [0.2, 1.0]:
                     paradigm, [subject], blocks[test_idx], repetitions
                 )
 
-                # We use riemannian geometry processing technics with MDM algorithm.
+                # We use riemannian geometry processing techniques with MDM algorithm.
                 pipe = make_pipeline(ERPCovariances(estimator="lwf"), MDM())
                 pipe.fit(X_train, y_train)
                 y_pred = pipe.predict(X_test)
