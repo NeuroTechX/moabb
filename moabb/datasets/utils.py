@@ -21,7 +21,7 @@ _init_dataset_list()
 
 
 def dataset_search(  # noqa: C901
-    paradigm,
+    paradigm=None,
     multi_session=False,
     events=None,
     has_all_events=False,
@@ -34,8 +34,8 @@ def dataset_search(  # noqa: C901
 
     Parameters
     ----------
-    paradigm: str
-        'imagery', 'p300', 'ssvep'
+    paradigm: str | None
+        'imagery', 'p300', 'ssvep', None
 
     multi_session: bool
         if True only returns datasets with more than one session per subject.
@@ -66,7 +66,7 @@ def dataset_search(  # noqa: C901
         n_classes = len(events)
     else:
         n_classes = None
-    assert paradigm in ["imagery", "p300", "ssvep"]
+    assert paradigm in ["imagery", "p300", "ssvep", None]
 
     for type_d in dataset_list:
         d = type_d()
@@ -77,7 +77,7 @@ def dataset_search(  # noqa: C901
         if len(d.subject_list) < min_subjects:
             continue
 
-        if paradigm != d.paradigm:
+        if paradigm is not None and paradigm != d.paradigm:
             continue
 
         if interval is not None and d.interval[1] - d.interval[0] < interval:
