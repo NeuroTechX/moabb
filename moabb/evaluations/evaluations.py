@@ -146,13 +146,15 @@ class WithinSessionEvaluation(BaseEvaluation):
         # Load result if the folder exists
         # Checking if grid search have the spd classifier, if have
         # we change for MDM
-        if grid_clf.estimator.__class__.__name__ == "SPDNet":
-            grid_clf.estimator = MDM()
 
         if param_grid is not None and not os.path.isdir(name_grid):
             if name in param_grid:
+                alter_grid = deepcopy(grid_clf)
+                if alter_grid.estimator.__class__.__name__ == "SPDNet":
+                    alter_grid.estimator = MDM()
+
                 search = GridSearchCV(
-                    grid_clf,
+                    alter_grid,
                     param_grid[name],
                     refit=True,
                     cv=cv,
@@ -497,13 +499,14 @@ class CrossSessionEvaluation(BaseEvaluation):
     """
 
     def _grid_search(self, param_grid, name_grid, name, grid_clf, X, y, cv, groups):
-        if grid_clf.estimator.__class__.__name__ == "SPDNet":
-            grid_clf.estimator = MDM()
-
         if param_grid is not None and not os.path.isdir(name_grid):
             if name in param_grid:
+                alter_grid = deepcopy(grid_clf)
+                if alter_grid.estimator.__class__.__name__ == "SPDNet":
+                    alter_grid.estimator = MDM()
+
                 search = GridSearchCV(
-                    grid_clf,
+                    alter_grid,
                     param_grid[name],
                     refit=True,
                     cv=cv,
