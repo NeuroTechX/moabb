@@ -394,11 +394,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_braindecode.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_cross_session_motor_imagery.html">Cross-Session Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_explore_paradigm.html">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_within_session_p300.html">Within Session P300</a></li>
@@ -450,6 +453,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.HeadMountedDisplay.html">moabb.datasets.HeadMountedDisplay</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.fake.FakeVirtualRealityDataset.html">moabb.datasets.fake.FakeVirtualRealityDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.download.data_path.html">moabb.datasets.download.data_path</a></li>
@@ -479,12 +483,16 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.P300.html">moabb.paradigms.P300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.SSVEP.html">moabb.paradigms.SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.FilterBankSSVEP.html">moabb.paradigms.FilterBankSSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.FixedIntervalWindowsProcessing.html">moabb.paradigms.FixedIntervalWindowsProcessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.FilterBankFixedIntervalWindowsProcessing.html">moabb.paradigms.FilterBankFixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.motor_imagery.BaseMotorImagery.html">moabb.paradigms.motor_imagery.BaseMotorImagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.motor_imagery.SinglePass.html">moabb.paradigms.motor_imagery.SinglePass</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.motor_imagery.FilterBank.html">moabb.paradigms.motor_imagery.FilterBank</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.p300.BaseP300.html">moabb.paradigms.p300.BaseP300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.ssvep.BaseSSVEP.html">moabb.paradigms.ssvep.BaseSSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.BaseFixedIntervalWindowsProcessing.html">moabb.paradigms.BaseFixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.base.BaseParadigm.html">moabb.paradigms.base.BaseParadigm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.base.BaseProcessing.html">moabb.paradigms.base.BaseProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.pipelines.features.LogVariance.html">moabb.pipelines.features.LogVariance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.pipelines.features.FM.html">moabb.pipelines.features.FM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.pipelines.features.ExtendedSSVEPSignal.html">moabb.pipelines.features.ExtendedSSVEPSignal</a></li>
@@ -656,16 +664,16 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.64s/it]No hdf5_path provided, models will not be saved.
+Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.89s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou 2016-WithinSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.06s/it]
-Zhou 2016-WithinSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.14s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    6.3s finished
+Zhou 2016-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.00s/it]
+Zhou 2016-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.14s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    8.3s finished
 
 001-2014-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 No hdf5_path provided, models will not be saved.
@@ -673,20 +681,20 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-001-2014-WithinSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.31s/it]No hdf5_path provided, models will not be saved.
+001-2014-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.40s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-001-2014-WithinSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.27s/it]
-001-2014-WithinSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.28s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    6.6s finished
+001-2014-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.35s/it]
+001-2014-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.36s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    8.7s finished
       score      time  samples  ... n_sessions    dataset  pipeline
-0  0.867143  0.027553    144.0  ...          2   001-2014     ts+lr
-1  0.871156  0.021735    144.0  ...          2   001-2014     ts+lr
-2  0.517959  0.024198    144.0  ...          2   001-2014     ts+lr
-3  0.583129  0.022893    144.0  ...          2   001-2014     ts+lr
-4  0.841414  0.027086    119.0  ...          3  Zhou 2016     ts+lr
+0  0.867143  0.032836    144.0  ...          2   001-2014     ts+lr
+1  0.871156  0.031787    144.0  ...          2   001-2014     ts+lr
+2  0.517959  0.033123    144.0  ...          2   001-2014     ts+lr
+3  0.583129  0.031925    144.0  ...          2   001-2014     ts+lr
+4  0.841414  0.038860    119.0  ...          3  Zhou 2016     ts+lr
 
 [5 rows x 9 columns]
 </pre></div>
@@ -717,16 +725,16 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.45s/it]No hdf5_path provided, models will not be saved.
+Zhou 2016-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.43s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou 2016-WithinSession: 100%|##########| 2/2 [00:06&lt;00:00,  2.97s/it]
-Zhou 2016-WithinSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.05s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    6.1s finished
+Zhou 2016-WithinSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.82s/it]
+Zhou 2016-WithinSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.91s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    7.8s finished
 
 001-2014-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 No hdf5_path provided, models will not be saved.
@@ -734,20 +742,20 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-001-2014-WithinSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.27s/it]No hdf5_path provided, models will not be saved.
+001-2014-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.34s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-001-2014-WithinSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.26s/it]
-001-2014-WithinSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.26s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    6.5s finished
+001-2014-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.35s/it]
+001-2014-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.35s/it]
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:    8.7s finished
       score      time  samples  ... n_sessions    dataset  pipeline
-0  0.856599  0.023730    144.0  ...          2   001-2014     ts+lr
-1  0.843061  0.022645    144.0  ...          2   001-2014     ts+lr
-2  0.524762  0.024460    144.0  ...          2   001-2014     ts+lr
-3  0.509048  0.022929    144.0  ...          2   001-2014     ts+lr
-4  0.871212  0.026826    119.0  ...          3  Zhou 2016     ts+lr
+0  0.856599  0.034076    144.0  ...          2   001-2014     ts+lr
+1  0.843061  0.033166    144.0  ...          2   001-2014     ts+lr
+2  0.524762  0.033955    144.0  ...          2   001-2014     ts+lr
+3  0.509048  0.032261    144.0  ...          2   001-2014     ts+lr
+4  0.871212  0.038422    119.0  ...          3  Zhou 2016     ts+lr
 
 [5 rows x 9 columns]
 </pre></div>
@@ -761,8 +769,8 @@ regression computed in the tangent space of the covariance matrices.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  32.482 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  327 MB</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  41.953 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  358 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/83c876b60654b8a0b9ebaf6714ef3607/plot_select_electrodes_resample.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_select_electrodes_resample.py</span></code></a></p>

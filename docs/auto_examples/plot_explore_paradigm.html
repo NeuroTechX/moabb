@@ -58,8 +58,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_explore_paradigm';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Spectral analysis of the trials" href="plot_phmd_ml_spectrum.html" />
-    <link rel="prev" title="Cross-Subject SSVEP" href="plot_cross_subject_ssvep.html" />
+    <link rel="next" title="Fixed interval windows processing" href="plot_fixed_interval_windows.html" />
+    <link rel="prev" title="Cache on disk intermediate data processing states" href="plot_disk_cache.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -394,11 +394,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_braindecode.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_motor_imagery.html">Cross-Session Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
@@ -450,6 +453,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.HeadMountedDisplay.html">moabb.datasets.HeadMountedDisplay</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.fake.FakeVirtualRealityDataset.html">moabb.datasets.fake.FakeVirtualRealityDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.data_path.html">moabb.datasets.download.data_path</a></li>
@@ -479,12 +483,16 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.P300.html">moabb.paradigms.P300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.SSVEP.html">moabb.paradigms.SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FilterBankSSVEP.html">moabb.paradigms.FilterBankSSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FixedIntervalWindowsProcessing.html">moabb.paradigms.FixedIntervalWindowsProcessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FilterBankFixedIntervalWindowsProcessing.html">moabb.paradigms.FilterBankFixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.motor_imagery.BaseMotorImagery.html">moabb.paradigms.motor_imagery.BaseMotorImagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.motor_imagery.SinglePass.html">moabb.paradigms.motor_imagery.SinglePass</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.motor_imagery.FilterBank.html">moabb.paradigms.motor_imagery.FilterBank</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.p300.BaseP300.html">moabb.paradigms.p300.BaseP300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.ssvep.BaseSSVEP.html">moabb.paradigms.ssvep.BaseSSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.BaseFixedIntervalWindowsProcessing.html">moabb.paradigms.BaseFixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.base.BaseParadigm.html">moabb.paradigms.base.BaseParadigm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.base.BaseProcessing.html">moabb.paradigms.base.BaseProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.LogVariance.html">moabb.pipelines.features.LogVariance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.FM.html">moabb.pipelines.features.FM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.ExtendedSSVEPSignal.html">moabb.pipelines.features.ExtendedSSVEPSignal</a></li>
@@ -702,6 +710,8 @@ return_epochs: boolean
 return_raws: boolean
     To return raw files and events, to ensure compatibility with braindecode.
     Mutually exclusive with return_epochs
+cache_config: dict | CacheConfig
+    Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
 
 returns
 -------
@@ -788,7 +798,7 @@ it will return the list all the imagery datasets from the MOABB.</p>
 <span class="nb">print</span><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">code</span></a> <span class="k">for</span> <a href="../generated/moabb.datasets.BNCI2014001.html#moabb.datasets.BNCI2014001" title="moabb.datasets.BNCI2014001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">compatible_datasets</span></a><span class="p">])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;Alexandre Motor Imagery&#39;, &#39;001-2014&#39;, &#39;002-2014&#39;, &#39;004-2014&#39;, &#39;001-2015&#39;, &#39;004-2015&#39;, &#39;Cho2017&#39;, &#39;FakeDataset&#39;, &#39;Lee2019_MI&#39;, &#39;Grosse-Wentrup 2009&#39;, &#39;Ofner2017&#39;, &#39;Physionet Motor Imagery&#39;, &#39;Schirrmeister2017&#39;, &#39;Shin2017A&#39;, &#39;Weibo 2014&#39;, &#39;Zhou 2016&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;Alexandre Motor Imagery&#39;, &#39;001-2014&#39;, &#39;002-2014&#39;, &#39;004-2014&#39;, &#39;001-2015&#39;, &#39;004-2015&#39;, &#39;Cho2017&#39;, &#39;FakeDataset_imagery_10_2_2__fake_c1_fake_c2_fake_c3__C3_Cz_C4&#39;, &#39;Lee2019_MI&#39;, &#39;Grosse-Wentrup 2009&#39;, &#39;Ofner2017&#39;, &#39;Physionet Motor Imagery&#39;, &#39;Schirrmeister2017&#39;, &#39;Shin2017A&#39;, &#39;Weibo 2014&#39;, &#39;Zhou 2016&#39;]
 </pre></div>
 </div>
 </section>
@@ -861,8 +871,8 @@ corresponding to left- and right-hand motor imagination.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;left_hand&#39; &#39;right_hand&#39;]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  21.686 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  804 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  37.068 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  616 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-explore-paradigm-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9b872d163c45f60eb451b1869667203a/plot_explore_paradigm.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_explore_paradigm.py</span></code></a></p>
@@ -887,20 +897,20 @@ corresponding to left- and right-hand motor imagination.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="plot_cross_subject_ssvep.html"
+       href="plot_disk_cache.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Cross-Subject SSVEP</p>
+        <p class="prev-next-title">Cache on disk intermediate data processing states</p>
       </div>
     </a>
     <a class="right-next"
-       href="plot_phmd_ml_spectrum.html"
+       href="plot_fixed_interval_windows.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Spectral analysis of the trials</p>
+        <p class="prev-next-title">Fixed interval windows processing</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

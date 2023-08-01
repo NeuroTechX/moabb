@@ -58,7 +58,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_benchmark_grid_search';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Cross-session motor imagery with deep learning EEGNet v4 model" href="plot_braindecode.html" />
+    <link rel="next" title="Convert a MOABB dataset to BIDS" href="plot_bids_conversion.html" />
     <link rel="prev" title="Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures" href="plot_benchmark_braindecode.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -394,11 +394,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_braindecode.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_motor_imagery.html">Cross-Session Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
@@ -450,6 +453,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.HeadMountedDisplay.html">moabb.datasets.HeadMountedDisplay</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.fake.FakeVirtualRealityDataset.html">moabb.datasets.fake.FakeVirtualRealityDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.download.data_path.html">moabb.datasets.download.data_path</a></li>
@@ -479,12 +483,16 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.P300.html">moabb.paradigms.P300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.SSVEP.html">moabb.paradigms.SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FilterBankSSVEP.html">moabb.paradigms.FilterBankSSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FixedIntervalWindowsProcessing.html">moabb.paradigms.FixedIntervalWindowsProcessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FilterBankFixedIntervalWindowsProcessing.html">moabb.paradigms.FilterBankFixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.motor_imagery.BaseMotorImagery.html">moabb.paradigms.motor_imagery.BaseMotorImagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.motor_imagery.SinglePass.html">moabb.paradigms.motor_imagery.SinglePass</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.motor_imagery.FilterBank.html">moabb.paradigms.motor_imagery.FilterBank</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.p300.BaseP300.html">moabb.paradigms.p300.BaseP300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.ssvep.BaseSSVEP.html">moabb.paradigms.ssvep.BaseSSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.BaseFixedIntervalWindowsProcessing.html">moabb.paradigms.BaseFixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.base.BaseParadigm.html">moabb.paradigms.base.BaseParadigm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.base.BaseProcessing.html">moabb.paradigms.base.BaseProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.LogVariance.html">moabb.pipelines.features.LogVariance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.FM.html">moabb.pipelines.features.FM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.pipelines.features.ExtendedSSVEPSignal.html">moabb.pipelines.features.ExtendedSSVEPSignal</a></li>
@@ -664,7 +672,7 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 
-Zhou 2016-WithinSession:  25%|##5       | 1/4 [00:24&lt;01:13, 24.62s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou 2016-WithinSession:  25%|##5       | 1/4 [00:32&lt;01:37, 32.39s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -685,7 +693,7 @@ Zhou 2016-WithinSession:  25%|##5       | 1/4 [00:24&lt;01:13, 24.62s/it]/home/r
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 
-Zhou 2016-WithinSession:  50%|#####     | 2/4 [00:50&lt;00:51, 25.54s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou 2016-WithinSession:  50%|#####     | 2/4 [01:07&lt;01:07, 33.94s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -702,7 +710,7 @@ Zhou 2016-WithinSession:  50%|#####     | 2/4 [00:50&lt;00:51, 25.54s/it]/home/r
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 
-Zhou 2016-WithinSession:  75%|#######5  | 3/4 [01:18&lt;00:26, 26.41s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou 2016-WithinSession:  75%|#######5  | 3/4 [01:36&lt;00:31, 31.72s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -719,9 +727,9 @@ Zhou 2016-WithinSession:  75%|#######5  | 3/4 [01:18&lt;00:26, 26.41s/it]/home/r
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 
-Zhou 2016-WithinSession: 100%|##########| 4/4 [01:40&lt;00:00, 24.68s/it]
-Zhou 2016-WithinSession: 100%|##########| 4/4 [01:40&lt;00:00, 25.07s/it]
-[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:  1.7min finished
+Zhou 2016-WithinSession: 100%|##########| 4/4 [02:06&lt;00:00, 31.02s/it]
+Zhou 2016-WithinSession: 100%|##########| 4/4 [02:06&lt;00:00, 31.61s/it]
+[Parallel(n_jobs=1)]: Done   4 out of   4 | elapsed:  2.1min finished
      dataset     evaluation   pipeline  avg score
 0  Zhou 2016  WithinSession  CSP + LDA   0.944031
 1  Zhou 2016  WithinSession    EN Grid   0.948688
@@ -739,8 +747,8 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
   sea.stripplot(
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  41.599 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  154 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  8.143 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  114 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-grid-search-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/b129d24bc810ae3a961d5bdcb7413828/plot_benchmark_grid_search.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark_grid_search.py</span></code></a></p>
@@ -774,11 +782,11 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
       </div>
     </a>
     <a class="right-next"
-       href="plot_braindecode.html"
+       href="plot_bids_conversion.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Cross-session motor imagery with deep learning EEGNet v4 model</p>
+        <p class="prev-next-title">Convert a MOABB dataset to BIDS</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

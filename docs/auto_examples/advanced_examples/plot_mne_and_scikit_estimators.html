@@ -394,11 +394,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_braindecode.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_cross_session_motor_imagery.html">Cross-Session Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_explore_paradigm.html">Explore Paradigm Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_within_session_p300.html">Within Session P300</a></li>
@@ -450,6 +453,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.HeadMountedDisplay.html">moabb.datasets.HeadMountedDisplay</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.fake.FakeVirtualRealityDataset.html">moabb.datasets.fake.FakeVirtualRealityDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.download.data_path.html">moabb.datasets.download.data_path</a></li>
@@ -479,12 +483,16 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.P300.html">moabb.paradigms.P300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.SSVEP.html">moabb.paradigms.SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.FilterBankSSVEP.html">moabb.paradigms.FilterBankSSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.FixedIntervalWindowsProcessing.html">moabb.paradigms.FixedIntervalWindowsProcessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.FilterBankFixedIntervalWindowsProcessing.html">moabb.paradigms.FilterBankFixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.motor_imagery.BaseMotorImagery.html">moabb.paradigms.motor_imagery.BaseMotorImagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.motor_imagery.SinglePass.html">moabb.paradigms.motor_imagery.SinglePass</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.motor_imagery.FilterBank.html">moabb.paradigms.motor_imagery.FilterBank</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.p300.BaseP300.html">moabb.paradigms.p300.BaseP300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.ssvep.BaseSSVEP.html">moabb.paradigms.ssvep.BaseSSVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.BaseFixedIntervalWindowsProcessing.html">moabb.paradigms.BaseFixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.base.BaseParadigm.html">moabb.paradigms.base.BaseParadigm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.base.BaseProcessing.html">moabb.paradigms.base.BaseProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.pipelines.features.LogVariance.html">moabb.pipelines.features.LogVariance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.pipelines.features.FM.html">moabb.pipelines.features.FM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.pipelines.features.ExtendedSSVEPSignal.html">moabb.pipelines.features.ExtendedSSVEPSignal</a></li>
@@ -709,7 +717,7 @@ ROC-AUC metric.</p>
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:   15.2s finished
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:   29.2s finished
 </pre></div>
 </div>
 </section>
@@ -742,7 +750,7 @@ then apply a logistic regression.</p>
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:   12.7s finished
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:   15.6s finished
 </pre></div>
 </div>
 </section>
@@ -770,7 +778,7 @@ on the tangent space and classified with a logistic regression.</p>
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:   19.1s finished
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:   27.0s finished
 </pre></div>
 </div>
 </section>
@@ -797,8 +805,8 @@ differences between pipelines.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  51.478 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  299 MB</p>
+<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  18.020 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  197 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3bb6d35e266c94de44c44ec75aa9d550/plot_mne_and_scikit_estimators.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_mne_and_scikit_estimators.py</span></code></a></p>

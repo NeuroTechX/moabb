@@ -580,12 +580,15 @@ on datasets (electrodes, number of trials, sessions, etc.)</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">base.BaseDataset</span></code></a>(subjects, ...[, doi, ...])</p></td>
-<td><p>Parameters required for all datasets</p></td>
+<td><p>Abstract Moabb BaseDataset.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.fake.FakeDataset.html#moabb.datasets.fake.FakeDataset" title="moabb.datasets.fake.FakeDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fake.FakeDataset</span></code></a>([event_list, n_sessions, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.base.CacheConfig.html#moabb.datasets.base.CacheConfig" title="moabb.datasets.base.CacheConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">base.CacheConfig</span></code></a>([save_raw, save_epochs, ...])</p></td>
+<td><p>Configuration for caching of datasets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.fake.FakeDataset.html#moabb.datasets.fake.FakeDataset" title="moabb.datasets.fake.FakeDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fake.FakeDataset</span></code></a>([event_list, n_sessions, ...])</p></td>
 <td><p>Fake Dataset for test purpose.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.fake.FakeVirtualRealityDataset.html#moabb.datasets.fake.FakeVirtualRealityDataset" title="moabb.datasets.fake.FakeVirtualRealityDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fake.FakeVirtualRealityDataset</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.fake.FakeVirtualRealityDataset.html#moabb.datasets.fake.FakeVirtualRealityDataset" title="moabb.datasets.fake.FakeVirtualRealityDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fake.FakeVirtualRealityDataset</span></code></a>()</p></td>
 <td><p>Fake VirtualReality dataset for test purpose.</p></td>
 </tr>
 </tbody>
@@ -613,7 +616,7 @@ on datasets (electrodes, number of trials, sessions, etc.)</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.download.fs_get_file_name.html#moabb.datasets.download.fs_get_file_name" title="moabb.datasets.download.fs_get_file_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download.fs_get_file_name</span></code></a>(filelist)</p></td>
 <td><p>Returns a dict associating figshare file id to filename</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.utils.dataset_search.html#moabb.datasets.utils.dataset_search" title="moabb.datasets.utils.dataset_search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.dataset_search</span></code></a>(paradigm[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.utils.dataset_search.html#moabb.datasets.utils.dataset_search" title="moabb.datasets.utils.dataset_search"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.dataset_search</span></code></a>([paradigm, ...])</p></td>
 <td><p>Returns a list of datasets that match a given criteria</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.utils.find_intersecting_channels.html#moabb.datasets.utils.find_intersecting_channels" title="moabb.datasets.utils.find_intersecting_channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.find_intersecting_channels</span></code></a>(datasets[, ...])</p></td>
