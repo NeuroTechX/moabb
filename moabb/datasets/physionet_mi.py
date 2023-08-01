@@ -140,7 +140,7 @@ class PhysionetMI(BaseDataset):
         # feet runs
         for run in self.feet_runs:
             raw = self._load_one_run(subject, run)
-            # modify stim channels to match new event ids. for feets runs,
+            # modify stim channels to match new event ids. for feet runs,
             # hand = 2 modified to 4, and feet = 3, modified to 5
             stim = raw.annotations.description.astype(np.dtype("<U10"))
             stim[stim == "T0"] = "rest"

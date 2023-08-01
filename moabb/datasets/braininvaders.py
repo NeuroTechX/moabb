@@ -889,7 +889,7 @@ class VirtualReality(BaseDataset):
         """Select data for all provided subjects, blocks and repetitions.
         Each subject has 12 blocks of 5 repetitions.
 
-        The returned data is a dictionary with the folowing structure::
+        The returned data is a dictionary with the following structure::
 
             data = {'subject_id' :
                         {'session_id':

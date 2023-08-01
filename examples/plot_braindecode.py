@@ -37,7 +37,6 @@ cuda = torch.cuda.is_available()
 device = "cuda" if cuda else "cpu"
 print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 
-
 ###############################################################################
 # In this example, we will use only the dataset ``BNCI2014001``.
 #
@@ -62,7 +61,6 @@ setup_seed(seed)
 # Ensure that all operations are deterministic on GPU (if used) for reproducibility
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
-
 
 # Hyperparameter
 LEARNING_RATE = 0.0625 * 0.01  # parameter taken from Braindecode
@@ -130,7 +128,6 @@ clf = EEGClassifier(
 # Create the pipelines
 pipes = {}
 pipes["EEGNetV4"] = Pipeline([("Braindecode_dataset", create_dataset), ("Net", clf)])
-
 
 ##############################################################################
 # Evaluation
