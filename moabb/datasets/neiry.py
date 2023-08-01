@@ -12,7 +12,8 @@ from .base import BaseDataset
 
 
 class DemonsP300(BaseDataset):
-    """Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons versus Demons.
+    """Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons
+    versus Demons.
 
     .. admonition:: Dataset summary
 
@@ -118,7 +119,8 @@ class DemonsP300(BaseDataset):
 
     @staticmethod
     def _strip(session) -> tuple:
-        """Strips nans (from right side of all channels) added during hdf5 packaging
+        """Strips nans (from right side of all channels) added during hdf5
+        packaging.
 
         Returns:
             tuple ready to be converted to `_session_dtype`
@@ -131,7 +133,7 @@ class DemonsP300(BaseDataset):
 
     @classmethod
     def read_hdf(cls, filename) -> np.ndarray:
-        """Reads data from HDF file
+        """Reads data from HDF file.
 
         Returns:
             array of `_act_dtype`

@@ -1,7 +1,5 @@
-"""
-Deep learning integrated in MOABB
-Implementation using the tensorflow, keras and scikeras framework.
-"""
+"""Deep learning integrated in MOABB Implementation using the tensorflow, keras
+and scikeras framework."""
 
 # Authors: Igor Carrara <igor.carrara@inria.fr>
 #          Bruno Aristimunha <b.aristimunha@gmail.com>
@@ -42,18 +40,17 @@ from moabb.pipelines.utils_deep_model import EEGNet, EEGNet_TC, TCN_block
 # ShallowConvNet
 # =====================================================================================
 def square(x):
-    """
-    Function to square the input tensor element-wise.
+    """Function to square the input tensor element-wise.
+
     Element-wise square.
     """
     return K.square(x)
 
 
 def log(x):
-    """
-    Function to take the log of the input tensor element-wise.
-    We use a clip to avoid taking the log of 0.
-    min_value=1e-7, max_value=10000
+    """Function to take the log of the input tensor element-wise. We use a clip
+    to avoid taking the log of 0. min_value=1e-7, max_value=10000.
+
     Parameters
     ----------
     x: tensor
@@ -66,7 +63,8 @@ def log(x):
 
 
 class KerasShallowConvNet(KerasClassifier):
-    """Keras implementation of the Shallow Convolutional Network as described in [1]_.
+    """Keras implementation of the Shallow Convolutional Network as described
+    in [1]_.
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels
@@ -150,7 +148,8 @@ class KerasShallowConvNet(KerasClassifier):
 # DeepConvNet
 # =================================================================================
 class KerasDeepConvNet(KerasClassifier):
-    """Keras implementation of the Deep Convolutional Network as described in [1]_.
+    """Keras implementation of the Deep Convolutional Network as described in
+    [1]_.
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels

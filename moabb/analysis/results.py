@@ -56,7 +56,6 @@ class Results:
 
     Saves dataframe per pipeline and can query to see if particular
     subject has already been run
-
     """
 
     def __init__(
@@ -68,9 +67,7 @@ class Results:
         hdf5_path=None,
         additional_columns=None,
     ):
-        """
-        class that will abstract result storage
-        """
+        """Class that will abstract result storage."""
         from moabb.evaluations.base import BaseEvaluation
         from moabb.paradigms.base import BaseParadigm
 
@@ -112,7 +109,7 @@ class Results:
                 )
 
     def add(self, results, pipelines):  # noqa: C901
-        """add results"""
+        """Add results."""
 
         def to_list(res):
             if type(res) is dict:
@@ -231,9 +228,8 @@ class Results:
         return ret
 
     def _already_computed(self, pipeline, dataset, subject, session=None):
-        """Check if we have results for a current combination of pipeline
-        / dataset / subject.
-        """
+        """Check if we have results for a current combination of pipeline /
+        dataset / subject."""
         with h5py.File(self.filepath, "r") as f:
             # get the digest from repr
             digest = get_digest(pipeline)

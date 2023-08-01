@@ -33,7 +33,6 @@ def create_pipeline_from_config(config):
     -------
     pipeline : Pipeline
         sklearn Pipeline
-
     """
     components = []
 
@@ -73,9 +72,9 @@ def create_pipeline_from_config(config):
 
 
 def parse_pipelines_from_directory(dir_path):
-    """
-    Takes in the path to a directory with pipeline configuration files and returns a dictionary
-    of pipelines.
+    """Takes in the path to a directory with pipeline configuration files and
+    returns a dictionary of pipelines.
+
     Parameters
     ----------
     dir_path: str
@@ -136,10 +135,10 @@ def parse_pipelines_from_directory(dir_path):
 
 
 def generate_paradigms(pipeline_configs, context=None, logger=log):
-    """
-    Takes in a dictionary of pipelines configurations as returned by
-    parse_pipelines_from_directory and returns a dictionary of unique paradigms with all pipeline
-    configurations compatible with that paradigm.
+    """Takes in a dictionary of pipelines configurations as returned by
+    parse_pipelines_from_directory and returns a dictionary of unique paradigms
+    with all pipeline configurations compatible with that paradigm.
+
     Parameters
     ----------
     pipeline_configs:
@@ -154,7 +153,6 @@ def generate_paradigms(pipeline_configs, context=None, logger=log):
     paradigms: dict
         Dictionary of dictionaries with the unique paradigms and the configuration of the
         pipelines compatible with the paradigm
-
     """
     context = context or {}
     paradigms = OrderedDict()
@@ -260,8 +258,8 @@ class FilterBank(BaseEstimator, TransformerMixin):
 
 
 def filterbank(X, sfreq, idx_fb, peaks):
-    """
-    Filter bank design for decomposing EEG data into sub-band components [1]_
+    """Filter bank design for decomposing EEG data into sub-band components
+    [1]_
 
     Parameters
     ----------
