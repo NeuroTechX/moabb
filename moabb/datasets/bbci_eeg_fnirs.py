@@ -1,6 +1,4 @@
-"""
-BBCI EEG fNIRS Motor imagery dataset.
-"""
+"""BBCI EEG fNIRS Motor imagery dataset."""
 
 import os
 import os.path as op
@@ -121,7 +119,7 @@ class Shin2017(BaseDataset):
         self.fnirs = fnirs  # TODO: actually incorporate fNIRS somehow
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         fname, fname_mrk = self.data_path(subject)
         data = loadmat(fname, squeeze_me=True, struct_as_record=False)["cnt"]
         mrk = loadmat(fname_mrk, squeeze_me=True, struct_as_record=False)["mrk"]
@@ -183,7 +181,7 @@ class Shin2017(BaseDataset):
 
 
 class Shin2017A(Shin2017):
-    """Motor Imagey Dataset from Shin et al 2017
+    """Motor Imagey Dataset from Shin et al 2017.
 
     .. admonition:: Dataset summary
 
@@ -303,7 +301,7 @@ class Shin2017A(Shin2017):
 
 
 class Shin2017B(Shin2017):
-    """Mental Arithmetic Dataset from Shin et al 2017
+    """Mental Arithmetic Dataset from Shin et al 2017.
 
     .. admonition:: Dataset summary
 

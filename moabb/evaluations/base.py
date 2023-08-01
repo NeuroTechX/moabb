@@ -147,7 +147,6 @@ class BaseEvaluation(ABC):
         -------
         results: pd.DataFrame
             A dataframe containing the results.
-
         """
 
         # check pipelines
@@ -211,5 +210,4 @@ class BaseEvaluation(ABC):
         ----------
         dataset : dataset instance
             The dataset to verify.
-
         """

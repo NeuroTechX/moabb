@@ -12,8 +12,7 @@ HEADMOUNTED_URL = "https://zenodo.org/record/2617085/files/"
 
 
 class HeadMountedDisplay(BaseDataset):
-    """
-    Passive Head Mounted Display with Music Listening dataset.
+    """Passive Head Mounted Display with Music Listening dataset.
 
     .. admonition:: Dataset summary
 
@@ -58,8 +57,6 @@ class HeadMountedDisplay(BaseDataset):
     .. [1] G. Cattan, P. L. Coelho Rodrigues, and M. Congedo,
         ‘Passive Head-Mounted Display Music-Listening EEG dataset’,
         Gipsa-Lab ; IHMTEK, Research Report 2, Mar. 2019. doi: 10.5281/zenodo.2617084.
-
-
     """
 
     def __init__(self):
@@ -94,7 +91,7 @@ class HeadMountedDisplay(BaseDataset):
         self._chtypes = ["eeg"] * 16 + ["stim"]
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
 
         filepath = self.data_path(subject)[0]
         data = loadmat(os.path.join(filepath, os.listdir(filepath)[0]))

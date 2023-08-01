@@ -33,7 +33,6 @@ def analyze(results, out_path, name="analysis", plot=False):
     plot: whether to plot results
 
     Either path or results is necessary
-
     """
     # input checks #
     if not isinstance(out_path, str):

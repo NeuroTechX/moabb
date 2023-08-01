@@ -1,6 +1,4 @@
-"""
-SSVEP Wang dataset.
-"""
+"""SSVEP Wang dataset."""
 
 import logging
 
@@ -22,7 +20,7 @@ WANG_URL = "ftp://sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
 
 
 class Wang2016(BaseDataset):
-    """SSVEP Wang 2016 dataset
+    """SSVEP Wang 2016 dataset.
 
     .. admonition:: Dataset summary
 
@@ -120,7 +118,7 @@ class Wang2016(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject"""
+        """Return the data of a single subject."""
         n_samples, n_channels, n_trials = 1500, 64, 6
         n_classes = len(self.event_id)
 

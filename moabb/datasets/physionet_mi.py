@@ -1,6 +1,4 @@
-"""
-Physionet Motor imagery dataset.
-"""
+"""Physionet Motor imagery dataset."""
 
 import mne
 import numpy as np
@@ -120,7 +118,7 @@ class PhysionetMI(BaseDataset):
         return raw
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         data = {}
         sign = "EEGBCI"
         get_dataset_path(sign, None)

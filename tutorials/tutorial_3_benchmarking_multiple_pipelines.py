@@ -1,4 +1,4 @@
-"""
+""" Basic tutorial on how to use MOABB.
 ===========================================
 Tutorial 3: Benchmarking multiple pipelines
 ===========================================

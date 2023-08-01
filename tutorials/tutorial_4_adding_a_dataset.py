@@ -33,7 +33,7 @@ from moabb.paradigms import LeftRightImagery
 
 
 def create_example_dataset():
-    """Create a fake example for a dataset"""
+    """Create a fake example for a dataset."""
     sfreq = 256
     t_recording = 150
     t_trial = 1  # duration of a trial
@@ -96,10 +96,10 @@ ExampleDataset_URL = "https://sandbox.zenodo.org/record/369543/files/"
 
 
 class ExampleDataset(BaseDataset):
-    """
-    Dataset used to exemplify the creation of a dataset class in MOABB.
-    The data samples have been simulated and has no physiological meaning
-    whatsoever.
+    """Dataset used to exemplify the creation of a dataset class in MOABB.
+
+    The data samples have been simulated and has no physiological
+    meaning whatsoever.
     """
 
     def __init__(self):
@@ -114,7 +114,7 @@ class ExampleDataset(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         file_path_list = self.data_path(subject)
 
         data = loadmat(file_path_list[0])
@@ -133,7 +133,7 @@ class ExampleDataset(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Download the data from one subject"""
+        """Download the data from one subject."""
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 

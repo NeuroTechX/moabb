@@ -1,7 +1,8 @@
-"""
-=============================
+""" Example of P300 classification with different epoch size.
+
+=======================================
 Changing epoch size in P300 VR dataset
-=============================
+=======================================
 
 This example shows how to extract the epochs from the P300-VR dataset of a given
 subject and then classify them using Riemannian Geometry framework for BCI.
