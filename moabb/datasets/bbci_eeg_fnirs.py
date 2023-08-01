@@ -34,7 +34,7 @@ def eeg_data_path(base_path, subject, accept):
                     if not accept:
                         raise AttributeError(
                             "You must accept licence term to download this dataset,"
-                            "set accept=True when instanciating the dataset."
+                            "set accept=True when instantiating the dataset."
                         )
                     retrieve(
                         "{}/EEG/EEG_{:02d}-{:02d}.zip".format(SHIN_URL, low, high),
@@ -59,7 +59,7 @@ def fnirs_data_path(path, subject, accept):
             if not accept:
                 raise AttributeError(
                     "You must accept licence term to download this dataset,"
-                    "set accept=True when instanciating the dataset."
+                    "set accept=True when instantiating the dataset."
                 )
             retrieve(
                 "http://doc.ml.tu-berlin.de/hBCI/NIRS/NIRS_01-29.zip",

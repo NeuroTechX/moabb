@@ -1,9 +1,13 @@
+import shutil
+import tempfile
 import unittest
 
 import mne
 
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
+from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
+from moabb.datasets.utils import block_rep
 from moabb.paradigms import P300
 
 
@@ -55,10 +59,85 @@ class Test_Datasets(unittest.TestCase):
             self.assertEqual(len(data[1]["session_0"]), n_runs)
 
             # We should get a raw array at the end
-            self.assertEqual(type(data[1]["session_0"]["run_0"]), mne.io.RawArray)
+            self.assertIsInstance(data[1]["session_0"]["run_0"], mne.io.BaseRaw)
 
             # bad subject id must raise error
             self.assertRaises(ValueError, ds.get_data, [1000])
+
+    def test_cache_dataset(self):
+        tempdir = tempfile.mkdtemp()
+        for paradigm in ["imagery", "p300", "ssvep"]:
+            dataset = FakeDataset(paradigm=paradigm)
+            # Save cache:
+            with self.assertLogs(
+                logger="moabb.datasets.bids_interface", level="INFO"
+            ) as cm:
+                _ = dataset.get_data(
+                    subjects=[1],
+                    cache_config=dict(
+                        save_raw=True,
+                        use=True,
+                        overwrite_raw=False,
+                        path=tempdir,
+                    ),
+                )
+            print("\n".join(cm.output))
+            expected = [
+                "Attempting to retrieve cache .* datatype-eeg",  # empty pipeline
+                "No cache found at",
+                "Starting caching .* datatype-eeg",
+                "Finished caching .* datatype-eeg",
+            ]
+            self.assertEqual(len(expected), len(cm.output))
+            for i, regex in enumerate(expected):
+                self.assertRegex(cm.output[i], regex)
+
+            # Load cache:
+            with self.assertLogs(
+                logger="moabb.datasets.bids_interface", level="INFO"
+            ) as cm:
+                _ = dataset.get_data(
+                    subjects=[1],
+                    cache_config=dict(
+                        save_raw=True,
+                        use=True,
+                        overwrite_raw=False,
+                        path=tempdir,
+                    ),
+                )
+            print("\n".join(cm.output))
+            expected = [
+                "Attempting to retrieve cache .* datatype-eeg",
+                "Finished reading cache .* datatype-eeg",
+            ]
+            self.assertEqual(len(expected), len(cm.output))
+            for i, regex in enumerate(expected):
+                self.assertRegex(cm.output[i], regex)
+
+            # Overwrite cache:
+            with self.assertLogs(
+                logger="moabb.datasets.bids_interface", level="INFO"
+            ) as cm:
+                _ = dataset.get_data(
+                    subjects=[1],
+                    cache_config=dict(
+                        save_raw=True,
+                        use=True,
+                        overwrite_raw=True,
+                        path=tempdir,
+                    ),
+                )
+            print("\n".join(cm.output))
+            expected = [
+                "Starting erasing cache .* datatype-eeg",
+                "Finished erasing cache .* datatype-eeg",
+                "Starting caching .* datatype-eeg",
+                "Finished caching .* datatype-eeg",
+            ]
+            self.assertEqual(len(expected), len(cm.output))
+            for i, regex in enumerate(expected):
+                self.assertRegex(cm.output[i], regex)
+        shutil.rmtree(tempdir)
 
     def test_dataset_accept(self):
         """verify that accept licence is working"""
@@ -94,4 +173,100 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         repetition = 4
         _, _, ret = ds.get_block_repetition(P300(), [subject], [block], [repetition])
         assert ret.subject.unique()[0] == subject
-        assert ret.run.unique()[0] == f"block_{block}-repetition_{repetition}"
+        assert ret.run.unique()[0] == block_rep(block, repetition)
+
+
+class Test_CompoundDataset(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        self.paradigm = "p300"
+        self.n_sessions = 2
+        self.n_subjects = 2
+        self.n_runs = 2
+        self.ds = FakeDataset(
+            n_sessions=self.n_sessions,
+            n_runs=self.n_runs,
+            n_subjects=self.n_subjects,
+            event_list=["Target", "NonTarget"],
+            paradigm=self.paradigm,
+        )
+        super().__init__(*args, **kwargs)
+
+    def test_fake_dataset(self):
+        """this test will insure the basedataset works"""
+        param_list = [(None, None), ("session_0", "run_0"), (["session_0"], ["run_0"])]
+        for sessions, runs in param_list:
+            with self.subTest():
+                subjects_list = [(self.ds, 1, sessions, runs)]
+                compound_data = CompoundDataset(
+                    subjects_list,
+                    events=dict(Target=2, NonTarget=1),
+                    code="CompoundTest",
+                    interval=[0, 1],
+                    paradigm=self.paradigm,
+                )
+
+                data = compound_data.get_data()
+
+                # Check data type
+                self.assertTrue(isinstance(data, dict))
+                self.assertIsInstance(data[1]["session_0"]["run_0"], mne.io.BaseRaw)
+
+                # Check data size
+                self.assertEqual(len(data), 1)
+                expected_session_number = self.n_sessions if sessions is None else 1
+                self.assertEqual(len(data[1]), expected_session_number)
+                expected_runs_number = self.n_runs if runs is None else 1
+                self.assertEqual(len(data[1]["session_0"]), expected_runs_number)
+
+                # bad subject id must raise error
+                self.assertRaises(ValueError, compound_data.get_data, [1000])
+
+    def test_compound_dataset_composition(self):
+        # Test we can compound two instance of CompoundDataset into a new one.
+
+        # Create an instance of CompoundDataset with one subject
+        subjects_list = [(self.ds, 1, None, None)]
+        compound_dataset = CompoundDataset(
+            subjects_list,
+            events=dict(Target=2, NonTarget=1),
+            code="D1",
+            interval=[0, 1],
+            paradigm=self.paradigm,
+        )
+
+        # Add it two time to a subjects_list
+        subjects_list = [compound_dataset, compound_dataset]
+        compound_data = CompoundDataset(
+            subjects_list,
+            events=dict(Target=2, NonTarget=1),
+            code="CompoundTest",
+            interval=[0, 1],
+            paradigm=self.paradigm,
+        )
+
+        # Assert that the coumpouned dataset has two times more subject than the original one.
+        data = compound_data.get_data()
+        self.assertEqual(len(data), 2)
+
+    def test_get_sessions_per_subject(self):
+        # define a new fake dataset with two times more sessions:
+        self.ds2 = FakeDataset(
+            n_sessions=self.n_sessions * 2,
+            n_runs=self.n_runs,
+            n_subjects=self.n_subjects,
+            event_list=["Target", "NonTarget"],
+            paradigm=self.paradigm,
+        )
+
+        # Add the two datasets to a CompoundDataset
+        subjects_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
+        compound_dataset = CompoundDataset(
+            subjects_list,
+            events=dict(Target=2, NonTarget=1),
+            code="CompoundTest",
+            interval=[0, 1],
+            paradigm=self.paradigm,
+        )
+
+        # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
+        self.assertEqual(compound_dataset._get_sessions_per_subject(), self.n_sessions)

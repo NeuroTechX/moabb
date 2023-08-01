@@ -9,13 +9,19 @@ from moabb.datasets.base import BaseDataset
 
 
 dataset_list = []
-for ds in inspect.getmembers(db, inspect.isclass):
-    if issubclass(ds[1], BaseDataset):
-        dataset_list.append(ds[1])
+
+
+def _init_dataset_list():
+    for ds in inspect.getmembers(db, inspect.isclass):
+        if issubclass(ds[1], BaseDataset):
+            dataset_list.append(ds[1])
+
+
+_init_dataset_list()
 
 
 def dataset_search(  # noqa: C901
-    paradigm,
+    paradigm=None,
     multi_session=False,
     events=None,
     has_all_events=False,
@@ -28,8 +34,8 @@ def dataset_search(  # noqa: C901
 
     Parameters
     ----------
-    paradigm: str
-        'imagery', 'p300', 'ssvep'
+    paradigm: str | None
+        'imagery', 'p300', 'ssvep', None
 
     multi_session: bool
         if True only returns datasets with more than one session per subject.
@@ -51,13 +57,16 @@ def dataset_search(  # noqa: C901
     channels: list of str
         list or set of channels
     """
+    if len(dataset_list) == 0:
+        _init_dataset_list()
+
     channels = set(channels)
     out_data = []
     if events is not None and has_all_events:
         n_classes = len(events)
     else:
         n_classes = None
-    assert paradigm in ["imagery", "p300", "ssvep"]
+    assert paradigm in ["imagery", "p300", "ssvep", None]
 
     for type_d in dataset_list:
         d = type_d()
@@ -68,7 +77,7 @@ def dataset_search(  # noqa: C901
         if len(d.subject_list) < min_subjects:
             continue
 
-        if paradigm != d.paradigm:
+        if paradigm is not None and paradigm != d.paradigm:
             continue
 
         if interval is not None and d.interval[1] - d.interval[0] < interval:
@@ -150,3 +159,11 @@ def _download_all(update_path=True, verbose=None):
     for ds in dataset_list:
         # call download
         ds().download(update_path=True, verbose=verbose, accept=True)
+
+
+def block_rep(block: int, rep: int):
+    return f"block_{block}-repetition_{rep}"
+
+
+def blocks_reps(blocks: list, reps: list):
+    return [block_rep(b, r) for b in blocks for r in reps]

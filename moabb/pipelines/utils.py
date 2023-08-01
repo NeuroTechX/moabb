@@ -209,7 +209,7 @@ def generate_param_grid(pipeline_configs, context=None, logger=log):
 
 
 class FilterBank(BaseEstimator, TransformerMixin):
-    """Apply a given indentical pipeline over a bank of filter.
+    """Apply a given identical pipeline over a bank of filter.
 
     The pipeline provided with the constrictor will be appield on the 4th
     axis of the input data. This pipeline should be used with a FilterBank

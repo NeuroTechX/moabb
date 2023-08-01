@@ -95,6 +95,7 @@ Base & Utils
     :template: class.rst
 
     base.BaseDataset
+    base.CacheConfig
     fake.FakeDataset
     fake.FakeVirtualRealityDataset
 
@@ -112,3 +113,27 @@ Base & Utils
     download.fs_get_file_name
     utils.dataset_search
     utils.find_intersecting_channels
+
+
+====================
+Compound Datasets
+====================
+
+.. automodule:: moabb.datasets.compound_dataset
+
+.. currentmodule:: moabb.datasets.compound_dataset
+
+------------
+ERP Datasets
+------------
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    bi2014a_il
+    bi2014b_il
+    bi2015a_il
+    bi2015b_il
+    VirtualReality_il
+    biIlliteracy

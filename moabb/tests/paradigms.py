@@ -1,5 +1,8 @@
 import logging
+import shutil
+import tempfile
 import unittest
+from math import ceil
 
 import numpy as np
 from mne import BaseEpochs
@@ -12,9 +15,11 @@ from moabb.paradigms import (
     BaseMotorImagery,
     BaseP300,
     BaseSSVEP,
+    FilterBankFixedIntervalWindowsProcessing,
     FilterBankLeftRightImagery,
     FilterBankMotorImagery,
     FilterBankSSVEP,
+    FixedIntervalWindowsProcessing,
     LeftRightImagery,
     RestingStateToP300Adapter,
 )
@@ -94,16 +99,26 @@ class Test_MotorImagery(unittest.TestCase):
 
     def test_baseImagery_wrongevent(self):
         # test process_raw return empty list if raw does not contain any
-        # selected event. cetain runs in dataset are event specific.
+        # selected event. certain runs in dataset are event specific.
         paradigm = SimpleMotorImagery(filters=[[7, 12], [12, 24]])
         dataset = FakeDataset(paradigm="imagery")
-        raw = dataset.get_data([1])[1]["session_0"]["run_0"]
+        epochs_pipeline = paradigm._get_epochs_pipeline(
+            return_epochs=True, return_raws=False, dataset=dataset
+        )
+        # no stim channel after loading cache
+        raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1][
+            "session_0"
+        ]["run_0"]
+        raw.load_data()
+        self.assertEqual("stim", raw.ch_names[-1])
         # add something on the event channel
         raw._data[-1] *= 10
-        self.assertIsNone(paradigm.process_raw(raw, dataset))
+        with self.assertRaises(ValueError, msg="No events found"):
+            epochs_pipeline.transform(raw)
         # zeros it out
         raw._data[-1] *= 0
-        self.assertIsNone(paradigm.process_raw(raw, dataset))
+        with self.assertRaises(ValueError, msg="No events found"):
+            epochs_pipeline.transform(raw)
 
     def test_BaseImagery_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap
@@ -138,6 +153,132 @@ class Test_MotorImagery(unittest.TestCase):
         # does not work with multiple filters:
         self.assertTrue(metadata.equals(epochs.metadata))
 
+    def test_BaseImagery_cache(self):
+        tempdir = tempfile.mkdtemp()
+        dataset = FakeDataset(paradigm="imagery", n_sessions=1, n_runs=1)
+        paradigm = SimpleMotorImagery()
+        # We save the full cache (raws, epochs, arrays):
+        from moabb import set_log_level
+
+        set_log_level("INFO")
+        with self.assertLogs(logger="moabb.datasets.bids_interface", level="INFO") as cm:
+            _ = paradigm.get_data(
+                dataset,
+                subjects=[1],
+                cache_config=dict(
+                    use=True,
+                    path=tempdir,
+                    save_raw=True,
+                    save_epochs=True,
+                    save_array=True,
+                    overwrite_raw=False,
+                    overwrite_epochs=False,
+                    overwrite_array=False,
+                ),
+            )
+        print("\n".join(cm.output))
+        expected = [
+            "Attempting to retrieve cache .* datatype-array",
+            "No cache found at",
+            "Attempting to retrieve cache .* datatype-epo",
+            "No cache found at",
+            "Attempting to retrieve cache .* datatype-eeg",  # raw_pipeline
+            "No cache found at",
+            "Attempting to retrieve cache .* datatype-eeg",  # SetRawAnnotations pipeline
+            "No cache found at",
+            "Starting caching .* datatype-eeg",
+            "Finished caching .* datatype-eeg",
+            "Starting caching .* datatype-epo",
+            "Finished caching .* datatype-epo",
+            "Starting caching .* datatype-array",
+            "Finished caching .* datatype-array",
+        ]
+        self.assertEqual(len(expected), len(cm.output))
+        for i, regex in enumerate(expected):
+            self.assertRegex(cm.output[i], regex)
+
+        # Test loading the array cache:
+        with self.assertLogs(logger="moabb.datasets.bids_interface", level="INFO") as cm:
+            _ = paradigm.get_data(
+                dataset,
+                subjects=[1],
+                cache_config=dict(
+                    use=True,
+                    path=tempdir,
+                    save_raw=False,
+                    save_epochs=False,
+                    save_array=False,
+                    overwrite_raw=False,
+                    overwrite_epochs=False,
+                    overwrite_array=False,
+                ),
+            )
+        print("\n".join(cm.output))
+        expected = [
+            "Attempting to retrieve cache .* datatype-array",
+            "Finished reading cache .* datatype-array",
+        ]
+        self.assertEqual(len(expected), len(cm.output))
+        for i, regex in enumerate(expected):
+            self.assertRegex(cm.output[i], regex)
+
+        # Test loading the epochs cache:
+        with self.assertLogs(logger="moabb.datasets.bids_interface", level="INFO") as cm:
+            _ = paradigm.get_data(
+                dataset,
+                subjects=[1],
+                cache_config=dict(
+                    use=True,
+                    path=tempdir,
+                    save_raw=False,
+                    save_epochs=False,
+                    save_array=False,
+                    overwrite_raw=False,
+                    overwrite_epochs=False,
+                    overwrite_array=True,
+                ),
+            )
+        print("\n".join(cm.output))
+        expected = [
+            "Starting erasing cache .* datatype-array",
+            "Finished erasing cache .* datatype-array",
+            "Attempting to retrieve cache .* datatype-epo",
+            "Finished reading cache .* datatype-epo",
+        ]
+        self.assertEqual(len(expected), len(cm.output))
+        for i, regex in enumerate(expected):
+            self.assertRegex(cm.output[i], regex)
+
+        # Test loading the raw cache:
+        with self.assertLogs(logger="moabb.datasets.bids_interface", level="INFO") as cm:
+            _ = paradigm.get_data(
+                dataset,
+                subjects=[1],
+                cache_config=dict(
+                    use=True,
+                    path=tempdir,
+                    save_raw=False,
+                    save_epochs=False,
+                    save_array=False,
+                    overwrite_raw=False,
+                    overwrite_epochs=True,
+                    overwrite_array=False,
+                ),
+            )
+        print("\n".join(cm.output))
+        expected = [
+            "Attempting to retrieve cache .* datatype-array",
+            "No cache found at",
+            "Starting erasing cache .* datatype-epo",
+            "Finished erasing cache .* datatype-epo",
+            "Attempting to retrieve cache .* datatype-eeg",
+            "Finished reading cache .* datatype-eeg",
+        ]
+        self.assertEqual(len(expected), len(cm.output))
+        for i, regex in enumerate(expected):
+            self.assertRegex(cm.output[i], regex)
+        shutil.rmtree(tempdir)
+
     def test_LeftRightImagery_paradigm(self):
         # with a good dataset
         paradigm = LeftRightImagery()
@@ -151,7 +292,7 @@ class Test_MotorImagery(unittest.TestCase):
         self.assertIsInstance(epochs, BaseEpochs)
 
     def test_LeftRightImagery_noevent(self):
-        # we cant pass event to this class
+        # we can't pass event to this class
         self.assertRaises(ValueError, LeftRightImagery, events=["a"])
 
     def test_LeftRightImagery_badevents(self):
@@ -270,16 +411,26 @@ class Test_P300(unittest.TestCase):
 
     def test_BaseP300_wrongevent(self):
         # test process_raw return empty list if raw does not contain any
-        # selected event. cetain runs in dataset are event specific.
+        # selected event. certain runs in dataset are event specific.
         paradigm = SimpleP300(filters=[[1, 12], [12, 24]])
         dataset = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])
-        raw = dataset.get_data([1])[1]["session_0"]["run_0"]
+        epochs_pipeline = paradigm._get_epochs_pipeline(
+            return_epochs=True, return_raws=False, dataset=dataset
+        )
+        # no stim channel after loading cache
+        raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1][
+            "session_0"
+        ]["run_0"]
+        raw.load_data()
+        self.assertEqual("stim", raw.ch_names[-1])
         # add something on the event channel
         raw._data[-1] *= 10
-        self.assertIsNone(paradigm.process_raw(raw, dataset))
+        with self.assertRaises(ValueError, msg="No events found"):
+            epochs_pipeline.transform(raw)
         # zeros it out
         raw._data[-1] *= 0
-        self.assertIsNone(paradigm.process_raw(raw, dataset))
+        with self.assertRaises(ValueError, msg="No events found"):
+            epochs_pipeline.transform(raw)
 
     def test_BaseP300_droppedevent(self):
         dataset = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])
@@ -309,7 +460,7 @@ class Test_P300(unittest.TestCase):
         self.assertTrue(metadata.equals(epochs.metadata))
 
     def test_P300_specifyevent(self):
-        # we cant pass event to this class
+        # we can't pass event to this class
         self.assertRaises(ValueError, P300, events=["a"])
 
     def test_P300_wrongevent(self):
@@ -352,10 +503,18 @@ class Test_RestingState(unittest.TestCase):
         # we should have two sessions in the metadata
         self.assertEqual(len(np.unique(metadata.session)), 2)
         # should return epochs
-        epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
+        epochs, _, _ = paradigm.get_data(
+            dataset,
+            subjects=[1],
+            return_epochs=True,
+        )
         self.assertIsInstance(epochs, BaseEpochs)
         # should return raws
-        raws, _, _ = paradigm.get_data(dataset, subjects=[1], return_raws=True)
+        raws, _, _ = paradigm.get_data(
+            dataset,
+            subjects=[1],
+            return_raws=True,
+        )
         for raw in raws:
             self.assertIsInstance(raw, BaseRaw)
         # should raise error
@@ -572,3 +731,55 @@ class Test_SSVEP(unittest.TestCase):
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         self.assertIsInstance(epochs, BaseEpochs)
+
+
+class Test_FixedIntervalWindowsProcessing(unittest.TestCase):
+    def test_processing(self):
+        processings = [
+            FixedIntervalWindowsProcessing(length=0.51, stride=0.27, resample=99),
+            FilterBankFixedIntervalWindowsProcessing(
+                length=0.51, stride=0.27, resample=99, filters=[[8, 35]]
+            ),
+        ]
+        for processing in processings:
+            for paradigm_name in ["ssvep", "p300", "imagery"]:
+                dataset = FakeDataset(paradigm=paradigm_name, n_sessions=1, n_runs=1)
+                X, labels, metadata = processing.get_data(dataset, subjects=[1])
+
+                # Verify that they have the same length
+                self.assertEqual(len(X), len(labels), len(metadata))
+                # X must be a 3D array
+                self.assertEqual(len(X.shape), 3)
+                # labels must contain 3 values
+                self.assertTrue(all(label == "Window" for label in labels))
+                # metadata must have subjets, sessions, runs
+                self.assertTrue("subject" in metadata.columns)
+                self.assertTrue("session" in metadata.columns)
+                self.assertTrue("run" in metadata.columns)
+                # Only one subject in the metadata
+                self.assertEqual(np.unique(metadata.subject), 1)
+                self.assertEqual(len(np.unique(metadata.session)), 1)
+                # should return epochs
+                epochs, _, _ = processing.get_data(
+                    dataset, subjects=[1], return_epochs=True
+                )
+                self.assertIsInstance(epochs, BaseEpochs)
+                # should return raws
+                raws, _, _ = processing.get_data(dataset, subjects=[1], return_raws=True)
+                for raw in raws:
+                    self.assertIsInstance(raw, BaseRaw)
+                n_times = 60 * len(dataset.event_id) * 128  # 128 = dataset sfreq
+                n_epochs = ceil(
+                    (n_times - int(processing.length * 128))
+                    / int(processing.stride * 128)
+                )  # no start/stop offset
+                self.assertEqual(n_epochs, len(epochs))
+                # should raise error
+                self.assertRaises(
+                    ValueError,
+                    processing.get_data,
+                    dataset,
+                    subjects=[1],
+                    return_epochs=True,
+                    return_raws=True,
+                )

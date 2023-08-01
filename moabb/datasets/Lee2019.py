@@ -59,7 +59,7 @@ class Lee2019(BaseDataset):
             raise ValueError('unknown paradigm "{}"'.format(paradigm))
         for s in sessions:
             if s not in [1, 2]:
-                raise ValueError("inexistant session {}".format(s))
+                raise ValueError("inexistent session {}".format(s))
         self.sessions = sessions
 
         super().__init__(

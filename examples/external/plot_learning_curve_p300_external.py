@@ -5,8 +5,8 @@ Within Session P300 with Learning Curve
 
 This example shows how to perform a within session analysis while also
 creating learning curves for a P300 dataset.
-Additionally, we will evaluate external code. Make sure to have tdlda installed, which
-can be found in requirements_external.txt
+Additionally, we will evaluate external code. Make sure to have tdlda installed
+, which can be found in requirements_external.txt
 
 We will compare three pipelines :
 
@@ -41,7 +41,6 @@ from moabb.paradigms import P300
 # getting rid of the warnings about the future (on s'en fout !)
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
-
 
 moabb.set_log_level("info")
 
@@ -91,7 +90,6 @@ c = TimeDecoupledLda(N_channels=16, N_times=10)
 c.preproc = jmv
 pipelines["JM+TD-LDA"] = make_pipeline(jmv, c)
 
-
 ##############################################################################
 # Evaluation
 # ----------
@@ -107,7 +105,8 @@ dataset.subject_list = dataset.subject_list[0:1]
 datasets = [dataset]
 overwrite = True  # set to True if we want to overwrite cached results
 data_size = dict(policy="ratio", value=np.geomspace(0.02, 1, 6))
-# When the training data is sparse, peform more permutations than when we have a lot of data
+# When the training data is sparse, perform more permutations than when we have
+# a lot of data
 n_perms = np.floor(np.geomspace(20, 2, len(data_size["value"]))).astype(int)
 print(n_perms)
 # Guarantee reproducibility
@@ -120,7 +119,6 @@ evaluation = WithinSessionEvaluation(
     suffix="examples_lr",
     overwrite=overwrite,
 )
-
 
 results = evaluation.process(pipelines)
 
