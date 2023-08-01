@@ -46,7 +46,7 @@ def benchmark(  # noqa: C901
     include_datasets=None,
     exclude_datasets=None,
 ):
-    """Run benchmarks for selected pipelines and datasets
+    """Run benchmarks for selected pipelines and datasets.
 
     Load from saved pipeline configurations to determine associated paradigms. It is
     possible to include or exclude specific datasets and to choose the type of
@@ -220,7 +220,7 @@ def benchmark(  # noqa: C901
 
 
 def _display_results(results):
-    """Print results after computation"""
+    """Print results after computation."""
     tab = []
     for d in results["dataset"].unique():
         for p in results["pipeline"].unique():
@@ -247,7 +247,7 @@ def _display_results(results):
 
 
 def _combine_paradigms(prdgm_results):
-    """Combining FilterBank and direct paradigms
+    """Combining FilterBank and direct paradigms.
 
     Applied only on SSVEP for now.
 
@@ -273,7 +273,7 @@ def _combine_paradigms(prdgm_results):
 
 
 def _save_results(eval_results, output, plot):
-    """Save results in specified folder
+    """Save results in specified folder.
 
     Parameters
     ----------

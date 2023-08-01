@@ -19,17 +19,16 @@ class BaseParadigm(metaclass=ABCMeta):
     @property
     @abstractmethod
     def scoring(self):
-        """Property that defines scoring metric (e.g. ROC-AUC or accuracy
-        or f-score), given as a sklearn-compatible string or a compatible
-        sklearn scorer.
-
-        """
+        """Abstract class for the scoring, each paradigm need to implement.
+        Property that defines scoring metric (e.g. ROC-AUC or accuracy or
+        f-score), given as a sklearn-compatible string or a compatible sklearn
+        scorer."""
         pass
 
     @property
     @abstractmethod
     def datasets(self):
-        """Property that define the list of compatible datasets"""
+        """Property that define the list of compatible datasets."""
         pass
 
     @abstractmethod
@@ -52,19 +51,17 @@ class BaseParadigm(metaclass=ABCMeta):
         pass
 
     def prepare_process(self, dataset):
-        """Prepare processing of raw files
+        """Prepare processing of raw files.
 
-                This function allows to set parameter of the paradigm class prior to
-                the preprocessing (process_raw). Does nothing by default and could be
-                overloaded if needed.
+        This function allows to set parameter of the paradigm class prior to
+        the preprocessing (process_raw). Does nothing by default and could be
+        overloaded if needed.
 
-                Parameters
-                ----------
-
-                dataset : dataset instance
-                    The dataset corresponding to the raw file. mainly use to access
-                    dataset specific i
-        nformation.
+        Parameters
+        ----------
+        dataset : dataset instance
+            The dataset corresponding to the raw file. mainly use to access
+            dataset specific information.
         """
         if dataset is not None:
             pass
@@ -72,8 +69,7 @@ class BaseParadigm(metaclass=ABCMeta):
     def process_raw(  # noqa: C901
         self, raw, dataset, return_epochs=False, return_raws=False
     ):
-        """
-        Process one raw data file.
+        """Process one raw data file.
 
         This function apply the preprocessing and eventual epoching on the
         individual run, and return the data, labels and a dataframe with
@@ -106,7 +102,6 @@ class BaseParadigm(metaclass=ABCMeta):
             the labels for training / evaluating the model
         metadata: pd.DataFrame
             A dataframe containing the metadata
-
         """
 
         if return_epochs and return_raws:
@@ -219,8 +214,7 @@ class BaseParadigm(metaclass=ABCMeta):
         return X, labels, metadata
 
     def get_data(self, dataset, subjects=None, return_epochs=False, return_raws=False):
-        """
-        Return the data for a list of subject.
+        """Return the data for a list of subject.
 
         return the data, labels and a dataframe with metadata. the dataframe
         will contain at least the following columns

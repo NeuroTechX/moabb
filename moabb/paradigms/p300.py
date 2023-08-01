@@ -1,4 +1,4 @@
-"""P300 Paradigms"""
+"""P300 Paradigms."""
 
 import abc
 import logging
@@ -101,8 +101,7 @@ class BaseP300(BaseParadigm):
     def process_raw(  # noqa: C901
         self, raw, dataset, return_epochs=False, return_raws=False
     ):
-        """
-        Process one raw data file.
+        """Process one raw data file.
 
         This function apply the preprocessing and eventual epoching on the
         individual run, and return the data, labels and a dataframe with
@@ -135,7 +134,6 @@ class BaseP300(BaseParadigm):
             the labels for training / evaluating the model
         metadata: pd.DataFrame
             A dataframe containing the metadata
-
         """
 
         if return_epochs and return_raws:
@@ -272,7 +270,7 @@ class BaseP300(BaseParadigm):
 
 
 class SinglePass(BaseP300):
-    """Single Bandpass filter P300
+    """Single Bandpass filter P300.
 
     P300 paradigm with only one bandpass filter (default 1 to 24 Hz)
 
@@ -313,7 +311,6 @@ class SinglePass(BaseP300):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
-
     """
 
     def __init__(self, fmin=1, fmax=24, **kwargs):
@@ -331,10 +328,9 @@ class SinglePass(BaseP300):
 
 
 class P300(SinglePass):
-    """P300 for Target/NonTarget classification
+    """P300 for Target/NonTarget classification.
 
     Metric is 'roc_auc'
-
     """
 
     def __init__(self, **kwargs):

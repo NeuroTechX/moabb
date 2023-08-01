@@ -30,7 +30,7 @@ def _run_tests_on_dataset(d):
 
 class Test_Datasets(unittest.TestCase):
     def test_fake_dataset(self):
-        """this test will insure the basedataset works"""
+        """This test will insure the basedataset works."""
         n_subjects = 3
         n_sessions = 2
         n_runs = 2
@@ -63,7 +63,7 @@ class Test_Datasets(unittest.TestCase):
             self.assertRaises(ValueError, ds.get_data, [1000])
 
     def test_dataset_accept(self):
-        """verify that accept licence is working"""
+        """Verify that accept licence is working."""
         # Only Shin2017 (bbci_eeg_fnirs) for now
         for ds in [Shin2017A(), Shin2017B()]:
             # if the data is already downloaded:
@@ -115,7 +115,7 @@ class Test_CompoundDataset(unittest.TestCase):
         super().__init__(*args, **kwargs)
 
     def test_fake_dataset(self):
-        """this test will insure the basedataset works"""
+        """This test will insure the basedataset works."""
         param_list = [(None, None), ("session_0", "run_0"), (["session_0"], ["run_0"])]
         for sessions, runs in param_list:
             with self.subTest():

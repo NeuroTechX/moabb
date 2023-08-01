@@ -28,7 +28,7 @@ def _simplify_names(x):
 
 
 def score_plot(data, pipelines=None):
-    """Plot scores for all pipelines and all datasets
+    """Plot scores for all pipelines and all datasets.
 
     Parameters
     ----------
@@ -77,7 +77,7 @@ def score_plot(data, pipelines=None):
 
 
 def codecarbon_plot(data, order_list=None, pipelines=None, country=""):
-    """Plot code carbon consume for the results from the benchmark
+    """Plot code carbon consume for the results from the benchmark.
 
     Parameters
     ----------
@@ -128,7 +128,7 @@ def codecarbon_plot(data, order_list=None, pipelines=None, country=""):
 
 
 def paired_plot(data, alg1, alg2):
-    """Generate a figure with a paired plot
+    """Generate a figure with a paired plot.
 
     Parameters
     ----------
@@ -160,7 +160,7 @@ def paired_plot(data, alg1, alg2):
 
 
 def summary_plot(sig_df, effect_df, p_threshold=0.05, simplify=True):
-    """Significance matrix to compare pipelines
+    """Significance matrix to compare pipelines.
 
     Visualize significances as a heatmap with green/grey/red for significantly
     higher/significantly lower.
@@ -220,7 +220,7 @@ def summary_plot(sig_df, effect_df, p_threshold=0.05, simplify=True):
 
 
 def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
-    """Meta-analysis to compare two algorithms across several datasets
+    """Meta-analysis to compare two algorithms across several datasets.
 
     A meta-analysis style plot that shows the standardized effect with
     confidence intervals over all datasets for two algorithms.

@@ -1,5 +1,5 @@
-"""
-Simple and compound motor imagery.
+"""Simple and compound motor imagery.
+
 https://doi.org/10.1371/journal.pone.0114853
 """
 
@@ -99,7 +99,7 @@ class Zhou2016(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         files = self.data_path(subject)
 
         out = {}

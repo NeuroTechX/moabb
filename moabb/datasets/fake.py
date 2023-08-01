@@ -118,8 +118,8 @@ class FakeVirtualRealityDataset(FakeDataset):
         return data
 
     def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
-        """Select data for all provided subjects, blocks and repetitions.
-        Each subject has 5 blocks of 12 repetitions.
+        """Select data for all provided subjects, blocks and repetitions. Each
+        subject has 5 blocks of 12 repetitions.
 
         The returned data is a dictionary with the following structure::
 

@@ -128,7 +128,7 @@ class Weibo2014(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         fname = self.data_path(subject)
         # TODO: add 1s 0 buffer between trials and make continuous
         data = loadmat(

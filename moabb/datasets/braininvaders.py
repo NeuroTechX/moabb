@@ -403,7 +403,7 @@ def _bi_data_path(  # noqa: C901
 
 
 class bi2012(BaseDataset):
-    """P300 dataset bi2012 from a "Brain Invaders" experiment
+    """P300 dataset bi2012 from a "Brain Invaders" experiment.
 
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
@@ -459,7 +459,7 @@ class bi2012(BaseDataset):
         self.online = Online
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         return _bi_get_subject_data(self, subject)
 
     def data_path(
@@ -469,7 +469,7 @@ class bi2012(BaseDataset):
 
 
 class bi2013a(BaseDataset):
-    """P300 dataset bi2013a from a "Brain Invaders" experiment
+    """P300 dataset bi2013a from a "Brain Invaders" experiment.
 
     .. admonition:: Dataset summary
 
@@ -561,7 +561,7 @@ class bi2013a(BaseDataset):
         self.online = Online
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         return _bi_get_subject_data(self, subject)
 
     def data_path(
@@ -571,7 +571,7 @@ class bi2013a(BaseDataset):
 
 
 class bi2014a(BaseDataset):
-    """P300 dataset bi2014a from a "Brain Invaders" experiment
+    """P300 dataset bi2014a from a "Brain Invaders" experiment.
 
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
@@ -619,7 +619,7 @@ class bi2014a(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         return _bi_get_subject_data(self, subject)
 
     def data_path(
@@ -629,7 +629,7 @@ class bi2014a(BaseDataset):
 
 
 class bi2014b(BaseDataset):
-    """P300 dataset bi2014b from a "Brain Invaders" experiment
+    """P300 dataset bi2014b from a "Brain Invaders" experiment.
 
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
@@ -678,7 +678,7 @@ class bi2014b(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         return _bi_get_subject_data(self, subject)
 
     def data_path(
@@ -688,7 +688,7 @@ class bi2014b(BaseDataset):
 
 
 class bi2015a(BaseDataset):
-    """P300 dataset bi2015a from a "Brain Invaders" experiment
+    """P300 dataset bi2015a from a "Brain Invaders" experiment.
 
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
@@ -738,7 +738,7 @@ class bi2015a(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         return _bi_get_subject_data(self, subject)
 
     def data_path(
@@ -748,7 +748,7 @@ class bi2015a(BaseDataset):
 
 
 class bi2015b(BaseDataset):
-    """P300 dataset bi2015b from a "Brain Invaders" experiment
+    """P300 dataset bi2015b from a "Brain Invaders" experiment.
 
        .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
@@ -801,7 +801,7 @@ class bi2015b(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         return _bi_get_subject_data(self, subject)
 
     def data_path(
@@ -811,7 +811,7 @@ class bi2015b(BaseDataset):
 
 
 class VirtualReality(BaseDataset):
-    """Dataset of an EEG-based BCI experiment in Virtual Reality using P300
+    """Dataset of an EEG-based BCI experiment in Virtual Reality using P300.
 
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
@@ -877,7 +877,7 @@ class VirtualReality(BaseDataset):
             )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         return _bi_get_subject_data(self, subject)
 
     def data_path(
@@ -886,8 +886,8 @@ class VirtualReality(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
     def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
-        """Select data for all provided subjects, blocks and repetitions.
-        Each subject has 12 blocks of 5 repetitions.
+        """Select data for all provided subjects, blocks and repetitions. Each
+        subject has 12 blocks of 5 repetitions.
 
         The returned data is a dictionary with the following structure::
 

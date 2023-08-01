@@ -9,8 +9,8 @@ from sklearn.pipeline import Pipeline
 
 
 def _check_if_is_keras_model(model):
-    """
-    Check if the model is a Keras model
+    """Check if the model is a Keras model.
+
     Parameters
     ----------
     model: object
@@ -30,8 +30,8 @@ def _check_if_is_keras_model(model):
 
 
 def _check_if_is_pytorch_model(model):
-    """
-    Check if the model is a Keras model
+    """Check if the model is a Keras model.
+
     Parameters
     ----------
     model: object
@@ -71,8 +71,8 @@ def _check_if_is_keras_steps(model):
 
 
 def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
-    """
-    Save a model fitted to a folder
+    """Save a model fitted to a folder.
+
     Parameters
     ----------
     model: object
@@ -86,7 +86,6 @@ def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
 
     Returns
     -------
-
     """
     if save_path is None:
         raise IOError("No path to save the model")
@@ -124,8 +123,8 @@ def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
 
 
 def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path: str):
-    """
-    Save a list of models fitted to a folder
+    """Save a list of models fitted to a folder.
+
     Parameters
     ----------
     model_list: list | Pipeline
@@ -163,8 +162,8 @@ def create_save_path(
     grid=False,
     eval_type="WithinSession",
 ):
-    """
-    Create a save path based on evaluation parameters.
+    """Create a save path based on evaluation parameters.
+
     Parameters
     ----------
     hdf5_path : str

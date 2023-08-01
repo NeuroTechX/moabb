@@ -1,6 +1,4 @@
-"""
-Base class for a dataset
-"""
+"""Base class for a dataset."""
 import abc
 import logging
 from inspect import signature
@@ -10,7 +8,7 @@ log = logging.getLogger(__name__)
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
-    """BaseDataset
+    """BaseDataset.
 
     Parameters required for all datasets
 
