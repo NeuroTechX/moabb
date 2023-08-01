@@ -8,6 +8,7 @@ import joblib
 import numpy as np
 from joblib import Parallel, delayed
 from mne.epochs import BaseEpochs
+from pyriemann.classification import MDM
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import (
@@ -143,6 +144,11 @@ class WithinSessionEvaluation(BaseEvaluation):
 
     def _grid_search(self, param_grid, name_grid, name, grid_clf, X_, y_, cv):
         # Load result if the folder exists
+        # Checking if grid search have the spd classifier, if have
+        # we change for MDM
+        if grid_clf.estimator.__class__.__name__ == "SPDNet":
+            grid_clf.estimator = MDM()
+
         if param_grid is not None and not os.path.isdir(name_grid):
             if name in param_grid:
                 search = GridSearchCV(
@@ -491,6 +497,9 @@ class CrossSessionEvaluation(BaseEvaluation):
     """
 
     def _grid_search(self, param_grid, name_grid, name, grid_clf, X, y, cv, groups):
+        if grid_clf.estimator.__class__.__name__ == "SPDNet":
+            grid_clf.estimator = MDM()
+
         if param_grid is not None and not os.path.isdir(name_grid):
             if name in param_grid:
                 search = GridSearchCV(
