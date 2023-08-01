@@ -669,7 +669,7 @@ class, as used in the filterbank motor imagery paradigms.</p>
 the first two frequencies of the dataset, 13 and 17 Hz.
 The evaluation function uses a LabelEncoder, transforming them
 to 0 and 1</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a> <span class="o">=</span> <a href="../generated/moabb.paradigms.SSVEP.html#moabb.paradigms.SSVEP" title="moabb.paradigms.SSVEP" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">.</span><span class="n">used_events</span><span class="p">(</span><a href="../generated/moabb.datasets.SSVEPExo.html#moabb.datasets.SSVEPExo" title="moabb.datasets.SSVEPExo" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">freqs</span></a> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.paradigms.ssvep.BaseSSVEP.html#moabb.paradigms.ssvep.BaseSSVEP.used_events" title="moabb.paradigms.ssvep.BaseSSVEP.used_events" class="sphx-glr-backref-module-moabb-paradigms-ssvep sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">used_events</span></a><span class="p">(</span><a href="../generated/moabb.datasets.SSVEPExo.html#moabb.datasets.SSVEPExo" title="moabb.datasets.SSVEPExo" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -729,9 +729,9 @@ be overwritten if necessary.</p>
   warnings.warn(
 
 Exoskeleton_SSVEP-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  2.40it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.40it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.40it/s]
+Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  4.30it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  4.33it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  4.33it/s]
 </pre></div>
 </div>
 <p>Filter bank processing, determine the filter automatically from the
@@ -743,9 +743,9 @@ stimulation frequency values of events.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Exoskeleton_SSVEP-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  4.23it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  4.66it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  4.58it/s]
+Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  6.91it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  7.19it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  7.13it/s]
 </pre></div>
 </div>
 <p>TRCA processing also relies on filter bank that is automatically designed.</p>
@@ -756,9 +756,9 @@ Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  4.58it/s]
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Exoskeleton_SSVEP-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:01&lt;00:01,  1.73s/it]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:03&lt;00:00,  1.73s/it]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:03&lt;00:00,  1.73s/it]
+Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  1.07it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.10it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.09it/s]
 </pre></div>
 </div>
 <p>MsetCCA processing</p>
@@ -769,9 +769,9 @@ Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:03&lt;00:00,  1.73s/it]
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Exoskeleton_SSVEP-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  1.53it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.61it/s]
-Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.60it/s]
+Exoskeleton_SSVEP-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  2.68it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.80it/s]
+Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.78it/s]
 </pre></div>
 </div>
 <p>After processing the four, we simply concatenate the results.</p>
@@ -799,7 +799,7 @@ Exoskeleton_SSVEP-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.60it/s]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" srcset="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" alt="plot cross subject ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  54.895 seconds)</p>
+<img src="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" srcset="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" alt="plot cross subject ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  16.469 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  12 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-subject-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
