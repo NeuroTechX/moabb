@@ -122,7 +122,6 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         if dataset is not None:
             pass
 
-
     @abc.abstractmethod
     def used_events(self, dataset):
         pass

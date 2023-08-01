@@ -75,7 +75,6 @@ class BaseSSVEP(BaseParadigm):
             tmax=tmax,
         )
 
-
         self.n_classes = n_classes
         if self.events is None:
             log.warning(

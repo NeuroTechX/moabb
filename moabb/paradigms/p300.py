@@ -86,7 +86,6 @@ class BaseP300(BaseParadigm):
         # we should verify list of channels, somehow
         return ret
 
-
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
         return RawToEventsP300(event_id=event_id)
