@@ -1,12 +1,11 @@
-"""
-Build a custom dataset using subjects from other datasets.
-"""
+"""Build a custom dataset using subjects from other datasets."""
 
 from ..base import BaseDataset
 
 
 class CompoundDataset(BaseDataset):
-    """With this dataset, you can merge different dataset
+    """CompoundDataset class.
+    With this dataset, you can merge different dataset
     by selecting among subjects in all datasets
     to build a custom dataset.
 
@@ -83,7 +82,7 @@ class CompoundDataset(BaseDataset):
                 self.subjects_list.extend(compoundDataset.subjects_list)
 
     def _get_single_subject_data(self, shopped_subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         dataset, subject, sessions, runs = self.subjects_list[shopped_subject - 1]
         subject_data = dataset._get_single_subject_data(subject)
         if sessions is None:

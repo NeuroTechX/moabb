@@ -1,6 +1,4 @@
-"""
-Utils for easy database selection
-"""
+"""Utils for easy database selection."""
 
 import inspect
 
@@ -29,8 +27,7 @@ def dataset_search(  # noqa: C901
     min_subjects=1,
     channels=(),
 ):
-    """
-    Returns a list of datasets that match a given criteria
+    """Returns a list of datasets that match a given criteria.
 
     Parameters
     ----------
@@ -112,10 +109,8 @@ def dataset_search(  # noqa: C901
 
 
 def find_intersecting_channels(datasets, verbose=False):
-    """
-    Given a list of dataset instances return a list of channels shared by all
-    datasets.
-    Skip datasets which have 0 overlap with the others
+    """Given a list of dataset instances return a list of channels shared by
+    all datasets. Skip datasets which have 0 overlap with the others.
 
     returns: set of common channels, list of datasets with valid channels
     """

@@ -1,4 +1,4 @@
-"""P300 Paradigms"""
+"""P300 Paradigms."""
 
 import logging
 
@@ -106,7 +106,7 @@ class BaseP300(BaseParadigm):
 
 
 class SinglePass(BaseP300):
-    """Single Bandpass filter P300
+    """Single Bandpass filter P300.
 
     P300 paradigm with only one bandpass filter (default 1 to 24 Hz)
 
@@ -147,7 +147,6 @@ class SinglePass(BaseP300):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
-
     """
 
     def __init__(self, fmin=1, fmax=24, **kwargs):
@@ -165,10 +164,9 @@ class SinglePass(BaseP300):
 
 
 class P300(SinglePass):
-    """P300 for Target/NonTarget classification
+    """P300 for Target/NonTarget classification.
 
     Metric is 'roc_auc'
-
     """
 
     def __init__(self, **kwargs):

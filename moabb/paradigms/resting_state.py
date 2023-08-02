@@ -1,12 +1,12 @@
-"""Resting state Paradigms
+"""Resting state Paradigms.
 
-Regroups paradigms for experience where we record the EEG
-and the participant is not doing an active task, such
-as focusing, counting or speaking.
+Regroups paradigms for experience where we record the EEG and the
+participant is not doing an active task, such as focusing, counting or
+speaking.
 
-Typically, a open/close eye experiment, where we
-record the EEG of a subject while he is having the eye open or close
-is a resting state experiment.
+Typically, a open/close eye experiment, where we record the EEG of a
+subject while he is having the eye open or close is a resting state
+experiment.
 """
 
 from scipy.signal import welch
@@ -16,6 +16,7 @@ from moabb.paradigms.p300 import SinglePass
 
 class RestingStateToP300Adapter(SinglePass):
     """Adapter to the P300 paradigm for resting state experiments.
+
     It implements a SinglePass processing as for P300, except that:
     - the name of the event is free (it is not enforced to Target/NonTarget as for P300)
     - the default values are different. In particular, the length of the epochs is larger.

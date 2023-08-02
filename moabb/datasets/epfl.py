@@ -150,7 +150,7 @@ class EPFLP300(BaseDataset):
         return raw
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
 
         file_path_list = self.data_path(subject)
         sessions = {}

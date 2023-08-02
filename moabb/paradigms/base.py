@@ -29,6 +29,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
 
     Please use one of the child classes
 
+
     Parameters
     ----------
 
@@ -83,7 +84,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
     @property
     @abc.abstractmethod
     def datasets(self):
-        """Property that define the list of compatible datasets"""
+        """Property that define the list of compatible datasets."""
         pass
 
     @abc.abstractmethod
@@ -106,19 +107,17 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         pass
 
     def prepare_process(self, dataset):
-        """Prepare processing of raw files
+        """Prepare processing of raw files.
 
-                This function allows to set parameter of the paradigm class prior to
-                the preprocessing (process_raw). Does nothing by default and could be
-                overloaded if needed.
+        This function allows to set parameter of the paradigm class prior to
+        the preprocessing (process_raw). Does nothing by default and could be
+        overloaded if needed.
 
-                Parameters
-                ----------
-
-                dataset : dataset instance
-                    The dataset corresponding to the raw file. mainly use to access
-                    dataset specific i
-        nformation.
+        Parameters
+        ----------
+        dataset : dataset instance
+            The dataset corresponding to the raw file. mainly use to access
+            dataset specific information.
         """
         if dataset is not None:
             pass
@@ -146,7 +145,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         - session : the session indice
         - run : the run indice
 
-        parameters
+        Parameters
         ----------
         dataset:
             A dataset instance.
@@ -161,7 +160,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         cache_config: dict | CacheConfig
             Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
 
-        returns
+        Eeturns
         -------
         X : Union[np.ndarray, mne.Epochs]
             the data that will be used as features for the model

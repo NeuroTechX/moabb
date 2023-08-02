@@ -72,7 +72,7 @@ class Test_MotorImagery(unittest.TestCase):
         )
 
     def test_BaseImagery_channel_order(self):
-        """test if paradigm return correct channel order, see issue #227"""
+        """Test if paradigm return correct channel order, see issue #227."""
         datasetA = FakeDataset(paradigm="imagery", channels=["C3", "Cz", "C4"])
         datasetB = FakeDataset(paradigm="imagery", channels=["Cz", "C4", "C3"])
         paradigm = SimpleMotorImagery(channels=["C4", "C3", "Cz"])
@@ -376,7 +376,7 @@ class Test_P300(unittest.TestCase):
         )
 
     def test_BaseP300_channel_order(self):
-        """test if paradigm return correct channel order, see issue #227"""
+        """Test if paradigm return correct channel order, see issue #227."""
         datasetA = FakeDataset(
             paradigm="p300",
             channels=["C3", "Cz", "C4"],
@@ -574,7 +574,7 @@ class Test_SSVEP(unittest.TestCase):
         )
 
     def test_BaseSSVEP_channel_order(self):
-        """test if paradigm return correct channel order, see issue #227"""
+        """Test if paradigm return correct channel order, see issue #227."""
         datasetA = FakeDataset(paradigm="ssvep", channels=["C3", "Cz", "C4"])
         datasetB = FakeDataset(paradigm="ssvep", channels=["Cz", "C4", "C3"])
         paradigm = BaseSSVEP(channels=["C4", "C3", "Cz"])

@@ -1,7 +1,7 @@
-"""
-Pipeline defines all steps required by an algorithm to obtain predictions.
-Pipelines are typically a chain of sklearn compatible transformers and end
-with a sklearn compatible estimator.
+"""Pipeline defines all steps required by an algorithm to obtain predictions.
+
+Pipelines are typically a chain of sklearn compatible transformers and
+end with a sklearn compatible estimator.
 """
 
 # flake8: noqa
