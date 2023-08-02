@@ -1,6 +1,4 @@
-"""
-SSVEP MAMEM1 dataset.
-"""
+"""SSVEP MAMEM1 dataset."""
 
 import logging
 import os.path as osp
@@ -37,9 +35,10 @@ MAMEM_URL = "https://ndownloader.figshare.com/files/"
 
 
 def mamem_event(eeg, dins, labels=None):
-    """Convert DIN field into events
+    """Convert DIN field into events.
 
-    Code adapted from https://github.com/MAMEM/eeg-processing-toolbox
+    Code adapted from
+    https://github.com/MAMEM/eeg-processing-toolbox
     """
     thres_split = 2000
     timestamps = dins[1, :]
@@ -82,7 +81,7 @@ def mamem_event(eeg, dins, labels=None):
 
 
 class BaseMAMEM(BaseDataset):
-    """Base class for MAMEM datasets"""
+    """Base class for MAMEM datasets."""
 
     def __init__(self, events, sessions_per_subject, code, doi, figshare_id):
         super().__init__(
@@ -97,7 +96,7 @@ class BaseMAMEM(BaseDataset):
         self.figshare_id = figshare_id
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         fnames = self.data_path(subject)
         filelist = fs_get_file_list(self.figshare_id)
         fsn = fs_get_file_name(filelist)
@@ -167,7 +166,7 @@ class BaseMAMEM(BaseDataset):
 
 
 class MAMEM1(BaseMAMEM):
-    """SSVEP MAMEM 1 dataset
+    """SSVEP MAMEM 1 dataset.
 
     .. admonition:: Dataset summary
 
@@ -183,7 +182,7 @@ class MAMEM1(BaseMAMEM):
     EEG signals with 256 channels captured from 11 subjects executing a
     SSVEP-based experimental protocol. Five different frequencies
     (6.66, 7.50, 8.57, 10.00 and 12.00 Hz) have been used for the visual
-    stimulation,and the EGI 300 Geodesic EEG System (GES 300), using a
+    stimulation,and the EGI 300 Geodesic EEG System, using a
     stimulation, HydroCel Geodesic Sensor Net (HCGSN) and a sampling rate of
     250 Hz has been used for capturing the signals.
 
@@ -287,7 +286,7 @@ class MAMEM1(BaseMAMEM):
 
 
 class MAMEM2(BaseMAMEM):
-    """SSVEP MAMEM 2 dataset
+    """SSVEP MAMEM 2 dataset.
 
     .. admonition:: Dataset summary
 
@@ -303,7 +302,7 @@ class MAMEM2(BaseMAMEM):
     EEG signals with 256 channels captured from 11 subjects executing a
     SSVEP-based experimental protocol. Five different frequencies
     (6.66, 7.50, 8.57, 10.00 and 12.00 Hz) have been used for the visual
-    stimulation,and the EGI 300 Geodesic EEG System (GES 300), using a
+    stimulation,and the EGI 300 Geodesic EEG System, using a
     stimulation, HydroCel Geodesic Sensor Net (HCGSN) and a sampling rate of
     250 Hz has been used for capturing the signals.
 
@@ -380,7 +379,7 @@ class MAMEM2(BaseMAMEM):
 
 
 class MAMEM3(BaseMAMEM):
-    """SSVEP MAMEM 3 dataset
+    """SSVEP MAMEM 3 dataset.
 
     .. admonition:: Dataset summary
 

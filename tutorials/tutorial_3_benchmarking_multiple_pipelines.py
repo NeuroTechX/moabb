@@ -1,6 +1,6 @@
-"""
+""" Basic tutorial on how to use MOABB.
 ===========================================
-Tutorial 3: Benchmarking mulitple pipelines
+Tutorial 3: Benchmarking multiple pipelines
 ===========================================
 
 In this last part, we extend the previous example by assessing the

@@ -95,6 +95,7 @@ Base & Utils
     :template: class.rst
 
     base.BaseDataset
+    base.CacheConfig
     fake.FakeDataset
     fake.FakeVirtualRealityDataset
 

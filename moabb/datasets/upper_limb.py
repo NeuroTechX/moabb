@@ -62,7 +62,6 @@ class Ofner2017(BaseDataset):
            Upper limb movements can be decoded from the time-domain of
            low-frequency EEG. PloS one, 12(8), p.e0182578.
            https://doi.org/10.1371/journal.pone.0182578
-
     """
 
     def __init__(self, imagined=True, executed=False):
@@ -90,7 +89,7 @@ class Ofner2017(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
 
         sessions = []
         if self.imagined:

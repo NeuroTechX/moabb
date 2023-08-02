@@ -1,16 +1,132 @@
-"""
-Base class for a dataset
-"""
+"""Base class for a dataset."""
 import abc
 import logging
+import traceback
+from dataclasses import dataclass
+from enum import Enum
 from inspect import signature
+from pathlib import Path
+from typing import Dict, Type, Union
+
+from sklearn.pipeline import Pipeline, make_pipeline
+
+from moabb.datasets.bids_interface import (
+    BIDSInterfaceBase,
+    BIDSInterfaceEpochs,
+    BIDSInterfaceNumpyArray,
+    BIDSInterfaceRawEDF,
+)
+from moabb.datasets.preprocessing import (
+    EpochsToEvents,
+    ForkPipelines,
+    RawToEvents,
+    SetRawAnnotations,
+)
 
 
 log = logging.getLogger(__name__)
 
 
+@dataclass
+class CacheConfig:
+    """
+    Configuration for caching of datasets.
+
+    Parameters
+    ----------
+    save_*: bool
+        This flag specifies whether to save the output of the corresponding
+        step to disk.
+    use: bool
+        This flag specifies whether to use the disk cache in case it exists.
+        If True, the Raw or Epochs objects returned will not be preloaded
+        (this saves some time). Otherwise, they will be preloaded.
+        If use is False, the save_* and overwrite_* keys will be ignored.
+    overwrite_*: bool
+        This flag specifies whether to overwrite the disk cache in
+        case it exist.
+    path : None | str
+        Location of where to look for the data storing location.
+        If None, the environment variable or config parameter
+        ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
+        "~/mne_data" directory is used. If the dataset
+        is not found under the given path, the data
+        will be automatically downloaded to the specified folder.
+    verbose:
+        Verbosity level. See mne.verbose.
+    """
+
+    save_raw: bool = False
+    save_epochs: bool = False
+    save_array: bool = False
+
+    use: bool = False
+
+    overwrite_raw: bool = False
+    overwrite_epochs: bool = False
+    overwrite_array: bool = False
+
+    path: Union[str, Path] = None
+    verbose: str = None
+
+    @classmethod
+    def make(cls, dic: Union[None, Dict, "CacheConfig"] = None) -> "CacheConfig":
+        """
+        Create a CacheConfig object from a dict or another CacheConfig object.
+
+        Examples
+        -------
+        Using default parameters:
+
+        >>> CacheConfig.make()
+        CacheConfig(save=True, use=True, overwrite=True, path=None)
+
+        From a dict:
+
+        >>> dic = {'save': False}
+        >>> CacheConfig.make(dic)
+        CacheConfig(save=False, use=True, overwrite=True, path=None)
+        """
+        if dic is None:
+            return cls()
+        elif isinstance(dic, dict):
+            return cls(**dic)
+        elif isinstance(dic, cls):
+            return dic
+        else:
+            raise ValueError(f"Expected dict or CacheConfig, got {type(dic)}")
+
+
+class StepType(Enum):
+    """Enum for the different steps in the pipeline."""
+
+    RAW = "raw"
+    EPOCHS = "epochs"
+    ARRAY = "array"
+
+
+_interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
+    StepType.RAW: BIDSInterfaceRawEDF,
+    StepType.EPOCHS: BIDSInterfaceEpochs,
+    StepType.ARRAY: BIDSInterfaceNumpyArray,
+}
+
+
+def apply_step(pipeline, obj):
+    """Apply a pipeline to an object."""
+    if obj is None:
+        return None
+    try:
+        return pipeline.transform(obj)
+    except ValueError as error:
+        # no events received by RawToEpochs:
+        if str(error) == "No events found":
+            return None
+        raise error
+
+
 class BaseDataset(metaclass=abc.ABCMeta):
-    """BaseDataset
+    """Abstract Moabb BaseDataset.
 
     Parameters required for all datasets
 
@@ -60,6 +176,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         doi=None,
         unit_factor=1e6,
     ):
+        """Initialize function for the BaseDataset."""
         try:
             _ = iter(subjects)
         except TypeError:
@@ -74,26 +191,66 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self.doi = doi
         self.unit_factor = unit_factor
 
-    def get_data(self, subjects=None):
+    def get_data(
+        self,
+        subjects=None,
+        cache_config=None,
+        raw_pipeline=None,
+        epochs_pipeline=None,
+        array_pipeline=None,
+        events_pipeline=None,
+    ):
         """Return the data correspoonding to a list of subjects.
 
-        The returned data is a dictionary with the folowing structure::
+        The returned data is a dictionary with the following structure::
 
             data = {'subject_id' :
                         {'session_id':
-                            {'run_id': raw}
+                            {'run_id': run}
                         }
                     }
 
         subjects are on top, then we have sessions, then runs.
         A sessions is a recording done in a single day, without removing the
         EEG cap. A session is constitued of at least one run. A run is a single
-        contigous recording. Some dataset break session in multiple runs.
+        contiguous recording. Some dataset break session in multiple runs.
+
+        Processing steps can optionally be applied to the data using the
+        ``*_pipeline`` arguments. These pipelines are applied in the
+        following order: ``raw_pipeline`` -> ``epochs_pipeline`` ->
+        ``array_pipeline``. If a ``*_pipeline`` argument is ``None``,
+        the step will be skipped. Therefore, the ``array_pipeline`` may
+        either receive a :class:`mne.io.Raw` or a :class:`mne.Epochs` object
+        as input depending on whether ``epochs_pipeline`` is ``None`` or not.
 
         Parameters
         ----------
         subjects: List of int
             List of subject number
+        cache_config: dict | CacheConfig
+            Configuration for caching of datasets. See ``CacheConfig``
+            for details.
+        raw_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin
+            | None
+            Pipeline that necessarily takes a mne.io.Raw as input,
+            and necessarily returns a :class:`mne.io.Raw` as output.
+        epochs_pipeline: sklearn.pipeline.Pipeline |
+            sklearn.base.TransformerMixin | None
+            Pipeline that necessarily takes a mne.io.Raw as input,
+            and necessarily returns a :class:`mne.Epochs` as output.
+        array_pipeline: sklearn.pipeline.Pipeline |
+            sklearn.base.TransformerMixin | None
+            Pipeline either takes as input a :class:`mne.Epochs` if
+            epochs_pipeline is not ``None``, or a :class:`mne.io.Raw`
+            otherwise. It necessarily returns a :func:`numpy.ndarray`
+            as output.
+            If array_pipeline is not None, each run will be a
+            dict with keys "X" and "y" corresponding respectively to the array
+             itself and the corresponding labels.
+        events_pipeline: sklearn.pipeline.Pipeline |
+            sklearn.base.TransformerMixin | None
+            Pipeline used to generate the events. Only used if
+            ``array_pipeline`` is not ``None``.
 
         Returns
         -------
@@ -104,13 +261,47 @@ class BaseDataset(metaclass=abc.ABCMeta):
             subjects = self.subject_list
 
         if not isinstance(subjects, list):
-            raise (ValueError("subjects must be a list"))
+            raise ValueError("subjects must be a list")
+
+        if events_pipeline is None and array_pipeline is not None:
+            log.warning(
+                f"event_id not specified, using all the dataset's "
+                f"events to generate labels: {self.event_id}"
+            )
+            events_pipeline = (
+                RawToEvents(self.event_id)
+                if epochs_pipeline is None
+                else EpochsToEvents()
+            )
+
+        cache_config = CacheConfig.make(cache_config)
+
+        steps = []
+        steps.append((StepType.RAW, SetRawAnnotations(self.event_id)))
+        if raw_pipeline is not None:
+            steps.append((StepType.RAW, raw_pipeline))
+        if epochs_pipeline is not None:
+            steps.append((StepType.EPOCHS, epochs_pipeline))
+        if array_pipeline is not None:
+            array_events_pipeline = ForkPipelines(
+                [
+                    ("X", array_pipeline),
+                    ("events", events_pipeline),
+                ]
+            )
+            steps.append((StepType.ARRAY, array_events_pipeline))
+        if len(steps) == 0:
+            steps.append((StepType.RAW, make_pipeline(None)))
 
         data = dict()
         for subject in subjects:
             if subject not in self.subject_list:
                 raise ValueError("Invalid subject {:d} given".format(subject))
-            data[subject] = self._get_single_subject_data(subject)
+            data[subject] = self._get_single_subject_data_using_cache(
+                subject,
+                cache_config,
+                steps,
+            )
 
         return data
 
@@ -125,7 +316,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
     ):
         """Download all data from the dataset.
 
-        This function is only usefull to download all the dataset at once.
+        This function is only useful to download all the dataset at once.
 
 
         Parameters
@@ -174,11 +365,107 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     verbose=verbose,
                 )
 
+    def _get_single_subject_data_using_cache(self, subject, cache_config, steps):
+        """Load a single subject's data using cache.
+
+        Either load the data of a single subject from disk cache or from the
+        dataset object,
+        then eventually saves or overwrites the cache version depending on the
+        parameters.
+        """
+        splitted_steps = []  # list of (cached_steps, remaining_steps)
+        if cache_config.use:
+            splitted_steps += [
+                (steps[:i], steps[i:]) for i in range(len(steps), 0, -1)
+            ]  # [len(steps)...1]
+        splitted_steps.append(
+            ([], steps)
+        )  # last option:  if cached_steps is [], we don't use cache, i.e. i=0
+
+        for cached_steps, remaining_steps in splitted_steps:
+            sessions_data = None
+            # Load and eventually overwrite:
+            if len(cached_steps) == 0:  # last option: we don't use cache
+                sessions_data = self._get_single_subject_data(subject)
+                assert sessions_data is not None  # should not happen
+            else:
+                cache_type = cached_steps[-1][0]
+                interface = _interface_map[cache_type](
+                    self,
+                    subject,
+                    path=cache_config.path,
+                    process_pipeline=Pipeline(cached_steps),
+                    verbose=cache_config.verbose,
+                )
+
+                if (
+                    (cache_config.overwrite_raw and cache_type is StepType.RAW)
+                    or (cache_config.overwrite_epochs and cache_type is StepType.EPOCHS)
+                    or (cache_config.overwrite_array and cache_type is StepType.ARRAY)
+                ):
+                    interface.erase()
+                elif cache_config.use:  # can't load if it was just erased
+                    sessions_data = interface.load(
+                        preload=False
+                    )  # None if cache inexistent
+
+            # If no cache was found or if it was erased, try the next option:
+            if sessions_data is None:
+                continue
+
+            # Apply remaining steps and save:
+            for step_idx, (step_type, process_pipeline) in enumerate(remaining_steps):
+                # apply one step:
+                sessions_data = {
+                    session: {
+                        run: apply_step(process_pipeline, raw)
+                        for run, raw in runs.items()
+                    }
+                    for session, runs in sessions_data.items()
+                }
+
+                # save:
+                if (
+                    (
+                        cache_config.save_raw
+                        and step_type is StepType.RAW
+                        and (
+                            (step_idx == len(remaining_steps) - 1)
+                            or (remaining_steps[step_idx + 1][0] is not StepType.RAW)
+                        )
+                    )  # we only save the last raw step
+                    or (cache_config.save_epochs and step_type is StepType.EPOCHS)
+                    or (cache_config.save_array and step_type is StepType.ARRAY)
+                ):
+                    interface = _interface_map[step_type](
+                        self,
+                        subject,
+                        path=cache_config.path,
+                        process_pipeline=Pipeline(
+                            cached_steps + remaining_steps[: step_idx + 1]
+                        ),
+                        verbose=cache_config.verbose,
+                    )
+                    try:
+                        interface.save(sessions_data)
+                    except Exception:
+                        log.warning(
+                            f"Failed to save {interface.__repr__()} "
+                            f"to BIDS format:\n"
+                            f"{' Pipeline: '.center(50, '#')}\n"
+                            f"{interface.process_pipeline.__repr__()}\n"
+                            f"{' Exception: '.center(50, '#')}\n"
+                            f"{''.join(traceback.format_exc())}{'#' * 50}"
+                        )
+                        interface.erase()  # remove partial cache
+            return sessions_data
+        raise ValueError("should not happen")
+
     @abc.abstractmethod
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
 
-        The returned data is a dictionary with the folowing structure
+        The returned data is a dictionary with the following structure
 
         data = {'session_id':
                     {'run_id': raw}
