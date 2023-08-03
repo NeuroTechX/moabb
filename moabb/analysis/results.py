@@ -49,6 +49,11 @@ def get_digest(obj):
     return hashlib.md5(get_string_rep(obj)).hexdigest()
 
 
+def get_pipeline_digest(process_pipeline, clf_pipeline):
+    full_pipeline = Pipeline(steps=[("process", process_pipeline), ("clf", clf_pipeline)])
+    return get_digest(full_pipeline)
+
+
 class Results:
     """Class to hold results from the evaluation.evaluate method.
 
@@ -132,11 +137,7 @@ class Results:
 
         with h5py.File(self.filepath, "r+") as f:
             for name, data_dict in results.items():
-                clf_pipeline = pipelines[name]
-                full_pipeline = Pipeline(
-                    [("process", process_pipeline), ("clf", clf_pipeline)]
-                )
-                digest = get_digest(full_pipeline)
+                digest = get_pipeline_digest(process_pipeline, pipelines[name])
                 if digest not in f.keys():
                     # create pipeline main group if nonexistent
                     f.create_group(digest)
@@ -200,8 +201,12 @@ class Results:
 
         # get the list of pipeline hash
         digests = []
+        process_pipeline = None  # TODO
         if pipelines is not None:
-            digests = [get_digest(pipelines[name]) for name in pipelines]
+            digests = [
+                get_pipeline_digest(process_pipeline, pipelines[name])
+                for name in pipelines
+            ]
 
         with h5py.File(self.filepath, "r") as f:
             for digest, p_group in f.items():
@@ -223,21 +228,23 @@ class Results:
                     df_list.append(df)
         return pd.concat(df_list, ignore_index=True)
 
-    def not_yet_computed(self, pipelines, dataset, subj):
+    def not_yet_computed(self, pipelines, dataset, subj, process_pipeline):
         """Check if a results has already been computed."""
         ret = {
             k: pipelines[k]
             for k in pipelines.keys()
-            if not self._already_computed(pipelines[k], dataset, subj)
+            if not self._already_computed(pipelines[k], dataset, subj, process_pipeline)
         }
         return ret
 
-    def _already_computed(self, pipeline, dataset, subject, session=None):
+    def _already_computed(
+        self, pipeline, dataset, subject, process_pipeline, session=None
+    ):
         """Check if we have results for a current combination of pipeline /
         dataset / subject."""
         with h5py.File(self.filepath, "r") as f:
             # get the digest from repr
-            digest = get_digest(pipeline)
+            digest = get_pipeline_digest(process_pipeline, pipeline)
 
             # check if digest present
             if digest not in f.keys():

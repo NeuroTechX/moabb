@@ -33,7 +33,6 @@ try:
 except ImportError:
     _carbonfootprint = False
 
-
 log = logging.getLogger(__name__)
 
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
@@ -195,7 +194,10 @@ class WithinSessionEvaluation(BaseEvaluation):
         # Progress Bar at subject level
         # check if we already have result for this subject/pipeline
         # we might need a better granularity, if we query the DB
-        run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
+        process_pipeline = None  # TODO
+        run_pipes = self.results.not_yet_computed(
+            pipelines, dataset, subject, process_pipeline
+        )
         if len(run_pipes) == 0:
             return []
 
@@ -367,7 +369,10 @@ class WithinSessionEvaluation(BaseEvaluation):
         for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-WithinSession"):
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
-            run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
+            process_pipeline = None  # TODO
+            run_pipes = self.results.not_yet_computed(
+                pipelines, dataset, subject, process_pipeline
+            )
             if len(run_pipes) == 0:
                 continue
 
@@ -398,7 +403,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                             continue
                         not_enough_data = False
                         log.info(
-                            f"Permutation: {perm_i+1},"
+                            f"Permutation: {perm_i + 1},"
                             f" Training samples: {len(subset_indices)}"
                         )
 
@@ -543,7 +548,10 @@ class CrossSessionEvaluation(BaseEvaluation):
     def process_subject(self, subject, param_grid, pipelines, dataset):
         # check if we already have result for this subject/pipeline
         # we might need a better granularity, if we query the DB
-        run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
+        process_pipeline = None  # TODO
+        run_pipes = self.results.not_yet_computed(
+            pipelines, dataset, subject, process_pipeline
+        )
         if len(run_pipes) == 0:
             print(f"Subject {subject} already processed")
             return []
@@ -752,7 +760,12 @@ class CrossSubjectEvaluation(BaseEvaluation):
         # we might need a better granularity, if we query the DB
         run_pipes = {}
         for subject in dataset.subject_list:
-            run_pipes.update(self.results.not_yet_computed(pipelines, dataset, subject))
+            process_pipeline = None  # TODO
+            run_pipes.update(
+                self.results.not_yet_computed(
+                    pipelines, dataset, subject, process_pipeline
+                )
+            )
         if len(run_pipes) == 0:
             return
 
@@ -807,7 +820,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
         ):
             subject = groups[test[0]]
             # now we can check if this subject has results
-            run_pipes = self.results.not_yet_computed(pipelines, dataset, subject)
+            process_pipeline = None  # TODO
+            run_pipes = self.results.not_yet_computed(
+                pipelines, dataset, subject, process_pipeline
+            )
             # iterate over pipelines
             for name, clf in run_pipes.items():
                 if _carbonfootprint:
