@@ -1,6 +1,4 @@
-"""
-Physionet Motor imagery dataset.
-"""
+"""Physionet Motor imagery dataset."""
 
 import mne
 import numpy as np
@@ -120,7 +118,7 @@ class PhysionetMI(BaseDataset):
         return raw
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         data = {}
         sign = "EEGBCI"
         get_dataset_path(sign, None)
@@ -140,7 +138,7 @@ class PhysionetMI(BaseDataset):
         # feet runs
         for run in self.feet_runs:
             raw = self._load_one_run(subject, run)
-            # modify stim channels to match new event ids. for feets runs,
+            # modify stim channels to match new event ids. for feet runs,
             # hand = 2 modified to 4, and feet = 3, modified to 5
             stim = raw.annotations.description.astype(np.dtype("<U10"))
             stim[stim == "T0"] = "rest"

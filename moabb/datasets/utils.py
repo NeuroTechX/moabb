@@ -1,6 +1,4 @@
-"""
-Utils for easy database selection
-"""
+"""Utils for easy database selection."""
 
 import inspect
 
@@ -21,7 +19,7 @@ _init_dataset_list()
 
 
 def dataset_search(  # noqa: C901
-    paradigm,
+    paradigm=None,
     multi_session=False,
     events=None,
     has_all_events=False,
@@ -29,13 +27,12 @@ def dataset_search(  # noqa: C901
     min_subjects=1,
     channels=(),
 ):
-    """
-    Returns a list of datasets that match a given criteria
+    """Returns a list of datasets that match a given criteria.
 
     Parameters
     ----------
-    paradigm: str
-        'imagery', 'p300', 'ssvep'
+    paradigm: str | None
+        'imagery', 'p300', 'ssvep', None
 
     multi_session: bool
         if True only returns datasets with more than one session per subject.
@@ -66,7 +63,7 @@ def dataset_search(  # noqa: C901
         n_classes = len(events)
     else:
         n_classes = None
-    assert paradigm in ["imagery", "p300", "ssvep"]
+    assert paradigm in ["imagery", "p300", "ssvep", None]
 
     for type_d in dataset_list:
         d = type_d()
@@ -77,7 +74,7 @@ def dataset_search(  # noqa: C901
         if len(d.subject_list) < min_subjects:
             continue
 
-        if paradigm != d.paradigm:
+        if paradigm is not None and paradigm != d.paradigm:
             continue
 
         if interval is not None and d.interval[1] - d.interval[0] < interval:
@@ -112,10 +109,8 @@ def dataset_search(  # noqa: C901
 
 
 def find_intersecting_channels(datasets, verbose=False):
-    """
-    Given a list of dataset instances return a list of channels shared by all
-    datasets.
-    Skip datasets which have 0 overlap with the others
+    """Given a list of dataset instances return a list of channels shared by
+    all datasets. Skip datasets which have 0 overlap with the others.
 
     returns: set of common channels, list of datasets with valid channels
     """

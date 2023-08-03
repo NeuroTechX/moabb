@@ -147,7 +147,6 @@ class BaseEvaluation(ABC):
         -------
         results: pd.DataFrame
             A dataframe containing the results.
-
         """
 
         # check pipelines
@@ -183,7 +182,7 @@ class BaseEvaluation(ABC):
         """Evaluate results on a single dataset.
 
         This method return a generator. each results item is a dict with
-        the following convension::
+        the following conversion::
 
             res = {'time': Duration of the training ,
                    'dataset': dataset id,
@@ -205,11 +204,10 @@ class BaseEvaluation(ABC):
 
         This method should return false if the dataset does not match the
         evaluation. This is for example the case if the dataset does not
-        contain enought session for a cross-session eval.
+        contain enough session for a cross-session eval.
 
         Parameters
         ----------
         dataset : dataset instance
             The dataset to verify.
-
         """

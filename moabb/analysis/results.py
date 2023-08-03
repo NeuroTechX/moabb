@@ -56,7 +56,6 @@ class Results:
 
     Saves dataframe per pipeline and can query to see if particular
     subject has already been run
-
     """
 
     def __init__(
@@ -68,9 +67,7 @@ class Results:
         hdf5_path=None,
         additional_columns=None,
     ):
-        """
-        class that will abstract result storage
-        """
+        """Class that will abstract result storage."""
         from moabb.evaluations.base import BaseEvaluation
         from moabb.paradigms.base import BaseParadigm
 
@@ -112,7 +109,7 @@ class Results:
                 )
 
     def add(self, results, pipelines):  # noqa: C901
-        """add results"""
+        """Add results."""
 
         def to_list(res):
             if type(res) is dict:
@@ -136,7 +133,7 @@ class Results:
             for name, data_dict in results.items():
                 digest = get_digest(pipelines[name])
                 if digest not in f.keys():
-                    # create pipeline main group if nonexistant
+                    # create pipeline main group if nonexistent
                     f.create_group(digest)
 
                 ppline_grp = f[digest]
@@ -148,7 +145,7 @@ class Results:
                 dname = d1["dataset"].code
                 n_add_cols = len(self.additional_columns)
                 if dname not in ppline_grp.keys():
-                    # create dataset subgroup if nonexistant
+                    # create dataset subgroup if nonexistent
                     dset = ppline_grp.create_group(dname)
                     dset.attrs["n_subj"] = len(d1["dataset"].subject_list)
                     dset.attrs["n_sessions"] = d1["dataset"].n_sessions
@@ -231,9 +228,8 @@ class Results:
         return ret
 
     def _already_computed(self, pipeline, dataset, subject, session=None):
-        """Check if we have results for a current combination of pipeline
-        / dataset / subject.
-        """
+        """Check if we have results for a current combination of pipeline /
+        dataset / subject."""
         with h5py.File(self.filepath, "r") as f:
             # get the digest from repr
             digest = get_digest(pipeline)

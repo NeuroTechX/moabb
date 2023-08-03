@@ -1,6 +1,4 @@
-"""
-BMI/OpenBMI dataset
-"""
+"""BMI/OpenBMI dataset."""
 from functools import partialmethod
 
 import numpy as np
@@ -17,7 +15,7 @@ Lee2019_URL = "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100542/
 
 
 class Lee2019(BaseDataset):
-    """Base dataset class for Lee2019"""
+    """Base dataset class for Lee2019."""
 
     def __init__(
         self,
@@ -59,7 +57,7 @@ class Lee2019(BaseDataset):
             raise ValueError('unknown paradigm "{}"'.format(paradigm))
         for s in sessions:
             if s not in [1, 2]:
-                raise ValueError("inexistant session {}".format(s))
+                raise ValueError("inexistent session {}".format(s))
         self.sessions = sessions
 
         super().__init__(
@@ -164,7 +162,7 @@ class Lee2019(BaseDataset):
         return raw
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subejct"""
+        """Return data for a single subejct."""
 
         sessions = {}
         file_path_list = self.data_path(subject)
