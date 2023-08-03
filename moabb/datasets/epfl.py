@@ -75,7 +75,7 @@ class EPFLP300(BaseDataset):
             subjects=[1, 2, 3, 4, 6, 7, 8, 9],
             sessions_per_subject=4,
             events=dict(Target=2, NonTarget=1),
-            code="EPFL P300 dataset",
+            code="EPFL P300",
             interval=[0, 1],
             paradigm="p300",
             doi="10.1016/j.jneumeth.2007.03.005",
