@@ -137,6 +137,8 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             message = "Select only return_epochs or return_raws, not both"
             raise ValueError(message)
 
+        self.prepare_process(dataset)
+
         raw_pipelines = self._get_raw_pipelines()
         epochs_pipeline = self._get_epochs_pipeline(return_epochs, return_raws, dataset)
         array_pipeline = self._get_array_pipeline(
@@ -258,8 +260,6 @@ class BaseProcessing(metaclass=abc.ABCMeta):
 
         if subjects is None:
             subjects = dataset.subject_list
-
-        self.prepare_process(dataset)
 
         process_pipelines = self.make_process_pipelines(
             dataset, return_epochs, return_raws, postprocess_pipeline
