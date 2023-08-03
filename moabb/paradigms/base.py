@@ -129,7 +129,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         pass
 
     def get_process_pipelines(
-        self, dataset, return_epochs, return_raws, processing_pipeline=None
+        self, dataset, return_epochs, return_raws, postprocess_pipeline=None
     ):
         """Return the pre-processing pipelines (one per frequency band)."""
         if return_epochs and return_raws:
@@ -139,7 +139,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         raw_pipelines = self._get_raw_pipelines()
         epochs_pipeline = self._get_epochs_pipeline(return_epochs, return_raws, dataset)
         array_pipeline = self._get_array_pipeline(
-            return_epochs, return_raws, dataset, processing_pipeline
+            return_epochs, return_raws, dataset, postprocess_pipeline
         )
 
         if array_pipeline is not None:

@@ -156,23 +156,34 @@ class BaseEvaluation(ABC):
         for _, pipeline in pipelines.items():
             if not (isinstance(pipeline, BaseEstimator)):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
-
         for dataset in self.datasets:
             log.info("Processing dataset: {}".format(dataset.code))
+            process_pipeline = self.paradigm.get_process_pipelines(
+                dataset,
+                return_epochs=self.return_epochs,
+                return_raws=self.return_raws,
+                postprocess_pipeline=None,
+            )[
+                0
+            ]  # TODO: fix this
+            # (we only keep the pipeline for the first frequency band, better ideas?)
+
             results = self.evaluate(dataset, pipelines, param_grid)
             for res in results:
-                self.push_result(res, pipelines)
+                self.push_result(res, pipelines, process_pipeline)
 
         return self.results.to_dataframe(pipelines=pipelines)
 
-    def push_result(self, res, pipelines):
+    def push_result(self, res, pipelines, process_pipeline):
         message = "{} | ".format(res["pipeline"])
         message += "{} | {} | {}".format(
             res["dataset"].code, res["subject"], res["session"]
         )
         message += ": Score %.3f" % res["score"]
         log.info(message)
-        self.results.add({res["pipeline"]: res}, pipelines=pipelines)
+        self.results.add(
+            {res["pipeline"]: res}, pipelines=pipelines, process_pipeline=process_pipeline
+        )
 
     def get_results(self):
         return self.results.to_dataframe()

@@ -11,6 +11,7 @@ import pandas as pd
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
 from sklearn.base import BaseEstimator
+from sklearn.pipeline import Pipeline
 
 
 try:
@@ -108,7 +109,7 @@ class Results:
                     "{:%Y-%m-%d, %H:%M}".format(datetime.now())
                 )
 
-    def add(self, results, pipelines):  # noqa: C901
+    def add(self, results, pipelines, process_pipeline):  # noqa: C901
         """Add results."""
 
         def to_list(res):
@@ -131,7 +132,11 @@ class Results:
 
         with h5py.File(self.filepath, "r+") as f:
             for name, data_dict in results.items():
-                digest = get_digest(pipelines[name])
+                clf_pipeline = pipelines[name]
+                full_pipeline = Pipeline(
+                    [("process", process_pipeline), ("clf", clf_pipeline)]
+                )
+                digest = get_digest(full_pipeline)
                 if digest not in f.keys():
                     # create pipeline main group if nonexistent
                     f.create_group(digest)
