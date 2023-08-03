@@ -128,10 +128,11 @@ class BaseProcessing(metaclass=abc.ABCMeta):
     def used_events(self, dataset):
         pass
 
-    def get_process_pipelines(
+    def make_process_pipelines(
         self, dataset, return_epochs, return_raws, postprocess_pipeline=None
     ):
-        """Return the pre-processing pipelines (one per frequency band)."""
+        """Return the pre-processing pipelines corresponding to this paradigm (one per frequency band).
+        Refer to the arguments of :func:`get_data` for more information."""
         if return_epochs and return_raws:
             message = "Select only return_epochs or return_raws, not both"
             raise ValueError(message)
@@ -179,9 +180,10 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             process_pipelines.append(Pipeline(steps))
         return process_pipelines
 
-    def get_labels_pipeline(self, dataset, return_epochs, return_raws):
+    def make_labels_pipeline(self, dataset, return_epochs, return_raws):
         """Returns the pipeline that extracts the labels from the
-        output of the postprocess_pipeline"""
+        output of the postprocess_pipeline.
+        Refer to the arguments of :func:`get_data` for more information."""
         if return_epochs:
             labels_pipeline = make_pipeline(
                 EpochsToEvents(),
@@ -202,8 +204,8 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         subjects=None,
         return_epochs=False,
         return_raws=False,
-        postprocess_pipeline=None,
         cache_config=None,
+        postprocess_pipeline=None,
     ):
         """
         Return the data for a list of subject.
@@ -229,6 +231,14 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             Mutually exclusive with return_epochs
         cache_config: dict | CacheConfig
             Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+        postprocess_pipeline: Pipeline | None
+            Optional pipeline to apply to the data after the preprocessing.
+            This pipeline will either receive :class:`mne.io.BaseRaw`, :class:`mne.Epochs`
+            or :func:`np.ndarray` as input, depending on the values of ``return_epochs``
+            and ``return_raws``.
+            This pipeline must return an ``np.ndarray``.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
 
         Eeturns
         -------
@@ -251,10 +261,10 @@ class BaseProcessing(metaclass=abc.ABCMeta):
 
         self.prepare_process(dataset)
 
-        process_pipelines = self.get_process_pipelines(
+        process_pipelines = self.make_process_pipelines(
             dataset, return_epochs, return_raws, postprocess_pipeline
         )
-        labels_pipeline = self.get_labels_pipeline(dataset, return_epochs, return_raws)
+        labels_pipeline = self.make_labels_pipeline(dataset, return_epochs, return_raws)
 
         data = [
             dataset.get_data(

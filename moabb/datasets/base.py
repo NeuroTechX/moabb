@@ -156,6 +156,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
         except TypeError:
             raise ValueError("subjects must be a iterable, like a list") from None
 
+        # if not is_camel_case(code):
+        #     raise ValueError(f"code {code!r} should be in CamelCase")
+
         self.subject_list = subjects
         self.n_sessions = sessions_per_subject
         self.event_id = events
@@ -171,7 +174,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
         cache_config=None,
         process_pipeline=None,
     ):
-        """Return the data correspoonding to a list of subjects.
+        """
+        Return the data correspoonding to a list of subjects.
 
         The returned data is a dictionary with the following structure::
 
@@ -201,27 +205,16 @@ class BaseDataset(metaclass=abc.ABCMeta):
         cache_config: dict | CacheConfig
             Configuration for caching of datasets. See ``CacheConfig``
             for details.
-        raw_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin
-            | None
-            Pipeline that necessarily takes a mne.io.Raw as input,
-            and necessarily returns a :class:`mne.io.Raw` as output.
-        epochs_pipeline: sklearn.pipeline.Pipeline |
-            sklearn.base.TransformerMixin | None
-            Pipeline that necessarily takes a mne.io.Raw as input,
-            and necessarily returns a :class:`mne.Epochs` as output.
-        array_pipeline: sklearn.pipeline.Pipeline |
-            sklearn.base.TransformerMixin | None
-            Pipeline either takes as input a :class:`mne.Epochs` if
-            epochs_pipeline is not ``None``, or a :class:`mne.io.Raw`
-            otherwise. It necessarily returns a :func:`numpy.ndarray`
-            as output.
-            If array_pipeline is not None, each run will be a
-            dict with keys "X" and "y" corresponding respectively to the array
-             itself and the corresponding labels.
-        events_pipeline: sklearn.pipeline.Pipeline |
-            sklearn.base.TransformerMixin | None
-            Pipeline used to generate the events. Only used if
-            ``array_pipeline`` is not ``None``.
+        process_pipeline: Pipeline | None
+            Optional processing pipeline to apply to the data.
+            To generate an adequate pipeline, we recommend using
+            :func:`moabb.paradigms.base.BaseProcessing.make_process_pipelines`.
+            This pipeline will receive :class:`mne.io.BaseRaw` objects.
+            The steps names of this pipeline should be elements of :class:`StepType`.
+            According to their name, the steps should either return a
+            :class:`mne.io.BaseRaw`, a :class:`mne.Epochs`, or a :func:`numpy.ndarray`.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
 
         Returns
         -------

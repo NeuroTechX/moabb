@@ -158,7 +158,7 @@ class BaseEvaluation(ABC):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
         for dataset in self.datasets:
             log.info("Processing dataset: {}".format(dataset.code))
-            process_pipeline = self.paradigm.get_process_pipelines(
+            process_pipeline = self.paradigm.make_process_pipelines(
                 dataset,
                 return_epochs=self.return_epochs,
                 return_raws=self.return_raws,
