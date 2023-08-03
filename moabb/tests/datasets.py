@@ -1,10 +1,13 @@
+import inspect
 import shutil
 import tempfile
 import unittest
 
 import mne
 
+import moabb.datasets as db
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
+from moabb.datasets.base import BaseDataset
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.utils import block_rep
@@ -146,6 +149,14 @@ class Test_Datasets(unittest.TestCase):
             # if the data is already downloaded:
             if mne.get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:
                 self.assertRaises(AttributeError, ds.get_data, [1])
+
+    def test_datasets_init(self):
+        for ds in inspect.getmembers(db, inspect.isclass):
+            if issubclass(ds[1], BaseDataset):
+                kwargs = {}
+                if inspect.signature(ds[1]).parameters.get("accept"):
+                    kwargs["accept"] = True
+                self.assertIsNotNone(ds[1](**kwargs))
 
 
 class Test_VirtualReality_Dataset(unittest.TestCase):
