@@ -19,7 +19,7 @@ class FakeDataset(BaseDataset):
     Parameters
     ----------
     event_list: list or tuple of str
-        List of event to generate, default: ("fake_c1", "fake_c2", "fake_c3")
+        List of event to generate, default: ("fake1", "fake2", "fake3")
     n_sessions: int, default 2
         Number of session to generate
     n_runs: int, default 2
@@ -36,7 +36,7 @@ class FakeDataset(BaseDataset):
 
     def __init__(
         self,
-        event_list=("fake_c1", "fake_c2", "fake_c3"),
+        event_list=("fake1", "fake2", "fake3"),
         n_sessions=2,
         n_runs=2,
         n_subjects=10,
@@ -48,8 +48,8 @@ class FakeDataset(BaseDataset):
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         self.channels = channels
         code = (
-            f"{code}{paradigm.capitalize()}Sub{n_subjects}Ses{n_sessions}Run{n_runs}"
-            f"Eve{''.join([e.replace('_', '').capitalize() for e in event_list])}Chan{''.join(channels)}"
+            f"{code}-{paradigm.capitalize()}-{n_subjects}-{n_sessions}-{n_runs}-"
+            f"{''.join([e.replace('_', '').capitalize() for e in event_list])}-{''.join(channels)}"
         )
         super().__init__(
             subjects=list(range(1, n_subjects + 1)),
