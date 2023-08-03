@@ -104,7 +104,7 @@ class Sosulski2019(BaseDataset):
         self.n_channels = 31
         self.use_soas_as_sessions = use_soas_as_sessions
         self.description_map = {"Stimulus/S 21": "Target", "Stimulus/S  1": "NonTarget"}
-        code = "SpotPilotP300"
+        code = "SpotPilot-P300"
         interval = [-0.2, 1] if interval is None else interval
         super().__init__(
             subjects=list(range(1, 13 + 1)),
