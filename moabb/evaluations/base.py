@@ -172,7 +172,9 @@ class BaseEvaluation(ABC):
             for res in results:
                 self.push_result(res, pipelines, process_pipeline)
 
-        return self.results.to_dataframe(pipelines=pipelines)
+        return self.results.to_dataframe(
+            pipelines=pipelines, process_pipeline=process_pipeline
+        )
 
     def push_result(self, res, pipelines, process_pipeline):
         message = "{} | ".format(res["pipeline"])

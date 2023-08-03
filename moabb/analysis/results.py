@@ -196,17 +196,20 @@ class Results:
                         ]
                     )
 
-    def to_dataframe(self, pipelines=None):
+    def to_dataframe(self, pipelines=None, process_pipeline=None):
         df_list = []
 
         # get the list of pipeline hash
         digests = []
-        process_pipeline = None  # TODO
-        if pipelines is not None:
+        if pipelines is not None and process_pipeline is not None:
             digests = [
                 get_pipeline_digest(process_pipeline, pipelines[name])
                 for name in pipelines
             ]
+        elif pipelines is not None or process_pipeline is not None:
+            raise ValueError(
+                "Either both of none of pipelines and process_pipeline must be specified."
+            )
 
         with h5py.File(self.filepath, "r") as f:
             for digest, p_group in f.items():
