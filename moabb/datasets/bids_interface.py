@@ -17,8 +17,9 @@ import json
 import logging
 from collections import OrderedDict
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Type
 
 import mne
 import mne_bids
@@ -430,3 +431,19 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
             overwrite=False,
             verbose=self.verbose,
         )
+
+
+class StepType(Enum):
+    """Enum corresponding to the type of data returned
+    by a pipeline step."""
+
+    RAW = "raw"
+    EPOCHS = "epochs"
+    ARRAY = "array"
+
+
+_interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
+    StepType.RAW: BIDSInterfaceRawEDF,
+    StepType.EPOCHS: BIDSInterfaceEpochs,
+    StepType.ARRAY: BIDSInterfaceNumpyArray,
+}

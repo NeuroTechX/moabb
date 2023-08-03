@@ -3,25 +3,14 @@ import abc
 import logging
 import traceback
 from dataclasses import dataclass
-from enum import Enum
 from inspect import signature
 from pathlib import Path
-from typing import Dict, Type, Union
+from typing import Dict, Union
 
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.pipeline import Pipeline
 
-from moabb.datasets.bids_interface import (
-    BIDSInterfaceBase,
-    BIDSInterfaceEpochs,
-    BIDSInterfaceNumpyArray,
-    BIDSInterfaceRawEDF,
-)
-from moabb.datasets.preprocessing import (
-    EpochsToEvents,
-    ForkPipelines,
-    RawToEvents,
-    SetRawAnnotations,
-)
+from moabb.datasets.bids_interface import StepType, _interface_map
+from moabb.datasets.preprocessing import SetRawAnnotations
 
 
 log = logging.getLogger(__name__)
@@ -95,21 +84,6 @@ class CacheConfig:
             return dic
         else:
             raise ValueError(f"Expected dict or CacheConfig, got {type(dic)}")
-
-
-class StepType(Enum):
-    """Enum for the different steps in the pipeline."""
-
-    RAW = "raw"
-    EPOCHS = "epochs"
-    ARRAY = "array"
-
-
-_interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
-    StepType.RAW: BIDSInterfaceRawEDF,
-    StepType.EPOCHS: BIDSInterfaceEpochs,
-    StepType.ARRAY: BIDSInterfaceNumpyArray,
-}
 
 
 def apply_step(pipeline, obj):
@@ -195,10 +169,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self,
         subjects=None,
         cache_config=None,
-        raw_pipeline=None,
-        epochs_pipeline=None,
-        array_pipeline=None,
-        events_pipeline=None,
+        process_pipeline=None,
     ):
         """Return the data correspoonding to a list of subjects.
 
@@ -263,35 +234,14 @@ class BaseDataset(metaclass=abc.ABCMeta):
         if not isinstance(subjects, list):
             raise ValueError("subjects must be a list")
 
-        if events_pipeline is None and array_pipeline is not None:
-            log.warning(
-                f"event_id not specified, using all the dataset's "
-                f"events to generate labels: {self.event_id}"
-            )
-            events_pipeline = (
-                RawToEvents(self.event_id)
-                if epochs_pipeline is None
-                else EpochsToEvents()
-            )
-
         cache_config = CacheConfig.make(cache_config)
 
-        steps = []
-        steps.append((StepType.RAW, SetRawAnnotations(self.event_id)))
-        if raw_pipeline is not None:
-            steps.append((StepType.RAW, raw_pipeline))
-        if epochs_pipeline is not None:
-            steps.append((StepType.EPOCHS, epochs_pipeline))
-        if array_pipeline is not None:
-            array_events_pipeline = ForkPipelines(
+        if process_pipeline is None:
+            process_pipeline = Pipeline(
                 [
-                    ("X", array_pipeline),
-                    ("events", events_pipeline),
+                    (StepType.RAW, SetRawAnnotations(self.event_id)),
                 ]
             )
-            steps.append((StepType.ARRAY, array_events_pipeline))
-        if len(steps) == 0:
-            steps.append((StepType.RAW, make_pipeline(None)))
 
         data = dict()
         for subject in subjects:
@@ -300,7 +250,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
             data[subject] = self._get_single_subject_data_using_cache(
                 subject,
                 cache_config,
-                steps,
+                process_pipeline,
             )
 
         return data
@@ -365,7 +315,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     verbose=verbose,
                 )
 
-    def _get_single_subject_data_using_cache(self, subject, cache_config, steps):
+    def _get_single_subject_data_using_cache(
+        self, subject, cache_config, process_pipeline
+    ):
         """Load a single subject's data using cache.
 
         Either load the data of a single subject from disk cache or from the
@@ -373,6 +325,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         then eventually saves or overwrites the cache version depending on the
         parameters.
         """
+        steps = list(process_pipeline.steps)
         splitted_steps = []  # list of (cached_steps, remaining_steps)
         if cache_config.use:
             splitted_steps += [
