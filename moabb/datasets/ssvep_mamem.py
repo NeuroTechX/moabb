@@ -109,13 +109,13 @@ class BaseMAMEM(BaseDataset):
             if fnamed[4] == "x":
                 continue
             session_name = "session_0"
-            if self.code == "MAMEM3_SSVEP":
+            if self.code == "MAMEM3-SSVEP":
                 repetition = len(fnamed) - 10
                 run_name = f"run_{(ord(fnamed[4]) - 97) * 2 + repetition}"
             else:
                 run_name = f"run_{ord(fnamed[4]) - 97}"
 
-            if self.code == "MAMEM3_SSVEP":
+            if self.code == "MAMEM3-SSVEP":
                 m = loadmat(fpath)
                 ch_names = [e[0] for e in m["info"][0, 0][9][0]]
                 sfreq = 128
@@ -126,7 +126,7 @@ class BaseMAMEM(BaseDataset):
                 ch_names = [f"E{i + 1}" for i in range(0, 256)]
                 ch_names.append("stim")
                 sfreq = 250
-                if self.code == "MAMEM2_SSVEP":
+                if self.code == "MAMEM2-SSVEP":
                     labels = m["labels"]
                 else:
                     labels = None
@@ -151,7 +151,7 @@ class BaseMAMEM(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         sub = f"{subject:02d}"
-        sign = self.code.split("_")[0]
+        sign = self.code.split("-")[0]
         key_dest = f"MNE-{sign.lower():s}-data"
         path = osp.join(get_dataset_path(sign, path), key_dest)
 

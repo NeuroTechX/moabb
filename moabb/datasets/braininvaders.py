@@ -34,24 +34,24 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
 
     for file_path in file_path_list:
         if ds.code in [
-            "Brain Invaders 2012",
-            "Brain Invaders 2014a",
-            "Brain Invaders 2014b",
-            "Brain Invaders 2015b",
+            "BrainInvaders2012",
+            "BrainInvaders2014a",
+            "BrainInvaders2014b",
+            "BrainInvaders2015b",
         ]:
             session_name = "session_1"
-        elif ds.code == "Brain Invaders 2013a":
+        elif ds.code == "BrainInvaders2013a":
             session_number = file_path.split(os.sep)[-2].replace("Session", "")
             session_name = "session_" + session_number
-        elif ds.code == "Brain Invaders 2015a":
+        elif ds.code == "BrainInvaders2015a":
             session_name = f'session_{file_path.split("_")[-1][1:2]}'
-        elif ds.code == "P300-VR":
+        elif ds.code == "VR-P300":
             session_name = file_path.split(".")[0].split("_")[-1]
 
         if session_name not in sessions.keys():
             sessions[session_name] = {}
 
-        if ds.code == "Brain Invaders 2012":
+        if ds.code == "BrainInvaders2012":
             condition = file_path.split("/")[-1].split(".")[0].split(os.sep)[-1]
             run_name = "run_" + condition
             # fmt: off
@@ -66,7 +66,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim = (X[18, :] + X[19, :])[None, :]
             X = np.concatenate([S, stim])
             sfreq = 128
-        elif ds.code == "Brain Invaders 2013a":
+        elif ds.code == "BrainInvaders2013a":
             run_number = file_path.split(os.sep)[-1]
             run_number = run_number.split("_")[-1]
             run_number = run_number.split(".mat")[0]
@@ -80,7 +80,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             chtypes = ["eeg"] * 16 + ["stim"]
             X = loadmat(file_path)["data"].T
             sfreq = 512
-        elif ds.code == "Brain Invaders 2014a":
+        elif ds.code == "BrainInvaders2014a":
             run_name = "run_1"
             # fmt: off
             chnames = [
@@ -95,7 +95,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim = D[-1, :]
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
-        elif ds.code == "Brain Invaders 2014b":
+        elif ds.code == "BrainInvaders2014b":
             # fmt: off
             chnames = [
                 'Fp1', 'Fp2', 'AFz', 'F7', 'F3', 'F4', 'F8', 'FC5', 'FC1', 'FC2',
@@ -114,7 +114,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim = D[-1, :]
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
-        elif ds.code == "Brain Invaders 2015a":
+        elif ds.code == "BrainInvaders2015a":
             run_name = "run_1"
             # fmt: off
             chnames = [
@@ -129,7 +129,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim = D[-2, :] + D[-1, :]
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
-        elif ds.code == "Brain Invaders 2015b":
+        elif ds.code == "BrainInvaders2015b":
             run_name = "run_" + file_path.split("_")[-1].split(".")[0][1]
             # fmt: off
             chnames = [
@@ -152,7 +152,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim[idx_nontarget] = 1
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
-        elif ds.code == "P300-VR":
+        elif ds.code == "VR-P300":
             data = loadmat(os.path.join(file_path, os.listdir(file_path)[0]))["data"]
 
             chnames = [
@@ -189,11 +189,11 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             verbose=False,
         )
 
-        if not ds.code == "P300-VR":
+        if not ds.code == "VR-P300":
             raw = mne.io.RawArray(data=X, info=info, verbose=False)
             raw.set_montage(make_standard_montage("standard_1020"))
 
-            if ds.code == "Brain Invaders 2012":
+            if ds.code == "BrainInvaders2012":
                 # get rid of the Fz channel (it is the ground)
                 raw.info["bads"] = ["Fz"]
                 raw.pick_types(eeg=True, stim=True)
@@ -230,7 +230,7 @@ def _bi_data_path(  # noqa: C901
         raise (ValueError("Invalid subject number"))
 
     subject_paths = []
-    if ds.code == "Brain Invaders 2012":
+    if ds.code == "BrainInvaders2012":
         # check if has the .zip
         url = f"{BI2012a_URL}subject_{subject:02}.zip"
         path_zip = dl.data_dl(url, "BRAININVADERS2012")
@@ -253,7 +253,7 @@ def _bi_data_path(  # noqa: C901
                 osp.join(f"{path_folder}subject_{subject:02}", "online.mat")
             )
 
-    elif ds.code == "Brain Invaders 2013a":
+    elif ds.code == "BrainInvaders2013a":
         if subject in [1, 2, 3, 4, 5, 6, 7]:
             zipname_list = [
                 f"subject{subject:02}_session{i:02}.zip" for i in range(1, 8 + 1)
@@ -305,7 +305,7 @@ def _bi_data_path(  # noqa: C901
                 osp.join(directory, "Session*", filename.replace(".gdf", ".mat"))
             )
 
-    elif ds.code == "Brain Invaders 2014a":
+    elif ds.code == "BrainInvaders2014a":
         url = f"{BI2014a_URL}subject_{subject:02}.zip"
         path_zip = dl.data_dl(url, "BRAININVADERS2014A")
         path_folder = path_zip.strip(f"subject_{subject:02}.zip")
@@ -320,7 +320,7 @@ def _bi_data_path(  # noqa: C901
         # filter the data regarding the experimental conditions
         subject_paths.append(osp.join(path_folder_subject, f"subject_{subject:02}.mat"))
 
-    elif ds.code == "Brain Invaders 2014b":
+    elif ds.code == "BrainInvaders2014b":
         group = (subject + 1) // 2
         url = f"{BI2014b_URL}group_{group:02}_mat.zip"
         path_zip = dl.data_dl(url, "BRAININVADERS2014B")
@@ -346,7 +346,7 @@ def _bi_data_path(  # noqa: C901
         # Collaborative session are not loaded
         # subject_paths.append(osp.join(path_folder_subject, f'group_{(subject+1)//2:02}.mat')
 
-    elif ds.code == "Brain Invaders 2015a":
+    elif ds.code == "BrainInvaders2015a":
         # TODO: possible fusion with 2014a?
         url = f"{BI2015a_URL}subject_{subject:02}_mat.zip"
         path_zip = dl.data_dl(url, "BRAININVADERS2015A")
@@ -367,7 +367,7 @@ def _bi_data_path(  # noqa: C901
                     path_folder_subject, f"subject_{subject:02}_session_{session:02}.mat"
                 )
             )
-    elif ds.code == "Brain Invaders 2015b":
+    elif ds.code == "BrainInvaders2015b":
         # TODO: possible fusion with 2014b?
         url = f"{BI2015b_URL}group_{(subject + 1) // 2:02}_mat.zip"
         path_zip = dl.data_dl(url, "BRAININVADERS2015B")
@@ -388,7 +388,7 @@ def _bi_data_path(  # noqa: C901
             )
             for i in range(1, 5)
         ]
-    elif ds.code == "P300-VR":
+    elif ds.code == "VR-P300":
         subject_paths = []
         if ds.virtual_reality:
             url = "{:s}subject_{:02d}_{:s}.mat".format(VIRTUALREALITY_URL, subject, "VR")
