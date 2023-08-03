@@ -47,7 +47,10 @@ class FakeDataset(BaseDataset):
         self.n_runs = n_runs
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         self.channels = channels
-        code = f"{code}_{paradigm}_{n_subjects}_{n_sessions}_{n_runs}__{'_'.join(event_list)}__{'_'.join(channels)}"
+        code = (
+            f"{code}{paradigm.capitalize()}Sub{n_subjects}Ses{n_sessions}Run{n_runs}"
+            f"Eve{''.join([e.replace('_', '').capitalize() for e in event_list])}Chan{''.join(channels)}"
+        )
         super().__init__(
             subjects=list(range(1, n_subjects + 1)),
             sessions_per_subject=n_sessions,
@@ -56,7 +59,7 @@ class FakeDataset(BaseDataset):
             interval=[0, 3],
             paradigm=paradigm,
         )
-        key = "MNE_DATASETS_{:s}-BIDS_PATH".format(self.code.upper())
+        key = "MNE_DATASETS_{:s}_PATH".format(self.code.upper())
         temp_dir = get_config(key)
         if temp_dir is None or not Path(temp_dir).is_dir():
             temp_dir = tempfile.mkdtemp()
