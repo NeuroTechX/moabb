@@ -46,12 +46,11 @@ from .ssvep_mamem import MAMEM1, MAMEM2, MAMEM3
 from .ssvep_nakanishi import Nakanishi2015
 from .ssvep_wang import Wang2016
 from .upper_limb import Ofner2017
-
-# Call this last in order to make sure the dataset list contains all
-# the datasets imported in this file.
 from .utils import _init_dataset_list
 from .Weibo2014 import Weibo2014
 from .Zhou2016 import Zhou2016
 
 
+# Call this last in order to make sure the dataset list contains all
+# the datasets imported in this file.
 _init_dataset_list()
