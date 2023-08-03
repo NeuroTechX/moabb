@@ -1,17 +1,16 @@
+import inspect
 import shutil
 import tempfile
 import unittest
-import inspect
 
 import mne
 
 from moabb import datasets as db
-from moabb.datasets.base import BaseDataset
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
+from moabb.datasets.base import BaseDataset
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
-from moabb.datasets.utils import block_rep
-from moabb.datasets.utils import dataset_list
+from moabb.datasets.utils import block_rep, dataset_list
 from moabb.paradigms import P300
 
 
@@ -152,10 +151,13 @@ class Test_Datasets(unittest.TestCase):
                 self.assertRaises(AttributeError, ds.get_data, [1])
 
     def test_dataset_list(self):
-        all_datasets = len([
-            issubclass(c, BaseDataset) for c in db.__dict__.values()
-            if inspect.isclass(c)
-        ])
+        all_datasets = len(
+            [
+                issubclass(c, BaseDataset)
+                for c in db.__dict__.values()
+                if inspect.isclass(c)
+            ]
+        )
         assert len(dataset_list) == all_datasets
 
 
