@@ -67,7 +67,7 @@ class MunichMI(BaseDataset):
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
             events=dict(right_hand=2, left_hand=1),
-            code="Grosse-Wentrup 2009",
+            code="GrosseWentrup2009",
             interval=[0, 7],
             paradigm="imagery",
             doi="10.1109/TBME.2008.2009768",

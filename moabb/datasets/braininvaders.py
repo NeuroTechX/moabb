@@ -369,11 +369,11 @@ def _bi_data_path(  # noqa: C901
             )
     elif ds.code == "Brain Invaders 2015b":
         # TODO: possible fusion with 2014b?
-        url = f"{BI2015b_URL}group_{(subject+1)//2:02}_mat.zip"
+        url = f"{BI2015b_URL}group_{(subject + 1) // 2:02}_mat.zip"
         path_zip = dl.data_dl(url, "BRAININVADERS2015B")
-        path_folder = path_zip.strip(f"group_{(subject+1)//2:02}_mat.zip")
+        path_folder = path_zip.strip(f"group_{(subject + 1) // 2:02}_mat.zip")
         # check if has to unzip
-        path_folder_subject = f"{path_folder}group_{(subject+1)//2:02}"
+        path_folder_subject = f"{path_folder}group_{(subject + 1) // 2:02}"
         if not (osp.isdir(path_folder_subject)):
             os.mkdir(path_folder_subject)
             zip_ref = z.ZipFile(path_zip, "r")
@@ -383,8 +383,8 @@ def _bi_data_path(  # noqa: C901
         subject_paths = [
             osp.join(
                 path_folder,
-                f"group_{(subject+1)//2:02}",
-                f"group_{(subject+1)//2:02}_s{i}",
+                f"group_{(subject + 1) // 2:02}",
+                f"group_{(subject + 1) // 2:02}_s{i}",
             )
             for i in range(1, 5)
         ]
@@ -449,7 +449,7 @@ class bi2012(BaseDataset):
             subjects=list(range(1, 26)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="Brain Invaders 2012",
+            code="BrainInvaders2012",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2649006",
@@ -549,7 +549,7 @@ class bi2013a(BaseDataset):
             subjects=list(range(1, 25)),
             sessions_per_subject=1,
             events=dict(Target=33285, NonTarget=33286),
-            code="Brain Invaders 2013a",
+            code="BrainInvaders2013a",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2669187",
@@ -612,7 +612,7 @@ class bi2014a(BaseDataset):
             subjects=list(range(1, 65)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="Brain Invaders 2014a",
+            code="BrainInvaders2014a",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3266222",
@@ -671,7 +671,7 @@ class bi2014b(BaseDataset):
             subjects=list(range(1, 38)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="Brain Invaders 2014b",
+            code="BrainInvaders2014b",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3267301",
@@ -731,7 +731,7 @@ class bi2015a(BaseDataset):
             subjects=list(range(1, 44)),
             sessions_per_subject=3,
             events=dict(Target=2, NonTarget=1),
-            code="Brain Invaders 2015a",
+            code="BrainInvaders2015a",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3266929",
@@ -794,7 +794,7 @@ class bi2015b(BaseDataset):
             subjects=list(range(1, 45)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="Brain Invaders 2015b",
+            code="BrainInvaders2015b",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3267307",
