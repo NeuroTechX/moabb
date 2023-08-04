@@ -168,7 +168,7 @@ class BaseEvaluation(ABC):
             ]  # TODO: fix this
             # (we only keep the pipeline for the first frequency band, better ideas?)
 
-            results = self.evaluate(dataset, pipelines, param_grid)
+            results = self.evaluate(dataset, pipelines, param_grid, process_pipeline)
             for res in results:
                 self.push_result(res, pipelines, process_pipeline)
 
@@ -191,7 +191,7 @@ class BaseEvaluation(ABC):
         return self.results.to_dataframe()
 
     @abstractmethod
-    def evaluate(self, dataset, pipelines, param_grid):
+    def evaluate(self, dataset, pipelines, param_grid, process_pipeline):
         """Evaluate results on a single dataset.
 
         This method return a generator. each results item is a dict with

@@ -129,7 +129,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         pass
 
     def make_process_pipelines(
-        self, dataset, return_epochs, return_raws, postprocess_pipeline=None
+        self, dataset, return_epochs=False, return_raws=False, postprocess_pipeline=None
     ):
         """Return the pre-processing pipelines corresponding to this paradigm (one per frequency band).
         Refer to the arguments of :func:`get_data` for more information."""
@@ -182,7 +182,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             process_pipelines.append(Pipeline(steps))
         return process_pipelines
 
-    def make_labels_pipeline(self, dataset, return_epochs, return_raws):
+    def make_labels_pipeline(self, dataset, return_epochs=False, return_raws=False):
         """Returns the pipeline that extracts the labels from the
         output of the postprocess_pipeline.
         Refer to the arguments of :func:`get_data` for more information."""

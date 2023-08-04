@@ -178,10 +178,12 @@ class WithinSessionEvaluation(BaseEvaluation):
 
     # flake8: noqa: C901
 
-    def _evaluate(self, dataset, pipelines, param_grid):
+    def _evaluate(self, dataset, pipelines, param_grid, process_pipeline):
         with parallel_backend("threading"):
             results = Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
-                delayed(self._evaluate_subject)(dataset, pipelines, param_grid, subject)
+                delayed(self._evaluate_subject)(
+                    dataset, pipelines, param_grid, subject, process_pipeline
+                )
                 for subject in tqdm(
                     dataset.subject_list, desc=f"{dataset.code}-WithinSession"
                 )
@@ -190,11 +192,12 @@ class WithinSessionEvaluation(BaseEvaluation):
         # Concatenate the results from all subjects
         yield from [res for subject_results in results for res in subject_results]
 
-    def _evaluate_subject(self, dataset, pipelines, param_grid, subject):
+    def _evaluate_subject(
+        self, dataset, pipelines, param_grid, subject, process_pipeline
+    ):
         # Progress Bar at subject level
         # check if we already have result for this subject/pipeline
         # we might need a better granularity, if we query the DB
-        process_pipeline = None  # TODO
         run_pipes = self.results.not_yet_computed(
             pipelines, dataset, subject, process_pipeline
         )
@@ -364,12 +367,11 @@ class WithinSessionEvaluation(BaseEvaluation):
         duration = time() - t_start
         return score, duration
 
-    def _evaluate_learning_curve(self, dataset, pipelines):
+    def _evaluate_learning_curve(self, dataset, pipelines, process_pipeline):
         # Progressbar at subject level
         for subject in tqdm(dataset.subject_list, desc=f"{dataset.code}-WithinSession"):
             # check if we already have result for this subject/pipeline
             # we might need a better granularity, if we query the DB
-            process_pipeline = None  # TODO
             run_pipes = self.results.not_yet_computed(
                 pipelines, dataset, subject, process_pipeline
             )
@@ -445,11 +447,11 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 )
                             yield res
 
-    def evaluate(self, dataset, pipelines, param_grid):
+    def evaluate(self, dataset, pipelines, param_grid, process_pipeline):
         if self.calculate_learning_curve:
-            yield from self._evaluate_learning_curve(dataset, pipelines)
+            yield from self._evaluate_learning_curve(dataset, pipelines, process_pipeline)
         else:
-            yield from self._evaluate(dataset, pipelines, param_grid)
+            yield from self._evaluate(dataset, pipelines, param_grid, process_pipeline)
 
     def is_valid(self, dataset):
         return True
@@ -531,24 +533,25 @@ class CrossSessionEvaluation(BaseEvaluation):
             return grid_clf
 
     # flake8: noqa: C901
-    def evaluate(self, dataset, pipelines, param_grid):
+    def evaluate(self, dataset, pipelines, param_grid, process_pipeline):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
         # Progressbar at subject level
         results = []
         with parallel_backend("threading"):
             for result in Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
-                delayed(self.process_subject)(subject, param_grid, pipelines, dataset)
+                delayed(self.process_subject)(
+                    subject, param_grid, pipelines, dataset, process_pipeline
+                )
                 for subject in dataset.subject_list
             ):
                 results.extend(result)
 
         return results
 
-    def process_subject(self, subject, param_grid, pipelines, dataset):
+    def process_subject(self, subject, param_grid, pipelines, dataset, process_pipeline):
         # check if we already have result for this subject/pipeline
         # we might need a better granularity, if we query the DB
-        process_pipeline = None  # TODO
         run_pipes = self.results.not_yet_computed(
             pipelines, dataset, subject, process_pipeline
         )
@@ -751,7 +754,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             return pipelines[name]
 
     # flake8: noqa: C901
-    def evaluate(self, dataset, pipelines, param_grid):
+    def evaluate(self, dataset, pipelines, param_grid, process_pipeline):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
         # this is a bit akward, but we need to check if at least one pipe
@@ -760,7 +763,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
         # we might need a better granularity, if we query the DB
         run_pipes = {}
         for subject in dataset.subject_list:
-            process_pipeline = None  # TODO
             run_pipes.update(
                 self.results.not_yet_computed(
                     pipelines, dataset, subject, process_pipeline
@@ -820,7 +822,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
         ):
             subject = groups[test[0]]
             # now we can check if this subject has results
-            process_pipeline = None  # TODO
             run_pipes = self.results.not_yet_computed(
                 pipelines, dataset, subject, process_pipeline
             )

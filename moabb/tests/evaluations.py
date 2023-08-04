@@ -70,7 +70,13 @@ class Test_WithinSess(unittest.TestCase):
             os.remove(path)
 
     def test_eval_results(self):
-        results = [r for r in self.eval.evaluate(dataset, pipelines, param_grid=None)]
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+        results = [
+            r
+            for r in self.eval.evaluate(
+                dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+            )
+        ]
 
         # We should get 4 results, 2 sessions 2 subjects
         self.assertEqual(len(results), 4)
@@ -113,8 +119,15 @@ class Test_WithinSess(unittest.TestCase):
 
         # Test grid search
         param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
         results = [
-            r for r in self.eval.evaluate(dataset, pipelines, param_grid=param_grid)
+            r
+            for r in self.eval.evaluate(
+                dataset,
+                pipelines,
+                param_grid=param_grid,
+                process_pipeline=process_pipeline,
+            )
         ]
 
         # We should get 4 results, 2 sessions 2 subjects
@@ -162,8 +175,12 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
             data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
             n_perms=np.array([2, 2]),
         )
+        process_pipeline = learning_curve_eval.paradigm.make_process_pipelines(dataset)[0]
         results = [
-            r for r in learning_curve_eval.evaluate(dataset, pipelines, param_grid=None)
+            r
+            for r in learning_curve_eval.evaluate(
+                dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+            )
         ]
         keys = results[0].keys()
         self.assertEqual(len(keys), 10)  # 8 + 2 new for learning curve
@@ -188,7 +205,12 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
     def test_data_sanity(self):
         # need this helper to iterate over the generator
         def run_evaluation(eval, dataset, pipelines):
-            list(eval.evaluate(dataset, pipelines, param_grid=None))
+            process_pipeline = eval.paradigm.make_process_pipelines(dataset)[0]
+            list(
+                eval.evaluate(
+                    dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+                )
+            )
 
         # E.g. if number of samples too high -> expect error
         kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], n_perms=[2, 2])
@@ -201,7 +223,11 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
         # This one should run
         run_evaluation(should_work, dataset, pipelines)
         self.assertRaises(
-            ValueError, run_evaluation, too_many_samples, dataset, pipelines
+            ValueError,
+            run_evaluation,
+            too_many_samples,
+            dataset,
+            pipelines,
         )
 
     def test_eval_grid_search(self):
