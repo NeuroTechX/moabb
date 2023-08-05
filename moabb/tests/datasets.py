@@ -153,9 +153,9 @@ class Test_Datasets(unittest.TestCase):
     def test_datasets_init(self):
         for ds in dataset_list:
             kwargs = {}
-            if inspect.signature(ds[1]).parameters.get("accept"):
+            if inspect.signature(ds).parameters.get("accept"):
                 kwargs["accept"] = True
-            self.assertIsNotNone(ds[1](**kwargs))
+            self.assertIsNotNone(ds(**kwargs))
 
     def test_dataset_list(self):
         all_datasets = len(
