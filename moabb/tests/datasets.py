@@ -12,6 +12,7 @@ from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.utils import block_rep, dataset_list
 from moabb.paradigms import P300
+from moabb.utils import aliases_list
 
 
 _ = mne.set_log_level("CRITICAL")
@@ -158,10 +159,18 @@ class Test_Datasets(unittest.TestCase):
             self.assertIsNotNone(ds(**kwargs))
 
     def test_dataset_list(self):
+        if aliases_list:
+            depreciated_list, _, _ = zip(*aliases_list)
+        else:
+            depreciated_list = []
         all_datasets = [
             c
             for c in db.__dict__.values()
-            if (inspect.isclass(c) and issubclass(c, BaseDataset))
+            if (
+                inspect.isclass(c)
+                and issubclass(c, BaseDataset)
+                and c.__name__ not in depreciated_list
+            )
         ]
 
         assert len(dataset_list) == len(all_datasets)
