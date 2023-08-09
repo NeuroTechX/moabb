@@ -15,6 +15,7 @@ import abc
 import datetime
 import json
 import logging
+import re
 from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
@@ -36,6 +37,12 @@ if TYPE_CHECKING:
     from moabb.datasets.base import BaseDataset
 
 log = logging.getLogger(__name__)
+
+
+def camel_to_kebab_case(name):
+    """Converts a CamelCase string to kebab-case."""
+    name = re.sub("(.)([A-Z][a-z]+)", r"\1-\2", name)
+    return re.sub("([a-z0-9])([A-Z])", r"\1-\2", name).lower()
 
 
 def subject_moabb_to_bids(subject: int):
@@ -119,11 +126,10 @@ class BIDSInterfaceBase(abc.ABC):
     @property
     def root(self):
         """Return the root path of the BIDS dataset."""
-        code = self.dataset.code + "-BIDS"
+        code = self.dataset.code
         mne_path = Path(dl.get_dataset_path(code, self.path))
-        cache_dir = f"MNE-{code.lower()}-cache"
+        cache_dir = f"MNE-BIDS-{camel_to_kebab_case(code)}"
         cache_path = mne_path / cache_dir
-
         return cache_path
 
     @property
@@ -143,7 +149,7 @@ class BIDSInterfaceBase(abc.ABC):
         )
 
     def erase(self):
-        """Erase the cache of the subject."""
+        """Erase the cache of the subject if it exists."""
         log.info("Starting erasing cache of %s...", repr(self))
         path = mne_bids.BIDSPath(
             root=self.root,
@@ -155,7 +161,15 @@ class BIDSInterfaceBase(abc.ABC):
         log.info("Finished erasing cache of %s.", repr(self))
 
     def load(self, preload=False):
-        """Load the cache of the subject."""
+        """Load the cache of the subject if it exists and returns it as
+        a nested dictionary with the following structure::
+
+            sessions_data = {'session_id':
+                        {'run_id': run}
+                    }
+
+        If the cache is not present, returns None.
+        """
         log.info("Attempting to retrieve cache of %s...", repr(self))
         self.lock_file.mkdir(exist_ok=True)
         if not self.lock_file.fpath.exists():
@@ -180,7 +194,18 @@ class BIDSInterfaceBase(abc.ABC):
         return sessions_data
 
     def save(self, sessions_data):
-        """Save the cache of the subject."""
+        """Save the cache of the subject.
+        The data to be saved should be a nested dictionary
+        with the following structure::
+
+            sessions_data = {'session_id':
+                        {'run_id': run}
+                    }
+
+        If a ``run`` is None, it will be skipped.
+
+        The type of the ``run`` object can vary (see the subclases).
+        """
         log.info("Starting caching %s", {repr(self)})
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
         mne_bids.make_dataset_description(
@@ -261,7 +286,10 @@ class BIDSInterfaceBase(abc.ABC):
 
 
 class BIDSInterfaceRawEDF(BIDSInterfaceBase):
-    """BIDS Interface for Raw EDF files. Selected .edf type only."""
+    """BIDS Interface for Raw EDF files. Selected .edf type only.
+
+    In this case, the ``run`` object (see the ``save()`` method)
+    is expected to be an ``mne.io.BaseRaw`` instance."""
 
     @property
     def _extension(self):
@@ -330,6 +358,10 @@ class BIDSInterfaceEpochs(BIDSInterfaceBase):
     """This interface is used to cache mne-epochs to disk.
 
     Pseudo-BIDS format is used to store the data.
+
+
+    In this case, the ``run`` object (see the ``save()`` method)
+    is expected to be an ``mne.Epochs`` instance.
     """
 
     @property
@@ -358,6 +390,10 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
     """This interface is used to cache numpy arrays to disk.
 
     MOABB Pseudo-BIDS format is used to store the data.
+
+    In this case, the ``run`` object (see the ``save()`` method)
+    is expected to be an ``OrderedDict`` with keys ``"X"`` and
+    ``"events"``. Both values are expected to be ``numpy.ndarray``.
     """
 
     @property

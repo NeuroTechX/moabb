@@ -64,7 +64,7 @@ class Lee2019(BaseDataset):
             subjects=list(range(1, 55)),
             sessions_per_subject=2,
             events=events,
-            code="Lee2019_" + code_suffix,
+            code="Lee2019-" + code_suffix,
             interval=interval,
             paradigm=paradigm,
             doi="10.5524/100542",

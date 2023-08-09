@@ -1,6 +1,7 @@
 """Base class for a dataset."""
 import abc
 import logging
+import re
 import traceback
 from dataclasses import dataclass
 from enum import Enum
@@ -125,6 +126,11 @@ def apply_step(pipeline, obj):
         raise error
 
 
+def is_camel_kebab_case(name):
+    """Check if a string is in CamelCase but can also contain dashes."""
+    return re.fullmatch(r"[a-zA-Z0-9\-]+", name) is not None
+
+
 class BaseDataset(metaclass=abc.ABCMeta):
     """Abstract Moabb BaseDataset.
 
@@ -154,7 +160,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
         - word_ass (for word association)
 
     code: string
-        Unique identifier for dataset, used in all plots
+        Unique identifier for dataset, used in all plots.
+        The code should be in CamelCase.
 
     interval: list with 2 entries
         Imagery interval as defined in the dataset description
@@ -181,6 +188,12 @@ class BaseDataset(metaclass=abc.ABCMeta):
             _ = iter(subjects)
         except TypeError:
             raise ValueError("subjects must be a iterable, like a list") from None
+
+        if not is_camel_kebab_case(code):
+            raise ValueError(
+                f"code {code!r} must be in Camel-KebabCase; "
+                "i.e. use CamelCase, and add dashes where absolutely necessary."
+            )
 
         self.subject_list = subjects
         self.n_sessions = sessions_per_subject
