@@ -126,7 +126,7 @@ def apply_step(pipeline, obj):
         raise error
 
 
-def is_camel_kebab_case(name):
+def is_camel_kebab_case(name: str):
     """Check if a string is in CamelCase but can also contain dashes."""
     return re.fullmatch(r"[a-zA-Z0-9\-]+", name) is not None
 
