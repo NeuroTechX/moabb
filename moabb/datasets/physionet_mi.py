@@ -81,7 +81,7 @@ class PhysionetMI(BaseDataset):
             subjects=list(range(1, 110)),
             sessions_per_subject=1,
             events=dict(left_hand=2, right_hand=3, feet=5, hands=4, rest=1),
-            code="Physionet Motor Imagery",
+            code="PhysionetMotorImagery",
             # website does not specify how long the trials are, but the
             # interval between 2 trial is 4 second.
             interval=[0, 3],
