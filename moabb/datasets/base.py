@@ -131,6 +131,14 @@ def is_camel_kebab_case(name):
     return re.fullmatch(r"[a-zA-Z0-9\-]+", name) is not None
 
 
+def is_abreviation(abrev_name: str, full_name: str):
+    """Check if abrev_name is an abbreviation of full_name,
+    i.e. if abrev_name has the same capitals letters as full_name
+    but may have lower letters shorten."""
+    pattern = re.sub(r"([A-Za-z])", r"\1[a-z]*", abrev_name)
+    return re.fullmatch(pattern, full_name) is not None
+
+
 class BaseDataset(metaclass=abc.ABCMeta):
     """Abstract Moabb BaseDataset.
 
