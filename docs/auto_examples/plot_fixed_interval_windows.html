@@ -646,7 +646,7 @@ with the <a class="reference internal" href="../generated/moabb.datasets.Zhou201
     <span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
     <span class="n">stride</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
     <span class="n">start_offset</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
-    <span class="n">stop_offset</span><span class="o">=</span><span class="mi">900</span><span class="p">,</span>  <span class="c1"># we epoch 10 minutes per run, starting at 200 seconds</span>
+    <span class="n">stop_offset</span><span class="o">=</span><span class="mi">900</span><span class="p">,</span>  <span class="c1"># we epoch 10 minutes per run, starting at 5 minutes (i.e. 300 seconds)</span>
     <span class="c1"># parameters common with other paradigms:</span>
     <span class="n">resample</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
     <span class="n">fmin</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
@@ -668,10 +668,10 @@ sessions: [&#39;session_0&#39; &#39;session_1&#39; &#39;session_2&#39;]
 runs: [&#39;run_0&#39; &#39;run_1&#39;]
 </pre></div>
 </div>
-<p>We expect to obtained <code class="docutils literal notranslate"><span class="pre">(stop_offset</span> <span class="pre">-</span> <span class="pre">start_offset</span> <span class="pre">-</span> <span class="pre">length)</span> <span class="pre">/</span> <span class="pre">stride</span></code>
-= (900-300-100)/50 = 10 epochs per run. Here we have 3*2=6 runs.
+<p>We expect to obtained <code class="docutils literal notranslate"><span class="pre">(stop_offset</span> <span class="pre">-</span> <span class="pre">start_offset</span> <span class="pre">-</span> <span class="pre">length)</span> <span class="pre">/</span> <span class="pre">stride</span></code>;
+i.e. <span class="math">(900-300-100)/50=10</span> epochs per run. Here we have 3*2=6 runs.
 And indeed, we obtain
-a total of 6*10=60 epochs:</p>
+a total of <span class="math">6*10=60</span> epochs:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of epochs: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -726,8 +726,8 @@ events of the dataset:</p>
 <img src="../_images/sphx_glr_plot_fixed_interval_windows_001.png" srcset="../_images/sphx_glr_plot_fixed_interval_windows_001.png" alt="plot fixed interval windows" class = "sphx-glr-single-img"/><p>We can see that the epochs were effectively created at a fixed interval
 every 50 seconds between 300 and 900 seconds, and ignoring
 the original events of the dataset.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.101 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  9 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.722 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  34 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-fixed-interval-windows-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fb557f4e0ac4b423b8911acc0958ae76/plot_fixed_interval_windows.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_fixed_interval_windows.py</span></code></a></p>

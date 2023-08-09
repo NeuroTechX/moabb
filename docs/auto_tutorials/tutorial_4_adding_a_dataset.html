@@ -696,7 +696,7 @@ have been downloaded</p></li>
             <span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
             <span class="n">sessions_per_subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">events</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;left_hand&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;right_hand&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
-            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;Example dataset&quot;</span><span class="p">,</span>
+            <span class="n">code</span><span class="o">=</span><span class="s2">&quot;ExampleDataset&quot;</span><span class="p">,</span>
             <span class="n">interval</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">],</span>
             <a href="../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span>
             <span class="n">doi</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -751,20 +751,20 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Example dataset-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>ExampleDataset-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 No hdf5_path provided, models will not be saved.
 
-Example dataset-WithinSession:  33%|###3      | 1/3 [00:00&lt;00:00,  3.48it/s]No hdf5_path provided, models will not be saved.
+ExampleDataset-WithinSession:  33%|###3      | 1/3 [00:00&lt;00:00,  2.66it/s]No hdf5_path provided, models will not be saved.
 
-Example dataset-WithinSession:  67%|######6   | 2/3 [00:02&lt;00:01,  1.61s/it]No hdf5_path provided, models will not be saved.
+ExampleDataset-WithinSession:  67%|######6   | 2/3 [00:03&lt;00:01,  1.94s/it]No hdf5_path provided, models will not be saved.
 
-Example dataset-WithinSession: 100%|##########| 3/3 [00:05&lt;00:00,  2.07s/it]
-Example dataset-WithinSession: 100%|##########| 3/3 [00:05&lt;00:00,  1.81s/it]
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    5.4s finished
-   score      time  samples  ... n_sessions          dataset  pipeline
-0    1.0  0.038456     40.0  ...          1  Example dataset       MDM
-1    1.0  0.033481     40.0  ...          1  Example dataset       MDM
-2    1.0  0.037172     40.0  ...          1  Example dataset       MDM
+ExampleDataset-WithinSession: 100%|##########| 3/3 [00:06&lt;00:00,  2.47s/it]
+ExampleDataset-WithinSession: 100%|##########| 3/3 [00:06&lt;00:00,  2.17s/it]
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    6.5s finished
+   score      time  samples  ... n_sessions         dataset  pipeline
+0    1.0  0.058211     40.0  ...          1  ExampleDataset       MDM
+1    1.0  0.037085     40.0  ...          1  ExampleDataset       MDM
+2    1.0  0.045086     40.0  ...          1  ExampleDataset       MDM
 
 [3 rows x 9 columns]
 </pre></div>
@@ -776,8 +776,8 @@ Example dataset-WithinSession: 100%|##########| 3/3 [00:05&lt;00:00,  1.81s/it]
 your data on public server (like Zenodo or Figshare) and signal that you
 want to add your dataset to MOABB in the  <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">dedicated issue</a>.  # noqa: E501
 You could then follow the instructions on <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">how to contribute</a>  # noqa: E501</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.655 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  15 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.900 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1ce8a4c577491f8abfb105c7b1aba3d2/tutorial_4_adding_a_dataset.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_4_adding_a_dataset.py</span></code></a></p>

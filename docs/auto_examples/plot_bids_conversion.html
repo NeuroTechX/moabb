@@ -606,37 +606,12 @@ sharing of neuroimaging data between researchers.</p>
 <p>The MOABB library allows to convert any MOABB dataset to
 BIDS <a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <a class="footnote-reference brackets" href="#id5" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
 <p>In this example, we will convert the AlexMI dataset to BIDS using the
-option <cite>cache_config=dict(path=temp_dir, save_raw=True)</cite> of the get_data
+option <code class="docutils literal notranslate"><span class="pre">cache_config=dict(path=temp_dir,</span> <span class="pre">save_raw=True)</span></code> of the <code class="docutils literal notranslate"><span class="pre">get_data</span></code>
 method from the dataset object.</p>
 <p>This will automatically save the raw data in the BIDS format and allow to use
 a cache for the next time the dataset is used.</p>
 <p>We will use the AlexMI dataset <a class="footnote-reference brackets" href="#id6" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, one of the smallest in
 people and one that can be downloaded quickly.</p>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id4" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Pernet, C.R., Appelhoff, S., Gorgolewski, K.J. et al. EEG-BIDS,
-An extension to the brain imaging data structure for
-electroencephalography. Sci Data 6, 103 (2019).
-<a class="reference external" href="https://doi.org/10.1038/s41597-019-0104-8">https://doi.org/10.1038/s41597-019-0104-8</a></p>
-</aside>
-<aside class="footnote brackets" id="id5" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
-<p>Appelhoff et al., (2019). MNE-BIDS: Organizing electrophysiological
-data into the BIDS format and facilitating their analysis.
-Journal of Open Source Software, 4(44), 1896,
-<a class="reference external" href="https://doi.org/10.21105/joss.01896">https://doi.org/10.21105/joss.01896</a></p>
-</aside>
-<aside class="footnote brackets" id="id6" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
-<p>Barachant, A., 2012. Commande robuste d’un effecteur par une
-interface cerveau machine EEG asynchrone (Doctoral dissertation,
-Université de Grenoble).
-<a class="reference external" href="https://tel.archives-ouvertes.fr/tel-01196752">https://tel.archives-ouvertes.fr/tel-01196752</a></p>
-</aside>
-</aside>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pierre Guetschel &lt;pierre.guetschel@gmail.com&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
@@ -654,7 +629,6 @@ Université de Grenoble).
 <a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
 <section id="basic-usage">
 <h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading">#</a></h2>
 <p>Here, we will save the BIDS version of the dataset in a temporary folder</p>
@@ -670,53 +644,53 @@ Université de Grenoble).
   set_config(key, get_config(&quot;MNE_DATA&quot;))
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
-/home/runner/work/moabb/moabb/moabb/datasets/download.py:54: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_ALEXANDRE MOTOR IMAGERY-BIDS_PATH&quot;
+/home/runner/work/moabb/moabb/moabb/datasets/download.py:54: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_ALEXANDREMOTORIMAGERY_PATH&quot;
   set_config(key, get_config(&quot;MNE_DATA&quot;))
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: Converting data files to EDF format
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: Converting data files to EDF format
   mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: EDF format requires equal-length data blocks, so 0.373046875 seconds of zeros were appended to all channels when writing the final block.
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: Converting data files to EDF format
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: EDF format requires equal-length data blocks, so 0.654296875 seconds of zeros were appended to all channels when writing the final block.
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: EDF format requires equal-length data blocks, so 0.373046875 seconds of zeros were appended to all channels when writing the final block.
   mne_bids.write_raw_bids(
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: Converting data files to EDF format
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: Converting data files to EDF format
   mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: EDF format requires equal-length data blocks, so 0.654296875 seconds of zeros were appended to all channels when writing the final block.
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: Converting data files to EDF format
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: EDF format requires equal-length data blocks, so 0.654296875 seconds of zeros were appended to all channels when writing the final block.
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: EDF format requires equal-length data blocks, so 0.654296875 seconds of zeros were appended to all channels when writing the final block.
   mne_bids.write_raw_bids(
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: Converting data files to EDF format
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: Converting data files to EDF format
   mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: EDF format requires equal-length data blocks, so 0.248046875 seconds of zeros were appended to all channels when writing the final block.
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: Converting data files to EDF format
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: EDF format requires equal-length data blocks, so 0.248046875 seconds of zeros were appended to all channels when writing the final block.
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: EDF format requires equal-length data blocks, so 0.654296875 seconds of zeros were appended to all channels when writing the final block.
   mne_bids.write_raw_bids(
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: Converting data files to EDF format
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: Converting data files to EDF format
   mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: EDF format requires equal-length data blocks, so 0.498046875 seconds of zeros were appended to all channels when writing the final block.
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: EDF format requires equal-length data blocks, so 0.654296875 seconds of zeros were appended to all channels when writing the final block.
   mne_bids.write_raw_bids(
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: Converting data files to EDF format
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: Converting data files to EDF format
   mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:340: RuntimeWarning: EDF format requires equal-length data blocks, so 0.279296875 seconds of zeros were appended to all channels when writing the final block.
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: EDF format requires equal-length data blocks, so 0.248046875 seconds of zeros were appended to all channels when writing the final block.
+  mne_bids.write_raw_bids(
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: Converting data files to EDF format
+  mne_bids.write_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: EDF format requires equal-length data blocks, so 0.248046875 seconds of zeros were appended to all channels when writing the final block.
+  mne_bids.write_raw_bids(
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: Converting data files to EDF format
+  mne_bids.write_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: EDF format requires equal-length data blocks, so 0.498046875 seconds of zeros were appended to all channels when writing the final block.
+  mne_bids.write_raw_bids(
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: Converting data files to EDF format
+  mne_bids.write_raw_bids(
+/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:346: RuntimeWarning: EDF format requires equal-length data blocks, so 0.279296875 seconds of zeros were appended to all channels when writing the final block.
   mne_bids.write_raw_bids(
 </pre></div>
 </div>
@@ -778,90 +752,6 @@ standard and can vary from one dataset to another.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>After conversion:
 └──MNE-alexandre motor imagery-bids-cache
-   ├──sub-2
-   │  ├──sub-2_desc-7e94b5a18354c447bffd76b31395eb91_lockfile.json
-   │  └──ses-0
-   │     ├──sub-2_ses-0_scans.tsv
-   │     └──eeg
-   │        ├──sub-2_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.json
-   │        ├──sub-2_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_channels.tsv
-   │        ├──sub-2_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.tsv
-   │        ├──sub-2_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.edf
-   │        └──sub-2_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.json
-   ├──sub-7
-   │  ├──sub-7_desc-7e94b5a18354c447bffd76b31395eb91_lockfile.json
-   │  └──ses-0
-   │     ├──sub-7_ses-0_scans.tsv
-   │     └──eeg
-   │        ├──sub-7_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.edf
-   │        ├──sub-7_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.json
-   │        ├──sub-7_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_channels.tsv
-   │        ├──sub-7_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.tsv
-   │        └──sub-7_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.json
-   ├──sub-5
-   │  ├──sub-5_desc-7e94b5a18354c447bffd76b31395eb91_lockfile.json
-   │  └──ses-0
-   │     ├──sub-5_ses-0_scans.tsv
-   │     └──eeg
-   │        ├──sub-5_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.tsv
-   │        ├──sub-5_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.json
-   │        ├──sub-5_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_channels.tsv
-   │        ├──sub-5_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.json
-   │        └──sub-5_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.edf
-   ├──participants.tsv
-   ├──sub-3
-   │  ├──sub-3_desc-7e94b5a18354c447bffd76b31395eb91_lockfile.json
-   │  └──ses-0
-   │     ├──sub-3_ses-0_scans.tsv
-   │     └──eeg
-   │        ├──sub-3_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.json
-   │        ├──sub-3_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.edf
-   │        ├──sub-3_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.tsv
-   │        ├──sub-3_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_channels.tsv
-   │        └──sub-3_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.json
-   ├──README
-   ├──sub-4
-   │  ├──sub-4_desc-7e94b5a18354c447bffd76b31395eb91_lockfile.json
-   │  └──ses-0
-   │     ├──sub-4_ses-0_scans.tsv
-   │     └──eeg
-   │        ├──sub-4_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.json
-   │        ├──sub-4_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.json
-   │        ├──sub-4_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.edf
-   │        ├──sub-4_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_channels.tsv
-   │        └──sub-4_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.tsv
-   ├──sub-8
-   │  ├──ses-0
-   │  │  ├──sub-8_ses-0_scans.tsv
-   │  │  └──eeg
-   │  │     ├──sub-8_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_channels.tsv
-   │  │     ├──sub-8_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.json
-   │  │     ├──sub-8_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.edf
-   │  │     ├──sub-8_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.tsv
-   │  │     └──sub-8_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.json
-   │  └──sub-8_desc-7e94b5a18354c447bffd76b31395eb91_lockfile.json
-   ├──dataset_description.json
-   ├──sub-1
-   │  ├──ses-0
-   │  │  ├──sub-1_ses-0_scans.tsv
-   │  │  └──eeg
-   │  │     ├──sub-1_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.edf
-   │  │     ├──sub-1_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.tsv
-   │  │     ├──sub-1_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.json
-   │  │     ├──sub-1_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.json
-   │  │     └──sub-1_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_channels.tsv
-   │  └──sub-1_desc-7e94b5a18354c447bffd76b31395eb91_lockfile.json
-   ├──sub-6
-   │  ├──sub-6_desc-7e94b5a18354c447bffd76b31395eb91_lockfile.json
-   │  └──ses-0
-   │     ├──sub-6_ses-0_scans.tsv
-   │     └──eeg
-   │        ├──sub-6_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_channels.tsv
-   │        ├──sub-6_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.json
-   │        ├──sub-6_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.tsv
-   │        ├──sub-6_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_eeg.edf
-   │        └──sub-6_ses-0_task-imagery_run-0_desc-7e94b5a18354c447bffd76b31395eb91_events.json
-   └──participants.json
 </pre></div>
 </div>
 <p>In the BIDS version of our dataset, the raw files are saved in EDF.
@@ -885,8 +775,34 @@ please refer to the tutorial <a class="reference internal" href="plot_disk_cache
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 12 minutes  15.589 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  9 MB</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id4" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Pernet, C.R., Appelhoff, S., Gorgolewski, K.J. et al. EEG-BIDS,
+An extension to the brain imaging data structure for
+electroencephalography. Sci Data 6, 103 (2019).
+<a class="reference external" href="https://doi.org/10.1038/s41597-019-0104-8">https://doi.org/10.1038/s41597-019-0104-8</a></p>
+</aside>
+<aside class="footnote brackets" id="id5" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Appelhoff et al., (2019). MNE-BIDS: Organizing electrophysiological
+data into the BIDS format and facilitating their analysis.
+Journal of Open Source Software, 4(44), 1896,
+<a class="reference external" href="https://doi.org/10.21105/joss.01896">https://doi.org/10.21105/joss.01896</a></p>
+</aside>
+<aside class="footnote brackets" id="id6" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Barachant, A., 2012. Commande robuste d’un effecteur par une
+interface cerveau machine EEG asynchrone (Doctoral dissertation,
+Université de Grenoble).
+<a class="reference external" href="https://tel.archives-ouvertes.fr/tel-01196752">https://tel.archives-ouvertes.fr/tel-01196752</a></p>
+</aside>
+</aside>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 7 minutes  18.718 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  75 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-bids-conversion-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/31c669584bbd313316e3f0842fdb0162/plot_bids_conversion.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_bids_conversion.py</span></code></a></p>
@@ -946,10 +862,10 @@ please refer to the tutorial <a class="reference internal" href="plot_disk_cache
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-usage">Basic usage</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#before-after-folder-structure">Before / after folder structure</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cleanup">Cleanup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 </ul>
   </nav></div>
 
