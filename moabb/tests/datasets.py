@@ -7,7 +7,7 @@ import mne
 
 import moabb.datasets as db
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
-from moabb.datasets.base import BaseDataset, is_abreviation, is_camel_kebab_case
+from moabb.datasets.base import BaseDataset, is_abbrev, is_camel_kebab_case
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.utils import block_rep, dataset_list
@@ -35,14 +35,14 @@ def _run_tests_on_dataset(d):
 
 
 class TestRegex(unittest.TestCase):
-    def test_is_abreviation(self):
-        assert is_abreviation("A", "Aab")
-        assert is_abreviation("Aa", "Aa")
-        assert is_abreviation("A1", "Aa1")
-        assert is_abreviation("1A", "1Aa")
-        assert not is_abreviation("Aa", "AAa")
-        assert not is_abreviation("Aab", "Aa")
-        assert not is_abreviation("A1", "A1a")
+    def test_is_abbrev(self):
+        assert is_abbrev("A", "Aab")
+        assert is_abbrev("Aa", "Aa")
+        assert is_abbrev("A1", "Aa1")
+        assert is_abbrev("1A", "1Aa")
+        assert not is_abbrev("Aa", "AAa")
+        assert not is_abbrev("Aab", "Aa")
+        assert not is_abbrev("A1", "A1a")
 
     def test_is_camell_kebab_case(self):
         assert is_camel_kebab_case("Aa")

@@ -131,11 +131,11 @@ def is_camel_kebab_case(name: str):
     return re.fullmatch(r"[a-zA-Z0-9\-]+", name) is not None
 
 
-def is_abreviation(abrev_name: str, full_name: str):
-    """Check if abrev_name is an abbreviation of full_name,
-    i.e. if abrev_name has the same capitals letters as full_name
+def is_abbrev(abbrev_name: str, full_name: str):
+    """Check if abbrev_name is an abbreviation of full_name,
+    i.e. if abbrev_name has the same capitals letters as full_name
     but may have lower letters shorten."""
-    pattern = re.sub(r"([A-Za-z])", r"\1[a-z]*", abrev_name)
+    pattern = re.sub(r"([A-Za-z])", r"\1[a-z]*", abbrev_name)
     return re.fullmatch(pattern, full_name) is not None
 
 
@@ -201,6 +201,14 @@ class BaseDataset(metaclass=abc.ABCMeta):
             raise ValueError(
                 f"code {code!r} must be in Camel-KebabCase; "
                 "i.e. use CamelCase, and add dashes where absolutely necessary."
+                "See moabb.datasets.base.is_camel_kebab_case for more information."
+            )
+        class_name = self.__class__.__name__.replace("_", "-")
+        if not is_abbrev(class_name, code):
+            raise ValueError(
+                f"The dataset class name {class_name!r} must be an abbreviation "
+                f"of its code {class_name!r}."
+                "See moabb.datasets.base.is_abbrev for more information."
             )
 
         self.subject_list = subjects
