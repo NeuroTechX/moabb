@@ -158,14 +158,14 @@ class Test_Datasets(unittest.TestCase):
             self.assertIsNotNone(ds(**kwargs))
 
     def test_dataset_list(self):
-        all_datasets = len(
-            [
-                issubclass(c, BaseDataset)
-                for c in db.__dict__.values()
-                if inspect.isclass(c)
-            ]
-        )
-        assert len(dataset_list) == all_datasets
+        all_datasets = [
+            c
+            for c in db.__dict__.values()
+            if (inspect.isclass(c) and issubclass(c, BaseDataset))
+        ]
+
+        assert len(dataset_list) == len(all_datasets)
+        assert set(dataset_list) == set(all_datasets)
 
 
 class Test_VirtualReality_Dataset(unittest.TestCase):
