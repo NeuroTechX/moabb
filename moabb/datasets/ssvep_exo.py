@@ -60,7 +60,7 @@ class SSVEPExo(BaseDataset):
             subjects=list(range(1, 13)),
             sessions_per_subject=1,
             events={"13": 2, "17": 3, "21": 4, "rest": 1},
-            code="Exoskeleton_SSVEP",
+            code="Exoskeleton-SSVEP",
             interval=[2, 4],
             paradigm="ssvep",
             doi="10.1016/j.neucom.2016.01.007",

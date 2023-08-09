@@ -120,7 +120,7 @@ class Weibo2014(BaseDataset):
                 right_hand_left_foot=6,
                 rest=7,
             ),
-            code="Weibo 2014",
+            code="Weibo2014",
             # Full trial w/ rest is 0-8
             interval=[3, 7],
             paradigm="imagery",
