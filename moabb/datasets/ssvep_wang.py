@@ -16,6 +16,8 @@ log = logging.getLogger(__name__)
 
 # WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
 WANG_URL = "ftp://sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
+
+
 # WANG_URL = "http://www.thubci.com/uploads/down/"
 
 
@@ -104,6 +106,7 @@ class Wang2016(BaseDataset):
         "P8", "PO7", "PO5", "PO3", "POz", "PO4", "PO6", "PO8", "CB1", "O1", "Oz", "O2",
         "CB2", "stim",
     ]
+
     # fmt: on
 
     def __init__(self):
@@ -111,7 +114,7 @@ class Wang2016(BaseDataset):
             subjects=list(range(1, 35)),
             sessions_per_subject=1,
             events=self._events,
-            code="Wang_SSVEP",
+            code="Wang-SSVEP",
             interval=[0.5, 5.5],
             paradigm="ssvep",
             doi="doi://10.1109/TNSRE.2016.2627556",

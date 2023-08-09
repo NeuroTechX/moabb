@@ -54,7 +54,7 @@ processing = FixedIntervalWindowsProcessing(
     length=100,
     stride=50,
     start_offset=300,
-    stop_offset=900,  # we epoch 10 minutes per run, starting at 200 seconds
+    stop_offset=900,  # we epoch 10 minutes per run, starting at 5 minutes (i.e. 300 seconds)
     # parameters common with other paradigms:
     resample=100,
     fmin=7,
@@ -71,10 +71,10 @@ for column in metadata.columns:
     print(f"{column}s: {metadata[column].unique()}")
 
 ###############################################################################
-# We expect to obtained ``(stop_offset - start_offset - length) / stride``
-# = (900-300-100)/50 = 10 epochs per run. Here we have 3*2=6 runs.
+# We expect to obtained ``(stop_offset - start_offset - length) / stride``;
+# i.e. :math:`(900-300-100)/50=10` epochs per run. Here we have 3*2=6 runs.
 # And indeed, we obtain
-# a total of 6*10=60 epochs:
+# a total of :math:`6*10=60` epochs:
 print(f"Number of epochs: {len(X)}")
 
 ###############################################################################
