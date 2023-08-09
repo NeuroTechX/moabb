@@ -39,6 +39,7 @@ Enhancements
 - Systematically set the annotations when loading data, eventually using the stim channel (PR :gh:`408` by `Pierre Guetschel`_)
 - Allow :func:`moabb.datasets.utils.dataset_search` to search across paradigms ``paradigm=None`` (PR :gh:`408` by `Pierre Guetschel`_)
 - Improving the review processing with more pre-commit bots (:gh:`435` by `Bruno Aristimunha`_)
+- Update all dataset codes to remove white spaces and underscores (:gh:`448` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~

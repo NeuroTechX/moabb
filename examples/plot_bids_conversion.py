@@ -12,7 +12,7 @@ The MOABB library allows to convert any MOABB dataset to
 BIDS [1]_ and [2]_.
 
 In this example, we will convert the AlexMI dataset to BIDS using the
-option `cache_config=dict(path=temp_dir, save_raw=True)` of the get_data
+option ``cache_config=dict(path=temp_dir, save_raw=True)`` of the ``get_data``
 method from the dataset object.
 
 This will automatically save the raw data in the BIDS format and allow to use
@@ -20,25 +20,6 @@ a cache for the next time the dataset is used.
 
 We will use the AlexMI dataset [3]_, one of the smallest in
 people and one that can be downloaded quickly.
-
-References
------------
-
-.. [1] Pernet, C.R., Appelhoff, S., Gorgolewski, K.J. et al. EEG-BIDS,
-       An extension to the brain imaging data structure for
-       electroencephalography. Sci Data 6, 103 (2019).
-       https://doi.org/10.1038/s41597-019-0104-8
-
-.. [2] Appelhoff et al., (2019). MNE-BIDS: Organizing electrophysiological
-       data into the BIDS format and facilitating their analysis.
-       Journal of Open Source Software, 4(44), 1896,
-       https://doi.org/10.21105/joss.01896
-
-.. [3] Barachant, A., 2012. Commande robuste d'un effecteur par une
-       interface cerveau machine EEG asynchrone (Doctoral dissertation,
-       Université de Grenoble).
-       https://tel.archives-ouvertes.fr/tel-01196752
-
 """
 # Authors: Pierre Guetschel <pierre.guetschel@gmail.com>
 #
@@ -131,3 +112,22 @@ print_tree(temp_dir / "MNE-alexandre motor imagery-bids-cache")
 #
 # Finally, we can delete the temporary folder:
 shutil.rmtree(temp_dir)
+
+###############################################################################
+# References
+# -----------
+#
+# .. [1] Pernet, C.R., Appelhoff, S., Gorgolewski, K.J. et al. EEG-BIDS,
+#        An extension to the brain imaging data structure for
+#        electroencephalography. Sci Data 6, 103 (2019).
+#        https://doi.org/10.1038/s41597-019-0104-8
+#
+# .. [2] Appelhoff et al., (2019). MNE-BIDS: Organizing electrophysiological
+#        data into the BIDS format and facilitating their analysis.
+#        Journal of Open Source Software, 4(44), 1896,
+#        https://doi.org/10.21105/joss.01896
+#
+# .. [3] Barachant, A., 2012. Commande robuste d'un effecteur par une
+#        interface cerveau machine EEG asynchrone (Doctoral dissertation,
+#        Université de Grenoble).
+#        https://tel.archives-ouvertes.fr/tel-01196752

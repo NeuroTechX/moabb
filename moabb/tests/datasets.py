@@ -5,7 +5,7 @@ import unittest
 
 import mne
 
-from moabb import datasets as db
+import moabb.datasets as db
 from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.compound_dataset import CompoundDataset
@@ -149,6 +149,13 @@ class Test_Datasets(unittest.TestCase):
             # if the data is already downloaded:
             if mne.get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:
                 self.assertRaises(AttributeError, ds.get_data, [1])
+
+    def test_datasets_init(self):
+        for ds in dataset_list:
+            kwargs = {}
+            if inspect.signature(ds).parameters.get("accept"):
+                kwargs["accept"] = True
+            self.assertIsNotNone(ds(**kwargs))
 
     def test_dataset_list(self):
         all_datasets = len(
