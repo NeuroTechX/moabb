@@ -40,6 +40,10 @@ Enhancements
 - Allow :func:`moabb.datasets.utils.dataset_search` to search across paradigms ``paradigm=None`` (PR :gh:`408` by `Pierre Guetschel`_)
 - Improving the review processing with more pre-commit bots (:gh:`435` by `Bruno Aristimunha`_)
 - Update all dataset codes to remove white spaces and underscores (:gh:`448` by `Pierre Guetschel`_)
+- Add :func:`moabb.utils.depreciated_alias` decorator (:gh:`455` by `Pierre Guetschel`_)
+- Rename many dataset class names to standardize and deprecate old names (:gh:`455` by `Pierre Guetschel`_)
+- Change many dataset codes to match the class names (:gh:`455` by `Pierre Guetschel`_)
+- Add :obj:`moabb.datasets.compound_dataset.utils.compound_dataset_list`  (:gh:`455` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
