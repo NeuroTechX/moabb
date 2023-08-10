@@ -751,20 +751,79 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>ExampleDataset-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:06, 436kB/s]
+  7%|██▌                                    | 180k/2.77M [00:00&lt;00:05, 483kB/s]
+ 20%|███████▍                              | 541k/2.77M [00:00&lt;00:01, 1.13MB/s]
+ 36%|█████████████▋                        | 994k/2.77M [00:00&lt;00:00, 2.00MB/s]
+ 46%|████████████████▉                    | 1.26M/2.77M [00:00&lt;00:00, 1.76MB/s]
+ 59%|██████████████████████               | 1.64M/2.77M [00:00&lt;00:00, 2.25MB/s]
+ 72%|██████████████████████████▋          | 2.00M/2.77M [00:01&lt;00:00, 2.10MB/s]
+ 87%|████████████████████████████████▏    | 2.41M/2.77M [00:01&lt;00:00, 2.55MB/s]
+ 99%|████████████████████████████████████▌| 2.74M/2.77M [00:01&lt;00:00, 2.24MB/s]
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 6.62GB/s]
+
+ExampleDataset-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 No hdf5_path provided, models will not be saved.
 
-ExampleDataset-WithinSession:  33%|###3      | 1/3 [00:00&lt;00:00,  2.66it/s]No hdf5_path provided, models will not be saved.
+ExampleDataset-WithinSession:  33%|###3      | 1/3 [00:00&lt;00:00,  4.31it/s]
 
-ExampleDataset-WithinSession:  67%|######6   | 2/3 [00:03&lt;00:01,  1.94s/it]No hdf5_path provided, models will not be saved.
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
 
-ExampleDataset-WithinSession: 100%|##########| 3/3 [00:06&lt;00:00,  2.47s/it]
-ExampleDataset-WithinSession: 100%|##########| 3/3 [00:06&lt;00:00,  2.17s/it]
-[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    6.5s finished
+  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:06, 431kB/s]
+
+  9%|███▍                                   | 246k/2.77M [00:00&lt;00:03, 680kB/s]
+
+ 23%|████████▋                             | 630k/2.77M [00:00&lt;00:01, 1.64MB/s]
+
+ 34%|████████████▊                         | 934k/2.77M [00:00&lt;00:01, 1.63MB/s]
+
+ 48%|█████████████████▉                   | 1.34M/2.77M [00:00&lt;00:00, 2.25MB/s]
+
+ 60%|██████████████████████▎              | 1.67M/2.77M [00:00&lt;00:00, 2.04MB/s]
+
+ 75%|███████████████████████████▊         | 2.08M/2.77M [00:01&lt;00:00, 2.52MB/s]
+
+ 87%|████████████████████████████████▏    | 2.41M/2.77M [00:01&lt;00:00, 2.19MB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 5.16GB/s]
+No hdf5_path provided, models will not be saved.
+
+ExampleDataset-WithinSession:  67%|######6   | 2/3 [00:02&lt;00:01,  1.46s/it]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+
+  3%|█▏                                    | 81.9k/2.77M [00:00&lt;00:06, 407kB/s]
+
+  7%|██▌                                    | 180k/2.77M [00:00&lt;00:05, 468kB/s]
+
+ 19%|███████▍                              | 538k/2.77M [00:00&lt;00:01, 1.40MB/s]
+
+ 30%|███████████▎                          | 819k/2.77M [00:00&lt;00:01, 1.44MB/s]
+
+ 47%|█████████████████▏                   | 1.29M/2.77M [00:00&lt;00:00, 2.26MB/s]
+
+ 57%|████████████████████▉                | 1.57M/2.77M [00:00&lt;00:00, 1.94MB/s]
+
+ 70%|█████████████████████████▊           | 1.93M/2.77M [00:01&lt;00:00, 2.35MB/s]
+
+ 83%|██████████████████████████████▋      | 2.29M/2.77M [00:01&lt;00:00, 2.17MB/s]
+
+ 97%|███████████████████████████████████▉ | 2.68M/2.77M [00:01&lt;00:00, 2.56MB/s]
+
+  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 6.07GB/s]
+No hdf5_path provided, models will not be saved.
+
+ExampleDataset-WithinSession: 100%|##########| 3/3 [00:04&lt;00:00,  1.82s/it]
+ExampleDataset-WithinSession: 100%|##########| 3/3 [00:04&lt;00:00,  1.60s/it]
+[Parallel(n_jobs=1)]: Done   3 out of   3 | elapsed:    4.8s finished
    score      time  samples  ... n_sessions         dataset  pipeline
-0    1.0  0.058211     40.0  ...          1  ExampleDataset       MDM
-1    1.0  0.037085     40.0  ...          1  ExampleDataset       MDM
-2    1.0  0.045086     40.0  ...          1  ExampleDataset       MDM
+0    1.0  0.033357     40.0  ...          1  ExampleDataset       MDM
+1    1.0  0.028592     40.0  ...          1  ExampleDataset       MDM
+2    1.0  0.028102     40.0  ...          1  ExampleDataset       MDM
 
 [3 rows x 9 columns]
 </pre></div>
@@ -776,7 +835,7 @@ ExampleDataset-WithinSession: 100%|##########| 3/3 [00:06&lt;00:00,  2.17s/it]
 your data on public server (like Zenodo or Figshare) and signal that you
 want to add your dataset to MOABB in the  <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">dedicated issue</a>.  # noqa: E501
 You could then follow the instructions on <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">how to contribute</a>  # noqa: E501</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.900 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  9.295 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
