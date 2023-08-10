@@ -11,7 +11,7 @@ from pyriemann.classification import MDM
 from pyriemann.estimation import ERPCovariances
 from sklearn.pipeline import make_pipeline
 
-from moabb.datasets import VirtualReality
+from moabb.datasets import Cattan2019_VR
 from moabb.datasets.braininvaders import bi2014a
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.utils import blocks_reps
@@ -35,6 +35,7 @@ paradigm = P300()
 pipelines = {}
 pipelines["MDM"] = make_pipeline(ERPCovariances(estimator="lwf"), MDM(metric="riemann"))
 
+
 ##############################################################################
 # Creation a selection of subject
 # ------------------
@@ -53,7 +54,7 @@ pipelines["MDM"] = make_pipeline(ERPCovariances(estimator="lwf"), MDM(metric="ri
 
 class CustomDataset1(CompoundDataset):
     def __init__(self):
-        biVR = VirtualReality(virtual_reality=True, screen_display=True)
+        biVR = Cattan2019_VR(virtual_reality=True, screen_display=True)
         runs = blocks_reps([1, 3], [1, 2, 3, 4, 5])
         subjects_list = [
             (biVR, 1, "VR", runs),

@@ -46,7 +46,7 @@ ERP Datasets
     bi2014b
     bi2015a
     bi2015b
-    VirtualReality
+    Cattan2019_VR
     BNCI2014_008
     BNCI2014_009
     BNCI2015_003

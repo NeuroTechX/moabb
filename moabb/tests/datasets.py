@@ -6,7 +6,7 @@ import unittest
 import mne
 
 import moabb.datasets as db
-from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
+from moabb.datasets import Cattan2019_VR, Shin2017A, Shin2017B
 from moabb.datasets.base import BaseDataset, is_abbrev, is_camel_kebab_case
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
@@ -214,14 +214,14 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         super().__init__(*args, **kwargs)
 
     def test_canary(self):
-        assert VirtualReality() is not None
+        assert Cattan2019_VR() is not None
 
     def test_warning_if_parameters_false(self):
         with self.assertWarns(UserWarning):
-            VirtualReality(virtual_reality=False, screen_display=False)
+            Cattan2019_VR(virtual_reality=False, screen_display=False)
 
     def test_data_path(self):
-        ds = VirtualReality(virtual_reality=True, screen_display=True)
+        ds = Cattan2019_VR(virtual_reality=True, screen_display=True)
         data_path = ds.data_path(1)
         assert len(data_path) == 2
         assert "subject_01_VR.mat" in data_path[0]

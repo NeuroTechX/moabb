@@ -810,15 +810,15 @@ class bi2015b(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-class VirtualReality(BaseDataset):
+class Cattan2019_VR(BaseDataset):
     """Dataset of an EEG-based BCI experiment in Virtual Reality using P300.
 
     .. admonition:: Dataset summary
-        ================ ======= ======= ================ =============== =============== ===========
-         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
-        ================ ======= ======= ================ =============== =============== ===========
-         VirtualReality   21      16      600 NT / 120 T   1s              512Hz           2
-        ================ ======= ======= ================ =============== =============== ===========
+        ============== ======= ======= ================ =============== =============== ===========
+         Name           #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
+        ============== ======= ======= ================ =============== =============== ===========
+         Cattan2019_VR   21      16      600 NT / 120 T   1s              512Hz           2
+        ============== ======= ======= ================ =============== =============== ===========
 
     We describe the experimental procedures for a dataset that we have made publicly
     available at https://doi.org/10.5281/zenodo.2605204 in mat (Mathworks, Natick, USA)
@@ -863,7 +863,7 @@ class VirtualReality(BaseDataset):
             subjects=list(range(1, 21 + 1)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="VR-P300",
+            code="Cattan2019-VR",
             interval=[0, 1.0],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2605204",

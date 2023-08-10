@@ -1,4 +1,4 @@
-from ..braininvaders import VirtualReality, bi2014a, bi2014b, bi2015a, bi2015b
+from ..braininvaders import Cattan2019_VR, bi2014a, bi2014b, bi2015a, bi2015b
 from .base import CompoundDataset
 
 
@@ -119,12 +119,12 @@ class bi2015b_il(_base_bi_il):
 
 
 class VirtualReality_il(_base_bi_il):
-    """A selection of subject from VirtualReality with AUC < 0.7 with pipeline:
+    """A selection of subject from Cattan2019_VR with AUC < 0.7 with pipeline:
     ERPCovariances(estimator="lwf"), MDM(metric="riemann")
     """
 
     def __init__(self):
-        dataset = VirtualReality(virtual_reality=True, screen_display=True)
+        dataset = Cattan2019_VR(virtual_reality=True, screen_display=True)
         subjects_list = [
             (dataset, 4, None, None),
             (dataset, 10, None, None),

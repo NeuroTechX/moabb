@@ -67,7 +67,7 @@ class Cattan2019_PHMD(BaseDataset):
             subjects=list(range(1, 12 + 1)),
             sessions_per_subject=1,
             events=dict(on=1, off=2),
-            code="Cattan2019_PHMD",  # Before: "PHMD-ML"
+            code="Cattan2019-PHMD",  # Before: "PHMD-ML"
             interval=[0, 1],
             paradigm="rstate",
             doi="https://doi.org/10.5281/zenodo.2617084 ",

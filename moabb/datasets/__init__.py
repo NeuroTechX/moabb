@@ -22,7 +22,7 @@ from .bnci import (
     BNCI2015_004,
 )
 from .braininvaders import (
-    VirtualReality,
+    Cattan2019_VR,
     bi2012,
     bi2013a,
     bi2014a,
