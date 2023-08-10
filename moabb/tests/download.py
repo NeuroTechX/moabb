@@ -9,9 +9,9 @@ from moabb.datasets.bbci_eeg_fnirs import Shin2017
 # from moabb.datasets.gigadb import Cho2017
 # from moabb.datasets.alex_mi import AlexMI
 # from moabb.datasets.physionet_mi import PhysionetMI
-# from moabb.datasets.bnci import (BNCI2014001, BNCI2014002, BNCI2014004,
-#                                  BNCI2014008, BNCI2014009, BNCI2015001,
-#                                  BNCI2015003, BNCI2015004)
+# from moabb.datasets.bnci import (BNCI2014_001, BNCI2014_002, BNCI2014_004,
+#                                  BNCI2014_008, BNCI2014_009, BNCI2015_001,
+#                                  BNCI2015_003, BNCI2015_004)
 # from moabb.datasets.bbci_eeg_fnirs import Shin2017A, Shin2017B
 # from moabb.datasets.upper_limb import Ofner2017
 # from moabb.datasets.mpi_mi import MunichMI
@@ -72,14 +72,14 @@ class Test_Downloads(unittest.TestCase):
     #     self.run_dataset(Cho2017)
 
     # def test_bnci(self):
-    #     self.run_dataset(BNCI2014001)
-    #     self.run_dataset(BNCI2014002)
-    #     self.run_dataset(BNCI2014004)
-    #     self.run_dataset(BNCI2014008)
-    #     self.run_dataset(BNCI2014009)
-    #     self.run_dataset(BNCI2015001)
-    #     self.run_dataset(BNCI2015003)
-    #     self.run_dataset(BNCI2015004)
+    #     self.run_dataset(BNCI2014_001)
+    #     self.run_dataset(BNCI2014_002)
+    #     self.run_dataset(BNCI2014_004)
+    #     self.run_dataset(BNCI2014_008)
+    #     self.run_dataset(BNCI2014_009)
+    #     self.run_dataset(BNCI2015_001)
+    #     self.run_dataset(BNCI2015_003)
+    #     self.run_dataset(BNCI2015_004)
 
     # def test_alexmi(self):
     #     self.run_dataset(AlexMI)

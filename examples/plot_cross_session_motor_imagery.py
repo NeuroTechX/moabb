@@ -65,7 +65,7 @@ pipelines["RG+LR"] = make_pipeline(
 # Evaluation
 # ----------
 #
-# We define the paradigm (LeftRightImagery) and the dataset (BNCI2014001).
+# We define the paradigm (LeftRightImagery) and the dataset (BNCI2014_001).
 # The evaluation will return a DataFrame containing a single AUC score for
 # each subject / session of the dataset, and for each pipeline.
 #

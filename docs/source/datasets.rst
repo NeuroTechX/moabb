@@ -15,11 +15,11 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
-    BNCI2014001
-    BNCI2014002
-    BNCI2014004
-    BNCI2015001
-    BNCI2015004
+    BNCI2014_001
+    BNCI2014_002
+    BNCI2014_004
+    BNCI2015_001
+    BNCI2015_004
     Cho2017
     Lee2019_MI
     MunichMI
@@ -47,9 +47,9 @@ ERP Datasets
     bi2015a
     bi2015b
     VirtualReality
-    BNCI2014008
-    BNCI2014009
-    BNCI2015003
+    BNCI2014_008
+    BNCI2014_009
+    BNCI2015_003
     DemonsP300
     EPFLP300
     Huebner2017

@@ -38,12 +38,12 @@ device = "cuda" if cuda else "cpu"
 print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 
 ###############################################################################
-# In this example, we will use only the dataset ``BNCI2014001``.
+# In this example, we will use only the dataset ``BNCI2014_001``.
 #
 # Running the benchmark
 # ---------------------
 #
-# This example uses the CrossSession evaluation procedure. We focus on the dataset BNCI2014001 and only on 1 subject
+# This example uses the CrossSession evaluation procedure. We focus on the dataset BNCI2014_001 and only on 1 subject
 # to reduce computational time.
 #
 # To keep the computational time low, the epoch is reduced. In a real situation, we suggest using the following:

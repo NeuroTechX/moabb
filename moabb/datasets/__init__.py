@@ -12,14 +12,14 @@ from . import compound_dataset
 from .alex_mi import AlexMI
 from .bbci_eeg_fnirs import Shin2017A, Shin2017B
 from .bnci import (
-    BNCI2014001,
-    BNCI2014002,
-    BNCI2014004,
-    BNCI2014008,
-    BNCI2014009,
-    BNCI2015001,
-    BNCI2015003,
-    BNCI2015004,
+    BNCI2014_001,
+    BNCI2014_002,
+    BNCI2014_004,
+    BNCI2014_008,
+    BNCI2014_009,
+    BNCI2015_001,
+    BNCI2015_003,
+    BNCI2015_004,
 )
 from .braininvaders import (
     VirtualReality,
@@ -54,3 +54,13 @@ from .Zhou2016 import Zhou2016
 # Call this last in order to make sure the dataset list contains all
 # the datasets imported in this file.
 _init_dataset_list()
+
+# Depreciated datasets (not added to dataset_list):
+from .bnci import BNCI2014001  # noqa: F401
+from .bnci import BNCI2014002  # noqa: F401
+from .bnci import BNCI2014004  # noqa: F401
+from .bnci import BNCI2014008  # noqa: F401
+from .bnci import BNCI2014009  # noqa: F401
+from .bnci import BNCI2015001  # noqa: F401
+from .bnci import BNCI2015003  # noqa: F401
+from .bnci import BNCI2015004  # noqa: F401

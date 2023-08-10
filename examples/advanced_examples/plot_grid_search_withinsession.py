@@ -144,7 +144,7 @@ search_session_E = joblib.load(
     os.path.join(
         path,
         "GridSearch_WithinSession",
-        "001-2014",
+        "BNCI2014-001",
         "1",
         "session_E",
         "GridSearchEN",
@@ -164,7 +164,7 @@ search_session_T = joblib.load(
     os.path.join(
         path,
         "GridSearch_WithinSession",
-        "001-2014",
+        "BNCI2014-001",
         "1",
         "session_T",
         "GridSearchEN",

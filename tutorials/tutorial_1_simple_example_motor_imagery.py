@@ -69,7 +69,6 @@ session_name = "session_T"
 run_name = "run_1"
 raw = sessions[subject][session_name][run_name]
 
-
 ##############################################################################
 # Choosing a Paradigm
 # -------------------
@@ -91,7 +90,7 @@ paradigm = LeftRightImagery()
 
 ##############################################################################
 # We may check the list of all datasets available in MOABB for using with this
-# paradigm (note that BNCI2014001 is in it)
+# paradigm (note that BNCI2014_001 is in it)
 
 print(paradigm.datasets)
 
