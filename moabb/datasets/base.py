@@ -200,14 +200,14 @@ class BaseDataset(metaclass=abc.ABCMeta):
         if not is_camel_kebab_case(code):
             raise ValueError(
                 f"code {code!r} must be in Camel-KebabCase; "
-                "i.e. use CamelCase, and add dashes where absolutely necessary."
+                "i.e. use CamelCase, and add dashes where absolutely necessary. "
                 "See moabb.datasets.base.is_camel_kebab_case for more information."
             )
         class_name = self.__class__.__name__.replace("_", "-")
         if not is_abbrev(class_name, code):
             raise ValueError(
                 f"The dataset class name {class_name!r} must be an abbreviation "
-                f"of its code {class_name!r}."
+                f"of its code {code!r}. "
                 "See moabb.datasets.base.is_abbrev for more information."
             )
 
