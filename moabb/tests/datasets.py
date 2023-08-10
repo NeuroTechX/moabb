@@ -36,16 +36,15 @@ def _run_tests_on_dataset(d):
 
 class TestRegex(unittest.TestCase):
     def test_is_abbrev(self):
-        assert is_abbrev("A", "Aab")
-        assert is_abbrev("Aa", "Aa")
-        assert is_abbrev("A1", "Aa1")
-        assert is_abbrev("1A", "1Aa")
-        assert is_abbrev("A-", "A-")
-        assert is_abbrev("a-a", "ab-ab")
-        assert not is_abbrev("Aa", "AAa")
-        assert not is_abbrev("Aab", "Aa")
-        assert not is_abbrev("A1", "A1a")
-        assert not is_abbrev("a-a", "ab-ba")
+        assert is_abbrev("a", "a-")
+        assert is_abbrev("a", "a0")
+        assert is_abbrev("a", "ab")
+        assert not is_abbrev("a", "aA")
+        assert not is_abbrev("a", "Aa")
+        assert not is_abbrev("a", "-a")
+        assert not is_abbrev("a", "0a")
+        assert not is_abbrev("a", "ba")
+        assert not is_abbrev("a", "a ")
 
     def test_is_camell_kebab_case(self):
         assert is_camel_kebab_case("Aa")

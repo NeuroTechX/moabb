@@ -133,9 +133,9 @@ def is_camel_kebab_case(name: str):
 
 def is_abbrev(abbrev_name: str, full_name: str):
     """Check if abbrev_name is an abbreviation of full_name,
-    i.e. if abbrev_name has the same capitals letters as full_name
-    but may have lower letters shorten."""
-    pattern = re.sub(r"([A-Za-z])", r"\1[a-z]*", re.escape(abbrev_name))
+    i.e. ifthe characters in abbrev_name are all in full_name
+    and in the same order. They must share the same capital letters."""
+    pattern = re.sub(r"([A-Za-z])", r"\1[a-z0-9\-]*", re.escape(abbrev_name))
     return re.fullmatch(pattern, full_name) is not None
 
 
