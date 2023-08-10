@@ -40,12 +40,12 @@ ERP Datasets
     :toctree: generated/
     :template: class.rst
 
-    bi2012
-    bi2013a
-    bi2014a
-    bi2014b
-    bi2015a
-    bi2015b
+    BI2012
+    BI2013a
+    BI2014a
+    BI2014b
+    BI2015a
+    BI2015b
     Cattan2019_VR
     BNCI2014_008
     BNCI2014_009

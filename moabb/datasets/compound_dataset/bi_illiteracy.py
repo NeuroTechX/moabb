@@ -1,4 +1,4 @@
-from ..braininvaders import Cattan2019_VR, bi2014a, bi2014b, bi2015a, bi2015b
+from ..braininvaders import BI2014a, BI2014b, BI2015a, BI2015b, Cattan2019_VR
 from .base import CompoundDataset
 
 
@@ -16,12 +16,12 @@ class _base_bi_il(CompoundDataset):
 
 
 class bi2014a_il(_base_bi_il):
-    """A selection of subject from bi2014a with AUC < 0.7 with pipeline:
+    """A selection of subject from BI2014a with AUC < 0.7 with pipeline:
     ERPCovariances(estimator="lwf"), MDM(metric="riemann")
     """
 
     def __init__(self):
-        dataset = bi2014a()
+        dataset = BI2014a()
         subjects_list = [
             (dataset, 4, None, None),
             (dataset, 7, None, None),
@@ -45,12 +45,12 @@ class bi2014a_il(_base_bi_il):
 
 
 class bi2014b_il(_base_bi_il):
-    """A selection of subject from bi2014b with AUC < 0.7 with pipeline:
+    """A selection of subject from BI2014b with AUC < 0.7 with pipeline:
     ERPCovariances(estimator="lwf"), MDM(metric="riemann")
     """
 
     def __init__(self):
-        dataset = bi2014b()
+        dataset = BI2014b()
         subjects_list = [
             (dataset, 2, None, None),
             (dataset, 7, None, None),
@@ -68,12 +68,12 @@ class bi2014b_il(_base_bi_il):
 
 
 class bi2015a_il(_base_bi_il):
-    """A selection of subject from bi2015a with AUC < 0.7 with pipeline:
+    """A selection of subject from BI2015a with AUC < 0.7 with pipeline:
     ERPCovariances(estimator="lwf"), MDM(metric="riemann")
     """
 
     def __init__(self):
-        dataset = bi2015a()
+        dataset = BI2015a()
         subjects_list = [
             (dataset, 1, ["session_1", "session_2", "session_3"], None),
             (dataset, 39, ["session_2", "session_3"], None),
@@ -82,12 +82,12 @@ class bi2015a_il(_base_bi_il):
 
 
 class bi2015b_il(_base_bi_il):
-    """A selection of subject from bi2015b with AUC < 0.7 with pipeline:
+    """A selection of subject from BI2015b with AUC < 0.7 with pipeline:
     ERPCovariances(estimator="lwf"), MDM(metric="riemann")
     """
 
     def __init__(self):
-        dataset = bi2015b()
+        dataset = BI2015b()
         subjects_list = [
             (dataset, 2, None, None),
             (dataset, 4, None, None),

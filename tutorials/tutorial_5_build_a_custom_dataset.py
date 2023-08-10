@@ -12,7 +12,7 @@ from pyriemann.estimation import ERPCovariances
 from sklearn.pipeline import make_pipeline
 
 from moabb.datasets import Cattan2019_VR
-from moabb.datasets.braininvaders import bi2014a
+from moabb.datasets.braininvaders import BI2014a
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.utils import blocks_reps
 from moabb.evaluations import WithinSessionEvaluation
@@ -72,7 +72,7 @@ class CustomDataset1(CompoundDataset):
 
 class CustomDataset2(CompoundDataset):
     def __init__(self):
-        bi2014 = bi2014a()
+        bi2014 = BI2014a()
         subjects_list = [
             (bi2014, 4, None, None),
             (bi2014, 7, None, None),

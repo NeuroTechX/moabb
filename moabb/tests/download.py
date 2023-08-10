@@ -19,7 +19,7 @@ from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
 # from moabb.datasets.Weibo2014 import Weibo2014
 # from moabb.datasets.Zhou2016 import Zhou2016
 # from moabb.datasets.ssvep_exo import Exoskeleton_SSVEP
-# from moabb.datasets.braininvaders import bi2013a
+# from moabb.datasets.braininvaders import BI2013a
 # from moabb.datasets.epfl import EPFLP300
 # from moabb.datasets.Lee2019 import Lee2019_MI
 # from moabb.datasets.neiry import DemonsP300
@@ -110,7 +110,7 @@ class Test_Downloads(unittest.TestCase):
     #     self.run_dataset(Exoskeleton_SSVEP)
 
     # def test_bi2013a(self):
-    #     self.run_dataset(bi2013a)
+    #     self.run_dataset(BI2013a)
 
     # def test_epflp300(self):
     #     self.run_dataset(EPFLP300)

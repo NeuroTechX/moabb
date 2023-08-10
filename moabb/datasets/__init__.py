@@ -22,13 +22,13 @@ from .bnci import (
     BNCI2015_004,
 )
 from .braininvaders import (
+    BI2012,
+    BI2013a,
+    BI2014a,
+    BI2014b,
+    BI2015a,
+    BI2015b,
     Cattan2019_VR,
-    bi2012,
-    bi2013a,
-    bi2014a,
-    bi2014b,
-    bi2015a,
-    bi2015b,
 )
 from .epfl import EPFLP300
 from .fake import FakeDataset, FakeVirtualRealityDataset
@@ -65,6 +65,12 @@ from .bnci import BNCI2015001  # noqa: F401
 from .bnci import BNCI2015003  # noqa: F401
 from .bnci import BNCI2015004  # noqa: F401
 from .braininvaders import VirtualReality  # noqa: F401
+from .braininvaders import bi2012  # noqa: F401
+from .braininvaders import bi2013a  # noqa: F401
+from .braininvaders import bi2014a  # noqa: F401
+from .braininvaders import bi2014b  # noqa: F401
+from .braininvaders import bi2015a  # noqa: F401
+from .braininvaders import bi2015b  # noqa: F401
 from .mpi_mi import MunichMI  # noqa: F401
 from .phmd_ml import HeadMountedDisplay  # noqa: F401
 from .ssvep_exo import SSVEPExo  # noqa: F401
