@@ -263,7 +263,7 @@ class Test_CompoundDataset(unittest.TestCase):
                 compound_data = CompoundDataset(
                     subjects_list,
                     events=dict(Target=2, NonTarget=1),
-                    code="CompoundTest",
+                    code="CompoundDataset-test",
                     interval=[0, 1],
                     paradigm=self.paradigm,
                 )
@@ -292,7 +292,7 @@ class Test_CompoundDataset(unittest.TestCase):
         compound_dataset = CompoundDataset(
             subjects_list,
             events=dict(Target=2, NonTarget=1),
-            code="D1",
+            code="CompoundDataset-test",
             interval=[0, 1],
             paradigm=self.paradigm,
         )
@@ -302,7 +302,7 @@ class Test_CompoundDataset(unittest.TestCase):
         compound_data = CompoundDataset(
             subjects_list,
             events=dict(Target=2, NonTarget=1),
-            code="CompoundTest",
+            code="CompoundDataset-test",
             interval=[0, 1],
             paradigm=self.paradigm,
         )
@@ -326,7 +326,7 @@ class Test_CompoundDataset(unittest.TestCase):
         compound_dataset = CompoundDataset(
             subjects_list,
             events=dict(Target=2, NonTarget=1),
-            code="CompoundTest",
+            code="CompoundDataset",
             interval=[0, 1],
             paradigm=self.paradigm,
         )
@@ -362,6 +362,5 @@ class Test_CompoundDataset(unittest.TestCase):
                 and c.__name__ != "CompoundDataset"
             )
         ]
-        print(all_datasets)
         assert len(compound_dataset_list) == len(all_datasets)
         assert set(compound_dataset_list) == set(all_datasets)

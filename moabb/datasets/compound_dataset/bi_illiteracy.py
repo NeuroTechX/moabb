@@ -1,10 +1,15 @@
+from moabb.utils import depreciated_alias
+
 from ..braininvaders import BI2014a, BI2014b, BI2015a, BI2015b, Cattan2019_VR
 from .base import CompoundDataset
 
 
 class _base_bi_il(CompoundDataset):
-    def __init__(self, subjects_list, dataset=None):
-        code = "Illiteracy" if dataset is None else f"{dataset.code}+IL"
+    def __init__(self, subjects_list, dataset=None, code=None):
+        if code is None and dataset is None:
+            raise ValueError("Either code or dataset must be provided")
+        if code is None:
+            code = f"{dataset.code}-Il"
         CompoundDataset.__init__(
             self,
             subjects_list=subjects_list,
@@ -15,7 +20,8 @@ class _base_bi_il(CompoundDataset):
         )
 
 
-class bi2014a_il(_base_bi_il):
+@depreciated_alias("bi2014a_il", "0.7")
+class BI2014a_Il(_base_bi_il):
     """A selection of subject from BI2014a with AUC < 0.7 with pipeline:
     ERPCovariances(estimator="lwf"), MDM(metric="riemann")
     """
@@ -44,7 +50,8 @@ class bi2014a_il(_base_bi_il):
         _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 
 
-class bi2014b_il(_base_bi_il):
+@depreciated_alias("bi2014b_il", "0.7")
+class BI2014b_Il(_base_bi_il):
     """A selection of subject from BI2014b with AUC < 0.7 with pipeline:
     ERPCovariances(estimator="lwf"), MDM(metric="riemann")
     """
@@ -67,7 +74,8 @@ class bi2014b_il(_base_bi_il):
         _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 
 
-class bi2015a_il(_base_bi_il):
+@depreciated_alias("bi2015a_il", "0.7")
+class BI2015a_Il(_base_bi_il):
     """A selection of subject from BI2015a with AUC < 0.7 with pipeline:
     ERPCovariances(estimator="lwf"), MDM(metric="riemann")
     """
@@ -81,7 +89,8 @@ class bi2015a_il(_base_bi_il):
         _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 
 
-class bi2015b_il(_base_bi_il):
+@depreciated_alias("bi2015b_il", "0.7")
+class BI2015b_Il(_base_bi_il):
     """A selection of subject from BI2015b with AUC < 0.7 with pipeline:
     ERPCovariances(estimator="lwf"), MDM(metric="riemann")
     """
@@ -118,7 +127,8 @@ class bi2015b_il(_base_bi_il):
         _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 
 
-class VirtualReality_il(_base_bi_il):
+@depreciated_alias("VirtualReality_il", "0.7")
+class Cattan2019_VR_Il(_base_bi_il):
     """A selection of subject from Cattan2019_VR with AUC < 0.7 with pipeline:
     ERPCovariances(estimator="lwf"), MDM(metric="riemann")
     """
@@ -134,17 +144,18 @@ class VirtualReality_il(_base_bi_il):
         _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 
 
-class biIlliteracy(_base_bi_il):
+@depreciated_alias("biIlliteracy", "0.7")
+class BI_Il(_base_bi_il):
     """Subjects from braininvaders datasets with AUC < 0.7 with pipeline:
     ERPCovariances(estimator="lwf"), MDM(metric="riemann")
     """
 
     def __init__(self):
         subjects_list = [
-            bi2014a_il(),
-            bi2014b_il(),
-            bi2015a_il(),
-            bi2015b_il(),
-            VirtualReality_il(),
+            BI2014a_Il(),
+            BI2014b_Il(),
+            BI2015a_Il(),
+            BI2015b_Il(),
+            Cattan2019_VR_Il(),
         ]
-        _base_bi_il.__init__(self, subjects_list=subjects_list)
+        _base_bi_il.__init__(self, subjects_list=subjects_list, code="BrainInvaders-Il")

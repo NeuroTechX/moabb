@@ -103,12 +103,12 @@ select a sample of subject inside a dataset (e.g. subject with high/low performa
    :header: Dataset, #Subj, #Original datasets
    :class: sortable
 
-   bi2014a_il,17,BI2014a
-   bi2014b_il,11,BI2014b
-   bi2015a_il,2,BI2015a
-   bi2015b_il,25,BI2015b
-   VirtualReality_il,4,Cattan2019_VR
-   biIlliteracy,59,bi2014a_il bi2014b_il bi2015a_il bi2015b_il VirtualReality_il
+   BI2014a_Il,17,BI2014a
+   BI2014b_Il,11,BI2014b
+   BI2015a_Il,2,BI2015a
+   BI2015b_Il,25,BI2015b
+   Cattan2019_VR_Il,4,Cattan2019_VR
+   BI_Il,59,BI2014a_Il BI2014b_Il BI2015a_Il BI2015b_Il Cattan2019_VR_Il
 
 
 Submit a new dataset

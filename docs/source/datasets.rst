@@ -131,9 +131,9 @@ ERP Datasets
     :toctree: generated/
     :template: class.rst
 
-    bi2014a_il
-    bi2014b_il
-    bi2015a_il
-    bi2015b_il
-    VirtualReality_il
-    biIlliteracy
+    BI2014a_Il
+    BI2014b_Il
+    BI2015a_Il
+    BI2015b_Il
+    Cattan2019_VR_Il
+    BI_Il
