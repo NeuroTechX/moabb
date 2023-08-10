@@ -640,7 +640,7 @@ class BI2014b(BaseDataset):
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         BI2014b           37      32        5 NT x 1 T         1s              512Hz           3
+         BI2014b           38      32        5 NT x 1 T         1s              512Hz           3
         ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings of 38 subjects playing in
@@ -673,7 +673,7 @@ class BI2014b(BaseDataset):
 
     def __init__(self):
         super().__init__(
-            subjects=list(range(1, 38)),
+            subjects=list(range(1, 39)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
             code="BrainInvaders2014b",
