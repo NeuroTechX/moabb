@@ -4,6 +4,7 @@ import logging
 import os
 import os.path as osp
 import random
+import re
 import sys
 
 import numpy as np
@@ -157,6 +158,18 @@ def set_download_dir(path):
 aliases_list = []  # list of tuples containing (old name, new name, expire version)
 
 
+def update_docstring_list(doc, section, msg):
+    header = f"{section}[ ]*\n[ ]*[\-]+[ ]*\n"
+    if section not in doc:
+        doc = doc + f"\n\n    {section}\n    {'-' * len(section)}\n"
+    if re.search(f"[ ]*{header}", doc) is None:
+        raise ValueError(
+            f"Incorrect formatting of section {section!r} in docstring {doc!r}"
+        )
+    doc = re.sub(f"([ ]*)({header})", f"\g<1>\g<2>\n\g<1>.. {msg}\n", doc)
+    return doc
+
+
 def depreciated_alias(name, expire_version):
     """Decorator that creates an alias for the decorated function or class,
     marks that alias as depreciated, and adds the alias to ``aliases_list``.
@@ -168,7 +181,6 @@ def depreciated_alias(name, expire_version):
             f"{name} will be removed in version {expire_version}."
         )
         note_msg = (
-            f"\n\nNotes\n-----\n"
             f"``{func.__name__}`` was previously named ``{name}``. "
             f"``{name}`` will be removed in  version {expire_version}."
         )
@@ -191,7 +203,7 @@ def depreciated_alias(name, expire_version):
             namespace[name] = depreciated_func
         else:
             raise ValueError("Can only decorate functions and classes")
-        func.__doc__ = (func.__doc__ or "") + note_msg
+        func.__doc__ = update_docstring_list(func.__doc__ or "", "Notes", note_msg)
         aliases_list.append((name, func.__name__, expire_version))
         return func
 

@@ -113,9 +113,9 @@ class TestDepreciatedAlias(unittest.TestCase):
             a = DummyA(2, b=2)
         self.assertEqual(
             a.__doc__,
-            "DummyA class\n\nNotes\n-----\n"
-            "``DummyA`` was previously named ``DummyB``. "
-            "``DummyB`` will be removed in  version 0.1.",
+            "DummyA class\n\n    Notes\n    -----\n\n"
+            "    .. ``DummyA`` was previously named ``DummyB``. "
+            "``DummyB`` will be removed in  version 0.1.\n",
         )
 
         with self.assertLogs(logger="moabb.utils", level="WARN") as cm:
@@ -137,6 +137,35 @@ class TestDepreciatedAlias(unittest.TestCase):
         self.assertIsInstance(b, DummyB)  # noqa: F821
         self.assertIsInstance(b, DummyA)
 
+    def test_class_alias_notes(self):
+        @depreciated_alias("DummyB", expire_version="0.1")
+        class DummyA:
+            """DummyA class
+
+            Notes
+            -----
+
+            .. a note"""
+
+            def __init__(self, a, b=1):
+                self.a = a
+                self.b = b
+
+            def c(self):
+                return self.a
+
+        self.assertIn(("DummyB", "DummyA", "0.1"), aliases_list)
+
+        with self.assertNoLogs(logger="moabb.utils", level="WARN"):
+            a = DummyA(2, b=2)
+        self.assertEqual(
+            a.__doc__,
+            "DummyA class\n\n            Notes\n            -----\n\n"
+            "            .. ``DummyA`` was previously named ``DummyB``. "
+            "``DummyB`` will be removed in  version 0.1.\n\n"
+            "            .. a note",
+        )
+
     def test_function_alias(self):
         @depreciated_alias("dummy_b", expire_version="0.1")
         def dummy_a(a, b=1):
@@ -149,9 +178,12 @@ class TestDepreciatedAlias(unittest.TestCase):
             self.assertEqual(dummy_a(2, b=2), 4)
         self.assertEqual(
             dummy_a.__doc__,
-            "Dummy function\n\nNotes\n-----\n"
-            "``dummy_a`` was previously named ``dummy_b``. "
-            "``dummy_b`` will be removed in  version 0.1.",
+            # "Dummy function\n\nNotes\n-----\n"
+            # "``dummy_a`` was previously named ``dummy_b``. "
+            # "``dummy_b`` will be removed in  version 0.1.",
+            "Dummy function\n\n    Notes\n    -----\n\n"
+            "    .. ``dummy_a`` was previously named ``dummy_b``. "
+            "``dummy_b`` will be removed in  version 0.1.\n",
         )
 
         with self.assertLogs(logger="moabb.utils", level="WARN") as cm:
