@@ -83,7 +83,7 @@ Resting State Datasets
     :toctree: generated/
     :template: class.rst
 
-    HeadMountedDisplay
+    Cattan2019
 
 
 ------------
