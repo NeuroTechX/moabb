@@ -64,6 +64,7 @@ from .bnci import BNCI2014009  # noqa: F401
 from .bnci import BNCI2015001  # noqa: F401
 from .bnci import BNCI2015003  # noqa: F401
 from .bnci import BNCI2015004  # noqa: F401
+from .braininvaders import VirtualReality  # noqa: F401
 from .mpi_mi import MunichMI  # noqa: F401
 from .phmd_ml import HeadMountedDisplay  # noqa: F401
 from .ssvep_exo import SSVEPExo  # noqa: F401

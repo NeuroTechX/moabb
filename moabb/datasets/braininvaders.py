@@ -16,6 +16,7 @@ from scipy.io import loadmat
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.utils import block_rep
+from moabb.utils import depreciated_alias
 
 
 BI2012a_URL = "https://zenodo.org/record/2649069/files/"
@@ -810,6 +811,7 @@ class bi2015b(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
+@depreciated_alias("VirtualReality", "0.7")
 class Cattan2019_VR(BaseDataset):
     """Dataset of an EEG-based BCI experiment in Virtual Reality using P300.
 
