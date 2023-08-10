@@ -48,8 +48,9 @@ class FakeDataset(BaseDataset):
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         self.channels = channels
         code = (
-            f"{code}-{paradigm.capitalize()}-{n_subjects}-{n_sessions}-{n_runs}-"
-            f"{''.join([e.replace('_', '').capitalize() for e in event_list])}-{''.join(channels)}"
+            f"{code}-{paradigm.lower()}-{n_subjects}-{n_sessions}-{n_runs}-"
+            f"{''.join([e.replace('_', '').lower() for e in event_list])}-"
+            f"{''.join([c.lower() for c in channels])}"
         )
         super().__init__(
             subjects=list(range(1, n_subjects + 1)),
