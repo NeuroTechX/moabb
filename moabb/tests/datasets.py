@@ -171,7 +171,7 @@ class Test_Datasets(unittest.TestCase):
 
     def test_dataset_accept(self):
         """Verify that accept licence is working."""
-        # Only Shin2017 (bbci_eeg_fnirs) for now
+        # Only BaseShin2017 (bbci_eeg_fnirs) for now
         for ds in [Shin2017A(), Shin2017B()]:
             # if the data is already downloaded:
             if mne.get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:

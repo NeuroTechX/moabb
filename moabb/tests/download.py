@@ -3,7 +3,7 @@ import unittest
 
 import mne
 
-from moabb.datasets.bbci_eeg_fnirs import Shin2017
+from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
 
 
 # from moabb.datasets.gigadb import Cho2017
@@ -39,7 +39,7 @@ class Test_Downloads(unittest.TestCase):
                 events, _ = mne.events_from_annotations(raw, verbose=False)
             return events
 
-        if isinstance(dataset(), Shin2017):
+        if isinstance(dataset(), BaseShin2017):
             obj = dataset(accept=True)
         else:
             obj = dataset()
