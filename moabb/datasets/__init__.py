@@ -54,6 +54,7 @@ from .Zhou2016 import Zhou2016
 # Call this last in order to make sure the dataset list contains all
 # the datasets imported in this file.
 _init_dataset_list()
+del _init_dataset_list
 
 # Depreciated datasets (not added to dataset_list):
 from .bnci import BNCI2014001  # noqa: F401
