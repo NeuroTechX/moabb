@@ -61,6 +61,7 @@ Bugs
 - Fix :func:`moabb.paradigms.base.BaseParadigm` using attributes before defining them  (PR :gh:`408`, issue :gh:`425` by `Pierre Guetschel`_)
 - Fix :func:`moabb.paradigms.FakeImageryParadigm`, :func:`moabb.paradigms.FakeP300Paradigm` and :func:`moabb.paradigms.FakeSSVEPParadigm` ``is_valid`` methods to only accept the correct datasets (PR :gh:`408` by `Pierre Guetschel`_)
 - Fix ``dataset_list`` construction, which could be empty due to bad import order (PR :gh:`449` by `Thomas Moreau`_).
+- Fixing dataset downloader from servers with non-http (PR :gh:`433` by `Sara Sedlar`_)
 
 API changes
 ~~~~~~~~~~~
