@@ -40,9 +40,12 @@ class TestRegex(unittest.TestCase):
         assert is_abbrev("Aa", "Aa")
         assert is_abbrev("A1", "Aa1")
         assert is_abbrev("1A", "1Aa")
+        assert is_abbrev("A-", "A-")
+        assert is_abbrev("a-a", "ab-ab")
         assert not is_abbrev("Aa", "AAa")
         assert not is_abbrev("Aab", "Aa")
         assert not is_abbrev("A1", "A1a")
+        assert not is_abbrev("a-a", "ab-ba")
 
     def test_is_camell_kebab_case(self):
         assert is_camel_kebab_case("Aa")

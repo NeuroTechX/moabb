@@ -135,7 +135,7 @@ def is_abbrev(abbrev_name: str, full_name: str):
     """Check if abbrev_name is an abbreviation of full_name,
     i.e. if abbrev_name has the same capitals letters as full_name
     but may have lower letters shorten."""
-    pattern = re.sub(r"([A-Za-z])", r"\1[a-z]*", abbrev_name)
+    pattern = re.sub(r"([A-Za-z])", r"\1[a-z]*", re.escape(abbrev_name))
     return re.fullmatch(pattern, full_name) is not None
 
 
