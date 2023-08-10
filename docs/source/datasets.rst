@@ -22,7 +22,7 @@ Motor Imagery Datasets
     BNCI2015_004
     Cho2017
     Lee2019_MI
-    MunichMI
+    GrosseWentrup2009
     Ofner2017
     PhysionetMI
     Schirrmeister2017

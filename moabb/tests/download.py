@@ -14,7 +14,7 @@ from moabb.datasets.bbci_eeg_fnirs import Shin2017
 #                                  BNCI2015_003, BNCI2015_004)
 # from moabb.datasets.bbci_eeg_fnirs import Shin2017A, Shin2017B
 # from moabb.datasets.upper_limb import Ofner2017
-# from moabb.datasets.mpi_mi import MunichMI
+# from moabb.datasets.mpi_mi import GrosseWentrup2009
 # from moabb.datasets.schirrmeister2017 import Schirrmeister2017
 # from moabb.datasets.Weibo2014 import Weibo2014
 # from moabb.datasets.Zhou2016 import Zhou2016
@@ -95,7 +95,7 @@ class Test_Downloads(unittest.TestCase):
     #     self.run_dataset(Ofner2017)
 
     # def test_mpi_mi(self):
-    #     self.run_dataset(MunichMI)
+    #     self.run_dataset(GrosseWentrup2009)
 
     # def test_schirrmeister2017(self):
     #     self.run_dataset(Schirrmeister2017, subj=(0, 1))
