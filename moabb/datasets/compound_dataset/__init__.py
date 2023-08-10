@@ -8,3 +8,8 @@ from .bi_illiteracy import (
     bi2015b_il,
     biIlliteracy,
 )
+from .utils import _init_compound_dataset_list
+
+
+_init_compound_dataset_list()
+del _init_compound_dataset_list

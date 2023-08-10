@@ -6,9 +6,11 @@ import unittest
 import mne
 
 import moabb.datasets as db
+import moabb.datasets.compound_dataset as db_compound
 from moabb.datasets import Cattan2019_VR, Shin2017A, Shin2017B
 from moabb.datasets.base import BaseDataset, is_abbrev, is_camel_kebab_case
 from moabb.datasets.compound_dataset import CompoundDataset
+from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.utils import block_rep, dataset_list
 from moabb.paradigms import P300
@@ -331,3 +333,35 @@ class Test_CompoundDataset(unittest.TestCase):
 
         # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
         self.assertEqual(compound_dataset._get_sessions_per_subject(), self.n_sessions)
+
+    def test_datasets_init(self):
+        codes = []
+        for ds in compound_dataset_list:
+            kwargs = {}
+            if inspect.signature(ds).parameters.get("accept"):
+                kwargs["accept"] = True
+            obj = ds(**kwargs)
+            self.assertIsNotNone(obj)
+            codes.append(obj.code)
+
+        # Check that all codes are unique:
+        self.assertEqual(len(codes), len(set(codes)))
+
+    def test_dataset_list(self):
+        if aliases_list:
+            depreciated_list, _, _ = zip(*aliases_list)
+        else:
+            depreciated_list = []
+        all_datasets = [
+            c
+            for c in db_compound.__dict__.values()
+            if (
+                inspect.isclass(c)
+                and issubclass(c, CompoundDataset)
+                and c.__name__ not in depreciated_list
+                and c.__name__ != "CompoundDataset"
+            )
+        ]
+        print(all_datasets)
+        assert len(compound_dataset_list) == len(all_datasets)
+        assert set(compound_dataset_list) == set(all_datasets)
