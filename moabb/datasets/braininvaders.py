@@ -46,7 +46,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             session_name = "session_" + session_number
         elif ds.code == "BrainInvaders2015a":
             session_name = f'session_{file_path.split("_")[-1][1:2]}'
-        elif ds.code == "VR-P300":
+        elif ds.code == "Cattan2019-VR":
             session_name = file_path.split(".")[0].split("_")[-1]
 
         if session_name not in sessions.keys():
@@ -153,7 +153,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim[idx_nontarget] = 1
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
-        elif ds.code == "VR-P300":
+        elif ds.code == "Cattan2019-VR":
             data = loadmat(os.path.join(file_path, os.listdir(file_path)[0]))["data"]
 
             chnames = [
@@ -190,7 +190,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             verbose=False,
         )
 
-        if not ds.code == "VR-P300":
+        if not ds.code == "Cattan2019-VR":
             raw = mne.io.RawArray(data=X, info=info, verbose=False)
             raw.set_montage(make_standard_montage("standard_1020"))
 
@@ -389,7 +389,7 @@ def _bi_data_path(  # noqa: C901
             )
             for i in range(1, 5)
         ]
-    elif ds.code == "VR-P300":
+    elif ds.code == "Cattan2019-VR":
         subject_paths = []
         if ds.virtual_reality:
             url = "{:s}subject_{:02d}_{:s}.mat".format(VIRTUALREALITY_URL, subject, "VR")
@@ -871,7 +871,7 @@ class Cattan2019_VR(BaseDataset):
             subjects=list(range(1, 21 + 1)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="Cattan2019-VR",
+            code="Cattan2019-VR",  # before: "VR-P300"
             interval=[0, 1.0],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2605204",
@@ -881,7 +881,7 @@ class Cattan2019_VR(BaseDataset):
         self.personal_computer = screen_display
         if not self.virtual_reality and not self.personal_computer:
             warn(
-                "[P300-VR dataset] virtual_reality and screen display are False. No data will be downloaded, unless you change these parameters after initialization."
+                "[Cattan2019-VR dataset] virtual_reality and screen display are False. No data will be downloaded, unless you change these parameters after initialization."
             )
 
     def _get_single_subject_data(self, subject):
