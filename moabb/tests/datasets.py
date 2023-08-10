@@ -179,11 +179,17 @@ class Test_Datasets(unittest.TestCase):
                 self.assertRaises(AttributeError, ds.get_data, [1])
 
     def test_datasets_init(self):
+        codes = []
         for ds in dataset_list:
             kwargs = {}
             if inspect.signature(ds).parameters.get("accept"):
                 kwargs["accept"] = True
-            self.assertIsNotNone(ds(**kwargs))
+            obj = ds(**kwargs)
+            self.assertIsNotNone(obj)
+            codes.append(obj.code)
+
+        # Check that all codes are unique:
+        self.assertEqual(len(codes), len(set(codes)))
 
     def test_dataset_list(self):
         if aliases_list:
