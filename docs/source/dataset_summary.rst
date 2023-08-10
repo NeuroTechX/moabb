@@ -70,7 +70,7 @@ SSVEP
    :class: sortable
 
    Lee2019_SSVEP,54,16,4,25,1s,1000Hz,1
-   SSVEPExo,12,8,4,16,2s,256Hz,1
+   Exoskeleton_SSVEP,12,8,4,16,2s,256Hz,1
    MAMEM1,10,256,5,12-15,3s,250Hz,1
    MAMEM2,10,256,5,20-30,3s,250Hz,1
    MAMEM3,10,14,4,20-30,3s,128Hz,1

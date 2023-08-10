@@ -66,7 +66,7 @@ SSVEP Datasets
     :toctree: generated/
     :template: class.rst
 
-    SSVEPExo
+    Exoskeleton_SSVEP
     Nakanishi2015
     Wang2016
     MAMEM1

@@ -41,7 +41,7 @@ from .phmd_ml import Cattan2019
 from .physionet_mi import PhysionetMI
 from .schirrmeister2017 import Schirrmeister2017
 from .sosulski2019 import Sosulski2019
-from .ssvep_exo import SSVEPExo
+from .ssvep_exo import Exoskeleton_SSVEP
 from .ssvep_mamem import MAMEM1, MAMEM2, MAMEM3
 from .ssvep_nakanishi import Nakanishi2015
 from .ssvep_wang import Wang2016
@@ -65,3 +65,4 @@ from .bnci import BNCI2015001  # noqa: F401
 from .bnci import BNCI2015003  # noqa: F401
 from .bnci import BNCI2015004  # noqa: F401
 from .phmd_ml import HeadMountedDisplay  # noqa: F401
+from .ssvep_exo import SSVEPExo  # noqa: F401
