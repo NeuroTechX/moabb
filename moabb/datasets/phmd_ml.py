@@ -14,17 +14,17 @@ HEADMOUNTED_URL = "https://zenodo.org/record/2617085/files/"
 
 
 @depreciated_alias("HeadMountedDisplay", "0.7")
-class Cattan2019(BaseDataset):
+class Cattan2019_PHMD(BaseDataset):
     """Passive Head Mounted Display with Music Listening dataset.
 
     .. admonition:: Dataset summary
 
 
-        =================  =======  =======  ==========  =================  ============  ===============  ===========
-        Name                 #Subj    #Chan    #Classes    #Blocks/class     Trials len    Sampling rate    #Sessions
-        ================== =======  =======  ==========  =================  ============  ===============  ===========
-        Cattan2019      12       16           2                 10   60s            512Hz                   1
-        ================== =======  =======  ==========  =================  ============  ===============  ===========
+        ==============  =======  =======  ==========  =================  ============  ===============  ===========
+        Name              #Subj    #Chan    #Classes    #Blocks/class     Trials len    Sampling rate    #Sessions
+        =============== =======  =======  ==========  =================  ============  ===============  ===========
+        Cattan2019_PHMD      12       16           2                 10   60s            512Hz                   1
+        =============== =======  =======  ==========  =================  ============  ===============  ===========
 
     We describe the experimental procedures for a dataset that we have made publicly available
     at https://doi.org/10.5281/zenodo.2617084 in mat (Mathworks, Natick, USA) and csv formats.
@@ -67,7 +67,7 @@ class Cattan2019(BaseDataset):
             subjects=list(range(1, 12 + 1)),
             sessions_per_subject=1,
             events=dict(on=1, off=2),
-            code="Cattan2019",  # Before: "PHMD-ML"
+            code="Cattan2019_PHMD",  # Before: "PHMD-ML"
             interval=[0, 1],
             paradigm="rstate",
             doi="https://doi.org/10.5281/zenodo.2617084 ",

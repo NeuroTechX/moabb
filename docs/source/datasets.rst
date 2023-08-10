@@ -83,7 +83,7 @@ Resting State Datasets
     :toctree: generated/
     :template: class.rst
 
-    Cattan2019
+    Cattan2019_PHMD
 
 
 ------------

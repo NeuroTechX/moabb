@@ -89,7 +89,7 @@ is a resting state experiment.
    :header: Dataset, #Subj, #Chan, #Classes, #Blocks / class, Trials length, Sampling rate, #Sessions
    :class: sortable
 
-   Cattan2019,12,16,2,10,60s,512Hz,1
+   Cattan2019_PHMD,12,16,2,10,60s,512Hz,1
 
 
 Compound Datasets

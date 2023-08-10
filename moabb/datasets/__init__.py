@@ -37,7 +37,7 @@ from .huebner_llp import Huebner2017, Huebner2018
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
 from .mpi_mi import GrosseWentrup2009
 from .neiry import DemonsP300
-from .phmd_ml import Cattan2019
+from .phmd_ml import Cattan2019_PHMD
 from .physionet_mi import PhysionetMI
 from .schirrmeister2017 import Schirrmeister2017
 from .sosulski2019 import Sosulski2019
