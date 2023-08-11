@@ -205,7 +205,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
             )
         class_name = self.__class__.__name__.replace("_", "-")
         if not is_abbrev(class_name, code):
-            raise ValueError(
+            log.warning(
                 f"The dataset class name {class_name!r} must be an abbreviation "
                 f"of its code {code!r}. "
                 "See moabb.datasets.base.is_abbrev for more information."

@@ -185,7 +185,8 @@ class Test_Datasets(unittest.TestCase):
             kwargs = {}
             if inspect.signature(ds).parameters.get("accept"):
                 kwargs["accept"] = True
-            obj = ds(**kwargs)
+            with self.assertNoLogs():
+                obj = ds(**kwargs)
             self.assertIsNotNone(obj)
             codes.append(obj.code)
 
