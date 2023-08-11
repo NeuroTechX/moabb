@@ -209,7 +209,8 @@ class Test_Datasets(unittest.TestCase):
             kwargs = {}
             if inspect.signature(ds).parameters.get("accept"):
                 kwargs["accept"] = True
-            with self.assertLogs():
+            with self.assertLogs(logger="moabb.utils", level="WARNING"):
+                # We test if depreciated_alias throws a warning.
                 obj = ds(**kwargs)
             self.assertIsNotNone(obj)
             self.assertIn(ds.__name__, depreciated_names)
