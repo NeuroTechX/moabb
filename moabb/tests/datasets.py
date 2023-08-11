@@ -193,6 +193,21 @@ class Test_Datasets(unittest.TestCase):
         # Check that all codes are unique:
         self.assertEqual(len(codes), len(set(codes)))
 
+    def test_depreciated_datasets_init(self):
+        depreciated_names, _, _ = zip(*aliases_list)
+        for ds in db.__dict__.values():
+            if ds in dataset_list:
+                continue
+            if not (inspect.isclass(ds) and issubclass(ds, BaseDataset)):
+                continue
+            kwargs = {}
+            if inspect.signature(ds).parameters.get("accept"):
+                kwargs["accept"] = True
+            with self.assertLogs():
+                obj = ds(**kwargs)
+            self.assertIsNotNone(obj)
+            self.assertIn(ds.__name__, depreciated_names)
+
     def test_dataset_list(self):
         if aliases_list:
             depreciated_list, _, _ = zip(*aliases_list)
