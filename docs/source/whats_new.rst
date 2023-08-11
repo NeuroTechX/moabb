@@ -24,7 +24,7 @@ Enhancements
 - Fixing the dataset description based on the meta information (:gh:`389` and `398` by `Bruno Aristimunha`_ and `Sara Sedlar`_)
 - Adding second deployment of the documentation (:gh:`374` by `Bruno Aristimunha`_)
 - Adding Parallel evaluation for :func:`moabb.evaluations.WithinSessionEvaluation` , :func:`moabb.evaluations.CrossSessionEvaluation` (:gh:`364` by `Bruno Aristimunha`_)
-- Add example with Cattan2019_VR BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
+- Add example with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 - Adding saving option for the models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Adding example to load different type of models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Add resting state paradigm with dataset and example (:gh:`400` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
@@ -49,7 +49,7 @@ Bugs
 ~~~~
 
 - Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
-- Correct downloading with Cattan2019_VR BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_)
+- Correct downloading with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_)
 - Rename event `substraction` to `subtraction` in :func:`moabb.datasets.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
 - Save parameters of :func:`moabb.datasets.PhysionetMI` (:gh:`403` by `Pierre Guetschel`_)
 - Fixing issue with parallel evaluation (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
@@ -78,7 +78,7 @@ Version - 0.5.0  (Stable - PyPi)
 Enhancements
 ~~~~~~~~~~~~
 - Speeding the augmentation model (:gh:`365` by `Bruno Aristimunha`_)
-- Add Cattan2019_VR BrainInvaders dataset (:gh:`358` by `Gregoire Cattan`_)
+- Add VirtualReality BrainInvaders dataset (:gh:`358` by `Gregoire Cattan`_)
 - Switch to python-3.8, update dependencies, fix code link in doc, add `code coverage <https://app.codecov.io/gh/NeuroTechX/moabb>`__ (:gh:`315` by `Sylvain Chevallier`_)
 - Adding a comprehensive benchmarking function (:gh:`264` by `Divyesh Narayanan`_ and `Sylvain Chevallier`_)
 - Add meta-information for datasets in documentation (:gh:`317` by `Bruno Aristimunha`_)
