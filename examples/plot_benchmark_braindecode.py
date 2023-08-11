@@ -21,7 +21,7 @@ from absl.logging import ERROR, set_verbosity
 
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import score_plot
-from moabb.datasets import BNCI2014_004, BNCI2014001
+from moabb.datasets import BNCI2014_001, BNCI2014_004
 from moabb.utils import setup_seed
 
 
@@ -68,7 +68,7 @@ print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 setup_seed(42)
 
 # Restrict this example only to the first two subjects of BNCI2014_001
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 dataset2 = BNCI2014_004()
 dataset.subject_list = dataset.subject_list[:2]
 dataset2.subject_list = dataset2.subject_list[:2]

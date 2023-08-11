@@ -30,7 +30,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014001
+from moabb.datasets import BNCI2014_001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
@@ -72,7 +72,7 @@ pipelines["RG+LR"] = make_pipeline(
 # be overwritten if necessary.
 
 paradigm = LeftRightImagery()
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 dataset.subject_list = dataset.subject_list[:1]
 datasets = [dataset]
 overwrite = True  # set to True if we want to overwrite cached results

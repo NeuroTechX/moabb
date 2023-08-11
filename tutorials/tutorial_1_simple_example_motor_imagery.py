@@ -23,7 +23,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014001
+from moabb.datasets import BNCI2014_001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
@@ -46,7 +46,7 @@ warnings.filterwarnings("ignore")
 # - importing the data from the files in whatever extension they might be
 #   (like .mat, .gdf, etc.) and instantiate a Raw object from the MNE package
 
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 dataset.subject_list = [1, 2, 3]
 
 ##############################################################################

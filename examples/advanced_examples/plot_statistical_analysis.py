@@ -27,7 +27,7 @@ from moabb.analysis.meta_analysis import (  # noqa: E501
     compute_dataset_statistics,
     find_significant_differences,
 )
-from moabb.datasets import BNCI2014001
+from moabb.datasets import BNCI2014_001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
@@ -79,7 +79,7 @@ pipelines["RG+LDA"] = make_pipeline(Covariances(), TangentSpace(), LDA())
 # be overwritten if necessary.
 
 paradigm = LeftRightImagery()
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 dataset.subject_list = dataset.subject_list[:4]
 datasets = [dataset]
 overwrite = True  # set to False if we want to use cached results
