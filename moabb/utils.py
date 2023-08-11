@@ -166,7 +166,7 @@ def update_docstring_list(doc, section, msg):
         raise ValueError(
             f"Incorrect formatting of section {section!r} in docstring {doc!r}"
         )
-    doc = re.sub(f"([ ]*)({header})", f"\g<1>\g<2>\n\g<1>.. {msg}\n", doc)
+    doc = re.sub(f"([ ]*)({header})", f"\g<1>\g<2>\n\g<1>{msg}\n", doc)
     return doc
 
 
@@ -181,7 +181,7 @@ def depreciated_alias(name, expire_version):
             f"{name} will be removed in version {expire_version}."
         )
         note_msg = (
-            f"``{func.__name__}`` was previously named ``{name}``. "
+            f".. note:: ``{func.__name__}`` was previously named ``{name}``. "
             f"``{name}`` will be removed in  version {expire_version}."
         )
 

@@ -114,7 +114,7 @@ class TestDepreciatedAlias(unittest.TestCase):
         self.assertEqual(
             a.__doc__,
             "DummyA class\n\n    Notes\n    -----\n\n"
-            "    .. ``DummyA`` was previously named ``DummyB``. "
+            "    .. note:: ``DummyA`` was previously named ``DummyB``. "
             "``DummyB`` will be removed in  version 0.1.\n",
         )
 
@@ -145,7 +145,7 @@ class TestDepreciatedAlias(unittest.TestCase):
             Notes
             -----
 
-            .. a note"""
+            a note"""
 
             def __init__(self, a, b=1):
                 self.a = a
@@ -161,9 +161,9 @@ class TestDepreciatedAlias(unittest.TestCase):
         self.assertEqual(
             a.__doc__,
             "DummyA class\n\n            Notes\n            -----\n\n"
-            "            .. ``DummyA`` was previously named ``DummyB``. "
+            "            .. note:: ``DummyA`` was previously named ``DummyB``. "
             "``DummyB`` will be removed in  version 0.1.\n\n"
-            "            .. a note",
+            "            a note",
         )
 
     def test_function_alias(self):
@@ -182,7 +182,7 @@ class TestDepreciatedAlias(unittest.TestCase):
             # "``dummy_a`` was previously named ``dummy_b``. "
             # "``dummy_b`` will be removed in  version 0.1.",
             "Dummy function\n\n    Notes\n    -----\n\n"
-            "    .. ``dummy_a`` was previously named ``dummy_b``. "
+            "    .. note:: ``dummy_a`` was previously named ``dummy_b``. "
             "``dummy_b`` will be removed in  version 0.1.\n",
         )
 
