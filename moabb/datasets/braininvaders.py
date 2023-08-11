@@ -411,7 +411,7 @@ class BI2012(BaseDataset):
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         BI2012           25      16     6140 NT / 128 T       1s              512Hz          2
+         BI2012           25      16      640 NT / 128 T       1s              128Hz          2
         ================ ======= ======= ================ =============== =============== ===========
 
     Dataset following the setup from [1]_ carried-out at University of
@@ -761,7 +761,7 @@ class BI2015b(BaseDataset):
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         BI2015b           44      32        5 NT x 1 T         1s              512Hz           2
+         BI2015b           44      32        5 NT x 1 T         1s              512Hz           1
         ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings
