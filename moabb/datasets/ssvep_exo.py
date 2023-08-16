@@ -12,17 +12,17 @@ SSVEPEXO_URL = "https://zenodo.org/record/2392979/files/"
 
 
 @depreciated_alias("SSVEPExo", "0.7")
-class Exoskeleton_SSVEP(BaseDataset):
+class Kalunga2016(BaseDataset):
     """SSVEP Exo dataset.
 
     .. admonition:: Dataset summary
 
 
-        =================  =======  =======  ==========  =================  ===============  ===============  ===========
-        Name                 #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
-        =================  =======  =======  ==========  =================  ===============  ===============  ===========
-        Exoskeleton_SSVEP       12        8           4                 16  2s               256Hz                      1
-        =================  =======  =======  ==========  =================  ===============  ===============  ===========
+        ===========  =======  =======  ==========  =================  ===============  ===============  ===========
+        Name           #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
+        ===========  =======  =======  ==========  =================  ===============  ===============  ===========
+        Kalunga2016       12        8           4                 16  2s               256Hz                      1
+        ===========  =======  =======  ==========  =================  ===============  ===============  ===========
 
     SSVEP dataset from E. Kalunga PhD in University of Versailles [1]_.
 
@@ -63,7 +63,7 @@ class Exoskeleton_SSVEP(BaseDataset):
             subjects=list(range(1, 13)),
             sessions_per_subject=1,
             events={"13": 2, "17": 3, "21": 4, "rest": 1},
-            code="Exoskeleton-SSVEP",
+            code="Kalunga2016",
             interval=[2, 4],
             paradigm="ssvep",
             doi="10.1016/j.neucom.2016.01.007",
