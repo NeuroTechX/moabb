@@ -218,7 +218,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         process_pipeline: Pipeline | None
             Optional processing pipeline to apply to the data.
             To generate an adequate pipeline, we recommend using
-            :func:`moabb.paradigms.base.BaseProcessing.make_process_pipelines`.
+            :func:`moabb.utils.make_process_pipelines`.
             This pipeline will receive :class:`mne.io.BaseRaw` objects.
             The steps names of this pipeline should be elements of :class:`StepType`.
             According to their name, the steps should either return a
