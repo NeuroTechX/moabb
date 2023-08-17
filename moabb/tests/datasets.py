@@ -35,7 +35,7 @@ class Test_Datasets(unittest.TestCase):
         n_sessions = 2
         n_runs = 2
 
-        for paradigm in ["imagery", "p300", "ssvep"]:
+        for paradigm in ["imagery", "p300", "ssvep", "cvep"]:
             ds = FakeDataset(
                 n_sessions=n_sessions,
                 n_runs=n_runs,

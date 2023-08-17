@@ -29,6 +29,7 @@ from moabb.datasets.bbci_eeg_fnirs import Shin2017
 # from moabb.datasets.ssvep_mamem import MAMEM1, MAMEM2, MAMEM3
 # from moabb.datasets.ssvep_nakanishi import Nakanishi2015
 # from moabb.datasets.ssvep_wang import Wang2016
+# from moabb.datasets.thielen2021 import Thielen2021
 
 
 class Test_Downloads(unittest.TestCase):
@@ -136,6 +137,9 @@ class Test_Downloads(unittest.TestCase):
 
     # def test_wang2016(self):
     #     self.run_dataset(Wang2016)
+
+    # def test_thielen2021(self):
+    #     self.run_dataset(Thielen2021)
 
 
 if __name__ == "__main__":
