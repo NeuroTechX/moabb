@@ -36,8 +36,8 @@ def score_plot(data, pipelines=None, orientation="vertical"):
         results on datasets
     pipelines: list of str | None
         pipelines to include in this plot
-    orientation: str
-        orientation of the score points
+    orientation: str, default="vertical"
+        plot orientation, could be ["vertical", "v", "horizontal", "h"]
 
     Returns
     -------
