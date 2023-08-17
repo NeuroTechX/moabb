@@ -21,10 +21,11 @@ class TestBenchmark(unittest.TestCase):
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
             include_datasets=[
-                "FakeDataset_imagery_10_2_2__left_hand_right_hand__C3_Cz_C4",
-                "FakeDataset_p300_10_2_2__Target_NonTarget__C3_Cz_C4",
-                "FakeDataset_ssvep_10_2_2__13_15__C3_Cz_C4",
+                "FakeDataset-Imagery-10-2-2-LefthandRighthand-C3CzC4",
+                "FakeDataset-P300-10-2-2-TargetNontarget-C3CzC4",
+                "FakeDataset-Ssvep-10-2-2-1315-C3CzC4",
             ],
+            overwrite=True,
         )
         self.assertEqual(len(res), 80)
 
@@ -37,6 +38,7 @@ class TestBenchmark(unittest.TestCase):
                 FakeDataset(["Target", "NonTarget"], paradigm="p300"),
                 FakeDataset(["13", "15"], paradigm="ssvep"),
             ],
+            overwrite=True,
         )
         self.assertEqual(len(res), 80)
 
@@ -53,6 +55,7 @@ class TestBenchmark(unittest.TestCase):
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
             paradigms=["FakeImageryParadigm"],
+            overwrite=True,
         )
         self.assertEqual(len(res), 40)
 
