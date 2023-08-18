@@ -1,3 +1,4 @@
+import re
 import tempfile
 from pathlib import Path
 
@@ -49,7 +50,7 @@ class FakeDataset(BaseDataset):
         self.channels = channels
         code = (
             f"{code}-{paradigm.lower()}-{n_subjects}-{n_sessions}-{n_runs}-"
-            f"{''.join([e.replace('_', '').lower() for e in event_list])}-"
+            f"{''.join([re.sub('[^A-Za-z09]', '', e).lower() for e in event_list])}-"
             f"{''.join([c.lower() for c in channels])}"
         )
         super().__init__(
