@@ -117,7 +117,7 @@ class BaseCVEP(BaseParadigm):
             raise (
                 ValueError(
                     f"Dataset {dataset.code} did not have enough "
-                    f"freqs in {self.events} to run analysis"
+                    f"events in {self.events} to run analysis"
                 )
             )
         return out
@@ -161,9 +161,11 @@ class CVEP(BaseCVEP):
     fmax: float (default 45.0)
         cutoff frequency (Hz) for the lowpass filter
 
-    events: list of str | None (default None)
-        List of stimulation frequencies. If None, use all stimulus
-        found in the dataset.
+    events: List of str | None (default None)
+        Event to use for epoching. Note, we stick to a convention where the
+        intensity level is encoded as float. For example, a binary sequence
+        would have events 1.0 (i.e., on) and 0.0 (i.e., off). If None, default
+        to all events defined in the dataset.
 
     n_classes: int or None (default None)
         Number of classes each dataset must have. All dataset classes if None
@@ -211,9 +213,11 @@ class FilterBankCVEP(BaseCVEP):
     ----------
     filters: tuple of tuple | None (default ((1., 45.), (12., 45.), (30., 45.)))
         Bank of bandpass filter to apply.
-    events: List of str (default None)
-        List of stimulation frequencies. If None, use all stimulus
-        found in the dataset.
+    events: List of str | None (default None)
+        Event to use for epoching. Note, we stick to a convention where the
+        intensity level is encoded as float. For example, a binary sequence
+        would have events 1.0 (i.e., on) and 0.0 (i.e., off). If None, default
+        to all events defined in the dataset.
     n_classes: int or None (default None)
         Number of classes each dataset must have. All dataset classes if None
     tmin: float (default 0.0)
@@ -244,7 +248,7 @@ class FilterBankCVEP(BaseCVEP):
 
 
 class FakeCVEPParadigm(BaseCVEP):
-    """Fake c-VEP classification."""
+    """Fake c-VEP dataset."""
 
     @property
     def datasets(self):

@@ -122,6 +122,7 @@ class Thielen2021(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
+        """Return the data of a single subject."""
         file_path_list = self.data_path(subject)
 
         # Codes
@@ -196,6 +197,7 @@ class Thielen2021(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
+        """Return the data paths of a single subject."""
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
