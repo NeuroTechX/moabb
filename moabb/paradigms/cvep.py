@@ -1,11 +1,6 @@
 """c-VEP Paradigms"""
 
-import abc
 import logging
-
-import mne
-import numpy as np
-import pandas as pd
 
 from moabb.datasets import utils
 from moabb.datasets.fake import FakeDataset
