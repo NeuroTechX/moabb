@@ -10,18 +10,18 @@ from mne.io import BaseRaw
 
 from moabb.datasets.fake import FakeDataset
 from moabb.paradigms import (
+    CVEP,
     P300,
     SSVEP,
-    CVEP,
+    BaseCVEP,
     BaseMotorImagery,
     BaseP300,
     BaseSSVEP,
-    BaseCVEP,
+    FilterBankCVEP,
     FilterBankFixedIntervalWindowsProcessing,
     FilterBankLeftRightImagery,
     FilterBankMotorImagery,
     FilterBankSSVEP,
-    FilterBankCVEP,
     FixedIntervalWindowsProcessing,
     LeftRightImagery,
     RestingStateToP300Adapter,
