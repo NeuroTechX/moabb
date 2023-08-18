@@ -12,13 +12,16 @@ from moabb.datasets.fake import FakeDataset
 from moabb.paradigms import (
     P300,
     SSVEP,
+    CVEP,
     BaseMotorImagery,
     BaseP300,
     BaseSSVEP,
+    BaseCVEP,
     FilterBankFixedIntervalWindowsProcessing,
     FilterBankLeftRightImagery,
     FilterBankMotorImagery,
     FilterBankSSVEP,
+    FilterBankCVEP,
     FixedIntervalWindowsProcessing,
     LeftRightImagery,
     RestingStateToP300Adapter,
@@ -783,3 +786,200 @@ class Test_FixedIntervalWindowsProcessing(unittest.TestCase):
                     return_epochs=True,
                     return_raws=True,
                 )
+
+
+class Test_CVEP(unittest.TestCase):
+    def test_BaseCVEP_paradigm(self):
+        paradigm = BaseCVEP(n_classes=None)
+        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        # Verify that they have the same length
+        self.assertEqual(len(X), len(labels), len(metadata))
+        # X must be a 3D array
+        self.assertEqual(len(X.shape), 3)
+        # labels must contain 2 values
+        self.assertEqual(len(np.unique(labels)), 2)
+        # metadata must have subjects, sessions, runs
+        self.assertTrue("subject" in metadata.columns)
+        self.assertTrue("session" in metadata.columns)
+        self.assertTrue("run" in metadata.columns)
+        # Only one subject in the metadata
+        self.assertEqual(np.unique(metadata.subject), 1)
+        # we should have two sessions in the metadata, n_classes = 2 as default
+        self.assertEqual(len(np.unique(metadata.session)), 2)
+        # should return epochs
+        epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
+        self.assertIsInstance(epochs, BaseEpochs)
+        # should return raws
+        raws, _, _ = paradigm.get_data(dataset, subjects=[1], return_raws=True)
+        for raw in raws:
+            self.assertIsInstance(raw, BaseRaw)
+        # should raise error
+        self.assertRaises(
+            ValueError,
+            paradigm.get_data,
+            dataset,
+            subjects=[1],
+            return_epochs=True,
+            return_raws=True,
+        )
+
+    def test_BaseCVEP_channel_order(self):
+        """Test if paradigm returns correct channel order, see issue #227."""
+        datasetA = FakeDataset(paradigm="cvep", channels=["C3", "Cz", "C4"])
+        datasetB = FakeDataset(paradigm="cvep", channels=["Cz", "C4", "C3"])
+        paradigm = BaseCVEP(channels=["C4", "C3", "Cz"])
+
+        ep1, _, _ = paradigm.get_data(datasetA, subjects=[1], return_epochs=True)
+        ep2, _, _ = paradigm.get_data(datasetB, subjects=[1], return_epochs=True)
+        self.assertEqual(ep1.info["ch_names"], ep2.info["ch_names"])
+
+    def test_baseCVEP_tmintmax(self):
+        # Verify that tmin < tmax
+        self.assertRaises(ValueError, BaseCVEP, tmin=1, tmax=0)
+
+    def test_BaseCVEP_filters(self):
+        # Accept filters
+        paradigm = BaseCVEP(filters=((1.0, 45.0), (12.0, 45.0)))
+        dataset = FakeDataset(paradigm="cvep")
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        # X must be a 4D array
+        self.assertEqual(len(X.shape), 4)
+        # Last dim should be 2 as the number of filters
+        self.assertEqual(X.shape[-1], 2)
+        # should return epochs
+        epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
+        self.assertIsInstance(epochs, BaseEpochs)
+
+    def test_BaseCVEP_nclasses_default(self):
+        # Default is with 2 classes
+        paradigm = BaseCVEP()
+        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        # labels must contain all 3 classes of dataset,
+        # as n_classes is "None" by default (taking all classes)
+        self.assertEqual(len(np.unique(labels)), 2)
+
+    def test_BaseCVEP_specified_nclasses(self):
+        # Set the number of classes
+        paradigm = BaseCVEP(n_classes=3)
+        dataset = FakeDataset(event_list=["0", "1", "2", "3", "4"], paradigm="cvep")
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        # labels must contain 3 values
+        self.assertEqual(len(np.unique(labels)), 3)
+
+    def test_BaseCVEP_toomany_nclasses(self):
+        paradigm = BaseCVEP(n_classes=4)
+        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        self.assertRaises(ValueError, paradigm.get_data, dataset)
+
+    def test_BaseCVEP_moreclassesthanevent(self):
+        self.assertRaises(AssertionError, BaseCVEP, n_classes=3, events=["1", "0"])
+
+    def test_BaseCVEP_droppedevent(self):
+        dataset = FakeDataset(paradigm="cvep")
+        tmax = dataset.interval[1]
+        # with regular windows, all epochs should be valid:
+        paradigm1 = BaseCVEP(tmax=tmax)
+        # with large windows, some epochs will have to be dropped:
+        paradigm2 = BaseCVEP(tmax=10 * tmax)
+        # with epochs:
+        epochs1, labels1, metadata1 = paradigm1.get_data(dataset, return_epochs=True)
+        epochs2, labels2, metadata2 = paradigm2.get_data(dataset, return_epochs=True)
+        self.assertEqual(len(epochs1), len(labels1), len(metadata1))
+        self.assertEqual(len(epochs2), len(labels2), len(metadata2))
+        self.assertGreater(len(epochs1), len(epochs2))
+        # with np.array:
+        X1, labels1, metadata1 = paradigm1.get_data(dataset)
+        X2, labels2, metadata2 = paradigm2.get_data(dataset)
+        self.assertEqual(len(X1), len(labels1), len(metadata1))
+        self.assertEqual(len(X2), len(labels2), len(metadata2))
+        self.assertGreater(len(X1), len(X2))
+
+    def test_BaseCVEP_epochsmetadata(self):
+        dataset = FakeDataset(paradigm="cvep")
+        paradigm = BaseCVEP()
+        epochs, _, metadata = paradigm.get_data(dataset, return_epochs=True)
+        # does not work with multiple filters:
+        self.assertTrue(metadata.equals(epochs.metadata))
+
+    def test_CVEP_noevent(self):
+        # Assert error if events from paradigm and dataset dont overlap
+        paradigm = CVEP(events=["1", "0"], n_classes=2)
+        dataset = FakeDataset(event_list=["13", "14"], paradigm="cvep")
+        self.assertRaises(AssertionError, paradigm.get_data, dataset)
+
+    def test_CVEP_paradigm(self):
+        paradigm = CVEP(n_classes=None)
+        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        # Verify that they have the same length
+        self.assertEqual(len(X), len(labels), len(metadata))
+        # X must be a 3D array
+        self.assertEqual(len(X.shape), 3)
+        # labels must contain 2 values, defined in the dataset
+        self.assertEqual(len(np.unique(labels)), 2)
+        # metadata must have subjects, sessions, runs
+        self.assertTrue("subject" in metadata.columns)
+        self.assertTrue("session" in metadata.columns)
+        self.assertTrue("run" in metadata.columns)
+        # Only one subject in the metadata
+        self.assertEqual(np.unique(metadata.subject), 1)
+        # We should have two sessions in the metadata
+        self.assertEqual(len(np.unique(metadata.session)), 2)
+        # should return epochs
+        epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
+        self.assertIsInstance(epochs, BaseEpochs)
+
+    def test_CVEP_singlepass(self):
+        # Accept only single pass filter
+        paradigm = CVEP(fmin=2.0, fmax=40.0)
+        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        # Verify that they have the same length
+        self.assertEqual(len(X), len(labels), len(metadata))
+        # X must be a 3D array
+        self.assertEqual(len(X.shape), 3)
+        # labels must contain all 3 classes of dataset,
+        # as n_classes is "None" by default (taking all classes)
+        self.assertEqual(len(np.unique(labels)), 2)
+        # should return epochs
+        epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
+        self.assertIsInstance(epochs, BaseEpochs)
+
+    def test_CVEP_filter(self):
+        # Do not accept multiple filters
+        self.assertRaises(ValueError, CVEP, filters=[(1.0, 45.0), (12.0, 45.0)])
+
+    def test_FilterBankCVEP_paradigm(self):
+        # FilterBankCVEP with all events
+        paradigm = FilterBankCVEP(n_classes=None)
+        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        # X must be a 4D array
+        self.assertEqual(len(X.shape), 4)
+        # X must be a 4D array with d=4 as last dimension for the 3 passbands in the filterbank
+        self.assertEqual(X.shape[-1], 3)
+        # should return epochs
+        epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
+        self.assertIsInstance(epochs, BaseEpochs)
+
+    def test_FilterBankCVEP_filters(self):
+        # can work with filter bank
+        paradigm = FilterBankCVEP(filters=((1.0, 45.0), (12.0, 45.0)))
+        dataset = FakeDataset(event_list=["1.", "0"], paradigm="cvep")
+        X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
+
+        # X must be a 4D array with d=2 as last dimension for the 2 filters
+        self.assertEqual(len(X.shape), 4)
+        self.assertEqual(X.shape[-1], 2)
+        # should return epochs
+        epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
+        self.assertIsInstance(epochs, BaseEpochs)
