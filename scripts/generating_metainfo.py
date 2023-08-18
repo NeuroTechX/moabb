@@ -40,9 +40,8 @@ def parser_init():
 
 
 def process_trial_freq(trials_per_events, prdgm):
-    """
-    Function to process the trial frequency.
-    Getting the median value if the paradigm is MotorImagery.
+    """Function to process the trial frequency. Getting the median value if the
+    paradigm is MotorImagery.
 
     Parameters
     ----------
@@ -64,8 +63,7 @@ def process_trial_freq(trials_per_events, prdgm):
 
 
 def get_meta_info(dataset, dataset_name, paradigm, prdgm_name):
-    """
-    Function to get the meta-information of a dataset.
+    """Function to get the meta-information of a dataset.
 
     Parameters
     ----------
@@ -80,7 +78,6 @@ def get_meta_info(dataset, dataset_name, paradigm, prdgm_name):
 
     Returns
     -------
-
     """
     subjects = len(dataset.subject_list)
     session = dataset.n_sessions

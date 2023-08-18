@@ -1,6 +1,4 @@
-"""
-BBCI EEG fNIRS Motor imagery dataset.
-"""
+"""BBCI EEG fNIRS Motor imagery dataset."""
 
 import os
 import os.path as op
@@ -34,7 +32,7 @@ def eeg_data_path(base_path, subject, accept):
                     if not accept:
                         raise AttributeError(
                             "You must accept licence term to download this dataset,"
-                            "set accept=True when instanciating the dataset."
+                            "set accept=True when instantiating the dataset."
                         )
                     retrieve(
                         "{}/EEG/EEG_{:02d}-{:02d}.zip".format(SHIN_URL, low, high),
@@ -59,7 +57,7 @@ def fnirs_data_path(path, subject, accept):
             if not accept:
                 raise AttributeError(
                     "You must accept licence term to download this dataset,"
-                    "set accept=True when instanciating the dataset."
+                    "set accept=True when instantiating the dataset."
                 )
             retrieve(
                 "http://doc.ml.tu-berlin.de/hBCI/NIRS/NIRS_01-29.zip",
@@ -76,11 +74,16 @@ def fnirs_data_path(path, subject, accept):
     return [op.join(datapath, fn) for fn in ["cnt.mat", "mrk.mat"]]
 
 
-class Shin2017(BaseDataset):
+class BaseShin2017(BaseDataset):
     """Not to be used."""
 
     def __init__(
-        self, fnirs=False, motor_imagery=True, mental_arithmetic=False, accept=False
+        self,
+        suffix,
+        fnirs=False,
+        motor_imagery=True,
+        mental_arithmetic=False,
+        accept=False,
     ):
         if not any([motor_imagery, mental_arithmetic]):
             raise (
@@ -109,7 +112,7 @@ class Shin2017(BaseDataset):
             subjects=list(range(1, 30)),
             sessions_per_subject=n_sessions,
             events=events,
-            code="Shin2017",
+            code="Shin2017" + suffix,
             # marker is for *task* start not cue start
             interval=[0, 10],
             paradigm=("/").join(paradigms),
@@ -121,7 +124,7 @@ class Shin2017(BaseDataset):
         self.fnirs = fnirs  # TODO: actually incorporate fNIRS somehow
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         fname, fname_mrk = self.data_path(subject)
         data = loadmat(fname, squeeze_me=True, struct_as_record=False)["cnt"]
         mrk = loadmat(fname_mrk, squeeze_me=True, struct_as_record=False)["mrk"]
@@ -182,8 +185,8 @@ class Shin2017(BaseDataset):
             return eeg_data_path(op.join(path, "MNE-eegfnirs-data"), subject, self.accept)
 
 
-class Shin2017A(Shin2017):
-    """Motor Imagey Dataset from Shin et al 2017
+class Shin2017A(BaseShin2017):
+    """Motor Imagey Dataset from Shin et al 2017.
 
     .. admonition:: Dataset summary
 
@@ -297,13 +300,16 @@ class Shin2017A(Shin2017):
 
     def __init__(self, accept=False):
         super().__init__(
-            fnirs=False, motor_imagery=True, mental_arithmetic=False, accept=accept
+            suffix="A",
+            fnirs=False,
+            motor_imagery=True,
+            mental_arithmetic=False,
+            accept=accept,
         )
-        self.code = "Shin2017A"
 
 
-class Shin2017B(Shin2017):
-    """Mental Arithmetic Dataset from Shin et al 2017
+class Shin2017B(BaseShin2017):
+    """Mental Arithmetic Dataset from Shin et al 2017.
 
     .. admonition:: Dataset summary
 
@@ -410,6 +416,9 @@ class Shin2017B(Shin2017):
 
     def __init__(self, accept=False):
         super().__init__(
-            fnirs=False, motor_imagery=False, mental_arithmetic=True, accept=accept
+            suffix="B",
+            fnirs=False,
+            motor_imagery=False,
+            mental_arithmetic=True,
+            accept=accept,
         )
-        self.code = "Shin2017B"

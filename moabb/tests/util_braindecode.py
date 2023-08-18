@@ -13,7 +13,7 @@ from moabb.tests import SimpleMotorImagery
 
 @pytest.fixture(scope="module")
 def data():
-    """Return EEG data from dataset to test transformer"""
+    """Return EEG data from dataset to test transformer."""
     paradigm = SimpleMotorImagery()
     dataset = FakeDataset(paradigm="imagery")
     X, labels, metadata = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
@@ -37,20 +37,22 @@ class TestTransformer:
         assert transformer.__sklearn_is_fitted__()
 
     def test_transformer_fit(self, data):
-        """Test whether transformer can fit to some training data"""
+        """Test whether transformer can fit to some training data."""
         X_train, y_train, _, _ = data
         transformer = BraindecodeDatasetLoader()
         assert transformer.fit(X_train, y_train) == transformer
 
     def test_transformer_transform_returns_dataset(self, data):
-        """Test whether the output of the transform method is a BaseConcatDataset"""
+        """Test whether the output of the transform method is a
+        BaseConcatDataset."""
         X_train, y_train, _, _ = data
         transformer = BraindecodeDatasetLoader()
         dataset = transformer.fit(X_train, y_train).transform(X_train, y_train)
         assert isinstance(dataset, BaseConcatDataset)
 
     def test_transformer_transform_contents(self, data):
-        """Test whether the contents and metadata of a transformed dataset are correct"""
+        """Test whether the contents and metadata of a transformed dataset are
+        correct."""
         X_train, y_train, _, _ = data
         transformer = BraindecodeDatasetLoader()
         dataset = transformer.fit(X_train, y_train).transform(X_train, y_train)
@@ -62,7 +64,7 @@ class TestTransformer:
         assert sample_epoch[1] == y_train[0]
 
     def test_sfreq_passed_through(self, data):
-        """Test if the sfreq parameter makes it through the transformer"""
+        """Test if the sfreq parameter makes it through the transformer."""
         sfreq = 128.0
         info = create_info(ch_names=["test"], sfreq=sfreq, ch_types=["eeg"])
         data = np.random.normal(size=(2, 1, 10 * int(sfreq))) * 1e-6
@@ -74,19 +76,19 @@ class TestTransformer:
         assert dataset.datasets[0].windows.info["sfreq"] == sfreq
 
     def test_kw_args_initialization(self):
-        """Test initializing the transformer with kw_args"""
+        """Test initializing the transformer with kw_args."""
         kw_args = {"sampling_rate": 128}
         transformer = BraindecodeDatasetLoader(kw_args=kw_args)
         assert transformer.kw_args == kw_args
 
     def test_is_fitted_method(self):
-        """Test __sklearn_is_fitted__ returns True"""
+        """Test __sklearn_is_fitted__ returns True."""
         transformer = BraindecodeDatasetLoader()
         is_fitter = transformer.__sklearn_is_fitted__()
         assert is_fitter
 
     def test_assert_raises_value_error(self, data):
-        """Test that an invalid argument gives a ValueError"""
+        """Test that an invalid argument gives a ValueError."""
         X_train, y_train, _, _ = data
         transformer = BraindecodeDatasetLoader()
         invalid_param_name = "invalid"
@@ -94,7 +96,7 @@ class TestTransformer:
             transformer.fit(X_train, y=y_train, **{invalid_param_name: None})
 
     def test_type_create_from_X_y_vs_transfomer(self, data):
-        """Test the type from create_from_X_y() and the transfomer"""
+        """Test the type from create_from_X_y() and the transformer."""
         X_train, y_train, _, _ = data
 
         dataset = create_from_X_y(
@@ -106,17 +108,52 @@ class TestTransformer:
             sfreq=X_train.info["sfreq"],
         )
         transformer = BraindecodeDatasetLoader()
-        dataset_trans = transformer.fit(X=X_train.get_data(), y=y_train).transform(
-            X_train
-        )
+        dataset_trans = transformer.fit(X=X_train, y=y_train).transform(X_train)
         assert isinstance(dataset_trans, BaseConcatDataset)
         assert type(dataset_trans) == type(dataset)
 
     def test_wrong_input(self):
-        """Test that an invalid input raises a ValueError"""
+        """Test that an invalid input raises a ValueError."""
         transformer = BraindecodeDatasetLoader()
         with pytest.raises(ValueError):
             transformer.fit_transform(np.random.normal(size=(2, 1, 10)), y=np.array([0]))
+
+    def test_transformer_transform_with_custom_y(self, data):
+        """Test whether the provided y is used during transform."""
+        X_train, y_train, _, _ = data
+        transformer = BraindecodeDatasetLoader()
+
+        # Create test data with different y values
+        X_test = X_train.copy()
+        y_test = y_train + 1
+
+        # Fit the transformer with training data and custom y
+        transformer.fit(X_train, y_train)
+
+        # Transform the test data with custom y
+        dataset_test = transformer.transform(X_test, y=y_test)
+
+        # Verify that the transformed dataset contains the test data's x values and the custom y values
+        assert len(dataset_test) == len(X_test)
+        assert np.array_equal(dataset_test[0][1], y_test[0])
+        assert np.array_equal(dataset_test[1][1], y_test[1])
+
+    def test_transformer_transform_with_default_y(self, data):
+        """Test whether self.y is used when y is not provided during
+        transform."""
+        X_train, y_train, _, _ = data
+        transformer = BraindecodeDatasetLoader()
+
+        # Fit the transformer with training data and default y
+        transformer.fit(X_train, y_train)
+
+        # Transform the test data without providing y
+        dataset_test = transformer.transform(X_train)
+
+        # Verify that the transformed dataset contains the training data's x values and the default y values
+        assert len(dataset_test) == len(X_train)
+        assert np.array_equal(dataset_test[0][1], y_train[0])
+        assert np.array_equal(dataset_test[1][1], y_train[1])
 
 
 if __name__ == "__main__":

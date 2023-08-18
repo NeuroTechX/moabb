@@ -1,6 +1,4 @@
-"""
-GigaDb Motor imagery dataset.
-"""
+"""GigaDb Motor imagery dataset."""
 
 import logging
 
@@ -78,7 +76,7 @@ class Cho2017(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         fname = self.data_path(subject)
 
         data = loadmat(

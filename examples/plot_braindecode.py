@@ -20,7 +20,7 @@ from sklearn.pipeline import Pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
 
-from moabb.datasets import BNCI2014001
+from moabb.datasets import BNCI2014_001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import MotorImagery
 from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader, InputShapeSetterEEG
@@ -37,14 +37,13 @@ cuda = torch.cuda.is_available()
 device = "cuda" if cuda else "cpu"
 print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 
-
 ###############################################################################
-# In this example, we will use only the dataset ``BNCI2014001``.
+# In this example, we will use only the dataset ``BNCI2014_001``.
 #
 # Running the benchmark
 # ---------------------
 #
-# This example uses the CrossSession evaluation procedure. We focus on the dataset BNCI2014001 and only on 1 subject
+# This example uses the CrossSession evaluation procedure. We focus on the dataset BNCI2014_001 and only on 1 subject
 # to reduce computational time.
 #
 # To keep the computational time low, the epoch is reduced. In a real situation, we suggest using the following:
@@ -63,7 +62,6 @@ setup_seed(seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-
 # Hyperparameter
 LEARNING_RATE = 0.0625 * 0.01  # parameter taken from Braindecode
 WEIGHT_DECAY = 0  # parameter taken from Braindecode
@@ -76,7 +74,7 @@ tmin = 0
 tmax = None
 
 # Load the dataset
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 events = ["right_hand", "left_hand"]
 paradigm = MotorImagery(
     events=events, n_classes=len(events), fmin=fmin, fmax=fmax, tmin=tmin, tmax=tmax
@@ -130,7 +128,6 @@ clf = EEGClassifier(
 # Create the pipelines
 pipes = {}
 pipes["EEGNetV4"] = Pipeline([("Braindecode_dataset", create_dataset), ("Net", clf)])
-
 
 ##############################################################################
 # Evaluation

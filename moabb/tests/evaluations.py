@@ -45,10 +45,11 @@ class DummyClassifier(sklearn.base.BaseEstimator):
 
 class Test_WithinSess(unittest.TestCase):
     """This is actually integration testing but I don't know how to do this
-    better. A paradigm implements pre-processing so it needs files to run MNE
+    better.
+
+    A paradigm implements pre-processing so it needs files to run MNE
     stuff on. To test the scoring and train/test we need to also have data and
     run it. Putting this on the future docket...
-
     """
 
     def setUp(self):
@@ -146,12 +147,12 @@ class Test_WithinSess(unittest.TestCase):
 
 
 class Test_WithinSessLearningCurve(unittest.TestCase):
-    """
-    Some tests for the learning curve evaluation.
+    """Some tests for the learning curve evaluation.
 
-    TODO if we ever extend dataset metadata, e.g. including y for example, we could get rid of a
-    lot of issues regarding valid inputs for policy per_class as this could be determined at
-    Evaluation initialization instead of during running the evaluation
+    TODO if we ever extend dataset metadata, e.g. including y for
+    example, we could get rid of a lot of issues regarding valid inputs
+    for policy per_class as this could be determined at Evaluation
+    initialization instead of during running the evaluation
     """
 
     def test_correct_results_integrity(self):

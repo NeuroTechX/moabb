@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from mne import get_config
 
 from moabb.datasets import utils
-from moabb.utils import set_download_dir, setup_seed
+from moabb.utils import aliases_list, depreciated_alias, set_download_dir, setup_seed
 
 
 class TestDownload(unittest.TestCase):
@@ -91,7 +91,111 @@ class TestSetupSeed(unittest.TestCase):
     @patch.dict("sys.modules", {"tensorflow": MagicMock(), "torch": MagicMock()})
     def test_with_tensorflow_and_torch(self):
         # Test when tensorflow and torch are installed
-        self.assertTrue(setup_seed(42) == None)  # noqa: E711
+        self.assertTrue(setup_seed(42) is None)  # noqa: E71
+
+
+class TestDepreciatedAlias(unittest.TestCase):
+    def test_class_alias(self):
+        @depreciated_alias("DummyB", expire_version="0.1")
+        class DummyA:
+            """DummyA class"""
+
+            def __init__(self, a, b=1):
+                self.a = a
+                self.b = b
+
+            def c(self):
+                return self.a
+
+        self.assertIn(("DummyB", "DummyA", "0.1"), aliases_list)
+
+        with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
+            a = DummyA(2, b=2)
+        self.assertEqual(
+            a.__doc__,
+            "DummyA class\n\n    Notes\n    -----\n\n"
+            "    .. note:: ``DummyA`` was previously named ``DummyB``. "
+            "``DummyB`` will be removed in  version 0.1.\n",
+        )
+
+        with self.assertLogs(logger="moabb.utils", level="WARN") as cm:
+            b = DummyB(2, b=2)  # noqa: F821
+
+        self.assertEqual(1, len(cm.output))
+        expected = (
+            "DummyB has been renamed to DummyA. DummyB will be removed in version 0.1."
+        )
+        self.assertRegex(cm.output[0], expected)
+        # attributes:
+        self.assertEqual(b.a, 2)
+        self.assertEqual(b.b, 2)
+        # methods:
+        self.assertEqual(b.c(), 2)
+        # class name and type:
+        self.assertEqual(DummyB.__name__, "DummyB")  # noqa: F821
+        self.assertEqual(b.__class__.__name__, "DummyB")
+        self.assertIsInstance(b, DummyB)  # noqa: F821
+        self.assertIsInstance(b, DummyA)
+
+    def test_class_alias_notes(self):
+        @depreciated_alias("DummyB", expire_version="0.1")
+        class DummyA:
+            """DummyA class
+
+            Notes
+            -----
+
+            a note"""
+
+            def __init__(self, a, b=1):
+                self.a = a
+                self.b = b
+
+            def c(self):
+                return self.a
+
+        self.assertIn(("DummyB", "DummyA", "0.1"), aliases_list)
+
+        with self.assertNoLogs(logger="moabb.utils", level="WARN"):
+            a = DummyA(2, b=2)
+        self.assertEqual(
+            a.__doc__,
+            "DummyA class\n\n            Notes\n            -----\n\n"
+            "            .. note:: ``DummyA`` was previously named ``DummyB``. "
+            "``DummyB`` will be removed in  version 0.1.\n\n"
+            "            a note",
+        )
+
+    def test_function_alias(self):
+        @depreciated_alias("dummy_b", expire_version="0.1")
+        def dummy_a(a, b=1):
+            """Dummy function"""
+            return a + b
+
+        self.assertIn(("dummy_b", "dummy_a", "0.1"), aliases_list)
+
+        with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
+            self.assertEqual(dummy_a(2, b=2), 4)
+        self.assertEqual(
+            dummy_a.__doc__,
+            # "Dummy function\n\nNotes\n-----\n"
+            # "``dummy_a`` was previously named ``dummy_b``. "
+            # "``dummy_b`` will be removed in  version 0.1.",
+            "Dummy function\n\n    Notes\n    -----\n\n"
+            "    .. note:: ``dummy_a`` was previously named ``dummy_b``. "
+            "``dummy_b`` will be removed in  version 0.1.\n",
+        )
+
+        with self.assertLogs(logger="moabb.utils", level="WARN") as cm:
+            self.assertEqual(dummy_b(2, b=2), 4)  # noqa: F821
+
+        self.assertEqual(1, len(cm.output))
+        expected = (
+            "dummy_b has been renamed to dummy_a. dummy_b will be removed in version 0.1."
+        )
+        self.assertRegex(cm.output[0], expected)
+        # class name and type:
+        self.assertEqual(dummy_b.__name__, "dummy_b")  # noqa: F821
 
 
 if __name__ == "__main__":

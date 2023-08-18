@@ -53,7 +53,7 @@ with open(
 # We load the single Keras model, if we want we can set in the exact same pipeline.
 
 model_Keras = keras.models.load_model(
-    "./results/Models_WithinSession/001-2014/1/session_E/Keras_DeepConvNet/kerasdeepconvnet_fitted_model_best.h5"
+    "./results/Models_WithinSession/BNCI2014-001/1/session_E/Keras_DeepConvNet/kerasdeepconvnet_fitted_model_best.h5"
 )
 # Now we need to instantiate a new SciKeras object since we only saved the Keras model
 Keras_DeepConvNet_Trained = KerasClassifier(model_Keras)
@@ -66,7 +66,6 @@ pipes_keras = Pipeline(
         ("Keras_DeepConvNet_Trained", Keras_DeepConvNet_Trained),
     ]
 )
-
 
 ###############################################################################
 # Loading the PyTorch model
@@ -109,12 +108,11 @@ clf = EEGClassifier(
 
 clf.initialize()
 
-f_params = "./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/EEGInception_fitted_best_model.pkl"
-f_optimizer = "./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/EEGInception_fitted_best_optim.pkl"
-f_history = "./results/Models_CrossSession/001-2014/1/braindecode_EEGInception/EEGInception_fitted_best_history.json"
+f_params = "./results/Models_CrossSession/BNCI2014-001/1/braindecode_EEGInception/EEGInception_fitted_best_model.pkl"
+f_optimizer = "./results/Models_CrossSession/BNCI2014-001/1/braindecode_EEGInception/EEGInception_fitted_best_optim.pkl"
+f_history = "./results/Models_CrossSession/BNCI2014-001/1/braindecode_EEGInception/EEGInception_fitted_best_history.json"
 
 clf.load_params(f_params=f_params, f_optimizer=f_optimizer, f_history=f_history)
-
 
 # Create the dataset
 create_dataset = BraindecodeDatasetLoader(drop_last_window=False)

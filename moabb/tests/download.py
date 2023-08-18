@@ -1,27 +1,25 @@
-"""
-Tests to ensure that datasets download correctly
-"""
+"""Tests to ensure that datasets download correctly."""
 import unittest
 
 import mne
 
-from moabb.datasets.bbci_eeg_fnirs import Shin2017
+from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
 
 
 # from moabb.datasets.gigadb import Cho2017
 # from moabb.datasets.alex_mi import AlexMI
 # from moabb.datasets.physionet_mi import PhysionetMI
-# from moabb.datasets.bnci import (BNCI2014001, BNCI2014002, BNCI2014004,
-#                                  BNCI2014008, BNCI2014009, BNCI2015001,
-#                                  BNCI2015003, BNCI2015004)
+# from moabb.datasets.bnci import (BNCI2014_001, BNCI2014_002, BNCI2014_004,
+#                                  BNCI2014_008, BNCI2014_009, BNCI2015_001,
+#                                  BNCI2015_003, BNCI2015_004)
 # from moabb.datasets.bbci_eeg_fnirs import Shin2017A, Shin2017B
 # from moabb.datasets.upper_limb import Ofner2017
-# from moabb.datasets.mpi_mi import MunichMI
+# from moabb.datasets.mpi_mi import GrosseWentrup2009
 # from moabb.datasets.schirrmeister2017 import Schirrmeister2017
 # from moabb.datasets.Weibo2014 import Weibo2014
 # from moabb.datasets.Zhou2016 import Zhou2016
-# from moabb.datasets.ssvep_exo import SSVEPExo
-# from moabb.datasets.braininvaders import bi2013a
+# from moabb.datasets.ssvep_exo import Kalunga2016
+# from moabb.datasets.braininvaders import BI2013a
 # from moabb.datasets.epfl import EPFLP300
 # from moabb.datasets.Lee2019 import Lee2019_MI
 # from moabb.datasets.neiry import DemonsP300
@@ -42,7 +40,7 @@ class Test_Downloads(unittest.TestCase):
                 events, _ = mne.events_from_annotations(raw, verbose=False)
             return events
 
-        if isinstance(dataset(), Shin2017):
+        if isinstance(dataset(), BaseShin2017):
             obj = dataset(accept=True)
         else:
             obj = dataset()
@@ -75,14 +73,14 @@ class Test_Downloads(unittest.TestCase):
     #     self.run_dataset(Cho2017)
 
     # def test_bnci(self):
-    #     self.run_dataset(BNCI2014001)
-    #     self.run_dataset(BNCI2014002)
-    #     self.run_dataset(BNCI2014004)
-    #     self.run_dataset(BNCI2014008)
-    #     self.run_dataset(BNCI2014009)
-    #     self.run_dataset(BNCI2015001)
-    #     self.run_dataset(BNCI2015003)
-    #     self.run_dataset(BNCI2015004)
+    #     self.run_dataset(BNCI2014_001)
+    #     self.run_dataset(BNCI2014_002)
+    #     self.run_dataset(BNCI2014_004)
+    #     self.run_dataset(BNCI2014_008)
+    #     self.run_dataset(BNCI2014_009)
+    #     self.run_dataset(BNCI2015_001)
+    #     self.run_dataset(BNCI2015_003)
+    #     self.run_dataset(BNCI2015_004)
 
     # def test_alexmi(self):
     #     self.run_dataset(AlexMI)
@@ -98,7 +96,7 @@ class Test_Downloads(unittest.TestCase):
     #     self.run_dataset(Ofner2017)
 
     # def test_mpi_mi(self):
-    #     self.run_dataset(MunichMI)
+    #     self.run_dataset(GrosseWentrup2009)
 
     # def test_schirrmeister2017(self):
     #     self.run_dataset(Schirrmeister2017, subj=(0, 1))
@@ -110,10 +108,10 @@ class Test_Downloads(unittest.TestCase):
     #     self.run_dataset(Zhou2016)
 
     # def test_ssvep_exo(self):
-    #     self.run_dataset(SSVEPExo)
+    #     self.run_dataset(Kalunga2016)
 
     # def test_bi2013a(self):
-    #     self.run_dataset(bi2013a)
+    #     self.run_dataset(BI2013a)
 
     # def test_epflp300(self):
     #     self.run_dataset(EPFLP300)

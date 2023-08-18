@@ -1,4 +1,4 @@
-"""Motor Imagery Paradigms"""
+"""Motor Imagery Paradigms."""
 
 import abc
 import logging
@@ -63,19 +63,15 @@ class BaseMotorImagery(BaseParadigm):
         channels=None,
         resample=None,
     ):
-        super().__init__()
-        self.filters = filters
-        self.events = events
-        self.channels = channels
-        self.baseline = baseline
-        self.resample = resample
-
-        if tmax is not None:
-            if tmin >= tmax:
-                raise (ValueError("tmax must be greater than tmin"))
-
-        self.tmin = tmin
-        self.tmax = tmax
+        super().__init__(
+            filters=filters,
+            events=events,
+            channels=channels,
+            baseline=baseline,
+            resample=resample,
+            tmin=tmin,
+            tmax=tmax,
+        )
 
     def is_valid(self, dataset):
         ret = True
@@ -151,7 +147,6 @@ class SinglePass(BaseMotorImagery):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
-
     """
 
     def __init__(self, fmin=8, fmax=32, **kwargs):
@@ -168,15 +163,14 @@ class FilterBank(BaseMotorImagery):
         filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
         **kwargs,
     ):
-        """init"""
+        """init."""
         super().__init__(filters=filters, **kwargs)
 
 
 class LeftRightImagery(SinglePass):
-    """Motor Imagery for left hand/right hand classification
+    """Motor Imagery for left hand/right hand classification.
 
     Metric is 'roc_auc'
-
     """
 
     def __init__(self, **kwargs):
@@ -193,10 +187,9 @@ class LeftRightImagery(SinglePass):
 
 
 class FilterBankLeftRightImagery(FilterBank):
-    """Filter Bank Motor Imagery for left hand/right hand classification
+    """Filter Bank Motor Imagery for left hand/right hand classification.
 
     Metric is 'roc_auc'
-
     """
 
     def __init__(self, **kwargs):
@@ -213,8 +206,7 @@ class FilterBankLeftRightImagery(FilterBank):
 
 
 class FilterBankMotorImagery(FilterBank):
-    """
-    Filter bank n-class motor imagery.
+    """Filter bank n-class motor imagery.
 
     Metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
@@ -297,8 +289,7 @@ class FilterBankMotorImagery(FilterBank):
 
 
 class MotorImagery(SinglePass):
-    """
-    N-class motor imagery.
+    """N-class motor imagery.
 
     Metric is 'roc-auc' if 2 classes and 'accuracy' if more
 
@@ -421,4 +412,4 @@ class FakeImageryParadigm(LeftRightImagery):
         return [FakeDataset(["left_hand", "right_hand"], paradigm="imagery")]
 
     def is_valid(self, dataset):
-        return True
+        return dataset.paradigm == "imagery"

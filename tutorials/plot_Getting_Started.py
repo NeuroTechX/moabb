@@ -30,7 +30,7 @@ from sklearn.svm import SVC
 # If you would like to specify the logging level when it is running, you can
 # use the standard python logging commands through the top-level moabb module
 import moabb
-from moabb.datasets import BNCI2014001, utils
+from moabb.datasets import BNCI2014_001, utils
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 from moabb.pipelines.features import LogVariance
@@ -71,7 +71,6 @@ pipelines["AM+SVM"] = pipe
 
 print(LeftRightImagery().datasets)
 
-
 ##########################################################################
 # Or you can run a search through the available datasets:
 print(utils.dataset_search(paradigm="imagery", min_subjects=6))
@@ -80,7 +79,7 @@ print(utils.dataset_search(paradigm="imagery", min_subjects=6))
 # Or you can simply make your own list (which we do here due to computational
 # constraints)
 
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 dataset.subject_list = dataset.subject_list[:2]
 datasets = [dataset]
 

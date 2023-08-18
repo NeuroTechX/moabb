@@ -21,7 +21,7 @@ from absl.logging import ERROR, set_verbosity
 
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import score_plot
-from moabb.datasets import BNCI2014001, BNCI2014004
+from moabb.datasets import BNCI2014_001, BNCI2014_004
 from moabb.utils import setup_seed
 
 
@@ -39,7 +39,7 @@ device = "cuda" if cuda else "cpu"
 print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 
 ###############################################################################
-# In this example, we will use only 2 subjects from the dataset ``BNCI2014001`` and ``BNCI2014004``.
+# In this example, we will use only 2 subjects from the dataset ``BNCI2014_001`` and ``BNCI2014_004``.
 #
 # Running the benchmark
 # ---------------------
@@ -67,9 +67,9 @@ print("GPU is", "AVAILABLE" if cuda else "NOT AVAILABLE")
 # Set up reproducibility of Tensorflow
 setup_seed(42)
 
-# Restrict this example only to the first two subjects of BNCI2014001
-dataset = BNCI2014001()
-dataset2 = BNCI2014004()
+# Restrict this example only to the first two subjects of BNCI2014_001
+dataset = BNCI2014_001()
+dataset2 = BNCI2014_004()
 dataset.subject_list = dataset.subject_list[:2]
 dataset2.subject_list = dataset2.subject_list[:2]
 datasets = [dataset, dataset2]

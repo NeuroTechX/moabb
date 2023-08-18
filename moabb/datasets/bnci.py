@@ -1,6 +1,4 @@
-"""
-BNCI 2014-001 Motor imagery dataset.
-"""
+"""BNCI 2014-001 Motor imagery dataset."""
 
 import numpy as np
 from mne import create_info
@@ -11,6 +9,7 @@ from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.utils import depreciated_alias
 
 
 BNCI_URL = "http://bnci-horizon-2020.eu/database/data-sets/"
@@ -24,7 +23,7 @@ def data_path(url, path=None, force_update=False, update_path=None, verbose=None
 @verbose
 def load_data(
     subject,
-    dataset="001-2014",
+    dataset="BNCI2014-001",
     path=None,
     force_update=False,
     update_path=None,
@@ -68,36 +67,36 @@ def load_data(
         List of raw instances for each non consecutive recording. Depending
         on the dataset it could be a BCI run or a different recording session.
     event_id: dict
-        dictonary containing events and their code.
+        dictionary containing events and their code.
     """
     dataset_list = {
-        "001-2014": _load_data_001_2014,
-        "002-2014": _load_data_002_2014,
-        "004-2014": _load_data_004_2014,
-        "008-2014": _load_data_008_2014,
-        "009-2014": _load_data_009_2014,
-        "001-2015": _load_data_001_2015,
-        "003-2015": _load_data_003_2015,
-        "004-2015": _load_data_004_2015,
-        "009-2015": _load_data_009_2015,
-        "010-2015": _load_data_010_2015,
-        "012-2015": _load_data_012_2015,
-        "013-2015": _load_data_013_2015,
+        "BNCI2014-001": _load_data_001_2014,
+        "BNCI2014-002": _load_data_002_2014,
+        "BNCI2014-004": _load_data_004_2014,
+        "BNCI2014-008": _load_data_008_2014,
+        "BNCI2014-009": _load_data_009_2014,
+        "BNCI2015-001": _load_data_001_2015,
+        "BNCI2015-003": _load_data_003_2015,
+        "BNCI2015-004": _load_data_004_2015,
+        "BNCI2015-009": _load_data_009_2015,
+        "BNCI2015-010": _load_data_010_2015,
+        "BNCI2015-012": _load_data_012_2015,
+        "BNCI2015-013": _load_data_013_2015,
     }
 
     baseurl_list = {
-        "001-2014": BNCI_URL,
-        "002-2014": BNCI_URL,
-        "001-2015": BNCI_URL,
-        "004-2014": BNCI_URL,
-        "008-2014": BNCI_URL,
-        "009-2014": BNCI_URL,
-        "003-2015": BNCI_URL,
-        "004-2015": BNCI_URL,
-        "009-2015": BBCI_URL,
-        "010-2015": BBCI_URL,
-        "012-2015": BBCI_URL,
-        "013-2015": BNCI_URL,
+        "BNCI2014-001": BNCI_URL,
+        "BNCI2014-002": BNCI_URL,
+        "BNCI2015-001": BNCI_URL,
+        "BNCI2014-004": BNCI_URL,
+        "BNCI2014-008": BNCI_URL,
+        "BNCI2014-009": BNCI_URL,
+        "BNCI2015-003": BNCI_URL,
+        "BNCI2015-004": BNCI_URL,
+        "BNCI2015-009": BBCI_URL,
+        "BNCI2015-010": BBCI_URL,
+        "BNCI2015-012": BBCI_URL,
+        "BNCI2015-013": BNCI_URL,
     }
 
     if dataset not in dataset_list.keys():
@@ -365,7 +364,7 @@ def _load_data_003_2015(
         # flash events on the channel 9
         flashs = run[9:10]
         ix_flash = flashs[0] > 0
-        flashs[0, ix_flash] += 2  # add 2 to avoid overlapp on event id
+        flashs[0, ix_flash] += 2  # add 2 to avoid overlap on event id
         flash_code = np.unique(flashs[0, ix_flash])
 
         if len(flash_code) == 36:
@@ -546,10 +545,21 @@ def _load_data_013_2015(
 
 
 def _convert_mi(filename, ch_names, ch_types):
-    """
-    Processes (Graz) motor imagery data from MAT files, returns list of
-    recording runs.
-    """
+    """Process (Graz) motor imagery data from MAT files.
+
+    Parameters
+    ----------
+    filename : str
+        Path to the MAT file.
+    ch_names : list of str
+        List of channel names.
+    ch_types : list of str
+        List of channel types.
+
+    Returns
+    -------
+    raw : instance of RawArray
+        returns list of recording runs."""
     runs = []
     event_id = {}
     data = loadmat(filename, struct_as_record=False, squeeze_me=True)
@@ -717,10 +727,10 @@ def _convert_run_epfl(run, verbose=None):
 
 
 class MNEBNCI(BaseDataset):
-    """Base BNCI dataset"""
+    """Base BNCI dataset."""
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         sessions = load_data(subject=subject, dataset=self.code, verbose=False)
         return sessions
 
@@ -738,17 +748,18 @@ class MNEBNCI(BaseDataset):
         )
 
 
-class BNCI2014001(MNEBNCI):
+@depreciated_alias("BNCI2014001", "0.7")
+class BNCI2014_001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2014001       9       22           4                144  4s            250Hz                      2
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014_001       9       22           4                144  4s            250Hz                      2
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset IIa from BCI Competition 4 [1]_.
 
@@ -783,7 +794,6 @@ class BNCI2014001(MNEBNCI):
 
     References
     ----------
-
     .. [1] Tangermann, M., Müller, K.R., Aertsen, A., Birbaumer, N., Braun, C.,
            Brunner, C., Leeb, R., Mehring, C., Miller, K.J., Mueller-Putz, G.
            and Nolte, G., 2012. Review of the BCI competition IV.
@@ -795,24 +805,25 @@ class BNCI2014001(MNEBNCI):
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
             events={"left_hand": 1, "right_hand": 2, "feet": 3, "tongue": 4},
-            code="001-2014",
+            code="BNCI2014-001",
             interval=[2, 6],
             paradigm="imagery",
             doi="10.3389/fnins.2012.00055",
         )
 
 
-class BNCI2014002(MNEBNCI):
+@depreciated_alias("BNCI2014002", "0.7")
+class BNCI2014_002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2014002       14       15           2                 80  5s            512Hz                      1
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014_002       14       15           2                 80  5s            512Hz                      1
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Motor Imagery Dataset from [1]_.
 
@@ -845,12 +856,10 @@ class BNCI2014002(MNEBNCI):
 
     References
     -----------
-
     .. [1] Steyrl, D., Scherer, R., Faller, J. and Müller-Putz, G.R., 2016.
            Random forests in non-invasive sensorimotor rhythm brain-computer
            interfaces: a practical and convenient non-linear classifier.
-           Biomedical Engineering/Biomedizinische Technik, 61(1), pp.77-86.
-
+           Biomedical Engineering/Biomedizinische Technique, 61(1), pp.77-86.
     """
 
     def __init__(self):
@@ -858,24 +867,25 @@ class BNCI2014002(MNEBNCI):
             subjects=list(range(1, 15)),
             sessions_per_subject=1,
             events={"right_hand": 1, "feet": 2},
-            code="002-2014",
+            code="BNCI2014-002",
             interval=[3, 8],
             paradigm="imagery",
             doi="10.1515/bmt-2014-0117",
         )
 
 
-class BNCI2014004(MNEBNCI):
+@depreciated_alias("BNCI2014004", "0.7")
+class BNCI2014_004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2014004       9        3           2                360  4.5s          250Hz                      5
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014_004       9        3           2                360  4.5s          250Hz                      5
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset B from BCI Competition 2008.
 
@@ -933,7 +943,6 @@ class BNCI2014004(MNEBNCI):
            G. Pfurtscheller. Brain-computer communication: motivation, aim,
            and impact of exploring a virtual apartment. IEEE Transactions on
            Neural Systems and Rehabilitation Engineering 15, 473–482, 2007
-
     """
 
     def __init__(self):
@@ -941,24 +950,25 @@ class BNCI2014004(MNEBNCI):
             subjects=list(range(1, 10)),
             sessions_per_subject=5,
             events={"left_hand": 1, "right_hand": 2},
-            code="004-2014",
+            code="BNCI2014-004",
             interval=[3, 7.5],
             paradigm="imagery",
             doi="10.1109/TNSRE.2007.906956",
         )
 
 
-class BNCI2014008(MNEBNCI):
-    """BNCI 2014-008 P300 dataset
+@depreciated_alias("BNCI2014008", "0.7")
+class BNCI2014_008(MNEBNCI):
+    """BNCI 2014-008 P300 dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
         Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        BNCI2014008        8        8  3500 NT / 700 T    1s               256Hz                      1
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
+        BNCI2014_008        8        8  3500 NT / 700 T    1s               256Hz                      1
+        ============  =======  =======  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -966,7 +976,7 @@ class BNCI2014008(MNEBNCI):
 
     This dataset represents a complete record of P300 evoked potentials
     using a paradigm originally described by Farwell and Donchin [2]_.
-    In these sessions, 8 users with amyotrophic lateral sclerosis (ALS)
+    In these sessions, 8 users with amyotrophic lateral sclerosis (ALSO)
     focused on one out of 36 different characters. The objective in this
     contest is to predict the correct character in each of the provided
     character selection epochs.
@@ -1004,7 +1014,6 @@ class BNCI2014008(MNEBNCI):
            toward a mental prosthesis utilizing eventrelated
            brain potentials, Electroencephalogr. Clin. Neurophysiol.,
            vol. 70, n. 6, pagg. 510–523, 1988.
-
     """
 
     def __init__(self):
@@ -1012,24 +1021,25 @@ class BNCI2014008(MNEBNCI):
             subjects=list(range(1, 9)),
             sessions_per_subject=1,
             events={"Target": 2, "NonTarget": 1},
-            code="008-2014",
+            code="BNCI2014-008",
             interval=[0, 1.0],
             paradigm="p300",
             doi="10.3389/fnhum.2013.00732",
         )
 
 
-class BNCI2014009(MNEBNCI):
+@depreciated_alias("BNCI2014009", "0.7")
+class BNCI2014_009(MNEBNCI):
     """BNCI 2014-009 P300 dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
         Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        BNCI2014009       10       16  1440 NT / 288 T    0.8s             256Hz                      3
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
+        BNCI2014_009       10       16  1440 NT / 288 T    0.8s             256Hz                      3
+        ============  =======  =======  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -1037,7 +1047,7 @@ class BNCI2014009(MNEBNCI):
 
     This dataset presents a complete record of P300 evoked potentials
     using two different paradigms: a paradigm based on the P300 Speller in
-    overt attention condition and a paradigm based used in covert attention
+    overt attention condition and a paradigm based used in convert attention
     condition. In these sessions, 10 healthy subjects focused on one out of 36
     different characters. The objective was to predict the correct character
     in each of the provided character selection epochs.
@@ -1062,12 +1072,10 @@ class BNCI2014009(MNEBNCI):
 
     References
     ----------
-
     .. [1] P Aricò, F Aloise, F Schettini, S Salinari, D Mattia and F Cincotti
            (2013). Influence of P300 latency jitter on event related potential-
            based brain–computer interface performance. Journal of Neural
            Engineering, vol. 11, number 3.
-
     """
 
     def __init__(self):
@@ -1075,24 +1083,25 @@ class BNCI2014009(MNEBNCI):
             subjects=list(range(1, 11)),
             sessions_per_subject=3,
             events={"Target": 2, "NonTarget": 1},
-            code="009-2014",
+            code="BNCI2014-009",
             interval=[0, 0.8],
             paradigm="p300",
             doi="10.1088/1741-2560/11/3/035008",
         )
 
 
-class BNCI2015001(MNEBNCI):
+@depreciated_alias("BNCI2015001", "0.7")
+class BNCI2015_001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2015001       12       13           2                200  5s            512Hz                      2
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2015_001       12       13           2                200  5s            512Hz                      2
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -1110,7 +1119,7 @@ class BNCI2015001(MNEBNCI):
 
     The task for the user was to perform sustained right hand versus both feet
     movement imagery starting from the cue (second 3) to the end of the cross
-    period (sec- ond 8).  A trial started with 3 s of reference period,
+    period (sec- and 8).  A trial started with 3 s of reference period,
     followed by a brisk audible cue and a visual cue (arrow right for right
     hand, arrow down for both feet) from second 3 to 4.25.
     The activity period, where the users received feedback, lasted from
@@ -1118,12 +1127,10 @@ class BNCI2015001(MNEBNCI):
 
     References
     ----------
-
     .. [1] J. Faller, C. Vidaurre, T. Solis-Escalante, C. Neuper and R.
            Scherer (2012). Autocalibration and recurrent adaptation: Towards a
            plug and play online ERD- BCI.  IEEE Transactions on Neural Systems
            and Rehabilitation Engineering, 20(3), 313-319.
-
     """
 
     def __init__(self):
@@ -1132,24 +1139,25 @@ class BNCI2015001(MNEBNCI):
             subjects=list(range(1, 13)),
             sessions_per_subject=2,
             events={"right_hand": 1, "feet": 2},
-            code="001-2015",
+            code="BNCI2015-001",
             interval=[0, 5],
             paradigm="imagery",
             doi="10.1109/tnsre.2012.2189584",
         )
 
 
-class BNCI2015003(MNEBNCI):
+@depreciated_alias("BNCI2015003", "0.7")
+class BNCI2015_003(MNEBNCI):
     """BNCI 2015-003 P300 dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
         Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        BNCI2015003       10        8  1500 NT / 300 T    0.8s             256Hz                      1
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
+        BNCI2015_003       10        8  1500 NT / 300 T    0.8s             256Hz                      1
+        ============  =======  =======  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -1163,12 +1171,10 @@ class BNCI2015003(MNEBNCI):
 
     References
     ----------
-
     .. [1]  C. Guger, S. Daban, E. Sellers, C. Holzner, G. Krausz,
             R. Carabalona, F. Gramatica, and G. Edlinger (2009). How many
             people are able to control a P300-based brain-computer interface
             (BCI)?. Neuroscience Letters, vol. 462, pp. 94–98.
-
     """
 
     def __init__(self):
@@ -1176,24 +1182,25 @@ class BNCI2015003(MNEBNCI):
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
             events={"Target": 2, "NonTarget": 1},
-            code="003-2015",
+            code="BNCI2015-003",
             interval=[0, 0.8],
             paradigm="p300",
             doi="10.1016/j.neulet.2009.06.045",
         )
 
 
-class BNCI2015004(MNEBNCI):
+@depreciated_alias("BNCI2015004", "0.7")
+class BNCI2015_004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2015004       9       30           5                 80  7s            256Hz                      2
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2015_004       9       30           5                 80  7s            256Hz                      2
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -1238,12 +1245,10 @@ class BNCI2015004(MNEBNCI):
 
     References
     ----------
-
     .. [1] Scherer R, Faller J, Friedrich EVC, Opisso E, Costa U, Kübler A, et
            al. (2015) Individually Adapted Imagery Improves Brain-Computer
            Interface Performance in End-Users with Disability. PLoS ONE 10(5).
            https://doi.org/10.1371/journal.pone.0123727
-
     """
 
     def __init__(self):
@@ -1251,7 +1256,7 @@ class BNCI2015004(MNEBNCI):
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
             events=dict(right_hand=4, feet=5, navigation=3, subtraction=2, word_ass=1),
-            code="004-2015",
+            code="BNCI2015-004",
             interval=[3, 10],
             paradigm="imagery",
             doi="10.1371/journal.pone.0123727",

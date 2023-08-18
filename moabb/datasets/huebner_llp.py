@@ -113,8 +113,8 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
 
 
 class Huebner2017(_BaseVisualMatrixSpellerDataset):
-    """
-    Learning from label proportions for a visual matrix speller (ERP) dataset from Hübner et al 2017 [1]_.
+    """Learning from label proportions for a visual matrix speller (ERP)
+    dataset from Hübner et al 2017 [1]_.
 
     .. admonition:: Dataset summary
 
@@ -172,7 +172,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             raw_slice_offset=raw_slice_offset,
             n_subjects=13,
             sessions_per_subject=1,  # if varying, take minimum
-            code="Visual Speller LLP",
+            code="Huebner2017",  # Before: "VisualSpellerLLP"
             interval=interval,
             doi=llp_speller_paper_doi,
             use_blocks_as_sessions=use_blocks_as_sessions,
@@ -180,8 +180,8 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
 
 
 class Huebner2018(_BaseVisualMatrixSpellerDataset):
-    """
-    Mixture of LLP and EM for a visual matrix speller (ERP) dataset from Hübner et al 2018 [1]_.
+    """Mixture of LLP and EM for a visual matrix speller (ERP) dataset from
+    Hübner et al 2018 [1]_.
 
     .. admonition:: Dataset summary
 
@@ -231,7 +231,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             raw_slice_offset=raw_slice_offset,
             n_subjects=12,
             sessions_per_subject=1,  # if varying, take minimum
-            code="Visual Speller MIX",
+            code="Huebner2018",  # Before: "VisualSpellerMIX"
             interval=interval,
             doi=mix_speller_paper_doi,
             use_blocks_as_sessions=use_blocks_as_sessions,
@@ -239,9 +239,9 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
 
 
 def _read_raw_llp_study_data(vhdr_fname, raw_slice_offset, verbose=None):
-    """
-    Read LLP BVR recordings file. Ignore the different sequence lengths. Just tag event as target or non-target if it
-    contains a target or does not contain a target.
+    """Read LLP BVR recordings file. Ignore the different sequence lengths.
+    Just tag event as target or non-target if it contains a target or does not
+    contain a target.
 
     Parameters
     ----------

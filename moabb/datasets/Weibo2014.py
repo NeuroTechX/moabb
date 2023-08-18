@@ -120,7 +120,7 @@ class Weibo2014(BaseDataset):
                 right_hand_left_foot=6,
                 rest=7,
             ),
-            code="Weibo 2014",
+            code="Weibo2014",
             # Full trial w/ rest is 0-8
             interval=[3, 7],
             paradigm="imagery",
@@ -128,7 +128,7 @@ class Weibo2014(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         fname = self.data_path(subject)
         # TODO: add 1s 0 buffer between trials and make continuous
         data = loadmat(

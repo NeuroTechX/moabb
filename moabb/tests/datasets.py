@@ -1,12 +1,21 @@
+import inspect
+import logging
+import shutil
+import tempfile
 import unittest
 
 import mne
 
-from moabb.datasets import Shin2017A, Shin2017B, VirtualReality
+import moabb.datasets as db
+import moabb.datasets.compound_dataset as db_compound
+from moabb.datasets import Cattan2019_VR, Shin2017A, Shin2017B
+from moabb.datasets.base import BaseDataset, is_abbrev, is_camel_kebab_case
 from moabb.datasets.compound_dataset import CompoundDataset
+from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
-from moabb.datasets.utils import block_rep
+from moabb.datasets.utils import block_rep, dataset_list
 from moabb.paradigms import P300
+from moabb.utils import aliases_list
 
 
 _ = mne.set_log_level("CRITICAL")
@@ -28,9 +37,35 @@ def _run_tests_on_dataset(d):
         print(d.event_id)
 
 
+class TestRegex(unittest.TestCase):
+    def test_is_abbrev(self):
+        assert is_abbrev("a", "a-")
+        assert is_abbrev("a", "a0")
+        assert is_abbrev("a", "ab")
+        assert not is_abbrev("a", "aA")
+        assert not is_abbrev("a", "Aa")
+        assert not is_abbrev("a", "-a")
+        assert not is_abbrev("a", "0a")
+        assert not is_abbrev("a", "ba")
+        assert not is_abbrev("a", "a ")
+
+    def test_is_camell_kebab_case(self):
+        assert is_camel_kebab_case("Aa")
+        assert is_camel_kebab_case("aAa")
+        assert is_camel_kebab_case("Aa-a")
+        assert is_camel_kebab_case("1Aa-1a1")
+        assert is_camel_kebab_case("AB")
+        assert not is_camel_kebab_case("A ")
+        assert not is_camel_kebab_case(" A")
+        assert not is_camel_kebab_case("A A")
+        assert not is_camel_kebab_case("A_")
+        assert not is_camel_kebab_case("_A")
+        assert not is_camel_kebab_case("A_A")
+
+
 class Test_Datasets(unittest.TestCase):
     def test_fake_dataset(self):
-        """this test will insure the basedataset works"""
+        """This test will insure the basedataset works."""
         n_subjects = 3
         n_sessions = 2
         n_runs = 2
@@ -57,18 +92,146 @@ class Test_Datasets(unittest.TestCase):
             self.assertEqual(len(data[1]["session_0"]), n_runs)
 
             # We should get a raw array at the end
-            self.assertEqual(type(data[1]["session_0"]["run_0"]), mne.io.RawArray)
+            self.assertIsInstance(data[1]["session_0"]["run_0"], mne.io.BaseRaw)
 
             # bad subject id must raise error
             self.assertRaises(ValueError, ds.get_data, [1000])
 
+    def test_cache_dataset(self):
+        tempdir = tempfile.mkdtemp()
+        for paradigm in ["imagery", "p300", "ssvep"]:
+            dataset = FakeDataset(paradigm=paradigm)
+            # Save cache:
+            with self.assertLogs(
+                logger="moabb.datasets.bids_interface", level="INFO"
+            ) as cm:
+                _ = dataset.get_data(
+                    subjects=[1],
+                    cache_config=dict(
+                        save_raw=True,
+                        use=True,
+                        overwrite_raw=False,
+                        path=tempdir,
+                    ),
+                )
+            print("\n".join(cm.output))
+            expected = [
+                "Attempting to retrieve cache .* datatype-eeg",  # empty pipeline
+                "No cache found at",
+                "Starting caching .* datatype-eeg",
+                "Finished caching .* datatype-eeg",
+            ]
+            self.assertEqual(len(expected), len(cm.output))
+            for i, regex in enumerate(expected):
+                self.assertRegex(cm.output[i], regex)
+
+            # Load cache:
+            with self.assertLogs(
+                logger="moabb.datasets.bids_interface", level="INFO"
+            ) as cm:
+                _ = dataset.get_data(
+                    subjects=[1],
+                    cache_config=dict(
+                        save_raw=True,
+                        use=True,
+                        overwrite_raw=False,
+                        path=tempdir,
+                    ),
+                )
+            print("\n".join(cm.output))
+            expected = [
+                "Attempting to retrieve cache .* datatype-eeg",
+                "Finished reading cache .* datatype-eeg",
+            ]
+            self.assertEqual(len(expected), len(cm.output))
+            for i, regex in enumerate(expected):
+                self.assertRegex(cm.output[i], regex)
+
+            # Overwrite cache:
+            with self.assertLogs(
+                logger="moabb.datasets.bids_interface", level="INFO"
+            ) as cm:
+                _ = dataset.get_data(
+                    subjects=[1],
+                    cache_config=dict(
+                        save_raw=True,
+                        use=True,
+                        overwrite_raw=True,
+                        path=tempdir,
+                    ),
+                )
+            print("\n".join(cm.output))
+            expected = [
+                "Starting erasing cache .* datatype-eeg",
+                "Finished erasing cache .* datatype-eeg",
+                "Starting caching .* datatype-eeg",
+                "Finished caching .* datatype-eeg",
+            ]
+            self.assertEqual(len(expected), len(cm.output))
+            for i, regex in enumerate(expected):
+                self.assertRegex(cm.output[i], regex)
+        shutil.rmtree(tempdir)
+
     def test_dataset_accept(self):
-        """verify that accept licence is working"""
-        # Only Shin2017 (bbci_eeg_fnirs) for now
+        """Verify that accept licence is working."""
+        # Only BaseShin2017 (bbci_eeg_fnirs) for now
         for ds in [Shin2017A(), Shin2017B()]:
             # if the data is already downloaded:
             if mne.get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:
                 self.assertRaises(AttributeError, ds.get_data, [1])
+
+    def test_datasets_init(self):
+        codes = []
+        logger = logging.getLogger("moabb.datasets.base")
+        for ds in dataset_list:
+            kwargs = {}
+            if inspect.signature(ds).parameters.get("accept"):
+                kwargs["accept"] = True
+            with self.assertLogs(logger="moabb.datasets.base", level="WARNING") as cm:
+                # We test if the is_abrev does not throw a warning.
+                # Trick needed because assertNoLogs only inrtoduced in python 3.10:
+                logger.warning(f"Testing {ds.__name__}")
+                obj = ds(**kwargs)
+            self.assertEqual(len(cm.output), 1)
+            self.assertIsNotNone(obj)
+            codes.append(obj.code)
+
+        # Check that all codes are unique:
+        self.assertEqual(len(codes), len(set(codes)))
+
+    def test_depreciated_datasets_init(self):
+        depreciated_names, _, _ = zip(*aliases_list)
+        for ds in db.__dict__.values():
+            if ds in dataset_list:
+                continue
+            if not (inspect.isclass(ds) and issubclass(ds, BaseDataset)):
+                continue
+            kwargs = {}
+            if inspect.signature(ds).parameters.get("accept"):
+                kwargs["accept"] = True
+            with self.assertLogs(logger="moabb.utils", level="WARNING"):
+                # We test if depreciated_alias throws a warning.
+                obj = ds(**kwargs)
+            self.assertIsNotNone(obj)
+            self.assertIn(ds.__name__, depreciated_names)
+
+    def test_dataset_list(self):
+        if aliases_list:
+            depreciated_list, _, _ = zip(*aliases_list)
+        else:
+            depreciated_list = []
+        all_datasets = [
+            c
+            for c in db.__dict__.values()
+            if (
+                inspect.isclass(c)
+                and issubclass(c, BaseDataset)
+                and c.__name__ not in depreciated_list
+            )
+        ]
+
+        assert len(dataset_list) == len(all_datasets)
+        assert set(dataset_list) == set(all_datasets)
 
 
 class Test_VirtualReality_Dataset(unittest.TestCase):
@@ -76,14 +239,14 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         super().__init__(*args, **kwargs)
 
     def test_canary(self):
-        assert VirtualReality() is not None
+        assert Cattan2019_VR() is not None
 
     def test_warning_if_parameters_false(self):
         with self.assertWarns(UserWarning):
-            VirtualReality(virtual_reality=False, screen_display=False)
+            Cattan2019_VR(virtual_reality=False, screen_display=False)
 
     def test_data_path(self):
-        ds = VirtualReality(virtual_reality=True, screen_display=True)
+        ds = Cattan2019_VR(virtual_reality=True, screen_display=True)
         data_path = ds.data_path(1)
         assert len(data_path) == 2
         assert "subject_01_VR.mat" in data_path[0]
@@ -115,7 +278,7 @@ class Test_CompoundDataset(unittest.TestCase):
         super().__init__(*args, **kwargs)
 
     def test_fake_dataset(self):
-        """this test will insure the basedataset works"""
+        """This test will insure the basedataset works."""
         param_list = [(None, None), ("session_0", "run_0"), (["session_0"], ["run_0"])]
         for sessions, runs in param_list:
             with self.subTest():
@@ -123,7 +286,7 @@ class Test_CompoundDataset(unittest.TestCase):
                 compound_data = CompoundDataset(
                     subjects_list,
                     events=dict(Target=2, NonTarget=1),
-                    code="CompoundTest",
+                    code="CompoundDataset-test",
                     interval=[0, 1],
                     paradigm=self.paradigm,
                 )
@@ -132,7 +295,7 @@ class Test_CompoundDataset(unittest.TestCase):
 
                 # Check data type
                 self.assertTrue(isinstance(data, dict))
-                self.assertEqual(type(data[1]["session_0"]["run_0"]), mne.io.RawArray)
+                self.assertIsInstance(data[1]["session_0"]["run_0"], mne.io.BaseRaw)
 
                 # Check data size
                 self.assertEqual(len(data), 1)
@@ -152,7 +315,7 @@ class Test_CompoundDataset(unittest.TestCase):
         compound_dataset = CompoundDataset(
             subjects_list,
             events=dict(Target=2, NonTarget=1),
-            code="D1",
+            code="CompoundDataset-test",
             interval=[0, 1],
             paradigm=self.paradigm,
         )
@@ -162,7 +325,7 @@ class Test_CompoundDataset(unittest.TestCase):
         compound_data = CompoundDataset(
             subjects_list,
             events=dict(Target=2, NonTarget=1),
-            code="CompoundTest",
+            code="CompoundDataset-test",
             interval=[0, 1],
             paradigm=self.paradigm,
         )
@@ -186,10 +349,41 @@ class Test_CompoundDataset(unittest.TestCase):
         compound_dataset = CompoundDataset(
             subjects_list,
             events=dict(Target=2, NonTarget=1),
-            code="CompoundTest",
+            code="CompoundDataset",
             interval=[0, 1],
             paradigm=self.paradigm,
         )
 
         # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
         self.assertEqual(compound_dataset._get_sessions_per_subject(), self.n_sessions)
+
+    def test_datasets_init(self):
+        codes = []
+        for ds in compound_dataset_list:
+            kwargs = {}
+            if inspect.signature(ds).parameters.get("accept"):
+                kwargs["accept"] = True
+            obj = ds(**kwargs)
+            self.assertIsNotNone(obj)
+            codes.append(obj.code)
+
+        # Check that all codes are unique:
+        self.assertEqual(len(codes), len(set(codes)))
+
+    def test_dataset_list(self):
+        if aliases_list:
+            depreciated_list, _, _ = zip(*aliases_list)
+        else:
+            depreciated_list = []
+        all_datasets = [
+            c
+            for c in db_compound.__dict__.values()
+            if (
+                inspect.isclass(c)
+                and issubclass(c, CompoundDataset)
+                and c.__name__ not in depreciated_list
+                and c.__name__ != "CompoundDataset"
+            )
+        ]
+        assert len(compound_dataset_list) == len(all_datasets)
+        assert set(compound_dataset_list) == set(all_datasets)

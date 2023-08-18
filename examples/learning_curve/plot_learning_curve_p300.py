@@ -32,7 +32,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014009
+from moabb.datasets import BNCI2014_009
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
 
@@ -40,7 +40,6 @@ from moabb.paradigms import P300
 # getting rid of the warnings about the future (on s'en fout !)
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
-
 
 moabb.set_log_level("info")
 
@@ -78,7 +77,7 @@ pipelines["Xdw+LDA"] = make_pipeline(
 # and dataset size.
 
 paradigm = P300(resample=processing_sampling_rate)
-dataset = BNCI2014009()
+dataset = BNCI2014_009()
 # Remove the slicing of the subject list to evaluate multiple subjects
 dataset.subject_list = dataset.subject_list[1:2]
 datasets = [dataset]
@@ -96,7 +95,6 @@ evaluation = WithinSessionEvaluation(
     suffix="examples_lr",
     overwrite=overwrite,
 )
-
 
 results = evaluation.process(pipelines)
 
