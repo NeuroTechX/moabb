@@ -106,18 +106,16 @@ class Thielen2021(BaseDataset):
     Notes
     -----
 
-    .. versionadded:: 0.4.6  TODO: check version
+    .. versionadded:: 0.6.0
 
     """
 
     def __init__(self, interval=None):
-        self.n_channels = 8
-        self.description_map = {101: "Target", 100: "NonTarget"}
         super().__init__(
             subjects=list(range(1, 30 + 1)),
             sessions_per_subject=1,
-            events=dict(Target=101, NonTarget=100),
-            code="cVEP_Thielen2021",
+            events={"1.0": 101, "0.0": 100},
+            code="Thielen2021",
             interval=[0, 0.3] if interval is None else interval,
             paradigm="cvep",
             doi="10.34973/9txv-z787",
@@ -173,8 +171,8 @@ class Thielen2021(BaseDataset):
             )
             raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
 
-            # Create stim channel with epoch information (i.e., target / non-target)
-            # N.B. 100 = non-target, 101 = target
+            # Create stim channel with epoch information (i.e., 1 / 0, or on / off)
+            # N.B. 100 = "0", 101 = "1"
             stim_chan = np.zeros((1, len(raw)))
             for onset, label in zip(onsets, labels):
                 idx = (
