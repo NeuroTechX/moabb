@@ -86,12 +86,6 @@ class BaseCVEP(BaseParadigm):
         else:
             assert n_classes <= len(self.events), "More classes than events specified"
 
-        if tmax is not None:
-            if tmin >= tmax:
-                raise (ValueError("tmax must be greater than tmin"))
-        self.tmin = tmin
-        self.tmax = tmax
-
     def is_valid(self, dataset):
         """Check if dataset is valid for the c-VEP paradigm."""
         ret = True
