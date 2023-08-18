@@ -4,9 +4,9 @@ import logging
 import os
 import os.path as osp
 import random
-from typing import TYPE_CHECKING
 import re
 import sys
+from typing import TYPE_CHECKING
 
 import numpy as np
 from mne import get_config, set_config
@@ -172,7 +172,7 @@ def make_process_pipelines(
         dataset, return_epochs, return_raws, postprocess_pipeline
     )
 
-  
+
 aliases_list = []  # list of tuples containing (old name, new name, expire version)
 
 
