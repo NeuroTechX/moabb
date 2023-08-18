@@ -9,6 +9,7 @@ from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.utils import depreciated_alias
 
 
 BNCI_URL = "http://bnci-horizon-2020.eu/database/data-sets/"
@@ -22,7 +23,7 @@ def data_path(url, path=None, force_update=False, update_path=None, verbose=None
 @verbose
 def load_data(
     subject,
-    dataset="001-2014",
+    dataset="BNCI2014-001",
     path=None,
     force_update=False,
     update_path=None,
@@ -69,33 +70,33 @@ def load_data(
         dictionary containing events and their code.
     """
     dataset_list = {
-        "001-2014": _load_data_001_2014,
-        "002-2014": _load_data_002_2014,
-        "004-2014": _load_data_004_2014,
-        "008-2014": _load_data_008_2014,
-        "009-2014": _load_data_009_2014,
-        "001-2015": _load_data_001_2015,
-        "003-2015": _load_data_003_2015,
-        "004-2015": _load_data_004_2015,
-        "009-2015": _load_data_009_2015,
-        "010-2015": _load_data_010_2015,
-        "012-2015": _load_data_012_2015,
-        "013-2015": _load_data_013_2015,
+        "BNCI2014-001": _load_data_001_2014,
+        "BNCI2014-002": _load_data_002_2014,
+        "BNCI2014-004": _load_data_004_2014,
+        "BNCI2014-008": _load_data_008_2014,
+        "BNCI2014-009": _load_data_009_2014,
+        "BNCI2015-001": _load_data_001_2015,
+        "BNCI2015-003": _load_data_003_2015,
+        "BNCI2015-004": _load_data_004_2015,
+        "BNCI2015-009": _load_data_009_2015,
+        "BNCI2015-010": _load_data_010_2015,
+        "BNCI2015-012": _load_data_012_2015,
+        "BNCI2015-013": _load_data_013_2015,
     }
 
     baseurl_list = {
-        "001-2014": BNCI_URL,
-        "002-2014": BNCI_URL,
-        "001-2015": BNCI_URL,
-        "004-2014": BNCI_URL,
-        "008-2014": BNCI_URL,
-        "009-2014": BNCI_URL,
-        "003-2015": BNCI_URL,
-        "004-2015": BNCI_URL,
-        "009-2015": BBCI_URL,
-        "010-2015": BBCI_URL,
-        "012-2015": BBCI_URL,
-        "013-2015": BNCI_URL,
+        "BNCI2014-001": BNCI_URL,
+        "BNCI2014-002": BNCI_URL,
+        "BNCI2015-001": BNCI_URL,
+        "BNCI2014-004": BNCI_URL,
+        "BNCI2014-008": BNCI_URL,
+        "BNCI2014-009": BNCI_URL,
+        "BNCI2015-003": BNCI_URL,
+        "BNCI2015-004": BNCI_URL,
+        "BNCI2015-009": BBCI_URL,
+        "BNCI2015-010": BBCI_URL,
+        "BNCI2015-012": BBCI_URL,
+        "BNCI2015-013": BNCI_URL,
     }
 
     if dataset not in dataset_list.keys():
@@ -747,17 +748,18 @@ class MNEBNCI(BaseDataset):
         )
 
 
-class BNCI2014001(MNEBNCI):
+@depreciated_alias("BNCI2014001", "0.7")
+class BNCI2014_001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2014001       9       22           4                144  4s            250Hz                      2
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014_001       9       22           4                144  4s            250Hz                      2
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset IIa from BCI Competition 4 [1]_.
 
@@ -803,24 +805,25 @@ class BNCI2014001(MNEBNCI):
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
             events={"left_hand": 1, "right_hand": 2, "feet": 3, "tongue": 4},
-            code="001-2014",
+            code="BNCI2014-001",
             interval=[2, 6],
             paradigm="imagery",
             doi="10.3389/fnins.2012.00055",
         )
 
 
-class BNCI2014002(MNEBNCI):
+@depreciated_alias("BNCI2014002", "0.7")
+class BNCI2014_002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2014002       14       15           2                 80  5s            512Hz                      1
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014_002       14       15           2                 80  5s            512Hz                      1
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Motor Imagery Dataset from [1]_.
 
@@ -864,24 +867,25 @@ class BNCI2014002(MNEBNCI):
             subjects=list(range(1, 15)),
             sessions_per_subject=1,
             events={"right_hand": 1, "feet": 2},
-            code="002-2014",
+            code="BNCI2014-002",
             interval=[3, 8],
             paradigm="imagery",
             doi="10.1515/bmt-2014-0117",
         )
 
 
-class BNCI2014004(MNEBNCI):
+@depreciated_alias("BNCI2014004", "0.7")
+class BNCI2014_004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2014004       9        3           2                360  4.5s          250Hz                      5
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2014_004       9        3           2                360  4.5s          250Hz                      5
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset B from BCI Competition 2008.
 
@@ -946,24 +950,25 @@ class BNCI2014004(MNEBNCI):
             subjects=list(range(1, 10)),
             sessions_per_subject=5,
             events={"left_hand": 1, "right_hand": 2},
-            code="004-2014",
+            code="BNCI2014-004",
             interval=[3, 7.5],
             paradigm="imagery",
             doi="10.1109/TNSRE.2007.906956",
         )
 
 
-class BNCI2014008(MNEBNCI):
+@depreciated_alias("BNCI2014008", "0.7")
+class BNCI2014_008(MNEBNCI):
     """BNCI 2014-008 P300 dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
         Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        BNCI2014008        8        8  3500 NT / 700 T    1s               256Hz                      1
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
+        BNCI2014_008        8        8  3500 NT / 700 T    1s               256Hz                      1
+        ============  =======  =======  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -1016,24 +1021,25 @@ class BNCI2014008(MNEBNCI):
             subjects=list(range(1, 9)),
             sessions_per_subject=1,
             events={"Target": 2, "NonTarget": 1},
-            code="008-2014",
+            code="BNCI2014-008",
             interval=[0, 1.0],
             paradigm="p300",
             doi="10.3389/fnhum.2013.00732",
         )
 
 
-class BNCI2014009(MNEBNCI):
+@depreciated_alias("BNCI2014009", "0.7")
+class BNCI2014_009(MNEBNCI):
     """BNCI 2014-009 P300 dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
         Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        BNCI2014009       10       16  1440 NT / 288 T    0.8s             256Hz                      3
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
+        BNCI2014_009       10       16  1440 NT / 288 T    0.8s             256Hz                      3
+        ============  =======  =======  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -1077,24 +1083,25 @@ class BNCI2014009(MNEBNCI):
             subjects=list(range(1, 11)),
             sessions_per_subject=3,
             events={"Target": 2, "NonTarget": 1},
-            code="009-2014",
+            code="BNCI2014-009",
             interval=[0, 0.8],
             paradigm="p300",
             doi="10.1088/1741-2560/11/3/035008",
         )
 
 
-class BNCI2015001(MNEBNCI):
+@depreciated_alias("BNCI2015001", "0.7")
+class BNCI2015_001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2015001       12       13           2                200  5s            512Hz                      2
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2015_001       12       13           2                200  5s            512Hz                      2
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -1132,24 +1139,25 @@ class BNCI2015001(MNEBNCI):
             subjects=list(range(1, 13)),
             sessions_per_subject=2,
             events={"right_hand": 1, "feet": 2},
-            code="001-2015",
+            code="BNCI2015-001",
             interval=[0, 5],
             paradigm="imagery",
             doi="10.1109/tnsre.2012.2189584",
         )
 
 
-class BNCI2015003(MNEBNCI):
+@depreciated_alias("BNCI2015003", "0.7")
+class BNCI2015_003(MNEBNCI):
     """BNCI 2015-003 P300 dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
         Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ===========  =======  =======  =================  ===============  ===============  ===========
-        BNCI2015003       10        8  1500 NT / 300 T    0.8s             256Hz                      1
-        ===========  =======  =======  =================  ===============  ===============  ===========
+        ============  =======  =======  =================  ===============  ===============  ===========
+        BNCI2015_003       10        8  1500 NT / 300 T    0.8s             256Hz                      1
+        ============  =======  =======  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -1174,24 +1182,25 @@ class BNCI2015003(MNEBNCI):
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
             events={"Target": 2, "NonTarget": 1},
-            code="003-2015",
+            code="BNCI2015-003",
             interval=[0, 0.8],
             paradigm="p300",
             doi="10.1016/j.neulet.2009.06.045",
         )
 
 
-class BNCI2015004(MNEBNCI):
+@depreciated_alias("BNCI2015004", "0.7")
+class BNCI2015_004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2015004       9       30           5                 80  7s            256Hz                      2
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
+        BNCI2015_004       9       30           5                 80  7s            256Hz                      2
+        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -1247,7 +1256,7 @@ class BNCI2015004(MNEBNCI):
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
             events=dict(right_hand=4, feet=5, navigation=3, subtraction=2, word_ass=1),
-            code="004-2015",
+            code="BNCI2015-004",
             interval=[3, 10],
             paradigm="imagery",
             doi="10.1371/journal.pone.0123727",

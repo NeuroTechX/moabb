@@ -37,7 +37,7 @@ from moabb.analysis.meta_analysis import (  # noqa: E501
     find_significant_differences,
 )
 from moabb.analysis.plotting import paired_plot, summary_plot
-from moabb.datasets import BNCI2014009
+from moabb.datasets import BNCI2014_009
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import P300
 
@@ -52,7 +52,7 @@ moabb.set_log_level("info")
 #
 # Load 2 subjects of BNCI 2014-009 dataset, with 3 session each
 
-dataset = BNCI2014009()
+dataset = BNCI2014_009()
 dataset.subject_list = dataset.subject_list[:3]
 datasets = [dataset]
 paradigm = P300()

@@ -172,7 +172,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             raw_slice_offset=raw_slice_offset,
             n_subjects=13,
             sessions_per_subject=1,  # if varying, take minimum
-            code="VisualSpellerLLP",
+            code="Huebner2017",  # Before: "VisualSpellerLLP"
             interval=interval,
             doi=llp_speller_paper_doi,
             use_blocks_as_sessions=use_blocks_as_sessions,
@@ -231,7 +231,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             raw_slice_offset=raw_slice_offset,
             n_subjects=12,
             sessions_per_subject=1,  # if varying, take minimum
-            code="VisualSpellerMIX",
+            code="Huebner2018",  # Before: "VisualSpellerMIX"
             interval=interval,
             doi=mix_speller_paper_doi,
             use_blocks_as_sessions=use_blocks_as_sessions,

@@ -20,7 +20,7 @@ from tensorflow import keras
 
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import score_plot
-from moabb.datasets import BNCI2014001
+from moabb.datasets import BNCI2014_001
 from moabb.utils import setup_seed
 
 
@@ -40,7 +40,7 @@ GPU = len(tf.config.list_physical_devices("GPU")) > 0
 print("GPU is", "AVAILABLE" if GPU else "NOT AVAILABLE")
 
 ###############################################################################
-# In this example, we will use only the dataset ``BNCI2014001``.
+# In this example, we will use only the dataset ``BNCI2014_001``.
 #
 # Running the benchmark
 # ---------------------
@@ -64,8 +64,8 @@ print("GPU is", "AVAILABLE" if GPU else "NOT AVAILABLE")
 # Set up reproducibility of Tensorflow
 setup_seed(42)
 
-# Restrict this example only on the first two subject of BNCI2014001
-dataset = BNCI2014001()
+# Restrict this example only on the first two subject of BNCI2014_001
+dataset = BNCI2014_001()
 dataset.subject_list = dataset.subject_list[:2]
 datasets = [dataset]
 
