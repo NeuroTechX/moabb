@@ -97,9 +97,7 @@ class BaseCVEP(BaseParadigm):
     def used_events(self, dataset):
         pass
 
-    def process_raw(
-        self, raw, dataset, return_epochs=False, return_raws=False
-    ):
+    def process_raw(self, raw, dataset, return_epochs=False, return_raws=False):
         """
         Process one raw data file.
 
@@ -162,9 +160,8 @@ class BaseCVEP(BaseParadigm):
         # pick events, based on event_id
         try:
             if "Target" in event_id and "NonTarget" in event_id:
-                if (
-                    isinstance(event_id["Target"], list)
-                    and isinstance(event_id["NonTarget"], list)
+                if isinstance(event_id["Target"], list) and isinstance(
+                    event_id["NonTarget"], list
                 ):
                     event_id_new = dict(Target=1, NonTarget=0)
                     events = mne.merge_events(events, event_id["Target"], 1)

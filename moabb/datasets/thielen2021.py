@@ -1,29 +1,61 @@
 import h5py
 import mne
-from mne.io import RawArray
-from mne import create_info
 import numpy as np
+from mne import create_info
+from mne.io import RawArray
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
 
-Thielen2021_URL = (
-    "https://public.data.donders.ru.nl/dcc/DSC_2018.00122_448_v3"
-)
+Thielen2021_URL = "https://public.data.donders.ru.nl/dcc/DSC_2018.00122_448_v3"
 ELECTRODE_MAPPING = {
-    "AF3": "Fz", "F3": "T7", "FC5": "O1", "P7": "POz",
-    "P8": "Oz", "FC6": "Iz", "F4": "O2", "AF4": "T8"}
-SESSIONS = ("20181128", "20181206", "20181217", "20181217", "20181217",
-            "20181218", "20181218", "20181219", "20181219", "20181220",
-            "20181220", "20181220", "20190107", "20190107", "20190110",
-            "20190110", "20190110", "20190117", "20190117", "20190118",
-            "20190118", "20190118", "20190220", "20190222", "20190225",
-            "20190301", "20190307", "20190308", "20190311", "20190311")
+    "AF3": "Fz",
+    "F3": "T7",
+    "FC5": "O1",
+    "P7": "POz",
+    "P8": "Oz",
+    "FC6": "Iz",
+    "F4": "O2",
+    "AF4": "T8",
+}
+SESSIONS = (
+    "20181128",
+    "20181206",
+    "20181217",
+    "20181217",
+    "20181217",
+    "20181218",
+    "20181218",
+    "20181219",
+    "20181219",
+    "20181220",
+    "20181220",
+    "20181220",
+    "20190107",
+    "20190107",
+    "20190110",
+    "20190110",
+    "20190110",
+    "20190117",
+    "20190117",
+    "20190118",
+    "20190118",
+    "20190118",
+    "20190220",
+    "20190222",
+    "20190225",
+    "20190301",
+    "20190307",
+    "20190308",
+    "20190311",
+    "20190311",
+)
 NR_BLOCKS = 5  # Each session consisted of 5 blocks (i.e., runs)
 NR_CYCLES_PER_TRIAL = 15  # Each trial contained 15 cycles of a 2.1 second code
 PRESENTATION_RATE = 60  # Codes were presented at a 60 Hz monitor refresh rate
+
 
 class Thielen2021(BaseDataset):
     """c-VEP dataset from Thielen et al. (2021)
@@ -78,10 +110,7 @@ class Thielen2021(BaseDataset):
 
     """
 
-    def __init__(
-        self,
-        interval=None
-    ):
+    def __init__(self, interval=None):
         self.n_channels = 8
         self.description_map = {101: "Target", 100: "NonTarget"}
         super().__init__(
@@ -103,20 +132,31 @@ class Thielen2021(BaseDataset):
         # There is only one session, each of 5 blocks (i.e., runs)
         sessions = {"session_1": {}}
         for i_b in range(NR_BLOCKS):
-
             # EEG
-            raw = mne.io.read_raw_gdf(file_path_list[2 * i_b], stim_channel="status", preload=True, verbose=False)
+            raw = mne.io.read_raw_gdf(
+                file_path_list[2 * i_b],
+                stim_channel="status",
+                preload=True,
+                verbose=False,
+            )
             mne.rename_channels(raw.info, ELECTRODE_MAPPING)
 
             # Labels at trial level (i.e., symbols)
-            labels = np.array(h5py.File(file_path_list[2 * i_b + 1], "r")["v"]).astype("uint8").flatten() - 1
+            labels = (
+                np.array(h5py.File(file_path_list[2 * i_b + 1], "r")["v"])
+                .astype("uint8")
+                .flatten()
+                - 1
+            )
 
             # Find onsets of trials
             # N.B. Every 2.1 seconds an event was generated (15 times per trial, plus one 16th "leaking epoch")
             # N.B. This "leaking epoch" is not always present, so taking epoch[::16, :] won't work
             events = mne.find_events(raw, verbose=False)
-            cond = np.logical_or(np.diff(events[:, 0]) < 1.8 * raw.info["sfreq"],
-                                 np.diff(events[:, 0]) > 2.4 * raw.info["sfreq"])
+            cond = np.logical_or(
+                np.diff(events[:, 0]) < 1.8 * raw.info["sfreq"],
+                np.diff(events[:, 0]) > 2.4 * raw.info["sfreq"],
+            )
             idx = np.concatenate(([0], 1 + np.where(cond)[0]))
             onsets = events[idx, 0]
 
@@ -125,16 +165,29 @@ class Thielen2021(BaseDataset):
             stim_chan = np.zeros((1, len(raw)))
             for onset, label in zip(onsets, labels):
                 stim_chan[0, onset] = 200 + label
-            info = create_info(ch_names=["stim_trial"], ch_types=["stim"], sfreq=raw.info["sfreq"], verbose=False)
+            info = create_info(
+                ch_names=["stim_trial"],
+                ch_types=["stim"],
+                sfreq=raw.info["sfreq"],
+                verbose=False,
+            )
             raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
 
             # Create stim channel with epoch information (i.e., target / non-target)
             # N.B. 100 = non-target, 101 = target
             stim_chan = np.zeros((1, len(raw)))
             for onset, label in zip(onsets, labels):
-                idx = (onset + np.arange(codes.shape[0]) / PRESENTATION_RATE * raw.info["sfreq"]).astype("int")
+                idx = (
+                    onset
+                    + np.arange(codes.shape[0]) / PRESENTATION_RATE * raw.info["sfreq"]
+                ).astype("int")
                 stim_chan[0, idx] = 100 + codes[:, label]
-            info = create_info(ch_names=["stim_epoch"], ch_types=["stim"], sfreq=raw.info["sfreq"], verbose=False)
+            info = create_info(
+                ch_names=["stim_epoch"],
+                ch_types=["stim"],
+                sfreq=raw.info["sfreq"],
+                verbose=False,
+            )
             raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
 
             # Add data as a new run
@@ -143,7 +196,7 @@ class Thielen2021(BaseDataset):
         return sessions
 
     def data_path(
-            self, subject, path=None, force_update=False, update_path=None, verbose=None
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
