@@ -51,8 +51,8 @@ c-VEP Paradigms
     :toctree: generated/
     :template: class.rst
 
-    SinglePass
     CVEP
+    FilterBankCVEP
 
 
 --------------
