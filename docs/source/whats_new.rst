@@ -39,6 +39,11 @@ Enhancements
 - Systematically set the annotations when loading data, eventually using the stim channel (PR :gh:`408` by `Pierre Guetschel`_)
 - Allow :func:`moabb.datasets.utils.dataset_search` to search across paradigms ``paradigm=None`` (PR :gh:`408` by `Pierre Guetschel`_)
 - Improving the review processing with more pre-commit bots (:gh:`435` by `Bruno Aristimunha`_)
+- Update all dataset codes to remove white spaces and underscores (:gh:`448` by `Pierre Guetschel`_)
+- Add :func:`moabb.utils.depreciated_alias` decorator (:gh:`455` by `Pierre Guetschel`_)
+- Rename many dataset class names to standardize and deprecate old names (:gh:`455` by `Pierre Guetschel`_)
+- Change many dataset codes to match the class names (:gh:`455` by `Pierre Guetschel`_)
+- Add :obj:`moabb.datasets.compound_dataset.utils.compound_dataset_list`  (:gh:`455` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
@@ -59,6 +64,8 @@ Bugs
 - Fix :func:`moabb.benchmark` overwriting ``include_datasets`` list (:gh:`408` by `Pierre Guetschel`_)
 - Fix :func:`moabb.paradigms.base.BaseParadigm` using attributes before defining them  (PR :gh:`408`, issue :gh:`425` by `Pierre Guetschel`_)
 - Fix :func:`moabb.paradigms.FakeImageryParadigm`, :func:`moabb.paradigms.FakeP300Paradigm` and :func:`moabb.paradigms.FakeSSVEPParadigm` ``is_valid`` methods to only accept the correct datasets (PR :gh:`408` by `Pierre Guetschel`_)
+- Fix ``dataset_list`` construction, which could be empty due to bad import order (PR :gh:`449` by `Thomas Moreau`_).
+- Fixing dataset downloader from servers with non-http (PR :gh:`433` by `Sara Sedlar`_)
 
 API changes
 ~~~~~~~~~~~
@@ -368,3 +375,4 @@ API changes
 .. _Jan Sosulski: https://github.com/jsosulski
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Ludovic Darmet: https://github.com/ludovicdmt
+.. _Thomas Moreau: https://github.com/tommoral

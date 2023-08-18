@@ -25,7 +25,7 @@ class Sosulski2019(BaseDataset):
         =============  =======  =======  =================  ===============  ===============  ===========
         Name             #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
         =============  =======  =======  =================  ===============  ===============  ===========
-        Sosulski2019       13       31   75 NT / 15 T                        1000Hz                     3
+        Sosulski2019       13       31   75 NT / 15 T            1.2s        1000Hz                     3
         =============  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**
@@ -104,7 +104,7 @@ class Sosulski2019(BaseDataset):
         self.n_channels = 31
         self.use_soas_as_sessions = use_soas_as_sessions
         self.description_map = {"Stimulus/S 21": "Target", "Stimulus/S  1": "NonTarget"}
-        code = "Spot Pilot P300 dataset"
+        code = "Sosulski2019"
         interval = [-0.2, 1] if interval is None else interval
         super().__init__(
             subjects=list(range(1, 13 + 1)),

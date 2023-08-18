@@ -16,6 +16,7 @@ from scipy.io import loadmat
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.utils import block_rep
+from moabb.utils import depreciated_alias
 
 
 BI2012a_URL = "https://zenodo.org/record/2649069/files/"
@@ -34,24 +35,24 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
 
     for file_path in file_path_list:
         if ds.code in [
-            "Brain Invaders 2012",
-            "Brain Invaders 2014a",
-            "Brain Invaders 2014b",
-            "Brain Invaders 2015b",
+            "BrainInvaders2012",
+            "BrainInvaders2014a",
+            "BrainInvaders2014b",
+            "BrainInvaders2015b",
         ]:
             session_name = "session_1"
-        elif ds.code == "Brain Invaders 2013a":
+        elif ds.code == "BrainInvaders2013a":
             session_number = file_path.split(os.sep)[-2].replace("Session", "")
             session_name = "session_" + session_number
-        elif ds.code == "Brain Invaders 2015a":
+        elif ds.code == "BrainInvaders2015a":
             session_name = f'session_{file_path.split("_")[-1][1:2]}'
-        elif ds.code == "P300-VR":
+        elif ds.code == "Cattan2019-VR":
             session_name = file_path.split(".")[0].split("_")[-1]
 
         if session_name not in sessions.keys():
             sessions[session_name] = {}
 
-        if ds.code == "Brain Invaders 2012":
+        if ds.code == "BrainInvaders2012":
             condition = file_path.split("/")[-1].split(".")[0].split(os.sep)[-1]
             run_name = "run_" + condition
             # fmt: off
@@ -66,7 +67,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim = (X[18, :] + X[19, :])[None, :]
             X = np.concatenate([S, stim])
             sfreq = 128
-        elif ds.code == "Brain Invaders 2013a":
+        elif ds.code == "BrainInvaders2013a":
             run_number = file_path.split(os.sep)[-1]
             run_number = run_number.split("_")[-1]
             run_number = run_number.split(".mat")[0]
@@ -80,7 +81,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             chtypes = ["eeg"] * 16 + ["stim"]
             X = loadmat(file_path)["data"].T
             sfreq = 512
-        elif ds.code == "Brain Invaders 2014a":
+        elif ds.code == "BrainInvaders2014a":
             run_name = "run_1"
             # fmt: off
             chnames = [
@@ -95,7 +96,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim = D[-1, :]
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
-        elif ds.code == "Brain Invaders 2014b":
+        elif ds.code == "BrainInvaders2014b":
             # fmt: off
             chnames = [
                 'Fp1', 'Fp2', 'AFz', 'F7', 'F3', 'F4', 'F8', 'FC5', 'FC1', 'FC2',
@@ -114,7 +115,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim = D[-1, :]
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
-        elif ds.code == "Brain Invaders 2015a":
+        elif ds.code == "BrainInvaders2015a":
             run_name = "run_1"
             # fmt: off
             chnames = [
@@ -129,7 +130,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim = D[-2, :] + D[-1, :]
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
-        elif ds.code == "Brain Invaders 2015b":
+        elif ds.code == "BrainInvaders2015b":
             run_name = "run_" + file_path.split("_")[-1].split(".")[0][1]
             # fmt: off
             chnames = [
@@ -152,7 +153,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             stim[idx_nontarget] = 1
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
-        elif ds.code == "P300-VR":
+        elif ds.code == "Cattan2019-VR":
             data = loadmat(os.path.join(file_path, os.listdir(file_path)[0]))["data"]
 
             chnames = [
@@ -189,11 +190,11 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             verbose=False,
         )
 
-        if not ds.code == "P300-VR":
+        if not ds.code == "Cattan2019-VR":
             raw = mne.io.RawArray(data=X, info=info, verbose=False)
             raw.set_montage(make_standard_montage("standard_1020"))
 
-            if ds.code == "Brain Invaders 2012":
+            if ds.code == "BrainInvaders2012":
                 # get rid of the Fz channel (it is the ground)
                 raw.info["bads"] = ["Fz"]
                 raw.pick_types(eeg=True, stim=True)
@@ -230,7 +231,7 @@ def _bi_data_path(  # noqa: C901
         raise (ValueError("Invalid subject number"))
 
     subject_paths = []
-    if ds.code == "Brain Invaders 2012":
+    if ds.code == "BrainInvaders2012":
         # check if has the .zip
         url = f"{BI2012a_URL}subject_{subject:02}.zip"
         path_zip = dl.data_dl(url, "BRAININVADERS2012")
@@ -253,7 +254,7 @@ def _bi_data_path(  # noqa: C901
                 osp.join(f"{path_folder}subject_{subject:02}", "online.mat")
             )
 
-    elif ds.code == "Brain Invaders 2013a":
+    elif ds.code == "BrainInvaders2013a":
         if subject in [1, 2, 3, 4, 5, 6, 7]:
             zipname_list = [
                 f"subject{subject:02}_session{i:02}.zip" for i in range(1, 8 + 1)
@@ -305,7 +306,7 @@ def _bi_data_path(  # noqa: C901
                 osp.join(directory, "Session*", filename.replace(".gdf", ".mat"))
             )
 
-    elif ds.code == "Brain Invaders 2014a":
+    elif ds.code == "BrainInvaders2014a":
         url = f"{BI2014a_URL}subject_{subject:02}.zip"
         path_zip = dl.data_dl(url, "BRAININVADERS2014A")
         path_folder = path_zip.strip(f"subject_{subject:02}.zip")
@@ -320,7 +321,7 @@ def _bi_data_path(  # noqa: C901
         # filter the data regarding the experimental conditions
         subject_paths.append(osp.join(path_folder_subject, f"subject_{subject:02}.mat"))
 
-    elif ds.code == "Brain Invaders 2014b":
+    elif ds.code == "BrainInvaders2014b":
         group = (subject + 1) // 2
         url = f"{BI2014b_URL}group_{group:02}_mat.zip"
         path_zip = dl.data_dl(url, "BRAININVADERS2014B")
@@ -346,7 +347,7 @@ def _bi_data_path(  # noqa: C901
         # Collaborative session are not loaded
         # subject_paths.append(osp.join(path_folder_subject, f'group_{(subject+1)//2:02}.mat')
 
-    elif ds.code == "Brain Invaders 2015a":
+    elif ds.code == "BrainInvaders2015a":
         # TODO: possible fusion with 2014a?
         url = f"{BI2015a_URL}subject_{subject:02}_mat.zip"
         path_zip = dl.data_dl(url, "BRAININVADERS2015A")
@@ -367,13 +368,13 @@ def _bi_data_path(  # noqa: C901
                     path_folder_subject, f"subject_{subject:02}_session_{session:02}.mat"
                 )
             )
-    elif ds.code == "Brain Invaders 2015b":
+    elif ds.code == "BrainInvaders2015b":
         # TODO: possible fusion with 2014b?
-        url = f"{BI2015b_URL}group_{(subject+1)//2:02}_mat.zip"
+        url = f"{BI2015b_URL}group_{(subject + 1) // 2:02}_mat.zip"
         path_zip = dl.data_dl(url, "BRAININVADERS2015B")
-        path_folder = path_zip.strip(f"group_{(subject+1)//2:02}_mat.zip")
+        path_folder = path_zip.strip(f"group_{(subject + 1) // 2:02}_mat.zip")
         # check if has to unzip
-        path_folder_subject = f"{path_folder}group_{(subject+1)//2:02}"
+        path_folder_subject = f"{path_folder}group_{(subject + 1) // 2:02}"
         if not (osp.isdir(path_folder_subject)):
             os.mkdir(path_folder_subject)
             zip_ref = z.ZipFile(path_zip, "r")
@@ -383,12 +384,12 @@ def _bi_data_path(  # noqa: C901
         subject_paths = [
             osp.join(
                 path_folder,
-                f"group_{(subject+1)//2:02}",
-                f"group_{(subject+1)//2:02}_s{i}",
+                f"group_{(subject + 1) // 2:02}",
+                f"group_{(subject + 1) // 2:02}_s{i}",
             )
             for i in range(1, 5)
         ]
-    elif ds.code == "P300-VR":
+    elif ds.code == "Cattan2019-VR":
         subject_paths = []
         if ds.virtual_reality:
             url = "{:s}subject_{:02d}_{:s}.mat".format(VIRTUALREALITY_URL, subject, "VR")
@@ -402,14 +403,15 @@ def _bi_data_path(  # noqa: C901
     return subject_paths
 
 
-class bi2012(BaseDataset):
-    """P300 dataset bi2012 from a "Brain Invaders" experiment.
+@depreciated_alias("bi2012", "0.7")
+class BI2012(BaseDataset):
+    """P300 dataset BI2012 from a "Brain Invaders" experiment.
 
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         bi2013a           25      16     6140 NT / 128 T       1s              512Hz          2
+         BI2012           25      16      640 NT / 128 T       1s              128Hz          2
         ================ ======= ======= ================ =============== =============== ===========
 
     Dataset following the setup from [1]_ carried-out at University of
@@ -449,7 +451,7 @@ class bi2012(BaseDataset):
             subjects=list(range(1, 26)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="Brain Invaders 2012",
+            code="BrainInvaders2012",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2649006",
@@ -468,8 +470,9 @@ class bi2012(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-class bi2013a(BaseDataset):
-    """P300 dataset bi2013a from a "Brain Invaders" experiment.
+@depreciated_alias("bi2013a", "0.7")
+class BI2013a(BaseDataset):
+    """P300 dataset BI2013a from a "Brain Invaders" experiment.
 
     .. admonition:: Dataset summary
 
@@ -477,7 +480,7 @@ class bi2013a(BaseDataset):
         =======  =======  =======  =================  ===============  ===============  =================
         Name       #Subj    #Chan  #Trials / class    Trials length    Sampling rate    #Sessions
         =======  =======  =======  =================  ===============  ===============  =================
-        bi2013a       24       16  3200 NT / 640 T    1s               512Hz            (1-7)8 s|(8-24)1s
+        BI2013a       24       16  3200 NT / 640 T    1s               512Hz            (1-7)8 s|(8-24)1s
         =======  =======  =======  =================  ===============  ===============  =================
 
     Dataset following the setup from [1]_ carried-out at University of
@@ -549,7 +552,7 @@ class bi2013a(BaseDataset):
             subjects=list(range(1, 25)),
             sessions_per_subject=1,
             events=dict(Target=33285, NonTarget=33286),
-            code="Brain Invaders 2013a",
+            code="BrainInvaders2013a",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2669187",
@@ -570,14 +573,15 @@ class bi2013a(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-class bi2014a(BaseDataset):
-    """P300 dataset bi2014a from a "Brain Invaders" experiment.
+@depreciated_alias("bi2014a", "0.7")
+class BI2014a(BaseDataset):
+    """P300 dataset BI2014a from a "Brain Invaders" experiment.
 
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         bi2014a           64      16        5 NT x 1 T         1s              512Hz       up to 3
+         BI2014a           64      16        5 NT x 1 T         1s              512Hz       up to 3
         ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings of 71 subjects
@@ -586,7 +590,7 @@ class bi2014a(BaseDataset):
     that are flashed pseudo-randomly to elicit the P300 response. EEG data were recorded
     using 16 active dry electrodes with up to three game sessions. The experiment took place
     at GIPSA-lab, Grenoble, France, in 2014. A full description of the experiment is available
-    at [1]_. The ID of this dataset is bi2014a.
+    at [1]_. The ID of this dataset is BI2014a.
 
     :Investigators: Eng. Louis Korczowski, B. Sc. Ekaterina Ostaschenko
     :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
@@ -603,7 +607,7 @@ class bi2014a(BaseDataset):
 
     .. [1] Korczowski, L., Ostaschenko, E., Andreev, A., Cattan, G., Rodrigues, P. L. C.,
            Gautheret, V., & Congedo, M. (2019). Brain Invaders calibration-less P300-based
-           BCI using dry EEG electrodes Dataset (bi2014a).
+           BCI using dry EEG electrodes Dataset (BI2014a).
            https://hal.archives-ouvertes.fr/hal-02171575
     """
 
@@ -612,7 +616,7 @@ class bi2014a(BaseDataset):
             subjects=list(range(1, 65)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="Brain Invaders 2014a",
+            code="BrainInvaders2014a",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3266222",
@@ -628,14 +632,15 @@ class bi2014a(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-class bi2014b(BaseDataset):
-    """P300 dataset bi2014b from a "Brain Invaders" experiment.
+@depreciated_alias("bi2014b", "0.7")
+class BI2014b(BaseDataset):
+    """P300 dataset BI2014b from a "Brain Invaders" experiment.
 
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         bi2014b           37      32        5 NT x 1 T         1s              512Hz           3
+         BI2014b           38      32        5 NT x 1 T         1s              512Hz           3
         ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings of 38 subjects playing in
@@ -645,7 +650,7 @@ class bi2014b(BaseDataset):
     appearing about 300ms after stimulation onset. EEG data were recorded using 32 active wet
     electrodes per subjects (total: 64 electrodes) during three randomized conditions
     (Solo1, Solo2, Collaboration). The experiment took place at GIPSA-lab, Grenoble, France, in 2014.
-    A full description of the experiment is available at [1]_. The ID of this dataset is bi2014b.
+    A full description of the experiment is available at [1]_. The ID of this dataset is BI2014b.
 
     :Investigators: Eng. Louis Korczowski, B. Sc. Ekaterina Ostaschenko
     :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
@@ -662,16 +667,16 @@ class bi2014b(BaseDataset):
 
     .. [1] Korczowski, L., Ostaschenko, E., Andreev, A., Cattan, G., Rodrigues, P. L. C.,
            Gautheret, V., & Congedo, M. (2019). Brain Invaders Solo versus Collaboration:
-           Multi-User P300-Based Brain-Computer Interface Dataset (bi2014b).
+           Multi-User P300-Based Brain-Computer Interface Dataset (BI2014b).
            https://hal.archives-ouvertes.fr/hal-02173958
     """
 
     def __init__(self):
         super().__init__(
-            subjects=list(range(1, 38)),
+            subjects=list(range(1, 39)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="Brain Invaders 2014b",
+            code="BrainInvaders2014b",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3267301",
@@ -687,14 +692,15 @@ class bi2014b(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-class bi2015a(BaseDataset):
-    """P300 dataset bi2015a from a "Brain Invaders" experiment.
+@depreciated_alias("bi2015a", "0.7")
+class BI2015a(BaseDataset):
+    """P300 dataset BI2015a from a "Brain Invaders" experiment.
 
     .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         bi2015a           43      32        5 NT x 1 T         1s              512Hz           3
+         BI2015a           43      32        5 NT x 1 T         1s              512Hz           3
         ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings
@@ -705,7 +711,7 @@ class bi2015a(BaseDataset):
     32 active wet electrodes with three conditions: flash duration 50ms, 80ms
     or 110ms. The experiment took place at GIPSA-lab, Grenoble, France, in 2015.
     A full description of the experiment is available at [1]_. The ID of this
-    dataset is bi2015a.
+    dataset is BI2015a.
 
     :Investigators: Eng. Louis Korczowski, B. Sc. Martine Cederhout
     :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
@@ -722,7 +728,7 @@ class bi2015a(BaseDataset):
 
     .. [1] Korczowski, L., Cederhout, M., Andreev, A., Cattan, G., Rodrigues, P. L. C.,
            Gautheret, V., & Congedo, M. (2019). Brain Invaders calibration-less P300-based
-           BCI with modulation of flash duration Dataset (bi2015a)
+           BCI with modulation of flash duration Dataset (BI2015a)
            https://hal.archives-ouvertes.fr/hal-02172347
     """
 
@@ -731,7 +737,7 @@ class bi2015a(BaseDataset):
             subjects=list(range(1, 44)),
             sessions_per_subject=3,
             events=dict(Target=2, NonTarget=1),
-            code="Brain Invaders 2015a",
+            code="BrainInvaders2015a",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3266929",
@@ -747,14 +753,15 @@ class bi2015a(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-class bi2015b(BaseDataset):
-    """P300 dataset bi2015b from a "Brain Invaders" experiment.
+@depreciated_alias("bi2015b", "0.7")
+class BI2015b(BaseDataset):
+    """P300 dataset BI2015b from a "Brain Invaders" experiment.
 
        .. admonition:: Dataset summary
         ================ ======= ======= ================ =============== =============== ===========
          Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
         ================ ======= ======= ================ =============== =============== ===========
-         bi2015b           44      32        5 NT x 1 T         1s              512Hz           2
+         BI2015b           44      32        5 NT x 1 T         1s              512Hz           1
         ================ ======= ======= ================ =============== =============== ===========
 
     This dataset contains electroencephalographic (EEG) recordings
@@ -768,7 +775,7 @@ class bi2015b(BaseDataset):
     Competition 2-Targets). The experiment took place at GIPSA-lab, Grenoble,
     France, in 2015. A full description of the experiment is available at
     A full description of the experiment is available at [1]_. The ID of this
-    dataset is bi2015a.
+    dataset is BI2015a.
 
     :Investigators: Eng. Louis Korczowski, B. Sc. Martine Cederhout
     :Technical Support: Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
@@ -785,7 +792,7 @@ class bi2015b(BaseDataset):
 
     .. [1] Korczowski, L., Cederhout, M., Andreev, A., Cattan, G., Rodrigues, P. L. C.,
            Gautheret, V., & Congedo, M. (2019). Brain Invaders Cooperative versus Competitive:
-           Multi-User P300-based Brain-Computer Interface Dataset (bi2015b)
+           Multi-User P300-based Brain-Computer Interface Dataset (BI2015b)
            https://hal.archives-ouvertes.fr/hal-02172347
     """
 
@@ -794,7 +801,7 @@ class bi2015b(BaseDataset):
             subjects=list(range(1, 45)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="Brain Invaders 2015b",
+            code="BrainInvaders2015b",
             interval=[0, 1],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.3267307",
@@ -810,15 +817,16 @@ class bi2015b(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-class VirtualReality(BaseDataset):
+@depreciated_alias("VirtualReality", "0.7")
+class Cattan2019_VR(BaseDataset):
     """Dataset of an EEG-based BCI experiment in Virtual Reality using P300.
 
     .. admonition:: Dataset summary
-        ================ ======= ======= ================ =============== =============== ===========
-         Name             #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
-        ================ ======= ======= ================ =============== =============== ===========
-         VirtualReality   21      16      600 NT / 120 T   1s              512Hz           2
-        ================ ======= ======= ================ =============== =============== ===========
+        ============== ======= ======= ================ =============== =============== ===========
+         Name           #Subj   #Chan   #Trials/class    Trials length   Sampling Rate   #Sessions
+        ============== ======= ======= ================ =============== =============== ===========
+         Cattan2019_VR   21      16      600 NT / 120 T   1s              512Hz           2
+        ============== ======= ======= ================ =============== =============== ===========
 
     We describe the experimental procedures for a dataset that we have made publicly
     available at https://doi.org/10.5281/zenodo.2605204 in mat (Mathworks, Natick, USA)
@@ -863,7 +871,7 @@ class VirtualReality(BaseDataset):
             subjects=list(range(1, 21 + 1)),
             sessions_per_subject=1,
             events=dict(Target=2, NonTarget=1),
-            code="P300-VR",
+            code="Cattan2019-VR",  # before: "VR-P300"
             interval=[0, 1.0],
             paradigm="p300",
             doi="https://doi.org/10.5281/zenodo.2605204",
@@ -873,7 +881,7 @@ class VirtualReality(BaseDataset):
         self.personal_computer = screen_display
         if not self.virtual_reality and not self.personal_computer:
             warn(
-                "[P300-VR dataset] virtual_reality and screen display are False. No data will be downloaded, unless you change these parameters after initialization."
+                "[Cattan2019-VR dataset] virtual_reality and screen display are False. No data will be downloaded, unless you change these parameters after initialization."
             )
 
     def _get_single_subject_data(self, subject):
