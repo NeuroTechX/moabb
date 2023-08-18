@@ -109,13 +109,13 @@ class BaseMAMEM(BaseDataset):
             if fnamed[4] == "x":
                 continue
             session_name = "session_0"
-            if self.code == "MAMEM3-SSVEP":
+            if self.code == "MAMEM3":
                 repetition = len(fnamed) - 10
                 run_name = f"run_{(ord(fnamed[4]) - 97) * 2 + repetition}"
             else:
                 run_name = f"run_{ord(fnamed[4]) - 97}"
 
-            if self.code == "MAMEM3-SSVEP":
+            if self.code == "MAMEM3":
                 m = loadmat(fpath)
                 ch_names = [e[0] for e in m["info"][0, 0][9][0]]
                 sfreq = 128
@@ -126,7 +126,7 @@ class BaseMAMEM(BaseDataset):
                 ch_names = [f"E{i + 1}" for i in range(0, 256)]
                 ch_names.append("stim")
                 sfreq = 250
-                if self.code == "MAMEM2-SSVEP":
+                if self.code == "MAMEM2":
                     labels = m["labels"]
                 else:
                     labels = None
@@ -281,7 +281,7 @@ class MAMEM1(BaseMAMEM):
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=1,
             # 5 runs per sessions, except 3 for S001, S003, S008, 4 for S004
-            code="MAMEM1-SSVEP",
+            code="MAMEM1",
             doi="https://arxiv.org/abs/1602.00904",
             figshare_id=2068677,
         )
@@ -374,7 +374,7 @@ class MAMEM2(BaseMAMEM):
         super().__init__(
             events={"6.66": 1, "7.50": 2, "8.57": 3, "10.00": 4, "12.00": 5},
             sessions_per_subject=1,
-            code="MAMEM2-SSVEP",
+            code="MAMEM2",
             doi="https://arxiv.org/abs/1602.00904",
             figshare_id=3153409,
         )
@@ -482,7 +482,7 @@ class MAMEM3(BaseMAMEM):
                 "12.00": 33025,
             },
             sessions_per_subject=1,
-            code="MAMEM3-SSVEP",
+            code="MAMEM3",
             doi="https://arxiv.org/abs/1602.00904",
             figshare_id=3413851,
         )
