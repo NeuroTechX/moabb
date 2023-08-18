@@ -105,70 +105,17 @@ class BaseMotorImagery(BaseParadigm):
         return "accuracy"
 
 
-class BandPass(BaseMotorImagery):
-    """Filter Motor Imagery signals.
+class LeftRightImagery(BaseMotorImagery):
+    """Motor Imagery for left hand/right hand classification."""
 
-    Motor imagery paradigm with one bandpass filter (default 8 to 32 Hz) 
-    or with a filter bank.
-
-    Parameters
-    ----------
-    fmin: float (default 8)
-        cutoff frequency (Hz) for the high pass filter in single band pass filter
-
-    fmax: float (default 32)
-        cutoff frequency (Hz) for the low pass filter in single band pass filter
-
-    events: List of str | None (default None)
-        event to use for epoching. If None, default to all events defined in
-        the dataset.
-
-    tmin: float (default 0.0)
-        Start time (in second) of the epoch, relative to the dataset specific
-        task interval e.g. tmin = 1 would mean the epoch will start 1 second
-        after the beginning of the task as defined by the dataset.
-
-    tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the beginning of the
-        dataset specific task interval. tmax = 5 would mean the epoch will end
-        5 second after the beginning of the task as defined in the dataset. If
-        None, use the dataset value.
-
-    baseline: None | tuple of length 2
-            The time interval to consider as “baseline” when applying baseline
-            correction. If None, do not apply baseline correction.
-            If a tuple (a, b), the interval is between a and b (in seconds),
-            including the endpoints.
-            Correction is applied by computing the mean of the baseline period
-            and subtracting it from the data (see mne.Epochs)
-
-    channels: list of str | None (default None)
-        list of channel to select. If None, use all EEG channels available in
-        the dataset.
-
-    resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided.
-    """
-
-    def __init__(self, filter_type="single_pass", fmin=8, fmax=32, **kwargs):
-        if filter_type == "single_pass":
-            if "filters" in kwargs.keys():
-                raise (ValueError("MotorImagery does not take argument filters"))
-            super().__init__(filters=[[fmin, fmax]], **kwargs)
-        elif filter_type == "filter_bank":
-            super().__init__(**kwargs)
-
-
-class LeftRightImagery(BandPass):
-    """Motor Imagery for left hand/right hand classification.
-
-    Metric is 'roc_auc'
-    """
-
-    def __init__(self, **kwargs):
+    def __init__(self, fmin=8, fmax=32, **kwargs):
         if "events" in kwargs.keys():
             raise (ValueError("LeftRightImagery dont accept events"))
-        super().__init__(events=["left_hand", "right_hand"], **kwargs)
+        if "filters" in kwargs.keys():
+            raise (ValueError("LeftRightImagery does not take argument filters"))
+        super().__init__(
+            filters=[[fmin, fmax]], events=["left_hand", "right_hand"], **kwargs
+        )
 
     def used_events(self, dataset):
         return {ev: dataset.event_id[ev] for ev in self.events}
@@ -179,16 +126,21 @@ class LeftRightImagery(BandPass):
 
 
 class FilterBankLeftRightImagery(LeftRightImagery):
-    """Filter Bank Motor Imagery for left hand/right hand classification.
+    """Filter Bank Motor Imagery for left hand/right hand classification."""
 
-    Metric is 'roc_auc'
-    """
+    def __init__(
+        self,
+        filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
+        **kwargs,
+    ):
+        if "events" in kwargs.keys():
+            raise (ValueError("LeftRightImagery dont accept events"))
+        super(LeftRightImagery, self).__init__(
+            filters=filters, events=["left_hand", "right_hand"], **kwargs
+        )
 
-    def __init__(self, filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]), **kwargs):
-        super().__init__(filter_type="filter_bank", filters=filters, **kwargs)
 
-
-class MotorImagery(BandPass):
+class MotorImagery(BaseMotorImagery):
     """N-class motor imagery.
 
     Metric is 'roc-auc' if 2 classes and 'accuracy' if more
@@ -237,10 +189,11 @@ class MotorImagery(BandPass):
         If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, n_classes=None, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, fmin=8, fmax=32, n_classes=None, **kwargs):
+        if "filters" in kwargs.keys():
+            raise (ValueError("MotorImagery does not take argument filters"))
+        super().__init__(filters=[[fmin, fmax]], **kwargs)
         self.n_classes = n_classes
-
         if self.events is None:
             log.warning("Choosing from all possible events")
         elif self.n_classes is not None:
@@ -253,11 +206,11 @@ class MotorImagery(BandPass):
         elif self.n_classes is None and self.events is None:
             pass
         elif self.events is None:
-            if not len(dataset.event_id) >= self.n_classes:
+            if len(dataset.event_id) < self.n_classes:
                 ret = False
         else:
             overlap = len(set(self.events) & set(dataset.event_id.keys()))
-            if self.n_classes is not None and not overlap >= self.n_classes:
+            if self.n_classes is not None and overlap < self.n_classes:
                 ret = False
         return ret
 
@@ -303,13 +256,17 @@ class MotorImagery(BandPass):
         else:
             return "accuracy"
 
-class FilterBankMotorImagery(MotorImagery):
-    """Filter bank n-class motor imagery.
 
-    Metric is 'roc-auc' if 2 classes and 'accuracy' if more
-    """
-    def __init__(self, filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]), **kwargs):
-        super().__init__(filter_type="filter_bank", filters=filters, **kwargs)
+class FilterBankMotorImagery(MotorImagery):
+    """Filter bank n-class motor imagery."""
+
+    def __init__(
+        self,
+        filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
+        **kwargs,
+    ):
+        super(MotorImagery, self).__init__(filters=filters, **kwargs)
+
 
 class FakeImageryParadigm(LeftRightImagery):
     """Fake Imagery for left hand/right hand classification."""
