@@ -110,13 +110,12 @@ class Thielen2021(BaseDataset):
 
     """
 
-    def __init__(self, interval=None):
+    def __init__(self):
         super().__init__(
             subjects=list(range(1, 30 + 1)),
             sessions_per_subject=1,
             events={"1.0": 101, "0.0": 100},
             code="Thielen2021",
-            interval=[0, 0.3] if interval is None else interval,
             paradigm="cvep",
             doi="10.34973/9txv-z787",
         )
