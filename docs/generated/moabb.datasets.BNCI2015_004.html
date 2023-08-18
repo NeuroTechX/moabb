@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>moabb.datasets.BNCI2014009 &#8212; moabb 0.5.0 documentation</title>
+    <title>moabb.datasets.BNCI2015_004 &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.BNCI2014009';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.BNCI2015_004';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.BNCI2015003" href="moabb.datasets.BNCI2015003.html" />
-    <link rel="prev" title="moabb.datasets.BNCI2014008" href="moabb.datasets.BNCI2014008.html" />
+    <link rel="next" title="moabb.datasets.Cho2017" href="moabb.datasets.Cho2017.html" />
+    <link rel="prev" title="moabb.datasets.BNCI2015_001" href="moabb.datasets.BNCI2015_001.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -410,7 +410,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.BNCI2014009</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.BNCI2015_004</li>
   </ul>
 </nav>
 </div>
@@ -427,89 +427,69 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-bnci2014009">
-<h1>moabb.datasets.BNCI2014009<a class="headerlink" href="#moabb-datasets-bnci2014009" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-datasets-bnci2015-004">
+<h1>moabb.datasets.BNCI2015_004<a class="headerlink" href="#moabb-datasets-bnci2015-004" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.BNCI2014009">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BNCI2014009</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci.py#L1026-L1084"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BNCI2014009" title="Permalink to this definition">#</a></dt>
-<dd><p>BNCI 2014-009 P300 dataset.</p>
+<dt class="sig sig-object py" id="moabb.datasets.BNCI2015_004">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BNCI2015_004</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci.py#L1192-L1263"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BNCI2015_004" title="Permalink to this definition">#</a></dt>
+<dd><p>BNCI 2015-004 Motor Imagery dataset.</p>
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>#Subj</p></th>
-<th class="head"><p>#Chan</p></th>
-<th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trials length</p></th>
-<th class="head"><p>Sampling rate</p></th>
-<th class="head"><p>#Sessions</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>BNCI2014009</p></td>
-<td><p>10</p></td>
-<td><p>16</p></td>
-<td><p>1440 NT / 288 T</p></td>
-<td><p>0.8s</p></td>
-<td><p>256Hz</p></td>
-<td><p>3</p></td>
-</tr>
-</tbody>
-</table>
 </div>
-<p>Dataset from <a class="reference internal" href="#r56dabb502234-1" id="id1">[1]</a>.</p>
+<p>Dataset from <a class="reference internal" href="#r92adba70080b-1" id="id1">[1]</a>.</p>
 <p><strong>Dataset description</strong></p>
-<p>This dataset presents a complete record of P300 evoked potentials
-using two different paradigms: a paradigm based on the P300 Speller in
-overt attention condition and a paradigm based used in convert attention
-condition. In these sessions, 10 healthy subjects focused on one out of 36
-different characters. The objective was to predict the correct character
-in each of the provided character selection epochs.
-(Note: right now only the overt attention data is available via MOABB)</p>
-<p>In the first interface, cues are organized in a 6×6 matrix and each
-character is always visible on the screen and spatially separated from the
-others. By design, no fixation cue is provided, as the subject is expected
-to gaze at the target character. Stimulation consists in the
-intensification of whole lines (rows or columns) of six characters.</p>
-<p>Ten healthy subjects (10 female, mean age = 26.8 ± 5.6, table I) with
-previous experience with P300-based BCIs attended 3 recording sessions.
-Scalp EEG potentials were measured using 16 Ag/AgCl electrodes that
-covered the left, right and central scalp (Fz, FCz, Cz, CPz, Pz, Oz, F3,
-F4, C3, C4, CP3, CP4, P3, P4, PO7, PO8) per the 10-10 standard. Each
-electrode was referenced to the linked earlobes and grounded to the
-right mastoid. The EEG was acquired at 256 Hz, high pass- and low
-pass-filtered with cutoff frequencies of 0.1 Hz and 20 Hz, respectively.
-Each subject attended 4 recording sessions. During each session,
-the subject performed three runs with each of the stimulation interfaces.</p>
+<p>We provide EEG data recorded from nine users with disability (spinal cord
+injury and stroke) on two different days (sessions).  Users performed,
+follow- ing a cue-guided experimental paradigm, five distinct mental tasks
+(MT).  MTs include mental word association (condition WORD), mental
+subtraction (SUB), spatial navigation (NAV), right hand motor imagery
+(HAND) and
+feet motor imagery (FEET). Details on the experimental paradigm are
+summarized in Figure 1.  The session for a single subject consisted of 8
+runs resulting in 40 trials of each class for each day.  One single
+experimental run consisted of 25 cues, with 5 of each mental task.  Cues
+were presented in random order.</p>
+<p>EEG was recorded from 30 electrode channels placed on the scalp according
+to the international 10-20 system.  Electrode positions included channels
+AFz, F7, F3, Fz, F4, F8, FC3, FCz, FC4, T3, C3, Cz, C4, T4, CP3, CPz,CP4,
+P7, P5, P3, P1, Pz, P2, P4, P6, P8, PO3, PO4, O1, and O2.  Reference and
+ground were placed at the left and right mastoid, respectively.  The g.tec
+GAMMAsys system with g.LADYbird active electrodes and two g.USBamp
+biosignal
+amplifiers (Guger Technolgies, Graz, Austria) was used for recording.  EEG
+was band pass filtered 0.5-100 Hz (notch filter at 50 Hz) and sampled at a
+rate of 256 Hz.</p>
+<p>The duration of a single imagery trials is 10 s.  At t = 0 s, a cross was
+presented in the middle of the screen.  Participants were asked to relax
+and
+fixate the cross to avoid eye movements.  At t = 3 s, a beep was sounded to
+get the participant’s attention.  The cue indicating the requested imagery
+task, one out of five graphical symbols, was presented from t = 3 s to t =
+4.25 s.  At t = 10 s, a second beep was sounded and the fixation-cross
+disappeared, which indicated the end of the trial.  A variable break
+(inter-trial-interval, ITI) lasting between 2.5 s and 3.5 s occurred
+before
+the start of the next trial.  Participants were asked to avoid movements
+during the imagery period, and to move and blink during the
+ITI. Experimental runs began and ended with a blank screen (duration 4 s)</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
-<div class="citation" id="r56dabb502234-1" role="doc-biblioentry">
+<div class="citation" id="r92adba70080b-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>P Aricò, F Aloise, F Schettini, S Salinari, D Mattia and F Cincotti
-(2013). Influence of P300 latency jitter on event related potential-
-based brain–computer interface performance. Journal of Neural
-Engineering, vol. 11, number 3.</p>
+<p>Scherer R, Faller J, Friedrich EVC, Opisso E, Costa U, Kübler A, et
+al. (2015) Individually Adapted Imagery Improves Brain-Computer
+Interface Performance in End-Users with Disability. PLoS ONE 10(5).
+<a class="reference external" href="https://doi.org/10.1371/journal.pone.0123727">https://doi.org/10.1371/journal.pone.0123727</a></p>
 </div>
+</div>
+<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">BNCI2015_004</span></code> was previously named <code class="docutils literal notranslate"><span class="pre">BNCI2015004</span></code>. <code class="docutils literal notranslate"><span class="pre">BNCI2015004</span></code> will be removed in  version 0.7.</p>
 </div>
 </dd></dl>
 
-<section id="examples-using-moabb-datasets-bnci2014009">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.BNCI2014009</span></code><a class="headerlink" href="#examples-using-moabb-datasets-bnci2014009" title="Permalink to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis on three different P300 datasets."><img alt="Within Session P300" src="../_images/sphx_glr_plot_within_session_p300_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/plot_within_session_p300.html#sphx-glr-auto-examples-plot-within-session-p300-py"><span class="std std-ref">Within Session P300</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Within Session P300</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use machine learning pipeline based on MNE Epochs instead of Numpy ar..."><img alt="MNE Epochs-based pipelines" src="../_images/sphx_glr_plot_mne_and_scikit_estimators_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/advanced_examples/plot_mne_and_scikit_estimators.html#sphx-glr-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py"><span class="std std-ref">MNE Epochs-based pipelines</span></a></p>
-  <div class="sphx-glr-thumbnail-title">MNE Epochs-based pipelines</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves..."><img alt="Within Session P300 with Learning Curve" src="../_images/sphx_glr_plot_learning_curve_p300_external_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/external/plot_learning_curve_p300_external.html#sphx-glr-auto-examples-external-plot-learning-curve-p300-external-py"><span class="std std-ref">Within Session P300 with Learning Curve</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Within Session P300 with Learning Curve</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves..."><img alt="Within Session P300 with Learning Curve" src="../_images/sphx_glr_plot_learning_curve_p300_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/learning_curve/plot_learning_curve_p300.html#sphx-glr-auto-examples-learning-curve-plot-learning-curve-p300-py"><span class="std std-ref">Within Session P300 with Learning Curve</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Within Session P300 with Learning Curve</div>
-</div></div><div style='clear:both'></div></section>
-</section>
+<div style='clear:both'></div></section>
 
 
                 </article>
@@ -523,20 +503,20 @@ Engineering, vol. 11, number 3.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.BNCI2014008.html"
+       href="moabb.datasets.BNCI2015_001.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.BNCI2014008</p>
+        <p class="prev-next-title">moabb.datasets.BNCI2015_001</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.BNCI2015003.html"
+       href="moabb.datasets.Cho2017.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.BNCI2015003</p>
+        <p class="prev-next-title">moabb.datasets.Cho2017</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -558,8 +538,7 @@ Engineering, vol. 11, number 3.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.BNCI2014009"><code class="docutils literal notranslate"><span class="pre">BNCI2014009</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-moabb-datasets-bnci2014009">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.BNCI2014009</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.BNCI2015_004"><code class="docutils literal notranslate"><span class="pre">BNCI2015_004</span></code></a></li>
 </ul>
   </nav></div>
 

@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>moabb.datasets.BNCI2014008 &#8212; moabb 0.5.0 documentation</title>
+    <title>moabb.datasets.compound_dataset.BI2015a_Il &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.BNCI2014008';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.compound_dataset.BI2015a_Il';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.BNCI2014009" href="moabb.datasets.BNCI2014009.html" />
-    <link rel="prev" title="moabb.datasets.VirtualReality" href="moabb.datasets.VirtualReality.html" />
+    <link rel="next" title="moabb.datasets.compound_dataset.BI2015b_Il" href="moabb.datasets.compound_dataset.BI2015b_Il.html" />
+    <link rel="prev" title="moabb.datasets.compound_dataset.BI2014b_Il" href="moabb.datasets.compound_dataset.BI2014b_Il.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -410,7 +410,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.BNCI2014008</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.compound_dataset.BI2015a_Il</li>
   </ul>
 </nav>
 </div>
@@ -427,81 +427,17 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-bnci2014008">
-<h1>moabb.datasets.BNCI2014008<a class="headerlink" href="#moabb-datasets-bnci2014008" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-datasets-compound-dataset-bi2015a-il">
+<h1>moabb.datasets.compound_dataset.BI2015a_Il<a class="headerlink" href="#moabb-datasets-compound-dataset-bi2015a-il" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.BNCI2014008">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BNCI2014008</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci.py#L956-L1023"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BNCI2014008" title="Permalink to this definition">#</a></dt>
-<dd><p>BNCI 2014-008 P300 dataset.</p>
-<div class="admonition-dataset-summary admonition">
-<p class="admonition-title">Dataset summary</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>#Subj</p></th>
-<th class="head"><p>#Chan</p></th>
-<th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trials length</p></th>
-<th class="head"><p>Sampling rate</p></th>
-<th class="head"><p>#Sessions</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>BNCI2014008</p></td>
-<td><p>8</p></td>
-<td><p>8</p></td>
-<td><p>3500 NT / 700 T</p></td>
-<td><p>1s</p></td>
-<td><p>256Hz</p></td>
-<td><p>1</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>Dataset from <a class="reference internal" href="#r055f37313c40-1" id="id1">[1]</a>.</p>
-<p><strong>Dataset description</strong></p>
-<p>This dataset represents a complete record of P300 evoked potentials
-using a paradigm originally described by Farwell and Donchin <a class="reference internal" href="#r055f37313c40-2" id="id2">[2]</a>.
-In these sessions, 8 users with amyotrophic lateral sclerosis (ALSO)
-focused on one out of 36 different characters. The objective in this
-contest is to predict the correct character in each of the provided
-character selection epochs.</p>
-<p>We included in the study a total of eight volunteers, all naïve to BCI
-training. Scalp EEG signals were recorded (g.MOBILAB, g.tec, Austria)
-from eight channels according to 10–10 standard (Fz, Cz, Pz, Oz, P3, P4,
-PO7 and PO8) using active electrodes (g.Ladybird, g.tec, Austria).
-All channels were referenced to the right earlobe and grounded to the left
-mastoid. The EEG signal was digitized at 256 Hz and band-pass filtered
-between 0.1 and 30 Hz.</p>
-<p>Participants were required to copy spell seven predefined words of five
-characters each (runs), by controlling a P300 matrix speller. Rows and
-columns on the interface were randomly intensified for 125ms, with an
-inter stimulus interval (ISI) of 125ms, yielding a 250 ms lag between the
-appearance of two stimuli (stimulus onset asynchrony, SOA).</p>
-<p>In the first three runs (15 trials in total) EEG data was stored to
-perform a calibration of the BCI classifier. Thus no feedback was provided
-to the participant up to this point. A stepwise linear discriminant
-analysis (SWLDA) was applied to the data from the three calibration runs
-(i.e., runs 1–3) to determine the classifier weights (i.e., classifier
-coefficients). These weights were then applied during the subsequent four
-testing runs (i.e., runs 4–7) when participants were provided with
-feedback.</p>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="r055f37313c40-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>A. Riccio, L. Simione, F. Schettini, A. Pizzimenti, M. Inghilleri,
-M. O. Belardinelli, D. Mattia, and F. Cincotti (2013). Attention
-and P300-based BCI performance in people with amyotrophic lateral
-sclerosis. Front. Hum. Neurosci., vol. 7:, pag. 732.</p>
-</div>
-<div class="citation" id="r055f37313c40-2" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
-<p>L. A. Farwell and E. Donchin, Talking off the top of your head:
-toward a mental prosthesis utilizing eventrelated
-brain potentials, Electroencephalogr. Clin. Neurophysiol.,
-vol. 70, n. 6, pagg. 510–523, 1988.</p>
-</div>
+<dt class="sig sig-object py" id="moabb.datasets.compound_dataset.BI2015a_Il">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.compound_dataset.</span></span><span class="sig-name descname"><span class="pre">BI2015a_Il</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/compound_dataset/bi_illiteracy.py#L77-L89"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.compound_dataset.BI2015a_Il" title="Permalink to this definition">#</a></dt>
+<dd><p>A selection of subject from BI2015a with AUC &lt; 0.7 with pipeline:
+ERPCovariances(estimator=”lwf”), MDM(metric=”riemann”)</p>
+<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">BI2015a_Il</span></code> was previously named <code class="docutils literal notranslate"><span class="pre">bi2015a_il</span></code>. <code class="docutils literal notranslate"><span class="pre">bi2015a_il</span></code> will be removed in  version 0.7.</p>
 </div>
 </dd></dl>
 
@@ -519,20 +455,20 @@ vol. 70, n. 6, pagg. 510–523, 1988.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.VirtualReality.html"
+       href="moabb.datasets.compound_dataset.BI2014b_Il.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.VirtualReality</p>
+        <p class="prev-next-title">moabb.datasets.compound_dataset.BI2014b_Il</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.BNCI2014009.html"
+       href="moabb.datasets.compound_dataset.BI2015b_Il.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.BNCI2014009</p>
+        <p class="prev-next-title">moabb.datasets.compound_dataset.BI2015b_Il</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -554,7 +490,7 @@ vol. 70, n. 6, pagg. 510–523, 1988.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.BNCI2014008"><code class="docutils literal notranslate"><span class="pre">BNCI2014008</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.compound_dataset.BI2015a_Il"><code class="docutils literal notranslate"><span class="pre">BI2015a_Il</span></code></a></li>
 </ul>
   </nav></div>
 

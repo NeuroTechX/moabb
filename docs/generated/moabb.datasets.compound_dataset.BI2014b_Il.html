@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>moabb.datasets.BNCI2014004 &#8212; moabb 0.5.0 documentation</title>
+    <title>moabb.datasets.compound_dataset.BI2014b_Il &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.BNCI2014004';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.compound_dataset.BI2014b_Il';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.BNCI2015001" href="moabb.datasets.BNCI2015001.html" />
-    <link rel="prev" title="moabb.datasets.BNCI2014002" href="moabb.datasets.BNCI2014002.html" />
+    <link rel="next" title="moabb.datasets.compound_dataset.BI2015a_Il" href="moabb.datasets.compound_dataset.BI2015a_Il.html" />
+    <link rel="prev" title="moabb.datasets.compound_dataset.BI2014a_Il" href="moabb.datasets.compound_dataset.BI2014a_Il.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -410,7 +410,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.BNCI2014004</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.compound_dataset.BI2014b_Il</li>
   </ul>
 </nav>
 </div>
@@ -427,76 +427,21 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-bnci2014004">
-<h1>moabb.datasets.BNCI2014004<a class="headerlink" href="#moabb-datasets-bnci2014004" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-datasets-compound-dataset-bi2014b-il">
+<h1>moabb.datasets.compound_dataset.BI2014b_Il<a class="headerlink" href="#moabb-datasets-compound-dataset-bi2014b-il" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.BNCI2014004">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BNCI2014004</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci.py#L874-L953"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BNCI2014004" title="Permalink to this definition">#</a></dt>
-<dd><p>BNCI 2014-004 Motor Imagery dataset.</p>
-<div class="admonition-dataset-summary admonition">
-<p class="admonition-title">Dataset summary</p>
-</div>
-<p>Dataset B from BCI Competition 2008.</p>
-<p><strong>Dataset description</strong></p>
-<p>This data set consists of EEG data from 9 subjects of a study published in
-<a class="reference internal" href="#r8331bf2312da-1" id="id1">[1]</a>. The subjects were right-handed, had normal or corrected-to-normal
-vision and were paid for participating in the experiments.
-All volunteers were sitting in an armchair, watching a flat screen monitor
-placed approximately 1 m away at eye level. For each subject 5 sessions
-are provided, whereby the first two sessions contain training data without
-feedback (screening), and the last three sessions were recorded with
-feedback.</p>
-<p>Three bipolar recordings (C3, Cz, and C4) were recorded with a sampling
-frequency of 250 Hz.They were bandpass- filtered between 0.5 Hz and 100 Hz,
-and a notch filter at 50 Hz was enabled.  The placement of the three
-bipolar recordings (large or small distances, more anterior or posterior)
-were slightly different for each subject (for more details see [1]).
-The electrode position Fz served as EEG ground. In addition to the EEG
-channels, the electrooculogram (EOG) was recorded with three monopolar
-electrodes.</p>
-<p>The cue-based screening paradigm consisted of two classes,
-namely the motor imagery (MI) of left hand (class 1) and right hand
-(class 2).
-Each subject participated in two screening sessions without feedback
-recorded on two different days within two weeks.
-Each session consisted of six runs with ten trials each and two classes of
-imagery.  This resulted in 20 trials per run and 120 trials per session.
-Data of 120 repetitions of each MI class were available for each person in
-total.  Prior to the first motor im- agery training the subject executed
-and imagined different movements for each body part and selected the one
-which they could imagine best (e. g., squeezing a ball or pulling a brake).</p>
-<p>Each trial started with a fixation cross and an additional short acoustic
-warning tone (1 kHz, 70 ms).  Some seconds later a visual cue was presented
-for 1.25 seconds.  Afterwards the subjects had to imagine the corresponding
-hand movement over a period of 4 seconds.  Each trial was followed by a
-short break of at least 1.5 seconds.  A randomized time of up to 1 second
-was added to the break to avoid adaptation</p>
-<p>For the three online feedback sessions four runs with smiley feedback
-were recorded, whereby each run consisted of twenty trials for each type of
-motor imagery.  At the beginning of each trial (second 0) the feedback (a
-gray smiley) was centered on the screen.  At second 2, a short warning beep
-(1 kHz, 70 ms) was given. The cue was presented from second 3 to 7.5. At
-second 7.5 the screen went blank and a random interval between 1.0 and 2.0
-seconds was added to the trial.</p>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="r8331bf2312da-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>R. Leeb, F. Lee, C. Keinrath, R. Scherer, H. Bischof,
-G. Pfurtscheller. Brain-computer communication: motivation, aim,
-and impact of exploring a virtual apartment. IEEE Transactions on
-Neural Systems and Rehabilitation Engineering 15, 473–482, 2007</p>
-</div>
+<dt class="sig sig-object py" id="moabb.datasets.compound_dataset.BI2014b_Il">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.compound_dataset.</span></span><span class="sig-name descname"><span class="pre">BI2014b_Il</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/compound_dataset/bi_illiteracy.py#L53-L74"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.compound_dataset.BI2014b_Il" title="Permalink to this definition">#</a></dt>
+<dd><p>A selection of subject from BI2014b with AUC &lt; 0.7 with pipeline:
+ERPCovariances(estimator=”lwf”), MDM(metric=”riemann”)</p>
+<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">BI2014b_Il</span></code> was previously named <code class="docutils literal notranslate"><span class="pre">bi2014b_il</span></code>. <code class="docutils literal notranslate"><span class="pre">bi2014b_il</span></code> will be removed in  version 0.7.</p>
 </div>
 </dd></dl>
 
-<section id="examples-using-moabb-datasets-bnci2014004">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.BNCI2014004</span></code><a class="headerlink" href="#examples-using-moabb-datasets-bnci2014004" title="Permalink to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures"><img alt="Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures" src="../_images/sphx_glr_plot_benchmark_braindecode_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/plot_benchmark_braindecode.html#sphx-glr-auto-examples-plot-benchmark-braindecode-py"><span class="std std-ref">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</div>
-</div></div><div style='clear:both'></div></section>
-</section>
+<div style='clear:both'></div></section>
 
 
                 </article>
@@ -510,20 +455,20 @@ Neural Systems and Rehabilitation Engineering 15, 473–482, 2007</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.BNCI2014002.html"
+       href="moabb.datasets.compound_dataset.BI2014a_Il.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.BNCI2014002</p>
+        <p class="prev-next-title">moabb.datasets.compound_dataset.BI2014a_Il</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.BNCI2015001.html"
+       href="moabb.datasets.compound_dataset.BI2015a_Il.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.BNCI2015001</p>
+        <p class="prev-next-title">moabb.datasets.compound_dataset.BI2015a_Il</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -545,8 +490,7 @@ Neural Systems and Rehabilitation Engineering 15, 473–482, 2007</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.BNCI2014004"><code class="docutils literal notranslate"><span class="pre">BNCI2014004</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-moabb-datasets-bnci2014004">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.BNCI2014004</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.compound_dataset.BI2014b_Il"><code class="docutils literal notranslate"><span class="pre">BI2014b_Il</span></code></a></li>
 </ul>
   </nav></div>
 

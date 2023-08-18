@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>moabb.datasets.compound_dataset.bi2015b_il &#8212; moabb 0.5.0 documentation</title>
+    <title>moabb.datasets.BNCI2015_001 &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.compound_dataset.bi2015b_il';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.BNCI2015_001';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.compound_dataset.VirtualReality_il" href="moabb.datasets.compound_dataset.VirtualReality_il.html" />
-    <link rel="prev" title="moabb.datasets.compound_dataset.bi2015a_il" href="moabb.datasets.compound_dataset.bi2015a_il.html" />
+    <link rel="next" title="moabb.datasets.BNCI2015_004" href="moabb.datasets.BNCI2015_004.html" />
+    <link rel="prev" title="moabb.datasets.BNCI2014_004" href="moabb.datasets.BNCI2014_004.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -410,7 +410,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.compound_dataset.bi2015b_il</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.BNCI2015_001</li>
   </ul>
 </nav>
 </div>
@@ -427,13 +427,48 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-compound-dataset-bi2015b-il">
-<h1>moabb.datasets.compound_dataset.bi2015b_il<a class="headerlink" href="#moabb-datasets-compound-dataset-bi2015b-il" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-datasets-bnci2015-001">
+<h1>moabb.datasets.BNCI2015_001<a class="headerlink" href="#moabb-datasets-bnci2015-001" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.compound_dataset.bi2015b_il">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.compound_dataset.</span></span><span class="sig-name descname"><span class="pre">bi2015b_il</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/compound_dataset/bi_illiteracy.py#L84-L118"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.compound_dataset.bi2015b_il" title="Permalink to this definition">#</a></dt>
-<dd><p>A selection of subject from bi2015b with AUC &lt; 0.7 with pipeline:
-ERPCovariances(estimator=”lwf”), MDM(metric=”riemann”)</p>
+<dt class="sig sig-object py" id="moabb.datasets.BNCI2015_001">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BNCI2015_001</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci.py#L1093-L1146"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BNCI2015_001" title="Permalink to this definition">#</a></dt>
+<dd><p>BNCI 2015-001 Motor Imagery dataset.</p>
+<div class="admonition-dataset-summary admonition">
+<p class="admonition-title">Dataset summary</p>
+</div>
+<p>Dataset from <a class="reference internal" href="#r0887fbcc8a8f-1" id="id1">[1]</a>.</p>
+<p><strong>Dataset description</strong></p>
+<p>We acquired the EEG from three Laplacian derivations, 3.5 cm (center-to-
+center) around the electrode positions (according to International 10-20
+System of Electrode Placement) C3 (FC3, C5, CP3 and C1), Cz (FCz, C1, CPz
+and C2) and C4 (FC4, C2, CP4 and C6).  The acquisition hardware was a
+g.GAMMAsys active electrode system along with a g.USBamp amplifier (g.tec,
+Guger Tech- nologies OEG, Graz, Austria).  The system sampled at 512 Hz,
+with a bandpass filter between 0.5 and 100 Hz and a notch filter at 50 Hz.
+The order of the channels in the data is FC3, FCz, FC4, C5, C3, C1, Cz, C2,
+C4, C6, CP3, CPz, CP4.</p>
+<p>The task for the user was to perform sustained right hand versus both feet
+movement imagery starting from the cue (second 3) to the end of the cross
+period (sec- and 8).  A trial started with 3 s of reference period,
+followed by a brisk audible cue and a visual cue (arrow right for right
+hand, arrow down for both feet) from second 3 to 4.25.
+The activity period, where the users received feedback, lasted from
+second 4 to 8. There was a random 2 to 3 s pause between the trials.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r0887fbcc8a8f-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>J. Faller, C. Vidaurre, T. Solis-Escalante, C. Neuper and R.
+Scherer (2012). Autocalibration and recurrent adaptation: Towards a
+plug and play online ERD- BCI.  IEEE Transactions on Neural Systems
+and Rehabilitation Engineering, 20(3), 313-319.</p>
+</div>
+</div>
+<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">BNCI2015_001</span></code> was previously named <code class="docutils literal notranslate"><span class="pre">BNCI2015001</span></code>. <code class="docutils literal notranslate"><span class="pre">BNCI2015001</span></code> will be removed in  version 0.7.</p>
+</div>
 </dd></dl>
 
 <div style='clear:both'></div></section>
@@ -450,20 +485,20 @@ ERPCovariances(estimator=”lwf”), MDM(metric=”riemann”)</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.compound_dataset.bi2015a_il.html"
+       href="moabb.datasets.BNCI2014_004.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.compound_dataset.bi2015a_il</p>
+        <p class="prev-next-title">moabb.datasets.BNCI2014_004</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.compound_dataset.VirtualReality_il.html"
+       href="moabb.datasets.BNCI2015_004.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.compound_dataset.VirtualReality_il</p>
+        <p class="prev-next-title">moabb.datasets.BNCI2015_004</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -485,7 +520,7 @@ ERPCovariances(estimator=”lwf”), MDM(metric=”riemann”)</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.compound_dataset.bi2015b_il"><code class="docutils literal notranslate"><span class="pre">bi2015b_il</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.BNCI2015_001"><code class="docutils literal notranslate"><span class="pre">BNCI2015_001</span></code></a></li>
 </ul>
   </nav></div>
 

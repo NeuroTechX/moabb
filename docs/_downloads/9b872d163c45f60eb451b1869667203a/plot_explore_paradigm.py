@@ -26,7 +26,7 @@ This tutorial explores the paradigm object, with 3 examples of paradigm :
 
 import numpy as np
 
-from moabb.datasets import BNCI2014001
+from moabb.datasets import BNCI2014_001
 from moabb.paradigms import FilterBankMotorImagery, LeftRightImagery, MotorImagery
 
 
@@ -50,14 +50,14 @@ print(paradigm.__doc__)
 print(paradigm.get_data.__doc__)
 
 ###############################################################################
-# Lets take the example of the BNCI2014001 dataset, known as the dataset IIa
+# Lets take the example of the BNCI2014_001 dataset, known as the dataset IIa
 # from the BCI competition IV. We will load the data from the subject 1.
 # When calling `get_data`, the paradigm will retrieve the data from the
 # specified list of subjects, apply preprocessing (by default, a bandpass
 # between 7 and 35 Hz), epoch the data (with interval specified by the dataset,
 # unless superseded by the paradigm) and return the corresponding objects.
 
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 subjects = [1]
 
 X, y, metadata = paradigm.get_data(dataset=dataset, subjects=subjects)

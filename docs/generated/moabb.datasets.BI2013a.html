@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>moabb.datasets.SSVEPExo &#8212; moabb 0.5.0 documentation</title>
+    <title>moabb.datasets.BI2013a &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.SSVEPExo';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.BI2013a';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.Nakanishi2015" href="moabb.datasets.Nakanishi2015.html" />
-    <link rel="prev" title="moabb.datasets.Sosulski2019" href="moabb.datasets.Sosulski2019.html" />
+    <link rel="next" title="moabb.datasets.BI2014a" href="moabb.datasets.BI2014a.html" />
+    <link rel="prev" title="moabb.datasets.BI2012" href="moabb.datasets.BI2012.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -410,7 +410,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.SSVEPExo</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.BI2013a</li>
   </ul>
 </nav>
 </div>
@@ -427,12 +427,12 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-ssvepexo">
-<h1>moabb.datasets.SSVEPExo<a class="headerlink" href="#moabb-datasets-ssvepexo" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-datasets-bi2013a">
+<h1>moabb.datasets.BI2013a<a class="headerlink" href="#moabb-datasets-bi2013a" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.SSVEPExo">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">SSVEPExo</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_exo.py#L12-L94"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.SSVEPExo" title="Permalink to this definition">#</a></dt>
-<dd><p>SSVEP Exo dataset.</p>
+<dt class="sig sig-object py" id="moabb.datasets.BI2013a">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BI2013a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">NonAdaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Online</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L473-L573"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BI2013a" title="Permalink to this definition">#</a></dt>
+<dd><p>P300 dataset BI2013a from a “Brain Invaders” experiment.</p>
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <table class="table">
@@ -440,7 +440,6 @@ document.write(`
 <tr class="row-odd"><th class="head"><p>Name</p></th>
 <th class="head"><p>#Subj</p></th>
 <th class="head"><p>#Chan</p></th>
-<th class="head"><p>#Classes</p></th>
 <th class="head"><p>#Trials / class</p></th>
 <th class="head"><p>Trials length</p></th>
 <th class="head"><p>Sampling rate</p></th>
@@ -448,52 +447,99 @@ document.write(`
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>SSVEPExo</p></td>
-<td><p>12</p></td>
-<td><p>8</p></td>
-<td><p>4</p></td>
+<tr class="row-even"><td><p>BI2013a</p></td>
+<td><p>24</p></td>
 <td><p>16</p></td>
-<td><p>2s</p></td>
-<td><p>256Hz</p></td>
-<td><p>1</p></td>
+<td><p>3200 NT / 640 T</p></td>
+<td><p>1s</p></td>
+<td><p>512Hz</p></td>
+<td><p>(1-7)8 s|(8-24)1s</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>SSVEP dataset from E. Kalunga PhD in University of Versailles <a class="reference internal" href="#ra2517b8cee77-1" id="id1">[1]</a>.</p>
-<p>The datasets contains recording from 12 male and female subjects aged
-between 20 and 28 years. Informed consent was obtained from all subjects,
-each one has signed a form attesting her or his consent. The subject sits
-in an electric wheelchair, his right upper limb is resting on the
-exoskeleton. The exoskeleton is functional but is not used during the
-recording of this experiment.</p>
-<p>A panel of size 20x30 cm is attached on the left side of the chair, with
-3 groups of 4 LEDs blinking at different frequencies. Even if the panel
-is on the left side, the user could see it without moving its head. The
-subjects were asked to sit comfortably in the wheelchair and to follow the
-auditory instructions, they could move and blink freely.</p>
-<p>A sequence of trials is proposed to the user. A trial begin by an audio cue
-indicating which LED to focus on, or to focus on a fixation point set at an
-equal distance from all LEDs for the reject class. A trial lasts 5 seconds
-and there is a 3 second pause between each trial. The evaluation is
-conducted during a session consisting of 32 trials, with 8 trials for each
-frequency (13Hz, 17Hz and 21Hz) and 8 trials for the reject class, i.e.
-when the subject is not focusing on any specific blinking LED.</p>
-<p>There is between 2 and 5 sessions for each user, recorded on different
-days, by the same operators, on the same hardware and in the same
-conditions.</p>
+<p>Dataset following the setup from <a class="reference internal" href="#r20000b838d47-1" id="id1">[1]</a> carried-out at University of
+Grenoble Alpes.</p>
+<p>This dataset concerns an experiment carried out at GIPSA-lab
+(University of Grenoble Alpes, CNRS, Grenoble-INP) in 2013.
+The recordings concerned 24 subjects in total. Subjects 1 to 7 participated
+to eight sessions, run in different days, subject 8 to 24 participated to
+one session. Each session consisted in two runs, one in a Non-Adaptive
+(classical) and one in an Adaptive (calibration-less) mode of operation.
+The order of the runs was randomized for each session. In both runs there
+was a Training (calibration) phase and an Online phase, always passed in
+this order. In the non-Adaptive run the data from the Training phase was
+used for classifying the trials on the Online phase using the training-test
+version of the MDM algorithm <a class="reference internal" href="#r20000b838d47-2" id="id2">[2]</a>. In the Adaptive run, the data from the
+training phase was not used at all, instead the classifier was initialized
+with generic class geometric means and continuously adapted to the incoming
+data using the Riemannian method explained in <a class="reference internal" href="#r20000b838d47-2" id="id3">[2]</a>. Subjects were completely
+blind to the mode of operation and the two runs appeared to them identical.</p>
+<p>In the Brain Invaders P300 paradigm, a repetition is composed of 12
+flashes, of which 2 include the Target symbol (Target flashes) and 10 do
+not (non-Target flash). Please see <a class="reference internal" href="#r20000b838d47-3" id="id4">[3]</a> for a description of the paradigm.
+For this experiment, in the Training phases the number of flashes is fixed
+(80 Target flashes and 400 non-Target flashes). In the Online phases the
+number of Target and non-Target still are in a ratio 1/5, however their
+number is variable because the Brain Invaders works with a fixed number of
+game levels, however the number of repetitions needed to destroy the target
+(hence to proceed to the next level) depends on the user’s performance
+<a class="reference internal" href="#r20000b838d47-2" id="id5">[2]</a>. In any case, since the classes are unbalanced, an appropriate score
+must be used for quantifying the performance of classification methods
+(e.g., balanced accuracy, AUC methods, etc).</p>
+<p>Data were acquired with a Nexus (TMSi, The Netherlands) EEG amplifier:</p>
+<ul class="simple">
+<li><p>Sampling Frequency: 512 samples per second</p></li>
+<li><p>Digital Filter: no</p></li>
+<li><p>Electrodes:  16 wet Silver/Silver Chloride electrodes positioned at
+FP1, FP2, F5, AFz, F6, T7, Cz, T8, P7, P3, Pz, P4, P8, O1, Oz, O2
+according to the 10/20 international system.</p></li>
+<li><p>Reference: left ear-lobe.</p></li>
+<li><p>Ground: N/A.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Principal Investigators<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Erwan Vaineau, Dr. Alexandre Barachant</p>
+</dd>
+<dt class="field-even">Scientific Supervisor<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dr. Marco Congedo</p>
+</dd>
+<dt class="field-odd">Technical Supervisor<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Anton Andreev</p>
+</dd>
+</dl>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
-<div class="citation" id="ra2517b8cee77-1" role="doc-biblioentry">
+<div class="citation" id="r20000b838d47-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Emmanuel K. Kalunga, Sylvain Chevallier, Quentin Barthelemy. “Online
-SSVEP-based BCI using Riemannian Geometry”. Neurocomputing, 2016.
-arXiv report: <a class="reference external" href="https://arxiv.org/abs/1501.03227">https://arxiv.org/abs/1501.03227</a></p>
+<p>Vaineau, E., Barachant, A., Andreev, A., Rodrigues, P. C.,
+Cattan, G. &amp; Congedo, M. (2019). Brain invaders adaptive
+versus non-adaptive P300 brain-computer interface dataset.
+arXiv preprint arXiv:1904.09111.</p>
 </div>
+<div class="citation" id="r20000b838d47-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id3">2</a>,<a role="doc-backlink" href="#id5">3</a>)</span>
+<p>Barachant A, Congedo M (2014) A Plug &amp; Play P300 BCI using
+Information Geometry.
+arXiv:1409.0107.</p>
+</div>
+<div class="citation" id="r20000b838d47-3" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
+<p>Congedo M, Goyat M, Tarrin N, Ionescu G, Rivet B,Varnet L, Rivet B,
+Phlypo R, Jrad N, Acquadro M, Jutten C (2011) “Brain Invaders”: a
+prototype of an open-source P300-based video game working with the
+OpenViBE platform. Proc. IBCI Conf., Graz, Austria, 280-283.</p>
+</div>
+</div>
+<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">BI2013a</span></code> was previously named <code class="docutils literal notranslate"><span class="pre">bi2013a</span></code>. <code class="docutils literal notranslate"><span class="pre">bi2013a</span></code> will be removed in  version 0.7.</p>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="moabb.datasets.SSVEPExo.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/ssvep_exo.py#L79-L94"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.SSVEPExo.data_path" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="moabb.datasets.BI2013a.data_path">
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L570-L573"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BI2013a.data_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -509,7 +555,7 @@ will be automatically downloaded to the specified folder.</p></li>
 <li><p><strong>update_path</strong> (bool | None <strong>Deprecated</strong>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
 config to the given path. If None, the user is prompted.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level
-(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
+(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -524,13 +570,7 @@ list of length one, for compatibility.</p>
 
 </dd></dl>
 
-<section id="examples-using-moabb-datasets-ssvepexo">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.SSVEPExo</span></code><a class="headerlink" href="#examples-using-moabb-datasets-ssvepexo" title="Permalink to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="- Riemannian Geometry - CCA - TRCA - MsetCCA"><img alt="Cross-Subject SSVEP" src="../_images/sphx_glr_plot_cross_subject_ssvep_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/plot_cross_subject_ssvep.html#sphx-glr-auto-examples-plot-cross-subject-ssvep-py"><span class="std std-ref">Cross-Subject SSVEP</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Cross-Subject SSVEP</div>
-</div></div><div style='clear:both'></div></section>
-</section>
+<div style='clear:both'></div></section>
 
 
                 </article>
@@ -544,20 +584,20 @@ list of length one, for compatibility.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.Sosulski2019.html"
+       href="moabb.datasets.BI2012.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.Sosulski2019</p>
+        <p class="prev-next-title">moabb.datasets.BI2012</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.Nakanishi2015.html"
+       href="moabb.datasets.BI2014a.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.Nakanishi2015</p>
+        <p class="prev-next-title">moabb.datasets.BI2014a</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -579,11 +619,10 @@ list of length one, for compatibility.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.SSVEPExo"><code class="docutils literal notranslate"><span class="pre">SSVEPExo</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.SSVEPExo.data_path"><code class="docutils literal notranslate"><span class="pre">SSVEPExo.data_path()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.BI2013a"><code class="docutils literal notranslate"><span class="pre">BI2013a</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.BI2013a.data_path"><code class="docutils literal notranslate"><span class="pre">BI2013a.data_path()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-moabb-datasets-ssvepexo">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.SSVEPExo</span></code></a></li>
 </ul>
   </nav></div>
 

@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>moabb.datasets.bi2015a &#8212; moabb 0.5.0 documentation</title>
+    <title>moabb.datasets.compound_dataset.Cattan2019_VR_Il &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.bi2015a';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.compound_dataset.Cattan2019_VR_Il';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.bi2015b" href="moabb.datasets.bi2015b.html" />
-    <link rel="prev" title="moabb.datasets.bi2014b" href="moabb.datasets.bi2014b.html" />
+    <link rel="next" title="moabb.datasets.compound_dataset.BI_Il" href="moabb.datasets.compound_dataset.BI_Il.html" />
+    <link rel="prev" title="moabb.datasets.compound_dataset.BI2015b_Il" href="moabb.datasets.compound_dataset.BI2015b_Il.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -410,7 +410,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.bi2015a</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.compound_dataset.Cattan2019_VR_Il</li>
   </ul>
 </nav>
 </div>
@@ -427,78 +427,18 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-bi2015a">
-<h1>moabb.datasets.bi2015a<a class="headerlink" href="#moabb-datasets-bi2015a" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-datasets-compound-dataset-cattan2019-vr-il">
+<h1>moabb.datasets.compound_dataset.Cattan2019_VR_Il<a class="headerlink" href="#moabb-datasets-compound-dataset-cattan2019-vr-il" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.bi2015a">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">bi2015a</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L690-L747"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.bi2015a" title="Permalink to this definition">#</a></dt>
-<dd><p>P300 dataset bi2015a from a “Brain Invaders” experiment.</p>
-<p>This dataset contains electroencephalographic (EEG) recordings
-of 43 subjects playing to a visual P300 Brain-Computer Interface (BCI)
-videogame named Brain Invaders. The interface uses the oddball paradigm
-on a grid of 36 symbols (1 Target, 35 Non-Target) that are flashed
-pseudo-randomly to elicit the P300 response. EEG data were recorded using
-32 active wet electrodes with three conditions: flash duration 50ms, 80ms
-or 110ms. The experiment took place at GIPSA-lab, Grenoble, France, in 2015.
-A full description of the experiment is available at <a class="reference internal" href="#rd6db48b0b956-1" id="id1">[1]</a>. The ID of this
-dataset is bi2015a.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Investigators<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Eng. Louis Korczowski, B. Sc. Martine Cederhout</p>
-</dd>
-<dt class="field-even">Technical Support<span class="colon">:</span></dt>
-<dd class="field-even"><p>Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
-M. Sc. Violette Gautheret</p>
-</dd>
-<dt class="field-odd">Scientific Supervisor<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Ph.D. Marco Congedo</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="moabb.datasets.compound_dataset.Cattan2019_VR_Il">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.compound_dataset.</span></span><span class="sig-name descname"><span class="pre">Cattan2019_VR_Il</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/compound_dataset/bi_illiteracy.py#L130-L144"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.compound_dataset.Cattan2019_VR_Il" title="Permalink to this definition">#</a></dt>
+<dd><p>A selection of subject from Cattan2019_VR with AUC &lt; 0.7 with pipeline:
+ERPCovariances(estimator=”lwf”), MDM(metric=”riemann”)</p>
 <p class="rubric">Notes</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 0.4.6.</span></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">Cattan2019_VR_Il</span></code> was previously named <code class="docutils literal notranslate"><span class="pre">VirtualReality_il</span></code>. <code class="docutils literal notranslate"><span class="pre">VirtualReality_il</span></code> will be removed in  version 0.7.</p>
 </div>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="rd6db48b0b956-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Korczowski, L., Cederhout, M., Andreev, A., Cattan, G., Rodrigues, P. L. C.,
-Gautheret, V., &amp; Congedo, M. (2019). Brain Invaders calibration-less P300-based
-BCI with modulation of flash duration Dataset (bi2015a)
-<a class="reference external" href="https://hal.archives-ouvertes.fr/hal-02172347">https://hal.archives-ouvertes.fr/hal-02172347</a></p>
-</div>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="moabb.datasets.bi2015a.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L744-L747"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.bi2015a.data_path" title="Permalink to this definition">#</a></dt>
-<dd><p>Get path to local copy of a subject data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – Number of subject to use</p></li>
-<li><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – Location of where to look for the data storing location.
-If None, the environment variable or config parameter
-<code class="docutils literal notranslate"><span class="pre">MNE_DATASETS_(dataset)_PATH</span></code> is used. If it doesn’t exist, the
-“~/mne_data” directory is used. If the dataset
-is not found under the given path, the data
-will be automatically downloaded to the specified folder.</p></li>
-<li><p><strong>force_update</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a>) – Force update of the dataset even if a local copy exists.</p></li>
-<li><p><strong>update_path</strong> (bool | None <strong>Deprecated</strong>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
-config to the given path. If None, the user is prompted.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level
-(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>path</strong> – Local path to the given data file. This path is contained inside a
-list of length one, for compatibility.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 <div style='clear:both'></div></section>
@@ -515,20 +455,20 @@ list of length one, for compatibility.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.bi2014b.html"
+       href="moabb.datasets.compound_dataset.BI2015b_Il.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.bi2014b</p>
+        <p class="prev-next-title">moabb.datasets.compound_dataset.BI2015b_Il</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.bi2015b.html"
+       href="moabb.datasets.compound_dataset.BI_Il.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.bi2015b</p>
+        <p class="prev-next-title">moabb.datasets.compound_dataset.BI_Il</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -550,10 +490,7 @@ list of length one, for compatibility.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.bi2015a"><code class="docutils literal notranslate"><span class="pre">bi2015a</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.bi2015a.data_path"><code class="docutils literal notranslate"><span class="pre">bi2015a.data_path()</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.compound_dataset.Cattan2019_VR_Il"><code class="docutils literal notranslate"><span class="pre">Cattan2019_VR_Il</span></code></a></li>
 </ul>
   </nav></div>
 

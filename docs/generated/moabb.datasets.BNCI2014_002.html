@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>moabb.datasets.VirtualReality &#8212; moabb 0.5.0 documentation</title>
+    <title>moabb.datasets.BNCI2014_002 &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.VirtualReality';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.BNCI2014_002';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.BNCI2014008" href="moabb.datasets.BNCI2014008.html" />
-    <link rel="prev" title="moabb.datasets.bi2015b" href="moabb.datasets.bi2015b.html" />
+    <link rel="next" title="moabb.datasets.BNCI2014_004" href="moabb.datasets.BNCI2014_004.html" />
+    <link rel="prev" title="moabb.datasets.BNCI2014_001" href="moabb.datasets.BNCI2014_001.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -410,7 +410,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.VirtualReality</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.BNCI2014_002</li>
   </ul>
 </nav>
 </div>
@@ -427,129 +427,59 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-virtualreality">
-<h1>moabb.datasets.VirtualReality<a class="headerlink" href="#moabb-datasets-virtualreality" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-datasets-bnci2014-002">
+<h1>moabb.datasets.BNCI2014_002<a class="headerlink" href="#moabb-datasets-bnci2014-002" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.VirtualReality">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">VirtualReality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">virtual_reality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">screen_display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L813-L934"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.VirtualReality" title="Permalink to this definition">#</a></dt>
-<dd><p>Dataset of an EEG-based BCI experiment in Virtual Reality using P300.</p>
-<p>We describe the experimental procedures for a dataset that we have made publicly
-available at <a class="reference external" href="https://doi.org/10.5281/zenodo.2605204">https://doi.org/10.5281/zenodo.2605204</a> in mat (Mathworks, Natick, USA)
-and csv formats <a class="reference internal" href="#r71832756315b-1" id="id1">[1]</a>. This dataset contains electroencephalographic recordings on 21
-subjects doing a visual P300 experiment on non-VR (PC display) and VR (virtual
-reality). The visual P300 is an event-related potential elicited by a visual
-stimulation, peaking 240-600 ms after stimulus onset. The experiment was designed
-in order to compare the use of a P300-based brain-computer interface on a PC and
-with a virtual reality headset, concerning the physiological, subjective and
-performance aspects. The brain-computer interface is based on electroencephalography
-(EEG). EEG data were recorded thanks to 16 electrodes. The virtual reality headset
-consisted of a passive head-mounted display, that is, a head-mounted display which
-does not include any electronics at the exception of a smartphone. A full description
-of the experiment is available at <a class="reference external" href="https://hal.archives-ouvertes.fr/hal-02078533">https://hal.archives-ouvertes.fr/hal-02078533</a>.</p>
-<p>See the example <cite>plot_vr_pc_p300_different_epoch_size</cite> to compare the performance
-between PC and VR.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>virtual_reality</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em> (</em><em>default False</em><em>)</em>) – if True, return runs corresponding to P300 experiment on virtual reality.</p></li>
-<li><p><strong>screen_display</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em> (</em><em>default True</em><em>)</em>) – if True, return runs corresponding to P300 experiment on personal computer.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 0.5.0.</span></p>
+<dt class="sig sig-object py" id="moabb.datasets.BNCI2014_002">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BNCI2014_002</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci.py#L815-L874"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BNCI2014_002" title="Permalink to this definition">#</a></dt>
+<dd><p>BNCI 2014-002 Motor Imagery dataset.</p>
+<div class="admonition-dataset-summary admonition">
+<p class="admonition-title">Dataset summary</p>
 </div>
+<p>Motor Imagery Dataset from <a class="reference internal" href="#r48fbbb5504eb-1" id="id1">[1]</a>.</p>
+<p><strong>Dataset description</strong></p>
+<p>The session consisted of eight runs, five of them for training and three
+with feedback for validation.  One run was composed of 20 trials.  Taken
+together, we recorded 50 trials per class for training and 30 trials per
+class for validation.  Participants had the task of performing sustained (5
+seconds) kinaesthetic motor imagery (MI) of the right hand and of the feet
+each as instructed by the cue. At 0 s, a white colored cross appeared on
+screen, 2 s later a beep sounded to catch the participant’s attention. The
+cue was displayed from 3 s to 4 s. Participants were instructed to start
+with MI as soon as they recognized the cue and to perform the indicated MI
+until the cross disappeared at 8 s. A rest period with a random length
+between 2 s and 3 s was presented between trials. Participants did not
+receive feedback during training.  Feedback was presented in form of a
+white
+coloured bar-graph.  The length of the bar-graph reflected the amount of
+correct classifications over the last second.  EEG was measured with a
+biosignal amplifier and active Ag/AgCl electrodes (g.USBamp, g.LADYbird,
+Guger Technologies OG, Schiedlberg, Austria) at a sampling rate of 512 Hz.
+The electrodes placement was designed for obtaining three Laplacian
+derivations.  Center electrodes at positions C3, Cz, and C4 and four
+additional electrodes around each center electrode with a distance of 2.5
+cm, 15 electrodes total.  The reference electrode was mounted on the left
+mastoid and the ground electrode on the right mastoid.  The 13 participants
+were aged between 20 and 30 years, 8 naive to the task, and had no known
+medical or neurological diseases.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
-<div class="citation" id="r71832756315b-1" role="doc-biblioentry">
+<div class="citation" id="r48fbbb5504eb-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>G. Cattan, A. Andreev, P. L. C. Rodrigues, and M. Congedo (2019).
-Dataset of an EEG-based BCI experiment in Virtual Reality and
-on a Personal Computer. Research Report, GIPSA-lab; IHMTEK.
-<a class="reference external" href="https://doi.org/10.5281/zenodo.2605204">https://doi.org/10.5281/zenodo.2605204</a></p>
+<p>Steyrl, D., Scherer, R., Faller, J. and Müller-Putz, G.R., 2016.
+Random forests in non-invasive sensorimotor rhythm brain-computer
+interfaces: a practical and convenient non-linear classifier.
+Biomedical Engineering/Biomedizinische Technique, 61(1), pp.77-86.</p>
 </div>
 </div>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 0.5.0.</span></p>
+<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">BNCI2014_002</span></code> was previously named <code class="docutils literal notranslate"><span class="pre">BNCI2014002</span></code>. <code class="docutils literal notranslate"><span class="pre">BNCI2014002</span></code> will be removed in  version 0.7.</p>
 </div>
-<dl class="py method">
-<dt class="sig sig-object py" id="moabb.datasets.VirtualReality.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L883-L886"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.VirtualReality.data_path" title="Permalink to this definition">#</a></dt>
-<dd><p>Get path to local copy of a subject data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – Number of subject to use</p></li>
-<li><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – Location of where to look for the data storing location.
-If None, the environment variable or config parameter
-<code class="docutils literal notranslate"><span class="pre">MNE_DATASETS_(dataset)_PATH</span></code> is used. If it doesn’t exist, the
-“~/mne_data” directory is used. If the dataset
-is not found under the given path, the data
-will be automatically downloaded to the specified folder.</p></li>
-<li><p><strong>force_update</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a>) – Force update of the dataset even if a local copy exists.</p></li>
-<li><p><strong>update_path</strong> (bool | None <strong>Deprecated</strong>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
-config to the given path. If None, the user is prompted.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level
-(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>path</strong> – Local path to the given data file. This path is contained inside a
-list of length one, for compatibility.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
-</dd>
-</dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="moabb.datasets.VirtualReality.get_block_repetition">
-<span class="sig-name descname"><span class="pre">get_block_repetition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetition_list</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L888-L934"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.VirtualReality.get_block_repetition" title="Permalink to this definition">#</a></dt>
-<dd><p>Select data for all provided subjects, blocks and repetitions. Each
-subject has 12 blocks of 5 repetitions.</p>
-<p>The returned data is a dictionary with the following structure:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;subject_id&#39;</span> <span class="p">:</span>
-            <span class="p">{</span><span class="s1">&#39;session_id&#39;</span><span class="p">:</span>
-                <span class="p">{</span><span class="s1">&#39;run_id&#39;</span><span class="p">:</span> <span class="n">raw</span><span class="p">}</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseDataset.get_data</span></code></p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>subjects</strong> (<em>List</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – List of subject number</p></li>
-<li><p><strong>block_list</strong> (<em>List</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – List of block number (from 1 to 5)</p></li>
-<li><p><strong>repetition_list</strong> (<em>List</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – List of repetition number inside a block (from 1 to 12)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>data</strong> – dict containing the raw data</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<section id="examples-using-moabb-datasets-virtualreality">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.VirtualReality</span></code><a class="headerlink" href="#examples-using-moabb-datasets-virtualreality" title="Permalink to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="======================================= Changing epoch size in P300 VR dataset ================..."><img alt="Example of P300 classification with different epoch size." src="../_images/sphx_glr_plot_vr_pc_p300_different_epoch_size_thumb.png" />
-<p><a class="reference external" href="https://neurotechx.github.io/moabb/auto_examples/plot_vr_pc_p300_different_epoch_size.html#sphx-glr-auto-examples-plot-vr-pc-p300-different-epoch-size-py" title="(in moabb v0.5.0)"><span class="xref std std-ref">sphx_glr_auto_examples_plot_vr_pc_p300_different_epoch_size.py</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Example of P300 classification with different epoch size.</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Tutorial 5: Creating a dataset class"><img alt="Tutorial 5: Creating a dataset class" src="../_images/sphx_glr_tutorial_5_build_a_custom_dataset_thumb.png" />
-<p><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html#sphx-glr-auto-tutorials-tutorial-5-build-a-custom-dataset-py"><span class="std std-ref">Tutorial 5: Creating a dataset class</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Tutorial 5: Creating a dataset class</div>
-</div></div><div style='clear:both'></div></section>
-</section>
+<div style='clear:both'></div></section>
 
 
                 </article>
@@ -563,20 +493,20 @@ subject has 12 blocks of 5 repetitions.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.bi2015b.html"
+       href="moabb.datasets.BNCI2014_001.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.bi2015b</p>
+        <p class="prev-next-title">moabb.datasets.BNCI2014_001</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.BNCI2014008.html"
+       href="moabb.datasets.BNCI2014_004.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.BNCI2014008</p>
+        <p class="prev-next-title">moabb.datasets.BNCI2014_004</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -598,12 +528,7 @@ subject has 12 blocks of 5 repetitions.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.VirtualReality"><code class="docutils literal notranslate"><span class="pre">VirtualReality</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.VirtualReality.data_path"><code class="docutils literal notranslate"><span class="pre">VirtualReality.data_path()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.VirtualReality.get_block_repetition"><code class="docutils literal notranslate"><span class="pre">VirtualReality.get_block_repetition()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-moabb-datasets-virtualreality">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.VirtualReality</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.BNCI2014_002"><code class="docutils literal notranslate"><span class="pre">BNCI2014_002</span></code></a></li>
 </ul>
   </nav></div>
 

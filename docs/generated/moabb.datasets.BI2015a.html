@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>moabb.datasets.MunichMI &#8212; moabb 0.5.0 documentation</title>
+    <title>moabb.datasets.BI2015a &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.MunichMI';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.BI2015a';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.Ofner2017" href="moabb.datasets.Ofner2017.html" />
-    <link rel="prev" title="moabb.datasets.Lee2019_MI" href="moabb.datasets.Lee2019_MI.html" />
+    <link rel="next" title="moabb.datasets.BI2015b" href="moabb.datasets.BI2015b.html" />
+    <link rel="prev" title="moabb.datasets.BI2014b" href="moabb.datasets.BI2014b.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -410,7 +410,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.MunichMI</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.BI2015a</li>
   </ul>
 </nav>
 </div>
@@ -427,80 +427,54 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-munichmi">
-<h1>moabb.datasets.MunichMI<a class="headerlink" href="#moabb-datasets-munichmi" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-datasets-bi2015a">
+<h1>moabb.datasets.BI2015a<a class="headerlink" href="#moabb-datasets-bi2015a" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.MunichMI">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">MunichMI</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/mpi_mi.py#L13-L100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MunichMI" title="Permalink to this definition">#</a></dt>
-<dd><p>Munich Motor Imagery dataset.</p>
-<div class="admonition-dataset-summary admonition">
-<p class="admonition-title">Dataset summary</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>#Subj</p></th>
-<th class="head"><p>#Chan</p></th>
-<th class="head"><p>#Classes</p></th>
-<th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trials len</p></th>
-<th class="head"><p>Sampling rate</p></th>
-<th class="head"><p>#Sessions</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>MunichMI</p></td>
-<td><p>10</p></td>
-<td><p>128</p></td>
-<td><p>2</p></td>
-<td><p>150</p></td>
-<td><p>7s</p></td>
-<td><p>500Hz</p></td>
-<td><p>1</p></td>
-</tr>
-</tbody>
-</table>
+<dt class="sig sig-object py" id="moabb.datasets.BI2015a">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BI2015a</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L695-L753"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BI2015a" title="Permalink to this definition">#</a></dt>
+<dd><p>P300 dataset BI2015a from a “Brain Invaders” experiment.</p>
+<p>This dataset contains electroencephalographic (EEG) recordings
+of 43 subjects playing to a visual P300 Brain-Computer Interface (BCI)
+videogame named Brain Invaders. The interface uses the oddball paradigm
+on a grid of 36 symbols (1 Target, 35 Non-Target) that are flashed
+pseudo-randomly to elicit the P300 response. EEG data were recorded using
+32 active wet electrodes with three conditions: flash duration 50ms, 80ms
+or 110ms. The experiment took place at GIPSA-lab, Grenoble, France, in 2015.
+A full description of the experiment is available at <a class="reference internal" href="#r6934c183e98b-1" id="id1">[1]</a>. The ID of this
+dataset is BI2015a.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Investigators<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Eng. Louis Korczowski, B. Sc. Martine Cederhout</p>
+</dd>
+<dt class="field-even">Technical Support<span class="colon">:</span></dt>
+<dd class="field-even"><p>Eng. Anton Andreev, Eng. Grégoire Cattan, Eng. Pedro. L. C. Rodrigues,
+M. Sc. Violette Gautheret</p>
+</dd>
+<dt class="field-odd">Scientific Supervisor<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Ph.D. Marco Congedo</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">BI2015a</span></code> was previously named <code class="docutils literal notranslate"><span class="pre">bi2015a</span></code>. <code class="docutils literal notranslate"><span class="pre">bi2015a</span></code> will be removed in  version 0.7.</p>
 </div>
-<p>Motor imagery dataset from Grosse-Wentrup et al. 2009 <a class="reference internal" href="#r16685df3dcc1-1" id="id1">[1]</a>.</p>
-<p>A trial started with the central display of a white fixation cross. After 3
-s, a white arrow was superimposed on the fixation cross, either pointing to
-the left or the right.
-Subjects were instructed to perform haptic motor imagery of the
-left or the right hand during display of the arrow, as indicated by the
-direction of the arrow. After another 7 s, the arrow was removed,
-indicating the end of the trial and start of the next trial. While subjects
-were explicitly instructed to perform haptic motor imagery with the
-specified hand, i.e., to imagine feeling instead of visualizing how their
-hands moved, the exact choice of which type of imaginary movement, i.e.,
-moving the fingers up and down, gripping an object, etc., was left
-unspecified.
-A total of 150 trials per condition were carried out by each subject,
-with trials presented in pseudorandomized order.</p>
-<p>Ten healthy subjects (S1–S10) participated in the experimental
-evaluation. Of these, two were females, eight were right handed, and their
-average age was 25.6 years with a standard deviation of 2.5 years. Subject
-S3 had already participated twice in a BCI experiment, while all other
-subjects were naive to BCIs. EEG was recorded at M=128 electrodes placed
-according to the extended 10–20 system. Data were recorded at 500 Hz with
-electrode Cz as reference. Four BrainAmp amplifiers were used for this
-purpose, using a temporal analog high-pass filter with a time constant of
-10 s. The data were re-referenced to common average reference
-offline. Electrode impedances were below 10 kΩ for all electrodes and
-subjects at the beginning of each recording session. No trials were
-rejected and no artifact correction was performed. For each subject, the
-locations of the 128 electrodes were measured in three dimensions using a
-Zebris ultrasound tracking system and stored for further offline analysis.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.4.6.</span></p>
+</div>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
-<div class="citation" id="r16685df3dcc1-1" role="doc-biblioentry">
+<div class="citation" id="r6934c183e98b-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Grosse-Wentrup, Moritz, et al. “Beamforming in noninvasive
-brain–computer interfaces.” IEEE Transactions on Biomedical
-Engineering 56.4 (2009): 1209-1219.</p>
+<p>Korczowski, L., Cederhout, M., Andreev, A., Cattan, G., Rodrigues, P. L. C.,
+Gautheret, V., &amp; Congedo, M. (2019). Brain Invaders calibration-less P300-based
+BCI with modulation of flash duration Dataset (BI2015a)
+<a class="reference external" href="https://hal.archives-ouvertes.fr/hal-02172347">https://hal.archives-ouvertes.fr/hal-02172347</a></p>
 </div>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="moabb.datasets.MunichMI.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/mpi_mi.py#L88-L100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.MunichMI.data_path" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="moabb.datasets.BI2015a.data_path">
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L750-L753"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BI2015a.data_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -516,7 +490,7 @@ will be automatically downloaded to the specified folder.</p></li>
 <li><p><strong>update_path</strong> (bool | None <strong>Deprecated</strong>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
 config to the given path. If None, the user is prompted.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level
-(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
+(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -545,20 +519,20 @@ list of length one, for compatibility.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.Lee2019_MI.html"
+       href="moabb.datasets.BI2014b.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.Lee2019_MI</p>
+        <p class="prev-next-title">moabb.datasets.BI2014b</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.Ofner2017.html"
+       href="moabb.datasets.BI2015b.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.Ofner2017</p>
+        <p class="prev-next-title">moabb.datasets.BI2015b</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -580,8 +554,8 @@ list of length one, for compatibility.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.MunichMI"><code class="docutils literal notranslate"><span class="pre">MunichMI</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.MunichMI.data_path"><code class="docutils literal notranslate"><span class="pre">MunichMI.data_path()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.BI2015a"><code class="docutils literal notranslate"><span class="pre">BI2015a</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.BI2015a.data_path"><code class="docutils literal notranslate"><span class="pre">BI2015a.data_path()</span></code></a></li>
 </ul>
 </li>
 </ul>

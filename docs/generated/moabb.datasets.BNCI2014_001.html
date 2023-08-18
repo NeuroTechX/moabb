@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>moabb.datasets.bi2013a &#8212; moabb 0.5.0 documentation</title>
+    <title>moabb.datasets.BNCI2014_001 &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.bi2013a';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.BNCI2014_001';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.bi2014a" href="moabb.datasets.bi2014a.html" />
-    <link rel="prev" title="moabb.datasets.bi2012" href="moabb.datasets.bi2012.html" />
+    <link rel="next" title="moabb.datasets.BNCI2014_002" href="moabb.datasets.BNCI2014_002.html" />
+    <link rel="prev" title="moabb.datasets.AlexMI" href="moabb.datasets.AlexMI.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -410,7 +410,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.bi2013a</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.BNCI2014_001</li>
   </ul>
 </nav>
 </div>
@@ -427,145 +427,110 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-bi2013a">
-<h1>moabb.datasets.bi2013a<a class="headerlink" href="#moabb-datasets-bi2013a" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-datasets-bnci2014-001">
+<h1>moabb.datasets.BNCI2014_001<a class="headerlink" href="#moabb-datasets-bnci2014-001" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.bi2013a">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">bi2013a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">NonAdaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Adaptive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Online</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L471-L570"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.bi2013a" title="Permalink to this definition">#</a></dt>
-<dd><p>P300 dataset bi2013a from a “Brain Invaders” experiment.</p>
+<dt class="sig sig-object py" id="moabb.datasets.BNCI2014_001">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">BNCI2014_001</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/bnci.py#L751-L812"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.BNCI2014_001" title="Permalink to this definition">#</a></dt>
+<dd><p>BNCI 2014-001 Motor Imagery dataset.</p>
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>#Subj</p></th>
-<th class="head"><p>#Chan</p></th>
-<th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trials length</p></th>
-<th class="head"><p>Sampling rate</p></th>
-<th class="head"><p>#Sessions</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>bi2013a</p></td>
-<td><p>24</p></td>
-<td><p>16</p></td>
-<td><p>3200 NT / 640 T</p></td>
-<td><p>1s</p></td>
-<td><p>512Hz</p></td>
-<td><p>(1-7)8 s|(8-24)1s</p></td>
-</tr>
-</tbody>
-</table>
 </div>
-<p>Dataset following the setup from <a class="reference internal" href="#rf8e422a08da4-1" id="id1">[1]</a> carried-out at University of
-Grenoble Alpes.</p>
-<p>This dataset concerns an experiment carried out at GIPSA-lab
-(University of Grenoble Alpes, CNRS, Grenoble-INP) in 2013.
-The recordings concerned 24 subjects in total. Subjects 1 to 7 participated
-to eight sessions, run in different days, subject 8 to 24 participated to
-one session. Each session consisted in two runs, one in a Non-Adaptive
-(classical) and one in an Adaptive (calibration-less) mode of operation.
-The order of the runs was randomized for each session. In both runs there
-was a Training (calibration) phase and an Online phase, always passed in
-this order. In the non-Adaptive run the data from the Training phase was
-used for classifying the trials on the Online phase using the training-test
-version of the MDM algorithm <a class="reference internal" href="#rf8e422a08da4-2" id="id2">[2]</a>. In the Adaptive run, the data from the
-training phase was not used at all, instead the classifier was initialized
-with generic class geometric means and continuously adapted to the incoming
-data using the Riemannian method explained in <a class="reference internal" href="#rf8e422a08da4-2" id="id3">[2]</a>. Subjects were completely
-blind to the mode of operation and the two runs appeared to them identical.</p>
-<p>In the Brain Invaders P300 paradigm, a repetition is composed of 12
-flashes, of which 2 include the Target symbol (Target flashes) and 10 do
-not (non-Target flash). Please see <a class="reference internal" href="#rf8e422a08da4-3" id="id4">[3]</a> for a description of the paradigm.
-For this experiment, in the Training phases the number of flashes is fixed
-(80 Target flashes and 400 non-Target flashes). In the Online phases the
-number of Target and non-Target still are in a ratio 1/5, however their
-number is variable because the Brain Invaders works with a fixed number of
-game levels, however the number of repetitions needed to destroy the target
-(hence to proceed to the next level) depends on the user’s performance
-<a class="reference internal" href="#rf8e422a08da4-2" id="id5">[2]</a>. In any case, since the classes are unbalanced, an appropriate score
-must be used for quantifying the performance of classification methods
-(e.g., balanced accuracy, AUC methods, etc).</p>
-<p>Data were acquired with a Nexus (TMSi, The Netherlands) EEG amplifier:</p>
-<ul class="simple">
-<li><p>Sampling Frequency: 512 samples per second</p></li>
-<li><p>Digital Filter: no</p></li>
-<li><p>Electrodes:  16 wet Silver/Silver Chloride electrodes positioned at
-FP1, FP2, F5, AFz, F6, T7, Cz, T8, P7, P3, Pz, P4, P8, O1, Oz, O2
-according to the 10/20 international system.</p></li>
-<li><p>Reference: left ear-lobe.</p></li>
-<li><p>Ground: N/A.</p></li>
-</ul>
-<dl class="field-list simple">
-<dt class="field-odd">Principal Investigators<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Erwan Vaineau, Dr. Alexandre Barachant</p>
-</dd>
-<dt class="field-even">Scientific Supervisor<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dr. Marco Congedo</p>
-</dd>
-<dt class="field-odd">Technical Supervisor<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Anton Andreev</p>
-</dd>
-</dl>
+<p>Dataset IIa from BCI Competition 4 <a class="reference internal" href="#r55ebd47d0fe7-1" id="id1">[1]</a>.</p>
+<p><strong>Dataset Description</strong></p>
+<p>This data set consists of EEG data from 9 subjects.  The cue-based BCI
+paradigm consisted of four different motor imagery tasks, namely the imag-
+ination of movement of the left hand (class 1), right hand (class 2), both
+feet (class 3), and tongue (class 4).  Two sessions on different days were
+recorded for each subject.  Each session is comprised of 6 runs separated
+by short breaks.  One run consists of 48 trials (12 for each of the four
+possible classes), yielding a total of 288 trials per session.</p>
+<p>The subjects were sitting in a comfortable armchair in front of a computer
+screen.  At the beginning of a trial ( t = 0 s), a fixation cross appeared
+on the black screen.  In addition, a short acoustic warning tone was
+presented.  After two seconds ( t = 2 s), a cue in the form of an arrow
+pointing either to the left, right, down or up (corresponding to one of the
+four classes left hand, right hand, foot or tongue) appeared and stayed on
+the screen for 1.25 s.  This prompted the subjects to perform the desired
+motor imagery task.  No feedback was provided.  The subjects were ask to
+carry out the motor imagery task until the fixation cross disappeared from
+the screen at t = 6 s.</p>
+<p>Twenty-two Ag/AgCl electrodes (with inter-electrode distances of 3.5 cm)
+were used to record the EEG; the montage is shown in Figure 3 left.  All
+signals were recorded monopolarly with the left mastoid serving as
+reference and the right mastoid as ground. The signals were sampled with.
+250 Hz and bandpass-filtered between 0.5 Hz and 100 Hz. The sensitivity of
+the amplifier was set to 100 μV . An additional 50 Hz notch filter was
+enabled to suppress line noise</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
-<div class="citation" id="rf8e422a08da4-1" role="doc-biblioentry">
+<div class="citation" id="r55ebd47d0fe7-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Vaineau, E., Barachant, A., Andreev, A., Rodrigues, P. C.,
-Cattan, G. &amp; Congedo, M. (2019). Brain invaders adaptive
-versus non-adaptive P300 brain-computer interface dataset.
-arXiv preprint arXiv:1904.09111.</p>
-</div>
-<div class="citation" id="rf8e422a08da4-2" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id3">2</a>,<a role="doc-backlink" href="#id5">3</a>)</span>
-<p>Barachant A, Congedo M (2014) A Plug &amp; Play P300 BCI using
-Information Geometry.
-arXiv:1409.0107.</p>
-</div>
-<div class="citation" id="rf8e422a08da4-3" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
-<p>Congedo M, Goyat M, Tarrin N, Ionescu G, Rivet B,Varnet L, Rivet B,
-Phlypo R, Jrad N, Acquadro M, Jutten C (2011) “Brain Invaders”: a
-prototype of an open-source P300-based video game working with the
-OpenViBE platform. Proc. IBCI Conf., Graz, Austria, 280-283.</p>
+<p>Tangermann, M., Müller, K.R., Aertsen, A., Birbaumer, N., Braun, C.,
+Brunner, C., Leeb, R., Mehring, C., Miller, K.J., Mueller-Putz, G.
+and Nolte, G., 2012. Review of the BCI competition IV.
+Frontiers in neuroscience, 6, p.55.</p>
 </div>
 </div>
-<dl class="py method">
-<dt class="sig sig-object py" id="moabb.datasets.bi2013a.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L567-L570"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.bi2013a.data_path" title="Permalink to this definition">#</a></dt>
-<dd><p>Get path to local copy of a subject data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – Number of subject to use</p></li>
-<li><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – Location of where to look for the data storing location.
-If None, the environment variable or config parameter
-<code class="docutils literal notranslate"><span class="pre">MNE_DATASETS_(dataset)_PATH</span></code> is used. If it doesn’t exist, the
-“~/mne_data” directory is used. If the dataset
-is not found under the given path, the data
-will be automatically downloaded to the specified folder.</p></li>
-<li><p><strong>force_update</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a>) – Force update of the dataset even if a local copy exists.</p></li>
-<li><p><strong>update_path</strong> (bool | None <strong>Deprecated</strong>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
-config to the given path. If None, the user is prompted.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level
-(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>path</strong> – Local path to the given data file. This path is contained inside a
-list of length one, for compatibility.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">BNCI2014_001</span></code> was previously named <code class="docutils literal notranslate"><span class="pre">BNCI2014001</span></code>. <code class="docutils literal notranslate"><span class="pre">BNCI2014001</span></code> will be removed in  version 0.7.</p>
+</div>
 </dd></dl>
 
-</dd></dl>
-
-<div style='clear:both'></div></section>
+<section id="examples-using-moabb-datasets-bnci2014-001">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.BNCI2014_001</span></code><a class="headerlink" href="#examples-using-moabb-datasets-bnci2014-001" title="Permalink to this heading">#</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use MOABB to track the CO2 footprint using `CodeCarbon library &lt;https..."><img alt="Benchmarking with MOABB showing the CO2 footprint" src="../_images/sphx_glr_example_codecarbon_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/example_codecarbon.html#sphx-glr-auto-examples-example-codecarbon-py"><span class="std std-ref">Benchmarking with MOABB showing the CO2 footprint</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Benchmarking with MOABB showing the CO2 footprint</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Benchmarking on MOABB with Tensorflow deep net architectures"><img alt="Benchmarking on MOABB with Tensorflow deep net architectures" src="../_images/sphx_glr_plot_benchmark_DL_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/plot_benchmark_DL.html#sphx-glr-auto-examples-plot-benchmark-dl-py"><span class="std std-ref">Benchmarking on MOABB with Tensorflow deep net architectures</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Benchmarking on MOABB with Tensorflow deep net architectures</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures"><img alt="Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures" src="../_images/sphx_glr_plot_benchmark_braindecode_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/plot_benchmark_braindecode.html#sphx-glr-auto-examples-plot-benchmark-braindecode-py"><span class="std std-ref">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Cross-session motor imagery with deep learning EEGNet v4 model"><img alt="Cross-session motor imagery with deep learning EEGNet v4 model" src="../_images/sphx_glr_plot_braindecode_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/plot_braindecode.html#sphx-glr-auto-examples-plot-braindecode-py"><span class="std std-ref">Cross-session motor imagery with deep learning EEGNet v4 model</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Cross-session motor imagery with deep learning EEGNet v4 model</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example show how to perform a cross session motor imagery analysis on the very popular dat..."><img alt="Cross-Session Motor Imagery" src="../_images/sphx_glr_plot_cross_session_motor_imagery_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/plot_cross_session_motor_imagery.html#sphx-glr-auto-examples-plot-cross-session-motor-imagery-py"><span class="std std-ref">Cross-Session Motor Imagery</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Cross-Session Motor Imagery</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a cross-session analysis on two MI datasets using a CSP+LDA p..."><img alt="Cross-Session on Multiple Datasets" src="../_images/sphx_glr_plot_cross_session_multiple_datasets_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/plot_cross_session_multiple_datasets.html#sphx-glr-auto-examples-plot-cross-session-multiple-datasets-py"><span class="std std-ref">Cross-Session on Multiple Datasets</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Cross-Session on Multiple Datasets</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="A paradigm defines how the raw data will be converted to trials ready to be processed by a deco..."><img alt="Explore Paradigm Object" src="../_images/sphx_glr_plot_explore_paradigm_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/plot_explore_paradigm.html#sphx-glr-auto-examples-plot-explore-paradigm-py"><span class="std std-ref">Explore Paradigm Object</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Explore Paradigm Object</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example show a comparison of CSP versus FilterBank CSP on the very popular dataset 2a from..."><img alt="FilterBank CSP versus CSP" src="../_images/sphx_glr_plot_filterbank_csp_vs_csp_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/advanced_examples/plot_filterbank_csp_vs_csp.html#sphx-glr-auto-examples-advanced-examples-plot-filterbank-csp-vs-csp-py"><span class="std std-ref">FilterBank CSP versus CSP</span></a></p>
+  <div class="sphx-glr-thumbnail-title">FilterBank CSP versus CSP</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to make a model selection in pipelines for finding the best model..."><img alt="GridSearch within a session" src="../_images/sphx_glr_plot_grid_search_withinsession_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/advanced_examples/plot_grid_search_withinsession.html#sphx-glr-auto-examples-advanced-examples-plot-grid-search-withinsession-py"><span class="std std-ref">GridSearch within a session</span></a></p>
+  <div class="sphx-glr-thumbnail-title">GridSearch within a session</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Within paradigm, it is possible to restrict analysis only to a subset of electrodes and to resa..."><img alt="Select Electrodes and Resampling" src="../_images/sphx_glr_plot_select_electrodes_resample_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/advanced_examples/plot_select_electrodes_resample.html#sphx-glr-auto-examples-advanced-examples-plot-select-electrodes-resample-py"><span class="std std-ref">Select Electrodes and Resampling</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Select Electrodes and Resampling</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="The MOABB codebase comes with convenience plotting utilities and some statistical testing. This..."><img alt="Statistical Analysis" src="../_images/sphx_glr_plot_statistical_analysis_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/advanced_examples/plot_statistical_analysis.html#sphx-glr-auto-examples-advanced-examples-plot-statistical-analysis-py"><span class="std std-ref">Statistical Analysis</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Statistical Analysis</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session motor imagery analysis on the very popular d..."><img alt="Within Session Motor Imagery with Learning Curve" src="../_images/sphx_glr_plot_learning_curve_motor_imagery_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/learning_curve/plot_learning_curve_motor_imagery.html#sphx-glr-auto-examples-learning-curve-plot-learning-curve-motor-imagery-py"><span class="std std-ref">Within Session Motor Imagery with Learning Curve</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Within Session Motor Imagery with Learning Curve</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial takes you through a basic working example of how to use this codebase, including ..."><img alt="Getting Started" src="../_images/sphx_glr_plot_Getting_Started_thumb.png" />
+<p><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html#sphx-glr-auto-tutorials-plot-getting-started-py"><span class="std std-ref">Getting Started</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Getting Started</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we will go through all the steps to make a simple BCI classification task, dow..."><img alt="Tutorial 1: Simple Motor Imagery" src="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_thumb.png" />
+<p><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html#sphx-glr-auto-tutorials-tutorial-1-simple-example-motor-imagery-py"><span class="std std-ref">Tutorial 1: Simple Motor Imagery</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Tutorial 1: Simple Motor Imagery</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="We extend the previous example to a case where we want to analyze the score of a classifier wit..."><img alt="Tutorial 2: Using multiple datasets" src="../_images/sphx_glr_tutorial_2_using_mulitple_datasets_thumb.png" />
+<p><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html#sphx-glr-auto-tutorials-tutorial-2-using-mulitple-datasets-py"><span class="std std-ref">Tutorial 2: Using multiple datasets</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Tutorial 2: Using multiple datasets</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this last part, we extend the previous example by assessing the classification score of not ..."><img alt="Basic tutorial on how to use MOABB." src="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_thumb.png" />
+<p><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html#sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"><span class="std std-ref">Basic tutorial on how to use MOABB.</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Basic tutorial on how to use MOABB.</div>
+</div></div><div style='clear:both'></div></section>
+</section>
 
 
                 </article>
@@ -579,20 +544,20 @@ list of length one, for compatibility.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.bi2012.html"
+       href="moabb.datasets.AlexMI.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.bi2012</p>
+        <p class="prev-next-title">moabb.datasets.AlexMI</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.bi2014a.html"
+       href="moabb.datasets.BNCI2014_002.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.bi2014a</p>
+        <p class="prev-next-title">moabb.datasets.BNCI2014_002</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -614,10 +579,8 @@ list of length one, for compatibility.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.bi2013a"><code class="docutils literal notranslate"><span class="pre">bi2013a</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.bi2013a.data_path"><code class="docutils literal notranslate"><span class="pre">bi2013a.data_path()</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.BNCI2014_001"><code class="docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-moabb-datasets-bnci2014-001">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.BNCI2014_001</span></code></a></li>
 </ul>
   </nav></div>
 
