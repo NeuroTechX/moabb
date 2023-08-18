@@ -1,5 +1,10 @@
 .. _data_summary:
 
+.. automodule:: moabb.datasets
+
+.. currentmodule:: moabb.datasets
+
+
 Data Summary
 ======================
 
@@ -20,7 +25,7 @@ Motor Imagery
    :header: Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, Total_trials
    :class: sortable
 
-        AlexMI,8,16,3,20,3s,512Hz,1,1,480
+        :class:`AlexMI`,8,16,3,20,3s,512Hz,1,1,480
         BNCI2014_001,9,22,4,144,4s,250Hz,2,6,62208
         BNCI2014_002,14,15,2,80,5s,512Hz,1,8,17920
         BNCI2014_004,9,3,2,360,4.5s,250Hz,5,1,32400
