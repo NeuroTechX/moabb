@@ -59,7 +59,7 @@ class BaseCVEP(BaseParadigm):
 
     def __init__(
         self,
-        filters=((1., 45.),),
+        filters=((1.0, 45.0),),
         events=None,
         n_classes=None,
         tmin=0.0,
@@ -80,7 +80,9 @@ class BaseCVEP(BaseParadigm):
 
         self.n_classes = n_classes
         if self.events is None:
-            log.warning(f"Choosing the first {n_classes} classes from all possible events.")
+            log.warning(
+                f"Choosing the first {n_classes} classes from all possible events."
+            )
         else:
             assert n_classes <= len(self.events), "More classes than events specified"
 
@@ -134,10 +136,7 @@ class BaseCVEP(BaseParadigm):
         else:
             interval = self.tmax - self.tmin
         return utils.dataset_search(
-            paradigm="cvep",
-            events=self.events,
-            interval=interval,
-            has_all_events=True
+            paradigm="cvep", events=self.events, interval=interval, has_all_events=True
         )
 
     @property
@@ -246,7 +245,7 @@ class FilterBankCVEP(BaseCVEP):
         If not None, resample the eeg data with the sampling rate provided.
     """
 
-    def __init__(self, filters=((1., 45.), (12., 45.), (30., 45.)), **kwargs):
+    def __init__(self, filters=((1.0, 45.0), (12.0, 45.0), (30.0, 45.0)), **kwargs):
         super().__init__(filters=filters, **kwargs)
 
 
