@@ -141,7 +141,7 @@ class BaseCVEP(BaseParadigm):
         about this default scoring method can be found in the original
         moabb paper.
         """
-        if self.n_classes == 2:
+        if self.n_classes and self.n_classes == 2:
             return "roc_auc"
         else:
             return "accuracy"

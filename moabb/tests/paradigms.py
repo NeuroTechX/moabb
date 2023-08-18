@@ -983,3 +983,11 @@ class Test_CVEP(unittest.TestCase):
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
         self.assertIsInstance(epochs, BaseEpochs)
+
+    def test_scoring(self):
+        assert CVEP().scoring == "accuracy"
+        assert CVEP(n_classes=3).scoring == "accuracy"
+        assert CVEP(n_classes=2).scoring == "roc_auc"
+        assert CVEP(events=["1.0", "0.0"], n_classes=2).scoring == "roc_auc"
+        assert CVEP(events=["1.0", "0.5", "0.0"], n_classes=3).scoring == "accuracy"
+        assert CVEP(events=["1.0", "0.5", "0.0"], n_classes=2).scoring == "roc_auc"
