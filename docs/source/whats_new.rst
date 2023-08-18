@@ -42,6 +42,10 @@ Enhancements
 - Add methods ``make_processing_pipelines`` and ``make_labels_pipeline`` to :class:`moabb.paradigms.base.BaseProcessing` (:gh:`447` by `Pierre Guetschel`_)
 - Pipelines' digests are now computed from the whole processing+classification pipeline (:gh:`447` by `Pierre Guetschel`_)
 - Update all dataset codes to remove white spaces and underscores (:gh:`448` by `Pierre Guetschel`_)
+- Add :func:`moabb.utils.depreciated_alias` decorator (:gh:`455` by `Pierre Guetschel`_)
+- Rename many dataset class names to standardize and deprecate old names (:gh:`455` by `Pierre Guetschel`_)
+- Change many dataset codes to match the class names (:gh:`455` by `Pierre Guetschel`_)
+- Add :obj:`moabb.datasets.compound_dataset.utils.compound_dataset_list`  (:gh:`455` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~

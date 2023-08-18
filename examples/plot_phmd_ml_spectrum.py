@@ -5,7 +5,7 @@ Spectral analysis of the trials
 
 This example demonstrates how to perform spectral
 analysis on epochs extracted from a specific subject
-within the :class:`moabb.datasets.HeadMountedDisplay`  dataset.
+within the :class:`moabb.datasets.Cattan2019_PHMD`  dataset.
 
 """
 
@@ -18,7 +18,7 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 
-from moabb.datasets import HeadMountedDisplay
+from moabb.datasets import Cattan2019_PHMD
 from moabb.paradigms import RestingStateToP300Adapter
 
 
@@ -29,7 +29,7 @@ warnings.filterwarnings("ignore")
 # ---------------
 #
 # 1) Specify the channel and subject to compute the power spectrum.
-# 2) Create an instance of the :class:`moabb.datasets.HeadMountedDisplay` dataset.
+# 2) Create an instance of the :class:`moabb.datasets.Cattan2019_PHMD` dataset.
 # 3) Create an instance of the :class:`moabb.paradigms.RestingStateToP300Adapter`  paradigm.
 #    By default, the data is filtered between 1-35 Hz,
 #    and epochs are extracted from 10 to 50 seconds after event tagging.
@@ -38,7 +38,7 @@ warnings.filterwarnings("ignore")
 channel = "Cz"
 subject = 1
 
-dataset = HeadMountedDisplay()
+dataset = Cattan2019_PHMD()
 events = ["on", "off"]
 paradigm = RestingStateToP300Adapter(events=events, channels=[channel])
 

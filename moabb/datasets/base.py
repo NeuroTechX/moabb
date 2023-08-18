@@ -100,9 +100,17 @@ def apply_step(pipeline, obj):
         raise error
 
 
-def is_camel_kebab_case(name):
+def is_camel_kebab_case(name: str):
     """Check if a string is in CamelCase but can also contain dashes."""
     return re.fullmatch(r"[a-zA-Z0-9\-]+", name) is not None
+
+
+def is_abbrev(abbrev_name: str, full_name: str):
+    """Check if abbrev_name is an abbreviation of full_name,
+    i.e. ifthe characters in abbrev_name are all in full_name
+    and in the same order. They must share the same capital letters."""
+    pattern = re.sub(r"([A-Za-z])", r"\1[a-z0-9\-]*", re.escape(abbrev_name))
+    return re.fullmatch(pattern, full_name) is not None
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
@@ -166,7 +174,15 @@ class BaseDataset(metaclass=abc.ABCMeta):
         if not is_camel_kebab_case(code):
             raise ValueError(
                 f"code {code!r} must be in Camel-KebabCase; "
-                "i.e. use CamelCase, and add dashes where absolutely necessary."
+                "i.e. use CamelCase, and add dashes where absolutely necessary. "
+                "See moabb.datasets.base.is_camel_kebab_case for more information."
+            )
+        class_name = self.__class__.__name__.replace("_", "-")
+        if not is_abbrev(class_name, code):
+            log.warning(
+                f"The dataset class name {class_name!r} must be an abbreviation "
+                f"of its code {code!r}. "
+                "See moabb.datasets.base.is_abbrev for more information."
             )
 
         self.subject_list = subjects

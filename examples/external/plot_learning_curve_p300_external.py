@@ -33,7 +33,7 @@ from tdlda import TimeDecoupledLda
 from tdlda import Vectorizer as JumpingMeansVectorizer
 
 import moabb
-from moabb.datasets import BNCI2014009
+from moabb.datasets import BNCI2014_009
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
 
@@ -99,7 +99,7 @@ pipelines["JM+TD-LDA"] = make_pipeline(jmv, c)
 # and dataset size.
 
 paradigm = P300(resample=processing_sampling_rate)
-dataset = BNCI2014009()
+dataset = BNCI2014_009()
 # Remove the slicing of the subject list to evaluate multiple subjects
 dataset.subject_list = dataset.subject_list[0:1]
 datasets = [dataset]

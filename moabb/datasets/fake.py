@@ -7,7 +7,7 @@ from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 from moabb.datasets.base import BaseDataset
-from moabb.datasets.braininvaders import VirtualReality
+from moabb.datasets.braininvaders import Cattan2019_VR
 from moabb.datasets.utils import block_rep
 
 
@@ -48,8 +48,9 @@ class FakeDataset(BaseDataset):
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         self.channels = channels
         code = (
-            f"{code}-{paradigm.capitalize()}-{n_subjects}-{n_sessions}-{n_runs}-"
-            f"{''.join([e.replace('_', '').capitalize() for e in event_list])}-{''.join(channels)}"
+            f"{code}-{paradigm.lower()}-{n_subjects}-{n_sessions}-{n_runs}-"
+            f"{''.join([e.replace('_', '').lower() for e in event_list])}-"
+            f"{''.join([c.lower() for c in channels])}"
         )
         super().__init__(
             subjects=list(range(1, n_subjects + 1)),
@@ -101,7 +102,7 @@ class FakeDataset(BaseDataset):
 
 
 class FakeVirtualRealityDataset(FakeDataset):
-    """Fake VirtualReality dataset for test purpose.
+    """Fake Cattan2019_VR dataset for test purpose.
 
     .. versionadded:: 0.5.0
     """
@@ -144,7 +145,7 @@ class FakeVirtualRealityDataset(FakeDataset):
         See also
         --------
         BaseDataset.get_data
-        VirtualReality.get_block_repetition
+        Cattan2019_VR.get_block_repetition
 
         Parameters
         ----------
@@ -160,6 +161,6 @@ class FakeVirtualRealityDataset(FakeDataset):
         data: Dict
             dict containing the raw data
         """
-        return VirtualReality.get_block_repetition(
+        return Cattan2019_VR.get_block_repetition(
             self, paradigm, subjects, block_list, repetition_list
         )
