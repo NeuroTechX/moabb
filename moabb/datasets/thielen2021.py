@@ -116,6 +116,7 @@ class Thielen2021(BaseDataset):
             sessions_per_subject=1,
             events={"1.0": 101, "0.0": 100},
             code="Thielen2021",
+            interval=(0, 0.3),
             paradigm="cvep",
             doi="10.34973/9txv-z787",
         )
