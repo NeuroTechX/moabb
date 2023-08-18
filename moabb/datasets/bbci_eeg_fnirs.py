@@ -74,11 +74,16 @@ def fnirs_data_path(path, subject, accept):
     return [op.join(datapath, fn) for fn in ["cnt.mat", "mrk.mat"]]
 
 
-class Shin2017(BaseDataset):
+class BaseShin2017(BaseDataset):
     """Not to be used."""
 
     def __init__(
-        self, fnirs=False, motor_imagery=True, mental_arithmetic=False, accept=False
+        self,
+        suffix,
+        fnirs=False,
+        motor_imagery=True,
+        mental_arithmetic=False,
+        accept=False,
     ):
         if not any([motor_imagery, mental_arithmetic]):
             raise (
@@ -107,7 +112,7 @@ class Shin2017(BaseDataset):
             subjects=list(range(1, 30)),
             sessions_per_subject=n_sessions,
             events=events,
-            code="Shin2017",
+            code="Shin2017" + suffix,
             # marker is for *task* start not cue start
             interval=[0, 10],
             paradigm=("/").join(paradigms),
@@ -180,7 +185,7 @@ class Shin2017(BaseDataset):
             return eeg_data_path(op.join(path, "MNE-eegfnirs-data"), subject, self.accept)
 
 
-class Shin2017A(Shin2017):
+class Shin2017A(BaseShin2017):
     """Motor Imagey Dataset from Shin et al 2017.
 
     .. admonition:: Dataset summary
@@ -295,12 +300,15 @@ class Shin2017A(Shin2017):
 
     def __init__(self, accept=False):
         super().__init__(
-            fnirs=False, motor_imagery=True, mental_arithmetic=False, accept=accept
+            suffix="A",
+            fnirs=False,
+            motor_imagery=True,
+            mental_arithmetic=False,
+            accept=accept,
         )
-        self.code = "Shin2017A"
 
 
-class Shin2017B(Shin2017):
+class Shin2017B(BaseShin2017):
     """Mental Arithmetic Dataset from Shin et al 2017.
 
     .. admonition:: Dataset summary
@@ -408,6 +416,9 @@ class Shin2017B(Shin2017):
 
     def __init__(self, accept=False):
         super().__init__(
-            fnirs=False, motor_imagery=False, mental_arithmetic=True, accept=accept
+            suffix="B",
+            fnirs=False,
+            motor_imagery=False,
+            mental_arithmetic=True,
+            accept=accept,
         )
-        self.code = "Shin2017B"

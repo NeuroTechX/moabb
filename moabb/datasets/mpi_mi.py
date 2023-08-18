@@ -5,22 +5,24 @@ import numpy as np
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.utils import depreciated_alias
 
 
 DOWNLOAD_URL = "https://zenodo.org/record/1217449/files/"
 
 
-class MunichMI(BaseDataset):
+@depreciated_alias("MunichMI", "0.7")
+class GrosseWentrup2009(BaseDataset):
     """Munich Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name        #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ========  =======  =======  ==========  =================  ============  ===============  ===========
-        MunichMI       10      128           2                150  7s            500Hz                      1
-        ========  =======  =======  ==========  =================  ============  ===============  ===========
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
+        Name                 #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
+        GrosseWentrup2009       10      128           2                150  7s            500Hz                      1
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
 
     Motor imagery dataset from Grosse-Wentrup et al. 2009 [1]_.
 

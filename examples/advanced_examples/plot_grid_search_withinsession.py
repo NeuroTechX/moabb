@@ -17,7 +17,7 @@ from pyriemann.tangentspace import TangentSpace
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
-from moabb.datasets import BNCI2014001
+from moabb.datasets import BNCI2014_001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import MotorImagery
 
@@ -30,7 +30,7 @@ tmax = None
 # Select the Subject
 subjects = [1]
 # Load the dataset
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 
 events = ["right_hand", "left_hand"]
 
@@ -144,7 +144,7 @@ search_session_E = joblib.load(
     os.path.join(
         path,
         "GridSearch_WithinSession",
-        "001-2014",
+        "BNCI2014-001",
         "1",
         "session_E",
         "GridSearchEN",
@@ -164,7 +164,7 @@ search_session_T = joblib.load(
     os.path.join(
         path,
         "GridSearch_WithinSession",
-        "001-2014",
+        "BNCI2014-001",
         "1",
         "session_T",
         "GridSearchEN",
