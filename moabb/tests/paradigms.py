@@ -791,7 +791,7 @@ class Test_FixedIntervalWindowsProcessing(unittest.TestCase):
 class Test_CVEP(unittest.TestCase):
     def test_BaseCVEP_paradigm(self):
         paradigm = BaseCVEP(n_classes=None)
-        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        dataset = FakeDataset(event_list=["1.0", "0.0"], paradigm="cvep")
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # Verify that they have the same length
@@ -856,7 +856,7 @@ class Test_CVEP(unittest.TestCase):
     def test_BaseCVEP_nclasses_default(self):
         # Default is with 2 classes
         paradigm = BaseCVEP()
-        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        dataset = FakeDataset(event_list=["1.0", "0.0"], paradigm="cvep")
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # labels must contain all 3 classes of dataset,
@@ -866,7 +866,9 @@ class Test_CVEP(unittest.TestCase):
     def test_BaseCVEP_specified_nclasses(self):
         # Set the number of classes
         paradigm = BaseCVEP(n_classes=3)
-        dataset = FakeDataset(event_list=["0", "1", "2", "3", "4"], paradigm="cvep")
+        dataset = FakeDataset(
+            event_list=["0.0", "0.25", "0.5", "0.75", "1.0"], paradigm="cvep"
+        )
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # labels must contain 3 values
@@ -874,11 +876,11 @@ class Test_CVEP(unittest.TestCase):
 
     def test_BaseCVEP_toomany_nclasses(self):
         paradigm = BaseCVEP(n_classes=4)
-        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        dataset = FakeDataset(event_list=["1.0", "0.0"], paradigm="cvep")
         self.assertRaises(ValueError, paradigm.get_data, dataset)
 
     def test_BaseCVEP_moreclassesthanevent(self):
-        self.assertRaises(AssertionError, BaseCVEP, n_classes=3, events=["1", "0"])
+        self.assertRaises(AssertionError, BaseCVEP, n_classes=3, events=["1.0", "0.0"])
 
     def test_BaseCVEP_droppedevent(self):
         dataset = FakeDataset(paradigm="cvep")
@@ -909,13 +911,13 @@ class Test_CVEP(unittest.TestCase):
 
     def test_CVEP_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap
-        paradigm = CVEP(events=["1", "0"], n_classes=2)
+        paradigm = CVEP(events=["1.0", "0.0"], n_classes=2)
         dataset = FakeDataset(event_list=["13", "14"], paradigm="cvep")
         self.assertRaises(AssertionError, paradigm.get_data, dataset)
 
     def test_CVEP_paradigm(self):
         paradigm = CVEP(n_classes=None)
-        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        dataset = FakeDataset(event_list=["1.0", "0.0"], paradigm="cvep")
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # Verify that they have the same length
@@ -939,7 +941,7 @@ class Test_CVEP(unittest.TestCase):
     def test_CVEP_singlepass(self):
         # Accept only single pass filter
         paradigm = CVEP(fmin=2.0, fmax=40.0)
-        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        dataset = FakeDataset(event_list=["1.0", "0.0"], paradigm="cvep")
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # Verify that they have the same length
@@ -960,7 +962,7 @@ class Test_CVEP(unittest.TestCase):
     def test_FilterBankCVEP_paradigm(self):
         # FilterBankCVEP with all events
         paradigm = FilterBankCVEP(n_classes=None)
-        dataset = FakeDataset(event_list=["1", "0"], paradigm="cvep")
+        dataset = FakeDataset(event_list=["1.0", "0.0"], paradigm="cvep")
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D array
@@ -974,7 +976,7 @@ class Test_CVEP(unittest.TestCase):
     def test_FilterBankCVEP_filters(self):
         # can work with filter bank
         paradigm = FilterBankCVEP(filters=((1.0, 45.0), (12.0, 45.0)))
-        dataset = FakeDataset(event_list=["1.", "0"], paradigm="cvep")
+        dataset = FakeDataset(event_list=["1.0", "0.0"], paradigm="cvep")
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D array with d=2 as last dimension for the 2 filters

@@ -24,7 +24,7 @@ class TestBenchmark(unittest.TestCase):
                 "FakeDataset-imagery-10-2-2-lefthandrighthand-c3czc4",
                 "FakeDataset-p300-10-2-2-targetnontarget-c3czc4",
                 "FakeDataset-ssvep-10-2-2-1315-c3czc4",
-                "FakeDataset-cvep-10-2-2-10-c3czc4",
+                "FakeDataset-cvep-10-2-2-1000-c3czc4",
             ],
             overwrite=True,
         )
@@ -38,7 +38,7 @@ class TestBenchmark(unittest.TestCase):
                 FakeDataset(["left_hand", "right_hand"], paradigm="imagery"),
                 FakeDataset(["Target", "NonTarget"], paradigm="p300"),
                 FakeDataset(["13", "15"], paradigm="ssvep"),
-                FakeDataset(["1", "0"], paradigm="cvep"),
+                FakeDataset(["1.0", "0.0"], paradigm="cvep"),
             ],
             overwrite=True,
         )
