@@ -91,7 +91,7 @@ c-VEP
    :header: Dataset, #Subj, #Chan, #Classes, #Trials / class, Trials length, #Epochs / class, Sampling rate, #Sessions, Codes, Presentation rate
    :class: sortable
 
-   Thielen2021,30,8,20,5,31.5s,18900 NT / 18900 T,512Hz,1,Gold codes,60Hz
+   :class:`Thielen2021`,30,8,20,5,31.5s,18900 NT / 18900 T,512Hz,1,Gold codes,60Hz
 
 
 Resting States
