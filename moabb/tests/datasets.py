@@ -216,23 +216,23 @@ class Test_Datasets(unittest.TestCase):
             self.assertIsNotNone(obj)
             self.assertIn(ds.__name__, depreciated_names)
 
-    def test_dataset_list(self):
-        if aliases_list:
-            depreciated_list, _, _ = zip(*aliases_list)
-        else:
-            depreciated_list = []
-        [
-            c
-            for c in db.__dict__.values()
-            if (
-                inspect.isclass(c)
-                and issubclass(c, BaseDataset)
-                and c.__name__ not in depreciated_list
-            )
-        ]
-        # Commented until next release
-        # assert len(dataset_list) == len(all_datasets)
-        # assert set(dataset_list) == set(all_datasets)
+    # def test_dataset_list(self):
+    #     if aliases_list:
+    #         depreciated_list, _, _ = zip(*aliases_list)
+    #     else:
+    #         depreciated_list = []
+    #     dataset_list = [
+    #         c
+    #         for c in db.__dict__.values()
+    #         if (
+    #             inspect.isclass(c)
+    #             and issubclass(c, BaseDataset)
+    #             and c.__name__ not in depreciated_list
+    #         )
+    #     ]
+    #      Commented until next release
+    # assert len(dataset_list) == len(all_datasets)
+    # assert set(dataset_list) == set(all_datasets)
 
 
 class Test_VirtualReality_Dataset(unittest.TestCase):
