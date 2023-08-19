@@ -183,6 +183,8 @@ class Test_Datasets(unittest.TestCase):
     def test_datasets_init(self):
         codes = []
         logger = logging.getLogger("moabb.datasets.base")
+        deprecated_list, _, _ = zip(*aliases_list)
+
         for ds in dataset_list:
             kwargs = {}
             if inspect.signature(ds).parameters.get("accept"):
@@ -195,10 +197,11 @@ class Test_Datasets(unittest.TestCase):
             # Commented for now, return in next release
             # self.assertEqual(len(cm.output), 1)
             self.assertIsNotNone(obj)
-            codes.append(obj.code)
+            if type(obj).__name__ not in deprecated_list:
+                codes.append(obj.code)
 
         # Check that all codes are unique:
-        # self.assertEqual(len(codes), len(set(codes)))
+        self.assertEqual(len(codes), len(set(codes)))
 
     def test_depreciated_datasets_init(self):
         depreciated_names, _, _ = zip(*aliases_list)
