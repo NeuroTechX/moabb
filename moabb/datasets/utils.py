@@ -15,9 +15,6 @@ def _init_dataset_list():
             dataset_list.append(ds[1])
 
 
-_init_dataset_list()
-
-
 def dataset_search(  # noqa: C901
     paradigm=None,
     multi_session=False,

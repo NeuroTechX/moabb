@@ -1,6 +1,7 @@
 """Base class for a dataset."""
 import abc
 import logging
+import re
 import traceback
 from dataclasses import dataclass
 from enum import Enum
@@ -125,6 +126,19 @@ def apply_step(pipeline, obj):
         raise error
 
 
+def is_camel_kebab_case(name: str):
+    """Check if a string is in CamelCase but can also contain dashes."""
+    return re.fullmatch(r"[a-zA-Z0-9\-]+", name) is not None
+
+
+def is_abbrev(abbrev_name: str, full_name: str):
+    """Check if abbrev_name is an abbreviation of full_name,
+    i.e. ifthe characters in abbrev_name are all in full_name
+    and in the same order. They must share the same capital letters."""
+    pattern = re.sub(r"([A-Za-z])", r"\1[a-z0-9\-]*", re.escape(abbrev_name))
+    return re.fullmatch(pattern, full_name) is not None
+
+
 class BaseDataset(metaclass=abc.ABCMeta):
     """Abstract Moabb BaseDataset.
 
@@ -154,7 +168,8 @@ class BaseDataset(metaclass=abc.ABCMeta):
         - word_ass (for word association)
 
     code: string
-        Unique identifier for dataset, used in all plots
+        Unique identifier for dataset, used in all plots.
+        The code should be in CamelCase.
 
     interval: list with 2 entries
         Imagery interval as defined in the dataset description
@@ -181,6 +196,20 @@ class BaseDataset(metaclass=abc.ABCMeta):
             _ = iter(subjects)
         except TypeError:
             raise ValueError("subjects must be a iterable, like a list") from None
+
+        if not is_camel_kebab_case(code):
+            raise ValueError(
+                f"code {code!r} must be in Camel-KebabCase; "
+                "i.e. use CamelCase, and add dashes where absolutely necessary. "
+                "See moabb.datasets.base.is_camel_kebab_case for more information."
+            )
+        class_name = self.__class__.__name__.replace("_", "-")
+        if not is_abbrev(class_name, code):
+            log.warning(
+                f"The dataset class name {class_name!r} must be an abbreviation "
+                f"of its code {code!r}. "
+                "See moabb.datasets.base.is_abbrev for more information."
+            )
 
         self.subject_list = subjects
         self.n_sessions = sessions_per_subject

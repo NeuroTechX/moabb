@@ -18,7 +18,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014001
+from moabb.datasets import BNCI2014_001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import FilterBankLeftRightImagery, LeftRightImagery
 from moabb.pipelines.utils import FilterBank
@@ -61,7 +61,7 @@ pipelines_fb["FBCSP+LDA"] = make_pipeline(FilterBank(CSP(n_components=4)), LDA()
 # from 8 to 35 Hz.
 
 # Because this is being auto-generated we only use 2 subjects
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 dataset.subject_list = dataset.subject_list[:2]
 datasets = [dataset]
 overwrite = False  # set to True if we want to overwrite cached results

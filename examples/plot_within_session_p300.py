@@ -29,7 +29,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014009
+from moabb.datasets import BNCI2014_009
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import P300
 
@@ -81,7 +81,7 @@ pipelines["Xdw+LDA"] = make_pipeline(
 # be overwritten if necessary.
 
 paradigm = P300(resample=128)
-dataset = BNCI2014009()
+dataset = BNCI2014_009()
 dataset.subject_list = dataset.subject_list[:2]
 datasets = [dataset]
 overwrite = True  # set to True if we want to overwrite cached results

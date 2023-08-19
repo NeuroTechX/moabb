@@ -24,7 +24,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014001, Zhou2016
+from moabb.datasets import BNCI2014_001, Zhou2016
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
@@ -40,7 +40,7 @@ moabb.set_log_level("info")
 # Load 2 subjects of BNCI 2014-004 and Zhou2016 datasets, with 2 session each
 
 subj = [1, 2]
-datasets = [Zhou2016(), BNCI2014001()]
+datasets = [Zhou2016(), BNCI2014_001()]
 for d in datasets:
     d.subject_list = subj
 
