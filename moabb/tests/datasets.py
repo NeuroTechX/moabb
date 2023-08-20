@@ -189,12 +189,11 @@ class Test_Datasets(unittest.TestCase):
             kwargs = {}
             if inspect.signature(ds).parameters.get("accept"):
                 kwargs["accept"] = True
-            with self.assertLogs(logger="moabb.datasets.base", level="WARNING"):
+            with self.assertLogs(logger="moabb.datasets.base", level="WARNING") as cm:
                 # We test if the is_abrev does not throw a warning.
                 # Trick needed because assertNoLogs only inrtoduced in python 3.10:
                 logger.warning(f"Testing {ds.__name__}")
                 obj = ds(**kwargs)
-            # Commented for now, return in next release
             if type(obj).__name__ not in deprecated_list:
                 self.assertEqual(len(cm.output), 1)
             self.assertIsNotNone(obj)
