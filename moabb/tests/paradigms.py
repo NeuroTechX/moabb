@@ -18,6 +18,7 @@ from moabb.paradigms import (
     BaseMotorImagery,
     BaseP300,
     BaseSSVEP,
+    FakeCVEPParadigm,
     FilterBankCVEP,
     FilterBankFixedIntervalWindowsProcessing,
     FilterBankLeftRightImagery,
@@ -790,6 +791,18 @@ class Test_FixedIntervalWindowsProcessing(unittest.TestCase):
                 )
 
 
+# Define the FakeLogger class outside of the test class
+class FakeLogger:
+    def __init__(self):
+        self.messages = []
+
+    def warning(self, message):
+        self.messages.append(message)
+
+    def format_warning(self, message):
+        return f"WARNING: {message}"
+
+
 class Test_CVEP:
     @pytest.fixture
     def fix_paradigm(self):
@@ -820,6 +833,66 @@ class Test_CVEP:
         ep1, _, _ = paradigm.get_data(datasetA, subjects=[1], return_epochs=True)
         ep2, _, _ = paradigm.get_data(datasetB, subjects=[1], return_epochs=True)
         return ep1, ep2
+
+    def test_base_cvep_init(self):
+        # Test without events
+        base_cvep = BaseCVEP(n_classes=2)
+        assert base_cvep
+
+        # Test with events
+        base_cvep = BaseCVEP(events=["event1", "event2"], n_classes=2)
+        assert base_cvep
+
+        # Test with more classes than events (should raise an exception)
+        with pytest.raises(AssertionError):
+            _ = BaseCVEP(events=["event1"], n_classes=2)
+
+    def test_base_cvep_is_valid(self, fix_fake_dataset) -> None:
+        base_cvep = BaseCVEP()
+        assert base_cvep.is_valid(fix_fake_dataset)
+
+    def test_is_valid_with_valid_dataset(self, fix_fake_dataset):
+        base_cvep = BaseCVEP(events=["1.0", "0.0"], n_classes=2)
+        assert base_cvep.is_valid(fix_fake_dataset)
+
+    def test_is_valid_with_invalid_paradigm(self):
+        invalid_dataset = FakeDataset(paradigm="ssvep")
+        base_cvep = BaseCVEP(events=["1.0", "0.0"], n_classes=2)
+        assert not base_cvep.is_valid(invalid_dataset)
+
+    def test_is_valid_with_missing_events(self):
+        valid_dataset = FakeDataset(paradigm="cvep", event_list=["1.0"])
+        base_cvep = BaseCVEP(events=["1.0", "0.0"], n_classes=2)
+        assert not base_cvep.is_valid(valid_dataset)
+
+    def test_cvep_init(self):
+        cvep = CVEP()
+        assert cvep
+
+    def test_used_events_with_all_events(self, fix_fake_dataset):
+        base_cvep = BaseCVEP(events=None, n_classes=2)
+        used_events = base_cvep.used_events(fix_fake_dataset)
+        assert used_events == {"1.0": 1, "0.0": 2}
+
+    def test_used_events_with_specific_events(self, fix_fake_dataset):
+        base_cvep = BaseCVEP(events=["1.0"], n_classes=1)
+        used_events = base_cvep.used_events(fix_fake_dataset)
+        assert used_events == {"1.0": 1}
+
+    def test_used_events_with_insufficient_events(self, fix_fake_dataset):
+        base_cvep = BaseCVEP(events=["1.0", "0.0", "2.0"], n_classes=3)
+        with pytest.raises(ValueError):
+            base_cvep.used_events(fix_fake_dataset)
+
+    def test_filterbank_cvep_init(self):
+        filterbank_cvep = FilterBankCVEP()
+        assert filterbank_cvep
+
+    def test_fake_cvep_paradigm_datasets(self) -> None:
+        fake_cvep = FakeCVEPParadigm()
+        datasets = fake_cvep.datasets
+        assert len(datasets) == 1
+        assert isinstance(datasets[0], FakeDataset)
 
     def test_get_data_with_paradigm(self, fix_test_paradigm, fix_fake_dataset) -> None:
         X, labels, metadata = fix_test_paradigm.get_data(fix_fake_dataset, subjects=[1])
