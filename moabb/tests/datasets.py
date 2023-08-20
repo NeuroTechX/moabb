@@ -195,7 +195,8 @@ class Test_Datasets(unittest.TestCase):
                 logger.warning(f"Testing {ds.__name__}")
                 obj = ds(**kwargs)
             # Commented for now, return in next release
-            # self.assertEqual(len(cm.output), 1)
+            if type(obj).__name__ not in deprecated_list:
+                self.assertEqual(len(cm.output), 1)
             self.assertIsNotNone(obj)
             if type(obj).__name__ not in deprecated_list:
                 codes.append(obj.code)
