@@ -1,4 +1,5 @@
 """Util functions for moabb."""
+import abc
 import inspect
 import logging
 import os
@@ -10,7 +11,7 @@ import sys
 import numpy as np
 from mne import get_config, set_config
 from mne import set_log_level as sll
-
+from docstring_inheritance import NumpyDocstringInheritanceMeta
 
 log = logging.getLogger(__name__)
 
@@ -208,3 +209,7 @@ def depreciated_alias(name, expire_version):
         return func
 
     return factory
+
+
+class MoabbMetaClass(abc.ABCMeta,NumpyDocstringInheritanceMeta):
+    pass

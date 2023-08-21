@@ -20,17 +20,17 @@ from moabb.datasets.preprocessing import (
     get_resample_pipeline,
 )
 
+from moabb.utils import MoabbMetaClass
 
 log = logging.getLogger(__name__)
 
 
-class BaseProcessing(metaclass=abc.ABCMeta):
+class BaseProcessing(metaclass=MoabbMetaClass):
     """Base Processing.
 
     Please use one of the child classes
 
-
-    Parameters
+    Attributes
     ----------
 
     filters: list of list (defaults [[7, 35]])
@@ -374,11 +374,11 @@ class BaseProcessing(metaclass=abc.ABCMeta):
 class BaseParadigm(BaseProcessing):
     """Base class for paradigms.
 
-    Parameters
+    Attributes
     ----------
 
     events: List of str | None (default None)
-        event to use for epoching. If None, default to all events defined in
+        events to use for epoching. If None, default to all events defined in
         the dataset.
     """
 
