@@ -83,19 +83,19 @@ The project is currently maintained by:
   <thead>
     <tr>
       <th>Sylvain Chevallier</th>
-      <th>Sara Sedlar</th>
       <th>Bruno Aristimunha</th>
       <th>Igor Carrara</th>
       <th>Pierre Guetschel</th>
+      <th>Sara Sedlar</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/5824988?s=150&amp;v=4" alt="Sylvain Chevallier"></td>
-      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/5344945?s=150&amp;v=4" alt="Sara Sedlar"></td>
       <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/42702466?s=150&amp;v=4" alt="Bruno Aristimunha"></td>
       <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/94047258?s=150&amp;v=4" alt="Igor Carrara"></td>
       <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/25532709?s=150&amp;v=4" alt="Pierre Guetschel"></td>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/5344945?s=150&amp;v=4" alt="Sara Sedlar"></td>
 </tr>
   </tbody>
 </table>
