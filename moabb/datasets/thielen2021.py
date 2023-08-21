@@ -140,7 +140,9 @@ class Thielen2021(BaseDataset):
             doi="10.34973/9txv-z787",
         )
 
-    def _add_stim_channel_trial(self, raw, onsets, labels, offset=200, ch_name="stim_trial"):
+    def _add_stim_channel_trial(
+        self, raw, onsets, labels, offset=200, ch_name="stim_trial"
+    ):
         """
         Add a stimulus channel with trial onsets and their labels.
 
@@ -174,8 +176,16 @@ class Thielen2021(BaseDataset):
         raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
         return raw
 
-    def _add_stim_channel_epoch(self, raw, onsets, labels, codes, presentation_rate=60, offset=100,
-                                ch_name="stim_epoch"):
+    def _add_stim_channel_epoch(
+        self,
+        raw,
+        onsets,
+        labels,
+        codes,
+        presentation_rate=60,
+        offset=100,
+        ch_name="stim_epoch",
+    ):
         """
         Add a stimulus channel with epoch onsets and their labels, which are the values of the presented code for each
         of the trials.
@@ -205,8 +215,7 @@ class Thielen2021(BaseDataset):
         stim_chan = np.zeros((1, len(raw)))
         for onset, label in zip(onsets, labels):
             idx = np.round(
-                onset
-                + np.arange(codes.shape[0]) / presentation_rate * raw.info["sfreq"]
+                onset + np.arange(codes.shape[0]) / presentation_rate * raw.info["sfreq"]
             ).astype("int")
             stim_chan[0, idx] = offset + codes[:, label]
         info = create_info(
@@ -231,7 +240,6 @@ class Thielen2021(BaseDataset):
         # There is only one session, each of 5 blocks (i.e., runs)
         sessions = {"session_1": {}}
         for i_b in range(NR_BLOCKS):
-
             # EEG
             raw = mne.io.read_raw_gdf(
                 file_path_list[2 * i_b],
@@ -269,11 +277,15 @@ class Thielen2021(BaseDataset):
 
             # Create stim channel with trial information (i.e., symbols)
             # Specifically: 200 = symbol-0, 201 = symbol-1, 202 = symbol-2, etc.
-            raw = self._add_stim_channel_trial(raw, trial_onsets, trial_labels, offset=200)
+            raw = self._add_stim_channel_trial(
+                raw, trial_onsets, trial_labels, offset=200
+            )
 
             # Create stim channel with epoch information (i.e., 1 / 0, or on / off)
             # Specifically: 100 = "0", 101 = "1"
-            raw = self._add_stim_channel_epoch(raw, trial_onsets, trial_labels, codes, PRESENTATION_RATE, offset=100)
+            raw = self._add_stim_channel_epoch(
+                raw, trial_onsets, trial_labels, codes, PRESENTATION_RATE, offset=100
+            )
 
             # Add data as a new run
             sessions["session_1"][f"run_{1 + i_b:02d}"] = raw
