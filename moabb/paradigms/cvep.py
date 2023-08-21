@@ -11,9 +11,15 @@ log = logging.getLogger(__name__)
 
 
 class BaseCVEP(BaseParadigm):
-    """Base c-VEP paradigm.
+    """Base c-VEP paradigm for epoch-level decoding.
 
     Please use one of the child classes.
+
+    This paradigm is meant to be used for epoch-level decoding of c-VEP
+    datasets; this means that the goal of the classifiers with this paradigm
+    is to predict, for every stimulation one by one, the amplitude of
+    the target code. The code value is between 0  (i.e., stimulation off)
+    and 1 (i.e., maximal stimulation).
 
     Parameters
     ----------
@@ -148,10 +154,16 @@ class BaseCVEP(BaseParadigm):
 
 
 class CVEP(BaseCVEP):
-    """Single bandpass c-VEP paradigm.
+    """Single bandpass c-VEP paradigm for epoch-level decoding.
 
     c-VEP paradigm with only one bandpass filter (default 1 to 45 Hz)
-    Metric is 'roc-auc' if 2 classes and 'accuracy' if more
+    Metric is 'roc-auc' if 2 classes and 'accuracy' if more.
+    This paradigm is meant to be used for epoch-level decoding of c-VEP
+    datasets; this means that the goal of the classifiers with this paradigm
+    is to predict, for every stimulation one by one, the amplitude of
+    the target code. The code value is between 0  (i.e., stimulation off)
+    and 1 (i.e., maximal stimulation).
+
 
     Parameters
     ----------
@@ -204,10 +216,15 @@ class CVEP(BaseCVEP):
 
 
 class FilterBankCVEP(BaseCVEP):
-    """Filterbank c-VEP paradigm.
+    """Filterbank c-VEP paradigm for epoch-level decoding.
 
     c-VEP paradigm with multiple bandpass filters.
     Metric is 'roc-auc' if 2 classes and 'accuracy' if more.
+    This paradigm is meant to be used for epoch-level decoding of c-VEP
+    datasets; this means that the goal of the classifiers with this paradigm
+    is to predict, for every stimulation one by one, the amplitude of
+    the target code. The code value is between 0  (i.e., stimulation off)
+    and 1 (i.e., maximal stimulation).
 
     Parameters
     ----------
@@ -248,7 +265,7 @@ class FilterBankCVEP(BaseCVEP):
 
 
 class FakeCVEPParadigm(BaseCVEP):
-    """Fake c-VEP dataset."""
+    """Fake c-VEP paradigm."""
 
     @property
     def datasets(self):
