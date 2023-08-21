@@ -86,6 +86,15 @@ SSVEP
 c-VEP
 ======================
 
+Include neuro experiments where the participant is presented with psuedo-random noise-codes,
+such as m-sequences, Gold codes, or any arbitrary "pseudo-random" code. Specifically, the
+difference with SSVEP is that SSVEP presents periodic stimuli, while c-VEP presents
+non-periodic stimuli. For a review of c-VEP BCI, see:
+
+Martínez-Cagigal, V., Thielen, J., Santamaria-Vazquez, E., Pérez-Velasco, S., Desain, P.,&
+Hornero, R. (2021). Brain–computer interfaces based on code-modulated visual evoked
+potentials (c-VEP): A literature review. Journal of Neural Engineering, 18(6), 061002.
+DOI: https://doi.org/10.1088/1741-2552/ac38cf
 
 .. csv-table::
    :header: Dataset, #Subj, #Chan, #Classes, #Trials / class, Trials length, #Epochs / class, Sampling rate, #Sessions, Codes, Presentation rate
