@@ -136,12 +136,12 @@ class MotorImagery(BaseMotorImagery):
     def __init__(self, fmin=8, fmax=32, n_classes=None, **kwargs):
         if "filters" in kwargs.keys():
             raise (ValueError("MotorImagery does not take argument filters"))
-        super().__init__(filters=[[fmin, fmax]], **kwargs)
         self.n_classes = n_classes
         if self.events is None:
             log.warning("Choosing from all possible events")
         elif self.n_classes is not None:
             assert n_classes <= len(self.events), "More classes than events specified"
+        super().__init__(filters=[[fmin, fmax]], **kwargs)
 
     def is_valid(self, dataset):
 
@@ -208,12 +208,12 @@ class FilterBankMotorImagery(MotorImagery):
         filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
         **kwargs,
     ):
-        super(MotorImagery, self).__init__(filters=filters, **kwargs)
         self.n_classes = n_classes
         if self.events is None:
             log.warning("Choosing from all possible events")
         elif self.n_classes is not None:
             assert n_classes <= len(self.events), "More classes than events specified"
+        super(MotorImagery, self).__init__(filters=filters, **kwargs)
 
 class FakeImageryParadigm(LeftRightImagery):
     """Fake Imagery for left hand/right hand classification."""
