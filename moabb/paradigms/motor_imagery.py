@@ -23,16 +23,16 @@ class BaseMotorImagery(BaseParadigm):
         bank of bandpass filter to apply.
 
     events: List of str | None (default None)
-        event to use for epoching. If None, default to all events defined in
+        events to use for epoching. If None, default to all events defined in
         the dataset.
 
     tmin: float (default 0.0)
-        Start time (in second) of the epoch, relative to the dataset specific
+        Start time (in seconds) of the epoch, relative to the dataset specific
         task interval e.g. tmin = 1 would mean the epoch will start 1 second
         after the beginning of the task as defined by the dataset.
 
     tmax: float | None, (default None)
-        End time (in second) of the epoch, relative to the beginning of the
+        End time (in seconds) of the epoch, relative to the beginning of the
         dataset specific task interval. tmax = 5 would mean the epoch will end
         5 second after the beginning of the task as defined in the dataset. If
         None, use the dataset value.
@@ -74,9 +74,10 @@ class BaseMotorImagery(BaseParadigm):
         )
 
     def is_valid(self, dataset):
-        ret = True
-        if not (dataset.paradigm == "imagery"):
-            ret = False
+
+        ret = dataset.paradigm == "imagery"
+        if not ret:
+            return ret
 
         # check if dataset has required events
         if self.events:
@@ -106,7 +107,7 @@ class BaseMotorImagery(BaseParadigm):
 
 
 class LeftRightImagery(BaseMotorImagery):
-    """Motor Imagery for left hand/right hand classification."""
+    """Motor Imagery for left hand/right hand motor imagery classification."""
 
     def __init__(self, fmin=8, fmax=32, **kwargs):
         if "events" in kwargs.keys():
@@ -200,18 +201,17 @@ class MotorImagery(BaseMotorImagery):
             assert n_classes <= len(self.events), "More classes than events specified"
 
     def is_valid(self, dataset):
-        ret = True
-        if not dataset.paradigm == "imagery":
-            ret = False
-        elif self.n_classes is None and self.events is None:
-            pass
-        elif self.events is None:
-            if len(dataset.event_id) < self.n_classes:
-                ret = False
-        else:
+
+        ret = dataset.paradigm == "imagery"
+        if not ret:
+            return ret
+
+        if self.events is None and self.n_classes:
+            ret = len(dataset.event_id) >= self.n_classes
+        elif self.events and self.n_classes:
             overlap = len(set(self.events) & set(dataset.event_id.keys()))
-            if self.n_classes is not None and overlap < self.n_classes:
-                ret = False
+            ret = overlap >= self.n_classes
+
         return ret
 
     def used_events(self, dataset):
