@@ -33,7 +33,6 @@ try:
 except ImportError:
     _carbonfootprint = False
 
-
 log = logging.getLogger(__name__)
 
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
@@ -305,6 +304,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 if _carbonfootprint:
                     res["carbon_emission"] = (1000 * emissions,)
                 subject_results.append(res)
+                self.push_result(res, pipelines)
 
         return subject_results
 
@@ -398,7 +398,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                             continue
                         not_enough_data = False
                         log.info(
-                            f"Permutation: {perm_i+1},"
+                            f"Permutation: {perm_i + 1},"
                             f" Training samples: {len(subset_indices)}"
                         )
 
@@ -661,6 +661,8 @@ class CrossSessionEvaluation(BaseEvaluation):
                     res["carbon_emission"] = (1000 * (emissions + emissions_grid),)
 
                 results.append(res)
+                self.push_result(res, pipelines)
+
         return results
 
     def is_valid(self, dataset):
@@ -859,6 +861,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                         res["carbon_emission"] = (
                             1000 * (emissions + emissions_grid[name]),
                         )
+                    self.push_result(res, pipelines)
                     yield res
 
     def is_valid(self, dataset):
