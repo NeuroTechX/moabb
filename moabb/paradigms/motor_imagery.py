@@ -209,7 +209,11 @@ class FilterBankMotorImagery(MotorImagery):
         **kwargs,
     ):
         super(MotorImagery, self).__init__(filters=filters, **kwargs)
-
+        self.n_classes = n_classes
+        if self.events is None:
+            log.warning("Choosing from all possible events")
+        elif self.n_classes is not None:
+            assert n_classes <= len(self.events), "More classes than events specified"
 
 class FakeImageryParadigm(LeftRightImagery):
     """Fake Imagery for left hand/right hand classification."""
