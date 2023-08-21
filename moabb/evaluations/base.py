@@ -163,9 +163,7 @@ class BaseEvaluation(ABC):
                 return_epochs=self.return_epochs,
                 return_raws=self.return_raws,
                 postprocess_pipeline=None,
-            )[
-                0
-            ]  # TODO: fix this
+            )[0]
             # (we only keep the pipeline for the first frequency band, better ideas?)
 
             results = self.evaluate(dataset, pipelines, param_grid, process_pipeline)
