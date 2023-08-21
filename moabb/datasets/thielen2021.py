@@ -16,7 +16,7 @@ Thielen2021_URL = "https://public.data.donders.ru.nl/dcc/DSC_2018.00122_448_v3"
 # Ahmadi, S., Borhanazad, M., Tump, D., Farquhar, J., & Desain, P. (2019). Low channel count montages using sensor
 # tying for VEP-based BCI. Journal of Neural Engineering, 16(6), 066038. DOI: https://doi.org/10.1088/1741-2552/ab4057
 ELECTRODE_MAPPING = {
-    "AF3": "Fz",
+    "AF3": "Fpz",
     "F3": "T7",
     "FC5": "O1",
     "P7": "POz",
@@ -223,7 +223,10 @@ class Thielen2021(BaseDataset):
         file_path_list = self.data_path(subject)
 
         # Codes
-        codes = np.tile(loadmat(file_path_list[-1])["codes"], (NR_CYCLES_PER_TRIAL, 1))
+        codes = np.tile(loadmat(file_path_list[-2])["codes"], (NR_CYCLES_PER_TRIAL, 1))
+
+        # Channels
+        montage = mne.channels.read_custom_montage(file_path_list[-1])
 
         # There is only one session, each of 5 blocks (i.e., runs)
         sessions = {"session_1": {}}
@@ -243,6 +246,7 @@ class Thielen2021(BaseDataset):
             # sensor tying for VEP-based BCI. Journal of Neural Engineering, 16(6), 066038.
             # DOI: https://doi.org/10.1088/1741-2552/ab4057
             mne.rename_channels(raw.info, ELECTRODE_MAPPING)
+            raw.set_montage(montage)
 
             # Labels at trial level (i.e., symbols)
             trial_labels = (
@@ -299,6 +303,10 @@ class Thielen2021(BaseDataset):
 
         # Codes
         url = f"{Thielen2021_URL:s}/resources/mgold_61_6521_flip_balanced_20.mat"
+        subject_paths.append(dl.data_dl(url, self.code, path, force_update, verbose))
+
+        # Channel locations
+        url = f"{Thielen2021_URL:s}/resources/nt_cap8.loc"
         subject_paths.append(dl.data_dl(url, self.code, path, force_update, verbose))
 
         return subject_paths
