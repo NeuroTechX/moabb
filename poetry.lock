@@ -1264,27 +1264,23 @@ test = ["EDFlib-Python", "black", "check-manifest", "codespell", "eeglabio", "im
 
 [[package]]
 name = "mne-bids"
-version = "0.13.dev0"
+version = "0.13"
 description = "MNE-BIDS: Organizing MEG, EEG, and iEEG data according to the BIDS specification and facilitating their analysis with MNE-Python"
 category = "main"
 optional = false
 python-versions = "~=3.8"
-files = []
-develop = false
+files = [
+    {file = "mne-bids-0.13.tar.gz", hash = "sha256:5c0217e11d06175c98f26285c61bf28f13d38a39b056ad8e6a7ce2e33c3df766"},
+    {file = "mne_bids-0.13-py2.py3-none-any.whl", hash = "sha256:540374d9f07948679bdef7831b9861b9e4c9ea96f8c33a7c2e2245a6ac80f8ee"},
+]
 
 [package.dependencies]
-mne = ">=1.3"
+mne = ">=1.4"
 numpy = ">=1.20.2"
 scipy = ">=1.6.3"
 
 [package.extras]
 full = ["EDFlib-Python (>=1.0.6)", "matplotlib (>=3.4.0)", "nibabel (>=3.2.1)", "pandas (>=1.2.4)", "pybv (>=0.7.5)", "pymatreader (>=0.0.30)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/mne-tools/mne-bids.git"
-reference = "HEAD"
-resolved_reference = "7ba64ac9397c18e40c3bd70a9632cfb68bb89892"
 
 [[package]]
 name = "nodeenv"
@@ -2864,4 +2860,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8, <3.11"
-content-hash = "996135202c6254a133354951d40f9f0540f539a3ec7e9099e7f07fd128837880"
+content-hash = "47a583e2cef5c2a15bd7a6be6c6e39d4d87981cda7d2fd4b1b3c17b10bd9f9ce"
