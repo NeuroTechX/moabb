@@ -19,8 +19,8 @@ from moabb.datasets.preprocessing import (
     get_filter_pipeline,
     get_resample_pipeline,
 )
-
 from moabb.utils import MoabbMetaClass
+
 
 log = logging.getLogger(__name__)
 

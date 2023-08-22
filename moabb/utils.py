@@ -9,9 +9,10 @@ import re
 import sys
 
 import numpy as np
+from docstring_inheritance import NumpyDocstringInheritanceMeta
 from mne import get_config, set_config
 from mne import set_log_level as sll
-from docstring_inheritance import NumpyDocstringInheritanceMeta
+
 
 log = logging.getLogger(__name__)
 
@@ -211,5 +212,5 @@ def depreciated_alias(name, expire_version):
     return factory
 
 
-class MoabbMetaClass(abc.ABCMeta,NumpyDocstringInheritanceMeta):
+class MoabbMetaClass(abc.ABCMeta, NumpyDocstringInheritanceMeta):
     pass

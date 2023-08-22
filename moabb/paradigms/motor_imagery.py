@@ -7,6 +7,7 @@ from moabb.datasets import utils
 from moabb.datasets.fake import FakeDataset
 from moabb.paradigms.base import BaseParadigm
 
+
 log = logging.getLogger(__name__)
 
 
@@ -38,7 +39,6 @@ class BaseMotorImagery(BaseParadigm):
         )
 
     def is_valid(self, dataset):
-
         ret = dataset.paradigm == "imagery"
         if not ret:
             return ret
@@ -144,7 +144,6 @@ class MotorImagery(BaseMotorImagery):
         super().__init__(filters=[[fmin, fmax]], **kwargs)
 
     def is_valid(self, dataset):
-
         ret = dataset.paradigm == "imagery"
         if not ret:
             return ret
@@ -222,6 +221,7 @@ class FilterBankMotorImagery(MotorImagery):
         elif self.n_classes is not None:
             assert n_classes <= len(self.events), "More classes than events specified"
         super(MotorImagery, self).__init__(filters=filters, **kwargs)
+
 
 class FakeImageryParadigm(LeftRightImagery):
     """Fake Imagery for left hand/right hand classification."""
