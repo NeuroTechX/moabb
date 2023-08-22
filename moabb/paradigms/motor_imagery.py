@@ -201,11 +201,19 @@ class MotorImagery(BaseMotorImagery):
 
 
 class FilterBankMotorImagery(MotorImagery):
-    """Filter bank N-class motor imagery."""
+    """Filter bank N-class motor imagery.
+
+    Attributes
+    -----------
+
+    n_classes: int (default number of available classes)
+        number of MotorImagery classes/events to select.
+    """
 
     def __init__(
         self,
         filters=([8, 12], [12, 16], [16, 20], [20, 24], [24, 28], [28, 32]),
+        n_classes=None,
         **kwargs,
     ):
         self.n_classes = n_classes
