@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>moabb.paradigms.FixedIntervalWindowsProcessing &#8212; moabb 0.5.0 documentation</title>
+    <title>moabb.paradigms.FilterBankCVEP &#8212; moabb 0.5.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.paradigms.FixedIntervalWindowsProcessing';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.paradigms.FilterBankCVEP';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.paradigms.FilterBankFixedIntervalWindowsProcessing" href="moabb.paradigms.FilterBankFixedIntervalWindowsProcessing.html" />
-    <link rel="prev" title="moabb.paradigms.FilterBankCVEP" href="moabb.paradigms.FilterBankCVEP.html" />
+    <link rel="next" title="moabb.paradigms.FixedIntervalWindowsProcessing" href="moabb.paradigms.FixedIntervalWindowsProcessing.html" />
+    <link rel="prev" title="moabb.paradigms.CVEP" href="moabb.paradigms.CVEP.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -410,7 +410,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.paradigms.FixedIntervalWindowsProcessing</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.paradigms.FilterBankCVEP</li>
   </ul>
 </nav>
 </div>
@@ -427,56 +427,50 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-paradigms-fixedintervalwindowsprocessing">
-<h1>moabb.paradigms.FixedIntervalWindowsProcessing<a class="headerlink" href="#moabb-paradigms-fixedintervalwindowsprocessing" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-paradigms-filterbankcvep">
+<h1>moabb.paradigms.FilterBankCVEP<a class="headerlink" href="#moabb-paradigms-filterbankcvep" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.paradigms.FixedIntervalWindowsProcessing">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.</span></span><span class="sig-name descname"><span class="pre">FixedIntervalWindowsProcessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">45</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/fixed_interval_windows.py#L124-L194"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.FixedIntervalWindowsProcessing" title="Permalink to this definition">#</a></dt>
-<dd><p>Fixed interval windows processing.</p>
-<p>Paradigm for creating epochs at fixed interval,
-ignoring the stim channel and events of the dataset.</p>
+<dt class="sig sig-object py" id="moabb.paradigms.FilterBankCVEP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.</span></span><span class="sig-name descname"><span class="pre">FilterBankCVEP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">((1.0,</span> <span class="pre">45.0),</span> <span class="pre">(12.0,</span> <span class="pre">45.0),</span> <span class="pre">(30.0,</span> <span class="pre">45.0))</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/cvep.py#L218-L264"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.FilterBankCVEP" title="Permalink to this definition">#</a></dt>
+<dd><p>Filterbank c-VEP paradigm for epoch-level decoding.</p>
+<p>c-VEP paradigm with multiple bandpass filters.
+Metric is ‘roc-auc’ if 2 classes and ‘accuracy’ if more.
+This paradigm is meant to be used for epoch-level decoding of c-VEP
+datasets; this means that the goal of the classifiers with this paradigm
+is to predict, for every stimulation one by one, the amplitude of
+the target code. The code value is between 0  (i.e., stimulation off)
+and 1 (i.e., maximal stimulation).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>fmin: float (default 7)</strong></dt><dd><p>cutoff frequency (Hz) for the high pass filter</p>
-</dd>
-<dt><strong>fmax: float (default 45)</strong></dt><dd><p>cutoff frequency (Hz) for the low pass filter</p>
-</dd>
-<dt><strong>baseline: None | tuple of length 2</strong></dt><dd><p>The time interval to consider as “baseline” when applying baseline
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><em>tuple</em></a><em> | </em><em>None</em><em> (</em><em>default</em><em> (</em><em>(</em><em>1.</em><em>, </em><em>45.</em><em>)</em><em>, </em><em>(</em><em>12.</em><em>, </em><em>45.</em><em>)</em><em>, </em><em>(</em><em>30.</em><em>, </em><em>45.</em><em>)</em><em>)</em><em>)</em>) – Bank of bandpass filter to apply.</p></li>
+<li><p><strong>events</strong> (<em>List</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> | </em><em>None</em><em> (</em><em>default None</em><em>)</em>) – Event to use for epoching. Note, we stick to a convention where the
+intensity level is encoded as float. For example, a binary sequence
+would have events 1.0 (i.e., on) and 0.0 (i.e., off). If None, default
+to all events defined in the dataset.</p></li>
+<li><p><strong>n_classes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em> or </em><em>None</em><em> (</em><em>default None</em><em>)</em>) – Number of classes each dataset must have. All dataset classes if None</p></li>
+<li><p><strong>tmin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em> (</em><em>default 0.0</em><em>)</em>) – Start time (in second) of the epoch, relative to the dataset specific
+task interval e.g. tmin = 1 would mean the epoch will start 1 second
+after the beginning of the task as defined by the dataset.</p></li>
+<li><p><strong>tmax</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em> | </em><em>None</em><em>, </em><em>(</em><em>default None</em><em>)</em>) – End time (in second) of the epoch, relative to the beginning of the
+dataset specific task interval. tmax = 5 would mean the epoch will end
+5 second after the beginning of the task as defined in the dataset. If
+None, use the dataset value.</p></li>
+<li><p><strong>baseline</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><em>tuple</em></a><em> of </em><em>length 2</em><em> (</em><em>default None</em><em>)</em>) – The time interval to consider as “baseline” when applying baseline
 correction. If None, do not apply baseline correction.
 If a tuple (a, b), the interval is between a and b (in seconds),
 including the endpoints.
 Correction is applied by computing the mean of the baseline period
-and subtracting it from the data (see mne.Epochs)</p>
-</dd>
-<dt><strong>channels: list of str | None (default None)</strong></dt><dd><p>list of channel to select. If None, use all EEG channels available in
-the dataset.</p>
-</dd>
-<dt><strong>resample: float | None (default None)</strong></dt><dd><p>If not None, resample the eeg data with the sampling rate provided.</p>
-</dd>
-<dt><strong>length: float (default 5.0)</strong></dt><dd><p>Length of the epochs in seconds.</p>
-</dd>
-<dt><strong>stride: float (default 10.0)</strong></dt><dd><p>Stride between epochs in seconds.</p>
-</dd>
-<dt><strong>start_offset: float (default 0.0)</strong></dt><dd><p>Start from the beginning of the raw recordings in seconds.</p>
-</dd>
-<dt><strong>stop_offset: float | None (default None)</strong></dt><dd><p>Stop offset from beginning of raw recordings in seconds.
-If None, set to be the end of the recording.</p>
-</dd>
-<dt><strong>marker: int (default -1)</strong></dt><dd><p>Marker to use for the events created.</p>
-</dd>
-</dl>
+and subtracting it from the data (see mne.Epochs)</p></li>
+<li><p><strong>channels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> | </em><em>None</em><em> (</em><em>default None</em><em>)</em>) – List of channel to select. If None, use all EEG channels available in
+the dataset.</p></li>
+<li><p><strong>resample</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em> | </em><em>None</em><em> (</em><em>default None</em><em>)</em>) – If not None, resample the eeg data with the sampling rate provided.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
-<section id="examples-using-moabb-paradigms-fixedintervalwindowsprocessing">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.paradigms.FixedIntervalWindowsProcessing</span></code><a class="headerlink" href="#examples-using-moabb-paradigms-fixedintervalwindowsprocessing" title="Permalink to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to process a dataset using the moabb.paradigms.FixedIntervalWindowsProce..."><img alt="Fixed interval windows processing" src="../_images/sphx_glr_plot_fixed_interval_windows_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/plot_fixed_interval_windows.html#sphx-glr-auto-examples-plot-fixed-interval-windows-py"><span class="std std-ref">Fixed interval windows processing</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Fixed interval windows processing</div>
-</div></div><div style='clear:both'></div></section>
-</section>
+<div style='clear:both'></div></section>
 
 
                 </article>
@@ -490,20 +484,20 @@ If None, set to be the end of the recording.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.paradigms.FilterBankCVEP.html"
+       href="moabb.paradigms.CVEP.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.paradigms.FilterBankCVEP</p>
+        <p class="prev-next-title">moabb.paradigms.CVEP</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.paradigms.FilterBankFixedIntervalWindowsProcessing.html"
+       href="moabb.paradigms.FixedIntervalWindowsProcessing.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.paradigms.FilterBankFixedIntervalWindowsProcessing</p>
+        <p class="prev-next-title">moabb.paradigms.FixedIntervalWindowsProcessing</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -525,8 +519,7 @@ If None, set to be the end of the recording.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.paradigms.FixedIntervalWindowsProcessing"><code class="docutils literal notranslate"><span class="pre">FixedIntervalWindowsProcessing</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-moabb-paradigms-fixedintervalwindowsprocessing">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.paradigms.FixedIntervalWindowsProcessing</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.paradigms.FilterBankCVEP"><code class="docutils literal notranslate"><span class="pre">FilterBankCVEP</span></code></a></li>
 </ul>
   </nav></div>
 

@@ -421,8 +421,14 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="data-summary">
-<span id="id1"></span><h1>Data Summary<a class="headerlink" href="#data-summary" title="Permalink to this heading">#</a></h1>
+  <span class="target" id="module-moabb.datasets"><span id="data-summary"></span></span><p>A dataset handle and abstract low level access to the data. the dataset will
+takes data stored locally, in the format in which they have been downloaded,
+and will convert them into a MNE raw object. There are options to pool all the
+different recording sessions per subject or to evaluate them separately.</p>
+<p>See <a class="github reference external" href="https://github.com/NeuroTechX/moabb/wiki/Datasets-Support">NeuroTechX/moabb</a> for detail
+on datasets (electrodes, number of trials, sessions, etc.)</p>
+<section id="id1">
+<h1>Data Summary<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
 <p>MOABB gather many datasets, here is list summarizing important information. Most of the
 datasets are listed here but this list not complete yet, check API for complete
 documentation.</p>
@@ -448,7 +454,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>AlexMI</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlexMI</span></code></a></p></td>
 <td><p>8</p></td>
 <td><p>16</p></td>
 <td><p>3</p></td>
@@ -459,7 +465,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1</p></td>
 <td><p>480</p></td>
 </tr>
-<tr class="row-odd"><td><p>BNCI2014_001</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></p></td>
 <td><p>9</p></td>
 <td><p>22</p></td>
 <td><p>4</p></td>
@@ -470,7 +476,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>6</p></td>
 <td><p>62208</p></td>
 </tr>
-<tr class="row-even"><td><p>BNCI2014_002</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_002.html#moabb.datasets.BNCI2014_002" title="moabb.datasets.BNCI2014_002"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_002</span></code></a></p></td>
 <td><p>14</p></td>
 <td><p>15</p></td>
 <td><p>2</p></td>
@@ -481,7 +487,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>8</p></td>
 <td><p>17920</p></td>
 </tr>
-<tr class="row-odd"><td><p>BNCI2014_004</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_004.html#moabb.datasets.BNCI2014_004" title="moabb.datasets.BNCI2014_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_004</span></code></a></p></td>
 <td><p>9</p></td>
 <td><p>3</p></td>
 <td><p>2</p></td>
@@ -492,7 +498,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1</p></td>
 <td><p>32400</p></td>
 </tr>
-<tr class="row-even"><td><p>BNCI2015_001</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_001.html#moabb.datasets.BNCI2015_001" title="moabb.datasets.BNCI2015_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_001</span></code></a></p></td>
 <td><p>12</p></td>
 <td><p>13</p></td>
 <td><p>2</p></td>
@@ -503,7 +509,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1</p></td>
 <td><p>14400</p></td>
 </tr>
-<tr class="row-odd"><td><p>BNCI2015_004</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_004.html#moabb.datasets.BNCI2015_004" title="moabb.datasets.BNCI2015_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_004</span></code></a></p></td>
 <td><p>9</p></td>
 <td><p>30</p></td>
 <td><p>5</p></td>
@@ -514,7 +520,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1</p></td>
 <td><p>7200</p></td>
 </tr>
-<tr class="row-even"><td><p>Cho2017</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Cho2017.html#moabb.datasets.Cho2017" title="moabb.datasets.Cho2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cho2017</span></code></a></p></td>
 <td><p>52</p></td>
 <td><p>64</p></td>
 <td><p>2</p></td>
@@ -525,7 +531,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1</p></td>
 <td><p>9800</p></td>
 </tr>
-<tr class="row-odd"><td><p>Lee2019_MI</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI" title="moabb.datasets.Lee2019_MI"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_MI</span></code></a></p></td>
 <td><p>54</p></td>
 <td><p>62</p></td>
 <td><p>2</p></td>
@@ -536,7 +542,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1</p></td>
 <td><p>11000</p></td>
 </tr>
-<tr class="row-even"><td><p>GrosseWentrup2009</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.GrosseWentrup2009.html#moabb.datasets.GrosseWentrup2009" title="moabb.datasets.GrosseWentrup2009"><code class="xref py py-class docutils literal notranslate"><span class="pre">GrosseWentrup2009</span></code></a></p></td>
 <td><p>10</p></td>
 <td><p>128</p></td>
 <td><p>2</p></td>
@@ -547,7 +553,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1</p></td>
 <td><p>3000</p></td>
 </tr>
-<tr class="row-odd"><td><p>Schirrmeister2017</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a></p></td>
 <td><p>14</p></td>
 <td><p>128</p></td>
 <td><p>4</p></td>
@@ -558,7 +564,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>2</p></td>
 <td><p>13440</p></td>
 </tr>
-<tr class="row-even"><td><p>Ofner2017</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Ofner2017.html#moabb.datasets.Ofner2017" title="moabb.datasets.Ofner2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ofner2017</span></code></a></p></td>
 <td><p>15</p></td>
 <td><p>61</p></td>
 <td><p>7</p></td>
@@ -569,7 +575,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>10</p></td>
 <td><p>63000</p></td>
 </tr>
-<tr class="row-odd"><td><p>PhysionetMI</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></p></td>
 <td><p>109</p></td>
 <td><p>64</p></td>
 <td><p>4</p></td>
@@ -580,7 +586,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1</p></td>
 <td><p>69760</p></td>
 </tr>
-<tr class="row-even"><td><p>Shin2017A</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Shin2017A.html#moabb.datasets.Shin2017A" title="moabb.datasets.Shin2017A"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shin2017A</span></code></a></p></td>
 <td><p>29</p></td>
 <td><p>30</p></td>
 <td><p>2</p></td>
@@ -591,7 +597,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1</p></td>
 <td><p>5220</p></td>
 </tr>
-<tr class="row-odd"><td><p>Shin2017B</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Shin2017B.html#moabb.datasets.Shin2017B" title="moabb.datasets.Shin2017B"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shin2017B</span></code></a></p></td>
 <td><p>29</p></td>
 <td><p>30</p></td>
 <td><p>2</p></td>
@@ -602,7 +608,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1</p></td>
 <td><p>5220</p></td>
 </tr>
-<tr class="row-even"><td><p>Weibo2014</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></p></td>
 <td><p>10</p></td>
 <td><p>60</p></td>
 <td><p>7</p></td>
@@ -613,7 +619,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1</p></td>
 <td><p>5600</p></td>
 </tr>
-<tr class="row-odd"><td><p>Zhou2016</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></p></td>
 <td><p>4</p></td>
 <td><p>14</p></td>
 <td><p>3</p></td>
@@ -641,7 +647,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>BNCI2014_008</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_008.html#moabb.datasets.BNCI2014_008" title="moabb.datasets.BNCI2014_008"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_008</span></code></a></p></td>
 <td><p>8</p></td>
 <td><p>8</p></td>
 <td><p>3500 NT / 700 T</p></td>
@@ -649,7 +655,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>256Hz</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p>BNCI2014_009</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_009</span></code></a></p></td>
 <td><p>10</p></td>
 <td><p>16</p></td>
 <td><p>1440 NT / 288 T</p></td>
@@ -657,7 +663,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>256Hz</p></td>
 <td><p>3</p></td>
 </tr>
-<tr class="row-even"><td><p>BNCI2015_003</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_003.html#moabb.datasets.BNCI2015_003" title="moabb.datasets.BNCI2015_003"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_003</span></code></a></p></td>
 <td><p>10</p></td>
 <td><p>8</p></td>
 <td><p>1500 NT / 300 T</p></td>
@@ -665,7 +671,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>256Hz</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p>BI2012</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2012.html#moabb.datasets.BI2012" title="moabb.datasets.BI2012"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2012</span></code></a></p></td>
 <td><p>25</p></td>
 <td><p>16</p></td>
 <td><p>640 NT / 128 T</p></td>
@@ -673,7 +679,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>128Hz</p></td>
 <td><p>2</p></td>
 </tr>
-<tr class="row-even"><td><p>BI2013a</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2013a.html#moabb.datasets.BI2013a" title="moabb.datasets.BI2013a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2013a</span></code></a></p></td>
 <td><p>24</p></td>
 <td><p>16</p></td>
 <td><p>3200 NT / 640 T</p></td>
@@ -681,7 +687,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>512Hz</p></td>
 <td><p>8 for subjects 1-7 else 1</p></td>
 </tr>
-<tr class="row-odd"><td><p>BI2014a</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a</span></code></a></p></td>
 <td><p>64</p></td>
 <td><p>16</p></td>
 <td><p>990 NT / 198 T</p></td>
@@ -689,7 +695,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>512Hz</p></td>
 <td><p>up to 3</p></td>
 </tr>
-<tr class="row-even"><td><p>BI2014b</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2014b.html#moabb.datasets.BI2014b" title="moabb.datasets.BI2014b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b</span></code></a></p></td>
 <td><p>38</p></td>
 <td><p>32</p></td>
 <td><p>200 NT / 40 T</p></td>
@@ -697,7 +703,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>512Hz</p></td>
 <td><p>3</p></td>
 </tr>
-<tr class="row-odd"><td><p>BI2015a</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2015a.html#moabb.datasets.BI2015a" title="moabb.datasets.BI2015a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a</span></code></a></p></td>
 <td><p>43</p></td>
 <td><p>32</p></td>
 <td><p>4131 NT / 825 T</p></td>
@@ -705,7 +711,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>512Hz</p></td>
 <td><p>3</p></td>
 </tr>
-<tr class="row-even"><td><p>BI2015b</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2015b.html#moabb.datasets.BI2015b" title="moabb.datasets.BI2015b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b</span></code></a></p></td>
 <td><p>44</p></td>
 <td><p>32</p></td>
 <td><p>2160 NT / 480 T</p></td>
@@ -713,7 +719,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>512Hz</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p>Cattan2019_VR</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR</span></code></a></p></td>
 <td><p>21</p></td>
 <td><p>16</p></td>
 <td><p>600 NT / 120 T</p></td>
@@ -721,7 +727,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>512Hz</p></td>
 <td><p>2</p></td>
 </tr>
-<tr class="row-even"><td><p>Huebner2017</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Huebner2017.html#moabb.datasets.Huebner2017" title="moabb.datasets.Huebner2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2017</span></code></a></p></td>
 <td><p>13</p></td>
 <td><p>31</p></td>
 <td><p>364 NT / 112 T</p></td>
@@ -729,7 +735,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1000Hz</p></td>
 <td><p>3</p></td>
 </tr>
-<tr class="row-odd"><td><p>Huebner2018</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Huebner2018.html#moabb.datasets.Huebner2018" title="moabb.datasets.Huebner2018"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2018</span></code></a></p></td>
 <td><p>12</p></td>
 <td><p>31</p></td>
 <td><p>364 NT / 112 T</p></td>
@@ -737,7 +743,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1000Hz</p></td>
 <td><p>3</p></td>
 </tr>
-<tr class="row-even"><td><p>Sosulski2019</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Sosulski2019.html#moabb.datasets.Sosulski2019" title="moabb.datasets.Sosulski2019"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sosulski2019</span></code></a></p></td>
 <td><p>13</p></td>
 <td><p>31</p></td>
 <td><p>75 NT / 15 T</p></td>
@@ -745,7 +751,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1000Hz</p></td>
 <td><p>3</p></td>
 </tr>
-<tr class="row-odd"><td><p>EPFLP300</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.EPFLP300.html#moabb.datasets.EPFLP300" title="moabb.datasets.EPFLP300"><code class="xref py py-class docutils literal notranslate"><span class="pre">EPFLP300</span></code></a></p></td>
 <td><p>8</p></td>
 <td><p>32</p></td>
 <td><p>2753 NT / 551 T</p></td>
@@ -753,7 +759,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>2048Hz</p></td>
 <td><p>4</p></td>
 </tr>
-<tr class="row-even"><td><p>Lee2019_ERP</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_ERP.html#moabb.datasets.Lee2019_ERP" title="moabb.datasets.Lee2019_ERP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_ERP</span></code></a></p></td>
 <td><p>54</p></td>
 <td><p>62</p></td>
 <td><p>6900 NT / 1380 T</p></td>
@@ -779,7 +785,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Lee2019_SSVEP</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_SSVEP.html#moabb.datasets.Lee2019_SSVEP" title="moabb.datasets.Lee2019_SSVEP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_SSVEP</span></code></a></p></td>
 <td><p>54</p></td>
 <td><p>16</p></td>
 <td><p>4</p></td>
@@ -788,7 +794,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>1000Hz</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p>Kalunga2016</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kalunga2016</span></code></a></p></td>
 <td><p>12</p></td>
 <td><p>8</p></td>
 <td><p>4</p></td>
@@ -797,7 +803,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>256Hz</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-even"><td><p>MAMEM1</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.MAMEM1.html#moabb.datasets.MAMEM1" title="moabb.datasets.MAMEM1"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM1</span></code></a></p></td>
 <td><p>10</p></td>
 <td><p>256</p></td>
 <td><p>5</p></td>
@@ -806,7 +812,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>250Hz</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p>MAMEM2</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.MAMEM2.html#moabb.datasets.MAMEM2" title="moabb.datasets.MAMEM2"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM2</span></code></a></p></td>
 <td><p>10</p></td>
 <td><p>256</p></td>
 <td><p>5</p></td>
@@ -815,7 +821,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>250Hz</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-even"><td><p>MAMEM3</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.MAMEM3.html#moabb.datasets.MAMEM3" title="moabb.datasets.MAMEM3"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM3</span></code></a></p></td>
 <td><p>10</p></td>
 <td><p>14</p></td>
 <td><p>4</p></td>
@@ -824,7 +830,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>128Hz</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-odd"><td><p>Nakanishi2015</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Nakanishi2015.html#moabb.datasets.Nakanishi2015" title="moabb.datasets.Nakanishi2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nakanishi2015</span></code></a></p></td>
 <td><p>9</p></td>
 <td><p>8</p></td>
 <td><p>12</p></td>
@@ -833,7 +839,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>256Hz</p></td>
 <td><p>1</p></td>
 </tr>
-<tr class="row-even"><td><p>Wang2016</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Wang2016.html#moabb.datasets.Wang2016" title="moabb.datasets.Wang2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wang2016</span></code></a></p></td>
 <td><p>34</p></td>
 <td><p>62</p></td>
 <td><p>40</p></td>
@@ -841,6 +847,47 @@ detail on datasets (class name, size, licence, etc.)</p>
 <td><p>5s</p></td>
 <td><p>250Hz</p></td>
 <td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="c-vep">
+<h1>c-VEP<a class="headerlink" href="#c-vep" title="Permalink to this heading">#</a></h1>
+<p>Include neuro experiments where the participant is presented with psuedo-random noise-codes,
+such as m-sequences, Gold codes, or any arbitrary “pseudo-random” code. Specifically, the
+difference with SSVEP is that SSVEP presents periodic stimuli, while c-VEP presents
+non-periodic stimuli. For a review of c-VEP BCI, see:</p>
+<p>Martínez-Cagigal, V., Thielen, J., Santamaria-Vazquez, E., Pérez-Velasco, S., Desain, P.,&amp;
+Hornero, R. (2021). Brain–computer interfaces based on code-modulated visual evoked
+potentials (c-VEP): A literature review. Journal of Neural Engineering, 18(6), 061002.
+DOI: <a class="reference external" href="https://doi.org/10.1088/1741-2552/ac38cf">https://doi.org/10.1088/1741-2552/ac38cf</a></p>
+<table class="sortable table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Dataset</p></th>
+<th class="head"><p>#Subj</p></th>
+<th class="head"><p>#Chan</p></th>
+<th class="head"><p>#Classes</p></th>
+<th class="head"><p>#Trials / class</p></th>
+<th class="head"><p>Trials length</p></th>
+<th class="head"><p>#Epochs / class</p></th>
+<th class="head"><p>Sampling rate</p></th>
+<th class="head"><p>#Sessions</p></th>
+<th class="head"><p>Codes</p></th>
+<th class="head"><p>Presentation rate</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Thielen2021.html#moabb.datasets.Thielen2021" title="moabb.datasets.Thielen2021"><code class="xref py py-class docutils literal notranslate"><span class="pre">Thielen2021</span></code></a></p></td>
+<td><p>30</p></td>
+<td><p>8</p></td>
+<td><p>20</p></td>
+<td><p>5</p></td>
+<td><p>31.5s</p></td>
+<td><p>18900 NT / 18900 T</p></td>
+<td><p>512Hz</p></td>
+<td><p>1</p></td>
+<td><p>Gold codes</p></td>
+<td><p>60Hz</p></td>
 </tr>
 </tbody>
 </table>
@@ -863,7 +910,7 @@ is a resting state experiment.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Cattan2019_PHMD</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Cattan2019_PHMD.html#moabb.datasets.Cattan2019_PHMD" title="moabb.datasets.Cattan2019_PHMD"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_PHMD</span></code></a></p></td>
 <td><p>12</p></td>
 <td><p>16</p></td>
 <td><p>2</p></td>
@@ -875,8 +922,8 @@ is a resting state experiment.</p>
 </tbody>
 </table>
 </section>
-<section id="compound-datasets">
-<h1>Compound Datasets<a class="headerlink" href="#compound-datasets" title="Permalink to this heading">#</a></h1>
+<section id="module-moabb.datasets.compound_dataset">
+<span id="compound-datasets"></span><h1>Compound Datasets<a class="headerlink" href="#module-moabb.datasets.compound_dataset" title="Permalink to this heading">#</a></h1>
 <p>Compound Datasets are datasets compounded with subjects from other datasets.
 It is useful for merging different datasets (including other Compound Datasets),
 select a sample of subject inside a dataset (e.g. subject with high/low performance).</p>
@@ -888,29 +935,29 @@ select a sample of subject inside a dataset (e.g. subject with high/low performa
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>BI2014a_Il</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2014a_Il.html#moabb.datasets.compound_dataset.BI2014a_Il" title="moabb.datasets.compound_dataset.BI2014a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a_Il</span></code></a></p></td>
 <td><p>17</p></td>
 <td><p>BI2014a</p></td>
 </tr>
-<tr class="row-odd"><td><p>BI2014b_Il</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2014b_Il.html#moabb.datasets.compound_dataset.BI2014b_Il" title="moabb.datasets.compound_dataset.BI2014b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b_Il</span></code></a></p></td>
 <td><p>11</p></td>
 <td><p>BI2014b</p></td>
 </tr>
-<tr class="row-even"><td><p>BI2015a_Il</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2015a_Il.html#moabb.datasets.compound_dataset.BI2015a_Il" title="moabb.datasets.compound_dataset.BI2015a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a_Il</span></code></a></p></td>
 <td><p>2</p></td>
 <td><p>BI2015a</p></td>
 </tr>
-<tr class="row-odd"><td><p>BI2015b_Il</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2015b_Il.html#moabb.datasets.compound_dataset.BI2015b_Il" title="moabb.datasets.compound_dataset.BI2015b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b_Il</span></code></a></p></td>
 <td><p>25</p></td>
 <td><p>BI2015b</p></td>
 </tr>
-<tr class="row-even"><td><p>Cattan2019_VR_Il</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.Cattan2019_VR_Il.html#moabb.datasets.compound_dataset.Cattan2019_VR_Il" title="moabb.datasets.compound_dataset.Cattan2019_VR_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR_Il</span></code></a></p></td>
 <td><p>4</p></td>
 <td><p>Cattan2019_VR</p></td>
 </tr>
-<tr class="row-odd"><td><p>BI_Il</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI_Il.html#moabb.datasets.compound_dataset.BI_Il" title="moabb.datasets.compound_dataset.BI_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI_Il</span></code></a></p></td>
 <td><p>59</p></td>
-<td><p>BI2014a_Il BI2014b_Il BI2015a_Il BI2015b_Il Cattan2019_VR_Il</p></td>
+<td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2014a_Il.html#moabb.datasets.compound_dataset.BI2014a_Il" title="moabb.datasets.compound_dataset.BI2014a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a_Il</span></code></a> <a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2014b_Il.html#moabb.datasets.compound_dataset.BI2014b_Il" title="moabb.datasets.compound_dataset.BI2014b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b_Il</span></code></a> <a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2015a_Il.html#moabb.datasets.compound_dataset.BI2015a_Il" title="moabb.datasets.compound_dataset.BI2015a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a_Il</span></code></a> <a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2015b_Il.html#moabb.datasets.compound_dataset.BI2015b_Il" title="moabb.datasets.compound_dataset.BI2015b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b_Il</span></code></a> <a class="reference internal" href="generated/moabb.datasets.compound_dataset.Cattan2019_VR_Il.html#moabb.datasets.compound_dataset.Cattan2019_VR_Il" title="moabb.datasets.compound_dataset.Cattan2019_VR_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR_Il</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -986,8 +1033,9 @@ but we are open to any suggestion.</p>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#motor-imagery">Motor Imagery</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#p300-erp">P300/ERP</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#ssvep">SSVEP</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#c-vep">c-VEP</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#resting-states">Resting States</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#compound-datasets">Compound Datasets</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#module-moabb.datasets.compound_dataset">Compound Datasets</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submit-a-new-dataset">Submit a new dataset</a></li>
 </ul>
 </li>
