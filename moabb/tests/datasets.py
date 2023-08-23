@@ -70,7 +70,7 @@ class Test_Datasets(unittest.TestCase):
         n_sessions = 2
         n_runs = 2
 
-        for paradigm in ["imagery", "p300", "ssvep"]:
+        for paradigm in ["imagery", "p300", "ssvep", "cvep"]:
             ds = FakeDataset(
                 n_sessions=n_sessions,
                 n_runs=n_runs,
@@ -183,6 +183,8 @@ class Test_Datasets(unittest.TestCase):
     def test_datasets_init(self):
         codes = []
         logger = logging.getLogger("moabb.datasets.base")
+        deprecated_list, _, _ = zip(*aliases_list)
+
         for ds in dataset_list:
             kwargs = {}
             if inspect.signature(ds).parameters.get("accept"):
@@ -192,9 +194,11 @@ class Test_Datasets(unittest.TestCase):
                 # Trick needed because assertNoLogs only inrtoduced in python 3.10:
                 logger.warning(f"Testing {ds.__name__}")
                 obj = ds(**kwargs)
-            self.assertEqual(len(cm.output), 1)
+            if type(obj).__name__ not in deprecated_list:
+                self.assertEqual(len(cm.output), 1)
             self.assertIsNotNone(obj)
-            codes.append(obj.code)
+            if type(obj).__name__ not in deprecated_list:
+                codes.append(obj.code)
 
         # Check that all codes are unique:
         self.assertEqual(len(codes), len(set(codes)))
@@ -219,17 +223,16 @@ class Test_Datasets(unittest.TestCase):
         if aliases_list:
             depreciated_list, _, _ = zip(*aliases_list)
         else:
-            depreciated_list = []
+            pass
         all_datasets = [
             c
             for c in db.__dict__.values()
             if (
                 inspect.isclass(c)
                 and issubclass(c, BaseDataset)
-                and c.__name__ not in depreciated_list
+                # and c.__name__ not in depreciated_list
             )
         ]
-
         assert len(dataset_list) == len(all_datasets)
         assert set(dataset_list) == set(all_datasets)
 
