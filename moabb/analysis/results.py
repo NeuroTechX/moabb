@@ -46,7 +46,6 @@ def get_digest(obj):
     If there are memory addresses, wipes them
     """
     return hashlib.md5(get_string_rep(obj)).hexdigest()
-    #return hashlib.md5(str(obj).encode('utf-8')).hexdigest()
 
 
 class Results:
