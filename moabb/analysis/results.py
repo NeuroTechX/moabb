@@ -36,7 +36,9 @@ def get_string_rep(obj):
             RuntimeWarning,
             stacklevel=2,
         )
-    str_no_addresses = re.sub("0x[a-z0-9]*", "0x__", str_repr)
+    str_no_addresses = re.sub(
+        "0x[\w]+>", "0x__", str_repr
+    )  # \w also includes _ for address such as 0x__
     return str_no_addresses.replace("\n", "").encode("utf8")
 
 
@@ -201,7 +203,7 @@ class Results:
         with h5py.File(self.filepath, "r") as f:
             for digest, p_group in f.items():
                 # skip if not in pipeline list
-                if (pipelines is not None) & (digest not in digests):
+                if (pipelines is not None) and (digest not in digests):
                     continue
 
                 name = p_group.attrs["name"]
@@ -216,6 +218,7 @@ class Results:
                     df["dataset"] = dname
                     df["pipeline"] = name
                     df_list.append(df)
+
         return pd.concat(df_list, ignore_index=True)
 
     def not_yet_computed(self, pipelines, dataset, subj):
