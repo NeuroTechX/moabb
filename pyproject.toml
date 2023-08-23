@@ -28,6 +28,7 @@ tqdm = "^4.64.1"
 coverage = "^7.0.1"
 memory-profiler = "^0.61.0"
 edflib-python = "^1.0.6"
+pytest = "^7.4.0"
 mne-bids = "^0.13"
 
 [tool.poetry.group.carbonemission]

@@ -44,6 +44,7 @@ Enhancements
 - Rename many dataset class names to standardize and deprecate old names (:gh:`455` by `Pierre Guetschel`_)
 - Change many dataset codes to match the class names (:gh:`455` by `Pierre Guetschel`_)
 - Add :obj:`moabb.datasets.compound_dataset.utils.compound_dataset_list`  (:gh:`455` by `Pierre Guetschel`_)
+- Add c-VEP paradigm and Thielen2021 c-VEP dataset (:gh:`463` by `Jordy Thielen`_)
 
 Bugs
 ~~~~
@@ -376,3 +377,4 @@ API changes
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Ludovic Darmet: https://github.com/ludovicdmt
 .. _Thomas Moreau: https://github.com/tommoral
+.. _Jordy Thielen: https://github.com/thijor
