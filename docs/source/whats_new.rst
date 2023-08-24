@@ -46,6 +46,8 @@ Enhancements
 - Rename many dataset class names to standardize and deprecate old names (:gh:`455` by `Pierre Guetschel`_)
 - Change many dataset codes to match the class names (:gh:`455` by `Pierre Guetschel`_)
 - Add :obj:`moabb.datasets.compound_dataset.utils.compound_dataset_list`  (:gh:`455` by `Pierre Guetschel`_)
+- Add c-VEP paradigm and Thielen2021 c-VEP dataset (:gh:`463` by `Jordy Thielen`_)
+- Add option to plot scores vertically. (:gh:`417` by `Sara Sedlar`_)
 
 Bugs
 ~~~~
@@ -68,7 +70,8 @@ Bugs
 - Fix :func:`moabb.paradigms.FakeImageryParadigm`, :func:`moabb.paradigms.FakeP300Paradigm` and :func:`moabb.paradigms.FakeSSVEPParadigm` ``is_valid`` methods to only accept the correct datasets (PR :gh:`408` by `Pierre Guetschel`_)
 - Fix ``dataset_list`` construction, which could be empty due to bad import order (PR :gh:`449` by `Thomas Moreau`_).
 - Fixing dataset downloader from servers with non-http (PR :gh:`433` by `Sara Sedlar`_)
-
+- Fix ``dataset_list`` to include deprecated datasets (PR :gh:`464` by `Bruno Aristimunha`_)
+- Fixed bug in :func:`moabb.analysis.results.get_string_rep` to handle addresses such as 0x__0A as well (PR :gh:`468` by `Anton Andreev`_)
 API changes
 ~~~~~~~~~~~
 
@@ -378,3 +381,4 @@ API changes
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Ludovic Darmet: https://github.com/ludovicdmt
 .. _Thomas Moreau: https://github.com/tommoral
+.. _Jordy Thielen: https://github.com/thijor

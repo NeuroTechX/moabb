@@ -14,7 +14,7 @@ license = "BSD-3-Clause"
 python = ">=3.8, <3.11"
 numpy = "^1.22"
 scipy = "^1.9.3"
-mne = "^1.3.0"
+mne = "^1.4"
 pandas = "^1.5.2"
 h5py = "^3.7.0"
 scikit-learn = "^1.2.0"
@@ -28,7 +28,8 @@ tqdm = "^4.64.1"
 coverage = "^7.0.1"
 memory-profiler = "^0.61.0"
 edflib-python = "^1.0.6"
-mne-bids = { git = "https://github.com/mne-tools/mne-bids.git", rev = "9bc6fe5" } # until release is available
+pytest = "^7.4.0"
+mne-bids = "^0.13"
 
 [tool.poetry.group.carbonemission]
 optional = true
