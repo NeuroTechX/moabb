@@ -12,6 +12,7 @@ from sklearn.base import clone
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import (
     GridSearchCV,
+    GroupKFold,
     LeaveOneGroupOut,
     StratifiedKFold,
     StratifiedShuffleSplit,
@@ -715,6 +716,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
         use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
+    n_splits: int, default=None
+        Number of splits for cross-validation. If None, the number of splits
+        is equal to the number of subjects.
     """
 
     def _grid_search(self, param_grid, name_grid, name, clf, pipelines, X, y, cv, groups):
@@ -786,7 +790,11 @@ class CrossSubjectEvaluation(BaseEvaluation):
         scorer = get_scorer(self.paradigm.scoring)
 
         # perform leave one subject out CV
-        cv = LeaveOneGroupOut()
+        if self.n_splits is None:
+            cv = LeaveOneGroupOut()
+            # cv = GroupKFold(n_splits=n_subjects)
+        else:
+            cv = GroupKFold(n_splits=self.n_splits)
 
         # Implement Grid Search
         emissions_grid = {}
