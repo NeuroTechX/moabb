@@ -684,27 +684,27 @@ handled correctly by the benchmark function.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-/home/runner/work/moabb/moabb/moabb/paradigms/base.py:291: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
+/home/runner/work/moabb/moabb/moabb/paradigms/base.py:345: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
   X = mne.concatenate_epochs(X)
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5000       14.4040       0.5172        7.5377  1.6550
-      2       0.5938       11.0621       0.5172        4.5918  1.3293
-      3       0.5781        9.8411       0.5172        1.6997  1.3005
-      4       0.5781        9.2607       0.4828        1.2340  1.2229
-      5       0.4219       12.6690       0.4828        3.5102  1.2528
+      1       0.5000       14.4040       0.5172        7.5377  1.9946
+      2       0.5938       11.0621       0.5172        4.5918  1.6115
+      3       0.5781        9.8411       0.5172        1.6997  1.5447
+      4       0.5781        9.2607       0.4828        1.2340  1.5414
+      5       0.4219       12.6690       0.4828        3.5102  1.4717
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4219       10.5848       0.4828        3.4865  1.2338
-      2       0.4688       14.6523       0.4828        0.9312  1.2329
-      3       0.5625        7.7827       0.5172        1.2034  1.1761
-      4       0.4844       10.6544       0.5172        1.8494  1.2101
+      1       0.4219       10.5848       0.4828        3.4865  1.4466
+      2       0.4688       14.6523       0.4828        0.9312  1.4399
+      3       0.5625        7.7827       0.5172        1.2034  1.4514
+      4       0.4844       10.6544       0.5172        1.8494  1.4459
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
@@ -713,572 +713,496 @@ Re-initializing optimizer.
   return F.conv2d(input, weight, bias, self.stride,
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5000        0.7349       0.5172        0.6931  0.6209
-      2       0.4844        0.7135       0.5172        0.6931  0.4911
-      3       0.4844        0.7499       0.5172        0.6931  0.5086
+      1       0.5000        0.7349       0.5172        0.6931  0.6881
+      2       0.4844        0.7135       0.5172        0.6931  0.5640
+      3       0.4844        0.7499       0.5172        0.6931  0.5587
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156        0.7226       0.5172        0.6931  0.4940
-      2       0.4531        0.7650       0.5172        0.6931  0.5025
-      3       0.3906        0.8028       0.5172        0.6931  0.5250
+      1       0.5156        0.7226       0.5172        0.6931  0.5597
+      2       0.4531        0.7650       0.5172        0.6931  0.5501
+      3       0.3906        0.8028       0.5172        0.6931  0.5820
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156        0.6929       0.5172        0.6931  0.2403
-      2       0.4688        0.6932       0.5172        0.6931  0.2410
-      3       0.4531        0.6934       0.5172        0.6931  0.2176
+      1       0.5156        0.6929       0.5172        0.6931  0.2398
+      2       0.4688        0.6932       0.5172        0.6931  0.2245
+      3       0.4531        0.6934       0.5172        0.6931  0.2265
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5625        0.6930       0.4828        0.6931  0.2144
-      2       0.4688        0.6934       0.5172        0.6931  0.2066
-      3       0.5625        0.6929       0.5172        0.6931  0.2123
+      1       0.5625        0.6930       0.4828        0.6931  0.2342
+      2       0.4688        0.6934       0.5172        0.6931  0.2337
+      3       0.5625        0.6929       0.5172        0.6931  0.2243
 Stopping since valid_loss has not improved in the last 3 epochs.
-/home/runner/work/moabb/moabb/moabb/paradigms/base.py:291: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
+/home/runner/work/moabb/moabb/moabb/paradigms/base.py:345: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
   X = mne.concatenate_epochs(X)
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156       15.1078       0.4828       10.3521  1.5646
-      2       0.4844       10.6155       0.4828        7.0849  1.2274
-      3       0.5469       13.2141       0.4828        3.8498  1.2322
-      4       0.5156        9.3577       0.4828        0.9458  1.2294
-      5       0.4375       12.6421       0.5172        1.3160  1.2559
+      1       0.5156       15.1078       0.4828       10.3521  1.6627
+      2       0.4844       10.6155       0.4828        7.0849  1.6594
+      3       0.5469       13.2141       0.4828        3.8498  1.5364
+      4       0.5156        9.3577       0.4828        0.9458  1.4887
+      5       0.4375       12.6421       0.5172        1.3160  1.4540
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5312       18.2092       0.5172       15.2703  1.2488
-      2       0.5312       15.5218       0.5172       12.0795  1.1971
-      3       0.5625       13.8632       0.5172        8.9722  1.1960
-      4       0.4688       12.1693       0.5172        5.9040  1.1950
-      5       0.6250        9.9145       0.5172        3.0800  1.1904
+      1       0.5312       18.2092       0.5172       15.2703  1.5750
+      2       0.5312       15.5218       0.5172       12.0795  1.4976
+      3       0.5625       13.8632       0.5172        8.9722  1.4522
+      4       0.4688       12.1693       0.5172        5.9040  1.4632
+      5       0.6250        9.9145       0.5172        3.0800  1.4409
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.7394       0.5172        0.6931  0.4880
-      2       0.5469        0.6851       0.5172        0.6931  0.5000
-      3       0.5469        0.6883       0.5172        0.6931  0.4852
+      1       0.4844        0.7394       0.5172        0.6931  0.5281
+      2       0.5469        0.6851       0.5172        0.6931  0.5549
+      3       0.5469        0.6883       0.5172        0.6931  0.5932
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5312        0.7173       0.4828        0.6932  0.5042
-      2       0.5469        0.7167       0.4828        0.6932  0.5015
-      3       0.5000        0.7012       0.4828        0.6932  0.5049
+      1       0.5312        0.7173       0.4828        0.6932  0.6042
+      2       0.5469        0.7167       0.4828        0.6932  0.5551
+      3       0.5000        0.7012       0.4828        0.6932  0.5787
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5469        0.6932       0.4828        0.6932  0.2191
-      2       0.5000        0.6932       0.4828        0.6932  0.2113
-      3       0.4844        0.6932       0.4828        0.6932  0.1835
+      1       0.5469        0.6932       0.4828        0.6932  0.2221
+      2       0.5000        0.6932       0.4828        0.6932  0.2321
+      3       0.4844        0.6932       0.4828        0.6932  0.2275
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.6929       0.5172        0.6931  0.2205
-      2       0.4531        0.6932       0.5172        0.6931  0.2006
-      3       0.6250        0.6928       0.5172        0.6931  0.2171
+      1       0.4844        0.6929       0.5172        0.6931  0.2190
+      2       0.4531        0.6932       0.5172        0.6931  0.2236
+      3       0.6250        0.6928       0.5172        0.6931  0.2265
 Stopping since valid_loss has not improved in the last 3 epochs.
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:  1.5min finished
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:  1.9min finished
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
   0%|                                              | 0.00/34.2M [00:00&lt;?, ?B/s]
-  0%|                                      | 27.6k/34.2M [00:00&lt;02:03, 276kB/s]
-  0%|                                      | 55.3k/34.2M [00:00&lt;02:04, 275kB/s]
-  0%|                                      | 96.3k/34.2M [00:00&lt;01:41, 336kB/s]
-  1%|▏                                      | 201k/34.2M [00:00&lt;00:55, 613kB/s]
-  1%|▍                                     | 417k/34.2M [00:00&lt;00:28, 1.17MB/s]
-  3%|▉                                     | 856k/34.2M [00:00&lt;00:14, 2.25MB/s]
-  5%|█▊                                   | 1.73M/34.2M [00:00&lt;00:07, 4.35MB/s]
- 10%|███▊                                 | 3.49M/34.2M [00:00&lt;00:03, 8.52MB/s]
- 19%|███████                              | 6.56M/34.2M [00:00&lt;00:01, 15.4MB/s]
- 28%|██████████▏                          | 9.42M/34.2M [00:01&lt;00:01, 19.4MB/s]
- 35%|█████████████▏                       | 12.1M/34.2M [00:01&lt;00:01, 21.7MB/s]
- 44%|████████████████▏                    | 15.0M/34.2M [00:01&lt;00:00, 23.6MB/s]
- 52%|███████████████████▏                 | 17.8M/34.2M [00:01&lt;00:00, 24.9MB/s]
- 60%|██████████████████████▏              | 20.6M/34.2M [00:01&lt;00:00, 25.7MB/s]
- 68%|█████████████████████████▎           | 23.4M/34.2M [00:01&lt;00:00, 26.3MB/s]
- 76%|████████████████████████████▏        | 26.1M/34.2M [00:01&lt;00:00, 26.5MB/s]
- 84%|███████████████████████████████▏     | 28.8M/34.2M [00:01&lt;00:00, 26.6MB/s]
- 92%|██████████████████████████████████▏  | 31.6M/34.2M [00:01&lt;00:00, 27.0MB/s]
+  0%|                                     | 8.19k/34.2M [00:00&lt;11:31, 49.5kB/s]
+  0%|                                      | 32.8k/34.2M [00:00&lt;05:20, 107kB/s]
+  0%|                                      | 88.1k/34.2M [00:00&lt;02:43, 209kB/s]
+  1%|▏                                      | 193k/34.2M [00:00&lt;01:31, 372kB/s]
+  1%|▍                                      | 409k/34.2M [00:00&lt;00:48, 701kB/s]
+  2%|▉                                     | 841k/34.2M [00:01&lt;00:24, 1.34MB/s]
+  5%|█▊                                   | 1.71M/34.2M [00:01&lt;00:12, 2.60MB/s]
+ 10%|███▋                                 | 3.44M/34.2M [00:01&lt;00:06, 5.04MB/s]
+ 19%|███████                              | 6.48M/34.2M [00:01&lt;00:03, 9.12MB/s]
+ 27%|█████████▉                           | 9.14M/34.2M [00:01&lt;00:02, 11.2MB/s]
+ 35%|████████████▊                        | 11.8M/34.2M [00:01&lt;00:01, 12.6MB/s]
+ 42%|███████████████▋                     | 14.5M/34.2M [00:02&lt;00:01, 13.6MB/s]
+ 50%|██████████████████▋                  | 17.2M/34.2M [00:02&lt;00:01, 14.5MB/s]
+ 58%|█████████████████████▋               | 20.0M/34.2M [00:02&lt;00:00, 15.0MB/s]
+ 67%|████████████████████████▌            | 22.8M/34.2M [00:02&lt;00:00, 15.5MB/s]
+ 75%|███████████████████████████▊         | 25.8M/34.2M [00:02&lt;00:00, 16.2MB/s]
+ 83%|██████████████████████████████▋      | 28.4M/34.2M [00:02&lt;00:00, 16.0MB/s]
+ 92%|█████████████████████████████████▉   | 31.4M/34.2M [00:03&lt;00:00, 16.5MB/s]
+ 99%|████████████████████████████████████▋| 34.0M/34.2M [00:03&lt;00:00, 16.2MB/s]
   0%|                                              | 0.00/34.2M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 34.2M/34.2M [00:00&lt;00:00, 84.9GB/s]
+100%|█████████████████████████████████████| 34.2M/34.2M [00:00&lt;00:00, 65.9GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
   0%|                                              | 0.00/18.6M [00:00&lt;?, ?B/s]
-  0%|                                     | 8.19k/18.6M [00:00&lt;03:49, 80.8kB/s]
-  0%|                                      | 32.8k/18.6M [00:00&lt;01:46, 174kB/s]
-  1%|▏                                     | 96.3k/18.6M [00:00&lt;00:49, 377kB/s]
-  1%|▍                                      | 201k/18.6M [00:00&lt;00:29, 630kB/s]
-  2%|▊                                     | 424k/18.6M [00:00&lt;00:15, 1.19MB/s]
-  5%|█▊                                    | 864k/18.6M [00:00&lt;00:07, 2.24MB/s]
-  9%|███▍                                 | 1.75M/18.6M [00:00&lt;00:03, 4.34MB/s]
- 19%|███████                              | 3.54M/18.6M [00:00&lt;00:01, 8.49MB/s]
- 33%|████████████                         | 6.08M/18.6M [00:00&lt;00:00, 13.6MB/s]
- 45%|████████████████▋                    | 8.36M/18.6M [00:01&lt;00:00, 16.3MB/s]
- 61%|██████████████████████▍              | 11.3M/18.6M [00:01&lt;00:00, 19.9MB/s]
- 76%|████████████████████████████▎        | 14.2M/18.6M [00:01&lt;00:00, 22.6MB/s]
- 91%|█████████████████████████████████▊   | 17.0M/18.6M [00:01&lt;00:00, 23.9MB/s]
+  0%|                                     | 8.19k/18.6M [00:00&lt;06:17, 49.2kB/s]
+  0%|                                      | 32.8k/18.6M [00:00&lt;02:54, 106kB/s]
+  0%|▏                                     | 88.1k/18.6M [00:00&lt;01:28, 208kB/s]
+  1%|▎                                      | 153k/18.6M [00:00&lt;01:06, 277kB/s]
+  2%|▋                                      | 329k/18.6M [00:00&lt;00:32, 555kB/s]
+  4%|█▍                                    | 688k/18.6M [00:01&lt;00:16, 1.09MB/s]
+  8%|██▊                                  | 1.40M/18.6M [00:01&lt;00:08, 2.12MB/s]
+ 15%|█████▌                               | 2.82M/18.6M [00:01&lt;00:03, 4.13MB/s]
+ 31%|███████████▎                         | 5.67M/18.6M [00:01&lt;00:01, 8.13MB/s]
+ 46%|█████████████████                    | 8.55M/18.6M [00:01&lt;00:00, 10.9MB/s]
+ 59%|█████████████████████▉               | 11.0M/18.6M [00:01&lt;00:00, 12.1MB/s]
+ 72%|██████████████████████████▊          | 13.5M/18.6M [00:02&lt;00:00, 12.8MB/s]
+ 87%|████████████████████████████████▎    | 16.3M/18.6M [00:02&lt;00:00, 13.9MB/s]
   0%|                                              | 0.00/18.6M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.6M/18.6M [00:00&lt;00:00, 49.3GB/s]
-/home/runner/work/moabb/moabb/moabb/paradigms/base.py:291: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
+100%|█████████████████████████████████████| 18.6M/18.6M [00:00&lt;00:00, 36.1GB/s]
+/home/runner/work/moabb/moabb/moabb/paradigms/base.py:345: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
   X = mne.concatenate_epochs(X)
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5223       10.0290       0.4250        1.9200  1.1775
-      2       0.5201       10.3331       0.5750        1.1221  1.1651
-      3       0.4955       11.2796       0.4250        1.9928  1.1981
-      4       0.5290       10.5761       0.5750        1.7751  1.2125
+      1       0.5223       10.0290       0.4250        1.9200  1.3370
+      2       0.5201       10.3331       0.5750        1.1221  1.3680
+      3       0.4955       11.2796       0.4250        1.9928  1.3498
+      4       0.5290       10.5761       0.5750        1.7751  1.3469
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5089        9.5727       0.4667        6.8997  1.1721
-      2       0.4754       11.8137       0.5333        2.5190  1.1881
-      3       0.4978        9.9379       0.5333        0.7021  1.1844
-      4       0.5156        9.7860       0.4667        2.8081  1.1834
-      5       0.5357        9.2653       0.5333        0.8262  1.1803
+      1       0.5089        9.5727       0.4667        6.8997  1.3419
+      2       0.4754       11.8137       0.5333        2.5190  1.3367
+      3       0.4978        9.9379       0.5333        0.7021  1.3482
+      4       0.5156        9.7860       0.4667        2.8081  1.3435
+      5       0.5357        9.2653       0.5333        0.8262  1.3558
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5022       30.4748       0.4911       16.7704  1.1947
-      2       0.4821       13.7110       0.5089        4.7652  1.1771
-      3       0.4821       12.9139       0.5089        9.1954  1.2056
-      4       0.4754       13.3844       0.5089        1.2809  1.1746
-      5       0.5335       10.1169       0.4911        3.0098  1.1779
+      1       0.5022       30.4748       0.4911       16.7704  1.3414
+      2       0.4821       13.7110       0.5089        4.7652  1.3392
+      3       0.4821       12.9139       0.5089        9.1954  1.3551
+      4       0.4754       13.3844       0.5089        1.2809  1.3839
+      5       0.5335       10.1169       0.4911        3.0098  1.3494
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5424       10.7264       0.5446        4.6988  1.1748
-      2       0.4888       11.9048       0.4554        0.8066  1.4054
-      3       0.5357        8.8770       0.4554        2.3286  1.1809
-      4       0.5268        9.9999       0.4554        1.2232  1.1876
+      1       0.5424       10.7264       0.5446        4.6988  1.3434
+      2       0.4888       11.9048       0.4554        0.8066  1.3599
+      3       0.5357        8.8770       0.4554        2.3286  1.3635
+      4       0.5268        9.9999       0.4554        1.2232  1.3784
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844       23.3823       0.5536        6.7730  1.1903
-      2       0.4688       12.2972       0.4464        9.2309  1.2045
-      3       0.5112       12.6475       0.4464        5.6924  1.1877
-      4       0.5112        9.5883       0.5536        2.1440  1.2067
-      5       0.4978       11.1717       0.5536        2.6518  1.1714
+      1       0.4844       23.3823       0.5536        6.7730  1.4179
+      2       0.4688       12.2972       0.4464        9.2309  1.3863
+      3       0.5112       12.6475       0.4464        5.6924  1.4074
+      4       0.5112        9.5883       0.5536        2.1440  1.3983
+      5       0.4978       11.1717       0.5536        2.6518  1.3642
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4554        0.7567       0.4250        0.6932  0.9707
-      2       0.5446        0.7098       0.4250        0.6933  0.8799
-      3       0.5112        0.7270       0.4250        0.6933  0.8990
+      1       0.4554        0.7567       0.4250        0.6932  1.1293
+      2       0.5446        0.7098       0.4250        0.6933  1.0821
+      3       0.5112        0.7270       0.4250        0.6933  1.0907
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5179        0.7247       0.5333        0.6929  0.9226
-      2       0.4710        0.7395       0.5333        0.6927  0.9014
-      3       0.5022        0.7312       0.5333        0.6926  0.9092
-      4       0.5223        0.7218       0.5333        0.6925  0.9094
-      5       0.5000        0.7265       0.5333        0.6924  0.9126
-      6       0.4710        0.7554       0.5333        0.6923  0.8839
-      7       0.5045        0.7392       0.5333        0.6923  0.9036
-      8       0.5201        0.7221       0.5333        0.6922  0.9180
-      9       0.4978        0.7377       0.5333        0.6922  0.8998
-     10       0.4665        0.7507       0.5333        0.6921  0.9193
+      1       0.5179        0.7247       0.5333        0.6929  1.0840
+      2       0.4710        0.7395       0.5333        0.6927  1.0458
+      3       0.5022        0.7312       0.5333        0.6926  1.0355
+      4       0.5223        0.7218       0.5333        0.6925  1.0385
+      5       0.5000        0.7265       0.5333        0.6924  1.0646
+      6       0.4710        0.7554       0.5333        0.6923  1.0720
+      7       0.5045        0.7392       0.5333        0.6923  1.0491
+      8       0.5201        0.7221       0.5333        0.6922  1.0706
+      9       0.4978        0.7377       0.5333        0.6922  1.0648
+     10       0.4665        0.7507       0.5333        0.6921  1.0817
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5223        0.7189       0.5089        0.6930  0.9320
-      2       0.4665        0.7388       0.5089        0.6930  0.8950
-      3       0.5112        0.7332       0.5089        0.6932  0.9036
+      1       0.5223        0.7189       0.5089        0.6930  1.0607
+      2       0.4665        0.7388       0.5089        0.6930  1.0739
+      3       0.5112        0.7332       0.5089        0.6932  1.0600
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5045        0.7229       0.4554        0.6950  0.8934
-      2       0.5179        0.7193       0.4554        0.6972  0.8697
-      3       0.5379        0.7221       0.4554        0.6994  0.9166
+      1       0.5045        0.7229       0.4554        0.6950  1.0496
+      2       0.5179        0.7193       0.4554        0.6972  1.0593
+      3       0.5379        0.7221       0.4554        0.6994  1.0612
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4978        0.7350       0.5536        0.6929  0.9256
-      2       0.4732        0.7474       0.5536        0.6929  0.9053
-      3       0.5156        0.7238       0.5536        0.6929  0.9168
-      4       0.4911        0.7485       0.5536        0.6928  0.9315
-      5       0.5067        0.7207       0.5536        0.6928  0.9171
-      6       0.5156        0.7279       0.5536        0.6927  0.9059
-      7       0.5223        0.7049       0.5536        0.6928  0.8857
-      8       0.5134        0.7298       0.5536        0.6929  0.9180
+      1       0.4978        0.7350       0.5536        0.6929  1.0611
+      2       0.4732        0.7474       0.5536        0.6929  1.0729
+      3       0.5156        0.7238       0.5536        0.6929  1.0441
+      4       0.4911        0.7485       0.5536        0.6928  1.0617
+      5       0.5067        0.7207       0.5536        0.6928  1.0601
+      6       0.5156        0.7279       0.5536        0.6927  1.0990
+      7       0.5223        0.7049       0.5536        0.6928  1.0713
+      8       0.5134        0.7298       0.5536        0.6929  1.0443
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5246        0.6932       0.4250        0.6935  0.3962
-      2       0.5290        0.6930       0.4250        0.6936  0.3730
-      3       0.5134        0.6930       0.4250        0.6938  0.3861
+      1       0.5246        0.6932       0.4250        0.6935  0.5071
+      2       0.5290        0.6930       0.4250        0.6936  0.4890
+      3       0.5134        0.6930       0.4250        0.6938  0.5388
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4821        0.6932       0.5333        0.6931  0.3913
-      2       0.4531        0.6932       0.4667        0.6932  0.3801
-      3       0.4777        0.6932       0.4667        0.6933  0.3717
+      1       0.4821        0.6932       0.5333        0.6931  0.4767
+      2       0.4531        0.6932       0.4667        0.6932  0.4732
+      3       0.4777        0.6932       0.4667        0.6933  0.5137
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4933        0.6932       0.4911        0.6932  0.3793
-      2       0.5067        0.6932       0.4911        0.6932  0.3727
-      3       0.4554        0.6932       0.4911        0.6932  0.3846
+      1       0.4933        0.6932       0.4911        0.6932  0.4879
+      2       0.5067        0.6932       0.4911        0.6932  0.4708
+      3       0.4554        0.6932       0.4911        0.6932  0.4908
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4888        0.6932       0.5446        0.6931  0.3834
-      2       0.5469        0.6930       0.4554        0.6932  0.3749
-      3       0.5112        0.6932       0.4554        0.6933  0.3768
+      1       0.4888        0.6932       0.5446        0.6931  0.4903
+      2       0.5469        0.6930       0.4554        0.6932  0.4719
+      3       0.5112        0.6932       0.4554        0.6933  0.4574
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.6932       0.4464        0.6934  0.3769
-      2       0.5067        0.6931       0.4464        0.6934  0.3811
-      3       0.4978        0.6931       0.4464        0.6935  0.3897
+      1       0.4844        0.6932       0.4464        0.6934  0.4870
+      2       0.5067        0.6931       0.4464        0.6934  0.4869
+      3       0.4978        0.6931       0.4464        0.6935  0.4915
 Stopping since valid_loss has not improved in the last 3 epochs.
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
   0%|                                              | 0.00/33.1M [00:00&lt;?, ?B/s]
-  0%|                                      | 25.6k/33.1M [00:00&lt;02:09, 256kB/s]
-  0%|                                      | 51.2k/33.1M [00:00&lt;02:09, 255kB/s]
-  0%|                                      | 96.3k/33.1M [00:00&lt;01:36, 343kB/s]
-  1%|▏                                      | 209k/33.1M [00:00&lt;00:50, 649kB/s]
-  1%|▍                                     | 432k/33.1M [00:00&lt;00:26, 1.21MB/s]
-  3%|█                                     | 889k/33.1M [00:00&lt;00:13, 2.34MB/s]
-  5%|██                                   | 1.80M/33.1M [00:00&lt;00:06, 4.53MB/s]
- 11%|████                                 | 3.62M/33.1M [00:00&lt;00:03, 8.84MB/s]
- 18%|██████▊                              | 6.03M/33.1M [00:00&lt;00:01, 13.5MB/s]
- 25%|█████████▏                           | 8.24M/33.1M [00:01&lt;00:01, 16.1MB/s]
- 32%|███████████▊                         | 10.6M/33.1M [00:01&lt;00:01, 18.2MB/s]
- 39%|██████████████▍                      | 12.9M/33.1M [00:01&lt;00:01, 19.6MB/s]
- 46%|████████████████▉                    | 15.2M/33.1M [00:01&lt;00:00, 20.6MB/s]
- 53%|███████████████████▌                 | 17.5M/33.1M [00:01&lt;00:00, 21.3MB/s]
- 60%|██████████████████████▏              | 19.8M/33.1M [00:01&lt;00:00, 21.8MB/s]
- 67%|████████████████████████▊            | 22.1M/33.1M [00:01&lt;00:00, 22.2MB/s]
- 76%|████████████████████████████▎        | 25.3M/33.1M [00:01&lt;00:00, 24.8MB/s]
- 85%|███████████████████████████████▎     | 28.0M/33.1M [00:01&lt;00:00, 25.5MB/s]
- 93%|██████████████████████████████████▏  | 30.6M/33.1M [00:01&lt;00:00, 25.5MB/s]
+  0%|                                     | 8.19k/33.1M [00:00&lt;11:10, 49.3kB/s]
+  0%|                                      | 32.8k/33.1M [00:00&lt;05:09, 107kB/s]
+  0%|                                      | 96.3k/33.1M [00:00&lt;02:22, 231kB/s]
+  1%|▏                                      | 184k/33.1M [00:00&lt;01:34, 347kB/s]
+  1%|▍                                      | 360k/33.1M [00:00&lt;00:54, 600kB/s]
+  2%|▊                                     | 721k/33.1M [00:01&lt;00:28, 1.12MB/s]
+  4%|█▌                                   | 1.43M/33.1M [00:01&lt;00:14, 2.14MB/s]
+  9%|███▏                                 | 2.86M/33.1M [00:01&lt;00:07, 4.16MB/s]
+ 17%|██████▍                              | 5.74M/33.1M [00:01&lt;00:03, 8.19MB/s]
+ 27%|█████████▊                           | 8.78M/33.1M [00:01&lt;00:02, 11.3MB/s]
+ 34%|████████████▋                        | 11.4M/33.1M [00:01&lt;00:01, 14.3MB/s]
+ 39%|██████████████▌                      | 13.0M/33.1M [00:01&lt;00:01, 14.1MB/s]
+ 44%|████████████████▏                    | 14.5M/33.1M [00:02&lt;00:01, 13.6MB/s]
+ 51%|███████████████████                  | 17.0M/33.1M [00:02&lt;00:00, 16.5MB/s]
+ 57%|█████████████████████                | 18.8M/33.1M [00:02&lt;00:00, 16.0MB/s]
+ 62%|██████████████████████▉              | 20.5M/33.1M [00:02&lt;00:00, 15.4MB/s]
+ 69%|█████████████████████████▎           | 22.6M/33.1M [00:02&lt;00:00, 15.9MB/s]
+ 75%|███████████████████████████▊         | 24.9M/33.1M [00:02&lt;00:00, 16.6MB/s]
+ 81%|██████████████████████████████▏      | 26.9M/33.1M [00:02&lt;00:00, 17.7MB/s]
+ 87%|████████████████████████████████▏    | 28.7M/33.1M [00:02&lt;00:00, 16.7MB/s]
+ 93%|██████████████████████████████████▎  | 30.6M/33.1M [00:02&lt;00:00, 16.7MB/s]
+ 98%|████████████████████████████████████▎| 32.4M/33.1M [00:03&lt;00:00, 17.0MB/s]
   0%|                                              | 0.00/33.1M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 33.1M/33.1M [00:00&lt;00:00, 85.8GB/s]
+100%|█████████████████████████████████████| 33.1M/33.1M [00:00&lt;00:00, 52.4GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
   0%|                                              | 0.00/16.5M [00:00&lt;?, ?B/s]
-  0%|                                     | 8.19k/16.5M [00:00&lt;03:24, 80.7kB/s]
-  0%|                                     | 16.4k/16.5M [00:00&lt;03:26, 80.2kB/s]
-  0%|                                      | 32.8k/16.5M [00:00&lt;02:22, 116kB/s]
-  0%|                                      | 45.1k/16.5M [00:00&lt;02:19, 118kB/s]
-  0%|▏                                     | 57.3k/16.5M [00:00&lt;02:19, 118kB/s]
-  0%|▏                                     | 69.6k/16.5M [00:00&lt;02:18, 119kB/s]
-  0%|▏                                     | 81.9k/16.5M [00:00&lt;02:17, 119kB/s]
-  1%|▏                                     | 96.3k/16.5M [00:00&lt;02:10, 126kB/s]
-  1%|▎                                      | 113k/16.5M [00:00&lt;02:00, 136kB/s]
-  1%|▎                                      | 128k/16.5M [00:01&lt;01:56, 140kB/s]
-  1%|▎                                      | 144k/16.5M [00:01&lt;01:52, 146kB/s]
-  1%|▍                                      | 161k/16.5M [00:01&lt;01:48, 150kB/s]
-  1%|▍                                      | 176k/16.5M [00:01&lt;01:48, 150kB/s]
-  1%|▍                                      | 201k/16.5M [00:01&lt;01:32, 177kB/s]
-  1%|▌                                      | 219k/16.5M [00:01&lt;01:31, 178kB/s]
-  1%|▌                                      | 241k/16.5M [00:01&lt;01:26, 187kB/s]
-  2%|▌                                      | 264k/16.5M [00:01&lt;01:21, 200kB/s]
-  2%|▋                                      | 289k/16.5M [00:01&lt;01:16, 212kB/s]
-  2%|▋                                      | 312k/16.5M [00:01&lt;01:14, 217kB/s]
-  2%|▊                                      | 337k/16.5M [00:02&lt;01:12, 223kB/s]
-  2%|▊                                      | 369k/16.5M [00:02&lt;01:04, 249kB/s]
-  2%|▉                                      | 394k/16.5M [00:02&lt;01:04, 249kB/s]
-  3%|▉                                      | 424k/16.5M [00:02&lt;01:01, 261kB/s]
-  3%|█                                      | 457k/16.5M [00:02&lt;00:57, 279kB/s]
-  3%|█▏                                     | 488k/16.5M [00:02&lt;00:55, 288kB/s]
-  3%|█▏                                     | 520k/16.5M [00:02&lt;00:54, 295kB/s]
-  3%|█▎                                     | 560k/16.5M [00:02&lt;00:49, 323kB/s]
-  4%|█▍                                     | 593k/16.5M [00:02&lt;00:49, 322kB/s]
-  4%|█▍                                     | 633k/16.5M [00:02&lt;00:46, 342kB/s]
-  4%|█▌                                     | 673k/16.5M [00:03&lt;00:44, 356kB/s]
-  4%|█▋                                     | 721k/16.5M [00:03&lt;00:40, 390kB/s]
-  5%|█▊                                     | 768k/16.5M [00:03&lt;00:38, 411kB/s]
-  5%|█▉                                     | 810k/16.5M [00:03&lt;00:38, 410kB/s]
-  5%|██                                     | 864k/16.5M [00:03&lt;00:35, 445kB/s]
-  6%|██▏                                    | 912k/16.5M [00:03&lt;00:34, 454kB/s]
-  6%|██▎                                    | 969k/16.5M [00:03&lt;00:32, 483kB/s]
-  6%|██▎                                   | 1.03M/16.5M [00:03&lt;00:29, 521kB/s]
-  7%|██▌                                   | 1.09M/16.5M [00:03&lt;00:29, 532kB/s]
-  7%|██▋                                   | 1.15M/16.5M [00:04&lt;00:27, 559kB/s]
-  7%|██▊                                   | 1.22M/16.5M [00:04&lt;00:25, 601kB/s]
-  8%|██▉                                   | 1.29M/16.5M [00:04&lt;00:25, 609kB/s]
-  8%|███▏                                  | 1.37M/16.5M [00:04&lt;00:23, 658kB/s]
-  9%|███▎                                  | 1.45M/16.5M [00:04&lt;00:21, 695kB/s]
-  9%|███▌                                  | 1.53M/16.5M [00:04&lt;00:20, 723kB/s]
- 10%|███▋                                  | 1.62M/16.5M [00:04&lt;00:19, 764kB/s]
- 10%|███▉                                  | 1.70M/16.5M [00:04&lt;00:18, 790kB/s]
- 11%|████▏                                 | 1.80M/16.5M [00:04&lt;00:17, 835kB/s]
- 11%|████▎                                 | 1.90M/16.5M [00:04&lt;00:16, 866kB/s]
- 12%|████▌                                 | 2.00M/16.5M [00:05&lt;00:15, 913kB/s]
- 13%|████▊                                 | 2.11M/16.5M [00:05&lt;00:14, 965kB/s]
- 13%|████▉                                | 2.23M/16.5M [00:05&lt;00:13, 1.02MB/s]
- 14%|█████▎                               | 2.35M/16.5M [00:05&lt;00:13, 1.07MB/s]
- 15%|█████▌                               | 2.48M/16.5M [00:05&lt;00:12, 1.12MB/s]
- 16%|█████▊                               | 2.62M/16.5M [00:05&lt;00:11, 1.19MB/s]
- 17%|██████▏                              | 2.75M/16.5M [00:05&lt;00:11, 1.23MB/s]
- 18%|██████▍                              | 2.90M/16.5M [00:05&lt;00:10, 1.30MB/s]
- 18%|██████▊                              | 3.06M/16.5M [00:05&lt;00:09, 1.36MB/s]
- 19%|███████▏                             | 3.22M/16.5M [00:05&lt;00:09, 1.42MB/s]
- 21%|███████▌                             | 3.39M/16.5M [00:06&lt;00:08, 1.51MB/s]
- 22%|███████▉                             | 3.57M/16.5M [00:06&lt;00:08, 1.57MB/s]
- 23%|████████▍                            | 3.76M/16.5M [00:06&lt;00:07, 1.66MB/s]
- 24%|████████▊                            | 3.95M/16.5M [00:06&lt;00:07, 1.73MB/s]
- 25%|█████████▎                           | 4.16M/16.5M [00:06&lt;00:06, 1.82MB/s]
- 26%|█████████▊                           | 4.38M/16.5M [00:06&lt;00:06, 1.91MB/s]
- 28%|██████████▎                          | 4.61M/16.5M [00:06&lt;00:05, 2.01MB/s]
- 29%|██████████▊                          | 4.85M/16.5M [00:06&lt;00:05, 2.11MB/s]
- 31%|███████████▍                         | 5.10M/16.5M [00:06&lt;00:05, 2.21MB/s]
- 32%|████████████                         | 5.37M/16.5M [00:06&lt;00:04, 2.34MB/s]
- 34%|████████████▌                        | 5.64M/16.5M [00:07&lt;00:04, 2.43MB/s]
- 36%|█████████████▎                       | 5.94M/16.5M [00:07&lt;00:04, 2.57MB/s]
- 38%|█████████████▉                       | 6.24M/16.5M [00:07&lt;00:03, 2.69MB/s]
- 40%|██████████████▋                      | 6.56M/16.5M [00:07&lt;00:03, 2.82MB/s]
- 42%|███████████████▍                     | 6.90M/16.5M [00:07&lt;00:03, 2.96MB/s]
- 44%|████████████████▏                    | 7.26M/16.5M [00:07&lt;00:02, 3.12MB/s]
- 46%|█████████████████                    | 7.62M/16.5M [00:07&lt;00:02, 3.26MB/s]
- 48%|█████████████████▉                   | 8.02M/16.5M [00:07&lt;00:02, 3.43MB/s]
- 51%|██████████████████▊                  | 8.43M/16.5M [00:07&lt;00:02, 3.61MB/s]
- 54%|███████████████████▊                 | 8.86M/16.5M [00:08&lt;00:02, 3.79MB/s]
- 56%|████████████████████▊                | 9.31M/16.5M [00:08&lt;00:01, 3.97MB/s]
- 59%|█████████████████████▉               | 9.78M/16.5M [00:08&lt;00:01, 4.16MB/s]
- 62%|███████████████████████              | 10.3M/16.5M [00:08&lt;00:01, 4.37MB/s]
- 65%|████████████████████████▏            | 10.8M/16.5M [00:08&lt;00:01, 4.60MB/s]
- 69%|█████████████████████████▍           | 11.4M/16.5M [00:08&lt;00:01, 4.81MB/s]
- 72%|██████████████████████████▋          | 11.9M/16.5M [00:08&lt;00:00, 5.07MB/s]
- 76%|████████████████████████████         | 12.5M/16.5M [00:08&lt;00:00, 5.31MB/s]
- 80%|█████████████████████████████▍       | 13.2M/16.5M [00:08&lt;00:00, 5.59MB/s]
- 84%|██████████████████████████████▉      | 13.8M/16.5M [00:08&lt;00:00, 5.88MB/s]
- 88%|████████████████████████████████▌    | 14.5M/16.5M [00:09&lt;00:00, 6.15MB/s]
- 92%|██████████████████████████████████▏  | 15.3M/16.5M [00:09&lt;00:00, 6.45MB/s]
- 97%|███████████████████████████████████▉ | 16.0M/16.5M [00:09&lt;00:00, 6.76MB/s]
+  0%|                                     | 8.19k/16.5M [00:00&lt;05:36, 49.1kB/s]
+  0%|                                      | 32.8k/16.5M [00:00&lt;02:35, 106kB/s]
+  1%|▏                                     | 96.3k/16.5M [00:00&lt;01:11, 230kB/s]
+  1%|▍                                      | 184k/16.5M [00:00&lt;00:47, 346kB/s]
+  2%|▊                                      | 337k/16.5M [00:00&lt;00:29, 549kB/s]
+  4%|█▌                                    | 656k/16.5M [00:01&lt;00:15, 1.01MB/s]
+  8%|██▉                                  | 1.31M/16.5M [00:01&lt;00:07, 1.95MB/s]
+ 16%|█████▊                               | 2.62M/16.5M [00:01&lt;00:03, 3.80MB/s]
+ 32%|███████████▋                         | 5.22M/16.5M [00:01&lt;00:01, 7.45MB/s]
+ 50%|██████████████████▍                  | 8.26M/16.5M [00:01&lt;00:00, 10.7MB/s]
+ 65%|████████████████████████▏            | 10.8M/16.5M [00:01&lt;00:00, 12.1MB/s]
+ 80%|█████████████████████████████▌       | 13.2M/16.5M [00:02&lt;00:00, 12.8MB/s]
+ 97%|███████████████████████████████████▉ | 16.1M/16.5M [00:02&lt;00:00, 14.0MB/s]
   0%|                                              | 0.00/16.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 16.5M/16.5M [00:00&lt;00:00, 45.7GB/s]
-/home/runner/work/moabb/moabb/moabb/paradigms/base.py:291: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
+100%|█████████████████████████████████████| 16.5M/16.5M [00:00&lt;00:00, 37.7GB/s]
+/home/runner/work/moabb/moabb/moabb/paradigms/base.py:345: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
   X = mne.concatenate_epochs(X)
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156       10.2713       0.4286        5.4129  1.1765
-      2       0.5089       10.9292       0.5714        1.4456  1.1889
-      3       0.4621       10.5031       0.5714        0.6894  1.1747
-      4       0.4754       11.6947       0.4286        3.7086  1.2048
-      5       0.4799       11.4634       0.5714        0.7817  1.1926
+      1       0.5156       10.2713       0.4286        5.4129  1.3353
+      2       0.5089       10.9292       0.5714        1.4456  1.3537
+      3       0.4621       10.5031       0.5714        0.6894  1.3885
+      4       0.4754       11.6947       0.4286        3.7086  1.3522
+      5       0.4799       11.4634       0.5714        0.7817  1.3379
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4911       12.6388       0.3929        7.1134  1.1873
-      2       0.5022       11.5521       0.6071        0.7275  1.1746
-      3       0.4732       11.1831       0.3929        2.0124  1.1761
-      4       0.4911       11.8136       0.3929        2.3320  1.1915
+      1       0.4911       12.6388       0.3929        7.1134  1.3225
+      2       0.5022       11.5521       0.6071        0.7275  1.3988
+      3       0.4732       11.1831       0.3929        2.0124  1.3482
+      4       0.4911       11.8136       0.3929        2.3320  1.3683
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4740       12.2813       0.4904        1.0094  1.0175
-      2       0.4583       11.2445       0.5096        0.6959  1.0249
-      3       0.4349       10.6880       0.5096        1.3882  1.0212
-      4       0.5182       10.6439       0.4904        1.0891  1.0212
+      1       0.4740       12.2813       0.4904        1.0094  1.2172
+      2       0.4583       11.2445       0.5096        0.6959  1.1313
+      3       0.4349       10.6880       0.5096        1.3882  1.1668
+      4       0.5182       10.6439       0.4904        1.0891  1.1954
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844       11.0015       0.4196        0.8070  1.1935
-      2       0.4799       12.0340       0.5804        1.0452  1.1970
-      3       0.5357        9.8446       0.4196        4.3068  1.2025
-      4       0.4621       11.6608       0.5804        0.7244  1.1686
-      5       0.4598       11.2964       0.5804        0.7472  1.2150
+      1       0.4844       11.0015       0.4196        0.8070  1.3538
+      2       0.4799       12.0340       0.5804        1.0452  1.3513
+      3       0.5357        9.8446       0.4196        4.3068  1.3883
+      4       0.4621       11.6608       0.5804        0.7244  1.4001
+      5       0.4598       11.2964       0.5804        0.7472  1.4000
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4818       13.6253       0.5096        5.2901  1.0314
-      2       0.4609       11.9825       0.5096        1.2451  1.0175
-      3       0.4896       10.3053       0.4904        3.2990  1.0293
-      4       0.5208       10.9640       0.4904        0.7783  1.0085
-      5       0.4635       11.5503       0.5096        1.3371  1.0140
+      1       0.4818       13.6253       0.5096        5.2901  1.1489
+      2       0.4609       11.9825       0.5096        1.2451  1.1674
+      3       0.4896       10.3053       0.4904        3.2990  1.2005
+      4       0.5208       10.9640       0.4904        0.7783  1.2001
+      5       0.4635       11.5503       0.5096        1.3371  1.1799
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4554        0.7582       0.4286        0.6941  0.9164
-      2       0.4799        0.7386       0.4286        0.6949  0.8957
-      3       0.4799        0.7521       0.4286        0.6957  0.9122
+      1       0.4554        0.7582       0.4286        0.6941  1.0766
+      2       0.4799        0.7386       0.4286        0.6949  1.0507
+      3       0.4799        0.7521       0.4286        0.6957  1.0774
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4888        0.7392       0.6071        0.6930  0.9020
-      2       0.5156        0.7162       0.6071        0.6929  0.9086
-      3       0.4933        0.7421       0.6071        0.6928  0.9164
-      4       0.4978        0.7405       0.6071        0.6926  0.9156
-      5       0.4754        0.7552       0.6071        0.6925  0.8863
-      6       0.4978        0.7194       0.6071        0.6924  0.9156
-      7       0.5491        0.7058       0.6071        0.6923  0.9224
-      8       0.5246        0.7182       0.6071        0.6922  0.9220
-      9       0.5022        0.7372       0.6071        0.6922  0.9080
-     10       0.5112        0.7279       0.6071        0.6921  0.9241
+      1       0.4888        0.7392       0.6071        0.6930  1.0242
+      2       0.5156        0.7162       0.6071        0.6929  1.0338
+      3       0.4933        0.7421       0.6071        0.6928  1.0766
+      4       0.4978        0.7405       0.6071        0.6926  1.0349
+      5       0.4754        0.7552       0.6071        0.6925  1.0605
+      6       0.4978        0.7194       0.6071        0.6924  1.0919
+      7       0.5491        0.7058       0.6071        0.6923  1.0736
+      8       0.5246        0.7182       0.6071        0.6922  1.0536
+      9       0.5022        0.7372       0.6071        0.6922  1.0375
+     10       0.5112        0.7279       0.6071        0.6921  1.0432
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4792        0.7281       0.5096        0.6930  0.7903
-      2       0.5000        0.7232       0.5096        0.6930  0.8009
-      3       0.5286        0.7224       0.5096        0.6932  0.7828
+      1       0.4792        0.7281       0.5096        0.6930  0.9404
+      2       0.5000        0.7232       0.5096        0.6930  0.9167
+      3       0.5286        0.7224       0.5096        0.6932  0.8968
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4777        0.7389       0.4196        0.6940  0.9086
-      2       0.5022        0.7375       0.4196        0.6946  0.9171
-      3       0.5513        0.7171       0.4196        0.6952  0.9180
+      1       0.4777        0.7389       0.4196        0.6940  1.0922
+      2       0.5022        0.7375       0.4196        0.6946  1.0590
+      3       0.5513        0.7171       0.4196        0.6952  1.0240
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5234        0.7185       0.5096        0.6931  0.7953
-      2       0.4948        0.7441       0.5096        0.6930  0.7735
-      3       0.5234        0.7379       0.5096        0.6930  0.7758
-      4       0.4714        0.7431       0.5096        0.6930  0.7966
-      5       0.5052        0.7382       0.5096        0.6930  0.7712
+      1       0.5234        0.7185       0.5096        0.6931  0.9070
+      2       0.4948        0.7441       0.5096        0.6930  0.9100
+      3       0.5234        0.7379       0.5096        0.6930  0.9236
+      4       0.4714        0.7431       0.5096        0.6930  0.9236
+      5       0.5052        0.7382       0.5096        0.6930  0.9054
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5134        0.6932       0.4286        0.6934  0.3723
-      2       0.5223        0.6931       0.4286        0.6935  0.3668
-      3       0.5156        0.6931       0.4286        0.6936  0.3682
+      1       0.5134        0.6932       0.4286        0.6934  0.4682
+      2       0.5223        0.6931       0.4286        0.6935  0.4637
+      3       0.5156        0.6931       0.4286        0.6936  0.4690
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5268        0.6931       0.3929        0.6936  0.3716
-      2       0.5290        0.6930       0.3929        0.6938  0.3680
-      3       0.5268        0.6930       0.3929        0.6940  0.3624
+      1       0.5268        0.6931       0.3929        0.6936  0.4925
+      2       0.5290        0.6930       0.3929        0.6938  0.4681
+      3       0.5268        0.6930       0.3929        0.6940  0.4975
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.6932       0.5096        0.6931  0.3417
-      2       0.4922        0.6932       0.5096        0.6931  0.3197
-      3       0.5078        0.6932       0.5096        0.6931  0.3227
+      1       0.4844        0.6932       0.5096        0.6931  0.4165
+      2       0.4922        0.6932       0.5096        0.6931  0.4271
+      3       0.5078        0.6932       0.5096        0.6931  0.4207
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4531        0.6932       0.5804        0.6930  0.3884
-      2       0.4821        0.6932       0.4196        0.6933  0.3710
-      3       0.5134        0.6930       0.4196        0.6934  0.3672
+      1       0.4531        0.6932       0.5804        0.6930  0.4657
+      2       0.4821        0.6932       0.4196        0.6933  0.4954
+      3       0.5134        0.6930       0.4196        0.6934  0.4764
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5026        0.6932       0.5096        0.6931  0.3205
-      2       0.5000        0.6932       0.5096        0.6931  0.3191
-      3       0.5417        0.6931       0.5096        0.6931  0.3367
+      1       0.5026        0.6932       0.5096        0.6931  0.4287
+      2       0.5000        0.6932       0.5096        0.6931  0.4197
+      3       0.5417        0.6931       0.5096        0.6931  0.4233
 Stopping since valid_loss has not improved in the last 3 epochs.
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:  4.5min finished
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:  5.4min finished
         dataset    evaluation                       pipeline  avg score
-0  BNCI2014-001  CrossSession  braindecode_EEGNetv4_resample   0.478106
-1  BNCI2014-001  CrossSession    braindecode_ShallowFBCSPNet   0.500000
-2  BNCI2014-001  CrossSession       braindecode_EEGInception   0.497975
-3  BNCI2014-004  CrossSession  braindecode_EEGNetv4_resample   0.506194
-4  BNCI2014-004  CrossSession    braindecode_ShallowFBCSPNet   0.500000
-5  BNCI2014-004  CrossSession       braindecode_EEGInception   0.484808
+0  BNCI2014-004  CrossSession       braindecode_EEGInception   0.484808
+1  BNCI2014-004  CrossSession  braindecode_EEGNetv4_resample   0.506194
+2  BNCI2014-004  CrossSession    braindecode_ShallowFBCSPNet   0.500000
 </pre></div>
 </div>
 <p>The deep learning architectures implemented in MOABB using Braindecode are:</p>
@@ -1295,7 +1219,7 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_benchmark_braindecode_001.png" srcset="../_images/sphx_glr_plot_benchmark_braindecode_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/plotting.py:59: UserWarning: The palette list has more values (6) than needed (3), which may not be intended.
+<img src="../_images/sphx_glr_plot_benchmark_braindecode_001.png" srcset="../_images/sphx_glr_plot_benchmark_braindecode_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/plotting.py:70: UserWarning: The palette list has more values (6) than needed (3), which may not be intended.
   sea.stripplot(
 </pre></div>
 </div>
@@ -1327,8 +1251,8 @@ for assistive ERP-based brain-computer interfaces.</a>
 IEEE Transactions on Neural Systems and Rehabilitation Engineering</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 6 minutes  2.359 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  1022 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 7 minutes  26.408 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  1029 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-braindecode-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/284aff1e2748c45a1efdc5d7071c4a77/plot_benchmark_braindecode.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark_braindecode.py</span></code></a></p>
