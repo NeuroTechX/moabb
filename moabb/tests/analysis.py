@@ -153,41 +153,55 @@ class Test_Results(unittest.TestCase):
             os.remove(path)
 
     def testCanAddSample(self):
-        self.obj.add(to_result_input(["a"], [d1]), to_pipeline_dict(["a"]))
+        self.obj.add(
+            to_result_input(["a"], [d1]), to_pipeline_dict(["a"]), "process_pipeline"
+        )
 
     def testRecognizesAlreadyComputed(self):
         _in = to_result_input(["a"], [d1])
-        self.obj.add(_in, to_pipeline_dict(["a"]))
+        self.obj.add(_in, to_pipeline_dict(["a"]), "process_pipeline")
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(["a"]), d1["dataset"], d1["subject"]
+            to_pipeline_dict(["a"]),
+            d1["dataset"],
+            d1["subject"],
+            "process_pipeline",
         )
         self.assertTrue(len(not_yet_computed) == 0)
 
     def testCanAddMultiplePipelines(self):
         _in = to_result_input(["a", "b", "c"], [d1, d1, d2])
-        self.obj.add(_in, to_pipeline_dict(["a", "b", "c"]))
+        self.obj.add(_in, to_pipeline_dict(["a", "b", "c"]), "process_pipeline")
 
     def testCanAddMultipleValuesPerPipeline(self):
         _in = to_result_input(["a", "b"], [[d1, d2], [d2, d1]])
-        self.obj.add(_in, to_pipeline_dict(["a", "b"]))
+        self.obj.add(_in, to_pipeline_dict(["a", "b"]), "process_pipeline")
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(["a"]), d1["dataset"], d1["subject"]
+            to_pipeline_dict(["a"]),
+            d1["dataset"],
+            d1["subject"],
+            "process_pipeline",
         )
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(["b"]), d2["dataset"], d2["subject"]
+            to_pipeline_dict(["b"]),
+            d2["dataset"],
+            d2["subject"],
+            "process_pipeline",
         )
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
         not_yet_computed = self.obj.not_yet_computed(
-            to_pipeline_dict(["b"]), d1["dataset"], d1["subject"]
+            to_pipeline_dict(["b"]),
+            d1["dataset"],
+            d1["subject"],
+            "process_pipeline",
         )
         self.assertTrue(len(not_yet_computed) == 0, not_yet_computed)
 
     def testCanExportToDataframe(self):
         _in = to_result_input(["a", "b", "c"], [d1, d1, d2])
-        self.obj.add(_in, to_pipeline_dict(["a", "b", "c"]))
+        self.obj.add(_in, to_pipeline_dict(["a", "b", "c"]), "process_pipeline")
         _in = to_result_input(["a", "b", "c"], [d2, d2, d3])
-        self.obj.add(_in, to_pipeline_dict(["a", "b", "c"]))
+        self.obj.add(_in, to_pipeline_dict(["a", "b", "c"]), "process_pipeline")
         df = self.obj.to_dataframe()
         self.assertTrue(
             set(np.unique(df["pipeline"])) == set(("a", "b", "c")),

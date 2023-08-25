@@ -9,12 +9,14 @@ import pandas as pd
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
+from moabb.datasets.bids_interface import StepType
 from moabb.datasets.preprocessing import (
     EpochsToEvents,
     EventsToLabels,
     ForkPipelines,
     RawToEpochs,
     RawToEvents,
+    SetRawAnnotations,
     get_crop_pipeline,
     get_filter_pipeline,
     get_resample_pipeline,
@@ -126,14 +128,86 @@ class BaseProcessing(metaclass=abc.ABCMeta):
     def used_events(self, dataset):
         pass
 
+    def make_process_pipelines(
+        self, dataset, return_epochs=False, return_raws=False, postprocess_pipeline=None
+    ):
+        """Return the pre-processing pipelines corresponding to this paradigm (one per frequency band).
+        Refer to the arguments of :func:`get_data` for more information."""
+        if return_epochs and return_raws:
+            message = "Select only return_epochs or return_raws, not both"
+            raise ValueError(message)
+
+        self.prepare_process(dataset)
+
+        raw_pipelines = self._get_raw_pipelines()
+        epochs_pipeline = self._get_epochs_pipeline(return_epochs, return_raws, dataset)
+        array_pipeline = self._get_array_pipeline(
+            return_epochs, return_raws, dataset, postprocess_pipeline
+        )
+
+        if array_pipeline is not None:
+            events_pipeline = (
+                self._get_events_pipeline(dataset) if return_raws else EpochsToEvents()
+            )
+        else:
+            events_pipeline = None
+
+        if events_pipeline is None and array_pipeline is not None:
+            log.warning(
+                f"event_id not specified, using all the dataset's "
+                f"events to generate labels: {dataset.event_id}"
+            )
+            events_pipeline = (
+                RawToEvents(dataset.event_id)
+                if epochs_pipeline is None
+                else EpochsToEvents()
+            )
+
+        process_pipelines = []
+        for raw_pipeline in raw_pipelines:
+            steps = []
+            steps.append((StepType.RAW, SetRawAnnotations(dataset.event_id)))
+            if raw_pipeline is not None:
+                steps.append((StepType.RAW, raw_pipeline))
+            if epochs_pipeline is not None:
+                steps.append((StepType.EPOCHS, epochs_pipeline))
+            if array_pipeline is not None:
+                array_events_pipeline = ForkPipelines(
+                    [
+                        ("X", array_pipeline),
+                        ("events", events_pipeline),
+                    ]
+                )
+                steps.append((StepType.ARRAY, array_events_pipeline))
+            process_pipelines.append(Pipeline(steps))
+        return process_pipelines
+
+    def make_labels_pipeline(self, dataset, return_epochs=False, return_raws=False):
+        """Returns the pipeline that extracts the labels from the
+        output of the postprocess_pipeline.
+        Refer to the arguments of :func:`get_data` for more information."""
+        if return_epochs:
+            labels_pipeline = make_pipeline(
+                EpochsToEvents(),
+                EventsToLabels(event_id=self.used_events(dataset)),
+            )
+        elif return_raws:
+            labels_pipeline = make_pipeline(
+                self._get_events_pipeline(dataset),
+                EventsToLabels(event_id=self.used_events(dataset)),
+            )
+        else:  # return array
+            labels_pipeline = EventsToLabels(event_id=self.used_events(dataset))
+        return labels_pipeline
+
     def get_data(  # noqa: C901
         self,
         dataset,
         subjects=None,
         return_epochs=False,
         return_raws=False,
-        processing_pipeline=None,
         cache_config=None,
+        postprocess_pipeline=None,
     ):
         """
         Return the data for a list of subject.
@@ -159,6 +233,14 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             Mutually exclusive with return_epochs
         cache_config: dict | CacheConfig
             Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+        postprocess_pipeline: Pipeline | None
+            Optional pipeline to apply to the data after the preprocessing.
+            This pipeline will either receive :class:`mne.io.BaseRaw`, :class:`mne.Epochs`
+            or :func:`np.ndarray` as input, depending on the values of ``return_epochs``
+            and ``return_raws``.
+            This pipeline must return an ``np.ndarray``.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
 
         Eeturns
         -------
@@ -176,49 +258,21 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             message = f"Dataset {dataset.code} is not valid for paradigm"
             raise AssertionError(message)
 
-        if return_epochs and return_raws:
-            message = "Select only return_epochs or return_raws, not both"
-            raise ValueError(message)
-
         if subjects is None:
             subjects = dataset.subject_list
 
-        self.prepare_process(dataset)
-        raw_pipelines = self._get_raw_pipelines()
-        epochs_pipeline = self._get_epochs_pipeline(return_epochs, return_raws, dataset)
-        array_pipeline = self._get_array_pipeline(
-            return_epochs, return_raws, dataset, processing_pipeline
+        process_pipelines = self.make_process_pipelines(
+            dataset, return_epochs, return_raws, postprocess_pipeline
         )
-        if return_epochs:
-            labels_pipeline = make_pipeline(
-                EpochsToEvents(),
-                EventsToLabels(event_id=self.used_events(dataset)),
-            )
-        elif return_raws:
-            labels_pipeline = make_pipeline(
-                self._get_events_pipeline(dataset),
-                EventsToLabels(event_id=self.used_events(dataset)),
-            )
-        else:  # return array
-            labels_pipeline = EventsToLabels(event_id=self.used_events(dataset))
-
-        if array_pipeline is not None:
-            events_pipeline = (
-                self._get_events_pipeline(dataset) if return_raws else EpochsToEvents()
-            )
-        else:
-            events_pipeline = None
+        labels_pipeline = self.make_labels_pipeline(dataset, return_epochs, return_raws)
 
         data = [
             dataset.get_data(
                 subjects=subjects,
                 cache_config=cache_config,
-                raw_pipeline=raw_pipeline,
-                epochs_pipeline=epochs_pipeline,
-                array_pipeline=array_pipeline,
-                events_pipeline=events_pipeline,
+                process_pipeline=process_pipeline,
             )
-            for raw_pipeline in raw_pipelines
+            for process_pipeline in process_pipelines
         ]
 
         X = []
@@ -361,7 +415,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                 )
             )
         if processing_pipeline is not None:
-            steps.append(("processing_pipeline", processing_pipeline))
+            steps.append(("postprocess_pipeline", processing_pipeline))
         if len(steps) == 0:
             return None
         return Pipeline(steps)

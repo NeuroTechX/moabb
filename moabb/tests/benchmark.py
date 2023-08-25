@@ -50,6 +50,7 @@ class TestBenchmark(unittest.TestCase):
             benchmark,
             pipelines=str(self.pp_dir),
             exclude_datasets=["FakeDataset"],
+            overwrite=True,
         )
 
     def test_selectparadigm(self):
@@ -68,6 +69,7 @@ class TestBenchmark(unittest.TestCase):
             pipelines=str(self.pp_dir),
             include_datasets=["FakeDataset"],
             exclude_datasets=["AnotherDataset"],
+            overwrite=True,
         )
 
 
