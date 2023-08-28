@@ -5,6 +5,7 @@ import tempfile
 import unittest
 
 import mne
+import pytest
 
 import moabb.datasets as db
 import moabb.datasets.compound_dataset as db_compound
@@ -235,6 +236,34 @@ class Test_Datasets(unittest.TestCase):
         ]
         assert len(dataset_list) == len(all_datasets)
         assert set(dataset_list) == set(all_datasets)
+
+    def test_bad_subject_name(self):
+        ds = FakeDataset()
+        ds.subject_list = ["1", "2", "3"]
+        with pytest.raises(ValueError, match=r"Subject names must be "):
+            ds.get_data()
+
+    def test_bad_session_name(self):
+        class BadSessionDataset(FakeDataset):
+            def _get_single_subject_data(self, subject):
+                data = super()._get_single_subject_data(subject)
+                data["session_0"] = data.pop("0")
+                return data
+
+        ds = BadSessionDataset()
+        with pytest.raises(ValueError, match=r"Session names must be "):
+            ds.get_data()
+
+    def test_bad_run_name(self):
+        class BadRunDataset(FakeDataset):
+            def _get_single_subject_data(self, subject):
+                data = super()._get_single_subject_data(subject)
+                data["0"]["run_0"] = data["0"].pop("0")
+                return data
+
+        ds = BadRunDataset()
+        with pytest.raises(ValueError, match=r"Run names must be "):
+            ds.get_data()
 
 
 class Test_VirtualReality_Dataset(unittest.TestCase):
