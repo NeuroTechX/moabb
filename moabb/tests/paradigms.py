@@ -367,10 +367,11 @@ class Test_P300(unittest.TestCase):
             channels=["C3", "Cz", "Fz", "C4"],
             sfreq=512,
         )
-        paradigm.match_all([dataset1, dataset2, dataset3])
+        shift=-0.5
+        paradigm.match_all([dataset1, dataset2, dataset3], shift=shift)
         # match_all should returns the smallest frequency minus 0.5.
         # See comment inside the match_all method
-        self.assertEqual(paradigm.resample, 64 - 0.5)
+        self.assertEqual(paradigm.resample, 64 + shift)
         self.assertEqual(paradigm.channels.sort(), ["C3", "Cz"].sort())
 
     def test_BaseP300_paradigm(self):

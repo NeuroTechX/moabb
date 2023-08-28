@@ -421,13 +421,13 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             return None
         return Pipeline(steps)
 
-    def match_all(self, datasets: List[BaseDataset]):
+    def match_all(self, datasets: List[BaseDataset], shift=-0.5):
         """
         Initialize this paradigm to match all datasets in parameter:
-        - `self.resample` is set to match the minimum frequency in all datasets, minus 0.5.
-          If the frequency is 128 for example, then MNE can returns 128 or 129 samples
+        - `self.resample` is set to match the minimum frequency in all datasets, minus `shift`.
+          If the frequency is 128 for example, then MNE can return 128 or 129 samples
           depending on the dataset, even if the length of the epochs is 1s
-          The `-0.5` solves this particular issue.
+          Setting `shift=-0.5` solves this particular issue.
         - `self.channels` is initialized with the channels which are common to all datasets.
 
         Parameters
@@ -454,8 +454,8 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             )
         # If resample=128 for example, then MNE can returns 128 or 129 samples
         # depending on the dataset, even if the length of the epochs is 1s
-        # The `-0.5` solves this particular issue.
-        self.resample = resample - 0.5
+        # `shift=-0.5` solves this particular issue.
+        self.resample = resample + shift
         self.channels = list(channels)
 
     @abc.abstractmethod
