@@ -154,7 +154,7 @@ def _download_all(update_path=True, verbose=None):
 
 
 def block_rep(block: int, rep: int):
-    return f"block_{block}-repetition_{rep}"
+    return f"{block}repetition{rep}"
 
 
 def blocks_reps(blocks: list, reps: list):
