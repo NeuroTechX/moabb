@@ -113,6 +113,48 @@ def is_abbrev(abbrev_name: str, full_name: str):
     return re.fullmatch(pattern, full_name) is not None
 
 
+def check_subject_names(data):
+    for subject in data.keys():
+        if not isinstance(subject, int):
+            raise ValueError(
+                f"Subject names must be integers, found {type(subject)}: {subject!r}. "
+                f"If you used cache, you may need to erase it using overwrite=True."
+            )
+
+
+def session_run_pattern():
+    return r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)"  # g1: index, g2: description
+
+
+def check_session_names(data):
+    pattern = session_run_pattern()
+    for subject, sessions in data.items():
+        for session in sessions.keys():
+            if not isinstance(session, str) or not re.fullmatch(pattern, session):
+                raise ValueError(
+                    f"Session names must be strings starting with an integer "
+                    f"identifying the order in which they were recorded, "
+                    f"optionally followed by a description only containing "
+                    f"letters and numbers. Found key {session!r} instead. "
+                    f"If you used cache, you may need to erase it using overwrite=True."
+                )
+
+
+def check_run_names(data):
+    pattern = session_run_pattern()
+    for subject, sessions in data.items():
+        for session, runs in sessions.items():
+            for run in runs.keys():
+                if not isinstance(run, str) or not re.fullmatch(pattern, run):
+                    raise ValueError(
+                        f"Run names must be strings starting with an integer "
+                        f"identifying the order in which they were recorded, "
+                        f"optionally followed by a description only containing "
+                        f"letters and numbers. Found key {run!r} instead. "
+                        f"If you used cache, you may need to erase it using overwrite=True."
+                    )
+
+
 class BaseDataset(metaclass=abc.ABCMeta):
     """Abstract Moabb BaseDataset.
 
@@ -271,7 +313,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
                 cache_config,
                 process_pipeline,
             )
-
+        check_subject_names(data)
+        check_session_names(data)
+        check_run_names(data)
         return data
 
     def download(
