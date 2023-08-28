@@ -444,7 +444,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             info = X.info
             sfreq = info["sfreq"]
             ch_names = info["ch_names"]
-            # get the minimum frequence between all datasets
+            # get the minimum sampling frequency between all datasets
             resample = sfreq if resample is None else min(resample, sfreq)
             # get the channels common to all datasets
             channels = (
