@@ -56,29 +56,6 @@ def subject_bids_to_moabb(subject: str):
     return int(subject)
 
 
-def session_moabb_to_bids(session: str):
-    """Replace the session_* to *."""
-    return session.replace("session_", "")
-
-
-def session_bids_to_moabb(session: str):
-    """Replace the * to session_*."""
-    return "session_" + session
-
-
-# Note: the runs are expected to be indexes in the BIDS standard.
-#       This is not always the case in MOABB.  See:
-# bids-specification.readthedocs.io/en/stable/glossary.html#run-entities
-def run_moabb_to_bids(run: str):
-    """Replace the run_* to *."""
-    return run.replace("run_", "")
-
-
-def run_bids_to_moabb(run: str):
-    """Replace the * to run_*."""
-    return "run_" + run
-
-
 @dataclass
 class BIDSInterfaceBase(abc.ABC):
     """Base class for BIDSInterface.
@@ -187,10 +164,10 @@ class BIDSInterfaceBase(abc.ABC):
         )
         sessions_data = {}
         for path in paths:
-            session_moabb = session_bids_to_moabb(path.session)
+            session_moabb = path.session
             session = sessions_data.setdefault(session_moabb, {})
             run = self._load_file(path, preload=preload)
-            session[run_bids_to_moabb(path.run)] = run
+            session[path.run] = run
         log.info("Finished reading cache of %s", {repr(self)})
         return sessions_data
 
@@ -243,9 +220,9 @@ class BIDSInterfaceBase(abc.ABC):
                 bids_path = mne_bids.BIDSPath(
                     root=self.root,
                     subject=subject_moabb_to_bids(self.subject),
-                    session=session_moabb_to_bids(session),
+                    session=session,
                     task=self.dataset.paradigm,
-                    run=run_moabb_to_bids(run),
+                    run=run,
                     description=self.desc,
                     extension=self._extension,
                     datatype=self._datatype,
