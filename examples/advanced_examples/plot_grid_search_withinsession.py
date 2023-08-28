@@ -146,7 +146,7 @@ search_session_E = joblib.load(
         "GridSearch_WithinSession",
         "BNCI2014-001",
         "1",
-        "session_E",
+        "1E",
         "GridSearchEN",
         "Grid_Search_WithinSession.pkl",
     )
@@ -166,7 +166,7 @@ search_session_T = joblib.load(
         "GridSearch_WithinSession",
         "BNCI2014-001",
         "1",
-        "session_T",
+        "0T",
         "GridSearchEN",
         "Grid_Search_WithinSession.pkl",
     )
