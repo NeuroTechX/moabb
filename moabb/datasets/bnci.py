@@ -141,7 +141,7 @@ def _load_data_001_2014(
 
     sessions = {}
     filenames = []
-    for r in ["T", "E"]:
+    for session_idx, r in enumerate(["T", "E"]):
         url = "{u}001-2014/A{s:02d}{r}.mat".format(u=base_url, s=subject, r=r)
         filename = data_path(url, path, force_update, update_path)
         filenames += filename
@@ -149,7 +149,7 @@ def _load_data_001_2014(
             continue
         runs, ev = _convert_mi(filename[0], ch_names, ch_types)
         # FIXME: deal with run with no event (1:3) and name them
-        sessions["session_%s" % r] = {"run_%d" % ii: run for ii, run in enumerate(runs)}
+        sessions[f"{session_idx}{r}"] = {str(ii): run for ii, run in enumerate(runs)}
     if only_filenames:
         return filenames
     return sessions
@@ -183,8 +183,8 @@ def _load_data_002_2014(
 
     if only_filenames:
         return filenames
-    runs = {"run_%d" % ii: run for ii, run in enumerate(runs)}
-    return {"session_0": runs}
+    runs = {str(ii): run for ii, run in enumerate(runs)}
+    return {"0": runs}
 
 
 @verbose
@@ -206,7 +206,7 @@ def _load_data_004_2014(
 
     sessions = []
     filenames = []
-    for r in ["T", "E"]:
+    for session_idx, r in enumerate(["T", "E"]):
         url = "{u}004-2014/B{s:02d}{r}.mat".format(u=base_url, s=subject, r=r)
         filename = data_path(url, path, force_update, update_path)[0]
         filenames.append(filename)
@@ -217,7 +217,7 @@ def _load_data_004_2014(
 
     if only_filenames:
         return filenames
-    sessions = {"session_%d" % ii: {"run_0": run} for ii, run in enumerate(sessions)}
+    sessions = {f"{session_idx}{r}": {"0": run} for ii, run in enumerate(sessions)}
     return sessions
 
 
@@ -242,7 +242,7 @@ def _load_data_008_2014(
     run = loadmat(filename, struct_as_record=False, squeeze_me=True)["data"]
     raw, event_id = _convert_run_p300_sl(run, verbose=verbose)
 
-    sessions = {"session_0": {"run_0": raw}}
+    sessions = {"0": {"0": raw}}
 
     return sessions
 
@@ -281,7 +281,7 @@ def _load_data_009_2014(
 
     sessions = {}
     for i, sessi in enumerate(sess):
-        sessions["session_" + str(i)] = {"run_0": sessi}
+        sessions[str(i)] = {"0": sessi}
 
     return sessions
 
@@ -301,9 +301,9 @@ def _load_data_001_2015(
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
 
     if subject in [8, 9, 10, 11]:
-        ses = ["A", "B", "C"]  # 3 sessions for those subjects
+        ses = [(0, "A"), (1, "B"), (2, "C")]  # 3 sessions for those subjects
     else:
-        ses = ["A", "B"]
+        ses = [(0, "A"), (1, "B")]
 
     # fmt: off
     ch_names = [
@@ -315,14 +315,14 @@ def _load_data_001_2015(
 
     sessions = {}
     filenames = []
-    for r in ses:
+    for session_idx, r in ses:
         url = "{u}001-2015/S{s:02d}{r}.mat".format(u=base_url, s=subject, r=r)
         filename = data_path(url, path, force_update, update_path)
         filenames += filename
         if only_filenames:
             continue
         runs, ev = _convert_mi(filename[0], ch_names, ch_types)
-        sessions["session_%s" % r] = {"run_%d" % ii: run for ii, run in enumerate(runs)}
+        sessions[f"{session_idx}{r}"] = {str(ii): run for ii, run in enumerate(runs)}
     if only_filenames:
         return filenames
     return sessions
@@ -359,8 +359,8 @@ def _load_data_003_2015(
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
 
     sessions = {}
-    sessions["session_0"] = {}
-    for ri, run in enumerate([data.train, data.test]):
+    sessions["0"] = {}
+    for r_name, run in [("0train", data.train), ("1test", data.test)]:
         # flash events on the channel 9
         flashs = run[9:10]
         ix_flash = flashs[0] > 0
@@ -382,7 +382,7 @@ def _load_data_003_2015(
         eeg_data = np.r_[run[1:-2] * 1e-6, targets, flashs]
         raw = RawArray(data=eeg_data, info=info, verbose=verbose)
         raw.set_montage(montage)
-        sessions["session_0"]["run_" + str(ri)] = raw
+        sessions["0"][r_name] = raw
 
     return sessions
 
@@ -417,7 +417,7 @@ def _load_data_004_2015(
     # fmt: on
     ch_types = ["eeg"] * 30
     raws, ev = _convert_mi(filename, ch_names, ch_types)
-    sessions = {"session_%d" % ii: {"run_0": run} for ii, run in enumerate(raws)}
+    sessions = {str(ii): {"0": run} for ii, run in enumerate(raws)}
     return sessions
 
 
