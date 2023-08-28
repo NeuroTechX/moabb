@@ -795,7 +795,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             # cv = GroupKFold(n_splits=n_subjects)
         else:
             cv = GroupKFold(n_splits=self.n_splits)
-
+            n_subjects = self.n_splits
         # Implement Grid Search
         emissions_grid = {}
 
