@@ -31,7 +31,7 @@ def _run_tests_on_dataset(d):
         assert isinstance(data, dict)
 
         # We should get a raw array at the end
-        rawdata = data[s]["session_0"]["run_0"]
+        rawdata = data[s]["0"]["0"]
         assert issubclass(type(rawdata), mne.io.BaseRaw), type(rawdata)
 
         # print events
