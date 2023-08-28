@@ -134,13 +134,13 @@ class BaseShin2017(BaseDataset):
         if self.motor_imagery:
             for ii in [0, 2, 4]:
                 session = self._convert_one_session(data, mrk, ii, trig_offset=0)
-                sessions["session_%d" % ii] = session
+                sessions[str(ii)] = session
 
         # arithmetic/rest
         if self.mental_arithmetic:
             for ii in [1, 3, 5]:
                 session = self._convert_one_session(data, mrk, ii, trig_offset=2)
-                sessions["session_%d" % ii] = session
+                sessions[str(ii)] = session
 
         return sessions
 
@@ -157,7 +157,7 @@ class BaseShin2017(BaseDataset):
         info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=200.0)
         raw = RawArray(data=eeg, info=info, verbose=False)
         raw.set_montage(montage)
-        return {"run_0": raw}
+        return {"0": raw}
 
     def data_path(
         self,
