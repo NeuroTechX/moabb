@@ -85,7 +85,7 @@ class GrosseWentrup2009(BaseDataset):
         stim[stim == "20"] = "right_hand"
         stim[stim == "10"] = "left_hand"
         raw.annotations.description = stim
-        return {"session_0": {"run_0": raw}}
+        return {"0": {"0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
