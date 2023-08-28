@@ -352,7 +352,7 @@ class Test_P300(unittest.TestCase):
         dataset1 = FakeDataset(
             paradigm="p300",
             event_list=["Target", "NonTarget"],
-            channels=("C3", "Cz", "C4"),
+            channels=("C3", "Cz", "Fz"),
             sfreq=64,
         )
         dataset2 = FakeDataset(

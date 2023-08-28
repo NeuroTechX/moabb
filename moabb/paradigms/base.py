@@ -456,7 +456,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         # depending on the dataset, even if the length of the epochs is 1s
         # The `-0.5` solves this particular issue.
         self.resample = resample - 0.5
-        self.channels = channels
+        self.channels = list(channels)
 
     @abc.abstractmethod
     def _get_events_pipeline(self, dataset):
