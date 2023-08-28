@@ -70,8 +70,8 @@ class FakeDataset(BaseDataset):
     def _get_single_subject_data(self, subject):
         data = dict()
         for session in range(self.n_sessions):
-            data[f"session_{session}"] = {
-                f"run_{ii}": self._generate_raw() for ii in range(self.n_runs)
+            data[f"{session}"] = {
+                f"{ii}": self._generate_raw() for ii in range(self.n_runs)
             }
         return data
 
