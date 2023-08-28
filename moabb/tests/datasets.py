@@ -127,7 +127,7 @@ class Test_Datasets(unittest.TestCase):
             # All the arrays should be equal:
             self.assertIsNone(np.testing.assert_array_equal(X1, X2))
             self.assertIsNone(np.testing.assert_array_equal(X3, X3))
-            
+
     def test_cache_dataset(self):
         tempdir = tempfile.mkdtemp()
         for paradigm in ["imagery", "p300", "ssvep"]:
