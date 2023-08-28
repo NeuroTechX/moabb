@@ -17,6 +17,72 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+
+
+- Adding extra thank you section in the documentation (:gh:`390` by `Bruno Aristimunha`_)
+- Adding new script to get the meta information of the datasets (:gh:`389` by `Bruno Aristimunha`_)
+- Fixing the dataset description based on the meta information (:gh:`389` and `398` by `Bruno Aristimunha`_ and `Sara Sedlar`_)
+- Adding second deployment of the documentation (:gh:`374` by `Bruno Aristimunha`_)
+- Adding Parallel evaluation for :func:`moabb.evaluations.WithinSessionEvaluation` , :func:`moabb.evaluations.CrossSessionEvaluation` (:gh:`364` by `Bruno Aristimunha`_)
+- Add example with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
+- Adding saving option for the models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
+- Adding example to load different type of models (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
+- Add resting state paradigm with dataset and example (:gh:`400` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
+- Speeding the augmentation method by 400% with NumPy vectorization  (:gh:`419` by `Bruno Aristimunha`_)
+- Add possibility to convert datasets to BIDS, plus `example <examples/example_bids_conversion.py>`_ (PR :gh:`408`, PR :gh:`391` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
+- Allow caching intermediate processing steps on disk, plus `example <examples/example_disk_cache.py>`_ (PR :gh:`408`, issue :gh:`385` by `Pierre Guetschel`_)
+- Restructure the paradigms and datasets to move all preprocessing steps to :mod:`moabb.datasets.preprocessing` and as sklearn pipelines (PR :gh:`408` by `Pierre Guetschel`_)
+- Add :func:`moabb.paradigms.FixedIntervalWindowsProcessing` and :func:`moabb.paradigms.FilterBankFixedIntervalWindowsProcessing`, plus `example <examples/example_fixed_interval_windows.py>`_ (PR :gh:`408`, issue :gh:`424` by `Pierre Guetschel`_)
+- Define :func:`moabb.paradigms.base.BaseProcessing`, common parent to :func:`moabb.paradigms.base.BaseParadigm` and :func:`moabb.paradigms.BaseFixedIntervalWindowsProcessing` (PR :gh:`408` by `Pierre Guetschel`_)
+- Allow passing a fixed processing pipeline to :func:`moabb.paradigms.base.BaseProcessing.get_data` and cache its result on disk (PR :gh:`408`, issue :gh:`367` by `Pierre Guetschel`_)
+- Update :func:`moabb.datasets.fake.FakeDataset`'s code to be unique for each parameter combination (PR :gh:`408` by `Pierre Guetschel`_)
+- Systematically set the annotations when loading data, eventually using the stim channel (PR :gh:`408` by `Pierre Guetschel`_)
+- Allow :func:`moabb.datasets.utils.dataset_search` to search across paradigms ``paradigm=None`` (PR :gh:`408` by `Pierre Guetschel`_)
+- Improving the review processing with more pre-commit bots (:gh:`435` by `Bruno Aristimunha`_)
+- Add methods ``make_processing_pipelines`` and ``make_labels_pipeline`` to :class:`moabb.paradigms.base.BaseProcessing` (:gh:`447` by `Pierre Guetschel`_)
+- Pipelines' digests are now computed from the whole processing+classification pipeline (:gh:`447` by `Pierre Guetschel`_)
+- Update all dataset codes to remove white spaces and underscores (:gh:`448` by `Pierre Guetschel`_)
+- Add :func:`moabb.utils.depreciated_alias` decorator (:gh:`455` by `Pierre Guetschel`_)
+- Rename many dataset class names to standardize and deprecate old names (:gh:`455` by `Pierre Guetschel`_)
+- Change many dataset codes to match the class names (:gh:`455` by `Pierre Guetschel`_)
+- Add :obj:`moabb.datasets.compound_dataset.utils.compound_dataset_list`  (:gh:`455` by `Pierre Guetschel`_)
+- Add c-VEP paradigm and Thielen2021 c-VEP dataset (:gh:`463` by `Jordy Thielen`_)
+- Add option to plot scores vertically. (:gh:`417` by `Sara Sedlar`_)
+
+Bugs
+~~~~
+
+- Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
+- Correct downloading with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_)
+- Rename event `substraction` to `subtraction` in :func:`moabb.datasets.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
+- Save parameters of :func:`moabb.datasets.PhysionetMI` (:gh:`403` by `Pierre Guetschel`_)
+- Fixing issue with parallel evaluation (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
+- Fixing SSLError from BCI competition IV (:gh:`404` by `Bruno Aristimunha`_)
+- Fixing :func:`moabb.datasets.bnci.MNEBNCI.data_path` that returned the data itself instead of paths (:gh:`412` by `Pierre Guetschel`_)
+- Adding :func:`moabb.datasets.fake` in the init file to use in braindecode object (:gh:`414` by `Bruno Aristimunha`_)
+- Fixing the parallel download issue when the dataset have the same directory (:gh:`421` by `Sara Sedlar`_)
+- Fixing fixes the problem with the annotation loading for the P300 datasets Sosulski2019, Huebner2017 and Huebner2018 (:gh:`396` by `Sara Sedlar`_)
+- Removing the print in the dataset list (:gh:`423` by `Bruno Aristimunha`_)
+- Fixing bug in :func:`moabb.pipeline.utils_pytorch.BraindecodeDatasetLoader` where incorrect y was used in transform calls (:gh:`426` by `Gabriel Schwartz`_)
+- Fixing one test in :func:`moabb.pipeline.utils_pytorch.BraindecodeDatasetLoader` (:gh:`426` by `Bruno Aristimunha`_)
+- Fix :func:`moabb.benchmark` overwriting ``include_datasets`` list (:gh:`408` by `Pierre Guetschel`_)
+- Fix :func:`moabb.paradigms.base.BaseParadigm` using attributes before defining them  (PR :gh:`408`, issue :gh:`425` by `Pierre Guetschel`_)
+- Fix :func:`moabb.paradigms.FakeImageryParadigm`, :func:`moabb.paradigms.FakeP300Paradigm` and :func:`moabb.paradigms.FakeSSVEPParadigm` ``is_valid`` methods to only accept the correct datasets (PR :gh:`408` by `Pierre Guetschel`_)
+- Fix ``dataset_list`` construction, which could be empty due to bad import order (PR :gh:`449` by `Thomas Moreau`_).
+- Fixing dataset downloader from servers with non-http (PR :gh:`433` by `Sara Sedlar`_)
+- Fix ``dataset_list`` to include deprecated datasets (PR :gh:`464` by `Bruno Aristimunha`_)
+- Fixed bug in :func:`moabb.analysis.results.get_string_rep` to handle addresses such as 0x__0A as well (PR :gh:`468` by `Anton Andreev`_)
+API changes
+~~~~~~~~~~~
+
+- None
+
+
+Version - 0.5.0  (Stable - PyPi)
+---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
 - Speeding the augmentation model (:gh:`365` by `Bruno Aristimunha`_)
 - Add VirtualReality BrainInvaders dataset (:gh:`358` by `Gregoire Cattan`_)
 - Switch to python-3.8, update dependencies, fix code link in doc, add `code coverage <https://app.codecov.io/gh/NeuroTechX/moabb>`__ (:gh:`315` by `Sylvain Chevallier`_)
@@ -28,7 +94,7 @@ Enhancements
 - Add a augmentation model to the pipeline (:gh:`326` by `Igor Carrara`_)
 - Add BrainDecode example (:gh:`340` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add Google Analytics to the documentation (:gh:`335` by `Bruno Aristimunha`_)
-- Add suport to Braindecode classifier (:gh:`328` by `Bruno Aristimunha`_)
+- Add support to Braindecode classifier (:gh:`328` by `Bruno Aristimunha`_)
 - Add CodeCarbon to track emission CO₂ (:gh:`350` by `Igor Carrara`_, `Bruno Aristimunha`_ and `Sylvain Chevallier`_)
 - Add CodeCarbon example (:gh:`356` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add MsetCCA method for SSVEP classification, parametrise CCA `n_components` in CCA based methods (:gh:`359` by `Emmanuel Kalunga`_ and `Sylvain Chevallier`_)
@@ -51,14 +117,15 @@ Bugs
 - Fix n_classes when events set to None (:gh:`337` by `Igor Carrara`_ and `Sylvain Chevallier`_)
 - Change n_jobs=-1 to self.n_jobs in GridSearch (:gh:`344` by `Igor Carrara`_)
 - Fix dropped epochs issue (:gh:`371` by `Pierre Guetschel`_)
+- Fix redundancy website issue (:gh:`372` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
 
 - None
 
-Version - 0.4.6  (Stable - PyPi)
----------------------------------
+Version - 0.4.6
+---------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -94,7 +161,7 @@ Bugs
 - Removing dependency on mne method for PhysionetMI data downloading, renaming runs (:gh:`257` by `Divyesh Narayanan`_)
 - Correcting events management in Schirrmeister2017, renaming session and run (:gh:`255` by `Pierre Guetschel`_ and `Sylvain Chevallier`_)
 - Switch session and runs in MAMEM1, 2 and 3 to avoid error in WithinSessionEvaluation (:gh:`256` by `Sylvain Chevallier`_)
-- Correct doctstrings for the documentation, incuding Lee2017 (:gh:`256` by `Sylvain Chevallier`_)
+- Correct doctstrings for the documentation, including Lee2017 (:gh:`256` by `Sylvain Chevallier`_)
 
 
 Version - 0.4.4
@@ -291,7 +358,8 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
-
+.. _Gabriel Schwartz: https://github.com/Kaos9001
+.. _Sara Sedlar: https://github.com/Sara04
 .. _Emmanuel Kalunga: https://github.com/emmanuelkalunga
 .. _Gregoire Cattan: https://github.com/gcattan
 .. _Igor Carrara: https://github.com/carraraig
@@ -312,3 +380,5 @@ API changes
 .. _Jan Sosulski: https://github.com/jsosulski
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Ludovic Darmet: https://github.com/ludovicdmt
+.. _Thomas Moreau: https://github.com/tommoral
+.. _Jordy Thielen: https://github.com/thijor

@@ -34,7 +34,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014001
+from moabb.datasets import BNCI2014_001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
@@ -65,7 +65,7 @@ pipelines["RG+LR"] = make_pipeline(
 # Evaluation
 # ----------
 #
-# We define the paradigm (LeftRightImagery) and the dataset (BNCI2014001).
+# We define the paradigm (LeftRightImagery) and the dataset (BNCI2014_001).
 # The evaluation will return a DataFrame containing a single AUC score for
 # each subject / session of the dataset, and for each pipeline.
 #
@@ -75,7 +75,7 @@ pipelines["RG+LR"] = make_pipeline(
 
 paradigm = LeftRightImagery()
 # Because this is being auto-generated we only use 2 subjects
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 dataset.subject_list = dataset.subject_list[:2]
 datasets = [dataset]
 overwrite = False  # set to True if we want to overwrite cached results

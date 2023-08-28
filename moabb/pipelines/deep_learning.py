@@ -1,7 +1,5 @@
-"""
-Deep learning integrated in MOABB
-Implementation using the tensorflow, keras and scikeras framework.
-"""
+"""Deep learning integrated in MOABB Implementation using the tensorflow, keras
+and scikeras framework."""
 
 # Authors: Igor Carrara <igor.carrara@inria.fr>
 #          Bruno Aristimunha <b.aristimunha@gmail.com>
@@ -42,18 +40,17 @@ from moabb.pipelines.utils_deep_model import EEGNet, EEGNet_TC, TCN_block
 # ShallowConvNet
 # =====================================================================================
 def square(x):
-    """
-    Function to square the input tensor element-wise.
+    """Function to square the input tensor element-wise.
+
     Element-wise square.
     """
     return K.square(x)
 
 
 def log(x):
-    """
-    Function to take the log of the input tensor element-wise.
-    We use a clip to avoid taking the log of 0.
-    min_value=1e-7, max_value=10000
+    """Function to take the log of the input tensor element-wise. We use a clip
+    to avoid taking the log of 0. min_value=1e-7, max_value=10000.
+
     Parameters
     ----------
     x: tensor
@@ -66,7 +63,8 @@ def log(x):
 
 
 class KerasShallowConvNet(KerasClassifier):
-    """Keras implementation of the Shallow Convolutional Network as described in [1]_.
+    """Keras implementation of the Shallow Convolutional Network as described
+    in [1]_.
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels
@@ -82,6 +80,10 @@ class KerasShallowConvNet(KerasClassifier):
            K., Tangermann, M., ... & Ball, T. (2017). Deep learning with convolutional neural networks
            for EEG decoding and visualization. Human brain mapping, 38(11), 5391-5420.
            https://doi.org/10.1002/hbm.23730
+
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(
@@ -146,7 +148,8 @@ class KerasShallowConvNet(KerasClassifier):
 # DeepConvNet
 # =================================================================================
 class KerasDeepConvNet(KerasClassifier):
-    """Keras implementation of the Deep Convolutional Network as described in [1]_.
+    """Keras implementation of the Deep Convolutional Network as described in
+    [1]_.
 
     This implementation is taken from code by the Army Research Laboratory (ARL)
     at https://github.com/vlawhern/arl-eegmodels
@@ -162,6 +165,10 @@ class KerasDeepConvNet(KerasClassifier):
            K., Tangermann, M., ... & Ball, T. (2017). Deep learning with convolutional neural networks
            for EEG decoding and visualization. Human brain mapping, 38(11), 5391-5420.
            https://doi.org/10.1002/hbm.23730
+
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(
@@ -266,6 +273,10 @@ class KerasEEGNet_8_2(KerasClassifier):
            a compact convolutional neural network for EEG-based brain–computer interfaces. Journal of neural
            engineering, 15(5), 056013.
            https://doi.org/10.1088/1741-2552/aace8c
+
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(
@@ -347,6 +358,10 @@ class KerasEEGTCNet(KerasClassifier):
            EEG-TCNet: An accurate temporal convolutional network for embedded motor-imagery brain–machine interfaces.
            In 2020 IEEE International Conference on Systems, Man, and Cybernetics (SMC) (pp. 2958-2965). IEEE.
            https://doi.org/10.1109/SMC42975.2020.9283028
+
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(
@@ -437,6 +452,9 @@ class KerasEEGNeX(KerasClassifier):
            electroencephalogram: A benchmark study to EEGNeX. arXiv preprint arXiv:2207.12369.
            https://doi.org/10.48550/arXiv.2207.12369
 
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(
@@ -575,6 +593,9 @@ class KerasEEGITNet(KerasClassifier):
            convolutional network for motor imagery classification. IEEE Access, 10, 36672-36685.
            https://doi.org/10.1109/ACCESS.2022.3161489
 
+    Notes
+    -----
+    .. versionadded:: 0.5.0
     """
 
     def __init__(

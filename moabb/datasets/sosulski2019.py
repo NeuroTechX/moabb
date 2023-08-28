@@ -25,7 +25,7 @@ class Sosulski2019(BaseDataset):
         =============  =======  =======  =================  ===============  ===============  ===========
         Name             #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
         =============  =======  =======  =================  ===============  ===============  ===========
-        Sosulski2019       13       32   75 NT / 15 T                        1000Hz                     1
+        Sosulski2019       13       31   75 NT / 15 T            1.2s        1000Hz                     3
         =============  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**
@@ -80,7 +80,6 @@ class Sosulski2019(BaseDataset):
     -----
 
     .. versionadded:: 0.4.5
-
     """
 
     def __init__(
@@ -104,7 +103,8 @@ class Sosulski2019(BaseDataset):
         self.stimulus_modality = "tone_oddball"
         self.n_channels = 31
         self.use_soas_as_sessions = use_soas_as_sessions
-        code = "Spot Pilot P300 dataset"
+        self.description_map = {"Stimulus/S 21": "Target", "Stimulus/S  1": "NonTarget"}
+        code = "Sosulski2019"
         interval = [-0.2, 1] if interval is None else interval
         super().__init__(
             subjects=list(range(1, 13 + 1)),
@@ -141,10 +141,11 @@ class Sosulski2019(BaseDataset):
         raw.set_montage("standard_1020")
         if self.reject_non_iid:
             raw.set_annotations(raw.annotations[7:85])  # non-iid rejection
+        raw.annotations.rename(self.description_map)
         return raw
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
 
         file_path_list = self.data_path(subject)
         sessions = {}

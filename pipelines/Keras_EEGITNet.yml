@@ -8,6 +8,14 @@ citations:
   - https://doi.org/10.1109/ACCESS.2022.3161489
 
 pipeline:
+  - name: Resampler_Epoch
+    from: moabb.pipelines.features
+    parameters:
+      sfreq: 128
+
+  - name: Convert_Epoch_Array
+    from: moabb.pipelines.features
+
   - name: StandardScaler_Epoch
     from: moabb.pipelines.features
 
@@ -19,8 +27,8 @@ pipeline:
         - name: Adam
           from: tensorflow.keras.optimizers.legacy
           parameters:
-            learning_rate: 0.0009
-      epochs: 1000
+            learning_rate: 0.001
+      epochs: 300
       batch_size: 64
       verbose: 0
       random_state: 42
@@ -30,11 +38,11 @@ pipeline:
           from: tensorflow.keras.callbacks
           parameters:
             monitor: "val_loss"
-            patience: 300
+            patience: 75
 
         - name: ReduceLROnPlateau
           from: tensorflow.keras.callbacks
           parameters:
             monitor: "val_loss"
-            patience: 300
+            patience: 75
             factor: 0.5

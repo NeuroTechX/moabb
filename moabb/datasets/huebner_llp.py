@@ -18,7 +18,12 @@ OPTICAL_MARKER_CODE = 500
 
 class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
     def __init__(
-        self, src_url, n_subjects, raw_slice_offset, use_blocks_as_sessions=True, **kwargs
+        self,
+        src_url,
+        n_subjects,
+        raw_slice_offset,
+        use_blocks_as_sessions=True,
+        **kwargs,
     ):
         self.n_channels = 31  # all channels except 5 times x_* CH and EOGvu
         if kwargs["interval"] is None:
@@ -35,6 +40,7 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
         self.raw_slice_offset = 2_000 if raw_slice_offset is None else raw_slice_offset
         self._src_url = src_url
         self.use_blocks_as_sessions = use_blocks_as_sessions
+        self.description_map = {"Stimulus/S   1": "Target", "Stimulus/S   0": "NonTarget"}
 
     @staticmethod
     def _filename_trial_info_extraction(vhdr_file_path):
@@ -68,6 +74,8 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
                 raw_slice_offset=self.raw_slice_offset,
                 verbose=None,
             )
+
+            raw_bvr_list[0].annotations.rename(self.description_map)
 
             if self.use_blocks_as_sessions:
                 session_name = f"{session_name}_block_{block_idx}"
@@ -105,8 +113,8 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
 
 
 class Huebner2017(_BaseVisualMatrixSpellerDataset):
-    """
-    Learning from label proportions for a visual matrix speller (ERP) dataset from Hübner et al 2017 [1]_.
+    """Learning from label proportions for a visual matrix speller (ERP)
+    dataset from Hübner et al 2017 [1]_.
 
     .. admonition:: Dataset summary
 
@@ -114,7 +122,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
         ===========  =======  =======  =================  ===============  ===============  ===========
         Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
         ===========  =======  =======  =================  ===============  ===============  ===========
-        Huebner2017       13       31                     0.9s             1000Hz                     1
+        Huebner2017       13       31  364 NT / 112 T     0.9s             1000Hz                     3
         ===========  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**
@@ -164,7 +172,7 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
             raw_slice_offset=raw_slice_offset,
             n_subjects=13,
             sessions_per_subject=1,  # if varying, take minimum
-            code="Visual Speller LLP",
+            code="Huebner2017",  # Before: "VisualSpellerLLP"
             interval=interval,
             doi=llp_speller_paper_doi,
             use_blocks_as_sessions=use_blocks_as_sessions,
@@ -172,8 +180,8 @@ class Huebner2017(_BaseVisualMatrixSpellerDataset):
 
 
 class Huebner2018(_BaseVisualMatrixSpellerDataset):
-    """
-    Mixture of LLP and EM for a visual matrix speller (ERP) dataset from Hübner et al 2018 [1]_.
+    """Mixture of LLP and EM for a visual matrix speller (ERP) dataset from
+    Hübner et al 2018 [1]_.
 
     .. admonition:: Dataset summary
 
@@ -181,7 +189,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
         ===========  =======  =======  =================  ===============  ===============  ===========
         Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
         ===========  =======  =======  =================  ===============  ===============  ===========
-        Huebner2018       12       31                     0.9s             1000Hz                     1
+        Huebner2018       12       31  364 NT / 112 T     0.9s             1000Hz                     3
         ===========  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**
@@ -223,7 +231,7 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
             raw_slice_offset=raw_slice_offset,
             n_subjects=12,
             sessions_per_subject=1,  # if varying, take minimum
-            code="Visual Speller MIX",
+            code="Huebner2018",  # Before: "VisualSpellerMIX"
             interval=interval,
             doi=mix_speller_paper_doi,
             use_blocks_as_sessions=use_blocks_as_sessions,
@@ -231,9 +239,9 @@ class Huebner2018(_BaseVisualMatrixSpellerDataset):
 
 
 def _read_raw_llp_study_data(vhdr_fname, raw_slice_offset, verbose=None):
-    """
-    Read LLP BVR recordings file. Ignore the different sequence lengths. Just tag event as target or non-target if it
-    contains a target or does not contain a target.
+    """Read LLP BVR recordings file. Ignore the different sequence lengths.
+    Just tag event as target or non-target if it contains a target or does not
+    contain a target.
 
     Parameters
     ----------

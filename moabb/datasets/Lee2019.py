@@ -1,6 +1,4 @@
-"""
-BMI/OpenBMI dataset
-"""
+"""BMI/OpenBMI dataset."""
 from functools import partialmethod
 
 import numpy as np
@@ -17,7 +15,7 @@ Lee2019_URL = "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100542/
 
 
 class Lee2019(BaseDataset):
-    """Base dataset class for Lee2019"""
+    """Base dataset class for Lee2019."""
 
     def __init__(
         self,
@@ -59,14 +57,14 @@ class Lee2019(BaseDataset):
             raise ValueError('unknown paradigm "{}"'.format(paradigm))
         for s in sessions:
             if s not in [1, 2]:
-                raise ValueError("inexistant session {}".format(s))
+                raise ValueError("inexistent session {}".format(s))
         self.sessions = sessions
 
         super().__init__(
             subjects=list(range(1, 55)),
             sessions_per_subject=2,
             events=events,
-            code="Lee2019_" + code_suffix,
+            code="Lee2019-" + code_suffix,
             interval=interval,
             paradigm=paradigm,
             doi="10.5524/100542",
@@ -164,7 +162,7 @@ class Lee2019(BaseDataset):
         return raw
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subejct"""
+        """Return data for a single subejct."""
 
         sessions = {}
         file_path_list = self.data_path(subject)
@@ -235,7 +233,7 @@ class Lee2019_MI(Lee2019):
         ==========  =======  =======  ==========  =================  ============  ===============  ===========
         Name          #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
         ==========  =======  =======  ==========  =================  ============  ===============  ===========
-        Lee2019_MI       55       62           2                100  4s            1000Hz                     2
+        Lee2019_MI       54       62           2                100  4s            1000Hz                     2
         ==========  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from Lee et al 2019 [1]_.
@@ -395,7 +393,7 @@ class Lee2019_SSVEP(Lee2019):
         =============  =======  =======  ==========  =================  ===============  ===============  ===========
         Name             #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
         =============  =======  =======  ==========  =================  ===============  ===============  ===========
-        Lee2019_SSVEP       24       16           4                 25  1s               1000Hz                     1
+        Lee2019_SSVEP       54       16           4                 25  1s               1000Hz                     1
         =============  =======  =======  ==========  =================  ===============  ===============  ===========
 
     Dataset from Lee et al 2019 [1]_.

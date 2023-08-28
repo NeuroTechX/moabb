@@ -1,3 +1,4 @@
+"""Meta-analysis functions for MOABB."""
 import itertools
 import logging
 
@@ -10,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 def collapse_session_scores(df):
-    """Prepare results dataframe for computing statistics
+    """Prepare results dataframe for computing statistics.
 
     Parameters
     ----------
@@ -31,7 +32,7 @@ def collapse_session_scores(df):
 
 
 def compute_pvals_wilcoxon(df, order=None):
-    """Compute Wilcoxon rank-sum test on agregated results
+    """Compute Wilcoxon rank-sum test on aggregated results.
 
     Returns kxk matrix of p-values computed via the Wilcoxon rank-sum test,
     order defines the order of rows and columns
@@ -72,7 +73,7 @@ def compute_pvals_wilcoxon(df, order=None):
 
 
 def _pairedttest_exhaustive(data):
-    """Exhaustive paired t-test for permutation tests
+    """Exhaustive paired t-test for permutation tests.
 
     Returns p-values for exhaustive ttest that runs through all possible
     permutations of the first dimension. Very bad idea for size greater than 12
@@ -104,7 +105,7 @@ def _pairedttest_exhaustive(data):
 
 
 def _pairedttest_random(data, nperms):
-    """Returns p-values based on nperms permutations of a paired ttest
+    """Return p-values based on nperms permutations of a paired ttest.
 
     data is a (subj, alg, alg) matrix of differences between scores for each
     pair of algorithms per subject
@@ -133,7 +134,7 @@ def _pairedttest_random(data, nperms):
 
 
 def compute_pvals_perm(df, order=None):
-    """Compute permutation test on agregated results
+    """Compute permutation test on aggregated results.
 
     Returns kxk matrix of p-values computed via permutation test,
     order defines the order of rows and columns
@@ -172,7 +173,7 @@ def compute_pvals_perm(df, order=None):
 
 
 def compute_effect(df, order=None):
-    """Compute effect size across datasets
+    """Compute effect size across datasets.
 
     Returns kxk matrix of effect sizes, order defines the order of rows/columns
 
@@ -207,7 +208,7 @@ def compute_effect(df, order=None):
 
 
 def compute_dataset_statistics(df, perm_cutoff=20):
-    """Compute meta-analysis statistics from results dataframe
+    """Compute meta-analysis statistics from results dataframe.
 
     Parameters
     ----------
@@ -245,14 +246,14 @@ def compute_dataset_statistics(df, perm_cutoff=20):
 
 
 def combine_effects(effects, nsubs):
-    """Combining effects for meta-analysis statistics
+    """Combine effects for meta-analysis statistics.
 
     Function that takes effects from each experiments and number of subjects to
     return meta-analysis effect
 
     Parameters
     ----------
-    p: DataFrame
+    effects: DataFrame
         effects for 2 pipelines computed on different datasets
     nsubs: float
         average number of subject per datasets
@@ -260,7 +261,7 @@ def combine_effects(effects, nsubs):
     Returns
     -------
     effect: float
-        Estimatation of the combined p-value
+        Estimatation of the combined effects
     """
     W = np.sqrt(nsubs)
     W = W / W.sum()
@@ -268,7 +269,7 @@ def combine_effects(effects, nsubs):
 
 
 def combine_pvalues(p, nsubs):
-    """Combining p-values for meta-analysis statistics
+    """Combine p-values for meta-analysis statistics.
 
     Function that takes pvals from each experiments and number of subjects to
     return meta-analysis significance using Stouffer's method
@@ -294,10 +295,10 @@ def combine_pvalues(p, nsubs):
 
 
 def find_significant_differences(df, perm_cutoff=20):
-    """Compute differences between pipelines across datasets
+    """Compute differences between pipelines across datasets.
 
-    Compute matrix of p-values for all algorithms over all datasets via
-    combined p-values method
+    Compute matrices of p-values and effects for all algorithms over all datasets via
+    combined p-values and combined effects methods
 
     Parameters
     ----------

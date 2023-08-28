@@ -27,6 +27,9 @@ class BaseEvaluation(ABC):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
+    n_jobs_evaluation: int, default=1
+        Number of jobs for evaluation, processing in parallel the within session,
+        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -52,6 +55,7 @@ class BaseEvaluation(ABC):
         datasets=None,
         random_state=None,
         n_jobs=1,
+        n_jobs_evaluation=1,
         overwrite=False,
         error_score="raise",
         suffix="",
@@ -63,12 +67,12 @@ class BaseEvaluation(ABC):
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
+        self.n_jobs_evaluation = n_jobs_evaluation
         self.error_score = error_score
         self.hdf5_path = hdf5_path
         self.return_epochs = return_epochs
         self.return_raws = return_raws
         self.mne_labels = mne_labels
-
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
@@ -143,7 +147,6 @@ class BaseEvaluation(ABC):
         -------
         results: pd.DataFrame
             A dataframe containing the results.
-
         """
 
         # check pipelines
@@ -153,33 +156,44 @@ class BaseEvaluation(ABC):
         for _, pipeline in pipelines.items():
             if not (isinstance(pipeline, BaseEstimator)):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
-
         for dataset in self.datasets:
             log.info("Processing dataset: {}".format(dataset.code))
-            results = self.evaluate(dataset, pipelines, param_grid)
+            process_pipeline = self.paradigm.make_process_pipelines(
+                dataset,
+                return_epochs=self.return_epochs,
+                return_raws=self.return_raws,
+                postprocess_pipeline=None,
+            )[0]
+            # (we only keep the pipeline for the first frequency band, better ideas?)
+
+            results = self.evaluate(dataset, pipelines, param_grid, process_pipeline)
             for res in results:
-                self.push_result(res, pipelines)
+                self.push_result(res, pipelines, process_pipeline)
 
-        return self.results.to_dataframe(pipelines=pipelines)
+        return self.results.to_dataframe(
+            pipelines=pipelines, process_pipeline=process_pipeline
+        )
 
-    def push_result(self, res, pipelines):
+    def push_result(self, res, pipelines, process_pipeline):
         message = "{} | ".format(res["pipeline"])
         message += "{} | {} | {}".format(
             res["dataset"].code, res["subject"], res["session"]
         )
         message += ": Score %.3f" % res["score"]
         log.info(message)
-        self.results.add({res["pipeline"]: res}, pipelines=pipelines)
+        self.results.add(
+            {res["pipeline"]: res}, pipelines=pipelines, process_pipeline=process_pipeline
+        )
 
     def get_results(self):
         return self.results.to_dataframe()
 
     @abstractmethod
-    def evaluate(self, dataset, pipelines, param_grid):
+    def evaluate(self, dataset, pipelines, param_grid, process_pipeline):
         """Evaluate results on a single dataset.
 
         This method return a generator. each results item is a dict with
-        the following convension::
+        the following conversion::
 
             res = {'time': Duration of the training ,
                    'dataset': dataset id,
@@ -201,11 +215,10 @@ class BaseEvaluation(ABC):
 
         This method should return false if the dataset does not match the
         evaluation. This is for example the case if the dataset does not
-        contain enought session for a cross-session eval.
+        contain enough session for a cross-session eval.
 
         Parameters
         ----------
         dataset : dataset instance
             The dataset to verify.
-
         """

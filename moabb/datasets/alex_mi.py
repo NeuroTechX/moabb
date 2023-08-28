@@ -1,6 +1,4 @@
-"""
-Alex Motor imagery dataset.
-"""
+"""Alex Motor imagery dataset."""
 
 from mne.io import Raw
 
@@ -44,7 +42,6 @@ class AlexMI(BaseDataset):
            interface cerveau machine EEG asynchrone (Doctoral dissertation,
            Université de Grenoble).
            https://tel.archives-ouvertes.fr/tel-01196752
-
     """
 
     def __init__(self):
@@ -52,13 +49,13 @@ class AlexMI(BaseDataset):
             subjects=list(range(1, 9)),
             sessions_per_subject=1,
             events=dict(right_hand=2, feet=3, rest=4),
-            code="Alexandre Motor Imagery",
+            code="AlexandreMotorImagery",
             interval=[0, 3],
             paradigm="imagery",
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         raw = Raw(self.data_path(subject), preload=True, verbose="ERROR")
         return {"session_0": {"run_0": raw}}
 

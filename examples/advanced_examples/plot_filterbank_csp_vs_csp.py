@@ -18,7 +18,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014001
+from moabb.datasets import BNCI2014_001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import FilterBankLeftRightImagery, LeftRightImagery
 from moabb.pipelines.utils import FilterBank
@@ -31,7 +31,7 @@ moabb.set_log_level("info")
 # ----------------
 #
 # The CSP implementation from MNE is used. We selected 8 CSP components, as
-# usually done in the litterature.
+# usually done in the literature.
 #
 # The second pipeline is the filter bank CSP. We use the FilterBank object
 # with a CSP estimator. We set up the CSP to 4 components, to compensate for
@@ -61,7 +61,7 @@ pipelines_fb["FBCSP+LDA"] = make_pipeline(FilterBank(CSP(n_components=4)), LDA()
 # from 8 to 35 Hz.
 
 # Because this is being auto-generated we only use 2 subjects
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 dataset.subject_list = dataset.subject_list[:2]
 datasets = [dataset]
 overwrite = False  # set to True if we want to overwrite cached results
@@ -87,7 +87,6 @@ results_fb = evaluation.process(pipelines_fb)
 # After processing the two, we simply concatenate the results.
 
 results = pd.concat([results, results_fb])
-
 
 ##############################################################################
 # Plot Results

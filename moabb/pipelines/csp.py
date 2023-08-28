@@ -5,17 +5,17 @@ from scipy import linalg
 
 
 class TRCSP(CSP):
-    """
-    Weighted Tikhonov-regularized CSP as described in Lotte and Guan 2011
-    """
+    """Weighted Tikhonov-regularized CSP as described in Lotte and Guan
+    2011."""
 
     def __init__(self, nfilter=4, metric="euclid", log=True, alpha=1):
         super().__init__(nfilter, metric, log)
         self.alpha = alpha
 
     def fit(self, X, y):
-        """
-        Train spatial filters. Only deals with two class
+        """Train spatial filters.
+
+        Only deals with two class
         """
 
         if not isinstance(X, (np.ndarray, list)):

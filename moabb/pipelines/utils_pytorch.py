@@ -13,16 +13,15 @@ from torch.nn import Module
 
 # check if the data format is numpy or mne epoch
 def _check_data_format(X):
-    """
-    Check if the data format is compatible with braindecode.
-    Expect values in the format of MNE objects.
+    """Check if the data format is compatible with braindecode. Expect values
+    in the format of MNE objects.
+
     Parameters
     ----------
     X: BaseConcatDataset
 
     Returns
     -------
-
     """
     if not isinstance(X, mne.EpochsArray):
         raise ValueError(
@@ -33,9 +32,8 @@ def _check_data_format(X):
 
 
 class BraindecodeDatasetLoader(BaseEstimator, TransformerMixin):
-    """
-    Class to Load the data from MOABB in a format compatible with braindecode
-    """
+    """Class to Load the data from MOABB in a format compatible with
+    braindecode."""
 
     def __init__(self, drop_last_window=False, kw_args=None):
         self.drop_last_window = drop_last_window
@@ -48,9 +46,11 @@ class BraindecodeDatasetLoader(BaseEstimator, TransformerMixin):
 
     def transform(self, X, y=None):
         _check_data_format(X)
+        if y is None:
+            y = self.y
         dataset = create_from_X_y(
             X=X.get_data(),
-            y=self.y,
+            y=y,
             window_size_samples=X.get_data().shape[2],
             window_stride_samples=X.get_data().shape[2],
             drop_last_window=self.drop_last_window,
@@ -61,12 +61,12 @@ class BraindecodeDatasetLoader(BaseEstimator, TransformerMixin):
         return dataset
 
     def __sklearn_is_fitted__(self):
-        """Return True since Transfomer is stateless."""
+        """Return True since Transformer is stateless."""
         return True
 
 
 def get_shape_from_baseconcat(X, param_name):
-    """Get the shape of the data after BaseConcatDataset is applied"""
+    """Get the shape of the data after BaseConcatDataset is applied."""
     if isinstance(X, BaseConcatDataset):
         in_channel = X[0][0].shape[0]
         input_window_samples = X[0][0].shape[1]

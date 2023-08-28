@@ -1,10 +1,15 @@
+import re
+import tempfile
+from pathlib import Path
+
 import numpy as np
-from mne import create_info
+from mne import create_info, get_config, set_config
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 from moabb.datasets.base import BaseDataset
-from moabb.datasets.braininvaders import VirtualReality
+from moabb.datasets.braininvaders import Cattan2019_VR
+from moabb.datasets.utils import block_rep
 
 
 class FakeDataset(BaseDataset):
@@ -15,7 +20,7 @@ class FakeDataset(BaseDataset):
     Parameters
     ----------
     event_list: list or tuple of str
-        List of event to generate, default: ("fake_c1", "fake_c2", "fake_c3")
+        List of event to generate, default: ("fake1", "fake2", "fake3")
     n_sessions: int, default 2
         Number of session to generate
     n_runs: int, default 2
@@ -32,7 +37,7 @@ class FakeDataset(BaseDataset):
 
     def __init__(
         self,
-        event_list=("fake_c1", "fake_c2", "fake_c3"),
+        event_list=("fake1", "fake2", "fake3"),
         n_sessions=2,
         n_runs=2,
         n_subjects=10,
@@ -45,6 +50,11 @@ class FakeDataset(BaseDataset):
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         self.channels = channels
         self.seed = seed
+        code = (
+            f"{code}-{paradigm.lower()}-{n_subjects}-{n_sessions}-{n_runs}-"
+            f"{''.join([re.sub('[^A-Za-z0-9]', '', e).lower() for e in event_list])}-"
+            f"{''.join([c.lower() for c in channels])}"
+        )
         super().__init__(
             subjects=list(range(1, n_subjects + 1)),
             sessions_per_subject=n_sessions,
@@ -53,6 +63,11 @@ class FakeDataset(BaseDataset):
             interval=[0, 3],
             paradigm=paradigm,
         )
+        key = "MNE_DATASETS_{:s}_PATH".format(self.code.upper())
+        temp_dir = get_config(key)
+        if temp_dir is None or not Path(temp_dir).is_dir():
+            temp_dir = tempfile.mkdtemp()
+            set_config(key, temp_dir)
 
     def _get_single_subject_data(self, subject):
         if self.seed is not None:
@@ -92,7 +107,7 @@ class FakeDataset(BaseDataset):
 
 
 class FakeVirtualRealityDataset(FakeDataset):
-    """Fake VirtualReality dataset for test purpose.
+    """Fake Cattan2019_VR dataset for test purpose.
 
     .. versionadded:: 0.5.0
     """
@@ -119,15 +134,15 @@ class FakeVirtualRealityDataset(FakeDataset):
             for block in range(self.n_blocks):
                 for repetition in range(self.n_repetitions):
                     data[f"{session}"][
-                        f"block_{block}-repetition_{repetition}"
+                        block_rep(block, repetition)
                     ] = self._generate_raw()
         return data
 
     def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):
-        """Select data for all provided subjects, blocks and repetitions.
-        Each subject has 5 blocks of 12 repetitions.
+        """Select data for all provided subjects, blocks and repetitions. Each
+        subject has 5 blocks of 12 repetitions.
 
-        The returned data is a dictionary with the folowing structure::
+        The returned data is a dictionary with the following structure::
 
             data = {'subject_id' :
                         {'session_id':
@@ -138,7 +153,7 @@ class FakeVirtualRealityDataset(FakeDataset):
         See also
         --------
         BaseDataset.get_data
-        VirtualReality.get_block_repetition
+        Cattan2019_VR.get_block_repetition
 
         Parameters
         ----------
@@ -154,6 +169,6 @@ class FakeVirtualRealityDataset(FakeDataset):
         data: Dict
             dict containing the raw data
         """
-        return VirtualReality.get_block_repetition(
+        return Cattan2019_VR.get_block_repetition(
             self, paradigm, subjects, block_list, repetition_list
         )
