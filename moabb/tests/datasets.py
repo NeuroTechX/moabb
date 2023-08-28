@@ -311,7 +311,7 @@ class Test_CompoundDataset(unittest.TestCase):
 
     def test_fake_dataset(self):
         """This test will insure the basedataset works."""
-        param_list = [(None, None), ("session_0", "run_0"), (["session_0"], ["run_0"])]
+        param_list = [(None, None), ("0", "0"), (["0"], ["0"])]
         for sessions, runs in param_list:
             with self.subTest():
                 subjects_list = [(self.ds, 1, sessions, runs)]
