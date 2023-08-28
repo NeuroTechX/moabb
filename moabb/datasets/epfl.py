@@ -156,12 +156,14 @@ class EPFLP300(BaseDataset):
         sessions = {}
 
         for file_path in sorted(file_path_list):
-            session_name = "session_" + file_path.split(os.sep)[-2].replace("session", "")
+            session_number = file_path.split(os.sep)[-2].replace("session", "")
+            session_number = int(session_number) - 1
+            session_name = str(session_number)
 
             if session_name not in sessions.keys():
                 sessions[session_name] = {}
 
-            run_name = "run_" + str(len(sessions[session_name]) + 1)
+            run_name = str(len(sessions[session_name]))
             sessions[session_name][run_name] = self._get_single_run_data(file_path)
 
         return sessions
