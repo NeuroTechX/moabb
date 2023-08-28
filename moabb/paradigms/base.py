@@ -421,7 +421,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             return None
         return Pipeline(steps)
 
-    def match_all(self, datasets: list[BaseDataset]):
+    def match_all(self, datasets: List[BaseDataset]):
         resample = None
         channels = None
         for dataset in datasets:
@@ -436,7 +436,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         # If resample=128 for example, then MNE can returns 128 or 129 samples
         # depending on the dataset, even if the length of the epochs is 1s
         # The `-0.5` solves this particular issue.
-        self.resample = resample - 0.5 
+        self.resample = resample - 0.5
         self.channels = channels
 
 
