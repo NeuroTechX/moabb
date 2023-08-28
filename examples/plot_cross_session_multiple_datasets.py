@@ -98,7 +98,6 @@ evaluation = CrossSessionEvaluation(
 results = evaluation.process(pipeline)
 
 print(results.head())
-results.replace(["session_E", "session_T"], ["session_0", "session_1"], inplace=True)
 
 ##############################################################################
 # Plot Results
