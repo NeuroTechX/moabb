@@ -57,8 +57,8 @@ class CustomDataset1(CompoundDataset):
         biVR = Cattan2019_VR(virtual_reality=True, screen_display=True)
         runs = blocks_reps([1, 3], [1, 2, 3, 4, 5])
         subjects_list = [
-            (biVR, 1, "VR", runs),
-            (biVR, 2, "VR", runs),
+            (biVR, 1, "0VR", runs),
+            (biVR, 2, "0VR", runs),
         ]
         CompoundDataset.__init__(
             self,
