@@ -43,8 +43,10 @@ class FakeDataset(BaseDataset):
         code="FakeDataset",
         paradigm="imagery",
         channels=("C3", "Cz", "C4"),
+        sfreq=128
     ):
         self.n_runs = n_runs
+        self.sfreq = sfreq
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         self.channels = channels
         code = f"{code}_{paradigm}_{n_subjects}_{n_sessions}_{n_runs}__{'_'.join(event_list)}__{'_'.join(channels)}"
@@ -72,7 +74,7 @@ class FakeDataset(BaseDataset):
 
     def _generate_raw(self):
         montage = make_standard_montage("standard_1005")
-        sfreq = 128
+        sfreq = self.sfreq
         duration = len(self.event_id) * 60
         eeg_data = 2e-5 * np.random.randn(duration * sfreq, len(self.channels))
         y = np.zeros((duration * sfreq))
