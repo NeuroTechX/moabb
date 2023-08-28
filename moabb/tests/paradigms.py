@@ -367,7 +367,7 @@ class Test_P300(unittest.TestCase):
             channels=["C3", "Cz", "Fz", "C4"],
             sfreq=512,
         )
-        shift=-0.5
+        shift = -0.5
         paradigm.match_all([dataset1, dataset2, dataset3], shift=shift)
         # match_all should returns the smallest frequency minus 0.5.
         # See comment inside the match_all method
