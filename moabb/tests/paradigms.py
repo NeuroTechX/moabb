@@ -350,12 +350,12 @@ class Test_P300(unittest.TestCase):
         # Note: the match all property is implemented in the base paradigm.
         # Thus, although it is located in the P300 section, this test stands for all paradigms.
         paradigm = SimpleP300()
-        dataset1 = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"], channels=["A", "B", "C"], sfreq=64)
-        dataset2 = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"], channels=["A", "B", "D"], sfreq=256)
-        dataset3 = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"], channels=["A", "B", "C", "D"], sfreq=512)
+        dataset1 = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"], channels=("C3", "Cz", "C4"), sfreq=64)
+        dataset2 = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"], channels=["C3", "C4", "Cz"], sfreq=256)
+        dataset3 = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"], channels=["C3", "Cz", "Fz", "C4"], sfreq=512)
         paradigm.match_all([dataset1, dataset2, dataset3])
         self.assertEqual(paradigm.resample, 64)
-        self.assertEqual(paradigm.channels, ["A", "B"])
+        self.assertEqual(paradigm.channels, ["C3", "Cz"])
 
     def test_BaseP300_paradigm(self):
         paradigm = SimpleP300()
