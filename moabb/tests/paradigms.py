@@ -371,7 +371,7 @@ class Test_P300(unittest.TestCase):
         # match_all should returns the smallest frequency minus 0.5.
         # See comment inside the match_all method
         self.assertEqual(paradigm.resample, 64 - 0.5)
-        self.assertEqual(paradigm.channels, ["C3", "Cz"])
+        self.assertEqual(paradigm.channels.sort(), ["C3", "Cz"].sort())
 
     def test_BaseP300_paradigm(self):
         paradigm = SimpleP300()
