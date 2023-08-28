@@ -345,14 +345,28 @@ class SimpleP300(BaseP300):  # Needed to assess BaseP300
 
 
 class Test_P300(unittest.TestCase):
-
     def test_match_all(self):
         # Note: the match all property is implemented in the base paradigm.
         # Thus, although it is located in the P300 section, this test stands for all paradigms.
         paradigm = SimpleP300()
-        dataset1 = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"], channels=("C3", "Cz", "C4"), sfreq=64)
-        dataset2 = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"], channels=["C3", "C4", "Cz"], sfreq=256)
-        dataset3 = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"], channels=["C3", "Cz", "Fz", "C4"], sfreq=512)
+        dataset1 = FakeDataset(
+            paradigm="p300",
+            event_list=["Target", "NonTarget"],
+            channels=("C3", "Cz", "C4"),
+            sfreq=64,
+        )
+        dataset2 = FakeDataset(
+            paradigm="p300",
+            event_list=["Target", "NonTarget"],
+            channels=["C3", "C4", "Cz"],
+            sfreq=256,
+        )
+        dataset3 = FakeDataset(
+            paradigm="p300",
+            event_list=["Target", "NonTarget"],
+            channels=["C3", "Cz", "Fz", "C4"],
+            sfreq=512,
+        )
         paradigm.match_all([dataset1, dataset2, dataset3])
         # match_all should returns the smallest frequency minus 0.5.
         # See comment inside the match_all method

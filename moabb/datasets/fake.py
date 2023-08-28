@@ -45,7 +45,7 @@ class FakeDataset(BaseDataset):
         paradigm="imagery",
         channels=("C3", "Cz", "C4"),
         seed=None,
-        sfreq=128
+        sfreq=128,
     ):
         self.n_runs = n_runs
         self.sfreq = sfreq

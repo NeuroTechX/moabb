@@ -4,12 +4,12 @@ from operator import methodcaller
 from typing import List, Optional, Tuple
 
 import mne
-from moabb.datasets.base import BaseDataset
 import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
+from moabb.datasets.base import BaseDataset
 from moabb.datasets.bids_interface import StepType
 from moabb.datasets.preprocessing import (
     EpochsToEvents,
@@ -438,20 +438,25 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         resample = None
         channels = None
         for dataset in datasets:
-            X, _, _ = self.get_data(dataset, subjects=[dataset.subject_list[0]], return_epochs=True)
+            X, _, _ = self.get_data(
+                dataset, subjects=[dataset.subject_list[0]], return_epochs=True
+            )
             info = X.info
-            sfreq = info['sfreq']
-            ch_names = info['ch_names']
+            sfreq = info["sfreq"]
+            ch_names = info["ch_names"]
             # get the minimum frequence between all datasets
             resample = sfreq if resample is None else min(resample, sfreq)
             # get the channels common to all datasets
-            channels = set(ch_names) if channels is None else set(channels).intersection(ch_names)
+            channels = (
+                set(ch_names)
+                if channels is None
+                else set(channels).intersection(ch_names)
+            )
         # If resample=128 for example, then MNE can returns 128 or 129 samples
         # depending on the dataset, even if the length of the epochs is 1s
         # The `-0.5` solves this particular issue.
         self.resample = resample - 0.5
         self.channels = channels
-
 
     @abc.abstractmethod
     def _get_events_pipeline(self, dataset):
