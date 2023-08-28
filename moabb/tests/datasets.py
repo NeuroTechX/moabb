@@ -5,6 +5,7 @@ import tempfile
 import unittest
 
 import mne
+import numpy as np
 
 import moabb.datasets as db
 import moabb.datasets.compound_dataset as db_compound
@@ -96,6 +97,36 @@ class Test_Datasets(unittest.TestCase):
 
             # bad subject id must raise error
             self.assertRaises(ValueError, ds.get_data, [1000])
+
+    def test_fake_dataset_seed(self):
+        """this test will insure the fake dataset's random seed works"""
+        n_subjects = 3
+        n_sessions = 2
+        n_runs = 2
+        seed = 12
+
+        for paradigm in ["imagery", "p300", "ssvep"]:
+            ds1 = FakeDataset(
+                n_sessions=n_sessions,
+                n_runs=n_runs,
+                n_subjects=n_subjects,
+                paradigm=paradigm,
+                seed=seed,
+            )
+            ds2 = FakeDataset(
+                n_sessions=n_sessions,
+                n_runs=n_runs,
+                n_subjects=n_subjects,
+                paradigm=paradigm,
+                seed=seed,
+            )
+            X1, _, _ = ds1.get_data()
+            X2, _, _ = ds2.get_data()
+            X3, _, _ = ds2.get_data()
+
+            # All the arrays should be equal:
+            self.assertIsNone(np.testing.assert_array_equal(X1, X2))
+            self.assertIsNone(np.testing.assert_array_equal(X3, X3))
 
     def test_cache_dataset(self):
         tempdir = tempfile.mkdtemp()

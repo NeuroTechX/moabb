@@ -242,7 +242,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
 
-        Eeturns
+        Returns
         -------
         X : Union[np.ndarray, mne.Epochs]
             the data that will be used as features for the model

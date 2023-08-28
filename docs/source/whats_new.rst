@@ -99,6 +99,8 @@ Enhancements
 - Add CodeCarbon example (:gh:`356` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add MsetCCA method for SSVEP classification, parametrise CCA `n_components` in CCA based methods (:gh:`359` by `Emmanuel Kalunga`_ and `Sylvain Chevallier`_)
 - Set epochs' `metadata` field in `get_data` (:gh:`371` by `Pierre Guetschel`_)
+- Add possibility to use transformers to apply fixed pre-processings before evaluations (:gh:`372` by `Pierre Guetschel`_)
+- Add `seed` parameter to `FakeDataset` (:gh:`372` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
