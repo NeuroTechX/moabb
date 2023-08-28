@@ -130,7 +130,7 @@ class BaseEvaluation(ABC):
             additional_columns=additional_columns,
         )
 
-    def process(self, pipelines, param_grid=None):
+    def process(self, pipelines, param_grid=None, postprocess_pipeline=None):
         """Runs all pipelines on all datasets.
 
         This function will apply all provided pipelines and return a dataframe
@@ -142,6 +142,15 @@ class BaseEvaluation(ABC):
             A dict containing the sklearn pipeline to evaluate.
         param_grid : dict of str
             The key of the dictionary must be the same as the associated pipeline.
+        postprocess_pipeline: Pipeline | None
+            Optional pipeline to apply to the data after the preprocessing.
+            This pipeline will either receive :class:`mne.io.BaseRaw`, :class:`mne.Epochs`
+            or :func:`np.ndarray` as input, depending on the values of ``return_epochs``
+            and ``return_raws``.
+            This pipeline must return an ``np.ndarray``.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
+
 
         Returns
         -------
@@ -162,7 +171,7 @@ class BaseEvaluation(ABC):
                 dataset,
                 return_epochs=self.return_epochs,
                 return_raws=self.return_raws,
-                postprocess_pipeline=None,
+                postprocess_pipeline=postprocess_pipeline,
             )[0]
             # (we only keep the pipeline for the first frequency band, better ideas?)
 
