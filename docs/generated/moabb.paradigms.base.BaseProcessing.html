@@ -491,14 +491,17 @@ and <code class="docutils literal notranslate"><span class="pre">return_raws</sp
 This pipeline must return an <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>.
 This pipeline must be “fixed” because it will not be trained,
 i.e. no call to <code class="docutils literal notranslate"><span class="pre">fit</span></code> will be made.</p></li>
-<li><p><strong>Eeturns</strong> – </p></li>
-<li><p><strong>-------</strong> – </p></li>
-<li><p><strong>X</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.5)"><em>mne.Epochs</em></a><em>]</em>) – the data that will be used as features for the model
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X</strong> (<em>Union[np.ndarray, mne.Epochs]</em>) – the data that will be used as features for the model
 Note: if return_epochs=True,  this is mne.Epochs
 if return_epochs=False, this is np.ndarray</p></li>
 <li><p><strong>labels</strong> (<em>np.ndarray</em>) – the labels for training / evaluating the model</p></li>
 <li><p><strong>metadata</strong> (<em>pd.DataFrame</em>) – A dataframe containing the metadata.</p></li>
 </ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
