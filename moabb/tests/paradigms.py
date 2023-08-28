@@ -354,7 +354,9 @@ class Test_P300(unittest.TestCase):
         dataset2 = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"], channels=["C3", "C4", "Cz"], sfreq=256)
         dataset3 = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"], channels=["C3", "Cz", "Fz", "C4"], sfreq=512)
         paradigm.match_all([dataset1, dataset2, dataset3])
-        self.assertEqual(paradigm.resample, 64)
+        # match_all should returns the smallest frequency minus 0.5.
+        # See comment inside the match_all method
+        self.assertEqual(paradigm.resample, 64 - 0.5)
         self.assertEqual(paradigm.channels, ["C3", "Cz"])
 
     def test_BaseP300_paradigm(self):
