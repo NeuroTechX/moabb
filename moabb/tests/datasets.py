@@ -90,10 +90,10 @@ class Test_Datasets(unittest.TestCase):
             self.assertEqual(len(data[1]), n_sessions)
 
             # right number of run
-            self.assertEqual(len(data[1]["session_0"]), n_runs)
+            self.assertEqual(len(data[1]["0"]), n_runs)
 
             # We should get a raw array at the end
-            self.assertIsInstance(data[1]["session_0"]["run_0"], mne.io.BaseRaw)
+            self.assertIsInstance(data[1]["0"]["0"], mne.io.BaseRaw)
 
             # bad subject id must raise error
             self.assertRaises(ValueError, ds.get_data, [1000])
@@ -327,14 +327,14 @@ class Test_CompoundDataset(unittest.TestCase):
 
                 # Check data type
                 self.assertTrue(isinstance(data, dict))
-                self.assertIsInstance(data[1]["session_0"]["run_0"], mne.io.BaseRaw)
+                self.assertIsInstance(data[1]["0"]["0"], mne.io.BaseRaw)
 
                 # Check data size
                 self.assertEqual(len(data), 1)
                 expected_session_number = self.n_sessions if sessions is None else 1
                 self.assertEqual(len(data[1]), expected_session_number)
                 expected_runs_number = self.n_runs if runs is None else 1
-                self.assertEqual(len(data[1]["session_0"]), expected_runs_number)
+                self.assertEqual(len(data[1]["0"]), expected_runs_number)
 
                 # bad subject id must raise error
                 self.assertRaises(ValueError, compound_data.get_data, [1000])

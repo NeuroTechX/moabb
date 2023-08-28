@@ -90,7 +90,7 @@ class Test_WithinSess(unittest.TestCase):
                 "GridSearch_WithinSession",
                 str(dataset.code),
                 "1",
-                "session_0",
+                "0",
                 "C",
                 "Grid_Search_WithinSession.pkl",
             ),
@@ -330,7 +330,7 @@ class UtilEvaluation(unittest.TestCase):
         hdf5_path = "base_path"
         code = "evaluation_code"
         subject = 1
-        session = "session_0"
+        session = "0"
         name = "evaluation_name"
         eval_type = "WithinSession"
         save_path = create_save_path(
@@ -338,7 +338,7 @@ class UtilEvaluation(unittest.TestCase):
         )
 
         expected_path = os.path.join(
-            hdf5_path, "Models_WithinSession", code, "1", "session_0", "evaluation_name"
+            hdf5_path, "Models_WithinSession", code, "1", "0", "evaluation_name"
         )
         self.assertEqual(save_path, expected_path)
 
@@ -351,7 +351,7 @@ class UtilEvaluation(unittest.TestCase):
             "GridSearch_WithinSession",
             code,
             "1",
-            "session_0",
+            "0",
             "evaluation_name",
         )
         self.assertEqual(grid_save_path, expected_grid_path)
@@ -403,7 +403,7 @@ class UtilEvaluation(unittest.TestCase):
         hdf5_path = "base_path"
         code = "evaluation_code"
         subject = 1
-        session = "session_0"
+        session = "0"
         name = "evaluation_name"
         eval_type = "CrossSession"
         save_path = create_save_path(
@@ -428,7 +428,7 @@ class UtilEvaluation(unittest.TestCase):
         hdf5_path = None
         code = "evaluation_code"
         subject = 1
-        session = "session_0"
+        session = "0"
         name = "evaluation_name"
         eval_type = "WithinSession"
         save_path = create_save_path(
@@ -507,7 +507,7 @@ class UtilEvaluation(unittest.TestCase):
         hdf5_path = "base_path"
         code = "evaluation_code"
         subject = 1
-        session = "session_0"
+        session = "0"
         name = "evalu@tion#name"
         eval_type = "WithinSession"
         save_path = create_save_path(
@@ -515,7 +515,7 @@ class UtilEvaluation(unittest.TestCase):
         )
 
         expected_path = os.path.join(
-            hdf5_path, "Models_WithinSession", code, "1", "session_0", "evalu@tion#name"
+            hdf5_path, "Models_WithinSession", code, "1", "0", "evalu@tion#name"
         )
         self.assertEqual(save_path, expected_path)
 
