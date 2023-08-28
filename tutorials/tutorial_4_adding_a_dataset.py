@@ -66,7 +66,6 @@ for subject in [1, 2, 3]:
     mdict["fs"] = fs
     savemat(filename, mdict)
 
-
 ##############################################################################
 # Creating a Dataset Class
 # ------------------------
@@ -85,6 +84,7 @@ for subject in [1, 2, 3]:
 # repository where all the files are stored.
 
 ExampleDataset_URL = "https://sandbox.zenodo.org/record/369543/files/"
+
 
 ##############################################################################
 # The ``ExampleDataset`` needs to implement only 3 functions:
@@ -107,7 +107,7 @@ class ExampleDataset(BaseDataset):
             subjects=[1, 2, 3],
             sessions_per_subject=1,
             events={"left_hand": 1, "right_hand": 2},
-            code="Example dataset",
+            code="ExampleDataset",
             interval=[0, 0.75],
             paradigm="imagery",
             doi="",

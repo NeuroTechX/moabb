@@ -15,14 +15,14 @@ Motor Imagery Datasets
     :template: class.rst
 
     AlexMI
-    BNCI2014001
-    BNCI2014002
-    BNCI2014004
-    BNCI2015001
-    BNCI2015004
+    BNCI2014_001
+    BNCI2014_002
+    BNCI2014_004
+    BNCI2015_001
+    BNCI2015_004
     Cho2017
     Lee2019_MI
-    MunichMI
+    GrosseWentrup2009
     Ofner2017
     PhysionetMI
     Schirrmeister2017
@@ -40,16 +40,16 @@ ERP Datasets
     :toctree: generated/
     :template: class.rst
 
-    bi2012
-    bi2013a
-    bi2014a
-    bi2014b
-    bi2015a
-    bi2015b
-    VirtualReality
-    BNCI2014008
-    BNCI2014009
-    BNCI2015003
+    BI2012
+    BI2013a
+    BI2014a
+    BI2014b
+    BI2015a
+    BI2015b
+    Cattan2019_VR
+    BNCI2014_008
+    BNCI2014_009
+    BNCI2015_003
     DemonsP300
     EPFLP300
     Huebner2017
@@ -66,13 +66,24 @@ SSVEP Datasets
     :toctree: generated/
     :template: class.rst
 
-    SSVEPExo
+    Kalunga2016
     Nakanishi2015
     Wang2016
     MAMEM1
     MAMEM2
     MAMEM3
     Lee2019_SSVEP
+
+
+--------------
+c-VEP Datasets
+--------------
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    Thielen2021
 
 
 ----------------------
@@ -83,7 +94,7 @@ Resting State Datasets
     :toctree: generated/
     :template: class.rst
 
-    HeadMountedDisplay
+    Cattan2019_PHMD
 
 
 ------------
@@ -131,9 +142,9 @@ ERP Datasets
     :toctree: generated/
     :template: class.rst
 
-    bi2014a_il
-    bi2014b_il
-    bi2015a_il
-    bi2015b_il
-    VirtualReality_il
-    biIlliteracy
+    BI2014a_Il
+    BI2014b_Il
+    BI2015a_Il
+    BI2015b_Il
+    Cattan2019_VR_Il
+    BI_Il

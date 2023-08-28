@@ -11,6 +11,7 @@ import pandas as pd
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
 from sklearn.base import BaseEstimator
+from sklearn.pipeline import Pipeline
 
 
 try:
@@ -36,7 +37,9 @@ def get_string_rep(obj):
             RuntimeWarning,
             stacklevel=2,
         )
-    str_no_addresses = re.sub("0x[a-z0-9]*", "0x__", str_repr)
+    str_no_addresses = re.sub(
+        "0x[\w]+>", "0x__", str_repr
+    )  # \w also includes _ for address such as 0x__
     return str_no_addresses.replace("\n", "").encode("utf8")
 
 
@@ -46,6 +49,11 @@ def get_digest(obj):
     If there are memory addresses, wipes them
     """
     return hashlib.md5(get_string_rep(obj)).hexdigest()
+
+
+def get_pipeline_digest(process_pipeline, clf_pipeline):
+    full_pipeline = Pipeline(steps=[("process", process_pipeline), ("clf", clf_pipeline)])
+    return get_digest(full_pipeline)
 
 
 class Results:
@@ -108,7 +116,7 @@ class Results:
                     "{:%Y-%m-%d, %H:%M}".format(datetime.now())
                 )
 
-    def add(self, results, pipelines):  # noqa: C901
+    def add(self, results, pipelines, process_pipeline):  # noqa: C901
         """Add results."""
 
         def to_list(res):
@@ -131,7 +139,7 @@ class Results:
 
         with h5py.File(self.filepath, "r+") as f:
             for name, data_dict in results.items():
-                digest = get_digest(pipelines[name])
+                digest = get_pipeline_digest(process_pipeline, pipelines[name])
                 if digest not in f.keys():
                     # create pipeline main group if nonexistent
                     f.create_group(digest)
@@ -190,18 +198,25 @@ class Results:
                         ]
                     )
 
-    def to_dataframe(self, pipelines=None):
+    def to_dataframe(self, pipelines=None, process_pipeline=None):
         df_list = []
 
         # get the list of pipeline hash
         digests = []
-        if pipelines is not None:
-            digests = [get_digest(pipelines[name]) for name in pipelines]
+        if pipelines is not None and process_pipeline is not None:
+            digests = [
+                get_pipeline_digest(process_pipeline, pipelines[name])
+                for name in pipelines
+            ]
+        elif pipelines is not None or process_pipeline is not None:
+            raise ValueError(
+                "Either both of none of pipelines and process_pipeline must be specified."
+            )
 
         with h5py.File(self.filepath, "r") as f:
             for digest, p_group in f.items():
                 # skip if not in pipeline list
-                if (pipelines is not None) & (digest not in digests):
+                if (pipelines is not None) and (digest not in digests):
                     continue
 
                 name = p_group.attrs["name"]
@@ -216,23 +231,26 @@ class Results:
                     df["dataset"] = dname
                     df["pipeline"] = name
                     df_list.append(df)
+
         return pd.concat(df_list, ignore_index=True)
 
-    def not_yet_computed(self, pipelines, dataset, subj):
+    def not_yet_computed(self, pipelines, dataset, subj, process_pipeline):
         """Check if a results has already been computed."""
         ret = {
             k: pipelines[k]
             for k in pipelines.keys()
-            if not self._already_computed(pipelines[k], dataset, subj)
+            if not self._already_computed(pipelines[k], dataset, subj, process_pipeline)
         }
         return ret
 
-    def _already_computed(self, pipeline, dataset, subject, session=None):
+    def _already_computed(
+        self, pipeline, dataset, subject, process_pipeline, session=None
+    ):
         """Check if we have results for a current combination of pipeline /
         dataset / subject."""
         with h5py.File(self.filepath, "r") as f:
             # get the digest from repr
-            digest = get_digest(pipeline)
+            digest = get_pipeline_digest(process_pipeline, pipeline)
 
             # check if digest present
             if digest not in f.keys():

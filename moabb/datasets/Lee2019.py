@@ -64,7 +64,7 @@ class Lee2019(BaseDataset):
             subjects=list(range(1, 55)),
             sessions_per_subject=2,
             events=events,
-            code="Lee2019_" + code_suffix,
+            code="Lee2019-" + code_suffix,
             interval=interval,
             paradigm=paradigm,
             doi="10.5524/100542",
@@ -233,7 +233,7 @@ class Lee2019_MI(Lee2019):
         ==========  =======  =======  ==========  =================  ============  ===============  ===========
         Name          #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
         ==========  =======  =======  ==========  =================  ============  ===============  ===========
-        Lee2019_MI       55       62           2                100  4s            1000Hz                     2
+        Lee2019_MI       54       62           2                100  4s            1000Hz                     2
         ==========  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from Lee et al 2019 [1]_.

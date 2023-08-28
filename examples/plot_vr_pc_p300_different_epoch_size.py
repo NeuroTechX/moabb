@@ -27,7 +27,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
-from moabb.datasets import VirtualReality
+from moabb.datasets import Cattan2019_VR
 from moabb.paradigms import P300
 
 
@@ -46,7 +46,7 @@ warnings.filterwarnings("ignore")
 # 3) Encode categorical variable (Target/NonTarget) to numerical values.
 #    We will be using label encoding.
 
-dataset = VirtualReality()
+dataset = Cattan2019_VR()
 paradigm = P300()
 le = LabelEncoder().fit(["Target", "NonTarget"])
 
@@ -61,7 +61,7 @@ nsubjects = 2
 # tmax, subjects and experimental conditions (VR or PC).
 #
 # Not all the data will be used for this validation.
-# The VirtualReality dataset contains the data from a randomized experiment.
+# The Cattan2019_VR dataset contains the data from a randomized experiment.
 # We will only be using the two first repetitions of the 12 experimental blocks.
 # Data will be selected thanks to the `get_block_repetition` method.
 

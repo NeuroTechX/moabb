@@ -15,10 +15,12 @@ import abc
 import datetime
 import json
 import logging
+import re
 from collections import OrderedDict
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Type
 
 import mne
 import mne_bids
@@ -36,6 +38,12 @@ if TYPE_CHECKING:
     from moabb.datasets.base import BaseDataset
 
 log = logging.getLogger(__name__)
+
+
+def camel_to_kebab_case(name):
+    """Converts a CamelCase string to kebab-case."""
+    name = re.sub("(.)([A-Z][a-z]+)", r"\1-\2", name)
+    return re.sub("([a-z0-9])([A-Z])", r"\1-\2", name).lower()
 
 
 def subject_moabb_to_bids(subject: int):
@@ -119,11 +127,10 @@ class BIDSInterfaceBase(abc.ABC):
     @property
     def root(self):
         """Return the root path of the BIDS dataset."""
-        code = self.dataset.code + "-BIDS"
+        code = self.dataset.code
         mne_path = Path(dl.get_dataset_path(code, self.path))
-        cache_dir = f"MNE-{code.lower()}-cache"
+        cache_dir = f"MNE-BIDS-{camel_to_kebab_case(code)}"
         cache_path = mne_path / cache_dir
-
         return cache_path
 
     @property
@@ -430,3 +437,19 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
             overwrite=False,
             verbose=self.verbose,
         )
+
+
+class StepType(Enum):
+    """Enum corresponding to the type of data returned
+    by a pipeline step."""
+
+    RAW = "raw"
+    EPOCHS = "epochs"
+    ARRAY = "array"
+
+
+_interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
+    StepType.RAW: BIDSInterfaceRawEDF,
+    StepType.EPOCHS: BIDSInterfaceEpochs,
+    StepType.ARRAY: BIDSInterfaceNumpyArray,
+}
