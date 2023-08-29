@@ -205,18 +205,18 @@ def _load_data_004_2014(
 
     sessions = []
     filenames = []
-    for session_idx, r in enumerate(["T", "E"]):
+    for r in ["T", "E"]:
         url = "{u}004-2014/B{s:02d}{r}.mat".format(u=base_url, s=subject, r=r)
         filename = data_path(url, path, force_update, update_path)[0]
         filenames.append(filename)
         if only_filenames:
             continue
         raws, _ = _convert_mi(filename, ch_names, ch_types)
-        sessions.extend(raws)
+        sessions.extend(zip([r] * len(raws), raws))
 
     if only_filenames:
         return filenames
-    sessions = {f"{session_idx}{r}": {"0": run} for ii, run in enumerate(sessions)}
+    sessions = {f"{ii}{r}": {"0": run} for ii, (r, run) in enumerate(sessions)}
     return sessions
 
 
