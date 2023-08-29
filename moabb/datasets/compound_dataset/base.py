@@ -91,8 +91,13 @@ class CompoundDataset(BaseDataset):
 
     def _with_data_origin(self, data: dict, shopped_subject):
         data_origin = self.subjects_list[shopped_subject - 1]
-        data['data_origin'] = data_origin
-        return data
+        class dict_with_hidden_key(dict):
+            def __getitem__(self, item):
+                # ensure data_origin is never accessed when iterating with dict.keys()
+                # that would be make iterating over runs and sessions failing.
+                if item == 'data_origin':
+                    return data_origin
+        return dict_with_hidden_key()
 
     def _get_single_subject_data(self, shopped_subject):
         """Return data for a single subject."""
