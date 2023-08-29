@@ -55,7 +55,7 @@ pipelines["MDM"] = make_pipeline(ERPCovariances(estimator="lwf"), MDM(metric="ri
 class CustomDataset1(CompoundDataset):
     def __init__(self):
         biVR = Cattan2019_VR(virtual_reality=True, screen_display=True)
-        runs = blocks_reps([1, 3], [1, 2, 3, 4, 5])
+        runs = blocks_reps([0, 2], [0, 1, 2, 3, 4])
         subjects_list = [
             (biVR, 1, "0VR", runs),
             (biVR, 2, "0VR", runs),
@@ -64,7 +64,7 @@ class CustomDataset1(CompoundDataset):
             self,
             subjects_list=subjects_list,
             events=dict(Target=2, NonTarget=1),
-            code="D1",
+            code="CustomDataset1",
             interval=[0, 1.0],
             paradigm="p300",
         )
@@ -81,7 +81,7 @@ class CustomDataset2(CompoundDataset):
             self,
             subjects_list=subjects_list,
             events=dict(Target=2, NonTarget=1),
-            code="D2",
+            code="CustomDataset2",
             interval=[0, 1.0],
             paradigm="p300",
         )
@@ -104,7 +104,7 @@ class CustomDataset3(CompoundDataset):
             self,
             subjects_list=subjects_list,
             events=dict(Target=2, NonTarget=1),
-            code="D3",
+            code="CustomDataset3",
             interval=[0, 1.0],
             paradigm="p300",
         )
