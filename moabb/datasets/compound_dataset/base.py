@@ -89,31 +89,34 @@ class CompoundDataset(BaseDataset):
         process_pipeline = self._create_process_pipeline()
         super()._get_single_subject_data_using_cache(shopped_subject, cache_config, process_pipeline)
 
+    def _with_data_origin(self, data: dict, shopped_subject):
+        data_origin = self.subjects_list[shopped_subject - 1]
+        data['data_origin'] = data_origin
+        return data
+
     def _get_single_subject_data(self, shopped_subject):
         """Return data for a single subject."""
         dataset, subject, sessions, runs = self.subjects_list[shopped_subject - 1]
         subject_data = dataset._get_single_subject_data(subject)
         if sessions is None:
-            return subject_data
+            return self._with_data_origin(subject_data)
         elif isinstance(sessions, list):
             sessions_data = {f"{session}": subject_data[session] for session in sessions}
         else:
             sessions_data = {f"{sessions}": subject_data[sessions]}
 
-        sessions_data['data_origin'] = (dataset, subject, sessions, runs)
-
         if runs is None:
-            return sessions_data
+            return self._with_data_origin(sessions_data)
         elif isinstance(runs, list):
             for session in sessions_data.keys():
                 sessions_data[session] = {
                     f"{run}": sessions_data[session][run] for run in runs
                 }
-            return sessions_data
+            return self._with_data_origin(sessions_data)
         else:
             for session in sessions_data.keys():
                 sessions_data[session] = {f"{runs}": sessions_data[session][runs]}
-            return sessions_data
+            return self._with_data_origin(sessions_data)
 
 
     def data_path(
