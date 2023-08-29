@@ -923,9 +923,9 @@ class Cattan2019_VR(BaseDataset):
         subjects: List of int
             List of subject number
         block_list: List of int
-            List of block number (from 1 to 5)
+            List of block number (from 0 to 11)
         repetition_list: List of int
-            List of repetition number inside a block (from 1 to 12)
+            List of repetition number inside a block (from 0 to 4)
 
         Returns
         -------
