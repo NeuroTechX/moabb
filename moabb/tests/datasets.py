@@ -414,7 +414,7 @@ class Test_CompoundDataset(unittest.TestCase):
         self.assertEqual(compound_dataset.event_id, self.ds.event_id)
 
         # Check event_id get correctly updated when taking a subject from dataset 2
-        data = compound_dataset.get_data(subjects=[3])
+        data = compound_dataset.get_data(subjects=[2])
         self.assertEqual(compound_dataset.event_id, self.ds2.event_id)
         self.assertEqual(len(data.keys()), 1)
         
