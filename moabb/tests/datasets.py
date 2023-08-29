@@ -322,7 +322,7 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         repetition = 4
         _, _, ret = ds.get_block_repetition(P300(), [subject], [block], [repetition])
         assert ret.subject.unique()[0] == subject
-        assert ret.run.unique()[0] == block_rep(block, repetition)
+        assert ret.run.unique()[0] == block_rep(block, repetition, ds.n_repetitions)
 
 
 class Test_CompoundDataset(unittest.TestCase):

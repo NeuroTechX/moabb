@@ -55,7 +55,7 @@ pipelines["MDM"] = make_pipeline(ERPCovariances(estimator="lwf"), MDM(metric="ri
 class CustomDataset1(CompoundDataset):
     def __init__(self):
         biVR = Cattan2019_VR(virtual_reality=True, screen_display=True)
-        runs = blocks_reps([0, 2], [0, 1, 2, 3, 4])
+        runs = blocks_reps([0, 2], [0, 1, 2, 3, 4], biVR.n_repetitions)
         subjects_list = [
             (biVR, 1, "0VR", runs),
             (biVR, 2, "0VR", runs),

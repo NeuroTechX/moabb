@@ -134,7 +134,7 @@ class FakeVirtualRealityDataset(FakeDataset):
             for block in range(self.n_blocks):
                 for repetition in range(self.n_repetitions):
                     data[f"{session}"][
-                        block_rep(block, repetition)
+                        block_rep(block, repetition, self.n_repetitions)
                     ] = self._generate_raw()
         return data
 

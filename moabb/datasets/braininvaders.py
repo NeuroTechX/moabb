@@ -228,7 +228,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
                     end = idx_repetEndin_local[j + 1]
                     Xbij = Xbi[:, start:end]
                     raw = mne.io.RawArray(data=Xbij, info=info, verbose=False)
-                    sessions[session_name][block_rep(bi, j)] = raw
+                    sessions[session_name][block_rep(bi, j, 5)] = raw
 
     return sessions
 
@@ -876,6 +876,7 @@ class Cattan2019_VR(BaseDataset):
     """
 
     def __init__(self, virtual_reality=False, screen_display=True):
+        self.n_repetitions = 5
         super().__init__(
             subjects=list(range(1, 21 + 1)),
             sessions_per_subject=1,
@@ -938,7 +939,7 @@ class Cattan2019_VR(BaseDataset):
         meta_select = []
         for block in block_list:
             for repetition in repetition_list:
-                run = block_rep(block, repetition)
+                run = block_rep(block, repetition, self.n_repetitions)
                 X_select.append(X[meta["run"] == run])
                 labels_select.append(labels[meta["run"] == run])
                 meta_select.append(meta[meta["run"] == run])
