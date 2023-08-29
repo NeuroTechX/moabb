@@ -48,6 +48,7 @@ Enhancements
 - Add :obj:`moabb.datasets.compound_dataset.utils.compound_dataset_list`  (:gh:`455` by `Pierre Guetschel`_)
 - Add c-VEP paradigm and Thielen2021 c-VEP dataset (:gh:`463` by `Jordy Thielen`_)
 - Add option to plot scores vertically. (:gh:`417` by `Sara Sedlar`_)
+- Increase the python version to 3.11 (:gh:`470` by `Bruno Aristimunha`_)
 - Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
 
 Bugs
@@ -73,6 +74,7 @@ Bugs
 - Fixing dataset downloader from servers with non-http (PR :gh:`433` by `Sara Sedlar`_)
 - Fix ``dataset_list`` to include deprecated datasets (PR :gh:`464` by `Bruno Aristimunha`_)
 - Fixed bug in :func:`moabb.analysis.results.get_string_rep` to handle addresses such as 0x__0A as well (PR :gh:`468` by `Anton Andreev`_)
+
 API changes
 ~~~~~~~~~~~
 
