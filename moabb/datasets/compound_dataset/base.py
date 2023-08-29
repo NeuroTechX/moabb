@@ -99,24 +99,24 @@ class CompoundDataset(BaseDataset):
         dataset, subject, sessions, runs = self.subjects_list[shopped_subject - 1]
         subject_data = dataset._get_single_subject_data(subject)
         if sessions is None:
-            return self._with_data_origin(subject_data)
+            return self._with_data_origin(subject_data, shopped_subject)
         elif isinstance(sessions, list):
             sessions_data = {f"{session}": subject_data[session] for session in sessions}
         else:
             sessions_data = {f"{sessions}": subject_data[sessions]}
 
         if runs is None:
-            return self._with_data_origin(sessions_data)
+            return self._with_data_origin(sessions_data, shopped_subject)
         elif isinstance(runs, list):
             for session in sessions_data.keys():
                 sessions_data[session] = {
                     f"{run}": sessions_data[session][run] for run in runs
                 }
-            return self._with_data_origin(sessions_data)
+            return self._with_data_origin(sessions_data, shopped_subject)
         else:
             for session in sessions_data.keys():
                 sessions_data[session] = {f"{runs}": sessions_data[session][runs]}
-            return self._with_data_origin(sessions_data)
+            return self._with_data_origin(sessions_data, shopped_subject)
 
 
     def data_path(
