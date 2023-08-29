@@ -126,33 +126,49 @@ def session_run_pattern():
     return r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)"  # g1: index, g2: description
 
 
+constraint_message = (
+    "names must be strings starting with an integer "
+    "identifying the order in which they were recorded, "
+    "optionally followed by a description only containing "
+    "letters and numbers."
+)
+
+
 def check_session_names(data):
     pattern = session_run_pattern()
     for subject, sessions in data.items():
+        indexes = []
         for session in sessions.keys():
-            if not isinstance(session, str) or not re.fullmatch(pattern, session):
+            match = re.fullmatch(pattern, session)
+            if not isinstance(session, str) or not match:
                 raise ValueError(
-                    f"Session names must be strings starting with an integer "
-                    f"identifying the order in which they were recorded, "
-                    f"optionally followed by a description only containing "
-                    f"letters and numbers. Found key {session!r} instead. "
+                    f"Session {constraint_message} Found key {session!r} instead. "
                     f"If you used cache, you may need to erase it using overwrite=True."
                 )
+            indexes.append(int(match.groups()[0]))
+        if not len(indexes) == len(set(indexes)):
+            raise ValueError(
+                f"Session {constraint_message} Found duplicate index {list(sessions.keys())}."
+            )
 
 
 def check_run_names(data):
     pattern = session_run_pattern()
     for subject, sessions in data.items():
         for session, runs in sessions.items():
+            indexes = []
             for run in runs.keys():
-                if not isinstance(run, str) or not re.fullmatch(pattern, run):
+                match = re.fullmatch(pattern, run)
+                if not isinstance(run, str) or not match:
                     raise ValueError(
-                        f"Run names must be strings starting with an integer "
-                        f"identifying the order in which they were recorded, "
-                        f"optionally followed by a description only containing "
-                        f"letters and numbers. Found key {run!r} instead. "
+                        f"Run {constraint_message} Found key {run!r} instead. "
                         f"If you used cache, you may need to erase it using overwrite=True."
                     )
+                indexes.append(int(match.groups()[0]))
+            if not len(indexes) == len(set(indexes)):
+                raise ValueError(
+                    f"Run {constraint_message} Found duplicate index {list(runs.keys())}."
+                )
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
