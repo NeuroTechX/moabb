@@ -319,13 +319,15 @@ class Test_CompoundDataset(unittest.TestCase):
                 subjects_list = [(self.ds, 1, sessions, runs)]
                 compound_data = CompoundDataset(
                     subjects_list,
-                    events=dict(Target=2, NonTarget=1),
                     code="CompoundDataset-test",
                     interval=[0, 1],
                     paradigm=self.paradigm,
                 )
 
                 data = compound_data.get_data()
+
+                # Check data origin is correctly set
+                self.assertEqual(data[1]["data_origin"], subjects_list[0])
 
                 # Check data type
                 self.assertTrue(isinstance(data, dict))
@@ -348,7 +350,6 @@ class Test_CompoundDataset(unittest.TestCase):
         subjects_list = [(self.ds, 1, None, None)]
         compound_dataset = CompoundDataset(
             subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="CompoundDataset-test",
             interval=[0, 1],
             paradigm=self.paradigm,
@@ -358,7 +359,6 @@ class Test_CompoundDataset(unittest.TestCase):
         subjects_list = [compound_dataset, compound_dataset]
         compound_data = CompoundDataset(
             subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="CompoundDataset-test",
             interval=[0, 1],
             paradigm=self.paradigm,
@@ -382,7 +382,6 @@ class Test_CompoundDataset(unittest.TestCase):
         subjects_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
         compound_dataset = CompoundDataset(
             subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="CompoundDataset",
             interval=[0, 1],
             paradigm=self.paradigm,
@@ -390,6 +389,40 @@ class Test_CompoundDataset(unittest.TestCase):
 
         # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
         self.assertEqual(compound_dataset._get_sessions_per_subject(), self.n_sessions)
+
+    def test_event_id_correctly_updated(self):
+        # define a new fake dataset with different event_id
+        self.ds2 = FakeDataset(
+            n_sessions=self.n_sessions,
+            n_runs=self.n_runs,
+            n_subjects=self.n_subjects,
+            event_list=["Target2", "NonTarget2"],
+            paradigm=self.paradigm,
+        )
+
+        # Add the two datasets to a CompoundDataset
+        subjects_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
+
+        compound_dataset = CompoundDataset(
+            subjects_list,
+            code="CompoundDataset",
+            interval=[0, 1],
+            paradigm=self.paradigm,
+        )
+
+        # Check that the event_id of the compound_dataset is the same has the first dataset
+        self.assertEqual(compound_dataset.event_id, self.ds.event_id)
+
+        # Check event_id get correctly updated when taking a subject from dataset 2
+        data = compound_dataset.get_data(subjects=[2])
+        self.assertEqual(compound_dataset.event_id, self.ds2.event_id)
+        self.assertEqual(len(data.keys()), 1)
+        
+        # Check event_id is correctly put back when taking a subject from the first dataset
+        data = compound_dataset.get_data(subjects=[0])
+        self.assertEqual(compound_dataset.event_id, self.ds.event_id)
+        self.assertEqual(len(data.keys()), 1)
+       
 
     def test_datasets_init(self):
         codes = []

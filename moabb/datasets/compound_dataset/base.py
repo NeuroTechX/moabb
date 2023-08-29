@@ -28,10 +28,6 @@ class CompoundDataset(BaseDataset):
     sessions_per_subject: int
         Number of sessions per subject (if varying, take minimum)
 
-    events: dict of strings
-        String codes for events matched with labels in the stim channel.
-        See `BaseDataset`.
-
     code: string
         Unique identifier for dataset, used in all plots
 
@@ -43,13 +39,14 @@ class CompoundDataset(BaseDataset):
     """
 
     def __init__(
-        self, subjects_list: list, events: dict, code: str, interval: list, paradigm: str
+        self, subjects_list: list, code: str, interval: list, paradigm: str
     ):
         self._set_subjects_list(subjects_list)
+        dataset, _, _, _ = self.subjects_list[0]
         super().__init__(
             subjects=list(range(1, self.count + 1)),
             sessions_per_subject=self._get_sessions_per_subject(),
-            events=events,
+            events=dataset.event_id,
             code=code,
             interval=interval,
             paradigm=paradigm,
@@ -81,6 +78,17 @@ class CompoundDataset(BaseDataset):
             for compoundDataset in subjects_list:
                 self.subjects_list.extend(compoundDataset.subjects_list)
 
+    def _get_single_subject_data_using_cache(
+        self, shopped_subject, cache_config, process_pipeline
+    ):
+        # change this compound dataset target event_id to match the one of the hidden dataset
+        # as event_id can varies between datasets
+        dataset, _, _, _ = self.subjects_list[shopped_subject - 1]
+        self.event_id = dataset.event_id
+        # regenerate the process_pipeline
+        process_pipeline = self._create_process_pipeline()
+        super()._get_single_subject_data_using_cache(shopped_subject, cache_config, process_pipeline)
+
     def _get_single_subject_data(self, shopped_subject):
         """Return data for a single subject."""
         dataset, subject, sessions, runs = self.subjects_list[shopped_subject - 1]
@@ -91,6 +99,8 @@ class CompoundDataset(BaseDataset):
             sessions_data = {f"{session}": subject_data[session] for session in sessions}
         else:
             sessions_data = {f"{sessions}": subject_data[sessions]}
+
+        sessions_data['data_origin'] = (dataset, subject, sessions, runs)
 
         if runs is None:
             return sessions_data
@@ -104,6 +114,7 @@ class CompoundDataset(BaseDataset):
             for session in sessions_data.keys():
                 sessions_data[session] = {f"{runs}": sessions_data[session][runs]}
             return sessions_data
+
 
     def data_path(
         self,
