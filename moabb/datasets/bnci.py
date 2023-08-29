@@ -179,11 +179,10 @@ def _load_data_002_2014(
             continue
         # FIXME: electrode position and name are not provided directly.
         raws, _ = _convert_mi(filename, None, ["eeg"] * 15)
-        runs.extend(raws)
-
+        runs.extend(zip([r] * len(raws), raws))
     if only_filenames:
         return filenames
-    runs = {str(ii): run for ii, run in enumerate(runs)}
+    runs = {f"{ii}{r}": run for ii, (r, run) in enumerate(runs)}
     return {"0": runs}
 
 
