@@ -51,7 +51,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             session_name = str(session_number)
         elif ds.code == "Cattan2019-VR":
             session_map = {"VR": "0VR", "PC": "1PC"}
-            session_name = file_path.split(".")[0].split("_")[-1]
+            session_name = file_path.split("_")[-1].split(".")[0]
             session_name = session_map[session_name]
 
         if session_name not in sessions.keys():
