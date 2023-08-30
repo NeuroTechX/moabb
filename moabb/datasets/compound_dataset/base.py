@@ -38,9 +38,7 @@ class CompoundDataset(BaseDataset):
         Defines what sort of dataset this is
     """
 
-    def __init__(
-        self, subjects_list: list, code: str, interval: list, paradigm: str
-    ):
+    def __init__(self, subjects_list: list, code: str, interval: list, paradigm: str):
         self._set_subjects_list(subjects_list)
         dataset, _, _, _ = self.subjects_list[0]
         super().__init__(
@@ -80,14 +78,16 @@ class CompoundDataset(BaseDataset):
 
     def _with_data_origin(self, data: dict, shopped_subject):
         data_origin = self.subjects_list[shopped_subject - 1]
+
         class dict_with_hidden_key(dict):
             def __getitem__(self, item):
                 # ensures data_origin is never accessed when iterating with dict.keys()
                 # that would make iterating over runs and sessions failing.
-                if item == 'data_origin':
+                if item == "data_origin":
                     return data_origin
                 else:
                     return super().__getitem__(item)
+
         return dict_with_hidden_key(data)
 
     def _get_single_subject_data_using_cache(
@@ -99,7 +99,9 @@ class CompoundDataset(BaseDataset):
         self.event_id = dataset.event_id
         # regenerate the process_pipeline
         process_pipeline = self._create_process_pipeline()
-        data = super()._get_single_subject_data_using_cache(shopped_subject, cache_config, process_pipeline)
+        data = super()._get_single_subject_data_using_cache(
+            shopped_subject, cache_config, process_pipeline
+        )
         return self._with_data_origin(data, shopped_subject)
 
     def _get_single_subject_data(self, shopped_subject):
@@ -125,7 +127,6 @@ class CompoundDataset(BaseDataset):
             for session in sessions_data.keys():
                 sessions_data[session] = {f"{runs}": sessions_data[session][runs]}
             return sessions_data
-
 
     def data_path(
         self,

@@ -420,12 +420,11 @@ class Test_CompoundDataset(unittest.TestCase):
         data = compound_dataset.get_data(subjects=[2])
         self.assertEqual(compound_dataset.event_id, self.ds2.event_id)
         self.assertEqual(len(data.keys()), 1)
-        
+
         # Check event_id is correctly put back when taking a subject from the first dataset
         data = compound_dataset.get_data(subjects=[1])
         self.assertEqual(compound_dataset.event_id, self.ds.event_id)
         self.assertEqual(len(data.keys()), 1)
-       
 
     def test_datasets_init(self):
         codes = []
