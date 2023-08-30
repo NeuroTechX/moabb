@@ -1,7 +1,7 @@
 """Build a custom dataset using subjects from other datasets."""
 
 from ..base import BaseDataset
-
+from sklearn.pipeline import Pipeline
 
 class CompoundDataset(BaseDataset):
     """CompoundDataset class.
@@ -97,8 +97,17 @@ class CompoundDataset(BaseDataset):
         # as event_id can varies between datasets
         dataset, _, _, _ = self.subjects_list[shopped_subject - 1]
         self.event_id = dataset.event_id
-        # regenerate the process_pipeline
-        process_pipeline = self._create_process_pipeline()
+
+        # regenerate the process_pipeline by overriding all `event_id`
+        steps = []
+        for step in process_pipeline.steps:
+            label, op = step
+            if(hasattr(op, 'event_id')):
+                op.event_id = self.event_id
+            steps.append((label, op))
+        process_pipeline = Pipeline(steps)
+
+        # don't forget to continue on preprocessing by calling super
         data = super()._get_single_subject_data_using_cache(
             shopped_subject, cache_config, process_pipeline
         )
