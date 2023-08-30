@@ -63,7 +63,6 @@ class CustomDataset1(CompoundDataset):
         CompoundDataset.__init__(
             self,
             subjects_list=subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="D1",
             interval=[0, 1.0],
             paradigm="p300",
@@ -80,7 +79,6 @@ class CustomDataset2(CompoundDataset):
         CompoundDataset.__init__(
             self,
             subjects_list=subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="D2",
             interval=[0, 1.0],
             paradigm="p300",
