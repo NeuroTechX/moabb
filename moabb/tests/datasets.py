@@ -326,6 +326,7 @@ class Test_CompoundDataset(unittest.TestCase):
 
                 data = compound_data.get_data()
 
+                # Check event_id is correctly set
                 self.assertEqual(compound_data.event_id, self.ds.event_id)
 
                 # Check data origin is correctly set
@@ -412,6 +413,7 @@ class Test_CompoundDataset(unittest.TestCase):
             paradigm=self.paradigm,
         )
 
+        self.assertEqual(data, None)
         # Check that the event_id of the compound_dataset is the same has the first dataset
         self.assertEqual(compound_dataset.event_id, self.ds.event_id)
 

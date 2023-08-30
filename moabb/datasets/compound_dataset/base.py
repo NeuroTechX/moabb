@@ -87,7 +87,7 @@ class CompoundDataset(BaseDataset):
         self.event_id = dataset.event_id
         # regenerate the process_pipeline
         process_pipeline = self._create_process_pipeline()
-        super()._get_single_subject_data_using_cache(shopped_subject, cache_config, process_pipeline)
+        return super()._get_single_subject_data_using_cache(shopped_subject, cache_config, process_pipeline)
 
     def _with_data_origin(self, data: dict, shopped_subject):
         data_origin = self.subjects_list[shopped_subject - 1]
