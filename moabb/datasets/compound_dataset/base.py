@@ -100,7 +100,7 @@ class CompoundDataset(BaseDataset):
         # regenerate the process_pipeline
         process_pipeline = self._create_process_pipeline()
         data = super()._get_single_subject_data_using_cache(shopped_subject, cache_config, process_pipeline)
-        return self._with_data_origin(data)
+        return self._with_data_origin(data, shopped_subject)
 
     def _get_single_subject_data(self, shopped_subject):
         """Return data for a single subject."""
