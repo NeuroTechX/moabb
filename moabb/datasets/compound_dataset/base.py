@@ -1,7 +1,9 @@
 """Build a custom dataset using subjects from other datasets."""
 
-from ..base import BaseDataset
 from sklearn.pipeline import Pipeline
+
+from ..base import BaseDataset
+
 
 class CompoundDataset(BaseDataset):
     """CompoundDataset class.
@@ -102,7 +104,7 @@ class CompoundDataset(BaseDataset):
         steps = []
         for step in process_pipeline.steps:
             label, op = step
-            if(hasattr(op, 'event_id')):
+            if hasattr(op, "event_id"):
                 op.event_id = self.event_id
             steps.append((label, op))
         process_pipeline = Pipeline(steps)
