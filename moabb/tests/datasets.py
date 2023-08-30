@@ -326,7 +326,7 @@ class Test_CompoundDataset(unittest.TestCase):
 
                 data = compound_data.get_data()
 
-                # Check event_id is correctly
+                # Check event_id is correctly set
                 self.assertEqual(compound_data.event_id, self.ds.event_id)
 
                 # Check data origin is correctly set
