@@ -97,6 +97,8 @@ class CompoundDataset(BaseDataset):
                 # that would be make iterating over runs and sessions failing.
                 if item == 'data_origin':
                     return data_origin
+                else:
+                    return super().__getitem__(item)
         return dict_with_hidden_key(data)
 
     def _get_single_subject_data(self, shopped_subject):

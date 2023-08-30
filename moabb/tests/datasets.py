@@ -326,6 +326,7 @@ class Test_CompoundDataset(unittest.TestCase):
 
                 data = compound_data.get_data()
 
+                print(data)
                 # Check data origin is correctly set
                 self.assertEqual(data["data_origin"], subjects_list[0])
 
