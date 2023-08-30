@@ -101,7 +101,6 @@ class CustomDataset3(CompoundDataset):
         CompoundDataset.__init__(
             self,
             subjects_list=subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="D3",
             interval=[0, 1.0],
             paradigm="p300",
