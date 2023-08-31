@@ -4,6 +4,8 @@ from sklearn.pipeline import Pipeline
 
 from ..base import BaseDataset
 
+import numpy as np
+
 
 class CompoundDataset(BaseDataset):
     """CompoundDataset class.
@@ -36,13 +38,12 @@ class CompoundDataset(BaseDataset):
     interval: list with 2 entries
         See `BaseDataset`.
 
-    paradigm: ['p300','imagery', 'ssvep', 'rstate']
-        Defines what sort of dataset this is
     """
 
-    def __init__(self, subjects_list: list, code: str, interval: list, paradigm: str):
+    def __init__(self, subjects_list: list, code: str, interval: list):
         self._set_subjects_list(subjects_list)
         dataset, _, _, _ = self.subjects_list[0]
+        paradigm = self._get_paradigm()
         super().__init__(
             subjects=list(range(1, self.count + 1)),
             sessions_per_subject=self._get_sessions_per_subject(),
@@ -51,6 +52,11 @@ class CompoundDataset(BaseDataset):
             interval=interval,
             paradigm=paradigm,
         )
+
+    @property
+    def datasets(self):
+        all_datasets = [entry[0] for entry in self.subjects_list]
+        return np.unique(all_datasets)
 
     @property
     def count(self):
@@ -78,6 +84,15 @@ class CompoundDataset(BaseDataset):
             for compoundDataset in subjects_list:
                 self.subjects_list.extend(compoundDataset.subjects_list)
 
+    def _get_paradigm(self):
+        dataset, _, _, _ = self.subjects_list[0]
+        paradigm = dataset.paradigm
+        # Check all of the datasets have the same paradigm
+        for entry in range(1, len(self.subjects_list)):
+            dataset = entry[0]
+            assert dataset.paradigm == paradigm
+        return paradigm
+    
     def _with_data_origin(self, data: dict, shopped_subject):
         data_origin = self.subjects_list[shopped_subject - 1]
 

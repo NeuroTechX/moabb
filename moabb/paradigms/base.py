@@ -421,7 +421,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             return None
         return Pipeline(steps)
 
-    def match_all(self, datasets: List[BaseDataset], shift=-0.5):
+    def match_all(self, datasets: List[BaseDataset], shift=-0.5, channel_merge_strategy: str = 'intersect'):
         """
         Initialize this paradigm to match all datasets in parameter:
         - `self.resample` is set to match the minimum frequency in all datasets, minus `shift`.
@@ -434,9 +434,18 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         ----------
         datasets: List[BaseDataset]
             A dataset instance.
+        shift: List[BaseDataset]
+            Shift the sampling frequency by this value
+            E.g.: if sampling=128 and shift=-0.5, then it returns 127.5 Hz
+        channel_merge_strategy: str (default: 'intersect')
+            Accepts two values:
+            - 'intersect': keep only channels common to all datasets
+            - 'union': keep all channels from all datasets, removing duplicate
+
+        ..versionadded:: 0.6.0
         """
         resample = None
-        channels = None
+        channels: set = None
         for dataset in datasets:
             X, _, _ = self.get_data(
                 dataset, subjects=[dataset.subject_list[0]], return_epochs=True
@@ -447,11 +456,12 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             # get the minimum sampling frequency between all datasets
             resample = sfreq if resample is None else min(resample, sfreq)
             # get the channels common to all datasets
-            channels = (
-                set(ch_names)
-                if channels is None
-                else set(channels).intersection(ch_names)
-            )
+            if channels is None:
+                channels = set(ch_names)
+            elif channel_merge_strategy == 'intersect':
+                channels = channels.intersection(ch_names)
+            else:
+                channels = channels.union(ch_names)
         # If resample=128 for example, then MNE can returns 128 or 129 samples
         # depending on the dataset, even if the length of the epochs is 1s
         # `shift=-0.5` solves this particular issue.

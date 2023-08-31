@@ -8,7 +8,7 @@ from .bi_illiteracy import (
     BI_Il,
     Cattan2019_VR_Il,
 )
-from .utils import _init_compound_dataset_list
+from .utils import (_init_compound_dataset_list, compound) # noqa: F401
 
 
 _init_compound_dataset_list()

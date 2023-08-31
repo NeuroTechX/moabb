@@ -182,6 +182,7 @@ class RawToEpochs(FixedTransformer):
         tmax: float,
         baseline: Tuple[float, float],
         channels: List[str] = None,
+        interpolate_missing_channels: bool = False
     ):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
@@ -189,6 +190,7 @@ class RawToEpochs(FixedTransformer):
         self.tmax = tmax
         self.baseline = baseline
         self.channels = channels
+        self.interpolate_missing_channels = interpolate_missing_channels
 
     def transform(self, X, y=None):
         raw = X["raw"]
@@ -201,9 +203,14 @@ class RawToEpochs(FixedTransformer):
         if self.channels is None:
             picks = mne.pick_types(raw.info, eeg=True, stim=False)
         else:
-            picks = mne.pick_channels(
-                raw.info["ch_names"], include=self.channels, ordered=True
-            )
+            if self.interpolate_missing_channels:
+                pass
+            else:
+                picks = mne.pick_channels(
+                    raw.info["ch_names"], include=self.channels, ordered=True
+                )
+            # mark as bad, and then
+            # https://mne.tools/0.24/generated/mne.io.Raw.html#mne.io.Raw.interpolate_bads
 
         epochs = mne.Epochs(
             raw,

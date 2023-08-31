@@ -17,6 +17,7 @@ from sklearn.pipeline import FunctionTransformer, Pipeline, make_pipeline
 
 from moabb.analysis.results import get_string_rep
 from moabb.datasets.fake import FakeDataset
+from moabb.datasets.compound_dataset import compound
 from moabb.evaluations import evaluations as ev
 from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
@@ -82,6 +83,43 @@ class Test_WithinSess(unittest.TestCase):
         self.assertEqual(len(results), 4)
         # We should have 9 columns in the results data frame
         self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
+    
+    def test_compound_dataset(self):
+        ch1 = ["C3", "Cz", "Fz"]
+        dataset1 = FakeDataset(
+            paradigm="p300",
+            event_list=["Target", "NonTarget"],
+            channels=ch1,
+            sfreq=64,
+        )
+        ch2 = ["C3", "C4", "Cz"]
+        dataset2 = FakeDataset(
+            paradigm="p300",
+            event_list=["Target", "NonTarget"],
+            channels=ch2,
+            sfreq=256,
+        )
+        merged_dataset = compound(dataset1, dataset2)
+
+        # We want to interpolate channels that are not in common between the two datasets
+        self.eval.paradigm.match_all(merged_dataset.datasets, merged_dataset='union')
+
+        # ... so we have all channels of all datasets
+        n_channels = len(np.unique(ch1 + ch2)) + 1 # 1 is for stims
+
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+        results = [
+            r
+            for r in self.eval.evaluate(
+                dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+            )
+        ]
+
+        # We should get 4 results, 2 sessions 2 subjects
+        self.assertEqual(len(results), 4)
+        
+        # We should have 9 columns in the results data frame
+        self.assertEqual(len(results[0].keys()), n_channels if _carbonfootprint else n_channels - 1)
 
     def test_eval_grid_search(self):
         gs_param = {

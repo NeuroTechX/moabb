@@ -367,6 +367,9 @@ class Test_CompoundDataset(unittest.TestCase):
             paradigm=self.paradigm,
         )
 
+        # Assert there is only one source dataset in the compound dataset
+        self.assertEqual(len(compound_data.datasets), 1)
+
         # Assert that the coumpouned dataset has two times more subject than the original one.
         data = compound_data.get_data()
         self.assertEqual(len(data), 2)
@@ -389,6 +392,9 @@ class Test_CompoundDataset(unittest.TestCase):
             interval=[0, 1],
             paradigm=self.paradigm,
         )
+
+        # Assert there are two source datasets (ds and ds2) in the compound dataset
+        self.assertEqual(len(compound_dataset.datasets), 2)
 
         # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
         self.assertEqual(compound_dataset._get_sessions_per_subject(), self.n_sessions)
