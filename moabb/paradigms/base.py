@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
+from moabb.datasets.base import BaseDataset
 from moabb.datasets.bids_interface import StepType
 from moabb.datasets.preprocessing import (
     EpochsToEvents,
@@ -242,7 +243,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
 
-        Eeturns
+        Returns
         -------
         X : Union[np.ndarray, mne.Epochs]
             the data that will be used as features for the model
@@ -419,6 +420,43 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         if len(steps) == 0:
             return None
         return Pipeline(steps)
+
+    def match_all(self, datasets: List[BaseDataset], shift=-0.5):
+        """
+        Initialize this paradigm to match all datasets in parameter:
+        - `self.resample` is set to match the minimum frequency in all datasets, minus `shift`.
+          If the frequency is 128 for example, then MNE can return 128 or 129 samples
+          depending on the dataset, even if the length of the epochs is 1s
+          Setting `shift=-0.5` solves this particular issue.
+        - `self.channels` is initialized with the channels which are common to all datasets.
+
+        Parameters
+        ----------
+        datasets: List[BaseDataset]
+            A dataset instance.
+        """
+        resample = None
+        channels = None
+        for dataset in datasets:
+            X, _, _ = self.get_data(
+                dataset, subjects=[dataset.subject_list[0]], return_epochs=True
+            )
+            info = X.info
+            sfreq = info["sfreq"]
+            ch_names = info["ch_names"]
+            # get the minimum sampling frequency between all datasets
+            resample = sfreq if resample is None else min(resample, sfreq)
+            # get the channels common to all datasets
+            channels = (
+                set(ch_names)
+                if channels is None
+                else set(channels).intersection(ch_names)
+            )
+        # If resample=128 for example, then MNE can returns 128 or 129 samples
+        # depending on the dataset, even if the length of the epochs is 1s
+        # `shift=-0.5` solves this particular issue.
+        self.resample = resample + shift
+        self.channels = list(channels)
 
     @abc.abstractmethod
     def _get_events_pipeline(self, dataset):

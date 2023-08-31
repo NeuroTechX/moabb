@@ -194,6 +194,13 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self.doi = doi
         self.unit_factor = unit_factor
 
+    def _create_process_pipeline(self):
+        return Pipeline(
+            [
+                (StepType.RAW, SetRawAnnotations(self.event_id)),
+            ]
+        )
+
     def get_data(
         self,
         subjects=None,
@@ -256,11 +263,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         cache_config = CacheConfig.make(cache_config)
 
         if process_pipeline is None:
-            process_pipeline = Pipeline(
-                [
-                    (StepType.RAW, SetRawAnnotations(self.event_id)),
-                ]
-            )
+            process_pipeline = self._create_process_pipeline()
 
         data = dict()
         for subject in subjects:

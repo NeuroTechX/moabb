@@ -48,6 +48,9 @@ Enhancements
 - Add :obj:`moabb.datasets.compound_dataset.utils.compound_dataset_list`  (:gh:`455` by `Pierre Guetschel`_)
 - Add c-VEP paradigm and Thielen2021 c-VEP dataset (:gh:`463` by `Jordy Thielen`_)
 - Add option to plot scores vertically. (:gh:`417` by `Sara Sedlar`_)
+- Increase the python version to 3.11 (:gh:`470` by `Bruno Aristimunha`_)
+- Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
+- Automate setting of event_id in compound dataset and add `data_origin` information to the data (:gh:`475` by `Gregoire Cattan`_)
 
 Bugs
 ~~~~
@@ -72,6 +75,7 @@ Bugs
 - Fixing dataset downloader from servers with non-http (PR :gh:`433` by `Sara Sedlar`_)
 - Fix ``dataset_list`` to include deprecated datasets (PR :gh:`464` by `Bruno Aristimunha`_)
 - Fixed bug in :func:`moabb.analysis.results.get_string_rep` to handle addresses such as 0x__0A as well (PR :gh:`468` by `Anton Andreev`_)
+
 API changes
 ~~~~~~~~~~~
 
@@ -99,6 +103,8 @@ Enhancements
 - Add CodeCarbon example (:gh:`356` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add MsetCCA method for SSVEP classification, parametrise CCA `n_components` in CCA based methods (:gh:`359` by `Emmanuel Kalunga`_ and `Sylvain Chevallier`_)
 - Set epochs' `metadata` field in `get_data` (:gh:`371` by `Pierre Guetschel`_)
+- Add possibility to use transformers to apply fixed pre-processings before evaluations (:gh:`372` by `Pierre Guetschel`_)
+- Add `seed` parameter to `FakeDataset` (:gh:`372` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~

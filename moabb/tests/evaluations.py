@@ -13,7 +13,7 @@ from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.dummy import DummyClassifier as Dummy
 from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.pipeline import FunctionTransformer, Pipeline, make_pipeline
 
 from moabb.analysis.results import get_string_rep
 from moabb.datasets.fake import FakeDataset
@@ -31,7 +31,7 @@ except ImportError:
 
 pipelines = OrderedDict()
 pipelines["C"] = make_pipeline(Covariances("oas"), CSP(8), LDA())
-dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=2)
+dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=2, seed=12)
 if not osp.isdir(osp.join(osp.expanduser("~"), "mne_data")):
     os.makedirs(osp.join(osp.expanduser("~"), "mne_data"))
 
@@ -158,6 +158,27 @@ class Test_WithinSess(unittest.TestCase):
             get_string_rep(c3)
             self.assertTrue(len(w) == 0)
 
+    def test_postprocess_pipeline(self):
+        cov = Covariances("oas")
+        pipelines0 = {
+            "CovCspLda": make_pipeline(
+                cov,
+                CSP(
+                    8,
+                ),
+                LDA(),
+            )
+        }
+        pipelines1 = {"CspLda": make_pipeline(CSP(8), LDA())}
+
+        results0 = self.eval.process(pipelines0)
+        results1 = self.eval.process(
+            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+        )
+        results2 = self.eval.process(pipelines1, postprocess_pipeline=cov)
+        np.testing.assert_allclose(results0.score, results1.score)
+        np.testing.assert_allclose(results0.score, results2.score)
+
 
 class Test_WithinSessLearningCurve(unittest.TestCase):
     """Some tests for the learning curve evaluation.
@@ -249,6 +270,34 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
         self.assertRaises(ValueError, ev.WithinSessionEvaluation, **constant_datasize)
         self.assertRaises(ValueError, ev.WithinSessionEvaluation, **increasing_perms)
         pass
+
+    def test_postprocess_pipeline(self):
+        learning_curve_eval = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
+            n_perms=np.array([2, 2]),
+        )
+
+        cov = Covariances("oas")
+        pipelines0 = {
+            "CovCspLda": make_pipeline(
+                cov,
+                CSP(
+                    8,
+                ),
+                LDA(),
+            )
+        }
+        pipelines1 = {"CspLda": make_pipeline(CSP(8), LDA())}
+
+        results0 = learning_curve_eval.process(pipelines0)
+        results1 = learning_curve_eval.process(
+            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+        )
+        results2 = learning_curve_eval.process(pipelines1, postprocess_pipeline=cov)
+        np.testing.assert_allclose(results0.score, results1.score)
+        np.testing.assert_allclose(results0.score, results2.score)
 
 
 class Test_AdditionalColumns(unittest.TestCase):
