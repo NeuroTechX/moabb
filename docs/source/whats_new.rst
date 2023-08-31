@@ -50,6 +50,7 @@ Enhancements
 - Add option to plot scores vertically. (:gh:`417` by `Sara Sedlar`_)
 - Increase the python version to 3.11 (:gh:`470` by `Bruno Aristimunha`_)
 - Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
+- Automate setting of event_id in compound dataset and add `data_origin` information to the data (:gh:`475` by `Gregoire Cattan`_)
 
 Bugs
 ~~~~
