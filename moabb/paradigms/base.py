@@ -391,6 +391,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                         tmax=bmax,
                         baseline=baseline,
                         channels=self.channels,
+                        interpolate_missing_channels=True,
                     ),
                 ),
             )

@@ -203,11 +203,18 @@ class RawToEpochs(FixedTransformer):
         if self.channels is None:
             picks = mne.pick_types(raw.info, eeg=True, stim=False)
         else:
+            available_channels = raw.info["ch_names"]
             if self.interpolate_missing_channels:
-                pass
+                missing_channels = list(set(available_channels).difference(self.channels))
+                # add missing channels (contains only zeros by default)
+                raw.add_reference_channels(missing_channels)
+                # Trick: mark these channels as bad
+                raw.info['bads'].extends(missing_channels)
+                # ...and use mne bad channel interpolation to generate the value of the missing channels
+                raw.interpolate_bads()
             else:
                 picks = mne.pick_channels(
-                    raw.info["ch_names"], include=self.channels, ordered=True
+                    available_channels, include=self.channels, ordered=True
                 )
             # mark as bad, and then
             # https://mne.tools/0.24/generated/mne.io.Raw.html#mne.io.Raw.interpolate_bads
