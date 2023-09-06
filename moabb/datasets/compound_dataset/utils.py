@@ -1,4 +1,5 @@
 import inspect
+from typing import List
 
 import moabb.datasets.compound_dataset as db
 from moabb.datasets.compound_dataset.base import CompoundDataset
@@ -14,7 +15,7 @@ def _init_compound_dataset_list():
             compound_dataset_list.append(ds[1])
 
 
-def compound(*datasets: list[BaseDataset], interval=[0, 1.0]):
+def compound(*datasets: List[BaseDataset], interval=[0, 1.0]):
         subjects_list = [
             (d, subject, None, None)
             for d in datasets
