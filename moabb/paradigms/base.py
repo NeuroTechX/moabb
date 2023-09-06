@@ -423,7 +423,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             return None
         return Pipeline(steps)
 
-    def match_all(self, datasets: List[BaseDataset], shift=-0.5, channel_merge_strategy: str = 'intersect'):
+    def match_all(self, datasets: List[BaseDataset], shift=-0.5, channel_merge_strategy: str = 'intersect', ignore=['stim']):
         """
         Initialize this paradigm to match all datasets in parameter:
         - `self.resample` is set to match the minimum frequency in all datasets, minus `shift`.
@@ -443,6 +443,8 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             Accepts two values:
             - 'intersect': keep only channels common to all datasets
             - 'union': keep all channels from all datasets, removing duplicate
+        ignore: List[string]
+            A list of channels to ignore
 
         ..versionadded:: 0.6.0
         """
@@ -469,7 +471,9 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         # depending on the dataset, even if the length of the epochs is 1s
         # `shift=-0.5` solves this particular issue.
         self.resample = resample + shift
-        self.channels = list(channels)
+
+        # exclude ignored channels
+        self.channels = list(channels.difference(ignore))
 
     @abc.abstractmethod
     def _get_events_pipeline(self, dataset):
