@@ -134,13 +134,13 @@ class BaseShin2017(BaseDataset):
         if self.motor_imagery:
             for ii in [0, 2, 4]:
                 session = self._convert_one_session(data, mrk, ii, trig_offset=0)
-                sessions[str(ii)] = session
+                sessions[f"{ii}imagery"] = session
 
         # arithmetic/rest
         if self.mental_arithmetic:
             for ii in [1, 3, 5]:
                 session = self._convert_one_session(data, mrk, ii, trig_offset=2)
-                sessions[str(ii)] = session
+                sessions[f"{ii}arithmetic"] = session
 
         return sessions
 
