@@ -56,7 +56,13 @@ class CompoundDataset(BaseDataset):
     @property
     def datasets(self):
         all_datasets = [entry[0] for entry in self.subjects_list]
-        return np.unique(all_datasets)
+        found_flags = set()
+        filtered_dataset = []
+        for dataset in all_datasets:
+            if not dataset.code in found_flags:
+                filtered_dataset.append(dataset)
+                found_flags.add(dataset.code)
+        return filtered_dataset
 
     @property
     def count(self):
