@@ -205,9 +205,8 @@ class RawToEpochs(FixedTransformer):
         else:
             available_channels = raw.info["ch_names"]
             if self.interpolate_missing_channels:
-                missing_channels = list(set(available_channels).difference(self.channels))
+                missing_channels = list(set(self.channels).difference(available_channels))
 
-                print(missing_channels, available_channels, self.channels)
                 # add missing channels (contains only zeros by default)
                 raw.add_reference_channels(missing_channels)
                 # Trick: mark these channels as bad
