@@ -20,6 +20,9 @@ def data_path(url, path=None, force_update=False, update_path=None, verbose=None
     return [dl.data_dl(url, "BNCI", path, force_update, verbose)]
 
 
+_map = {"T": "train", "E": "test"}
+
+
 @verbose
 def load_data(
     subject,
@@ -149,7 +152,9 @@ def _load_data_001_2014(
             continue
         runs, ev = _convert_mi(filename[0], ch_names, ch_types)
         # FIXME: deal with run with no event (1:3) and name them
-        sessions[f"{session_idx}{r}"] = {str(ii): run for ii, run in enumerate(runs)}
+        sessions[f"{session_idx}{_map[r]}"] = {
+            str(ii): run for ii, run in enumerate(runs)
+        }
     if only_filenames:
         return filenames
     return sessions
@@ -182,7 +187,7 @@ def _load_data_002_2014(
         runs.extend(zip([r] * len(raws), raws))
     if only_filenames:
         return filenames
-    runs = {f"{ii}{r}": run for ii, (r, run) in enumerate(runs)}
+    runs = {f"{ii}{_map[r]}": run for ii, (r, run) in enumerate(runs)}
     return {"0": runs}
 
 
@@ -216,7 +221,7 @@ def _load_data_004_2014(
 
     if only_filenames:
         return filenames
-    sessions = {f"{ii}{r}": {"0": run} for ii, (r, run) in enumerate(sessions)}
+    sessions = {f"{ii}{_map[r]}": {"0": run} for ii, (r, run) in enumerate(sessions)}
     return sessions
 
 
