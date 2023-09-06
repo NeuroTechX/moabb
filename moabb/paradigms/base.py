@@ -83,6 +83,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         self.resample = resample
         self.tmin = tmin
         self.tmax = tmax
+        self.interpolate_missing_channels = False
 
     @property
     @abc.abstractmethod
@@ -391,7 +392,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                         tmax=bmax,
                         baseline=baseline,
                         channels=self.channels,
-                        interpolate_missing_channels=True,
+                        interpolate_missing_channels=self.interpolate_missing_channels,
                     ),
                 ),
             )
@@ -463,6 +464,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                 channels = channels.intersection(ch_names)
             else:
                 channels = channels.union(ch_names)
+                self.interpolate_missing_channels = True
         # If resample=128 for example, then MNE can returns 128 or 129 samples
         # depending on the dataset, even if the length of the epochs is 1s
         # `shift=-0.5` solves this particular issue.
