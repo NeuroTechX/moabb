@@ -87,14 +87,14 @@ class Test_WithinSess(unittest.TestCase):
     def test_compound_dataset(self):
         ch1 = ["C3", "Cz", "Fz"]
         dataset1 = FakeDataset(
-            paradigm="p300",
+            paradigm="imagery",
             event_list=["Target", "NonTarget"],
             channels=ch1,
             sfreq=64,
         )
         ch2 = ["C3", "C4", "Cz"]
         dataset2 = FakeDataset(
-            paradigm="p300",
+            paradigm="imagery",
             event_list=["Target", "NonTarget"],
             channels=ch2,
             sfreq=256,
