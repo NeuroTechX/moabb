@@ -88,7 +88,8 @@ class CompoundDataset(BaseDataset):
         dataset, _, _, _ = self.subjects_list[0]
         paradigm = dataset.paradigm
         # Check all of the datasets have the same paradigm
-        for entry in range(1, len(self.subjects_list)):
+        for i in range(1, len(self.subjects_list)):
+            entry = self.subject_list[i]
             dataset = entry[0]
             assert dataset.paradigm == paradigm
         return paradigm
