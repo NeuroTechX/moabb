@@ -102,7 +102,7 @@ class Test_WithinSess(unittest.TestCase):
         merged_dataset = compound(dataset1, dataset2)
 
         # We want to interpolate channels that are not in common between the two datasets
-        self.eval.paradigm.match_all(merged_dataset.datasets, merged_dataset='union')
+        self.eval.paradigm.match_all(merged_dataset.datasets, channel_merge_strategy='union')
 
         # ... so we have all channels of all datasets
         n_channels = len(np.unique(ch1 + ch2)) + 1 # 1 is for stims
