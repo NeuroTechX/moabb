@@ -215,7 +215,7 @@ class RawToEpochs(FixedTransformer):
                     # Index error can occurs if the channels we add are not part of this epoch montage
                     # Then log a warning
                     montage = raw.info['dig']
-                    warn(f'Montage disabled as one of these channels, {missing_channels}, is not part of the montage {montage}')
+                    warn(f'Montage disabled as one of these channels, {missing_channels}, is not part of the montage {raw.get_montage()}')
                     # and disable the montage
                     raw.info.pop('dig')
                     # run again with montage disabled
