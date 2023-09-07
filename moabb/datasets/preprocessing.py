@@ -183,8 +183,7 @@ class RawToEpochs(FixedTransformer):
         tmax: float,
         baseline: Tuple[float, float],
         channels: List[str] = None,
-        interpolate_missing_channels: bool = False,
-        standard_montage: str = "standard_1005"
+        interpolate_missing_channels: bool = False
     ):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
@@ -193,7 +192,6 @@ class RawToEpochs(FixedTransformer):
         self.baseline = baseline
         self.channels = channels
         self.interpolate_missing_channels = interpolate_missing_channels
-        self.standard_montage = standard_montage
 
     def transform(self, X, y=None):
         raw = X["raw"]
@@ -216,10 +214,11 @@ class RawToEpochs(FixedTransformer):
                 except IndexError:
                     # Index error can occurs if the channels we add are not part of this epoch montage
                     # Then log a warning
-                    warn(f'{missing_channels}, is not part of the montage {raw.get_montage()}. Setting default to {self.standard_montage}')
-                    # and set default montage
-                    raw.set_montage(self.standard_montage)
-                    # run again with default montage
+                    montage = raw.info['dig']
+                    warn(f'Montage disabled as one of these channels, {missing_channels}, is not part of the montage {montage}')
+                    # and disable the montage
+                    raw.info.pop('dig')
+                    # run again with montage disabled
                     raw.add_reference_channels(missing_channels)
 
                 # Trick: mark these channels as bad
