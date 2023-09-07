@@ -371,21 +371,19 @@ class Test_P300(unittest.TestCase):
         
 
         paradigm.match_all([dataset1, dataset2, dataset3], shift=shift, channel_merge_strategy='union')
+        # match_all should returns the smallest frequency minus 0.5.
+        # See comment inside the match_all method
+        self.assertEqual(paradigm.resample, 64 + shift)
         self.assertEqual(paradigm.channels.sort(), ["C3", "Cz", "Fz", "C4"].sort())
         self.assertEqual(paradigm.interpolate_missing_channels, True)
-
         X, _, _ = paradigm.get_data(dataset1, subjects=[1])
         n_channels, _ = X[0].shape
         self.assertEqual(n_channels, 4)
 
         paradigm.match_all([dataset1, dataset2, dataset3], shift=shift, channel_merge_strategy='intersect')
-
-        # match_all should returns the smallest frequency minus 0.5.
-        # See comment inside the match_all method
         self.assertEqual(paradigm.resample, 64 + shift)
         self.assertEqual(paradigm.channels.sort(), ["C3", "Cz"].sort())
         self.assertEqual(paradigm.interpolate_missing_channels, False)
-
         X, _, _ = paradigm.get_data(dataset1, subjects=[1])
         n_channels, _ = X[0].shape
         self.assertEqual(n_channels, 2)

@@ -452,7 +452,8 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         channels: set = None
         for dataset in datasets:
             X, _, _ = self.get_data(
-                dataset, subjects=[dataset.subject_list[0]], return_epochs=True
+                dataset, subjects=[dataset.subject_list[0]],
+                return_epochs=True
             )
             info = X.info
             sfreq = info["sfreq"]

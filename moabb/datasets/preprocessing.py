@@ -204,6 +204,7 @@ class RawToEpochs(FixedTransformer):
         if self.channels is None:
             picks = mne.pick_types(raw.info, eeg=True, stim=False)
         else:
+            raw = raw.copy()
             available_channels = raw.info["ch_names"]
             if self.interpolate_missing_channels:
                 missing_channels = list(set(self.channels).difference(available_channels))
