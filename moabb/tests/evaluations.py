@@ -117,7 +117,7 @@ class Test_WithinSess(unittest.TestCase):
 
         # We should get 4 results, 2 sessions 2 subjects
         self.assertEqual(len(results), 4)
-        
+        self.assertEqual(results, 4)
         # We should have 9 columns in the results data frame
         self.assertEqual(len(results[0].keys()), n_channels if _carbonfootprint else n_channels - 1)
 
