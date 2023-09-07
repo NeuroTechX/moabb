@@ -88,14 +88,14 @@ class Test_WithinSess(unittest.TestCase):
         ch1 = ["C3", "Cz", "Fz"]
         dataset1 = FakeDataset(
             paradigm="imagery",
-            event_list=["Target", "NonTarget"],
+            event_list=["left_hand"],
             channels=ch1,
             sfreq=64,
         )
         ch2 = ["C3", "C4", "Cz"]
         dataset2 = FakeDataset(
             paradigm="imagery",
-            event_list=["Target", "NonTarget"],
+            event_list=["left_hand"],
             channels=ch2,
             sfreq=256,
         )
