@@ -247,6 +247,7 @@ class RawToEpochs(FixedTransformer):
             event_repeated="drop",
             on_missing="ignore",
         )
+        warn(epochs)
         return epochs
 
 
