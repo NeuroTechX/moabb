@@ -223,7 +223,7 @@ class RawToEpochs(FixedTransformer):
                     raw.add_reference_channels(missing_channels)
 
                 # Trick: mark these channels as bad
-                raw.info['bads'].extends(missing_channels)
+                raw.info['bads'].extend(missing_channels)
                 # ...and use mne bad channel interpolation to generate the value of the missing channels
                 raw.interpolate_bads()
             else:
