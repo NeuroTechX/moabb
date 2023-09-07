@@ -91,6 +91,8 @@ class Test_WithinSess(unittest.TestCase):
             event_list=["left_hand", "right_hand"],
             channels=ch1,
             sfreq=64,
+            fmin=2,
+            fmax=24
         )
         ch2 = ["C3", "C4", "Cz"]
         dataset2 = FakeDataset(
@@ -98,6 +100,8 @@ class Test_WithinSess(unittest.TestCase):
             event_list=["left_hand", "right_hand"],
             channels=ch2,
             sfreq=256,
+            fmin=2,
+            fmax=24
         )
         merged_dataset = compound(dataset1, dataset2)
 
