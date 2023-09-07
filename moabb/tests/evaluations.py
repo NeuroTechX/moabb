@@ -90,7 +90,7 @@ class Test_WithinSess(unittest.TestCase):
             paradigm="imagery",
             event_list=["left_hand", "right_hand"],
             channels=ch1,
-            sfreq=64,
+            sfreq=128,
         )
         ch2 = ["C3", "C4", "Cz"]
         dataset2 = FakeDataset(
