@@ -218,7 +218,6 @@ class RawToEpochs(FixedTransformer):
                     warn(f'Montage disabled as one of these channels, {missing_channels}, is not part of the montage {montage}')
                     # and disable the montage
                     raw.info.pop('dig')
-                finally:
                     # run again with montage disabled
                     raw.add_reference_channels(missing_channels)
 
