@@ -384,7 +384,7 @@ class Test_P300(unittest.TestCase):
 
         X, _, _ = paradigm.get_data(dataset1, subjects=[1])
         n_channels, _ = X[0].shape
-        self.assertEqual(n_channels, 4)
+        self.assertEqual(X, 4)
 
     def test_BaseP300_paradigm(self):
         paradigm = SimpleP300()

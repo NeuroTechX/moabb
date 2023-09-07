@@ -231,6 +231,7 @@ class RawToEpochs(FixedTransformer):
             picks = mne.pick_channels(
                 available_channels, include=self.channels, ordered=True
             )
+            assert len(picks) == len(self.channels)
 
         epochs = mne.Epochs(
             raw,
