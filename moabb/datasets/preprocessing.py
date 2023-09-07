@@ -2,6 +2,7 @@ import logging
 from collections import OrderedDict
 from operator import methodcaller
 from typing import Dict, List, Tuple, Union
+from warnings import warn
 
 import mne
 import numpy as np
@@ -208,7 +209,19 @@ class RawToEpochs(FixedTransformer):
                 missing_channels = list(set(self.channels).difference(available_channels))
 
                 # add missing channels (contains only zeros by default)
-                raw.add_reference_channels(missing_channels)
+                try:
+                    raw.add_reference_channels(missing_channels)
+                except IndexError:
+                    # Index error can occurs if the channels we add are not part of this epoch montage
+                    # Then log a warning
+                    montage = raw.info['dig']
+                    warn(f'Montage disabled as one of these channels, {missing_channels}, is not part of the montage {montage}')
+                    # and disable the montage
+                    raw.info['dig'] = None
+                finally:
+                    # run again with montage disabled
+                    raw.add_reference_channels(missing_channels)
+
                 # Trick: mark these channels as bad
                 raw.info['bads'].extends(missing_channels)
                 # ...and use mne bad channel interpolation to generate the value of the missing channels
@@ -217,8 +230,6 @@ class RawToEpochs(FixedTransformer):
                 picks = mne.pick_channels(
                     available_channels, include=self.channels, ordered=True
                 )
-            # mark as bad, and then
-            # https://mne.tools/0.24/generated/mne.io.Raw.html#mne.io.Raw.interpolate_bads
 
         epochs = mne.Epochs(
             raw,
