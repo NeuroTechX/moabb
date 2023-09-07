@@ -376,7 +376,7 @@ class Test_P300(unittest.TestCase):
         self.assertEqual(paradigm.channels.sort(), ["C3", "Cz"].sort())
 
         X, _, _ = paradigm.get_data(dataset1, subjects=[1])
-        n_channels = X[0].shape
+        n_channels, _ = X[0].shape
         self.assertEqual(n_channels, 2)
 
         paradigm.match_all([dataset1, dataset2, dataset3], shift=shift, channel_merge_strategy='union')
