@@ -104,9 +104,6 @@ class Test_WithinSess(unittest.TestCase):
         # We want to interpolate channels that are not in common between the two datasets
         self.eval.paradigm.match_all(merged_dataset.datasets, channel_merge_strategy='union')
 
-        # ... so we have all channels of all datasets
-        n_channels = len(np.unique(ch1 + ch2)) + 1 # 1 is for stims
-
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
         results = [
             r
@@ -117,9 +114,8 @@ class Test_WithinSess(unittest.TestCase):
 
         # We should get 4 results, 2 sessions 2 subjects
         self.assertEqual(len(results), 4)
-        self.assertEqual(results, 4)
         # We should have 9 columns in the results data frame
-        self.assertEqual(len(results[0].keys()), n_channels if _carbonfootprint else n_channels - 1)
+        self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
 
     def test_eval_grid_search(self):
         gs_param = {
