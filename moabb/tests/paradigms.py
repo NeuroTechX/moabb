@@ -375,14 +375,14 @@ class Test_P300(unittest.TestCase):
         self.assertEqual(paradigm.resample, 64 + shift)
         self.assertEqual(paradigm.channels.sort(), ["C3", "Cz"].sort())
 
-        X, _, _ = paradigm.get_data(subjects=[0])
+        X, _, _ = paradigm.get_data(dataset1, subjects=[0])
         n_channels = X[0].shape[1]
         self.assertEqual(n_channels, 2)
 
         paradigm.match_all([dataset1, dataset2, dataset3], shift=shift, channel_merge_strategy='union')
         self.assertEqual(paradigm.channels.sort(), ["C3", "Cz", "Fz", "C4"].sort())
 
-        X, _, _ = paradigm.get_data(subjects=[0])
+        X, _, _ = paradigm.get_data(dataset1, subjects=[0])
         n_channels = X[0].shape[1]
         self.assertEqual(n_channels, 4)
 
