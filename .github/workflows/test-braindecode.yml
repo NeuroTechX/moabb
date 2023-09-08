@@ -58,6 +58,14 @@ jobs:
       - name: Install library
         run: poetry install --no-interaction
 
+      - name: Debug
+        run: |
+          echo "hello"
+          ls
+          echo "this is ls" $(ls)
+          pwd
+          echo $(pwd)
+
       - name: Install braindecode
         run: |
           source $VENV
