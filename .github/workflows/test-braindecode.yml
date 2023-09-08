@@ -39,6 +39,13 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
+      - name: Create/Restore MNE Data Cache
+        id: cache-mne_data
+        uses: actions/cache@v3
+        with:
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne
+
       - name: Load cached venv
         if: runner.os != 'Windows'
         id: cached-poetry-dependencies
@@ -62,18 +69,14 @@ jobs:
         run: |
           echo "Debug"
           pwd
-          ls ../../braindecode/
+          ls braindecode/
 
-      - name: Install braindecode
+      - name: Install and test braindecode
         run: |
           source $VENV
           poetry run pip install torch
-          cd ../../braindecode
+          cd braindecode
           poetry run pip install -e .
-
-      - name: Test braindecode
-        run: |
-          cd ../braindecode
           poetry run pytest test/
 
       # poetry run pip install -U https://api.github.com/repos/braindecode/braindecode/zipball/master
