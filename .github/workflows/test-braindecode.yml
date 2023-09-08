@@ -60,17 +60,15 @@ jobs:
 
       - name: Debug
         run: |
-          echo "hello"
-          ls
-          echo "this is ls" $(ls)
+          echo "Debug"
           pwd
-          echo $(pwd)
+          ls ../../braindecode/
 
       - name: Install braindecode
         run: |
           source $VENV
           poetry run pip install torch
-          cd ../braindecode
+          cd ../../braindecode
           poetry run pip install -e .
 
       - name: Test braindecode
