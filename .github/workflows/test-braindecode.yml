@@ -65,18 +65,12 @@ jobs:
       - name: Install library
         run: poetry install --no-interaction
 
-      - name: Debug
-        run: |
-          echo "Debug"
-          pwd
-          ls braindecode/
-
       - name: Install and test braindecode
         run: |
           source $VENV
           poetry run pip install torch
           cd braindecode
-          poetry run pip install -e .
+          poetry run pip install -e .[tests]
           poetry run pytest test/
 
       # poetry run pip install -U https://api.github.com/repos/braindecode/braindecode/zipball/master
