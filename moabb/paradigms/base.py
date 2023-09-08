@@ -465,6 +465,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                 channels = set(ch_names)
             elif channel_merge_strategy == 'intersect':
                 channels = channels.intersection(ch_names)
+                self.interpolate_missing_channels = False
             else:
                 channels = channels.union(ch_names)
                 self.interpolate_missing_channels = True
