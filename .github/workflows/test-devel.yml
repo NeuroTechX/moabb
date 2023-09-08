@@ -32,6 +32,13 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
+      - name: Create/Restore MNE Data Cache
+        id: cache-mne_data
+        uses: actions/cache@v3
+        with:
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne
+
       - name: Load cached venv
         if: runner.os != 'Windows'
         id: cached-poetry-dependencies
