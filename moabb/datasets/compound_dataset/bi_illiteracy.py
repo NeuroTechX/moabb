@@ -13,7 +13,6 @@ class _base_bi_il(CompoundDataset):
         CompoundDataset.__init__(
             self,
             subjects_list=subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code=code,
             interval=[0, 1.0],
             paradigm="p300",
