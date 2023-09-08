@@ -6,11 +6,16 @@ import os.path as osp
 import random
 import re
 import sys
+from typing import TYPE_CHECKING
 
 import numpy as np
 from mne import get_config, set_config
 from mne import set_log_level as sll
 
+
+if TYPE_CHECKING:
+    from moabb.datasets.base import BaseDataset
+    from moabb.paradigms.base import BaseProcessing
 
 log = logging.getLogger(__name__)
 
@@ -153,6 +158,19 @@ def set_download_dir(path):
             print("The path given does not exist, creating it..")
             os.makedirs(path)
         set_config("MNE_DATA", path)
+
+
+def make_process_pipelines(
+    processing: "BaseProcessing",
+    dataset: "BaseDataset",
+    return_epochs: bool = False,
+    return_raws: bool = False,
+    postprocess_pipeline=None,
+):
+    """Shortcut for the method :func:`moabb.paradigms.base.BaseProcessing.make_process_pipelines`"""
+    return processing.make_process_pipelines(
+        dataset, return_epochs, return_raws, postprocess_pipeline
+    )
 
 
 aliases_list = []  # list of tuples containing (old name, new name, expire version)

@@ -13,7 +13,7 @@ from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.dummy import DummyClassifier as Dummy
 from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.pipeline import FunctionTransformer, Pipeline, make_pipeline
 
 from moabb.analysis.results import get_string_rep
 from moabb.datasets.fake import FakeDataset
@@ -31,7 +31,7 @@ except ImportError:
 
 pipelines = OrderedDict()
 pipelines["C"] = make_pipeline(Covariances("oas"), CSP(8), LDA())
-dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=2)
+dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=2, seed=12)
 if not osp.isdir(osp.join(osp.expanduser("~"), "mne_data")):
     os.makedirs(osp.join(osp.expanduser("~"), "mne_data"))
 
@@ -70,7 +70,13 @@ class Test_WithinSess(unittest.TestCase):
             os.remove(path)
 
     def test_eval_results(self):
-        results = [r for r in self.eval.evaluate(dataset, pipelines, param_grid=None)]
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+        results = [
+            r
+            for r in self.eval.evaluate(
+                dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+            )
+        ]
 
         # We should get 4 results, 2 sessions 2 subjects
         self.assertEqual(len(results), 4)
@@ -113,8 +119,15 @@ class Test_WithinSess(unittest.TestCase):
 
         # Test grid search
         param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
         results = [
-            r for r in self.eval.evaluate(dataset, pipelines, param_grid=param_grid)
+            r
+            for r in self.eval.evaluate(
+                dataset,
+                pipelines,
+                param_grid=param_grid,
+                process_pipeline=process_pipeline,
+            )
         ]
 
         # We should get 4 results, 2 sessions 2 subjects
@@ -145,6 +158,27 @@ class Test_WithinSess(unittest.TestCase):
             get_string_rep(c3)
             self.assertTrue(len(w) == 0)
 
+    def test_postprocess_pipeline(self):
+        cov = Covariances("oas")
+        pipelines0 = {
+            "CovCspLda": make_pipeline(
+                cov,
+                CSP(
+                    8,
+                ),
+                LDA(),
+            )
+        }
+        pipelines1 = {"CspLda": make_pipeline(CSP(8), LDA())}
+
+        results0 = self.eval.process(pipelines0)
+        results1 = self.eval.process(
+            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+        )
+        results2 = self.eval.process(pipelines1, postprocess_pipeline=cov)
+        np.testing.assert_allclose(results0.score, results1.score)
+        np.testing.assert_allclose(results0.score, results2.score)
+
 
 class Test_WithinSessLearningCurve(unittest.TestCase):
     """Some tests for the learning curve evaluation.
@@ -162,8 +196,12 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
             data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
             n_perms=np.array([2, 2]),
         )
+        process_pipeline = learning_curve_eval.paradigm.make_process_pipelines(dataset)[0]
         results = [
-            r for r in learning_curve_eval.evaluate(dataset, pipelines, param_grid=None)
+            r
+            for r in learning_curve_eval.evaluate(
+                dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+            )
         ]
         keys = results[0].keys()
         self.assertEqual(len(keys), 10)  # 8 + 2 new for learning curve
@@ -188,7 +226,12 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
     def test_data_sanity(self):
         # need this helper to iterate over the generator
         def run_evaluation(eval, dataset, pipelines):
-            list(eval.evaluate(dataset, pipelines, param_grid=None))
+            process_pipeline = eval.paradigm.make_process_pipelines(dataset)[0]
+            list(
+                eval.evaluate(
+                    dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+                )
+            )
 
         # E.g. if number of samples too high -> expect error
         kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], n_perms=[2, 2])
@@ -201,7 +244,11 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
         # This one should run
         run_evaluation(should_work, dataset, pipelines)
         self.assertRaises(
-            ValueError, run_evaluation, too_many_samples, dataset, pipelines
+            ValueError,
+            run_evaluation,
+            too_many_samples,
+            dataset,
+            pipelines,
         )
 
     def test_eval_grid_search(self):
@@ -223,6 +270,34 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
         self.assertRaises(ValueError, ev.WithinSessionEvaluation, **constant_datasize)
         self.assertRaises(ValueError, ev.WithinSessionEvaluation, **increasing_perms)
         pass
+
+    def test_postprocess_pipeline(self):
+        learning_curve_eval = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
+            n_perms=np.array([2, 2]),
+        )
+
+        cov = Covariances("oas")
+        pipelines0 = {
+            "CovCspLda": make_pipeline(
+                cov,
+                CSP(
+                    8,
+                ),
+                LDA(),
+            )
+        }
+        pipelines1 = {"CspLda": make_pipeline(CSP(8), LDA())}
+
+        results0 = learning_curve_eval.process(pipelines0)
+        results1 = learning_curve_eval.process(
+            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+        )
+        results2 = learning_curve_eval.process(pipelines1, postprocess_pipeline=cov)
+        np.testing.assert_allclose(results0.score, results1.score)
+        np.testing.assert_allclose(results0.score, results2.score)
 
 
 class Test_AdditionalColumns(unittest.TestCase):

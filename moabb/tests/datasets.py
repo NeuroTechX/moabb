@@ -5,6 +5,7 @@ import tempfile
 import unittest
 
 import mne
+import numpy as np
 
 import moabb.datasets as db
 import moabb.datasets.compound_dataset as db_compound
@@ -70,7 +71,7 @@ class Test_Datasets(unittest.TestCase):
         n_sessions = 2
         n_runs = 2
 
-        for paradigm in ["imagery", "p300", "ssvep"]:
+        for paradigm in ["imagery", "p300", "ssvep", "cvep"]:
             ds = FakeDataset(
                 n_sessions=n_sessions,
                 n_runs=n_runs,
@@ -96,6 +97,36 @@ class Test_Datasets(unittest.TestCase):
 
             # bad subject id must raise error
             self.assertRaises(ValueError, ds.get_data, [1000])
+
+    def test_fake_dataset_seed(self):
+        """this test will insure the fake dataset's random seed works"""
+        n_subjects = 3
+        n_sessions = 2
+        n_runs = 2
+        seed = 12
+
+        for paradigm in ["imagery", "p300", "ssvep"]:
+            ds1 = FakeDataset(
+                n_sessions=n_sessions,
+                n_runs=n_runs,
+                n_subjects=n_subjects,
+                paradigm=paradigm,
+                seed=seed,
+            )
+            ds2 = FakeDataset(
+                n_sessions=n_sessions,
+                n_runs=n_runs,
+                n_subjects=n_subjects,
+                paradigm=paradigm,
+                seed=seed,
+            )
+            X1, _, _ = ds1.get_data()
+            X2, _, _ = ds2.get_data()
+            X3, _, _ = ds2.get_data()
+
+            # All the arrays should be equal:
+            self.assertIsNone(np.testing.assert_array_equal(X1, X2))
+            self.assertIsNone(np.testing.assert_array_equal(X3, X3))
 
     def test_cache_dataset(self):
         tempdir = tempfile.mkdtemp()
@@ -183,6 +214,8 @@ class Test_Datasets(unittest.TestCase):
     def test_datasets_init(self):
         codes = []
         logger = logging.getLogger("moabb.datasets.base")
+        deprecated_list, _, _ = zip(*aliases_list)
+
         for ds in dataset_list:
             kwargs = {}
             if inspect.signature(ds).parameters.get("accept"):
@@ -192,9 +225,11 @@ class Test_Datasets(unittest.TestCase):
                 # Trick needed because assertNoLogs only inrtoduced in python 3.10:
                 logger.warning(f"Testing {ds.__name__}")
                 obj = ds(**kwargs)
-            self.assertEqual(len(cm.output), 1)
+            if type(obj).__name__ not in deprecated_list:
+                self.assertEqual(len(cm.output), 1)
             self.assertIsNotNone(obj)
-            codes.append(obj.code)
+            if type(obj).__name__ not in deprecated_list:
+                codes.append(obj.code)
 
         # Check that all codes are unique:
         self.assertEqual(len(codes), len(set(codes)))
@@ -219,17 +254,16 @@ class Test_Datasets(unittest.TestCase):
         if aliases_list:
             depreciated_list, _, _ = zip(*aliases_list)
         else:
-            depreciated_list = []
+            pass
         all_datasets = [
             c
             for c in db.__dict__.values()
             if (
                 inspect.isclass(c)
                 and issubclass(c, BaseDataset)
-                and c.__name__ not in depreciated_list
+                # and c.__name__ not in depreciated_list
             )
         ]
-
         assert len(dataset_list) == len(all_datasets)
         assert set(dataset_list) == set(all_datasets)
 
@@ -285,13 +319,18 @@ class Test_CompoundDataset(unittest.TestCase):
                 subjects_list = [(self.ds, 1, sessions, runs)]
                 compound_data = CompoundDataset(
                     subjects_list,
-                    events=dict(Target=2, NonTarget=1),
                     code="CompoundDataset-test",
                     interval=[0, 1],
                     paradigm=self.paradigm,
                 )
 
                 data = compound_data.get_data()
+
+                # Check event_id is correctly set
+                self.assertEqual(compound_data.event_id, self.ds.event_id)
+
+                # Check data origin is correctly set
+                self.assertEqual(data[1]["data_origin"], subjects_list[0])
 
                 # Check data type
                 self.assertTrue(isinstance(data, dict))
@@ -314,7 +353,6 @@ class Test_CompoundDataset(unittest.TestCase):
         subjects_list = [(self.ds, 1, None, None)]
         compound_dataset = CompoundDataset(
             subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="CompoundDataset-test",
             interval=[0, 1],
             paradigm=self.paradigm,
@@ -324,7 +362,6 @@ class Test_CompoundDataset(unittest.TestCase):
         subjects_list = [compound_dataset, compound_dataset]
         compound_data = CompoundDataset(
             subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="CompoundDataset-test",
             interval=[0, 1],
             paradigm=self.paradigm,
@@ -348,7 +385,6 @@ class Test_CompoundDataset(unittest.TestCase):
         subjects_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
         compound_dataset = CompoundDataset(
             subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="CompoundDataset",
             interval=[0, 1],
             paradigm=self.paradigm,
@@ -356,6 +392,39 @@ class Test_CompoundDataset(unittest.TestCase):
 
         # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
         self.assertEqual(compound_dataset._get_sessions_per_subject(), self.n_sessions)
+
+    def test_event_id_correctly_updated(self):
+        # define a new fake dataset with different event_id
+        self.ds2 = FakeDataset(
+            n_sessions=self.n_sessions,
+            n_runs=self.n_runs,
+            n_subjects=self.n_subjects,
+            event_list=["Target2", "NonTarget2"],
+            paradigm=self.paradigm,
+        )
+
+        # Add the two datasets to a CompoundDataset
+        subjects_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
+
+        compound_dataset = CompoundDataset(
+            subjects_list,
+            code="CompoundDataset",
+            interval=[0, 1],
+            paradigm=self.paradigm,
+        )
+
+        # Check that the event_id of the compound_dataset is the same has the first dataset
+        self.assertEqual(compound_dataset.event_id, self.ds.event_id)
+
+        # Check event_id get correctly updated when taking a subject from dataset 2
+        data = compound_dataset.get_data(subjects=[2])
+        self.assertEqual(compound_dataset.event_id, self.ds2.event_id)
+        self.assertEqual(len(data.keys()), 1)
+
+        # Check event_id is correctly put back when taking a subject from the first dataset
+        data = compound_dataset.get_data(subjects=[1])
+        self.assertEqual(compound_dataset.event_id, self.ds.event_id)
+        self.assertEqual(len(data.keys()), 1)
 
     def test_datasets_init(self):
         codes = []

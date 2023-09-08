@@ -130,7 +130,7 @@ class BaseEvaluation(ABC):
             additional_columns=additional_columns,
         )
 
-    def process(self, pipelines, param_grid=None):
+    def process(self, pipelines, param_grid=None, postprocess_pipeline=None):
         """Runs all pipelines on all datasets.
 
         This function will apply all provided pipelines and return a dataframe
@@ -142,6 +142,15 @@ class BaseEvaluation(ABC):
             A dict containing the sklearn pipeline to evaluate.
         param_grid : dict of str
             The key of the dictionary must be the same as the associated pipeline.
+        postprocess_pipeline: Pipeline | None
+            Optional pipeline to apply to the data after the preprocessing.
+            This pipeline will either receive :class:`mne.io.BaseRaw`, :class:`mne.Epochs`
+            or :func:`np.ndarray` as input, depending on the values of ``return_epochs``
+            and ``return_raws``.
+            This pipeline must return an ``np.ndarray``.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
+
 
         Returns
         -------
@@ -156,29 +165,48 @@ class BaseEvaluation(ABC):
         for _, pipeline in pipelines.items():
             if not (isinstance(pipeline, BaseEstimator)):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
-
         for dataset in self.datasets:
             log.info("Processing dataset: {}".format(dataset.code))
-            results = self.evaluate(dataset, pipelines, param_grid)
+            process_pipeline = self.paradigm.make_process_pipelines(
+                dataset,
+                return_epochs=self.return_epochs,
+                return_raws=self.return_raws,
+                postprocess_pipeline=postprocess_pipeline,
+            )[0]
+            # (we only keep the pipeline for the first frequency band, better ideas?)
+
+            results = self.evaluate(
+                dataset,
+                pipelines,
+                param_grid=param_grid,
+                process_pipeline=process_pipeline,
+                postprocess_pipeline=postprocess_pipeline,
+            )
             for res in results:
-                self.push_result(res, pipelines)
+                self.push_result(res, pipelines, process_pipeline)
 
-        return self.results.to_dataframe(pipelines=pipelines)
+        return self.results.to_dataframe(
+            pipelines=pipelines, process_pipeline=process_pipeline
+        )
 
-    def push_result(self, res, pipelines):
+    def push_result(self, res, pipelines, process_pipeline):
         message = "{} | ".format(res["pipeline"])
         message += "{} | {} | {}".format(
             res["dataset"].code, res["subject"], res["session"]
         )
         message += ": Score %.3f" % res["score"]
         log.info(message)
-        self.results.add({res["pipeline"]: res}, pipelines=pipelines)
+        self.results.add(
+            {res["pipeline"]: res}, pipelines=pipelines, process_pipeline=process_pipeline
+        )
 
     def get_results(self):
         return self.results.to_dataframe()
 
     @abstractmethod
-    def evaluate(self, dataset, pipelines, param_grid):
+    def evaluate(
+        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
+    ):
         """Evaluate results on a single dataset.
 
         This method return a generator. each results item is a dict with
