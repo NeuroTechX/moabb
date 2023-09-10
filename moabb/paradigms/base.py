@@ -451,10 +451,12 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         resample = None
         channels: set = None
         for dataset in datasets:
-            X, _, _ = self.get_data(
-                dataset, subjects=[dataset.subject_list[0]],
-                return_epochs=True
-            )
+            first_subject = dataset.subject_list[0]
+            data = dataset.get_data(subjects = [first_subject])[first_subject]
+            first_session = list(data.keys())[0]
+            session = data[first_session]
+            first_run = list(session.keys())[0]
+            X = session[first_run]
             info = X.info
             sfreq = info["sfreq"]
             ch_names = info["ch_names"]
