@@ -1,10 +1,8 @@
 import logging
-import os
 from copy import deepcopy
 from time import time
 from typing import Optional, Union
 
-import joblib
 import numpy as np
 from joblib import Parallel, delayed
 from mne.epochs import BaseEpochs
@@ -222,7 +220,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                     tracker.start()
                 t_start = time()
                 cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
-                inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
+                inner_cv = StratifiedKFold(
+                    3, shuffle=True, random_state=self.random_state
+                )
                 scorer = get_scorer(self.paradigm.scoring)
                 le = LabelEncoder()
                 y_cv = le.fit_transform(y[ix])
@@ -232,7 +232,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 grid_clf = clone(clf)
 
                 # Create folder for grid search results
-                name_grid = create_save_path(
+                create_save_path(
                     self.hdf5_path,
                     dataset.code,
                     subject,
@@ -779,7 +779,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
         inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
 
         # Implement Grid Search
-        emissions_grid = {}
 
         if _carbonfootprint:
             # Initialise CodeCarbon
@@ -845,9 +844,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     }
 
                     if _carbonfootprint:
-                        res["carbon_emission"] = (
-                            1000 * emissions,
-                        )
+                        res["carbon_emission"] = (1000 * emissions,)
                     yield res
 
     def is_valid(self, dataset):
