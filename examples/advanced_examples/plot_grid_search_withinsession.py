@@ -140,41 +140,35 @@ axes.set_ylabel("ROC AUC")
 # search found a l1_ratio that is different from the baseline
 # value.
 
-search_session_E = joblib.load(
-    os.path.join(
-        path,
-        "GridSearch_WithinSession",
-        "BNCI2014-001",
-        "1",
-        "session_E",
-        "GridSearchEN",
-        "Grid_Search_WithinSession.pkl",
-    )
-)
+from pickle import load
+
+with open(
+    "./Results/Models_WithinSession/BNCI2014-001/1/session_E/GridSearchEN/fitted_model_best.pkl",
+    "rb",
+) as pickle_file:
+    GridSearchEN_Session_E = load(pickle_file)
+
 print(
     "Best Parameter l1_ratio Session_E GridSearchEN ",
-    search_session_E.best_params_["LogistReg__l1_ratio"],
+    GridSearchEN_Session_E.best_params_["LogistReg__l1_ratio"],
 )
+
 print(
     "Best Parameter l1_ratio Session_E VanillaEN: ",
     pipelines["VanillaEN"].steps[2][1].l1_ratio,
 )
 
-search_session_T = joblib.load(
-    os.path.join(
-        path,
-        "GridSearch_WithinSession",
-        "BNCI2014-001",
-        "1",
-        "session_T",
-        "GridSearchEN",
-        "Grid_Search_WithinSession.pkl",
-    )
-)
+with open(
+        "./Results/Models_WithinSession/BNCI2014-001/1/session_T/GridSearchEN/fitted_model_best.pkl",
+        "rb",
+) as pickle_file:
+    GridSearchEN_Session_T = load(pickle_file)
+
 print(
     "Best Parameter l1_ratio Session_T GridSearchEN ",
-    search_session_T.best_params_["LogistReg__l1_ratio"],
+    GridSearchEN_Session_T.best_params_["LogistReg__l1_ratio"],
 )
+
 print(
     "Best Parameter l1_ratio Session_T VanillaEN: ",
     pipelines["VanillaEN"].steps[2][1].l1_ratio,
