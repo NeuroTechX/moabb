@@ -8,6 +8,7 @@ for finding the best model parameter, using grid search. Two models
 are compared, one "vanilla" model with model tuned via grid search.
 """
 import os
+from pickle import load
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -19,7 +20,6 @@ from sklearn.pipeline import Pipeline
 from moabb.datasets import BNCI2014_001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import MotorImagery
-from pickle import load
 
 
 # Initialize parameter for the Band Pass filter
