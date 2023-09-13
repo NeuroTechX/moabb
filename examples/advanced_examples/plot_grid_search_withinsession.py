@@ -9,7 +9,6 @@ are compared, one "vanilla" model with model tuned via grid search.
 """
 import os
 
-import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pyriemann.estimation import Covariances
@@ -20,7 +19,6 @@ from sklearn.pipeline import Pipeline
 from moabb.datasets import BNCI2014_001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import MotorImagery
-from pickle import load
 
 
 # Initialize parameter for the Band Pass filter
@@ -141,6 +139,9 @@ axes.set_ylabel("ROC AUC")
 # search found a l1_ratio that is different from the baseline
 # value.
 
+from pickle import load
+
+
 with open(
     "./Results/Models_WithinSession/BNCI2014-001/1/session_E/GridSearchEN/fitted_model_best.pkl",
     "rb",
@@ -158,8 +159,8 @@ print(
 )
 
 with open(
-        "./Results/Models_WithinSession/BNCI2014-001/1/session_T/GridSearchEN/fitted_model_best.pkl",
-        "rb",
+    "./Results/Models_WithinSession/BNCI2014-001/1/session_T/GridSearchEN/fitted_model_best.pkl",
+    "rb",
 ) as pickle_file:
     GridSearchEN_Session_T = load(pickle_file)
 
