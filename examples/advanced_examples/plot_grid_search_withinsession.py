@@ -20,6 +20,7 @@ from sklearn.pipeline import Pipeline
 from moabb.datasets import BNCI2014_001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import MotorImagery
+from pickle import load
 
 
 # Initialize parameter for the Band Pass filter
@@ -139,8 +140,6 @@ axes.set_ylabel("ROC AUC")
 # dataset, subject and session. Here, we could see that the grid
 # search found a l1_ratio that is different from the baseline
 # value.
-
-from pickle import load
 
 with open(
     "./Results/Models_WithinSession/BNCI2014-001/1/session_E/GridSearchEN/fitted_model_best.pkl",
