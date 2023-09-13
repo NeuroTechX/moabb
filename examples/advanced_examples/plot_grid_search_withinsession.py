@@ -9,7 +9,6 @@ are compared, one "vanilla" model with model tuned via grid search.
 """
 import os
 
-import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pyriemann.estimation import Covariances
@@ -142,6 +141,7 @@ axes.set_ylabel("ROC AUC")
 
 from pickle import load
 
+
 with open(
     "./Results/Models_WithinSession/BNCI2014-001/1/session_E/GridSearchEN/fitted_model_best.pkl",
     "rb",
@@ -159,8 +159,8 @@ print(
 )
 
 with open(
-        "./Results/Models_WithinSession/BNCI2014-001/1/session_T/GridSearchEN/fitted_model_best.pkl",
-        "rb",
+    "./Results/Models_WithinSession/BNCI2014-001/1/session_T/GridSearchEN/fitted_model_best.pkl",
+    "rb",
 ) as pickle_file:
     GridSearchEN_Session_T = load(pickle_file)
 
