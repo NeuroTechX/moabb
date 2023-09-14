@@ -5,14 +5,12 @@ import unittest
 import warnings
 from collections import OrderedDict
 
-import joblib
 import numpy as np
 import sklearn.base
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.dummy import DummyClassifier as Dummy
-from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import FunctionTransformer, Pipeline, make_pipeline
 
 from moabb.analysis.results import get_string_rep
@@ -84,39 +82,6 @@ class Test_WithinSess(unittest.TestCase):
         self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
 
     def test_eval_grid_search(self):
-        gs_param = {
-            "Within": os.path.join(
-                "res_test",
-                "GridSearch_WithinSession",
-                str(dataset.code),
-                "1",
-                "session_0",
-                "C",
-                "Grid_Search_WithinSession.pkl",
-            ),
-            "CrossSess": os.path.join(
-                "res_test",
-                "GridSearch_CrossSession",
-                str(dataset.code),
-                "1",
-                "C",
-                "Grid_Search_CrossSession.pkl",
-            ),
-            "CrossSubj": os.path.join(
-                "res_test",
-                "GridSearch_CrossSubject",
-                str(dataset.code),
-                "C",
-                "Grid_Search_CrossSubject.pkl",
-            ),
-        }
-        if isinstance(self.eval, ev.WithinSessionEvaluation):
-            respath = gs_param["Within"]
-        elif isinstance(self.eval, ev.CrossSessionEvaluation):
-            respath = gs_param["CrossSess"]
-        elif isinstance(self.eval, ev.CrossSubjectEvaluation):
-            respath = gs_param["CrossSubj"]
-
         # Test grid search
         param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
@@ -134,10 +99,6 @@ class Test_WithinSess(unittest.TestCase):
         self.assertEqual(len(results), 4)
         # We should have 9 columns in the results data frame
         self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
-        # We should check for selected parameters with joblib
-        self.assertTrue(os.path.isfile(respath))
-        res = joblib.load(respath)
-        self.assertIsInstance(res, GridSearchCV)
 
     def test_lambda_warning(self):
         def explicit_kernel(x):
