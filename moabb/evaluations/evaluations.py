@@ -1,10 +1,8 @@
 import logging
-import os
 from copy import deepcopy
 from time import time
 from typing import Optional, Union
 
-import joblib
 import numpy as np
 from joblib import Parallel, delayed
 from mne.epochs import BaseEpochs
@@ -140,40 +138,25 @@ class WithinSessionEvaluation(BaseEvaluation):
             # Perform default within session evaluation
             super().__init__(**kwargs)
 
-    def _grid_search(self, param_grid, name_grid, name, grid_clf, X_, y_, cv):
+    def _grid_search(self, param_grid, name, grid_clf, inner_cv):
         # Load result if the folder exists
-        if param_grid is not None and not os.path.isdir(name_grid):
+        if param_grid is not None:
             if name in param_grid:
                 search = GridSearchCV(
                     grid_clf,
                     param_grid[name],
                     refit=True,
-                    cv=cv,
+                    cv=inner_cv,
                     n_jobs=self.n_jobs,
                     scoring=self.paradigm.scoring,
                     return_train_score=True,
                 )
-                search.fit(X_, y_)
-                grid_clf.set_params(**search.best_params_)
-
-                # Save the result
-                os.makedirs(name_grid, exist_ok=True)
-                joblib.dump(
-                    search,
-                    os.path.join(name_grid, "Grid_Search_WithinSession.pkl"),
-                )
-                del search
-                return grid_clf
+                return search
 
             else:
                 return grid_clf
 
-        elif param_grid is not None and os.path.isdir(name_grid):
-            search = joblib.load(os.path.join(name_grid, "Grid_Search_WithinSession.pkl"))
-            grid_clf.set_params(**search.best_params_)
-            return grid_clf
-
-        elif param_grid is None:
+        else:
             return grid_clf
 
     # flake8: noqa: C901
@@ -237,6 +220,9 @@ class WithinSessionEvaluation(BaseEvaluation):
                     tracker.start()
                 t_start = time()
                 cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
+                inner_cv = StratifiedKFold(
+                    3, shuffle=True, random_state=self.random_state
+                )
                 scorer = get_scorer(self.paradigm.scoring)
                 le = LabelEncoder()
                 y_cv = le.fit_transform(y[ix])
@@ -246,7 +232,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 grid_clf = clone(clf)
 
                 # Create folder for grid search results
-                name_grid = create_save_path(
+                create_save_path(
                     self.hdf5_path,
                     dataset.code,
                     subject,
@@ -258,7 +244,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                 # Implement Grid Search
                 grid_clf = self._grid_search(
-                    param_grid, name_grid, name, grid_clf, X_, y_, cv
+                    param_grid=param_grid, name=name, grid_clf=grid_clf, inner_cv=inner_cv
                 )
                 if self.hdf5_path is not None:
                     model_save_path = create_save_path(
@@ -523,39 +509,24 @@ class CrossSessionEvaluation(BaseEvaluation):
         if returning MNE epoch, use original dataset label if True
     """
 
-    def _grid_search(self, param_grid, name_grid, name, grid_clf, X, y, cv, groups):
-        if param_grid is not None and not os.path.isdir(name_grid):
+    def _grid_search(self, param_grid, name, grid_clf, inner_cv):
+        if param_grid is not None:
             if name in param_grid:
                 search = GridSearchCV(
                     grid_clf,
                     param_grid[name],
                     refit=True,
-                    cv=cv,
+                    cv=inner_cv,
                     n_jobs=self.n_jobs,
                     scoring=self.paradigm.scoring,
                     return_train_score=True,
                 )
-                search.fit(X, y, groups=groups)
-                grid_clf.set_params(**search.best_params_)
-
-                # Save the result
-                os.makedirs(name_grid, exist_ok=True)
-                joblib.dump(
-                    search,
-                    os.path.join(name_grid, "Grid_Search_CrossSession.pkl"),
-                )
-                del search
-                return grid_clf
+                return search
 
             else:
                 return grid_clf
 
-        elif param_grid is not None and os.path.isdir(name_grid):
-            search = joblib.load(os.path.join(name_grid, "Grid_Search_CrossSession.pkl"))
-            grid_clf.set_params(**search.best_params_)
-            return grid_clf
-
-        elif param_grid is None:
+        else:
             return grid_clf
 
     # flake8: noqa: C901
@@ -622,29 +593,14 @@ class CrossSessionEvaluation(BaseEvaluation):
 
             # we want to store a results per session
             cv = LeaveOneGroupOut()
+            inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
 
             grid_clf = clone(clf)
 
-            # Load result if the folder exist
-            name_grid = create_save_path(
-                hdf5_path=self.hdf5_path,
-                code=dataset.code,
-                subject=subject,
-                session="",
-                name=name,
-                grid=True,
-                eval_type="CrossSession",
-            )
-
             # Implement Grid Search
             grid_clf = self._grid_search(
-                param_grid, name_grid, name, grid_clf, X, y, cv, groups
+                param_grid=param_grid, name=name, grid_clf=grid_clf, inner_cv=inner_cv
             )
-
-            if _carbonfootprint:
-                emissions_grid = tracker.stop()
-                if emissions_grid is None:
-                    emissions_grid = 0
 
             if self.hdf5_path is not None:
                 model_save_path = create_save_path(
@@ -711,7 +667,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                     "pipeline": name,
                 }
                 if _carbonfootprint:
-                    res["carbon_emission"] = (1000 * (emissions + emissions_grid),)
+                    res["carbon_emission"] = (1000 * emissions,)
 
                 results.append(res)
         return results
@@ -759,41 +715,25 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if returning MNE epoch, use original dataset label if True
     """
 
-    def _grid_search(self, param_grid, name_grid, name, clf, pipelines, X, y, cv, groups):
-        if param_grid is not None and not os.path.isdir(name_grid):
+    def _grid_search(self, param_grid, name, clf, inner_cv):
+        if param_grid is not None:
             if name in param_grid:
                 search = GridSearchCV(
                     clf,
                     param_grid[name],
                     refit=True,
-                    cv=cv,
+                    cv=inner_cv,
                     n_jobs=self.n_jobs,
                     scoring=self.paradigm.scoring,
                     return_train_score=True,
                 )
-                search.fit(X, y, groups=groups)
-                pipelines[name].set_params(**search.best_params_)
-
-                # Save the result
-                os.makedirs(name_grid, exist_ok=True)
-                joblib.dump(
-                    search,
-                    os.path.join(name_grid, "Grid_Search_CrossSubject.pkl"),
-                )
-                del search
-                return pipelines[name]
+                return search
 
             else:
-                return pipelines[name]
+                return clf
 
-        elif param_grid is not None and os.path.isdir(name_grid):
-            search = joblib.load(os.path.join(name_grid, "Grid_Search_CrossSubject.pkl"))
-
-            pipelines[name].set_params(**search.best_params_)
-            return pipelines[name]
-
-        elif param_grid is None:
-            return pipelines[name]
+        else:
+            return clf
 
     # flake8: noqa: C901
     def evaluate(
@@ -836,30 +776,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
         # perform leave one subject out CV
         cv = LeaveOneGroupOut()
+        inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
 
         # Implement Grid Search
-        emissions_grid = {}
 
         if _carbonfootprint:
             # Initialise CodeCarbon
             tracker = EmissionsTracker(save_to_file=False, log_level="error")
-
-        for name, clf in pipelines.items():
-            if _carbonfootprint:
-                tracker.start()
-
-            name_grid = os.path.join(
-                str(self.hdf5_path), "GridSearch_CrossSubject", dataset.code, name
-            )
-
-            pipelines[name] = self._grid_search(
-                param_grid, name_grid, name, clf, pipelines, X, y, cv, groups
-            )
-
-            if _carbonfootprint:
-                emissions_grid[name] = tracker.stop()
-                if emissions_grid[name] is None:
-                    emissions_grid[name] = 0
 
         # Progressbar at subject level
         for cv_ind, (train, test) in enumerate(
@@ -879,6 +802,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 if _carbonfootprint:
                     tracker.start()
                 t_start = time()
+                clf = self._grid_search(
+                    param_grid=param_grid, name=name, clf=clf, inner_cv=inner_cv
+                )
                 model = deepcopy(clf).fit(X[train], y[train])
                 if _carbonfootprint:
                     emissions = tracker.stop()
@@ -905,10 +831,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     ix = sessions[test] == session
                     score = _score(model, X[test[ix]], y[test[ix]], scorer)
 
-                    if _carbonfootprint:
-                        if emissions_grid[name] is None:
-                            emissions_grid[name] = 0
-
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
                         "time": duration,
@@ -922,9 +844,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     }
 
                     if _carbonfootprint:
-                        res["carbon_emission"] = (
-                            1000 * (emissions + emissions_grid[name]),
-                        )
+                        res["carbon_emission"] = (1000 * emissions,)
                     yield res
 
     def is_valid(self, dataset):
