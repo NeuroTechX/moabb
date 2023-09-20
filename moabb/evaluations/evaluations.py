@@ -4,7 +4,7 @@ from time import time
 from typing import Optional, Union
 
 import numpy as np
-from joblib import Parallel, delayed
+from joblib import Memory, Parallel, delayed
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
@@ -22,6 +22,7 @@ from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
 from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
+from moabb.model_selection import WithinSessionValidator
 
 
 try:
@@ -35,6 +36,9 @@ log = logging.getLogger(__name__)
 
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
 Vector = Union[list, tuple, np.ndarray]
+
+
+memory = Memory(location="__cache__")
 
 
 class WithinSessionEvaluation(BaseEvaluation):
@@ -71,9 +75,6 @@ class WithinSessionEvaluation(BaseEvaluation):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -91,6 +92,8 @@ class WithinSessionEvaluation(BaseEvaluation):
         use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
+    n_splits: int, default=5
+        Number of splits for evaluation.
     """
 
     VALID_POLICIES = ["per_class", "ratio"]
@@ -101,6 +104,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         data_size: Optional[dict] = None,
         **kwargs,
     ):
+        self.cv = WithinSessionValidator(n_splits=self.n_splits)
         self.data_size = data_size
         self.n_perms = n_perms
         self.calculate_learning_curve = self.data_size is not None
@@ -168,7 +172,7 @@ class WithinSessionEvaluation(BaseEvaluation):
             results = Parallel(n_jobs=self.n_jobs_evaluation, verbose=1)(
                 delayed(self._evaluate_subject)(
                     dataset,
-                    pipelines,
+                    pipeline,
                     param_grid,
                     subject,
                     process_pipeline,
@@ -177,30 +181,23 @@ class WithinSessionEvaluation(BaseEvaluation):
                 for subject in tqdm(
                     dataset.subject_list, desc=f"{dataset.code}-WithinSession"
                 )
+                for pipeline in self.results.not_yet_computed(
+                    pipelines, dataset, subject, process_pipeline
+                )
             )
 
         # Concatenate the results from all subjects
         yield from [res for subject_results in results for res in subject_results]
 
+    @memory.cache
     def _evaluate_subject(
         self,
         dataset,
-        pipelines,
-        param_grid,
+        pipeline,
         subject,
-        process_pipeline,
         postprocess_pipeline,
     ):
-        # Progress Bar at subject level
-        # check if we already have result for this subject/pipeline
-        # we might need a better granularity, if we query the DB
-        run_pipes = self.results.not_yet_computed(
-            pipelines, dataset, subject, process_pipeline
-        )
-        if len(run_pipes) == 0:
-            return []
-
-        # get the data
+        # Getting the data
         X, y, metadata = self.paradigm.get_data(
             dataset=dataset,
             subjects=[subject],
@@ -213,23 +210,19 @@ class WithinSessionEvaluation(BaseEvaluation):
         for session in np.unique(metadata.session):
             ix = metadata.session == session
 
-            for name, clf in run_pipes.items():
+            for name, clf in pipeline.items():
                 if _carbonfootprint:
                     # Initialize CodeCarbon
                     tracker = EmissionsTracker(save_to_file=False, log_level="error")
                     tracker.start()
                 t_start = time()
                 cv = StratifiedKFold(5, shuffle=True, random_state=self.random_state)
-                inner_cv = StratifiedKFold(
-                    3, shuffle=True, random_state=self.random_state
-                )
+
                 scorer = get_scorer(self.paradigm.scoring)
                 le = LabelEncoder()
                 y_cv = le.fit_transform(y[ix])
                 X_ = X[ix]
                 y_ = y[ix] if self.mne_labels else y_cv
-
-                grid_clf = clone(clf)
 
                 # Create folder for grid search results
                 create_save_path(
@@ -242,10 +235,6 @@ class WithinSessionEvaluation(BaseEvaluation):
                     eval_type="WithinSession",
                 )
 
-                # Implement Grid Search
-                grid_clf = self._grid_search(
-                    param_grid=param_grid, name=name, grid_clf=grid_clf, inner_cv=inner_cv
-                )
                 if self.hdf5_path is not None:
                     model_save_path = create_save_path(
                         self.hdf5_path,
@@ -263,7 +252,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     X_ = X[ix]
                     y_ = y[ix] if self.mne_labels else y_cv
                     for cv_ind, (train, test) in enumerate(cv.split(X_, y_)):
-                        cvclf = clone(grid_clf)
+                        cvclf = clone(clf)
                         cvclf.fit(X_[train], y_[train])
                         acc.append(scorer(cvclf, X_[test], y_[test]))
 
@@ -276,7 +265,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     score = acc.mean()
                 else:
                     results = cross_validate(
-                        grid_clf,
+                        clf,
                         X[ix],
                         y_cv,
                         cv=cv,
