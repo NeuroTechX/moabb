@@ -44,10 +44,14 @@ class FakeDataset(BaseDataset):
         code="FakeDataset",
         paradigm="imagery",
         channels=("C3", "Cz", "C4"),
+        seed=None,
+        sfreq=128,
     ):
         self.n_runs = n_runs
+        self.sfreq = sfreq
         event_id = {ev: ii + 1 for ii, ev in enumerate(event_list)}
         self.channels = channels
+        self.seed = seed
         code = (
             f"{code}-{paradigm.lower()}-{n_subjects}-{n_sessions}-{n_runs}-"
             f"{''.join([re.sub('[^A-Za-z0-9]', '', e).lower() for e in event_list])}-"
@@ -68,6 +72,8 @@ class FakeDataset(BaseDataset):
             set_config(key, temp_dir)
 
     def _get_single_subject_data(self, subject):
+        if self.seed is not None:
+            np.random.seed(self.seed + subject)
         data = dict()
         for session in range(self.n_sessions):
             data[f"session_{session}"] = {
@@ -77,7 +83,7 @@ class FakeDataset(BaseDataset):
 
     def _generate_raw(self):
         montage = make_standard_montage("standard_1005")
-        sfreq = 128
+        sfreq = self.sfreq
         duration = len(self.event_id) * 60
         eeg_data = 2e-5 * np.random.randn(duration * sfreq, len(self.channels))
         y = np.zeros((duration * sfreq))
@@ -108,7 +114,7 @@ class FakeVirtualRealityDataset(FakeDataset):
     .. versionadded:: 0.5.0
     """
 
-    def __init__(self):
+    def __init__(self, seed=None):
         self.n_blocks = 5
         self.n_repetitions = 12
         super().__init__(
@@ -118,9 +124,12 @@ class FakeVirtualRealityDataset(FakeDataset):
             code="FakeVirtualRealityDataset",
             event_list=dict(Target=2, NonTarget=1),
             paradigm="p300",
+            seed=seed,
         )
 
     def _get_single_subject_data(self, subject):
+        if self.seed is not None:
+            np.random.seed(self.seed + subject)
         data = dict()
         for session in range(self.n_sessions):
             data[f"{session}"] = {}

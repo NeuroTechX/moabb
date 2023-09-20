@@ -5,15 +5,13 @@ import unittest
 import warnings
 from collections import OrderedDict
 
-import joblib
 import numpy as np
 import sklearn.base
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.dummy import DummyClassifier as Dummy
-from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.pipeline import FunctionTransformer, Pipeline, make_pipeline
 
 from moabb.analysis.results import get_string_rep
 from moabb.datasets.fake import FakeDataset
@@ -31,7 +29,7 @@ except ImportError:
 
 pipelines = OrderedDict()
 pipelines["C"] = make_pipeline(Covariances("oas"), CSP(8), LDA())
-dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=2)
+dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=2, seed=12)
 if not osp.isdir(osp.join(osp.expanduser("~"), "mne_data")):
     os.makedirs(osp.join(osp.expanduser("~"), "mne_data"))
 
@@ -84,39 +82,6 @@ class Test_WithinSess(unittest.TestCase):
         self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
 
     def test_eval_grid_search(self):
-        gs_param = {
-            "Within": os.path.join(
-                "res_test",
-                "GridSearch_WithinSession",
-                str(dataset.code),
-                "1",
-                "session_0",
-                "C",
-                "Grid_Search_WithinSession.pkl",
-            ),
-            "CrossSess": os.path.join(
-                "res_test",
-                "GridSearch_CrossSession",
-                str(dataset.code),
-                "1",
-                "C",
-                "Grid_Search_CrossSession.pkl",
-            ),
-            "CrossSubj": os.path.join(
-                "res_test",
-                "GridSearch_CrossSubject",
-                str(dataset.code),
-                "C",
-                "Grid_Search_CrossSubject.pkl",
-            ),
-        }
-        if isinstance(self.eval, ev.WithinSessionEvaluation):
-            respath = gs_param["Within"]
-        elif isinstance(self.eval, ev.CrossSessionEvaluation):
-            respath = gs_param["CrossSess"]
-        elif isinstance(self.eval, ev.CrossSubjectEvaluation):
-            respath = gs_param["CrossSubj"]
-
         # Test grid search
         param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
@@ -134,10 +99,6 @@ class Test_WithinSess(unittest.TestCase):
         self.assertEqual(len(results), 4)
         # We should have 9 columns in the results data frame
         self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
-        # We should check for selected parameters with joblib
-        self.assertTrue(os.path.isfile(respath))
-        res = joblib.load(respath)
-        self.assertIsInstance(res, GridSearchCV)
 
     def test_lambda_warning(self):
         def explicit_kernel(x):
@@ -157,6 +118,27 @@ class Test_WithinSess(unittest.TestCase):
         with warnings.catch_warnings(record=True) as w:
             get_string_rep(c3)
             self.assertTrue(len(w) == 0)
+
+    def test_postprocess_pipeline(self):
+        cov = Covariances("oas")
+        pipelines0 = {
+            "CovCspLda": make_pipeline(
+                cov,
+                CSP(
+                    8,
+                ),
+                LDA(),
+            )
+        }
+        pipelines1 = {"CspLda": make_pipeline(CSP(8), LDA())}
+
+        results0 = self.eval.process(pipelines0)
+        results1 = self.eval.process(
+            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+        )
+        results2 = self.eval.process(pipelines1, postprocess_pipeline=cov)
+        np.testing.assert_allclose(results0.score, results1.score)
+        np.testing.assert_allclose(results0.score, results2.score)
 
 
 class Test_WithinSessLearningCurve(unittest.TestCase):
@@ -249,6 +231,34 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
         self.assertRaises(ValueError, ev.WithinSessionEvaluation, **constant_datasize)
         self.assertRaises(ValueError, ev.WithinSessionEvaluation, **increasing_perms)
         pass
+
+    def test_postprocess_pipeline(self):
+        learning_curve_eval = ev.WithinSessionEvaluation(
+            paradigm=FakeImageryParadigm(),
+            datasets=[dataset],
+            data_size={"policy": "ratio", "value": np.array([0.2, 0.5])},
+            n_perms=np.array([2, 2]),
+        )
+
+        cov = Covariances("oas")
+        pipelines0 = {
+            "CovCspLda": make_pipeline(
+                cov,
+                CSP(
+                    8,
+                ),
+                LDA(),
+            )
+        }
+        pipelines1 = {"CspLda": make_pipeline(CSP(8), LDA())}
+
+        results0 = learning_curve_eval.process(pipelines0)
+        results1 = learning_curve_eval.process(
+            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+        )
+        results2 = learning_curve_eval.process(pipelines1, postprocess_pipeline=cov)
+        np.testing.assert_allclose(results0.score, results1.score)
+        np.testing.assert_allclose(results0.score, results2.score)
 
 
 class Test_AdditionalColumns(unittest.TestCase):
