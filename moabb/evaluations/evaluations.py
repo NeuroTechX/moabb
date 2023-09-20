@@ -9,7 +9,6 @@ from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import (
-    GridSearchCV,
     LeaveOneGroupOut,
     StratifiedKFold,
     StratifiedShuffleSplit,
@@ -137,27 +136,6 @@ class WithinSessionEvaluation(BaseEvaluation):
         else:
             # Perform default within session evaluation
             super().__init__(**kwargs)
-
-    def _grid_search(self, param_grid, name, grid_clf, inner_cv):
-        # Load result if the folder exists
-        if param_grid is not None:
-            if name in param_grid:
-                search = GridSearchCV(
-                    grid_clf,
-                    param_grid[name],
-                    refit=True,
-                    cv=inner_cv,
-                    n_jobs=self.n_jobs,
-                    scoring=self.paradigm.scoring,
-                    return_train_score=True,
-                )
-                return search
-
-            else:
-                return grid_clf
-
-        else:
-            return grid_clf
 
     # flake8: noqa: C901
 
@@ -509,26 +487,6 @@ class CrossSessionEvaluation(BaseEvaluation):
         if returning MNE epoch, use original dataset label if True
     """
 
-    def _grid_search(self, param_grid, name, grid_clf, inner_cv):
-        if param_grid is not None:
-            if name in param_grid:
-                search = GridSearchCV(
-                    grid_clf,
-                    param_grid[name],
-                    refit=True,
-                    cv=inner_cv,
-                    n_jobs=self.n_jobs,
-                    scoring=self.paradigm.scoring,
-                    return_train_score=True,
-                )
-                return search
-
-            else:
-                return grid_clf
-
-        else:
-            return grid_clf
-
     # flake8: noqa: C901
     def evaluate(
         self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
@@ -715,26 +673,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
         if returning MNE epoch, use original dataset label if True
     """
 
-    def _grid_search(self, param_grid, name, clf, inner_cv):
-        if param_grid is not None:
-            if name in param_grid:
-                search = GridSearchCV(
-                    clf,
-                    param_grid[name],
-                    refit=True,
-                    cv=inner_cv,
-                    n_jobs=self.n_jobs,
-                    scoring=self.paradigm.scoring,
-                    return_train_score=True,
-                )
-                return search
-
-            else:
-                return clf
-
-        else:
-            return clf
-
     # flake8: noqa: C901
     def evaluate(
         self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
@@ -803,7 +741,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
                     tracker.start()
                 t_start = time()
                 clf = self._grid_search(
-                    param_grid=param_grid, name=name, clf=clf, inner_cv=inner_cv
+                    param_grid=param_grid, name=name, grid_clf=clf, inner_cv=inner_cv
                 )
                 model = deepcopy(clf).fit(X[train], y[train])
                 if _carbonfootprint:
