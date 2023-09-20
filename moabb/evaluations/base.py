@@ -47,6 +47,8 @@ class BaseEvaluation(ABC):
         use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
+    n_splits: int, default=5
+        Number of splits for evaluation.
     """
 
     def __init__(
@@ -64,6 +66,7 @@ class BaseEvaluation(ABC):
         return_epochs=False,
         return_raws=False,
         mne_labels=False,
+        n_splits=5,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -77,7 +80,7 @@ class BaseEvaluation(ABC):
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
         self.paradigm = paradigm
-
+        self.n_splits = n_splits
         # check labels
         if self.mne_labels and not self.return_epochs:
             raise (ValueError("mne_labels could only be set with return_epochs"))
