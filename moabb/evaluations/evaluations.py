@@ -99,11 +99,12 @@ class WithinSessionEvaluation(BaseEvaluation):
 
     def __init__(
         self,
+        n_splits=5,
         n_perms: Optional[Union[int, Vector]] = None,
         data_size: Optional[dict] = None,
         **kwargs,
     ):
-        self.cv = WithinSessionValidator(n_splits=self.n_splits)
+        self.cv = WithinSessionValidator(n_splits=n_splits)
         self.data_size = data_size
         self.n_perms = n_perms
         self.calculate_learning_curve = self.data_size is not None

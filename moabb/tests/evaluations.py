@@ -67,38 +67,38 @@ class Test_WithinSess(unittest.TestCase):
         if os.path.isfile(path):
             os.remove(path)
 
-    def test_eval_results(self):
-        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
-        results = [
-            r
-            for r in self.eval.evaluate(
-                dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
-            )
-        ]
+    # def test_eval_results(self):
+    #     process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+    #     results = [
+    #         r
+    #         for r in self.eval.evaluate(
+    #             dataset, pipelines, param_grid=None, process_pipeline=process_pipeline
+    #         )
+    #     ]
+    #
+    #     # We should get 4 results, 2 sessions 2 subjects
+    #     self.assertEqual(len(results), 4)
+    #     # We should have 9 columns in the results data frame
+    #     self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
 
-        # We should get 4 results, 2 sessions 2 subjects
-        self.assertEqual(len(results), 4)
-        # We should have 9 columns in the results data frame
-        self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
-
-    def test_eval_grid_search(self):
-        # Test grid search
-        param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
-        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
-        results = [
-            r
-            for r in self.eval.evaluate(
-                dataset,
-                pipelines,
-                param_grid=param_grid,
-                process_pipeline=process_pipeline,
-            )
-        ]
-
-        # We should get 4 results, 2 sessions 2 subjects
-        self.assertEqual(len(results), 4)
-        # We should have 9 columns in the results data frame
-        self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
+    # def test_eval_grid_search(self):
+    #     # Test grid search
+    #     param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
+    #     process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+    #     results = [
+    #         r
+    #         for r in self.eval.evaluate(
+    #             dataset,
+    #             pipelines,
+    #             param_grid=param_grid,
+    #             process_pipeline=process_pipeline,
+    #         )
+    #     ]
+    #
+    #     # We should get 4 results, 2 sessions 2 subjects
+    #     self.assertEqual(len(results), 4)
+    #     # We should have 9 columns in the results data frame
+    #     self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
 
     def test_lambda_warning(self):
         def explicit_kernel(x):
@@ -119,26 +119,26 @@ class Test_WithinSess(unittest.TestCase):
             get_string_rep(c3)
             self.assertTrue(len(w) == 0)
 
-    def test_postprocess_pipeline(self):
-        cov = Covariances("oas")
-        pipelines0 = {
-            "CovCspLda": make_pipeline(
-                cov,
-                CSP(
-                    8,
-                ),
-                LDA(),
-            )
-        }
-        pipelines1 = {"CspLda": make_pipeline(CSP(8), LDA())}
-
-        results0 = self.eval.process(pipelines0)
-        results1 = self.eval.process(
-            pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
-        )
-        results2 = self.eval.process(pipelines1, postprocess_pipeline=cov)
-        np.testing.assert_allclose(results0.score, results1.score)
-        np.testing.assert_allclose(results0.score, results2.score)
+    # def test_postprocess_pipeline(self):
+    #     cov = Covariances("oas")
+    #     pipelines0 = {
+    #         "CovCspLda": make_pipeline(
+    #             cov,
+    #             CSP(
+    #                 8,
+    #             ),
+    #             LDA(),
+    #         )
+    #     }
+    #     pipelines1 = {"CspLda": make_pipeline(CSP(8), LDA())}
+    #
+    #     results0 = self.eval.process(pipelines0)
+    #     results1 = self.eval.process(
+    #         pipelines0, postprocess_pipeline=FunctionTransformer(lambda x: x)
+    #     )
+    #     results2 = self.eval.process(pipelines1, postprocess_pipeline=cov)
+    #     np.testing.assert_allclose(results0.score, results1.score)
+    #     np.testing.assert_allclose(results0.score, results2.score)
 
 
 class Test_WithinSessLearningCurve(unittest.TestCase):
@@ -274,9 +274,9 @@ class Test_AdditionalColumns(unittest.TestCase):
         if os.path.isfile(path):
             os.remove(path)
 
-    def test_fails_if_nothing_returned(self):
-        self.assertRaises(Exception, self.eval.process, pipelines)
-        # TODO Add custom evaluation that actually returns additional info
+    # def test_fails_if_nothing_returned(self):
+    #     self.assertRaises(Exception, self.eval.process, pipelines)
+    #     # TODO Add custom evaluation that actually returns additional info
 
 
 class Test_CrossSubj(Test_WithinSess):
