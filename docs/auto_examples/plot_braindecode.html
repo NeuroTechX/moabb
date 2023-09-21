@@ -749,60 +749,58 @@ Here, we will use the EEGNet v4 model <a class="footnote-reference brackets" hre
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/analysis/results.py:93: RuntimeWarning: Setting non-standard config type: &quot;MOABB_RESULTS&quot;
   set_config(&quot;MOABB_RESULTS&quot;, osp.join(osp.expanduser(&quot;~&quot;), &quot;mne_data&quot;))
 [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-/home/runner/work/moabb/moabb/moabb/paradigms/base.py:346: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
+/home/runner/work/moabb/moabb/moabb/paradigms/base.py:354: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
   X = mne.concatenate_epochs(X)
-No hdf5_path provided, models will not be saved.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5312        0.6930       0.5172        0.6931  0.4271
-      2       0.5156        0.6931       0.4828        0.6932  0.3422
-      3       0.5156        0.6932       0.4828        0.6932  0.3422
+      1       0.5312        0.6930       0.5172        0.6931  0.4006
+      2       0.5156        0.6931       0.4828        0.6932  0.3617
+      3       0.5156        0.6932       0.4828        0.6932  0.3896
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5000        0.6937       0.4828        0.6932  0.3404
-      2       0.6562        0.6926       0.4828        0.6932  0.3438
-      3       0.5156        0.6933       0.4828        0.6932  0.3556
+      1       0.5000        0.6937       0.4828        0.6932  0.3674
+      2       0.6562        0.6926       0.4828        0.6932  0.3741
+      3       0.5156        0.6933       0.4828        0.6932  0.3665
 Stopping since valid_loss has not improved in the last 3 epochs.
-/home/runner/work/moabb/moabb/moabb/paradigms/base.py:346: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
+/home/runner/work/moabb/moabb/moabb/paradigms/base.py:354: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
   X = mne.concatenate_epochs(X)
-No hdf5_path provided, models will not be saved.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4688        0.6936       0.5172        0.6931  0.3631
-      2       0.4844        0.6935       0.5172        0.6930  0.3494
-      3       0.4531        0.6929       0.5172        0.6930  0.3426
-      4       0.4688        0.6934       0.5172        0.6929  0.3544
-      5       0.6406        0.6913       0.5172        0.6929  0.3355
-      6       0.5312        0.6917       0.5172        0.6929  0.3114
-      7       0.4531        0.6929       0.5172        0.6928  0.3329
-      8       0.4688        0.6928       0.5172        0.6928  0.3383
-      9       0.5156        0.6911       0.5172        0.6928  0.3415
+      1       0.4688        0.6936       0.5172        0.6931  0.3742
+      2       0.4844        0.6935       0.5172        0.6930  0.3787
+      3       0.4531        0.6929       0.5172        0.6930  0.3708
+      4       0.4688        0.6934       0.5172        0.6929  0.3930
+      5       0.6406        0.6913       0.5172        0.6929  0.3417
+      6       0.5312        0.6917       0.5172        0.6929  0.3826
+      7       0.4531        0.6929       0.5172        0.6928  0.3744
+      8       0.4688        0.6928       0.5172        0.6928  0.3631
+      9       0.5156        0.6911       0.5172        0.6928  0.3989
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.6938       0.5172        0.6931  0.3338
-      2       0.5625        0.6925       0.5172        0.6930  0.3602
-      3       0.5312        0.6927       0.5172        0.6930  0.3403
+      1       0.4844        0.6938       0.5172        0.6931  0.3873
+      2       0.5625        0.6925       0.5172        0.6930  0.3647
+      3       0.5312        0.6927       0.5172        0.6930  0.3977
 Stopping since valid_loss has not improved in the last 3 epochs.
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   23.4s finished
+[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   29.9s finished
       score      time  samples  ... n_sessions       dataset  pipeline
-0  0.462577  3.760202    144.0  ...          2  BNCI2014-001  EEGNetV4
-1  0.478106  3.615328    144.0  ...          2  BNCI2014-001  EEGNetV4
-2  0.463638  5.742591    144.0  ...          2  BNCI2014-001  EEGNetV4
-3  0.555363  3.967157    144.0  ...          2  BNCI2014-001  EEGNetV4
+0  0.482735  4.734970    144.0  ...          2  BNCI2014-001  EEGNetV4
+1  0.506752  4.665517    144.0  ...          2  BNCI2014-001  EEGNetV4
+2  0.484279  6.973729    144.0  ...          2  BNCI2014-001  EEGNetV4
+3  0.551119  5.065471    144.0  ...          2  BNCI2014-001  EEGNetV4
 
 [4 rows x 9 columns]
 </pre></div>
@@ -827,8 +825,8 @@ network for EEG-based brain-computer interfaces.</a>
 Journal of neural engineering, 15(5), 056013.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  28.961 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  259 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  37.829 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  126 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-braindecode-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/c9b0437022c98a63476dd3cad6cb69c7/plot_braindecode.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_braindecode.py</span></code></a></p>
