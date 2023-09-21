@@ -41,12 +41,13 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
 
 
 class SetRawAnnotations(FixedTransformer):
-    def __init__(self, event_id):
+    def __init__(self, event_id, durations: Union[float, Dict[str, float]]):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         if len(set(event_id.values())) != len(event_id):
             raise ValueError("Duplicate event code")
         self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
+        self.durations = durations
 
     def transform(self, raw, y=None):
         if raw.annotations:
@@ -64,6 +65,7 @@ class SetRawAnnotations(FixedTransformer):
             first_samp=raw.first_samp,
             verbose=False,
         )
+        annotations.set_durations(self.durations)
         raw.set_annotations(annotations)
         return raw
 
