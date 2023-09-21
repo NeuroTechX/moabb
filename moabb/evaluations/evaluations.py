@@ -220,7 +220,10 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     # Implement Grid Search
                     grid_clf = self._grid_search(
-                        param_grid=param_grid, name=name, grid_clf=grid_clf, inner_cv=inner_cv
+                        param_grid=param_grid,
+                        name=name,
+                        grid_clf=grid_clf,
+                        inner_cv=inner_cv,
                     )
                     if self.hdf5_path is not None:
                         model_save_path = create_save_path(
@@ -245,7 +248,9 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                             if self.hdf5_path is not None:
                                 save_model_cv(
-                                    model=cvclf, save_path=model_save_path, cv_index=cv_ind
+                                    model=cvclf,
+                                    save_path=model_save_path,
+                                    cv_index=cv_ind,
                                 )
 
                         acc = np.array(acc)
@@ -505,7 +510,9 @@ class CrossSessionEvaluation(BaseEvaluation):
             return grid_clf
 
     # flake8: noqa: C901
-    def evaluate(self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline):
+    def evaluate(
+        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline
+    ):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
             # Progressbar at subject level
@@ -540,7 +547,9 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                 # we want to store a results per session
                 cv = LeaveOneGroupOut()
-                inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
+                inner_cv = StratifiedKFold(
+                    3, shuffle=True, random_state=self.random_state
+                )
 
                 grid_clf = clone(clf)
 
@@ -573,7 +582,9 @@ class CrossSessionEvaluation(BaseEvaluation):
 
                         if self.hdf5_path is not None:
                             save_model_cv(
-                                model=cvclf, save_path=model_save_path, cv_index=str(cv_ind)
+                                model=cvclf,
+                                save_path=model_save_path,
+                                cv_index=str(cv_ind),
                             )
                     else:
                         result = _fit_and_score(
@@ -599,7 +610,9 @@ class CrossSessionEvaluation(BaseEvaluation):
                     duration = time() - t_start
                     if self.hdf5_path is not None:
                         save_model_list(
-                            model_list=model_list, score_list=score, save_path=model_save_path
+                            model_list=model_list,
+                            score_list=score,
+                            save_path=model_save_path,
                         )
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
