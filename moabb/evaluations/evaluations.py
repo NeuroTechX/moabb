@@ -220,7 +220,10 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                     # Implement Grid Search
                     grid_clf = self._grid_search(
-                        param_grid=param_grid, name=name, grid_clf=grid_clf, inner_cv=inner_cv
+                        param_grid=param_grid,
+                        name=name,
+                        grid_clf=grid_clf,
+                        inner_cv=inner_cv,
                     )
                     if self.hdf5_path is not None:
                         model_save_path = create_save_path(
@@ -505,7 +508,7 @@ class CrossSessionEvaluation(BaseEvaluation):
             return grid_clf
 
     # flake8: noqa: C901
-    def evaluate(self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None):
+    def evaluate(self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
             # Progressbar at subject level
