@@ -75,6 +75,7 @@ Bugs
 - Fixing dataset downloader from servers with non-http (PR :gh:`433` by `Sara Sedlar`_)
 - Fix ``dataset_list`` to include deprecated datasets (PR :gh:`464` by `Bruno Aristimunha`_)
 - Fixed bug in :func:`moabb.analysis.results.get_string_rep` to handle addresses such as 0x__0A as well (PR :gh:`468` by `Anton Andreev`_)
+- Removing joblib Parallel (:gh:`423` by `Igor Carrara`_)
 
 API changes
 ~~~~~~~~~~~
