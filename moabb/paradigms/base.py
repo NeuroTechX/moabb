@@ -167,7 +167,15 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         process_pipelines = []
         for raw_pipeline in raw_pipelines:
             steps = []
-            steps.append((StepType.RAW, SetRawAnnotations(dataset.event_id)))
+            steps.append(
+                (
+                    StepType.RAW,
+                    SetRawAnnotations(
+                        dataset.event_id,
+                        durations=dataset.interval[1] - dataset.interval[0],
+                    ),
+                )
+            )
             if raw_pipeline is not None:
                 steps.append((StepType.RAW, raw_pipeline))
             if epochs_pipeline is not None:
