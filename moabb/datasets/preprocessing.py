@@ -79,7 +79,7 @@ class RawToEvents(FixedTransformer):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
 
-    def transform(self, raw, y=None):
+    def _find_events(self, raw):
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) > 0:
             # returns empty array if none found
@@ -93,42 +93,36 @@ class RawToEvents(FixedTransformer):
                 if str(e) == "Could not find any of the events you specified.":
                     return np.zeros((0, 3), dtype="int32")
                 raise e
+        return events
 
+    def _pick_events(self, events, include):
         try:
-            return mne.pick_events(events, include=list(self.event_id.values()))
+            return mne.pick_events(events, include=include)
         except RuntimeError as e:
             if str(e) == "No events found":
                 return np.zeros((0, 3), dtype="int32")
             raise e
 
-
-class RawToEventsP300(FixedTransformer):
-    def __init__(self, event_id):
-        assert isinstance(event_id, dict)  # not None
-        self.event_id = event_id
-
     def transform(self, raw, y=None):
+        events = self._find_events(raw)
+        return self._pick_events(events, list(self.event_id.values()))
+
+
+class RawToEventsP300(RawToEvents):
+    def transform(self, raw, y=None):
+        events = self._find_events(raw)
         event_id = self.event_id
-        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
-        if len(stim_channels) > 0:
-            events = mne.find_events(raw, shortest_event=0, verbose=False)
-        else:
-            events, _ = mne.events_from_annotations(raw, event_id=event_id, verbose=False)
-        try:
-            if "Target" in event_id and "NonTarget" in event_id:
-                if (
-                    type(event_id["Target"]) is list
-                    and type(event_id["NonTarget"]) == list
-                ):
-                    event_id_new = dict(Target=1, NonTarget=0)
-                    events = mne.merge_events(events, event_id["Target"], 1)
-                    events = mne.merge_events(events, event_id["NonTarget"], 0)
-                    event_id = event_id_new
-            events = mne.pick_events(events, include=list(event_id.values()))
-        except RuntimeError:
-            # skip raw if no event found
-            return
-        return events
+        if (
+            "Target" in event_id
+            and "NonTarget" in event_id
+            and type(event_id["Target"]) is list
+            and type(event_id["NonTarget"]) is list
+        ):
+            event_id_new = dict(Target=1, NonTarget=0)
+            events = mne.merge_events(events, event_id["Target"], 1)
+            events = mne.merge_events(events, event_id["NonTarget"], 0)
+            event_id = event_id_new
+        return self._pick_events(events, list(event_id.values()))
 
 
 class RawToFixedIntervalEvents(FixedTransformer):
