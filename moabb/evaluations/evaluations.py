@@ -254,8 +254,11 @@ class WithinSessionEvaluation(BaseEvaluation):
             scorer = get_scorer(self.paradigm.scoring)
             acc = list()
             cvclf = deepcopy(clf)
-            cvclf.fit(X[train_idx], y[train_idx])
-            acc.append(scorer(cvclf, X[test_idx], y[test_idx]))
+            le = LabelEncoder()
+            y_train = le.fit_transform(y[train_idx])
+            y_test = le.transform(y[test_idx])
+            cvclf.fit(X[train_idx], y_train)
+            acc.append(scorer(cvclf, X[test_idx], y_test))
 
             if self.hdf5_path is not None:
                 save_model_cv(model=cvclf, save_path=model_save_path, cv_index=cv_ind)
@@ -271,7 +274,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
             nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
             res = {
-                "time": duration / 5.0,  # 5 fold CV
+                "time": duration / self.n_splits,  # k-fold CV
                 "dataset": dataset,
                 "subject": subject,
                 "session": session,
