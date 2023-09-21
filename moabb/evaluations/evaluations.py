@@ -4,7 +4,6 @@ from time import time
 from typing import Optional, Union
 
 import numpy as np
-from joblib import Parallel, delayed
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
@@ -17,7 +16,6 @@ from sklearn.model_selection import (
 )
 from sklearn.model_selection._validation import _fit_and_score, _score
 from sklearn.preprocessing import LabelEncoder
-from sklearn.utils import parallel_backend
 from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
