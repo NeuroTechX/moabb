@@ -200,7 +200,7 @@ class RawToEpochs(FixedTransformer):
     def transform(self, X, y=None):
         raw = X["raw"]
         events = X["events"]
-        if events is None or len(events) == 0:
+        if len(events) == 0:
             raise ValueError("No events found")
         if not isinstance(raw, mne.io.BaseRaw):
             raise ValueError("raw must be a mne.io.BaseRaw")
