@@ -508,7 +508,7 @@ class CrossSessionEvaluation(BaseEvaluation):
             return grid_clf
 
     # flake8: noqa: C901
-    def evaluate(self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline):
+    def evaluate(self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
             # Progressbar at subject level
