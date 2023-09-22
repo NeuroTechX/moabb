@@ -298,6 +298,7 @@ class Test_CrossSubj(Test_WithinSess):
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
             hdf5_path="res_test",
+            save_model=True
         )
 
     def test_compatible_dataset(self):
@@ -316,6 +317,7 @@ class Test_CrossSess(Test_WithinSess):
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
             hdf5_path="res_test",
+            save_model=True
         )
 
     def test_compatible_dataset(self):
