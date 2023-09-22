@@ -778,7 +778,13 @@ class Test_FixedIntervalWindowsProcessing(unittest.TestCase):
         ]
         for processing in processings:
             for paradigm_name in ["ssvep", "p300", "imagery"]:
-                dataset = FakeDataset(paradigm=paradigm_name, n_sessions=1, n_runs=1)
+                dataset = FakeDataset(
+                    paradigm=paradigm_name,
+                    n_sessions=1,
+                    n_runs=1,
+                    duration=55.4,
+                    sfreq=128,
+                )
                 X, labels, metadata = processing.get_data(dataset, subjects=[1])
 
                 # Verify that they have the same length
@@ -803,7 +809,7 @@ class Test_FixedIntervalWindowsProcessing(unittest.TestCase):
                 raws, _, _ = processing.get_data(dataset, subjects=[1], return_raws=True)
                 for raw in raws:
                     self.assertIsInstance(raw, BaseRaw)
-                n_times = 60 * len(dataset.event_id) * 128  # 128 = dataset sfreq
+                n_times = int(55.4 * 128)
                 n_epochs = ceil(
                     (n_times - int(processing.length * 128))
                     / int(processing.stride * 128)
