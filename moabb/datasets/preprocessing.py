@@ -63,11 +63,14 @@ class SetRawAnnotations(FixedTransformer):
         self.durations = durations
 
     def transform(self, raw, y=None):
-        if raw.annotations is not None:
+        if raw.annotations:
             return raw
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) == 0:
-            raise ValueError("Need either a stim channel or annotations")
+            log.warning(
+                "No stim channel nor annotations found, skipping setting annotations."
+            )
+            return raw
         events = mne.find_events(raw, shortest_event=0, verbose=False)
         events = _unsafe_pick_events(events, include=list(self.event_id.values()))
         if len(events) != 0:
@@ -79,9 +82,9 @@ class SetRawAnnotations(FixedTransformer):
                 verbose=False,
             )
             annotations.set_durations(self.durations)
+            raw.set_annotations(annotations)
         else:
-            annotations = mne.Annotations([], [], [])
-        raw.set_annotations(annotations)
+            log.warning("No events found, skipping setting annotations.")
         return raw
 
 
