@@ -3,7 +3,7 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
-from mne import annotations_from_events, create_info, get_config, set_config
+from mne import Annotations, annotations_from_events, create_info, get_config, set_config
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 
@@ -140,10 +140,13 @@ class FakeDataset(BaseDataset):
 
         if self.annotations:
             event_desc = {v: k for k, v in self.event_id.items()}
-            annotations = annotations_from_events(
-                events, sfreq=sfreq, event_desc=event_desc
-            )
-            annotations.set_durations(self.interval[1] - self.interval[0])
+            if len(events) != 0:
+                annotations = annotations_from_events(
+                    events, sfreq=sfreq, event_desc=event_desc
+                )
+                annotations.set_durations(self.interval[1] - self.interval[0])
+            else:
+                annotations = Annotations([], [], [])
             raw.set_annotations(annotations)
 
         return raw
