@@ -21,6 +21,15 @@ def _is_none_pipeline(pipeline):
     )
 
 
+def _unsafe_pick_events(events, include):
+    try:
+        return mne.pick_events(events, include=include)
+    except RuntimeError as e:
+        if str(e) == "No events found":
+            return np.zeros((0, 3), dtype="int32")
+        raise e
+
+
 class ForkPipelines(TransformerMixin, BaseEstimator):
     def __init__(self, transformers: List[Tuple[str, Union[Pipeline, TransformerMixin]]]):
         for _, t in transformers:
@@ -41,6 +50,10 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
 
 
 class SetRawAnnotations(FixedTransformer):
+    """
+    Always sets the annotations, even if the events list is empty
+    """
+
     def __init__(self, event_id, durations: Union[float, Dict[str, float]]):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
@@ -50,22 +63,24 @@ class SetRawAnnotations(FixedTransformer):
         self.durations = durations
 
     def transform(self, raw, y=None):
-        if raw.annotations:
+        if raw.annotations is not None:
             return raw
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) == 0:
             raise ValueError("Need either a stim channel or annotations")
         events = mne.find_events(raw, shortest_event=0, verbose=False)
-        # we don't catch the error if no event found:
-        events = mne.pick_events(events, include=list(self.event_id.values()))
-        annotations = mne.annotations_from_events(
-            events,
-            raw.info["sfreq"],
-            self.event_desc,
-            first_samp=raw.first_samp,
-            verbose=False,
-        )
-        annotations.set_durations(self.durations)
+        events = _unsafe_pick_events(events, include=list(self.event_id.values()))
+        if len(events) != 0:
+            annotations = mne.annotations_from_events(
+                events,
+                raw.info["sfreq"],
+                self.event_desc,
+                first_samp=raw.first_samp,
+                verbose=False,
+            )
+            annotations.set_durations(self.durations)
+        else:
+            annotations = mne.Annotations([], [], [])
         raw.set_annotations(annotations)
         return raw
 
@@ -95,17 +110,9 @@ class RawToEvents(FixedTransformer):
                 raise e
         return events
 
-    def _pick_events(self, events, include):
-        try:
-            return mne.pick_events(events, include=include)
-        except RuntimeError as e:
-            if str(e) == "No events found":
-                return np.zeros((0, 3), dtype="int32")
-            raise e
-
     def transform(self, raw, y=None):
         events = self._find_events(raw)
-        return self._pick_events(events, list(self.event_id.values()))
+        return _unsafe_pick_events(events, list(self.event_id.values()))
 
 
 class RawToEventsP300(RawToEvents):
@@ -122,7 +129,7 @@ class RawToEventsP300(RawToEvents):
             events = mne.merge_events(events, event_id["Target"], 1)
             events = mne.merge_events(events, event_id["NonTarget"], 0)
             event_id = event_id_new
-        return self._pick_events(events, list(event_id.values()))
+        return _unsafe_pick_events(events, list(event_id.values()))
 
 
 class RawToFixedIntervalEvents(FixedTransformer):
