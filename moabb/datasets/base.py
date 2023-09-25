@@ -197,7 +197,13 @@ class BaseDataset(metaclass=abc.ABCMeta):
     def _create_process_pipeline(self):
         return Pipeline(
             [
-                (StepType.RAW, SetRawAnnotations(self.event_id)),
+                (
+                    StepType.RAW,
+                    SetRawAnnotations(
+                        self.event_id,
+                        durations=self.interval[1] - self.interval[0],
+                    ),
+                ),
             ]
         )
 

@@ -10,6 +10,7 @@ from mne.channels import make_standard_montage
 from mne.datasets.utils import _get_path
 from mne.io import RawArray
 from pooch import retrieve
+from pooch.downloaders import choose_downloader
 from scipy.io import loadmat
 
 from .base import BaseDataset
@@ -34,12 +35,15 @@ def eeg_data_path(base_path, subject, accept):
                             "You must accept licence term to download this dataset,"
                             "set accept=True when instantiating the dataset."
                         )
+                    downloader = choose_downloader(SHIN_URL, progressbar=True)
+                    downloader.kwargs.setdefault("verify", False)
                     retrieve(
                         "{}/EEG/EEG_{:02d}-{:02d}.zip".format(SHIN_URL, low, high),
                         None,
                         fname="EEG.zip",
                         path=base_path,
                         progressbar=True,
+                        downloader=downloader,
                     )
                 with z.ZipFile(op.join(base_path, "EEG.zip"), "r") as f:
                     f.extractall(op.join(base_path, "EEG"))

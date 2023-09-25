@@ -65,6 +65,7 @@ class BaseEvaluation(ABC):
         return_raws=False,
         mne_labels=False,
         n_splits=None,
+        save_model=False,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -75,6 +76,7 @@ class BaseEvaluation(ABC):
         self.return_raws = return_raws
         self.mne_labels = mne_labels
         self.n_splits = n_splits
+        self.save_model = save_model
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
