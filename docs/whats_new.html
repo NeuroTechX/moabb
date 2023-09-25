@@ -464,6 +464,7 @@ document.write(`
 <li><p>Increase the python version to 3.11 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/470">#470</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/473">#473</a> by <a class="reference external" href="https://github.com/gcattan">Gregoire Cattan</a>)</p></li>
 <li><p>Automate setting of event_id in compound dataset and add <cite>data_origin</cite> information to the data (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/475">#475</a> by <a class="reference external" href="https://github.com/gcattan">Gregoire Cattan</a>)</p></li>
+<li><p>Add possibility of not saving the model (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/489">#489</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>)</p></li>
 </ul>
 </section>
 <section id="bugs">
@@ -489,6 +490,8 @@ document.write(`
 <li><p>Fixing dataset downloader from servers with non-http (PR <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/433">#433</a> by <a class="reference external" href="https://github.com/Sara04">Sara Sedlar</a>)</p></li>
 <li><p>Fix <code class="docutils literal notranslate"><span class="pre">dataset_list</span></code> to include deprecated datasets (PR <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/464">#464</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Fixed bug in <code class="xref py py-func docutils literal notranslate"><span class="pre">moabb.analysis.results.get_string_rep()</span></code> to handle addresses such as 0x__0A as well (PR <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/468">#468</a> by <a href="#id34"><span class="problematic" id="id35">`Anton Andreev`_</span></a>)</p></li>
+<li><p>Removing joblib Parallel (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/488">#488</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>)</p></li>
+<li><p>Fix case when events specified via <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> but no events (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/491">#491</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 </ul>
 </section>
 <section id="api-changes">

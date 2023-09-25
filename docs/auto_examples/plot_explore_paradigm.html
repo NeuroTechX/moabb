@@ -378,12 +378,12 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_tutorials/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
 
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
@@ -811,7 +811,7 @@ it will return the list all the imagery datasets from the MOABB.</p>
 <span class="nb">print</span><span class="p">([</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span><span class="o">.</span><span class="n">code</span></a> <span class="k">for</span> <a href="../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">compatible_datasets</span></a><span class="p">])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;AlexandreMotorImagery&#39;, &#39;BNCI2014-001&#39;, &#39;BNCI2014-002&#39;, &#39;BNCI2014-004&#39;, &#39;BNCI2014-001&#39;, &#39;BNCI2014-002&#39;, &#39;BNCI2014-004&#39;, &#39;BNCI2015-001&#39;, &#39;BNCI2015-004&#39;, &#39;BNCI2015-001&#39;, &#39;BNCI2015-004&#39;, &#39;Cho2017&#39;, &#39;FakeDataset-imagery-10-2-2-fake1fake2fake3-c3czc4&#39;, &#39;GrosseWentrup2009&#39;, &#39;Lee2019-MI&#39;, &#39;GrosseWentrup2009&#39;, &#39;Ofner2017&#39;, &#39;PhysionetMotorImagery&#39;, &#39;Schirrmeister2017&#39;, &#39;Shin2017A&#39;, &#39;Weibo2014&#39;, &#39;Zhou2016&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;AlexandreMotorImagery&#39;, &#39;BNCI2014-001&#39;, &#39;BNCI2014-002&#39;, &#39;BNCI2014-004&#39;, &#39;BNCI2014-001&#39;, &#39;BNCI2014-002&#39;, &#39;BNCI2014-004&#39;, &#39;BNCI2015-001&#39;, &#39;BNCI2015-004&#39;, &#39;BNCI2015-001&#39;, &#39;BNCI2015-004&#39;, &#39;Cho2017&#39;, &#39;FakeDataset-imagery-10-2--60-60--120-120--fake1-fake2-fake3--c3-cz-c4&#39;, &#39;GrosseWentrup2009&#39;, &#39;Lee2019-MI&#39;, &#39;GrosseWentrup2009&#39;, &#39;Ofner2017&#39;, &#39;PhysionetMotorImagery&#39;, &#39;Schirrmeister2017&#39;, &#39;Shin2017A&#39;, &#39;Weibo2014&#39;, &#39;Zhou2016&#39;]
 </pre></div>
 </div>
 </section>
@@ -884,8 +884,8 @@ corresponding to left- and right-hand motor imagination.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;left_hand&#39; &#39;right_hand&#39;]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  44.045 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  572 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  32.413 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  658 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-explore-paradigm-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9b872d163c45f60eb451b1869667203a/plot_explore_paradigm.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_explore_paradigm.py</span></code></a></p>

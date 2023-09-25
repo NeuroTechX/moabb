@@ -378,12 +378,12 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_tutorials/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
 
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
@@ -681,78 +681,34 @@ be overwritten if necessary.</p>
 <span class="n">results</span> <span class="o">=</span> <a href="../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-
-
-  0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
-
-  0%|                                     | 8.19k/18.5M [00:00&lt;06:15, 49.3kB/s]
-
-  0%|                                      | 32.8k/18.5M [00:00&lt;02:53, 106kB/s]
-
-  0%|▏                                     | 88.1k/18.5M [00:00&lt;01:28, 208kB/s]
-
-  1%|▎                                      | 176k/18.5M [00:00&lt;00:55, 333kB/s]
-
-  2%|▊                                      | 377k/18.5M [00:00&lt;00:28, 642kB/s]
-
-  4%|█▌                                    | 768k/18.5M [00:01&lt;00:14, 1.21MB/s]
-
-  8%|███                                  | 1.56M/18.5M [00:01&lt;00:07, 2.36MB/s]
-
- 17%|██████▎                              | 3.14M/18.5M [00:01&lt;00:03, 4.60MB/s]
-
- 33%|████████████                         | 6.04M/18.5M [00:01&lt;00:01, 8.54MB/s]
-
- 45%|████████████████▌                    | 8.32M/18.5M [00:01&lt;00:01, 10.1MB/s]
-
- 59%|█████████████████████▊               | 10.9M/18.5M [00:01&lt;00:00, 11.8MB/s]
-
- 73%|███████████████████████████          | 13.6M/18.5M [00:02&lt;00:00, 12.9MB/s]
-
- 87%|████████████████████████████████▏    | 16.1M/18.5M [00:02&lt;00:00, 13.5MB/s]
-
-  0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 22.4GB/s]
-No hdf5_path provided, models will not be saved.
-No hdf5_path provided, models will not be saved.
-No hdf5_path provided, models will not be saved.
-No hdf5_path provided, models will not be saved.
-No hdf5_path provided, models will not be saved.
-No hdf5_path provided, models will not be saved.
-
-BNCI2014-009-WithinSession:  50%|#####     | 1/2 [00:25&lt;00:25, 25.68s/it]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/18.5M [00:00&lt;06:16, 49.1kB/s]
+  0%|                                      | 32.8k/18.5M [00:00&lt;01:49, 168kB/s]
 
-  0%|                                      | 32.8k/18.5M [00:00&lt;02:54, 106kB/s]
+  1%|▎                                      | 153k/18.5M [00:00&lt;00:30, 604kB/s]
 
-  1%|▏                                     | 96.3k/18.5M [00:00&lt;01:20, 230kB/s]
+  2%|▋                                     | 349k/18.5M [00:00&lt;00:16, 1.12MB/s]
 
-  1%|▍                                      | 184k/18.5M [00:00&lt;00:53, 346kB/s]
+  3%|█▎                                    | 616k/18.5M [00:00&lt;00:10, 1.66MB/s]
 
-  2%|▊                                      | 392k/18.5M [00:00&lt;00:27, 666kB/s]
+  6%|██▏                                  | 1.11M/18.5M [00:00&lt;00:06, 2.75MB/s]
 
-  4%|█▋                                    | 808k/18.5M [00:01&lt;00:13, 1.28MB/s]
+ 12%|████▎                                | 2.14M/18.5M [00:00&lt;00:03, 5.17MB/s]
 
-  9%|███▎                                 | 1.64M/18.5M [00:01&lt;00:06, 2.47MB/s]
+ 22%|████████                             | 4.03M/18.5M [00:00&lt;00:01, 9.51MB/s]
 
- 18%|██████▌                              | 3.30M/18.5M [00:01&lt;00:03, 4.83MB/s]
+ 39%|██████████████▎                      | 7.16M/18.5M [00:00&lt;00:00, 16.3MB/s]
 
- 34%|████████████▌                        | 6.31M/18.5M [00:01&lt;00:01, 8.90MB/s]
+ 56%|████████████████████▌                | 10.3M/18.5M [00:00&lt;00:00, 20.9MB/s]
 
- 46%|████████████████▊                    | 8.43M/18.5M [00:01&lt;00:01, 10.0MB/s]
+ 73%|██████████████████████████▉          | 13.5M/18.5M [00:01&lt;00:00, 24.2MB/s]
 
- 59%|█████████████████████▊               | 10.9M/18.5M [00:01&lt;00:00, 11.4MB/s]
-
- 73%|██████████████████████████▊          | 13.5M/18.5M [00:02&lt;00:00, 12.6MB/s]
-
- 86%|███████████████████████████████▊     | 15.9M/18.5M [00:02&lt;00:00, 13.2MB/s]
+ 89%|████████████████████████████████▉    | 16.5M/18.5M [00:01&lt;00:00, 26.0MB/s]
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 28.0GB/s]
+100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 29.2GB/s]
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
@@ -760,9 +716,45 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-009-WithinSession: 100%|##########| 2/2 [00:49&lt;00:00, 24.80s/it]
-BNCI2014-009-WithinSession: 100%|##########| 2/2 [00:49&lt;00:00, 24.93s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   49.9s finished
+BNCI2014-009-WithinSession:  50%|#####     | 1/2 [00:10&lt;00:10, 10.82s/it]
+
+  0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
+
+  0%|                                      | 32.8k/18.5M [00:00&lt;01:49, 168kB/s]
+
+  1%|▎                                      | 120k/18.5M [00:00&lt;00:39, 465kB/s]
+
+  2%|▋                                     | 312k/18.5M [00:00&lt;00:17, 1.02MB/s]
+
+  3%|█▏                                    | 603k/18.5M [00:00&lt;00:10, 1.68MB/s]
+
+  6%|██                                   | 1.05M/18.5M [00:00&lt;00:06, 2.61MB/s]
+
+ 11%|████                                 | 2.06M/18.5M [00:00&lt;00:03, 5.01MB/s]
+
+ 21%|███████▊                             | 3.89M/18.5M [00:00&lt;00:01, 9.22MB/s]
+
+ 38%|██████████████                       | 7.02M/18.5M [00:00&lt;00:00, 16.1MB/s]
+
+ 54%|███████████████████▊                 | 9.93M/18.5M [00:00&lt;00:00, 20.1MB/s]
+
+ 68%|█████████████████████████            | 12.5M/18.5M [00:01&lt;00:00, 21.9MB/s]
+
+ 83%|██████████████████████████████▌      | 15.3M/18.5M [00:01&lt;00:00, 23.6MB/s]
+
+ 98%|████████████████████████████████████▎| 18.2M/18.5M [00:01&lt;00:00, 25.1MB/s]
+
+  0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 35.2GB/s]
+No hdf5_path provided, models will not be saved.
+No hdf5_path provided, models will not be saved.
+No hdf5_path provided, models will not be saved.
+No hdf5_path provided, models will not be saved.
+No hdf5_path provided, models will not be saved.
+No hdf5_path provided, models will not be saved.
+
+BNCI2014-009-WithinSession: 100%|##########| 2/2 [00:21&lt;00:00, 10.58s/it]
+BNCI2014-009-WithinSession: 100%|##########| 2/2 [00:21&lt;00:00, 10.62s/it]
 </pre></div>
 </div>
 </section>
@@ -789,8 +781,8 @@ BNCI2014-009-WithinSession: 100%|##########| 2/2 [00:49&lt;00:00, 24.93s/it]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_within_session_p300_001.png" srcset="../_images/sphx_glr_plot_within_session_p300_001.png" alt="plot within session p300" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  56.544 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  11 MB</p>
+<img src="../_images/sphx_glr_plot_within_session_p300_001.png" srcset="../_images/sphx_glr_plot_within_session_p300_001.png" alt="plot within session p300" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  23.750 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-within-session-p300-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/39844aaaee383c2803c6ac93e64037d5/plot_within_session_p300.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_within_session_p300.py</span></code></a></p>

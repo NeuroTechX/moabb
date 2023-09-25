@@ -378,12 +378,12 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_tutorials/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
 
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
@@ -686,17 +686,15 @@ each subject and pipeline.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>MAMEM3-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s][Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-No hdf5_path provided, models will not be saved.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>MAMEM3-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 
-MAMEM3-WithinSession:  50%|#####     | 1/2 [00:27&lt;00:27, 27.99s/it]No hdf5_path provided, models will not be saved.
+MAMEM3-WithinSession:  50%|#####     | 1/2 [00:15&lt;00:15, 15.57s/it]No hdf5_path provided, models will not be saved.
 
-MAMEM3-WithinSession: 100%|##########| 2/2 [00:56&lt;00:00, 28.04s/it]
-MAMEM3-WithinSession: 100%|##########| 2/2 [00:56&lt;00:00, 28.03s/it]
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   56.1s finished
+MAMEM3-WithinSession: 100%|##########| 2/2 [00:31&lt;00:00, 15.57s/it]
+MAMEM3-WithinSession: 100%|##########| 2/2 [00:31&lt;00:00, 15.57s/it]
       score      time  samples subject  ... channels  n_sessions  dataset pipeline
-0  0.688889  0.095939     45.0       1  ...       14           1   MAMEM3      CCA
-1  0.266667  0.097538     45.0       3  ...       14           1   MAMEM3      CCA
+0  0.688889  0.056635     45.0       1  ...       14           1   MAMEM3      CCA
+1  0.266667  0.054855     45.0       3  ...       14           1   MAMEM3      CCA
 
 [2 rows x 9 columns]
 </pre></div>
@@ -719,8 +717,8 @@ MAMEM3-WithinSession: 100%|##########| 2/2 [00:56&lt;00:00, 28.03s/it]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  1.815 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  11 MB</p>
+<img src="../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  34.638 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-within-session-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/09c597e028c1574e907e103b3db53254/plot_within_session_ssvep.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_within_session_ssvep.py</span></code></a></p>

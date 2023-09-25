@@ -378,12 +378,12 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_tutorials/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
 
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
@@ -678,14 +678,16 @@ be overwritten if necessary.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-[Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:   12.7s finished
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
+BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.81s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.50s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.55s/it]
       score      time  samples  ... n_sessions       dataset  pipeline
-0  0.962963  0.459876    144.0  ...          2  BNCI2014-001     RG+LR
-1  0.950424  0.380818    144.0  ...          2  BNCI2014-001     RG+LR
-2  0.585648  0.366462    144.0  ...          2  BNCI2014-001     RG+LR
-3  0.574846  0.411711    144.0  ...          2  BNCI2014-001     RG+LR
-4  0.955440  0.633082    144.0  ...          2  BNCI2014-001   CSP+LDA
+0  0.962963  0.314262    144.0  ...          2  BNCI2014-001     RG+LR
+1  0.950424  0.260984    144.0  ...          2  BNCI2014-001     RG+LR
+2  0.585648  0.273402    144.0  ...          2  BNCI2014-001     RG+LR
+3  0.574846  0.273537    144.0  ...          2  BNCI2014-001     RG+LR
+4  0.955440  0.404912    144.0  ...          2  BNCI2014-001   CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -731,8 +733,8 @@ points are in its quadrant.</p>
   sns.stripplot(
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  17.777 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  80 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.338 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  235 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/82e3e6cb009bb9a9c444c6cff254cea8/plot_cross_session_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_motor_imagery.py</span></code></a></p>

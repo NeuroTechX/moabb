@@ -107,6 +107,7 @@ evaluation = WithinSessionEvaluation(
     random_state=42,
     hdf5_path=path,
     n_jobs=-1,
+    save_model=True,
 )
 result = evaluation.process(pipelines, param_grid)
 
