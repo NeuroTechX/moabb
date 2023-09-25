@@ -778,7 +778,13 @@ class Test_FixedIntervalWindowsProcessing(unittest.TestCase):
         ]
         for processing in processings:
             for paradigm_name in ["ssvep", "p300", "imagery"]:
-                dataset = FakeDataset(paradigm=paradigm_name, n_sessions=1, n_runs=1)
+                dataset = FakeDataset(
+                    paradigm=paradigm_name,
+                    n_sessions=1,
+                    n_runs=1,
+                    duration=55.4,
+                    sfreq=128,
+                )
                 X, labels, metadata = processing.get_data(dataset, subjects=[1])
 
                 # Verify that they have the same length
@@ -803,7 +809,7 @@ class Test_FixedIntervalWindowsProcessing(unittest.TestCase):
                 raws, _, _ = processing.get_data(dataset, subjects=[1], return_raws=True)
                 for raw in raws:
                     self.assertIsInstance(raw, BaseRaw)
-                n_times = 60 * len(dataset.event_id) * 128  # 128 = dataset sfreq
+                n_times = int(55.4 * 128)
                 n_epochs = ceil(
                     (n_times - int(processing.length * 128))
                     / int(processing.stride * 128)
@@ -1101,3 +1107,35 @@ class Test_CVEP:
         assert CVEP(events=["1.0", "0.0"], n_classes=2).scoring == "roc_auc"
         assert CVEP(events=["1.0", "0.5", "0.0"], n_classes=3).scoring == "accuracy"
         assert CVEP(events=["1.0", "0.5", "0.0"], n_classes=2).scoring == "roc_auc"
+
+
+class TestParadigm:
+    @pytest.fixture(
+        params=[
+            (SimpleMotorImagery, "imagery"),
+            (SimpleP300, "p300"),
+            (SSVEP, "ssvep"),
+            (CVEP, "cvep"),
+        ]
+    )
+    def paradigm_cls_name(self, request):
+        paradigm, paradigm_name = request.param
+        return paradigm, paradigm_name
+
+    @pytest.mark.parametrize(
+        "stim,annotations", [(True, False), (False, True), (True, True)]
+    )
+    def test_no_events(self, stim, annotations, paradigm_cls_name):
+        # the paradigms should still be able to process the data
+        # even if some runs have no events
+        paradigm = paradigm_cls_name[0]()
+        dataset = FakeDataset(
+            stim=stim,
+            annotations=annotations,
+            paradigm=paradigm_cls_name[1],
+            n_sessions=2,
+            n_runs=2,
+            n_events=[0, 10],
+        )
+        X, y, metadata = paradigm.get_data(dataset, subjects=[1])
+        assert len(X) == len(y) == len(metadata) == 10 * 2

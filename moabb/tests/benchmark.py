@@ -21,10 +21,10 @@ class TestBenchmark(unittest.TestCase):
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
             include_datasets=[
-                "FakeDataset-imagery-10-2-2-lefthandrighthand-c3czc4",
-                "FakeDataset-p300-10-2-2-targetnontarget-c3czc4",
-                "FakeDataset-ssvep-10-2-2-1315-c3czc4",
-                "FakeDataset-cvep-10-2-2-1000-c3czc4",
+                "FakeDataset-imagery-10-2--60-60--120-120--lefthand-righthand--c3-cz-c4",
+                "FakeDataset-p300-10-2--60-60--120-120--target-nontarget--c3-cz-c4",
+                "FakeDataset-ssvep-10-2--60-60--120-120--13-15--c3-cz-c4",
+                "FakeDataset-cvep-10-2--60-60--120-120--10-00--c3-cz-c4",
             ],
             overwrite=True,
         )
