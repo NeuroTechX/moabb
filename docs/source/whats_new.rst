@@ -78,6 +78,7 @@ Bugs
 - Fixed bug in :func:`moabb.analysis.results.get_string_rep` to handle addresses such as 0x__0A as well (PR :gh:`468` by `Anton Andreev`_)
 - Removing joblib Parallel (:gh:`488` by `Igor Carrara`_)
 - Fix case when events specified via ``raw.annotations`` but no events (:gh:`491` by `Pierre Guetschel`_)
+- Fix bug in downloading Shin2017A dataset (:gh:`493` by `Igor Carrara`_)
 
 API changes
 ~~~~~~~~~~~

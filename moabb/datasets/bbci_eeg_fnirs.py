@@ -35,7 +35,7 @@ def eeg_data_path(base_path, subject, accept):
                             "You must accept licence term to download this dataset,"
                             "set accept=True when instantiating the dataset."
                         )
-                    downloader = choose_downloader(SHIN_URL, progressbar=True) #add
+                    downloader = choose_downloader(SHIN_URL, progressbar=True)
                     downloader.kwargs.setdefault("verify", False)
                     retrieve(
                         "{}/EEG/EEG_{:02d}-{:02d}.zip".format(SHIN_URL, low, high),
