@@ -8,7 +8,6 @@ from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import (
-    GridSearchCV,
     GroupKFold,
     LeaveOneGroupOut,
     StratifiedKFold,
