@@ -151,7 +151,7 @@ class BIDSInterfaceBase(abc.ABC):
         log.info("Attempting to retrieve cache of %s...", repr(self))
         self.lock_file.mkdir(exist_ok=True)
         if not self.lock_file.fpath.exists():
-            log.info("No cache found at %s.", {str(self.lock_file.directory)})
+            log.info("No cache found at %s.", str(self.lock_file.directory))
             return None
         paths = mne_bids.find_matching_paths(
             root=self.root,
@@ -168,7 +168,7 @@ class BIDSInterfaceBase(abc.ABC):
             session = sessions_data.setdefault(session_moabb, {})
             run = self._load_file(path, preload=preload)
             session[path.run] = run
-        log.info("Finished reading cache of %s", {repr(self)})
+        log.info("Finished reading cache of %s", repr(self))
         return sessions_data
 
     def save(self, sessions_data):
@@ -184,7 +184,7 @@ class BIDSInterfaceBase(abc.ABC):
 
         The type of the ``run`` object can vary (see the subclases).
         """
-        log.info("Starting caching %s", {repr(self)})
+        log.info("Starting caching %s", repr(self))
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
         mne_bids.make_dataset_description(
             path=str(self.root),

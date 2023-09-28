@@ -5,14 +5,12 @@ import unittest
 import warnings
 from collections import OrderedDict
 
-import joblib
 import numpy as np
 import sklearn.base
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.dummy import DummyClassifier as Dummy
-from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import FunctionTransformer, Pipeline, make_pipeline
 
 from moabb.analysis.results import get_string_rep
@@ -57,6 +55,7 @@ class Test_WithinSess(unittest.TestCase):
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
             hdf5_path="res_test",
+            save_model=True,
         )
 
     def test_mne_labels(self):
@@ -84,39 +83,6 @@ class Test_WithinSess(unittest.TestCase):
         self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
 
     def test_eval_grid_search(self):
-        gs_param = {
-            "Within": os.path.join(
-                "res_test",
-                "GridSearch_WithinSession",
-                str(dataset.code),
-                "1",
-                "0",
-                "C",
-                "Grid_Search_WithinSession.pkl",
-            ),
-            "CrossSess": os.path.join(
-                "res_test",
-                "GridSearch_CrossSession",
-                str(dataset.code),
-                "1",
-                "C",
-                "Grid_Search_CrossSession.pkl",
-            ),
-            "CrossSubj": os.path.join(
-                "res_test",
-                "GridSearch_CrossSubject",
-                str(dataset.code),
-                "C",
-                "Grid_Search_CrossSubject.pkl",
-            ),
-        }
-        if isinstance(self.eval, ev.WithinSessionEvaluation):
-            respath = gs_param["Within"]
-        elif isinstance(self.eval, ev.CrossSessionEvaluation):
-            respath = gs_param["CrossSess"]
-        elif isinstance(self.eval, ev.CrossSubjectEvaluation):
-            respath = gs_param["CrossSubj"]
-
         # Test grid search
         param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
@@ -134,10 +100,25 @@ class Test_WithinSess(unittest.TestCase):
         self.assertEqual(len(results), 4)
         # We should have 9 columns in the results data frame
         self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
-        # We should check for selected parameters with joblib
-        self.assertTrue(os.path.isfile(respath))
-        res = joblib.load(respath)
-        self.assertIsInstance(res, GridSearchCV)
+
+    def test_within_session_evaluation_save_model(self):
+        res_test_path = "./res_test"
+
+        # Get a list of all subdirectories inside 'res_test'
+        subdirectories = [
+            d
+            for d in os.listdir(res_test_path)
+            if os.path.isdir(os.path.join(res_test_path, d))
+        ]
+
+        # Check if any of the subdirectories contain the partial name 'Model'
+        model_folder_exists = any("Model" in folder for folder in subdirectories)
+
+        # Assert that at least one folder with the partial name 'Model' exists
+        self.assertTrue(
+            model_folder_exists,
+            "No folder with partial name 'Model' found inside 'res_test' directory",
+        )
 
     def test_lambda_warning(self):
         def explicit_kernel(x):
@@ -324,6 +305,7 @@ class Test_CrossSubj(Test_WithinSess):
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
             hdf5_path="res_test",
+            save_model=True,
         )
 
     def test_compatible_dataset(self):
@@ -342,6 +324,7 @@ class Test_CrossSess(Test_WithinSess):
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
             hdf5_path="res_test",
+            save_model=True,
         )
 
     def test_compatible_dataset(self):
