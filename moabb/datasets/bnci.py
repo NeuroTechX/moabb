@@ -748,7 +748,7 @@ class MNEBNCI(BaseDataset):
         )
 
 
-@depreciated_alias("BNCI2014001", "0.7")
+@depreciated_alias("BNCI2014001", "1.1")
 class BNCI2014_001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset.
 
@@ -812,7 +812,7 @@ class BNCI2014_001(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2014002", "0.7")
+@depreciated_alias("BNCI2014002", "1.1")
 class BNCI2014_002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset.
 
@@ -874,7 +874,7 @@ class BNCI2014_002(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2014004", "0.7")
+@depreciated_alias("BNCI2014004", "1.1")
 class BNCI2014_004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset.
 
@@ -957,7 +957,7 @@ class BNCI2014_004(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2014008", "0.7")
+@depreciated_alias("BNCI2014008", "1.1")
 class BNCI2014_008(MNEBNCI):
     """BNCI 2014-008 P300 dataset.
 
@@ -1028,7 +1028,7 @@ class BNCI2014_008(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2014009", "0.7")
+@depreciated_alias("BNCI2014009", "1.1")
 class BNCI2014_009(MNEBNCI):
     """BNCI 2014-009 P300 dataset.
 
@@ -1090,7 +1090,7 @@ class BNCI2014_009(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2015001", "0.7")
+@depreciated_alias("BNCI2015001", "1.1")
 class BNCI2015_001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset.
 
@@ -1146,7 +1146,7 @@ class BNCI2015_001(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2015003", "0.7")
+@depreciated_alias("BNCI2015003", "1.1")
 class BNCI2015_003(MNEBNCI):
     """BNCI 2015-003 P300 dataset.
 
@@ -1189,7 +1189,7 @@ class BNCI2015_003(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2015004", "0.7")
+@depreciated_alias("BNCI2015004", "1.1")
 class BNCI2015_004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset.
 

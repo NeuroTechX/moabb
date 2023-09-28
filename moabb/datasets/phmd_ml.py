@@ -13,7 +13,7 @@ from .base import BaseDataset
 HEADMOUNTED_URL = "https://zenodo.org/record/2617085/files/"
 
 
-@depreciated_alias("HeadMountedDisplay", "0.7")
+@depreciated_alias("HeadMountedDisplay", "1.1")
 class Cattan2019_PHMD(BaseDataset):
     """Passive Head Mounted Display with Music Listening dataset.
 
