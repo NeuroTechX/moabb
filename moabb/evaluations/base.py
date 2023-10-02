@@ -2,6 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 
 from sklearn.base import BaseEstimator
+from sklearn.model_selection import GridSearchCV
 
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
@@ -64,6 +65,7 @@ class BaseEvaluation(ABC):
         return_epochs=False,
         return_raws=False,
         mne_labels=False,
+        save_model=False,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -73,6 +75,7 @@ class BaseEvaluation(ABC):
         self.return_epochs = return_epochs
         self.return_raws = return_raws
         self.mne_labels = mne_labels
+        self.save_model = save_model
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
@@ -239,3 +242,23 @@ class BaseEvaluation(ABC):
         dataset : dataset instance
             The dataset to verify.
         """
+
+    def _grid_search(self, param_grid, name, grid_clf, inner_cv):
+        if param_grid is not None:
+            if name in param_grid:
+                search = GridSearchCV(
+                    grid_clf,
+                    param_grid[name],
+                    refit=True,
+                    cv=inner_cv,
+                    n_jobs=self.n_jobs,
+                    scoring=self.paradigm.scoring,
+                    return_train_score=True,
+                )
+                return search
+
+            else:
+                return grid_clf
+
+        else:
+            return grid_clf
