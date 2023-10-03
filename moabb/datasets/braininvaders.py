@@ -412,7 +412,7 @@ def _bi_data_path(  # noqa: C901
     return subject_paths
 
 
-@depreciated_alias("bi2012", "0.7")
+@depreciated_alias("bi2012", "1.1")
 class BI2012(BaseDataset):
     """P300 dataset BI2012 from a "Brain Invaders" experiment.
 
@@ -479,7 +479,7 @@ class BI2012(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-@depreciated_alias("bi2013a", "0.7")
+@depreciated_alias("bi2013a", "1.1")
 class BI2013a(BaseDataset):
     """P300 dataset BI2013a from a "Brain Invaders" experiment.
 
@@ -582,7 +582,7 @@ class BI2013a(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-@depreciated_alias("bi2014a", "0.7")
+@depreciated_alias("bi2014a", "1.1")
 class BI2014a(BaseDataset):
     """P300 dataset BI2014a from a "Brain Invaders" experiment.
 
@@ -641,7 +641,7 @@ class BI2014a(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-@depreciated_alias("bi2014b", "0.7")
+@depreciated_alias("bi2014b", "1.1")
 class BI2014b(BaseDataset):
     """P300 dataset BI2014b from a "Brain Invaders" experiment.
 
@@ -701,7 +701,7 @@ class BI2014b(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-@depreciated_alias("bi2015a", "0.7")
+@depreciated_alias("bi2015a", "1.1")
 class BI2015a(BaseDataset):
     """P300 dataset BI2015a from a "Brain Invaders" experiment.
 
@@ -762,7 +762,7 @@ class BI2015a(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-@depreciated_alias("bi2015b", "0.7")
+@depreciated_alias("bi2015b", "1.1")
 class BI2015b(BaseDataset):
     """P300 dataset BI2015b from a "Brain Invaders" experiment.
 
@@ -826,7 +826,7 @@ class BI2015b(BaseDataset):
         return _bi_data_path(self, subject, path, force_update, update_path, verbose)
 
 
-@depreciated_alias("VirtualReality", "0.7")
+@depreciated_alias("VirtualReality", "1.1")
 class Cattan2019_VR(BaseDataset):
     """Dataset of an EEG-based BCI experiment in Virtual Reality using P300.
 

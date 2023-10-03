@@ -11,7 +11,7 @@ from moabb.utils import depreciated_alias
 DOWNLOAD_URL = "https://zenodo.org/record/1217449/files/"
 
 
-@depreciated_alias("MunichMI", "0.7")
+@depreciated_alias("MunichMI", "1.1")
 class GrosseWentrup2009(BaseDataset):
     """Munich Motor Imagery dataset.
 
