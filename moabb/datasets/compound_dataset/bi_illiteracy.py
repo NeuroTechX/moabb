@@ -82,8 +82,8 @@ class BI2015a_Il(_base_bi_il):
     def __init__(self):
         dataset = BI2015a()
         subjects_list = [
-            (dataset, 1, ["session_1", "session_2", "session_3"], None),
-            (dataset, 39, ["session_2", "session_3"], None),
+            (dataset, 1, ["0", "1", "2"], None),
+            (dataset, 39, ["1", "2"], None),
         ]
         _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 

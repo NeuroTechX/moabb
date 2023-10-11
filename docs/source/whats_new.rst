@@ -48,6 +48,7 @@ Enhancements
 - Add :obj:`moabb.datasets.compound_dataset.utils.compound_dataset_list`  (:gh:`455` by `Pierre Guetschel`_)
 - Add c-VEP paradigm and Thielen2021 c-VEP dataset (:gh:`463` by `Jordy Thielen`_)
 - Add option to plot scores vertically. (:gh:`417` by `Sara Sedlar`_)
+- Change naming scheme for runs and sessions to align to BIDS standard (:gh:`471` by `Pierre Guetschel`_)
 - Increase the python version to 3.11 (:gh:`470` by `Bruno Aristimunha`_)
 - Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
 - Automate setting of event_id in compound dataset and add `data_origin` information to the data (:gh:`475` by `Gregoire Cattan`_)

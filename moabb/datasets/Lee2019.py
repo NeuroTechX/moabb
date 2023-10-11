@@ -171,37 +171,29 @@ class Lee2019(BaseDataset):
             if self.train_run or self.test_run:
                 mat = loadmat(file_path_list[self.sessions.index(session)])
 
-            session_name = "session_{}".format(session)
+            session_name = str(session - 1)
             sessions[session_name] = {}
             if self.train_run:
-                sessions[session_name]["train"] = self._get_single_run(
+                sessions[session_name]["1train"] = self._get_single_run(
                     mat["EEG_{}_train".format(self.code_suffix)][0, 0]
                 )
             if self.test_run:
-                sessions[session_name]["test"] = self._get_single_run(
+                sessions[session_name]["4test"] = self._get_single_run(
                     mat["EEG_{}_test".format(self.code_suffix)][0, 0]
                 )
             if self.resting_state:
                 prefix = "pre"
-                sessions[session_name][
-                    "test_{}_rest".format(prefix)
-                ] = self._get_single_rest_run(
+                sessions[session_name][f"3{prefix}TestRest"] = self._get_single_rest_run(
                     mat["EEG_{}_test".format(self.code_suffix)][0, 0], prefix
                 )
-                sessions[session_name][
-                    "train_{}_rest".format(prefix)
-                ] = self._get_single_rest_run(
+                sessions[session_name][f"0{prefix}TrainRest"] = self._get_single_rest_run(
                     mat["EEG_{}_train".format(self.code_suffix)][0, 0], prefix
                 )
                 prefix = "post"
-                sessions[session_name][
-                    "test_{}_rest".format(prefix)
-                ] = self._get_single_rest_run(
+                sessions[session_name][f"5{prefix}TestRest"] = self._get_single_rest_run(
                     mat["EEG_{}_test".format(self.code_suffix)][0, 0], prefix
                 )
-                sessions[session_name][
-                    "train_{}_rest".format(prefix)
-                ] = self._get_single_rest_run(
+                sessions[session_name][f"2{prefix}TrainRest"] = self._get_single_rest_run(
                     mat["EEG_{}_train".format(self.code_suffix)][0, 0], prefix
                 )
 

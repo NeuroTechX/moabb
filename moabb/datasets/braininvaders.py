@@ -40,21 +40,27 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             "BrainInvaders2014b",
             "BrainInvaders2015b",
         ]:
-            session_name = "session_1"
+            session_name = "0"
         elif ds.code == "BrainInvaders2013a":
             session_number = file_path.split(os.sep)[-2].replace("Session", "")
-            session_name = "session_" + session_number
+            session_number = int(session_number) - 1
+            session_name = str(session_number)
         elif ds.code == "BrainInvaders2015a":
-            session_name = f'session_{file_path.split("_")[-1][1:2]}'
+            session_number = file_path.split("_")[-1][1:2]
+            session_number = int(session_number) - 1
+            session_name = str(session_number)
         elif ds.code == "Cattan2019-VR":
-            session_name = file_path.split(".")[0].split("_")[-1]
+            session_map = {"VR": "0VR", "PC": "1PC"}
+            session_name = file_path.split("_")[-1].split(".")[0]
+            session_name = session_map[session_name]
 
         if session_name not in sessions.keys():
             sessions[session_name] = {}
 
         if ds.code == "BrainInvaders2012":
+            condition_map = {"training": "0training", "online": "1online"}
             condition = file_path.split("/")[-1].split(".")[0].split(os.sep)[-1]
-            run_name = "run_" + condition
+            run_name = condition_map[condition]
             # fmt: off
             chnames = [
                 'F7', 'F3', 'Fz', 'F4', 'F8', 'T7', 'C3', 'Cz', 'C4',
@@ -71,7 +77,8 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             run_number = file_path.split(os.sep)[-1]
             run_number = run_number.split("_")[-1]
             run_number = run_number.split(".mat")[0]
-            run_name = "run_" + run_number
+            run_number = int(run_number) - 1
+            run_name = str(run_number)
             # fmt: off
             chnames = [
                 "Fp1", "Fp2", "F5", "AFz", "F6", "T7", "Cz", "T8", "P7",
@@ -82,7 +89,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             X = loadmat(file_path)["data"].T
             sfreq = 512
         elif ds.code == "BrainInvaders2014a":
-            run_name = "run_1"
+            run_name = "0"
             # fmt: off
             chnames = [
                 'Fp1', 'Fp2', 'F3', 'AFz', 'F4', 'T7', 'Cz', 'T8', 'P7',
@@ -105,7 +112,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
                 'PO10', 'STI 014']
             # fmt: on
             chtypes = ["eeg"] * 32 + ["stim"]
-            run_name = "run_1"
+            run_name = "0"
 
             D = loadmat(file_path)["samples"].T
             if subject % 2 == 1:
@@ -116,7 +123,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
         elif ds.code == "BrainInvaders2015a":
-            run_name = "run_1"
+            run_name = "0"
             # fmt: off
             chnames = [
                 'Fp1', 'Fp2', 'AFz', 'F7', 'F3', 'F4', 'F8', 'FC5', 'FC1', 'FC2', 'FC6',
@@ -131,7 +138,9 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             X = np.concatenate([S, stim[None, :]])
             sfreq = 512
         elif ds.code == "BrainInvaders2015b":
-            run_name = "run_" + file_path.split("_")[-1].split(".")[0][1]
+            run_number = file_path.split("_")[-1].split(".")[0][1]
+            run_number = int(run_number) - 1
+            run_name = str(run_number)
             # fmt: off
             chnames = [
                 'Fp1', 'Fp2', 'AFz', 'F7', 'F3', 'F4', 'F8', 'FC5', 'FC1', 'FC2',
@@ -219,7 +228,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
                     end = idx_repetEndin_local[j + 1]
                     Xbij = Xbi[:, start:end]
                     raw = mne.io.RawArray(data=Xbij, info=info, verbose=False)
-                    sessions[session_name][block_rep(bi + 1, j + 1)] = raw
+                    sessions[session_name][block_rep(bi, j, 5)] = raw
 
     return sessions
 
@@ -867,6 +876,7 @@ class Cattan2019_VR(BaseDataset):
     """
 
     def __init__(self, virtual_reality=False, screen_display=True):
+        self.n_repetitions = 5
         super().__init__(
             subjects=list(range(1, 21 + 1)),
             sessions_per_subject=1,
@@ -914,9 +924,9 @@ class Cattan2019_VR(BaseDataset):
         subjects: List of int
             List of subject number
         block_list: List of int
-            List of block number (from 1 to 5)
+            List of block number (from 0 to 11)
         repetition_list: List of int
-            List of repetition number inside a block (from 1 to 12)
+            List of repetition number inside a block (from 0 to 4)
 
         Returns
         -------
@@ -929,7 +939,7 @@ class Cattan2019_VR(BaseDataset):
         meta_select = []
         for block in block_list:
             for repetition in repetition_list:
-                run = block_rep(block, repetition)
+                run = block_rep(block, repetition, self.n_repetitions)
                 X_select.append(X[meta["run"] == run])
                 labels_select.append(labels[meta["run"] == run])
                 meta_select.append(meta[meta["run"] == run])
