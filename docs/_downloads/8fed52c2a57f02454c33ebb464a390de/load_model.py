@@ -43,7 +43,7 @@ setup_seed(42)
 # Loading the Scikit-learn pipelines
 
 with open(
-    "./results/Models_WithinSession/Zhou 2016/1/session_0/CSP + SVM/fitted_model_best.pkl",
+    "./results/Models_WithinSession/Zhou2016/1/0/CSP + SVM/fitted_model_best.pkl",
     "rb",
 ) as pickle_file:
     CSP_SVM_Trained = load(pickle_file)
@@ -53,7 +53,7 @@ with open(
 # We load the single Keras model, if we want we can set in the exact same pipeline.
 
 model_Keras = keras.models.load_model(
-    "./results/Models_WithinSession/BNCI2014-001/1/session_E/Keras_DeepConvNet/kerasdeepconvnet_fitted_model_best.h5"
+    "./results/Models_WithinSession/BNCI2014-001/1/1E/Keras_DeepConvNet/kerasdeepconvnet_fitted_model_best.h5"
 )
 # Now we need to instantiate a new SciKeras object since we only saved the Keras model
 Keras_DeepConvNet_Trained = KerasClassifier(model_Keras)

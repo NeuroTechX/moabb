@@ -636,7 +636,7 @@ to download the full example code</p>
 </div>
 <p>Loading the Scikit-learn pipelines</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
-    <span class="s2">&quot;./results/Models_WithinSession/Zhou 2016/1/session_0/CSP + SVM/fitted_model_best.pkl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;./results/Models_WithinSession/Zhou2016/1/0/CSP + SVM/fitted_model_best.pkl&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rb&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="k">as</span> <span class="n">pickle_file</span><span class="p">:</span>
     <span class="n">CSP_SVM_Trained</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/pickle.html#pickle.load" title="pickle.load" class="sphx-glr-backref-module-pickle sphx-glr-backref-type-py-function"><span class="n">load</span></a><span class="p">(</span><span class="n">pickle_file</span><span class="p">)</span>
@@ -645,7 +645,7 @@ to download the full example code</p>
 <p>Loading the Keras model
 We load the single Keras model, if we want we can set in the exact same pipeline.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model_Keras</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span>
-    <span class="s2">&quot;./results/Models_WithinSession/BNCI2014-001/1/session_E/Keras_DeepConvNet/kerasdeepconvnet_fitted_model_best.h5&quot;</span>
+    <span class="s2">&quot;./results/Models_WithinSession/BNCI2014-001/1/1E/Keras_DeepConvNet/kerasdeepconvnet_fitted_model_best.h5&quot;</span>
 <span class="p">)</span>
 <span class="c1"># Now we need to instantiate a new SciKeras object since we only saved the Keras model</span>
 <span class="n">Keras_DeepConvNet_Trained</span> <span class="o">=</span> <span class="n">KerasClassifier</span><span class="p">(</span><span class="n">model_Keras</span><span class="p">)</span>

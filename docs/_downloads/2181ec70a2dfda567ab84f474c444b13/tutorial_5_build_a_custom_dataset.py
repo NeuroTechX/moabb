@@ -46,8 +46,8 @@ pipelines["MDM"] = make_pipeline(ERPCovariances(estimator="lwf"), MDM(metric="ri
 # - the original dataset
 # - the subject number to select
 # - the sessions. It can be:
-#   - a session name ('session_0')
-#   - a list of sessions (['session_0', 'session_1'])
+#   - a session name ('0')
+#   - a list of sessions (['0', '1'])
 #   - `None` to select all the sessions attributed to a subject
 # - the runs. As for sessions, it can be a single run name, a list or `None`` (to select all runs).
 
@@ -55,15 +55,15 @@ pipelines["MDM"] = make_pipeline(ERPCovariances(estimator="lwf"), MDM(metric="ri
 class CustomDataset1(CompoundDataset):
     def __init__(self):
         biVR = Cattan2019_VR(virtual_reality=True, screen_display=True)
-        runs = blocks_reps([1, 3], [1, 2, 3, 4, 5])
+        runs = blocks_reps([0, 2], [0, 1, 2, 3, 4], biVR.n_repetitions)
         subjects_list = [
-            (biVR, 1, "VR", runs),
-            (biVR, 2, "VR", runs),
+            (biVR, 1, "0VR", runs),
+            (biVR, 2, "0VR", runs),
         ]
         CompoundDataset.__init__(
             self,
             subjects_list=subjects_list,
-            code="D1",
+            code="CustomDataset1",
             interval=[0, 1.0],
             paradigm="p300",
         )
@@ -79,7 +79,7 @@ class CustomDataset2(CompoundDataset):
         CompoundDataset.__init__(
             self,
             subjects_list=subjects_list,
-            code="D2",
+            code="CustomDataset2",
             interval=[0, 1.0],
             paradigm="p300",
         )
@@ -101,7 +101,7 @@ class CustomDataset3(CompoundDataset):
         CompoundDataset.__init__(
             self,
             subjects_list=subjects_list,
-            code="D3",
+            code="CustomDataset3",
             interval=[0, 1.0],
             paradigm="p300",
         )

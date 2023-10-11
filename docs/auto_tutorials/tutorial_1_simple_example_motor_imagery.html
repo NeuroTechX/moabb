@@ -659,8 +659,8 @@ for some users, since the pre-processing and epoching steps can be easily
 done via MNE. However, to conduct an assessment of several classifiers on
 multiple subjects, MOABB ends up being a more appropriate option.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="mi">1</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">session_name</span></a> <span class="o">=</span> <span class="s2">&quot;session_T&quot;</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_name</span></a> <span class="o">=</span> <span class="s2">&quot;run_1&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">session_name</span></a> <span class="o">=</span> <span class="s2">&quot;0train&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_name</span></a> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
 <a href="https://mne.tools/stable/generated/mne.io.RawArray.html#mne.io.RawArray" title="mne.io.RawArray" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sessions</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">][</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">session_name</span></a><span class="p">][</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_name</span></a><span class="p">]</span>
 </pre></div>
 </div>
@@ -689,7 +689,7 @@ paradigm (note that BNCI2014_001 is in it)</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://neurotechx.github.io/moabb/generated/moabb.paradigms.motor_imagery.BaseMotorImagery.html#moabb.paradigms.motor_imagery.BaseMotorImagery.datasets" title="moabb.paradigms.motor_imagery.BaseMotorImagery.datasets" class="sphx-glr-backref-module-moabb-paradigms-motor_imagery sphx-glr-backref-type-py-property"><span class="n">paradigm</span><span class="o">.</span><span class="n">datasets</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014001 object at 0x7f5ba00fe3d0&gt;, &lt;moabb.datasets.bnci.BNCI2014004 object at 0x7f5ba00feb80&gt;, &lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7f5c319dc8e0&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7f5ba00fe340&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f5ba00fe580&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f5ba00fefd0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f5ba0d93250&gt;, &lt;moabb.datasets.mpi_mi.MunichMI object at 0x7f5ba00fe1c0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f5ba0d939a0&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f5ba0d93a90&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f5ba0d93bb0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f5ba0d93310&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7f5ba0d93280&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014001 object at 0x7fa3804eb4f0&gt;, &lt;moabb.datasets.bnci.BNCI2014004 object at 0x7fa3804eb910&gt;, &lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7fa368562d30&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7fa35dc02ac0&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fa35dc026a0&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7fa35dc02310&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fa35d7469d0&gt;, &lt;moabb.datasets.mpi_mi.MunichMI object at 0x7fa35dc02340&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fa35d746c40&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fa35d746dc0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fa35d746190&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fa35d7468e0&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7fa35d746100&gt;]
 </pre></div>
 </div>
 <p>The data from a list of subjects could be preprocessed and return as a 3D
@@ -738,14 +738,14 @@ partition and the remaining one as testing partition.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  33%|###3      | 1/3 [00:06&lt;00:13,  6.94s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  33%|###3      | 1/3 [00:08&lt;00:17,  8.53s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  67%|######6   | 2/3 [00:13&lt;00:06,  6.76s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  67%|######6   | 2/3 [00:16&lt;00:08,  8.33s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|##########| 3/3 [00:20&lt;00:00,  6.67s/it]
-BNCI2014-001-WithinSession: 100%|##########| 3/3 [00:20&lt;00:00,  6.71s/it]
+BNCI2014-001-WithinSession: 100%|##########| 3/3 [00:24&lt;00:00,  8.21s/it]
+BNCI2014-001-WithinSession: 100%|##########| 3/3 [00:24&lt;00:00,  8.26s/it]
 </pre></div>
 </div>
 <p>The results are stored in locally, to avoid recomputing the results each time.
@@ -773,8 +773,8 @@ strings for its labeling. This is why we create the field ‘subj’.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  31.505 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  527 MB</p>
+<img src="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" srcset="../_images/sphx_glr_tutorial_1_simple_example_motor_imagery_001.png" alt="tutorial 1 simple example motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  38.668 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  469 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-1-simple-example-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/b446bb6bcfa12c42d029c4259163f668/tutorial_1_simple_example_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_1_simple_example_motor_imagery.py</span></code></a></p>

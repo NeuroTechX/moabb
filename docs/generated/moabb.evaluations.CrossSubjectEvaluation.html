@@ -441,19 +441,19 @@ concatenating sessions.</p>
 <li><p><strong>paradigm</strong> (<em>Paradigm instance</em>) – The paradigm to use.</p></li>
 <li><p><strong>datasets</strong> (<em>List</em><em> of </em><em>Dataset instance</em>) – The list of dataset to run the evaluation. If none, the list of
 compatible dataset will be retrieved from the paradigm instance.</p></li>
-<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>RandomState instance</em><em>, </em><em>default=None</em>) – If not None, can guarantee same seed for shuffling examples.</p></li>
-<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default=1</em>) – Number of jobs for fitting of pipeline.</p></li>
-<li><p><strong>n_jobs_evaluation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default=1</em>) – Number of jobs for evaluation, processing in parallel the within session,
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>RandomState instance</em><em>, </em><em>default=None</em>) – If not None, can guarantee same seed for shuffling examples.</p></li>
+<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>default=1</em>) – Number of jobs for fitting of pipeline.</p></li>
+<li><p><strong>n_jobs_evaluation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>default=1</em>) – Number of jobs for evaluation, processing in parallel the within session,
 cross-session or cross-subject.</p></li>
-<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>default=False</em>) – If true, overwrite the results.</p></li>
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>default=False</em>) – If true, overwrite the results.</p></li>
 <li><p><strong>error_score</strong> (<em>&quot;raise&quot;</em><em> or </em><em>numeric</em><em>, </em><em>default=&quot;raise&quot;</em>) – Value to assign to the score if an error occurs in estimator fitting. If set to
 ‘raise’, the error is raised.</p></li>
-<li><p><strong>suffix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – Suffix for the results file.</p></li>
-<li><p><strong>hdf5_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – Specific path for storing the results and models.</p></li>
+<li><p><strong>suffix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Suffix for the results file.</p></li>
+<li><p><strong>hdf5_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Specific path for storing the results and models.</p></li>
 <li><p><strong>additional_columns</strong> (<em>None</em>) – Adding information to results.</p></li>
-<li><p><strong>return_epochs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>default=False</em>) – use MNE epoch to train pipelines.</p></li>
-<li><p><strong>return_raws</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>default=False</em>) – use MNE raw to train pipelines.</p></li>
-<li><p><strong>mne_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>default=False</em>) – if returning MNE epoch, use original dataset label if True</p></li>
+<li><p><strong>return_epochs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>default=False</em>) – use MNE epoch to train pipelines.</p></li>
+<li><p><strong>return_raws</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>default=False</em>) – use MNE raw to train pipelines.</p></li>
+<li><p><strong>mne_labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>default=False</em>) – if returning MNE epoch, use original dataset label if True</p></li>
 </ul>
 </dd>
 </dl>

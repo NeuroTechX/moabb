@@ -714,8 +714,8 @@ automatically be run with a grid search.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-WithinSession:   0%|          | 0/1 [00:00&lt;?, ?it/s]
-BNCI2014-001-WithinSession: 100%|##########| 1/1 [00:22&lt;00:00, 22.48s/it]
-BNCI2014-001-WithinSession: 100%|##########| 1/1 [00:22&lt;00:00, 22.48s/it]
+BNCI2014-001-WithinSession: 100%|##########| 1/1 [00:26&lt;00:00, 26.33s/it]
+BNCI2014-001-WithinSession: 100%|##########| 1/1 [00:26&lt;00:00, 26.33s/it]
 </pre></div>
 </div>
 </section>
@@ -751,7 +751,7 @@ dataset, subject and session. Here, we could see that the grid
 search found a l1_ratio that is different from the baseline
 value.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
-    <span class="s2">&quot;./Results/Models_WithinSession/BNCI2014-001/1/session_E/GridSearchEN/fitted_model_best.pkl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;./Results/Models_WithinSession/BNCI2014-001/1/1test/GridSearchEN/fitted_model_best.pkl&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rb&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="k">as</span> <a href="https://docs.python.org/3/library/io.html#io.BufferedReader" title="io.BufferedReader" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pickle_file</span></a><span class="p">:</span>
     <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">GridSearchEN_Session_E</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pickle.html#pickle.load" title="pickle.load" class="sphx-glr-backref-module-pickle sphx-glr-backref-type-py-function"><span class="n">load</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/io.html#io.BufferedReader" title="io.BufferedReader" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pickle_file</span></a><span class="p">)</span>
@@ -767,7 +767,7 @@ value.</p>
 <span class="p">)</span>
 
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
-    <span class="s2">&quot;./Results/Models_WithinSession/BNCI2014-001/1/session_T/GridSearchEN/fitted_model_best.pkl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;./Results/Models_WithinSession/BNCI2014-001/1/0train/GridSearchEN/fitted_model_best.pkl&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rb&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="k">as</span> <a href="https://docs.python.org/3/library/io.html#io.BufferedReader" title="io.BufferedReader" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pickle_file</span></a><span class="p">:</span>
     <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV" title="sklearn.model_selection.GridSearchCV" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">GridSearchEN_Session_T</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pickle.html#pickle.load" title="pickle.load" class="sphx-glr-backref-module-pickle sphx-glr-backref-type-py-function"><span class="n">load</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/io.html#io.BufferedReader" title="io.BufferedReader" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pickle_file</span></a><span class="p">)</span>
@@ -789,8 +789,8 @@ Best Parameter l1_ratio Session_T GridSearchEN  0.15
 Best Parameter l1_ratio Session_T VanillaEN:  0.75
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  25.526 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  181 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  30.185 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  124 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-grid-search-withinsession-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b298e4b36adf2bb5cb6f65682eec852f/plot_grid_search_withinsession.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_grid_search_withinsession.py</span></code></a></p>

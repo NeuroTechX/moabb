@@ -689,23 +689,22 @@ each subject / session of the dataset, and for each pipeline.</p>
 <span class="n">results</span> <span class="o">=</span> <a href="../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipeline</span></a><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-<span class="n">results</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="s2">&quot;session_E&quot;</span><span class="p">,</span> <span class="s2">&quot;session_T&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;session_0&quot;</span><span class="p">,</span> <span class="s2">&quot;session_1&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Zhou2016-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Zhou2016-CrossSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.27s/it]
-Zhou2016-CrossSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.51s/it]
-Zhou2016-CrossSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.62s/it]
+Zhou2016-CrossSession:  50%|#####     | 1/2 [00:06&lt;00:06,  6.25s/it]
+Zhou2016-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.35s/it]
+Zhou2016-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.49s/it]
 
 BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.37s/it]
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.36s/it]
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.36s/it]
+BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.29s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.19s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.20s/it]
       score      time  samples  ... n_sessions       dataset  pipeline
-0  0.956597  0.323221    144.0  ...          2  BNCI2014-001   CSP+LDA
-1  0.930941  0.374002    144.0  ...          2  BNCI2014-001   CSP+LDA
-2  0.649691  0.384771    144.0  ...          2  BNCI2014-001   CSP+LDA
-3  0.526813  0.315190    144.0  ...          2  BNCI2014-001   CSP+LDA
+0  0.930941  0.444013    144.0  ...          2  BNCI2014-001   CSP+LDA
+1  0.956597  0.568054    144.0  ...          2  BNCI2014-001   CSP+LDA
+2  0.526813  0.421968    144.0  ...          2  BNCI2014-001   CSP+LDA
+3  0.649691  0.378046    144.0  ...          2  BNCI2014-001   CSP+LDA
 
 [4 rows x 9 columns]
 </pre></div>
@@ -726,8 +725,8 @@ BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.36s/it]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  20.889 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  236 MB</p>
+<img src="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  24.998 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  174 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fa1ca889a5b6c6678d3af932651fcf7f/plot_cross_session_multiple_datasets.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_multiple_datasets.py</span></code></a></p>

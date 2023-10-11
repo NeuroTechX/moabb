@@ -437,16 +437,16 @@ SSVEP.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a>) – Sampling frequency of the data to be analyzed.</p></li>
+<li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Sampling frequency of the data to be analyzed.</p></li>
 <li><p><strong>freqs</strong> (<em>dict with n_classes keys</em>) – Frequencies corresponding to the SSVEP components. These are
 necessary to design the filterbank bands.</p></li>
-<li><p><strong>n_fbands</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default=5</em>) – Number of sub-bands considered for filterbank analysis.</p></li>
-<li><p><strong>downsample</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default=1</em>) – Factor by which downsample the data. A downsample value of N will result
+<li><p><strong>n_fbands</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>default=5</em>) – Number of sub-bands considered for filterbank analysis.</p></li>
+<li><p><strong>downsample</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>default=1</em>) – Factor by which downsample the data. A downsample value of N will result
 on a sampling frequency of (sfreq // N) by taking one sample every N of
 the original data. In the original TRCA paper <a href="#id7"><span class="problematic" id="id2">[1]_</span></a> data are at 250Hz.</p></li>
-<li><p><strong>is_ensemble</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>default=False</em>) – If True, predict on new data using the Ensemble-TRCA method described
+<li><p><strong>is_ensemble</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>default=False</em>) – If True, predict on new data using the Ensemble-TRCA method described
 in <a href="#id8"><span class="problematic" id="id3">[1]_</span></a>.</p></li>
-<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>default='original'</em>) – ‘original’ computes euclidean mean for S as in the original paper <a href="#id9"><span class="problematic" id="id4">[1]_</span></a>.
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>default='original'</em>) – ‘original’ computes euclidean mean for S as in the original paper <a href="#id9"><span class="problematic" id="id4">[1]_</span></a>.
 ‘riemann’ variation computes geodesic mean instead. This geodesic
 mean is more robust to outlier but negatively impacted by ill-conditioned
 matrices (when only few samples are available for training for instance).
@@ -456,7 +456,7 @@ computationally.
 ‘riemann’ and ‘logeuclid’ variations are useful when lots of noisy
 training data are available. With few training data ‘original’ is more
 appropriate.</p></li>
-<li><p><strong>estimator</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – For both methods, regularization to use for covariance matrices estimations.
+<li><p><strong>estimator</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – For both methods, regularization to use for covariance matrices estimations.
 Consider ‘schaefer’, ‘lwf’, ‘oas’ or ‘scm’ for no regularization.
 In the original implementation from TRCA paper <a href="#id10"><span class="problematic" id="id5">[1]_</span></a>, no regularization
 is used. So method=’original’ and regul=’scm’ is similar to original
@@ -470,7 +470,7 @@ implementation.</p></li>
 <dd><p>Alpha coefficients for the fusion of the filterbank sub-bands.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)">list</a> of len (n_fbands)</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a> of len (n_fbands)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -492,7 +492,7 @@ implementation.</p></li>
 <dd><p>Number of unique labels/classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
 </dd>
 </dl>
 </dd></dl>

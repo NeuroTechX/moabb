@@ -778,12 +778,12 @@ may or may not contain multiple runs.</p></li>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   subject    session    run
-0        1  session_T  run_0
-1        1  session_T  run_0
-2        1  session_T  run_0
-3        1  session_T  run_0
-4        1  session_T  run_0
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>   subject session run
+0        1  0train   0
+1        1  0train   0
+2        1  0train   0
+3        1  0train   0
+4        1  0train   0
 </pre></div>
 </div>
 <p>For this data, we have one subject, 2 sessions (2 different recording days)
@@ -791,18 +791,18 @@ and 6 runs per session.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>        subject    session    run
-count     576.0        576    576
-unique      NaN          2      6
-top         NaN  session_T  run_0
-freq        NaN        288     96
-mean        1.0        NaN    NaN
-std         0.0        NaN    NaN
-min         1.0        NaN    NaN
-25%         1.0        NaN    NaN
-50%         1.0        NaN    NaN
-75%         1.0        NaN    NaN
-max         1.0        NaN    NaN
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>        subject session  run
+count     576.0     576  576
+unique      NaN       2    6
+top         NaN  0train    0
+freq        NaN     288   96
+mean        1.0     NaN  NaN
+std         0.0     NaN  NaN
+min         1.0     NaN  NaN
+25%         1.0     NaN  NaN
+50%         1.0     NaN  NaN
+75%         1.0     NaN  NaN
+max         1.0     NaN  NaN
 </pre></div>
 </div>
 <p>Paradigm objects can also return the list of all dataset compatible. Here
@@ -884,8 +884,8 @@ corresponding to left- and right-hand motor imagination.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;left_hand&#39; &#39;right_hand&#39;]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  33.573 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  634 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  39.795 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  639 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-explore-paradigm-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/9b872d163c45f60eb451b1869667203a/plot_explore_paradigm.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_explore_paradigm.py</span></code></a></p>
