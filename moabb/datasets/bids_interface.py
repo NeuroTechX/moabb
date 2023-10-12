@@ -75,6 +75,12 @@ class BIDSInterfaceBase(abc.ABC):
         The processing pipeline used to convert the data.
     verbose : str
         The verbosity level.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.0
+
     """
 
     dataset: "BaseDataset"

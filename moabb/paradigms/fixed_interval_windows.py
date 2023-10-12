@@ -45,6 +45,12 @@ class BaseFixedIntervalWindowsProcessing(BaseProcessing):
 
     marker: int (default -1)
         Marker to use for the events created.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.0
+
     """
 
     def __init__(

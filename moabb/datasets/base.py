@@ -44,6 +44,12 @@ class CacheConfig:
         will be automatically downloaded to the specified folder.
     verbose:
         Verbosity level. See mne.verbose.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.0
+
     """
 
     save_raw: bool = False
