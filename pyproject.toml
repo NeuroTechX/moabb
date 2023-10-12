@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "moabb"
-version = "0.5.0"
+version = "1.0.0"
 description = "Mother of All BCI Benchmarks"
 authors = ["Alexandre Barachant", "Vinay Jayaram"]
 maintainers = ["Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>"]
@@ -20,7 +20,7 @@ h5py = "^3.7.0"
 scikit-learn = "^1.2.0"
 matplotlib = "^3.6.2"
 seaborn = "^0.12.1"
-pyriemann = "^0.3"
+pyriemann = "^0.5"
 PyYAML = "^6.0"
 pooch = "^1.6.0"
 requests = "^2.28.1"

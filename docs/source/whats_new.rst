@@ -18,6 +18,24 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
+- None
+
+Bugs
+~~~~
+
+- None
+
+API changes
+~~~~~~~~~~~
+
+- None
+
+
+Version - 1.0.0  (Stable - PyPi)
+---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
 
 - Adding extra thank you section in the documentation (:gh:`390` by `Bruno Aristimunha`_)
 - Adding new script to get the meta information of the datasets (:gh:`389` by `Bruno Aristimunha`_)
@@ -88,8 +106,8 @@ API changes
 - None
 
 
-Version - 0.5.0  (Stable - PyPi)
----------------------------------
+Version - 0.5.0
+---------------
 
 Enhancements
 ~~~~~~~~~~~~
