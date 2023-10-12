@@ -51,9 +51,11 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         self.slen = interval[1] - interval[0]
         self.freqs = freqs
         self.n_harmonics = n_harmonics
-        self.classes_ = {}
+        self.classes_ = []
+        self.one_hot = {}
         for i, k in enumerate(freqs.keys()):
-            self.classes_[k] = i
+            self.classes_.append(i)
+            self.one_hot[k] = i
 
     def fit(self, X, y, sample_weight=None):
         """Compute reference sinusoid signal.
@@ -85,7 +87,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
                 if f.replace(".", "", 1).isnumeric():
                     S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
                     corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0, 1]
-            y.append(self.classes_[max(corr_f, key=corr_f.get)])
+            y.append(self.one_hot[max(corr_f, key=corr_f.get)])
         return y
 
     def predict_proba(self, X):
