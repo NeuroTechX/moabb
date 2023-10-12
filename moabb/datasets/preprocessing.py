@@ -125,8 +125,8 @@ class RawToEventsP300(RawToEvents):
         if (
             "Target" in event_id
             and "NonTarget" in event_id
-            and type(event_id["Target"]) is list
-            and type(event_id["NonTarget"]) is list
+            and isinstance(event_id["Target"], list)
+            and isinstance(event_id["NonTarget"], list)
         ):
             event_id_new = dict(Target=1, NonTarget=0)
             events = mne.merge_events(events, event_id["Target"], 1)

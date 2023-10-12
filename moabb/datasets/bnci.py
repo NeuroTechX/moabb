@@ -1229,7 +1229,7 @@ class BNCI2015_004(MNEBNCI):
     ground were placed at the left and right mastoid, respectively.  The g.tec
     GAMMAsys system with g.LADYbird active electrodes and two g.USBamp
     biosignal
-    amplifiers (Guger Technolgies, Graz, Austria) was used for recording.  EEG
+    amplifiers (Guger Technologies, Graz, Austria) was used for recording.  EEG
     was band pass filtered 0.5-100 Hz (notch filter at 50 Hz) and sampled at a
     rate of 256 Hz.
 

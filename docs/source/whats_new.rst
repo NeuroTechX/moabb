@@ -77,7 +77,7 @@ Bugs
 
 - Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
 - Correct downloading with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_)
-- Rename event `substraction` to `subtraction` in :func:`moabb.datasets.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
+- Rename event `subtraction` in :func:`moabb.datasets.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
 - Save parameters of :func:`moabb.datasets.PhysionetMI` (:gh:`403` by `Pierre Guetschel`_)
 - Fixing issue with parallel evaluation (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Fixing SSLError from BCI competition IV (:gh:`404` by `Bruno Aristimunha`_)
@@ -334,7 +334,7 @@ Bugs
 - Use stim_channels or check annotation when loading files in Paradigm  (:gh:`72` by `Jan Sosulski`_)
 - Correct MNE issues (:gh:`76` by `Sylvain Chevallier`_)
 - Fix capitalization in channel names of cho dataset  (:gh:`90` by `Jan Sosulski`_)
-- Correct failling CI tests (:gh:`100` by `Sylvain Chevallier`_)
+- Correct failing CI tests (:gh:`100` by `Sylvain Chevallier`_)
 - Fix EPFL dataset flat signal sections and wrong scaling (:gh:`104` and :gh:`96` by  `Jan Sosulski`_)
 - Fix schirrmeister dataset for Python3.8 (:gh:`105` by `Robin Schirrmeister`_)
 - Correct event detection problem and duplicate event error (:gh:`106` by `Sylvain Chevallier`_)

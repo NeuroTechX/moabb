@@ -278,7 +278,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         process_pipeline=None,
     ):
         """
-        Return the data correspoonding to a list of subjects.
+        Return the data corresponding to a list of subjects.
 
         The returned data is a dictionary with the following structure::
 
