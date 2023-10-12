@@ -97,8 +97,8 @@ class FakeDataset(BaseDataset):
             np.random.seed(self.seed + subject)
         data = dict()
         for session in range(self.n_sessions):
-            data[f"session_{session}"] = {
-                f"run_{ii}": self._generate_raw(n, d)
+            data[f"{session}"] = {
+                f"{ii}": self._generate_raw(n, d)
                 for ii, (n, d) in enumerate(zip(self.n_events, self.duration))
             }
         return data
@@ -192,9 +192,9 @@ class FakeVirtualRealityDataset(FakeDataset):
                 for repetition, (n, d) in enumerate(
                     zip(self.n_events_rep, self.duration_rep)
                 ):
-                    data[f"{session}"][block_rep(block, repetition)] = self._generate_raw(
-                        n, d
-                    )
+                    data[f"{session}"][
+                        block_rep(block, repetition, self.n_repetitions)
+                    ] = self._generate_raw(n, d)
         return data
 
     def get_block_repetition(self, paradigm, subjects, block_list, repetition_list):

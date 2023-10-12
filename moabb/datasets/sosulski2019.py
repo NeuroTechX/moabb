@@ -157,14 +157,17 @@ class Sosulski2019(BaseDataset):
             if soa == 60 and not self.load_soa_60:
                 continue
             if self.use_soas_as_sessions:
-                session_name = f"session_1_soa_{soa}"
+                session_name = f"{p_i}soa{soa}"
             else:
-                session_name = "session_1"
+                session_name = "0"
 
             if session_name not in sessions.keys():
                 sessions[session_name] = {}
 
-            run_name = f"run_{p_i + 1}_soa_{p_i}"
+            if self.use_soas_as_sessions:
+                run_name = f"0soa{soa}"
+            else:
+                run_name = f"{p_i}soa{soa}"
             sessions[session_name][run_name] = self._get_single_run_data(file_path)
 
         return sessions

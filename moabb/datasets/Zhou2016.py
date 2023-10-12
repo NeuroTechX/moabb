@@ -104,10 +104,10 @@ class Zhou2016(BaseDataset):
 
         out = {}
         for sess_ind, runlist in enumerate(files):
-            sess_key = "session_{}".format(sess_ind)
+            sess_key = str(sess_ind)
             out[sess_key] = {}
             for run_ind, fname in enumerate(runlist):
-                run_key = "run_{}".format(run_ind)
+                run_key = str(run_ind)
                 raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
                 stim = raw.annotations.description.astype(np.dtype("<10U"))
                 stim[stim == "1"] = "left_hand"

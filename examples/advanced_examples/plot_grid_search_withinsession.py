@@ -142,7 +142,7 @@ axes.set_ylabel("ROC AUC")
 # value.
 
 with open(
-    "./Results/Models_WithinSession/BNCI2014-001/1/session_E/GridSearchEN/fitted_model_best.pkl",
+    "./Results/Models_WithinSession/BNCI2014-001/1/1test/GridSearchEN/fitted_model_best.pkl",
     "rb",
 ) as pickle_file:
     GridSearchEN_Session_E = load(pickle_file)
@@ -158,7 +158,7 @@ print(
 )
 
 with open(
-    "./Results/Models_WithinSession/BNCI2014-001/1/session_T/GridSearchEN/fitted_model_best.pkl",
+    "./Results/Models_WithinSession/BNCI2014-001/1/0train/GridSearchEN/fitted_model_best.pkl",
     "rb",
 ) as pickle_file:
     GridSearchEN_Session_T = load(pickle_file)
