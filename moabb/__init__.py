@@ -2,4 +2,4 @@
 __version__ = "1.0.0"
 
 from .benchmark import benchmark
-from .utils import set_download_dir, set_log_level, setup_seed
+from .utils import make_process_pipelines, set_download_dir, set_log_level, setup_seed
