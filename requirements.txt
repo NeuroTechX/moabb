@@ -554,7 +554,7 @@ psutil==5.9.5 ; python_version >= "3.8" and python_version < "3.11" \
 pyparsing==3.0.9 ; python_version >= "3.8" and python_version < "3.11" \
     --hash=sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb \
     --hash=sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc
-pyriemann==0.3 ; python_version >= "3.8" and python_version < "3.11" \
+pyriemann==0.5 ; python_version >= "3.8" and python_version < "3.11" \
     --hash=sha256:cd492b9373240ccbf25c099f05fa94c065cd13a9a3495be14d87989a52bea770
 python-dateutil==2.8.2 ; python_version >= "3.8" and python_version < "3.11" \
     --hash=sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86 \
