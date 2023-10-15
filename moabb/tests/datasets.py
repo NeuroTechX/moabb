@@ -308,12 +308,13 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         with self.assertWarns(UserWarning):
             Cattan2019_VR(virtual_reality=False, screen_display=False)
 
-    def test_data_path(self):
-        ds = Cattan2019_VR(virtual_reality=True, screen_display=True)
-        data_path = ds.data_path(1)
-        assert len(data_path) == 2
-        assert "subject_01_VR.mat" in data_path[0]
-        assert "subject_01_PC.mat" in data_path[1]
+    # Access to Zenodo could fail on CI
+    # def test_data_path(self):
+    #     ds = Cattan2019_VR(virtual_reality=True, screen_display=True)
+    #     data_path = ds.data_path(1)
+    #     assert len(data_path) == 2
+    #     assert "subject_01_VR.mat" in data_path[0]
+    #     assert "subject_01_PC.mat" in data_path[1]
 
     def test_get_block_repetition(self):
         ds = FakeVirtualRealityDataset()
