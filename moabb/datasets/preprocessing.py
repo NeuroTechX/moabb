@@ -254,7 +254,7 @@ def get_filter_pipeline(fmin, fmax):
 
 def get_crop_pipeline(tmin, tmax):
     return FunctionTransformer(
-        methodcaller("crop", tmin=tmax, tmax=tmin, verbose=False),
+        methodcaller("crop", tmin=tmin, tmax=tmax, verbose=False),
     )
 
 
