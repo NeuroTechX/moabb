@@ -99,6 +99,7 @@ Bugs
 - Removing joblib Parallel (:gh:`488` by `Igor Carrara`_)
 - Fix case when events specified via ``raw.annotations`` but no events (:gh:`491` by `Pierre Guetschel`_)
 - Fix bug in downloading Shin2017A dataset (:gh:`493` by `Igor Carrara`_)
+- Fix the cropped option in the dataset preprocessing (:gh:`502` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
