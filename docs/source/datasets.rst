@@ -75,6 +75,17 @@ SSVEP Datasets
     Lee2019_SSVEP
 
 
+--------------
+c-VEP Datasets
+--------------
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    Thielen2021
+
+
 ----------------------
 Resting State Datasets
 ----------------------

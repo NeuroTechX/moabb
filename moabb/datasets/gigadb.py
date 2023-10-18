@@ -122,7 +122,7 @@ class Cho2017(BaseDataset):
         raw = RawArray(data=eeg_data, info=info, verbose=False)
         raw.set_montage(montage)
 
-        return {"session_0": {"run_0": raw}}
+        return {"0": {"0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

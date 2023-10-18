@@ -5,6 +5,8 @@ import tempfile
 import unittest
 
 import mne
+import numpy as np
+import pytest
 
 import moabb.datasets as db
 import moabb.datasets.compound_dataset as db_compound
@@ -29,7 +31,7 @@ def _run_tests_on_dataset(d):
         assert isinstance(data, dict)
 
         # We should get a raw array at the end
-        rawdata = data[s]["session_0"]["run_0"]
+        rawdata = data[s]["0"]["0"]
         assert issubclass(type(rawdata), mne.io.BaseRaw), type(rawdata)
 
         # print events
@@ -70,7 +72,7 @@ class Test_Datasets(unittest.TestCase):
         n_sessions = 2
         n_runs = 2
 
-        for paradigm in ["imagery", "p300", "ssvep"]:
+        for paradigm in ["imagery", "p300", "ssvep", "cvep"]:
             ds = FakeDataset(
                 n_sessions=n_sessions,
                 n_runs=n_runs,
@@ -89,13 +91,43 @@ class Test_Datasets(unittest.TestCase):
             self.assertEqual(len(data[1]), n_sessions)
 
             # right number of run
-            self.assertEqual(len(data[1]["session_0"]), n_runs)
+            self.assertEqual(len(data[1]["0"]), n_runs)
 
             # We should get a raw array at the end
-            self.assertIsInstance(data[1]["session_0"]["run_0"], mne.io.BaseRaw)
+            self.assertIsInstance(data[1]["0"]["0"], mne.io.BaseRaw)
 
             # bad subject id must raise error
             self.assertRaises(ValueError, ds.get_data, [1000])
+
+    def test_fake_dataset_seed(self):
+        """this test will insure the fake dataset's random seed works"""
+        n_subjects = 3
+        n_sessions = 2
+        n_runs = 2
+        seed = 12
+
+        for paradigm in ["imagery", "p300", "ssvep"]:
+            ds1 = FakeDataset(
+                n_sessions=n_sessions,
+                n_runs=n_runs,
+                n_subjects=n_subjects,
+                paradigm=paradigm,
+                seed=seed,
+            )
+            ds2 = FakeDataset(
+                n_sessions=n_sessions,
+                n_runs=n_runs,
+                n_subjects=n_subjects,
+                paradigm=paradigm,
+                seed=seed,
+            )
+            X1, _, _ = ds1.get_data()
+            X2, _, _ = ds2.get_data()
+            X3, _, _ = ds2.get_data()
+
+            # All the arrays should be equal:
+            self.assertIsNone(np.testing.assert_array_equal(X1, X2))
+            self.assertIsNone(np.testing.assert_array_equal(X3, X3))
 
     def test_cache_dataset(self):
         tempdir = tempfile.mkdtemp()
@@ -236,6 +268,34 @@ class Test_Datasets(unittest.TestCase):
         assert len(dataset_list) == len(all_datasets)
         assert set(dataset_list) == set(all_datasets)
 
+    def test_bad_subject_name(self):
+        ds = FakeDataset()
+        ds.subject_list = ["1", "2", "3"]
+        with pytest.raises(ValueError, match=r"Subject names must be "):
+            ds.get_data()
+
+    def test_bad_session_name(self):
+        class BadSessionDataset(FakeDataset):
+            def _get_single_subject_data(self, subject):
+                data = super()._get_single_subject_data(subject)
+                data["session_0"] = data.pop("0")
+                return data
+
+        ds = BadSessionDataset()
+        with pytest.raises(ValueError, match=r"Session names must be "):
+            ds.get_data()
+
+    def test_bad_run_name(self):
+        class BadRunDataset(FakeDataset):
+            def _get_single_subject_data(self, subject):
+                data = super()._get_single_subject_data(subject)
+                data["0"]["run_0"] = data["0"].pop("0")
+                return data
+
+        ds = BadRunDataset()
+        with pytest.raises(ValueError, match=r"Run names must be "):
+            ds.get_data()
+
 
 class Test_VirtualReality_Dataset(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -262,7 +322,7 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         repetition = 4
         _, _, ret = ds.get_block_repetition(P300(), [subject], [block], [repetition])
         assert ret.subject.unique()[0] == subject
-        assert ret.run.unique()[0] == block_rep(block, repetition)
+        assert ret.run.unique()[0] == block_rep(block, repetition, ds.n_repetitions)
 
 
 class Test_CompoundDataset(unittest.TestCase):
@@ -282,13 +342,12 @@ class Test_CompoundDataset(unittest.TestCase):
 
     def test_fake_dataset(self):
         """This test will insure the basedataset works."""
-        param_list = [(None, None), ("session_0", "run_0"), (["session_0"], ["run_0"])]
+        param_list = [(None, None), ("0", "0"), (["0"], ["0"])]
         for sessions, runs in param_list:
             with self.subTest():
                 subjects_list = [(self.ds, 1, sessions, runs)]
                 compound_data = CompoundDataset(
                     subjects_list,
-                    events=dict(Target=2, NonTarget=1),
                     code="CompoundDataset-test",
                     interval=[0, 1],
                     paradigm=self.paradigm,
@@ -296,16 +355,22 @@ class Test_CompoundDataset(unittest.TestCase):
 
                 data = compound_data.get_data()
 
+                # Check event_id is correctly set
+                self.assertEqual(compound_data.event_id, self.ds.event_id)
+
+                # Check data origin is correctly set
+                self.assertEqual(data[1]["data_origin"], subjects_list[0])
+
                 # Check data type
                 self.assertTrue(isinstance(data, dict))
-                self.assertIsInstance(data[1]["session_0"]["run_0"], mne.io.BaseRaw)
+                self.assertIsInstance(data[1]["0"]["0"], mne.io.BaseRaw)
 
                 # Check data size
                 self.assertEqual(len(data), 1)
                 expected_session_number = self.n_sessions if sessions is None else 1
                 self.assertEqual(len(data[1]), expected_session_number)
                 expected_runs_number = self.n_runs if runs is None else 1
-                self.assertEqual(len(data[1]["session_0"]), expected_runs_number)
+                self.assertEqual(len(data[1]["0"]), expected_runs_number)
 
                 # bad subject id must raise error
                 self.assertRaises(ValueError, compound_data.get_data, [1000])
@@ -317,7 +382,6 @@ class Test_CompoundDataset(unittest.TestCase):
         subjects_list = [(self.ds, 1, None, None)]
         compound_dataset = CompoundDataset(
             subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="CompoundDataset-test",
             interval=[0, 1],
             paradigm=self.paradigm,
@@ -327,7 +391,6 @@ class Test_CompoundDataset(unittest.TestCase):
         subjects_list = [compound_dataset, compound_dataset]
         compound_data = CompoundDataset(
             subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="CompoundDataset-test",
             interval=[0, 1],
             paradigm=self.paradigm,
@@ -351,7 +414,6 @@ class Test_CompoundDataset(unittest.TestCase):
         subjects_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
         compound_dataset = CompoundDataset(
             subjects_list,
-            events=dict(Target=2, NonTarget=1),
             code="CompoundDataset",
             interval=[0, 1],
             paradigm=self.paradigm,
@@ -359,6 +421,39 @@ class Test_CompoundDataset(unittest.TestCase):
 
         # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
         self.assertEqual(compound_dataset._get_sessions_per_subject(), self.n_sessions)
+
+    def test_event_id_correctly_updated(self):
+        # define a new fake dataset with different event_id
+        self.ds2 = FakeDataset(
+            n_sessions=self.n_sessions,
+            n_runs=self.n_runs,
+            n_subjects=self.n_subjects,
+            event_list=["Target2", "NonTarget2"],
+            paradigm=self.paradigm,
+        )
+
+        # Add the two datasets to a CompoundDataset
+        subjects_list = [(self.ds, 1, None, None), (self.ds2, 1, None, None)]
+
+        compound_dataset = CompoundDataset(
+            subjects_list,
+            code="CompoundDataset",
+            interval=[0, 1],
+            paradigm=self.paradigm,
+        )
+
+        # Check that the event_id of the compound_dataset is the same has the first dataset
+        self.assertEqual(compound_dataset.event_id, self.ds.event_id)
+
+        # Check event_id get correctly updated when taking a subject from dataset 2
+        data = compound_dataset.get_data(subjects=[2])
+        self.assertEqual(compound_dataset.event_id, self.ds2.event_id)
+        self.assertEqual(len(data.keys()), 1)
+
+        # Check event_id is correctly put back when taking a subject from the first dataset
+        data = compound_dataset.get_data(subjects=[1])
+        self.assertEqual(compound_dataset.event_id, self.ds.event_id)
+        self.assertEqual(len(data.keys()), 1)
 
     def test_datasets_init(self):
         codes = []

@@ -11,7 +11,7 @@ keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
 license = "BSD-3-Clause"
 
 [tool.poetry.dependencies]
-python = ">=3.8, <3.11"
+python = ">=3.8, <3.12"
 numpy = "^1.22"
 scipy = "^1.9.3"
 mne = "^1.4"
@@ -28,6 +28,7 @@ tqdm = "^4.64.1"
 coverage = "^7.0.1"
 memory-profiler = "^0.61.0"
 edflib-python = "^1.0.6"
+pytest = "^7.4.0"
 mne-bids = "^0.13"
 
 [tool.poetry.group.carbonemission]
@@ -42,7 +43,7 @@ optional = true
 [tool.poetry.group.deeplearning.dependencies]
 tensorflow = "^2.10"
 keras = ">=1.11.0"
-scikeras = "^0.10.0"
+scikeras =  { git = "https://github.com/adriangb/scikeras"}
 braindecode = "^0.7"
 torch = "^1.13.1"
 libclang = "^15.0"

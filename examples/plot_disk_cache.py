@@ -225,7 +225,7 @@ print(f"Without cache: {t_nocache:.2f} seconds")
 # The main interest of the array cache is when the user passes a
 # computationally heavy but fixed additional preprocessing (for example
 # computing the covariance matrices of the epochs). This can be done by using
-# the ``processing_pipeline`` argument. The output of this additional pipeline
+# the ``postprocess_pipeline`` argument. The output of this additional pipeline
 # (necessary a numpy array) will be saved to avoid re-computing it each time.
 #
 #

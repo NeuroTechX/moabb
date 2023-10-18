@@ -42,6 +42,19 @@ SSVEP Paradigms
     SSVEP
     FilterBankSSVEP
 
+
+---------------
+c-VEP Paradigms
+---------------
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    CVEP
+    FilterBankCVEP
+
+
 --------------
 Fixed Interval Windows Processings
 --------------

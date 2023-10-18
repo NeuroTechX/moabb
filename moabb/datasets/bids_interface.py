@@ -18,8 +18,9 @@ import logging
 import re
 from collections import OrderedDict
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Type
 
 import mne
 import mne_bids
@@ -53,29 +54,6 @@ def subject_moabb_to_bids(subject: int):
 def subject_bids_to_moabb(subject: str):
     """Convert the subject string to int(subject)."""
     return int(subject)
-
-
-def session_moabb_to_bids(session: str):
-    """Replace the session_* to *."""
-    return session.replace("session_", "")
-
-
-def session_bids_to_moabb(session: str):
-    """Replace the * to session_*."""
-    return "session_" + session
-
-
-# Note: the runs are expected to be indexes in the BIDS standard.
-#       This is not always the case in MOABB.  See:
-# bids-specification.readthedocs.io/en/stable/glossary.html#run-entities
-def run_moabb_to_bids(run: str):
-    """Replace the run_* to *."""
-    return run.replace("run_", "")
-
-
-def run_bids_to_moabb(run: str):
-    """Replace the * to run_*."""
-    return "run_" + run
 
 
 @dataclass
@@ -173,7 +151,7 @@ class BIDSInterfaceBase(abc.ABC):
         log.info("Attempting to retrieve cache of %s...", repr(self))
         self.lock_file.mkdir(exist_ok=True)
         if not self.lock_file.fpath.exists():
-            log.info("No cache found at %s.", {str(self.lock_file.directory)})
+            log.info("No cache found at %s.", str(self.lock_file.directory))
             return None
         paths = mne_bids.find_matching_paths(
             root=self.root,
@@ -186,11 +164,11 @@ class BIDSInterfaceBase(abc.ABC):
         )
         sessions_data = {}
         for path in paths:
-            session_moabb = session_bids_to_moabb(path.session)
+            session_moabb = path.session
             session = sessions_data.setdefault(session_moabb, {})
             run = self._load_file(path, preload=preload)
-            session[run_bids_to_moabb(path.run)] = run
-        log.info("Finished reading cache of %s", {repr(self)})
+            session[path.run] = run
+        log.info("Finished reading cache of %s", repr(self))
         return sessions_data
 
     def save(self, sessions_data):
@@ -206,7 +184,7 @@ class BIDSInterfaceBase(abc.ABC):
 
         The type of the ``run`` object can vary (see the subclases).
         """
-        log.info("Starting caching %s", {repr(self)})
+        log.info("Starting caching %s", repr(self))
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
         mne_bids.make_dataset_description(
             path=str(self.root),
@@ -242,9 +220,9 @@ class BIDSInterfaceBase(abc.ABC):
                 bids_path = mne_bids.BIDSPath(
                     root=self.root,
                     subject=subject_moabb_to_bids(self.subject),
-                    session=session_moabb_to_bids(session),
+                    session=session,
                     task=self.dataset.paradigm,
-                    run=run_moabb_to_bids(run),
+                    run=run,
                     description=self.desc,
                     extension=self._extension,
                     datatype=self._datatype,
@@ -436,3 +414,19 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
             overwrite=False,
             verbose=self.verbose,
         )
+
+
+class StepType(Enum):
+    """Enum corresponding to the type of data returned
+    by a pipeline step."""
+
+    RAW = "raw"
+    EPOCHS = "epochs"
+    ARRAY = "array"
+
+
+_interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
+    StepType.RAW: BIDSInterfaceRawEDF,
+    StepType.EPOCHS: BIDSInterfaceEpochs,
+    StepType.ARRAY: BIDSInterfaceNumpyArray,
+}

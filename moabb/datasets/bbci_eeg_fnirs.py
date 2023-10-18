@@ -10,6 +10,7 @@ from mne.channels import make_standard_montage
 from mne.datasets.utils import _get_path
 from mne.io import RawArray
 from pooch import retrieve
+from pooch.downloaders import choose_downloader
 from scipy.io import loadmat
 
 from .base import BaseDataset
@@ -34,12 +35,15 @@ def eeg_data_path(base_path, subject, accept):
                             "You must accept licence term to download this dataset,"
                             "set accept=True when instantiating the dataset."
                         )
+                    downloader = choose_downloader(SHIN_URL, progressbar=True)
+                    downloader.kwargs.setdefault("verify", False)
                     retrieve(
                         "{}/EEG/EEG_{:02d}-{:02d}.zip".format(SHIN_URL, low, high),
                         None,
                         fname="EEG.zip",
                         path=base_path,
                         progressbar=True,
+                        downloader=downloader,
                     )
                 with z.ZipFile(op.join(base_path, "EEG.zip"), "r") as f:
                     f.extractall(op.join(base_path, "EEG"))
@@ -134,13 +138,13 @@ class BaseShin2017(BaseDataset):
         if self.motor_imagery:
             for ii in [0, 2, 4]:
                 session = self._convert_one_session(data, mrk, ii, trig_offset=0)
-                sessions["session_%d" % ii] = session
+                sessions[f"{ii}imagery"] = session
 
         # arithmetic/rest
         if self.mental_arithmetic:
             for ii in [1, 3, 5]:
                 session = self._convert_one_session(data, mrk, ii, trig_offset=2)
-                sessions["session_%d" % ii] = session
+                sessions[f"{ii}arithmetic"] = session
 
         return sessions
 
@@ -157,7 +161,7 @@ class BaseShin2017(BaseDataset):
         info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=200.0)
         raw = RawArray(data=eeg, info=info, verbose=False)
         raw.set_montage(montage)
-        return {"run_0": raw}
+        return {"0": raw}
 
     def data_path(
         self,

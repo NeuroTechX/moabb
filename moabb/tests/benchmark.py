@@ -21,9 +21,10 @@ class TestBenchmark(unittest.TestCase):
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
             include_datasets=[
-                "FakeDataset-imagery-10-2-2-lefthandrighthand-c3czc4",
-                "FakeDataset-p300-10-2-2-targetnontarget-c3czc4",
-                "FakeDataset-ssvep-10-2-2-1315-c3czc4",
+                "FakeDataset-imagery-10-2--60-60--120-120--lefthand-righthand--c3-cz-c4",
+                "FakeDataset-p300-10-2--60-60--120-120--target-nontarget--c3-cz-c4",
+                "FakeDataset-ssvep-10-2--60-60--120-120--13-15--c3-cz-c4",
+                "FakeDataset-cvep-10-2--60-60--120-120--10-00--c3-cz-c4",
             ],
             overwrite=True,
         )
@@ -37,6 +38,7 @@ class TestBenchmark(unittest.TestCase):
                 FakeDataset(["left_hand", "right_hand"], paradigm="imagery"),
                 FakeDataset(["Target", "NonTarget"], paradigm="p300"),
                 FakeDataset(["13", "15"], paradigm="ssvep"),
+                FakeDataset(["1.0", "0.0"], paradigm="cvep"),
             ],
             overwrite=True,
         )
@@ -48,6 +50,7 @@ class TestBenchmark(unittest.TestCase):
             benchmark,
             pipelines=str(self.pp_dir),
             exclude_datasets=["FakeDataset"],
+            overwrite=True,
         )
 
     def test_selectparadigm(self):
@@ -66,6 +69,7 @@ class TestBenchmark(unittest.TestCase):
             pipelines=str(self.pp_dir),
             include_datasets=["FakeDataset"],
             exclude_datasets=["AnotherDataset"],
+            overwrite=True,
         )
 
 

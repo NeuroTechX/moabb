@@ -4,25 +4,14 @@ import logging
 import re
 import traceback
 from dataclasses import dataclass
-from enum import Enum
 from inspect import signature
 from pathlib import Path
-from typing import Dict, Type, Union
+from typing import Dict, Union
 
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.pipeline import Pipeline
 
-from moabb.datasets.bids_interface import (
-    BIDSInterfaceBase,
-    BIDSInterfaceEpochs,
-    BIDSInterfaceNumpyArray,
-    BIDSInterfaceRawEDF,
-)
-from moabb.datasets.preprocessing import (
-    EpochsToEvents,
-    ForkPipelines,
-    RawToEvents,
-    SetRawAnnotations,
-)
+from moabb.datasets.bids_interface import StepType, _interface_map
+from moabb.datasets.preprocessing import SetRawAnnotations
 
 
 log = logging.getLogger(__name__)
@@ -98,21 +87,6 @@ class CacheConfig:
             raise ValueError(f"Expected dict or CacheConfig, got {type(dic)}")
 
 
-class StepType(Enum):
-    """Enum for the different steps in the pipeline."""
-
-    RAW = "raw"
-    EPOCHS = "epochs"
-    ARRAY = "array"
-
-
-_interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
-    StepType.RAW: BIDSInterfaceRawEDF,
-    StepType.EPOCHS: BIDSInterfaceEpochs,
-    StepType.ARRAY: BIDSInterfaceNumpyArray,
-}
-
-
 def apply_step(pipeline, obj):
     """Apply a pipeline to an object."""
     if obj is None:
@@ -137,6 +111,64 @@ def is_abbrev(abbrev_name: str, full_name: str):
     and in the same order. They must share the same capital letters."""
     pattern = re.sub(r"([A-Za-z])", r"\1[a-z0-9\-]*", re.escape(abbrev_name))
     return re.fullmatch(pattern, full_name) is not None
+
+
+def check_subject_names(data):
+    for subject in data.keys():
+        if not isinstance(subject, int):
+            raise ValueError(
+                f"Subject names must be integers, found {type(subject)}: {subject!r}. "
+                f"If you used cache, you may need to erase it using overwrite=True."
+            )
+
+
+def session_run_pattern():
+    return r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)"  # g1: index, g2: description
+
+
+constraint_message = (
+    "names must be strings starting with an integer "
+    "identifying the order in which they were recorded, "
+    "optionally followed by a description only containing "
+    "letters and numbers."
+)
+
+
+def check_session_names(data):
+    pattern = session_run_pattern()
+    for subject, sessions in data.items():
+        indexes = []
+        for session in sessions.keys():
+            match = re.fullmatch(pattern, session)
+            if not isinstance(session, str) or not match:
+                raise ValueError(
+                    f"Session {constraint_message} Found key {session!r} instead. "
+                    f"If you used cache, you may need to erase it using overwrite=True."
+                )
+            indexes.append(int(match.groups()[0]))
+        if not len(indexes) == len(set(indexes)):
+            raise ValueError(
+                f"Session {constraint_message} Found duplicate index {list(sessions.keys())}."
+            )
+
+
+def check_run_names(data):
+    pattern = session_run_pattern()
+    for subject, sessions in data.items():
+        for session, runs in sessions.items():
+            indexes = []
+            for run in runs.keys():
+                match = re.fullmatch(pattern, run)
+                if not isinstance(run, str) or not match:
+                    raise ValueError(
+                        f"Run {constraint_message} Found key {run!r} instead. "
+                        f"If you used cache, you may need to erase it using overwrite=True."
+                    )
+                indexes.append(int(match.groups()[0]))
+            if not len(indexes) == len(set(indexes)):
+                raise ValueError(
+                    f"Run {constraint_message} Found duplicate index {list(runs.keys())}."
+                )
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
@@ -220,16 +252,27 @@ class BaseDataset(metaclass=abc.ABCMeta):
         self.doi = doi
         self.unit_factor = unit_factor
 
+    def _create_process_pipeline(self):
+        return Pipeline(
+            [
+                (
+                    StepType.RAW,
+                    SetRawAnnotations(
+                        self.event_id,
+                        durations=self.interval[1] - self.interval[0],
+                    ),
+                ),
+            ]
+        )
+
     def get_data(
         self,
         subjects=None,
         cache_config=None,
-        raw_pipeline=None,
-        epochs_pipeline=None,
-        array_pipeline=None,
-        events_pipeline=None,
+        process_pipeline=None,
     ):
-        """Return the data correspoonding to a list of subjects.
+        """
+        Return the data correspoonding to a list of subjects.
 
         The returned data is a dictionary with the following structure::
 
@@ -259,27 +302,16 @@ class BaseDataset(metaclass=abc.ABCMeta):
         cache_config: dict | CacheConfig
             Configuration for caching of datasets. See ``CacheConfig``
             for details.
-        raw_pipeline: sklearn.pipeline.Pipeline | sklearn.base.TransformerMixin
-            | None
-            Pipeline that necessarily takes a mne.io.Raw as input,
-            and necessarily returns a :class:`mne.io.Raw` as output.
-        epochs_pipeline: sklearn.pipeline.Pipeline |
-            sklearn.base.TransformerMixin | None
-            Pipeline that necessarily takes a mne.io.Raw as input,
-            and necessarily returns a :class:`mne.Epochs` as output.
-        array_pipeline: sklearn.pipeline.Pipeline |
-            sklearn.base.TransformerMixin | None
-            Pipeline either takes as input a :class:`mne.Epochs` if
-            epochs_pipeline is not ``None``, or a :class:`mne.io.Raw`
-            otherwise. It necessarily returns a :func:`numpy.ndarray`
-            as output.
-            If array_pipeline is not None, each run will be a
-            dict with keys "X" and "y" corresponding respectively to the array
-             itself and the corresponding labels.
-        events_pipeline: sklearn.pipeline.Pipeline |
-            sklearn.base.TransformerMixin | None
-            Pipeline used to generate the events. Only used if
-            ``array_pipeline`` is not ``None``.
+        process_pipeline: Pipeline | None
+            Optional processing pipeline to apply to the data.
+            To generate an adequate pipeline, we recommend using
+            :func:`moabb.utils.make_process_pipelines`.
+            This pipeline will receive :class:`mne.io.BaseRaw` objects.
+            The steps names of this pipeline should be elements of :class:`StepType`.
+            According to their name, the steps should either return a
+            :class:`mne.io.BaseRaw`, a :class:`mne.Epochs`, or a :func:`numpy.ndarray`.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
 
         Returns
         -------
@@ -292,35 +324,10 @@ class BaseDataset(metaclass=abc.ABCMeta):
         if not isinstance(subjects, list):
             raise ValueError("subjects must be a list")
 
-        if events_pipeline is None and array_pipeline is not None:
-            log.warning(
-                f"event_id not specified, using all the dataset's "
-                f"events to generate labels: {self.event_id}"
-            )
-            events_pipeline = (
-                RawToEvents(self.event_id)
-                if epochs_pipeline is None
-                else EpochsToEvents()
-            )
-
         cache_config = CacheConfig.make(cache_config)
 
-        steps = []
-        steps.append((StepType.RAW, SetRawAnnotations(self.event_id)))
-        if raw_pipeline is not None:
-            steps.append((StepType.RAW, raw_pipeline))
-        if epochs_pipeline is not None:
-            steps.append((StepType.EPOCHS, epochs_pipeline))
-        if array_pipeline is not None:
-            array_events_pipeline = ForkPipelines(
-                [
-                    ("X", array_pipeline),
-                    ("events", events_pipeline),
-                ]
-            )
-            steps.append((StepType.ARRAY, array_events_pipeline))
-        if len(steps) == 0:
-            steps.append((StepType.RAW, make_pipeline(None)))
+        if process_pipeline is None:
+            process_pipeline = self._create_process_pipeline()
 
         data = dict()
         for subject in subjects:
@@ -329,9 +336,11 @@ class BaseDataset(metaclass=abc.ABCMeta):
             data[subject] = self._get_single_subject_data_using_cache(
                 subject,
                 cache_config,
-                steps,
+                process_pipeline,
             )
-
+        check_subject_names(data)
+        check_session_names(data)
+        check_run_names(data)
         return data
 
     def download(
@@ -394,7 +403,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     verbose=verbose,
                 )
 
-    def _get_single_subject_data_using_cache(self, subject, cache_config, steps):
+    def _get_single_subject_data_using_cache(
+        self, subject, cache_config, process_pipeline
+    ):
         """Load a single subject's data using cache.
 
         Either load the data of a single subject from disk cache or from the
@@ -402,6 +413,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         then eventually saves or overwrites the cache version depending on the
         parameters.
         """
+        steps = list(process_pipeline.steps)
         splitted_steps = []  # list of (cached_steps, remaining_steps)
         if cache_config.use:
             splitted_steps += [

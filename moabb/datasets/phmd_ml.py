@@ -13,7 +13,7 @@ from .base import BaseDataset
 HEADMOUNTED_URL = "https://zenodo.org/record/2617085/files/"
 
 
-@depreciated_alias("HeadMountedDisplay", "0.7")
+@depreciated_alias("HeadMountedDisplay", "1.1")
 class Cattan2019_PHMD(BaseDataset):
     """Passive Head Mounted Display with Music Listening dataset.
 
@@ -110,7 +110,7 @@ class Cattan2019_PHMD(BaseDataset):
             ch_names=self._chnames, sfreq=512, ch_types=self._chtypes, verbose=False
         )
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
-        return {"session_0": {"run_0": raw}}
+        return {"0": {"0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

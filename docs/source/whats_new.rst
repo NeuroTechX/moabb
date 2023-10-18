@@ -39,11 +39,20 @@ Enhancements
 - Systematically set the annotations when loading data, eventually using the stim channel (PR :gh:`408` by `Pierre Guetschel`_)
 - Allow :func:`moabb.datasets.utils.dataset_search` to search across paradigms ``paradigm=None`` (PR :gh:`408` by `Pierre Guetschel`_)
 - Improving the review processing with more pre-commit bots (:gh:`435` by `Bruno Aristimunha`_)
+- Add methods ``make_processing_pipelines`` and ``make_labels_pipeline`` to :class:`moabb.paradigms.base.BaseProcessing` (:gh:`447` by `Pierre Guetschel`_)
+- Pipelines' digests are now computed from the whole processing+classification pipeline (:gh:`447` by `Pierre Guetschel`_)
 - Update all dataset codes to remove white spaces and underscores (:gh:`448` by `Pierre Guetschel`_)
 - Add :func:`moabb.utils.depreciated_alias` decorator (:gh:`455` by `Pierre Guetschel`_)
 - Rename many dataset class names to standardize and deprecate old names (:gh:`455` by `Pierre Guetschel`_)
 - Change many dataset codes to match the class names (:gh:`455` by `Pierre Guetschel`_)
 - Add :obj:`moabb.datasets.compound_dataset.utils.compound_dataset_list`  (:gh:`455` by `Pierre Guetschel`_)
+- Add c-VEP paradigm and Thielen2021 c-VEP dataset (:gh:`463` by `Jordy Thielen`_)
+- Add option to plot scores vertically. (:gh:`417` by `Sara Sedlar`_)
+- Change naming scheme for runs and sessions to align to BIDS standard (:gh:`471` by `Pierre Guetschel`_)
+- Increase the python version to 3.11 (:gh:`470` by `Bruno Aristimunha`_)
+- Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
+- Automate setting of event_id in compound dataset and add `data_origin` information to the data (:gh:`475` by `Gregoire Cattan`_)
+- Add possibility of not saving the model (:gh:`489` by `Igor Carrara`_)
 
 Bugs
 ~~~~
@@ -67,6 +76,12 @@ Bugs
 - Fix ``dataset_list`` construction, which could be empty due to bad import order (PR :gh:`449` by `Thomas Moreau`_).
 - Fixing dataset downloader from servers with non-http (PR :gh:`433` by `Sara Sedlar`_)
 - Fix ``dataset_list`` to include deprecated datasets (PR :gh:`464` by `Bruno Aristimunha`_)
+- Fixed bug in :func:`moabb.analysis.results.get_string_rep` to handle addresses such as 0x__0A as well (PR :gh:`468` by `Anton Andreev`_)
+- Moving the :func:`moabb.evualation.grid_search` to inside the base evaluation (:gh:`487` by `Bruno Aristimunha`_)
+- Removing joblib Parallel (:gh:`488` by `Igor Carrara`_)
+- Fix case when events specified via ``raw.annotations`` but no events (:gh:`491` by `Pierre Guetschel`_)
+- Fix bug in downloading Shin2017A dataset (:gh:`493` by `Igor Carrara`_)
+
 API changes
 ~~~~~~~~~~~
 
@@ -94,6 +109,8 @@ Enhancements
 - Add CodeCarbon example (:gh:`356` by `Igor Carrara`_ and `Bruno Aristimunha`_)
 - Add MsetCCA method for SSVEP classification, parametrise CCA `n_components` in CCA based methods (:gh:`359` by `Emmanuel Kalunga`_ and `Sylvain Chevallier`_)
 - Set epochs' `metadata` field in `get_data` (:gh:`371` by `Pierre Guetschel`_)
+- Add possibility to use transformers to apply fixed pre-processings before evaluations (:gh:`372` by `Pierre Guetschel`_)
+- Add `seed` parameter to `FakeDataset` (:gh:`372` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
@@ -376,3 +393,4 @@ API changes
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Ludovic Darmet: https://github.com/ludovicdmt
 .. _Thomas Moreau: https://github.com/tommoral
+.. _Jordy Thielen: https://github.com/thijor
