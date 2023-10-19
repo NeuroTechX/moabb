@@ -51,8 +51,10 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         self.slen = interval[1] - interval[0]
         self.freqs = freqs
         self.n_harmonics = n_harmonics
+        self.classes_ = []
         self.one_hot = {}
         for i, k in enumerate(freqs.keys()):
+            self.classes_.append(i)
             self.one_hot[k] = i
 
     def fit(self, X, y, sample_weight=None):

@@ -90,7 +90,7 @@ class CustomDataset2(CompoundDataset):
 # ------------------
 #
 # We are now going to merge the two CompoundDataset into a single one.
-# The implementation is straigh forward. Instead of providing a list of subjects,
+# The implementation is straight forward. Instead of providing a list of subjects,
 # you should provide a list of CompoundDataset.
 # subjects_list = [CustomDataset1(), CustomDataset2()]
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "moabb"
-version = "0.5.0"
+version = "1.0.0"
 description = "Mother of All BCI Benchmarks"
 authors = ["Alexandre Barachant", "Vinay Jayaram"]
 maintainers = ["Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>"]
@@ -10,20 +10,22 @@ documentation = "https://neurotechx.github.io/moabb"
 keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
 license = "BSD-3-Clause"
 
+
 [tool.poetry.dependencies]
 python = ">=3.8, <3.12"
 numpy = "^1.22"
 scipy = "^1.9.3"
 mne = "^1.4"
 pandas = "^1.5.2"
-h5py = "^3.7.0"
+h5py = "<=3.8.0"
 scikit-learn = "^1.2.0"
 matplotlib = "^3.6.2"
 seaborn = "^0.12.1"
-pyriemann = "^0.3"
+pyriemann = "^0.5"
 PyYAML = "^6.0"
 pooch = "^1.6.0"
 requests = "^2.28.1"
+urllib3 = "^1.26.15"
 tqdm = "^4.64.1"
 coverage = "^7.0.1"
 memory-profiler = "^0.61.0"
@@ -31,25 +33,26 @@ edflib-python = "^1.0.6"
 pytest = "^7.4.0"
 mne-bids = "^0.13"
 
-[tool.poetry.group.carbonemission]
-optional = true
+# Optional dependencies for carbon emission
+codecarbon = { version = "^2.1.4", optional = true }
 
-[tool.poetry.group.carbonemission.dependencies]
-codecarbon = "^2.1.4" # for carbon emission
+# Optional dependencies for deep learning
+tensorflow = { version = ">=2.10,<2.13", optional = true }
+keras = { version = ">=1.11.0", optional = true }
+scikeras =  { git = "https://github.com/adriangb/scikeras", optional = true }
+braindecode = { version = "^0.7", optional = true }
+torch = { version = "^1.13.1", optional = true }
+libclang = { version = "^15.0", optional = true }
 
-[tool.poetry.group.deeplearning]
-optional = true
 
-[tool.poetry.group.deeplearning.dependencies]
-tensorflow = "^2.10"
-keras = ">=1.11.0"
-scikeras =  { git = "https://github.com/adriangb/scikeras"}
-braindecode = "^0.7"
-torch = "^1.13.1"
-libclang = "^15.0"
+[tool.poetry.extras]
+carbonemission = ["codecarbon"]
+deeplearning = ["tensorflow", "keras", "scikeras", "braindecode", "torch", "libclang"]
+
 
 [tool.poetry.group.docs]
 optional = true
+
 
 [tool.poetry.group.docs.dependencies]
 Sphinx = "^5.3.0"
@@ -68,9 +71,11 @@ sphinx-rtd-theme = "^1.2.0"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+
 [tool.black]
 line-length = 90
 target-version = ["py38"]
+
 
 [tool.isort]
 src_paths = ["moabb"]

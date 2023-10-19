@@ -52,7 +52,7 @@ class Cattan2019_PHMD(BaseDataset):
     Notes
     -----
 
-    .. versionadded:: 0.6.0
+    .. versionadded:: 1.0.0
 
     References
     ----------

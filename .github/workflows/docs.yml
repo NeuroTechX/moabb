@@ -16,7 +16,7 @@ jobs:
         python-version: ["3.9"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create local data folder
         run: |
@@ -44,10 +44,10 @@ jobs:
 
       - name: Install dependencies
         if: steps.cached-dataset-docs.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root --with docs,deeplearning
+        run: poetry install --no-interaction --no-root --with docs --extras deeplearning
 
       - name: Install library
-        run: poetry install --no-interaction --with docs,deeplearning
+        run: poetry install --no-interaction --with docs --extras deeplearning
 
       - name: Build docs
         run: |
@@ -69,7 +69,7 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create local data folder
         run: |
@@ -85,7 +85,7 @@ jobs:
             docs/build
 
       - name: Checkout moabb.github.io
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: "NeuroTechX/moabb.github.io"
           path: moabb-ghio
@@ -101,7 +101,7 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create local data folder
         run: |
@@ -117,7 +117,7 @@ jobs:
             docs/build
 
       - name: Checkout gh pages
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: moabb-ghpages

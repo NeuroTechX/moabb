@@ -44,6 +44,12 @@ class CacheConfig:
         will be automatically downloaded to the specified folder.
     verbose:
         Verbosity level. See mne.verbose.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.0
+
     """
 
     save_raw: bool = False
@@ -272,7 +278,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         process_pipeline=None,
     ):
         """
-        Return the data correspoonding to a list of subjects.
+        Return the data corresponding to a list of subjects.
 
         The returned data is a dictionary with the following structure::
 

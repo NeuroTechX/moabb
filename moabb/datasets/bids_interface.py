@@ -75,6 +75,12 @@ class BIDSInterfaceBase(abc.ABC):
         The processing pipeline used to convert the data.
     verbose : str
         The verbosity level.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.0
+
     """
 
     dataset: "BaseDataset"
@@ -300,7 +306,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         if raw.info.get("subject_info", None) is None:
             # specify subject info as required by BIDS
             raw.info["subject_info"] = {
-                "his_id": self.subject,
+                "his_id": subject_moabb_to_bids(self.subject),
             }
         if raw.info.get("device_info", None) is None:
             # specify device info as required by BIDS
