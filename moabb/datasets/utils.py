@@ -4,6 +4,7 @@ import inspect
 
 import moabb.datasets as db
 from moabb.datasets.base import BaseDataset
+from moabb.utils import aliases_list
 
 
 dataset_list = []
@@ -53,6 +54,7 @@ def dataset_search(  # noqa: C901
     """
     if len(dataset_list) == 0:
         _init_dataset_list()
+    deprecated_names, _, _ = zip(*aliases_list)
 
     channels = set(channels)
     out_data = []
@@ -63,6 +65,9 @@ def dataset_search(  # noqa: C901
     assert paradigm in ["imagery", "p300", "ssvep", None]
 
     for type_d in dataset_list:
+        if type_d.__name__ in deprecated_names:
+            continue
+
         d = type_d()
         skip_dataset = False
         if multi_session and d.n_sessions < 2:
