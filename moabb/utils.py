@@ -10,7 +10,6 @@ import sys
 from typing import TYPE_CHECKING
 
 import numpy as np
-from docstring_inheritance import NumpyDocstringInheritanceInitMeta
 from mne import get_config, set_config
 from mne import set_log_level as sll
 
