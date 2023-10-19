@@ -88,7 +88,7 @@ print_tree(mne_data / "MNE-alexeeg-data")
 #
 # After conversion, the data is stored in a BIDS-compliant way:
 print("After conversion:")
-print_tree(temp_dir / "MNE-alexandre motor imagery-bids-cache")
+print_tree(temp_dir / "MNE-BIDS-alexandre-motor-imagery")
 
 ###############################################################################
 # In the BIDS version of our dataset, the raw files are saved in EDF.
