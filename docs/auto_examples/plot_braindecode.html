@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Cross-session motor imagery with deep learning EEGNet v4 model &#8212; moabb 0.5.0 documentation</title>
+    <title>Cross-session motor imagery with deep learning EEGNet v4 model &#8212; moabb 1.0.0 documentation</title>
   
   
   
@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Cross-Session Motor Imagery" href="plot_cross_session_motor_imagery.html" />
-    <link rel="prev" title="Convert a MOABB dataset to BIDS" href="plot_bids_conversion.html" />
+    <link rel="prev" title="Benchmarking with MOABB with Grid Search" href="plot_benchmark_grid_search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -379,24 +379,26 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_tutorials/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/noplot_tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
 
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noplot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noplot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noplot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_motor_imagery.html">Cross-Session Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
@@ -404,8 +406,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_ssvep.html">Within Session SSVEP</a></li>
 </ul>
@@ -533,6 +533,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.set_log_level.html">moabb.set_log_level</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.setup_seed.html">moabb.setup_seed</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.set_download_dir.html">moabb.set_download_dir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.make_process_pipelines.html">moabb.make_process_pipelines</a></li>
 </ul>
 </li>
 </ul>
@@ -756,55 +757,55 @@ Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4375        0.6936       0.4828        0.6933  0.4184
-      2       0.4688        0.6941       0.4828        0.6932  0.3588
-      3       0.5625        0.6924       0.5172        0.6931  0.3734
-      4       0.4062        0.6936       0.5172        0.6931  0.3440
-      5       0.5781        0.6921       0.5172        0.6930  0.3532
-      6       0.4844        0.6935       0.5172        0.6930  0.3674
-      7       0.5469        0.6924       0.5172        0.6929  0.3432
-      8       0.4844        0.6932       0.5172        0.6929  0.3310
-      9       0.4688        0.6947       0.5172        0.6929  0.3954
+      1       0.4375        0.6936       0.4828        0.6933  0.3667
+      2       0.4688        0.6941       0.4828        0.6932  0.3164
+      3       0.5625        0.6924       0.5172        0.6931  0.3078
+      4       0.4062        0.6936       0.5172        0.6931  0.2921
+      5       0.5781        0.6921       0.5172        0.6930  0.3437
+      6       0.4844        0.6935       0.5172        0.6930  0.3356
+      7       0.5469        0.6924       0.5172        0.6929  0.3278
+      8       0.4844        0.6932       0.5172        0.6929  0.3180
+      9       0.4688        0.6947       0.5172        0.6929  0.3321
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.6928       0.4828        0.6932  0.3770
-      2       0.5938        0.6927       0.5172        0.6931  0.3459
-      3       0.5000        0.6930       0.5172        0.6931  0.3408
+      1       0.4844        0.6928       0.4828        0.6932  0.3428
+      2       0.5938        0.6927       0.5172        0.6931  0.3309
+      3       0.5000        0.6930       0.5172        0.6931  0.3505
 Stopping since valid_loss has not improved in the last 3 epochs.
 
-BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:13&lt;00:13, 13.28s/it]/home/runner/work/moabb/moabb/moabb/paradigms/base.py:354: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
+BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:12&lt;00:12, 12.92s/it]/home/runner/work/moabb/moabb/moabb/paradigms/base.py:354: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
   X = mne.concatenate_epochs(X)
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5938        0.6928       0.4828        0.6932  0.3511
-      2       0.5156        0.6925       0.4828        0.6933  0.3429
-      3       0.5156        0.6921       0.4828        0.6933  0.3365
+      1       0.5938        0.6928       0.4828        0.6932  0.3608
+      2       0.5156        0.6925       0.4828        0.6933  0.3423
+      3       0.5156        0.6921       0.4828        0.6933  0.3339
 Stopping since valid_loss has not improved in the last 3 epochs.
 Re-initializing module because the following parameters were re-set: module.
 Re-initializing criterion.
 Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5781        0.6930       0.5172        0.6931  0.3993
-      2       0.5000        0.6928       0.5172        0.6930  0.3570
-      3       0.5312        0.6931       0.5172        0.6931  0.3252
-      4       0.5781        0.6928       0.5172        0.6931  0.3934
+      1       0.5781        0.6930       0.5172        0.6931  0.3558
+      2       0.5000        0.6928       0.5172        0.6930  0.3274
+      3       0.5312        0.6931       0.5172        0.6931  0.3336
+      4       0.5781        0.6928       0.5172        0.6931  0.3484
 Stopping since valid_loss has not improved in the last 3 epochs.
 
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:24&lt;00:00, 12.21s/it]
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:24&lt;00:00, 12.37s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:24&lt;00:00, 11.97s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:24&lt;00:00, 12.11s/it]
       score      time  samples  ... n_sessions       dataset  pipeline
-0  0.467593  5.982289    144.0  ...          2  BNCI2014-001  EEGNetV4
-1  0.374228  3.623482    144.0  ...          2  BNCI2014-001  EEGNetV4
-2  0.546007  4.000571    144.0  ...          2  BNCI2014-001  EEGNetV4
-3  0.550347  4.033311    144.0  ...          2  BNCI2014-001  EEGNetV4
+0  0.467593  5.661205    144.0  ...          2  BNCI2014-001  EEGNetV4
+1  0.374228  3.626965    144.0  ...          2  BNCI2014-001  EEGNetV4
+2  0.546007  3.610357    144.0  ...          2  BNCI2014-001  EEGNetV4
+3  0.550347  4.260852    144.0  ...          2  BNCI2014-001  EEGNetV4
 
 [4 rows x 9 columns]
 </pre></div>
@@ -829,8 +830,8 @@ network for EEG-based brain-computer interfaces.</a>
 Journal of neural engineering, 15(5), 056013.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  30.050 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  318 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  29.369 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  316 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-braindecode-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/c9b0437022c98a63476dd3cad6cb69c7/plot_braindecode.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_braindecode.py</span></code></a></p>
@@ -855,12 +856,12 @@ Journal of neural engineering, 15(5), 056013.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="plot_bids_conversion.html"
+       href="plot_benchmark_grid_search.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Convert a MOABB dataset to BIDS</p>
+        <p class="prev-next-title">Benchmarking with MOABB with Grid Search</p>
       </div>
     </a>
     <a class="right-next"

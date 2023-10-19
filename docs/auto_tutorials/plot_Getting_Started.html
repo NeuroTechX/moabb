@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Getting Started &#8212; moabb 0.5.0 documentation</title>
+    <title>Getting Started &#8212; moabb 1.0.0 documentation</title>
   
   
   
@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Tutorial 1: Simple Motor Imagery" href="tutorial_1_simple_example_motor_imagery.html" />
-    <link rel="prev" title="Tutorial 4: Creating a dataset class" href="4_adding_a_dataset.html" />
+    <link rel="prev" title="Tutorial 5: Creating a dataset class" href="noplot_tutorial_5_build_a_custom_dataset.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -379,24 +379,26 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Getting Started</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noplot_tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
 
-<li class="toctree-l2"><a class="reference internal" href="tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_examples/index.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/noplot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/noplot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_examples/noplot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_braindecode.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_cross_session_motor_imagery.html">Cross-Session Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
@@ -404,8 +406,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_explore_paradigm.html">Explore Paradigm Object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_within_session_p300.html">Within Session P300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_examples/plot_within_session_ssvep.html">Within Session SSVEP</a></li>
 </ul>
@@ -533,6 +533,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.set_log_level.html">moabb.set_log_level</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.setup_seed.html">moabb.setup_seed</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.set_download_dir.html">moabb.set_download_dir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.make_process_pipelines.html">moabb.make_process_pipelines</a></li>
 </ul>
 </li>
 </ul>
@@ -663,14 +664,14 @@ is the name of the pipeline and the value is the Pipeline object</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a><span class="p">()</span><span class="o">.</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7ff89df6b670&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7ff89df6ba30&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7ff89df6bb50&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7ff89df6b0a0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7ff89df6b6a0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7ff89df6b8b0&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7ff89df6bd90&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7ff89df6bf70&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7ff89df6b520&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7ff89df6b9d0&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7fac70a56880&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7fac70a56730&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fac70a56130&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7fac70a56490&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fac70a56fa0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fac70a56ee0&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fac70a56040&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fac70a56ac0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fac70a56400&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7fac70a562e0&gt;]
 </pre></div>
 </div>
 <p>Or you can run a search through the available datasets:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/moabb.datasets.utils.dataset_search.html#moabb.datasets.utils.dataset_search" title="moabb.datasets.utils.dataset_search" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">utils</span><span class="o">.</span><span class="n">dataset_search</span></a><span class="p">(</span><a href="../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span> <span class="n">min_subjects</span><span class="o">=</span><span class="mi">6</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.alex_mi.AlexMI object at 0x7ff89df6b6d0&gt;, &lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7ff89df6bcd0&gt;, &lt;moabb.datasets.bnci.BNCI2014_002 object at 0x7ff89df6b9a0&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7ff89df6be50&gt;, &lt;moabb.datasets.bnci.BNCI2015_001 object at 0x7ff89df6b940&gt;, &lt;moabb.datasets.bnci.BNCI2015_004 object at 0x7ff89df6b550&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7ff89df6b070&gt;, &lt;moabb.datasets.fake.FakeDataset object at 0x7ff89df6b850&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7ff89df6b640&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7ff89df6b4c0&gt;, &lt;moabb.datasets.upper_limb.Ofner2017 object at 0x7ff89df6bdf0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7ff89df6bca0&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7ff89df6b5b0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7ff89df6b2b0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7ff89df6bfd0&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.alex_mi.AlexMI object at 0x7fac70a56430&gt;, &lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7fac70a56280&gt;, &lt;moabb.datasets.bnci.BNCI2014_002 object at 0x7fac70a56af0&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7fac70a56f10&gt;, &lt;moabb.datasets.bnci.BNCI2015_001 object at 0x7fac70a56640&gt;, &lt;moabb.datasets.bnci.BNCI2015_004 object at 0x7fac70a56670&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fac70a56040&gt;, &lt;moabb.datasets.fake.FakeDataset object at 0x7fac70a561f0&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7fac70a56790&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fac70a56d60&gt;, &lt;moabb.datasets.upper_limb.Ofner2017 object at 0x7fac70a56b80&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fac70a56a00&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fac70a56d00&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fac70a56cd0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fac70a56a30&gt;]
 </pre></div>
 </div>
 <p>Or you can simply make your own list (which we do here due to computational
@@ -706,9 +707,9 @@ subjects. This also is the correct place to specify multiple threads.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.06s/it]
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.95s/it]
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.97s/it]
+BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.02s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.91s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.92s/it]
 </pre></div>
 </div>
 <p>Results are returned as a pandas DataFrame, and from here you can do as you
@@ -717,17 +718,17 @@ want with them</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ... n_sessions       dataset  pipeline
-0  0.786458  0.049906    144.0  ...          2  BNCI2014-001    AM+LDA
-1  0.801698  0.040458    144.0  ...          2  BNCI2014-001    AM+LDA
-2  0.576582  0.040586    144.0  ...          2  BNCI2014-001    AM+LDA
-3  0.498650  0.041534    144.0  ...          2  BNCI2014-001    AM+LDA
-4  0.797068  0.202824    144.0  ...          2  BNCI2014-001    AM+SVM
+0  0.786458  0.043722    144.0  ...          2  BNCI2014-001    AM+LDA
+1  0.801698  0.042931    144.0  ...          2  BNCI2014-001    AM+LDA
+2  0.576582  0.041254    144.0  ...          2  BNCI2014-001    AM+LDA
+3  0.498650  0.041142    144.0  ...          2  BNCI2014-001    AM+LDA
+4  0.797068  0.211420    144.0  ...          2  BNCI2014-001    AM+SVM
 
 [5 rows x 9 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.120 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  268 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.813 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  258 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-plot-getting-started-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/55cdcc1a57595324be0a4f77a5294187/plot_Getting_Started.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_Getting_Started.py</span></code></a></p>
@@ -752,12 +753,12 @@ want with them</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="4_adding_a_dataset.html"
+       href="noplot_tutorial_5_build_a_custom_dataset.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Tutorial 4: Creating a dataset class</p>
+        <p class="prev-next-title">Tutorial 5: Creating a dataset class</p>
       </div>
     </a>
     <a class="right-next"

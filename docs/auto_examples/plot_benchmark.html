@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Examples of how to use MOABB to benchmark pipelines. &#8212; moabb 0.5.0 documentation</title>
+    <title>Examples of how to use MOABB to benchmark pipelines. &#8212; moabb 1.0.0 documentation</title>
   
   
   
@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Benchmarking on MOABB with Tensorflow deep net architectures" href="plot_benchmark_DL.html" />
-    <link rel="prev" title="Load Model (Scikit, Pytorch, Keras) with MOABB" href="load_model.html" />
+    <link rel="prev" title="Changing epoch size in P300 VR dataset" href="noplot_vr_pc_p300_different_epoch_size.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -379,24 +379,26 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_tutorials/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/noplot_tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
 
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noplot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noplot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noplot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_braindecode.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_motor_imagery.html">Cross-Session Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
@@ -404,8 +406,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_ssvep.html">Within Session SSVEP</a></li>
 </ul>
@@ -533,6 +533,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.set_log_level.html">moabb.set_log_level</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.setup_seed.html">moabb.setup_seed</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.set_download_dir.html">moabb.set_download_dir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.make_process_pipelines.html">moabb.make_process_pipelines</a></li>
 </ul>
 </li>
 </ul>
@@ -725,7 +726,7 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-10-19 15:03:27,205 INFO MainThread moabb.evaluations.base Processing dataset: Zhou2016
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-10-19 15:57:48,437 INFO MainThread moabb.evaluations.base Processing dataset: Zhou2016
 
 Zhou2016-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_data
 All datasets will be downloaded to this location, if anything is already downloaded, please move manually to this location
@@ -735,104 +736,86 @@ All datasets will be downloaded to this location, if anything is already downloa
 
   0%|                                               | 0.00/156M [00:00&lt;?, ?B/s]
 
-  0%|                                       | 52.2k/156M [00:00&lt;06:55, 376kB/s]
+  0%|                                       | 51.2k/156M [00:00&lt;06:53, 378kB/s]
 
-  0%|                                       | 261k/156M [00:00&lt;02:29, 1.04MB/s]
+  0%|                                        | 243k/156M [00:00&lt;02:37, 988kB/s]
 
-  1%|▎                                     | 1.08M/156M [00:00&lt;00:48, 3.22MB/s]
+  1%|▏                                     | 1.03M/156M [00:00&lt;00:48, 3.18MB/s]
 
-  3%|▉                                     | 3.96M/156M [00:00&lt;00:13, 11.3MB/s]
+  2%|▉                                     | 3.80M/156M [00:00&lt;00:13, 11.2MB/s]
 
-  4%|█▌                                    | 6.27M/156M [00:00&lt;00:10, 14.5MB/s]
+  4%|█▍                                    | 5.97M/156M [00:00&lt;00:10, 14.4MB/s]
 
-  6%|██▍                                   | 10.1M/156M [00:00&lt;00:06, 21.6MB/s]
+  6%|██▍                                   | 9.90M/156M [00:00&lt;00:07, 19.9MB/s]
 
-  8%|███                                   | 12.4M/156M [00:00&lt;00:06, 21.3MB/s]
+  9%|███▍                                  | 14.0M/156M [00:00&lt;00:05, 24.8MB/s]
 
- 11%|███▉                                  | 16.4M/156M [00:00&lt;00:05, 26.7MB/s]
+ 12%|████▌                                 | 18.5M/156M [00:00&lt;00:04, 30.5MB/s]
 
- 12%|████▋                                 | 19.2M/156M [00:01&lt;00:05, 25.4MB/s]
+ 14%|█████▎                                | 21.7M/156M [00:01&lt;00:04, 30.8MB/s]
 
- 15%|█████▌                                | 22.7M/156M [00:01&lt;00:05, 25.8MB/s]
+ 17%|██████▍                               | 26.4M/156M [00:01&lt;00:03, 35.3MB/s]
 
- 17%|██████▍                               | 26.6M/156M [00:01&lt;00:04, 29.3MB/s]
+ 19%|███████▍                              | 30.4M/156M [00:01&lt;00:03, 36.8MB/s]
 
- 19%|███████▏                              | 29.6M/156M [00:01&lt;00:04, 27.6MB/s]
+ 22%|████████▍                             | 34.8M/156M [00:01&lt;00:03, 38.8MB/s]
 
- 21%|███████▉                              | 32.9M/156M [00:01&lt;00:04, 26.9MB/s]
+ 25%|█████████▍                            | 39.0M/156M [00:01&lt;00:02, 39.5MB/s]
 
- 24%|████████▉                             | 36.7M/156M [00:01&lt;00:03, 29.9MB/s]
+ 28%|██████████▍                           | 43.2M/156M [00:01&lt;00:02, 40.1MB/s]
 
- 25%|█████████▋                            | 39.8M/156M [00:01&lt;00:04, 28.1MB/s]
+ 31%|███████████▌                          | 47.7M/156M [00:01&lt;00:02, 41.8MB/s]
 
- 28%|██████████▍                           | 43.1M/156M [00:01&lt;00:04, 27.5MB/s]
+ 33%|████████████▋                         | 51.9M/156M [00:01&lt;00:02, 41.3MB/s]
 
- 30%|███████████▍                          | 46.8M/156M [00:02&lt;00:03, 30.1MB/s]
+ 36%|█████████████▋                        | 56.3M/156M [00:01&lt;00:02, 42.0MB/s]
 
- 32%|████████████▏                         | 49.9M/156M [00:02&lt;00:03, 28.4MB/s]
+ 39%|██████████████▋                       | 60.5M/156M [00:01&lt;00:02, 41.6MB/s]
 
- 34%|████████████▉                         | 53.4M/156M [00:02&lt;00:03, 28.0MB/s]
+ 42%|███████████████▊                      | 65.1M/156M [00:02&lt;00:02, 42.9MB/s]
 
- 37%|█████████████▉                        | 57.4M/156M [00:02&lt;00:03, 30.9MB/s]
+ 44%|████████████████▉                     | 69.4M/156M [00:02&lt;00:02, 42.0MB/s]
 
- 39%|██████████████▋                       | 60.5M/156M [00:02&lt;00:03, 29.1MB/s]
+ 47%|██████████████████                    | 74.1M/156M [00:02&lt;00:01, 43.6MB/s]
 
- 41%|███████████████▌                      | 63.9M/156M [00:02&lt;00:03, 28.3MB/s]
+ 50%|███████████████████                   | 78.5M/156M [00:02&lt;00:01, 42.3MB/s]
 
- 43%|████████████████▌                     | 67.9M/156M [00:02&lt;00:02, 31.4MB/s]
+ 53%|████████████████████▏                 | 83.1M/156M [00:02&lt;00:01, 41.7MB/s]
 
- 46%|█████████████████▎                    | 71.1M/156M [00:02&lt;00:02, 29.5MB/s]
+ 56%|█████████████████████▎                | 87.6M/156M [00:02&lt;00:01, 42.9MB/s]
 
- 48%|██████████████████                    | 74.4M/156M [00:02&lt;00:02, 28.4MB/s]
+ 59%|██████████████████████▎               | 91.9M/156M [00:02&lt;00:01, 41.8MB/s]
 
- 50%|███████████████████                   | 78.4M/156M [00:03&lt;00:02, 31.4MB/s]
+ 62%|███████████████████████▍              | 96.6M/156M [00:02&lt;00:01, 43.1MB/s]
 
- 52%|███████████████████▊                  | 81.7M/156M [00:03&lt;00:02, 29.5MB/s]
+ 65%|█████████████████████████▏             | 101M/156M [00:02&lt;00:01, 41.9MB/s]
 
- 54%|████████████████████▋                 | 85.0M/156M [00:03&lt;00:02, 28.4MB/s]
+ 67%|██████████████████████████▎            | 105M/156M [00:03&lt;00:01, 42.4MB/s]
 
- 57%|█████████████████████▋                | 88.9M/156M [00:03&lt;00:02, 31.2MB/s]
+ 70%|███████████████████████████▎           | 110M/156M [00:03&lt;00:01, 42.3MB/s]
 
- 59%|██████████████████████▍               | 92.1M/156M [00:03&lt;00:02, 29.4MB/s]
+ 73%|████████████████████████████▍          | 114M/156M [00:03&lt;00:00, 42.6MB/s]
 
- 61%|███████████████████████▎              | 95.7M/156M [00:03&lt;00:02, 28.9MB/s]
+ 76%|█████████████████████████████▍         | 118M/156M [00:03&lt;00:00, 42.3MB/s]
 
- 64%|████████████████████████▎             | 99.9M/156M [00:03&lt;00:01, 32.1MB/s]
+ 79%|██████████████████████████████▌        | 123M/156M [00:03&lt;00:00, 43.2MB/s]
 
- 66%|█████████████████████████▊             | 103M/156M [00:03&lt;00:01, 30.1MB/s]
+ 81%|███████████████████████████████▋       | 127M/156M [00:03&lt;00:00, 42.6MB/s]
 
- 68%|██████████████████████████▌            | 107M/156M [00:04&lt;00:01, 29.0MB/s]
+ 84%|████████████████████████████████▊      | 131M/156M [00:03&lt;00:00, 42.8MB/s]
 
- 71%|███████████████████████████▌           | 111M/156M [00:04&lt;00:01, 32.0MB/s]
+ 87%|█████████████████████████████████▊     | 136M/156M [00:03&lt;00:00, 42.2MB/s]
 
- 73%|████████████████████████████▍          | 114M/156M [00:04&lt;00:01, 30.0MB/s]
+ 90%|██████████████████████████████████▉    | 140M/156M [00:03&lt;00:00, 43.2MB/s]
 
- 75%|█████████████████████████████▎         | 117M/156M [00:04&lt;00:01, 29.0MB/s]
+ 92%|████████████████████████████████████   | 144M/156M [00:03&lt;00:00, 42.5MB/s]
 
- 78%|██████████████████████████████▎        | 121M/156M [00:04&lt;00:01, 31.9MB/s]
+ 95%|█████████████████████████████████████▏ | 149M/156M [00:04&lt;00:00, 42.8MB/s]
 
- 80%|███████████████████████████████        | 125M/156M [00:04&lt;00:01, 29.9MB/s]
-
- 82%|███████████████████████████████▉       | 128M/156M [00:04&lt;00:00, 28.6MB/s]
-
- 84%|████████████████████████████████▉      | 132M/156M [00:04&lt;00:00, 31.3MB/s]
-
- 86%|█████████████████████████████████▋     | 135M/156M [00:04&lt;00:00, 29.4MB/s]
-
- 88%|██████████████████████████████████▌    | 138M/156M [00:05&lt;00:00, 28.2MB/s]
-
- 91%|███████████████████████████████████▍   | 142M/156M [00:05&lt;00:00, 31.2MB/s]
-
- 93%|████████████████████████████████████▎  | 145M/156M [00:05&lt;00:00, 29.3MB/s]
-
- 95%|█████████████████████████████████████  | 149M/156M [00:05&lt;00:00, 28.2MB/s]
-
- 98%|██████████████████████████████████████ | 153M/156M [00:05&lt;00:00, 31.2MB/s]
-
-100%|██████████████████████████████████████▉| 156M/156M [00:05&lt;00:00, 29.3MB/s]
+ 98%|██████████████████████████████████████▏| 153M/156M [00:04&lt;00:00, 42.3MB/s]
 
   0%|                                               | 0.00/156M [00:00&lt;?, ?B/s]
-100%|████████████████████████████████████████| 156M/156M [00:00&lt;00:00, 228GB/s]
+100%|████████████████████████████████████████| 156M/156M [00:00&lt;00:00, 370GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning:   Could not parse meas date from the header. Setting to None.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
@@ -857,14 +840,14 @@ All datasets will be downloaded to this location, if anything is already downloa
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-2023-10-19 15:03:40,313 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 1 | 0: Score 0.860
-2023-10-19 15:03:40,851 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 1 | 0: Score 0.909
-2023-10-19 15:03:41,220 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 1 | 1: Score 0.924
-2023-10-19 15:03:41,710 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 1 | 1: Score 0.926
-2023-10-19 15:03:42,078 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 1 | 2: Score 0.954
-2023-10-19 15:03:42,557 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 1 | 2: Score 0.964
+2023-10-19 15:58:00,508 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 1 | 0: Score 0.860
+2023-10-19 15:58:01,175 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 1 | 0: Score 0.909
+2023-10-19 15:58:01,697 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 1 | 1: Score 0.924
+2023-10-19 15:58:02,294 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 1 | 1: Score 0.926
+2023-10-19 15:58:02,819 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 1 | 2: Score 0.954
+2023-10-19 15:58:03,415 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 1 | 2: Score 0.964
 
-Zhou2016-WithinSession:  25%|##5       | 1/4 [00:15&lt;00:46, 15.51s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou2016-WithinSession:  25%|##5       | 1/4 [00:15&lt;00:45, 15.14s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -884,14 +867,14 @@ Zhou2016-WithinSession:  25%|##5       | 1/4 [00:15&lt;00:46, 15.51s/it]/home/ru
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-2023-10-19 15:03:45,435 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 2 | 0: Score 0.916
-2023-10-19 15:03:45,928 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 2 | 0: Score 0.910
-2023-10-19 15:03:46,285 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 2 | 1: Score 0.753
-2023-10-19 15:03:46,766 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 2 | 1: Score 0.765
-2023-10-19 15:03:47,134 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 2 | 2: Score 0.906
-2023-10-19 15:03:47,612 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 2 | 2: Score 0.904
+2023-10-19 15:58:06,513 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 2 | 0: Score 0.916
+2023-10-19 15:58:07,138 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 2 | 0: Score 0.910
+2023-10-19 15:58:07,642 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 2 | 1: Score 0.753
+2023-10-19 15:58:08,228 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 2 | 1: Score 0.765
+2023-10-19 15:58:08,755 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 2 | 2: Score 0.906
+2023-10-19 15:58:09,352 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 2 | 2: Score 0.904
 
-Zhou2016-WithinSession:  50%|#####     | 2/4 [00:20&lt;00:18,  9.36s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou2016-WithinSession:  50%|#####     | 2/4 [00:21&lt;00:19,  9.73s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -907,14 +890,14 @@ Zhou2016-WithinSession:  50%|#####     | 2/4 [00:20&lt;00:18,  9.36s/it]/home/ru
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-2023-10-19 15:03:50,685 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 3 | 0: Score 0.972
-2023-10-19 15:03:51,166 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 3 | 0: Score 0.994
-2023-10-19 15:03:51,532 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 3 | 1: Score 0.980
-2023-10-19 15:03:52,006 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 3 | 1: Score 0.990
-2023-10-19 15:03:52,369 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 3 | 2: Score 0.990
-2023-10-19 15:03:52,847 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 3 | 2: Score 0.992
+2023-10-19 15:58:12,610 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 3 | 0: Score 0.972
+2023-10-19 15:58:13,211 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 3 | 0: Score 0.994
+2023-10-19 15:58:13,739 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 3 | 1: Score 0.980
+2023-10-19 15:58:14,347 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 3 | 1: Score 0.990
+2023-10-19 15:58:14,873 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 3 | 2: Score 0.990
+2023-10-19 15:58:15,470 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 3 | 2: Score 0.992
 
-Zhou2016-WithinSession:  75%|#######5  | 3/4 [00:25&lt;00:07,  7.48s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou2016-WithinSession:  75%|#######5  | 3/4 [00:27&lt;00:08,  8.08s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -930,15 +913,15 @@ Zhou2016-WithinSession:  75%|#######5  | 3/4 [00:25&lt;00:07,  7.48s/it]/home/ru
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
-2023-10-19 15:03:55,667 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 4 | 0: Score 0.993
-2023-10-19 15:03:56,125 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 4 | 0: Score 0.995
-2023-10-19 15:03:56,495 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 4 | 1: Score 0.972
-2023-10-19 15:03:56,995 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 4 | 1: Score 0.972
-2023-10-19 15:03:57,360 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 4 | 2: Score 0.968
-2023-10-19 15:03:57,845 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 4 | 2: Score 0.978
+2023-10-19 15:58:18,517 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 4 | 0: Score 0.993
+2023-10-19 15:58:19,084 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 4 | 0: Score 0.995
+2023-10-19 15:58:19,620 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 4 | 1: Score 0.972
+2023-10-19 15:58:20,237 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 4 | 1: Score 0.972
+2023-10-19 15:58:20,785 INFO MainThread moabb.evaluations.base CSP + SVM | Zhou2016 | 4 | 2: Score 0.968
+2023-10-19 15:58:21,382 INFO MainThread moabb.evaluations.base Tangent Space LR | Zhou2016 | 4 | 2: Score 0.978
 
-Zhou2016-WithinSession: 100%|##########| 4/4 [00:30&lt;00:00,  6.50s/it]
-Zhou2016-WithinSession: 100%|##########| 4/4 [00:30&lt;00:00,  7.70s/it]
+Zhou2016-WithinSession: 100%|##########| 4/4 [00:33&lt;00:00,  7.22s/it]
+Zhou2016-WithinSession: 100%|##########| 4/4 [00:33&lt;00:00,  8.28s/it]
     dataset     evaluation          pipeline  avg score
 0  Zhou2016  WithinSession         CSP + SVM   0.932315
 1  Zhou2016  WithinSession  Tangent Space LR   0.941601
@@ -951,13 +934,13 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_benchmark_001.png" srcset="../_images/sphx_glr_plot_benchmark_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-10-19 15:03:58,488 WARNING MainThread moabb.analysis.plotting Dataset names are too similar, turning off name shortening
+<img src="../_images/sphx_glr_plot_benchmark_001.png" srcset="../_images/sphx_glr_plot_benchmark_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2023-10-19 15:58:22,031 WARNING MainThread moabb.analysis.plotting Dataset names are too similar, turning off name shortening
 /home/runner/work/moabb/moabb/moabb/analysis/plotting.py:70: UserWarning: The palette list has more values (6) than needed (2), which may not be intended.
   sea.stripplot(
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  32.230 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  321 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  34.635 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  316 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5657e54b8c692376a881117a99de998e/plot_benchmark.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark.py</span></code></a></p>
@@ -982,12 +965,12 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="load_model.html"
+       href="noplot_vr_pc_p300_different_epoch_size.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Load Model (Scikit, Pytorch, Keras) with MOABB</p>
+        <p class="prev-next-title">Changing epoch size in P300 VR dataset</p>
       </div>
     </a>
     <a class="right-next"

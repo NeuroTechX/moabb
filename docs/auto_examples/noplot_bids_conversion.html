@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Convert a MOABB dataset to BIDS &#8212; moabb 0.5.0 documentation</title>
+    <title>Convert a MOABB dataset to BIDS &#8212; moabb 1.0.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_bids_conversion';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/noplot_bids_conversion';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Cross-session motor imagery with deep learning EEGNet v4 model" href="plot_braindecode.html" />
-    <link rel="prev" title="Benchmarking with MOABB with Grid Search" href="plot_benchmark_grid_search.html" />
+    <link rel="next" title="Spectral analysis of the trials" href="noplot_phmd_ml_spectrum.html" />
+    <link rel="prev" title="Load Model (Scikit, Pytorch, Keras) with MOABB" href="load_model.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -379,24 +379,26 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_tutorials/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/noplot_tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
 
-<li class="toctree-l2"><a class="reference internal" href="../auto_tutorials/tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
 <li class="toctree-l2"><a class="reference internal" href="load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Convert a MOABB dataset to BIDS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noplot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noplot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_braindecode.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_motor_imagery.html">Cross-Session Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
@@ -404,8 +406,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_explore_paradigm.html">Explore Paradigm Object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_fixed_interval_windows.html">Fixed interval windows processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_p300.html">Within Session P300</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_within_session_ssvep.html">Within Session SSVEP</a></li>
 </ul>
@@ -533,6 +533,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.set_log_level.html">moabb.set_log_level</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.setup_seed.html">moabb.setup_seed</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.set_download_dir.html">moabb.set_download_dir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.make_process_pipelines.html">moabb.make_process_pipelines</a></li>
 </ul>
 </li>
 </ul>
@@ -597,11 +598,11 @@ document.write(`
                   
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-bids-conversion-py"><span class="std std-ref">here</span></a>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-noplot-bids-conversion-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
 <section class="sphx-glr-example-title" id="convert-a-moabb-dataset-to-bids">
-<span id="sphx-glr-auto-examples-plot-bids-conversion-py"></span><h1>Convert a MOABB dataset to BIDS<a class="headerlink" href="#convert-a-moabb-dataset-to-bids" title="Permalink to this heading">#</a></h1>
+<span id="sphx-glr-auto-examples-noplot-bids-conversion-py"></span><h1>Convert a MOABB dataset to BIDS<a class="headerlink" href="#convert-a-moabb-dataset-to-bids" title="Permalink to this heading">#</a></h1>
 <p>The Brain Imaging Data Structure (BIDS) format
 is standard for storing neuroimaging data.
 It follows fixed principles to facilitate the
@@ -621,12 +622,12 @@ people and one that can be downloaded quickly.</p>
 
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Path</span></a>
 
 <span class="kn">import</span> <span class="nn">mne</span>
 
 <span class="kn">from</span> <span class="nn">moabb</span> <span class="kn">import</span> <a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a>
-<span class="kn">from</span> <span class="nn">moabb.datasets</span> <span class="kn">import</span> <a href="../generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">AlexMI</span></a>
+<span class="kn">from</span> <span class="nn">moabb.datasets</span> <span class="kn">import</span> <a href="../generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">AlexMI</span></a>
 
 
 <a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
@@ -635,202 +636,12 @@ people and one that can be downloaded quickly.</p>
 <section id="basic-usage">
 <h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading">#</a></h2>
 <p>Here, we will save the BIDS version of the dataset in a temporary folder</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/tempfile.html#tempfile.mkdtemp" title="tempfile.mkdtemp" class="sphx-glr-backref-module-tempfile sphx-glr-backref-type-py-function"><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span></a><span class="p">())</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">temp_dir</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Path</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/tempfile.html#tempfile.mkdtemp" title="tempfile.mkdtemp" class="sphx-glr-backref-module-tempfile sphx-glr-backref-type-py-function"><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span></a><span class="p">())</span>
 <span class="c1"># The conversion of any MOABB dataset to a BIDS-compliant structure can be done</span>
 <span class="c1"># by simply calling its ``get_data`` method and using the ``cache_config``</span>
 <span class="c1"># parameter. This parameter is a dictionary.</span>
-<a href="../generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <a href="../generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">AlexMI</span></a><span class="p">()</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="../generated/moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset.get_data" title="moabb.datasets.base.BaseDataset.get_data" class="sphx-glr-backref-module-moabb-datasets-base sphx-glr-backref-type-py-method"><span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><span class="n">cache_config</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">,</span> <span class="n">save_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/datasets/download.py:55: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_ALEXEEG_PATH&quot;
-  set_config(key, get_config(&quot;MNE_DATA&quot;))
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/17.3M [00:00&lt;?, ?B/s]
-  0%|                                      | 44.0k/17.3M [00:00&lt;01:14, 233kB/s]
-  1%|▍                                      | 204k/17.3M [00:00&lt;00:29, 590kB/s]
-  3%|█▎                                    | 575k/17.3M [00:00&lt;00:10, 1.55MB/s]
-  7%|██▋                                  | 1.26M/17.3M [00:00&lt;00:05, 3.18MB/s]
- 14%|█████▏                               | 2.42M/17.3M [00:00&lt;00:02, 5.73MB/s]
- 26%|█████████▋                           | 4.54M/17.3M [00:00&lt;00:01, 10.4MB/s]
- 40%|██████████████▋                      | 6.87M/17.3M [00:00&lt;00:00, 14.3MB/s]
- 52%|███████████████████▎                 | 9.04M/17.3M [00:00&lt;00:00, 16.5MB/s]
- 65%|████████████████████████▏            | 11.3M/17.3M [00:01&lt;00:00, 18.4MB/s]
- 78%|████████████████████████████▊        | 13.5M/17.3M [00:01&lt;00:00, 19.4MB/s]
- 90%|█████████████████████████████████    | 15.5M/17.3M [00:01&lt;00:00, 16.8MB/s]
-  0%|                                              | 0.00/17.3M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 17.3M/17.3M [00:00&lt;00:00, 31.2GB/s]
-/home/runner/work/moabb/moabb/moabb/datasets/download.py:55: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_ALEXANDREMOTORIMAGERY_PATH&quot;
-  set_config(key, get_config(&quot;MNE_DATA&quot;))
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: Converting data files to EDF format
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: EDF format requires equal-length data blocks, so 0.373046875 seconds of zeros were appended to all channels when writing the final block.
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/17.2M [00:00&lt;?, ?B/s]
-  0%|                                      | 32.8k/17.2M [00:00&lt;01:39, 172kB/s]
-  1%|▍                                      | 201k/17.2M [00:00&lt;00:28, 586kB/s]
-  4%|█▎                                    | 604k/17.2M [00:00&lt;00:10, 1.64MB/s]
-  8%|██▊                                  | 1.31M/17.2M [00:00&lt;00:04, 3.27MB/s]
- 14%|█████▏                               | 2.43M/17.2M [00:00&lt;00:02, 5.68MB/s]
- 26%|█████████▊                           | 4.53M/17.2M [00:00&lt;00:01, 10.3MB/s]
- 41%|██████████████▉                      | 6.95M/17.2M [00:00&lt;00:00, 14.5MB/s]
- 53%|███████████████████▊                 | 9.17M/17.2M [00:00&lt;00:00, 16.8MB/s]
- 68%|████████████████████████▉            | 11.6M/17.2M [00:01&lt;00:00, 19.0MB/s]
- 81%|█████████████████████████████▉       | 13.9M/17.2M [00:01&lt;00:00, 20.1MB/s]
- 93%|██████████████████████████████████▍  | 16.0M/17.2M [00:01&lt;00:00, 17.3MB/s]
-  0%|                                              | 0.00/17.2M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 17.2M/17.2M [00:00&lt;00:00, 37.9GB/s]
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: Converting data files to EDF format
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: EDF format requires equal-length data blocks, so 0.654296875 seconds of zeros were appended to all channels when writing the final block.
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/17.2M [00:00&lt;?, ?B/s]
-  0%|                                      | 41.0k/17.2M [00:00&lt;01:19, 216kB/s]
-  1%|▍                                      | 211k/17.2M [00:00&lt;00:27, 615kB/s]
-  4%|█▍                                    | 642k/17.2M [00:00&lt;00:09, 1.75MB/s]
-  8%|██▊                                  | 1.33M/17.2M [00:00&lt;00:04, 3.31MB/s]
- 15%|█████▍                               | 2.53M/17.2M [00:00&lt;00:02, 5.96MB/s]
- 26%|█████████▋                           | 4.51M/17.2M [00:00&lt;00:01, 10.1MB/s]
- 41%|███████████████                      | 6.99M/17.2M [00:00&lt;00:00, 14.5MB/s]
- 54%|███████████████████▊                 | 9.21M/17.2M [00:00&lt;00:00, 16.9MB/s]
- 67%|████████████████████████▊            | 11.5M/17.2M [00:01&lt;00:00, 18.6MB/s]
- 81%|█████████████████████████████▉       | 13.9M/17.2M [00:01&lt;00:00, 17.0MB/s]
- 94%|██████████████████████████████████▉  | 16.2M/17.2M [00:01&lt;00:00, 18.7MB/s]
-  0%|                                              | 0.00/17.2M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 17.2M/17.2M [00:00&lt;00:00, 36.9GB/s]
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: Converting data files to EDF format
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: EDF format requires equal-length data blocks, so 0.654296875 seconds of zeros were appended to all channels when writing the final block.
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/17.2M [00:00&lt;?, ?B/s]
-  0%|                                      | 36.9k/17.2M [00:00&lt;01:28, 194kB/s]
-  1%|▎                                      | 141k/17.2M [00:00&lt;00:42, 401kB/s]
-  3%|█                                     | 487k/17.2M [00:00&lt;00:12, 1.34MB/s]
-  6%|██▏                                  | 1.00M/17.2M [00:00&lt;00:08, 1.97MB/s]
- 12%|████▌                                | 2.14M/17.2M [00:00&lt;00:03, 4.37MB/s]
- 25%|█████████▍                           | 4.36M/17.2M [00:00&lt;00:01, 9.16MB/s]
- 38%|██████████████▏                      | 6.56M/17.2M [00:00&lt;00:00, 12.7MB/s]
- 52%|███████████████████▎                 | 8.96M/17.2M [00:01&lt;00:00, 15.9MB/s]
- 66%|████████████████████████▍            | 11.4M/17.2M [00:01&lt;00:00, 18.2MB/s]
- 81%|█████████████████████████████▊       | 13.8M/17.2M [00:01&lt;00:00, 20.1MB/s]
- 94%|██████████████████████████████████▊  | 16.2M/17.2M [00:01&lt;00:00, 21.1MB/s]
-  0%|                                              | 0.00/17.2M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 17.2M/17.2M [00:00&lt;00:00, 39.0GB/s]
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: Converting data files to EDF format
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: EDF format requires equal-length data blocks, so 0.654296875 seconds of zeros were appended to all channels when writing the final block.
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/17.3M [00:00&lt;?, ?B/s]
-  0%|                                      | 41.0k/17.3M [00:00&lt;01:19, 217kB/s]
-  1%|▍                                      | 209k/17.3M [00:00&lt;00:28, 608kB/s]
-  3%|█▏                                    | 554k/17.3M [00:00&lt;00:11, 1.48MB/s]
-  5%|██                                    | 949k/17.3M [00:00&lt;00:08, 2.04MB/s]
-  9%|███▏                                 | 1.52M/17.3M [00:00&lt;00:05, 3.07MB/s]
- 16%|██████                               | 2.83M/17.3M [00:00&lt;00:02, 5.98MB/s]
- 31%|███████████▎                         | 5.30M/17.3M [00:00&lt;00:01, 11.4MB/s]
- 48%|█████████████████▊                   | 8.34M/17.3M [00:01&lt;00:00, 15.4MB/s]
- 64%|███████████████████████▌             | 11.1M/17.3M [00:01&lt;00:00, 18.6MB/s]
- 80%|█████████████████████████████▌       | 13.8M/17.3M [00:01&lt;00:00, 21.2MB/s]
- 95%|███████████████████████████████████▏ | 16.5M/17.3M [00:01&lt;00:00, 22.6MB/s]
-  0%|                                              | 0.00/17.3M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 17.3M/17.3M [00:00&lt;00:00, 35.8GB/s]
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: Converting data files to EDF format
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: EDF format requires equal-length data blocks, so 0.248046875 seconds of zeros were appended to all channels when writing the final block.
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/17.5M [00:00&lt;?, ?B/s]
-  0%|                                      | 39.9k/17.5M [00:00&lt;01:22, 210kB/s]
-  1%|▎                                      | 151k/17.5M [00:00&lt;00:40, 427kB/s]
-  3%|█                                     | 493k/17.5M [00:00&lt;00:12, 1.34MB/s]
-  6%|██▎                                  | 1.07M/17.5M [00:00&lt;00:06, 2.68MB/s]
- 11%|████                                 | 1.94M/17.5M [00:00&lt;00:03, 4.50MB/s]
- 19%|██████▉                              | 3.26M/17.5M [00:00&lt;00:01, 7.13MB/s]
- 34%|████████████▌                        | 5.95M/17.5M [00:00&lt;00:00, 13.1MB/s]
- 50%|██████████████████▍                  | 8.71M/17.5M [00:00&lt;00:00, 16.7MB/s]
- 60%|██████████████████████               | 10.4M/17.5M [00:01&lt;00:00, 14.3MB/s]
- 75%|███████████████████████████▋         | 13.1M/17.5M [00:01&lt;00:00, 17.4MB/s]
- 93%|██████████████████████████████████▌  | 16.3M/17.5M [00:01&lt;00:00, 21.5MB/s]
-  0%|                                              | 0.00/17.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 17.5M/17.5M [00:00&lt;00:00, 45.2GB/s]
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: Converting data files to EDF format
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: EDF format requires equal-length data blocks, so 0.248046875 seconds of zeros were appended to all channels when writing the final block.
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/17.4M [00:00&lt;?, ?B/s]
-  0%|                                      | 32.8k/17.4M [00:00&lt;01:40, 173kB/s]
-  1%|▎                                      | 147k/17.4M [00:00&lt;00:40, 424kB/s]
-  3%|█▏                                    | 541k/17.4M [00:00&lt;00:11, 1.50MB/s]
-  7%|██▍                                  | 1.14M/17.4M [00:00&lt;00:05, 2.87MB/s]
- 11%|████▏                                | 1.96M/17.4M [00:00&lt;00:03, 4.48MB/s]
- 19%|███████                              | 3.35M/17.4M [00:00&lt;00:01, 7.32MB/s]
- 29%|██████████▉                          | 5.14M/17.4M [00:00&lt;00:01, 10.5MB/s]
- 44%|████████████████▍                    | 7.74M/17.4M [00:00&lt;00:00, 15.1MB/s]
- 56%|████████████████████▊                | 9.83M/17.4M [00:01&lt;00:00, 16.9MB/s]
- 69%|█████████████████████████▍           | 12.0M/17.4M [00:01&lt;00:00, 15.6MB/s]
- 82%|██████████████████████████████▎      | 14.3M/17.4M [00:01&lt;00:00, 17.5MB/s]
- 94%|██████████████████████████████████▉  | 16.5M/17.4M [00:01&lt;00:00, 18.7MB/s]
-  0%|                                              | 0.00/17.4M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 17.4M/17.4M [00:00&lt;00:00, 46.2GB/s]
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: Converting data files to EDF format
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: EDF format requires equal-length data blocks, so 0.498046875 seconds of zeros were appended to all channels when writing the final block.
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1045: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
-  warnings.warn(
-
-  0%|                                              | 0.00/17.4M [00:00&lt;?, ?B/s]
-  0%|                                      | 49.2k/17.4M [00:00&lt;01:06, 260kB/s]
-  1%|▎                                      | 147k/17.4M [00:00&lt;00:41, 410kB/s]
-  3%|█▏                                    | 530k/17.4M [00:00&lt;00:11, 1.46MB/s]
-  7%|██▍                                  | 1.15M/17.4M [00:00&lt;00:05, 2.89MB/s]
- 11%|████▏                                | 1.97M/17.4M [00:00&lt;00:03, 4.50MB/s]
- 21%|███████▋                             | 3.62M/17.4M [00:00&lt;00:01, 8.13MB/s]
- 38%|██████████████▏                      | 6.67M/17.4M [00:00&lt;00:00, 14.9MB/s]
- 53%|███████████████████▋                 | 9.27M/17.4M [00:00&lt;00:00, 17.5MB/s]
- 70%|█████████████████████████▉           | 12.2M/17.4M [00:01&lt;00:00, 20.9MB/s]
- 85%|███████████████████████████████▎     | 14.7M/17.4M [00:01&lt;00:00, 22.1MB/s]
-  0%|                                              | 0.00/17.4M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 17.4M/17.4M [00:00&lt;00:00, 37.4GB/s]
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: Converting data files to EDF format
-  mne_bids.write_raw_bids(
-/home/runner/work/moabb/moabb/moabb/datasets/bids_interface.py:324: RuntimeWarning: EDF format requires equal-length data blocks, so 0.279296875 seconds of zeros were appended to all channels when writing the final block.
-  mne_bids.write_raw_bids(
+<span class="n">dataset</span> <span class="o">=</span> <a href="../generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">AlexMI</span></a><span class="p">()</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">cache_config</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">temp_dir</span><span class="p">,</span> <span class="n">save_raw</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
@@ -838,7 +649,7 @@ people and one that can be downloaded quickly.</p>
 <h2>Before / after folder structure<a class="headerlink" href="#before-after-folder-structure" title="Permalink to this heading">#</a></h2>
 <p>To investigate what was saved, we will first define a function to print
 the folder structure of a given path:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">print_tree</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">print_tree</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Path</span></a><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
     <span class="n">elbow</span> <span class="o">=</span> <span class="s2">&quot;└──&quot;</span>
     <span class="n">pipe</span> <span class="o">=</span> <span class="s2">&quot;│  &quot;</span>
     <span class="n">tee</span> <span class="o">=</span> <span class="s2">&quot;├──&quot;</span>
@@ -854,31 +665,13 @@ the folder structure of a given path:</p>
 </div>
 <p>Now, we will retrieve the location of the original dataset. It is stored
 in the MNE data directory, which can be found with the <code class="docutils literal notranslate"><span class="pre">&quot;MNE_DATA&quot;</span></code> key:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s2">&quot;MNE_DATA&quot;</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MNE data directory: </span><span class="si">{</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>MNE data directory: /home/runner/mne_data
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mne_data</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Path</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s2">&quot;MNE_DATA&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MNE data directory: </span><span class="si">{</span><span class="n">mne_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now, we can print the folder structure of the original dataset:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Before conversion:&quot;</span><span class="p">)</span>
-<span class="n">print_tree</span><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data</span></a> <span class="o">/</span> <span class="s2">&quot;MNE-alexeeg-data&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Before conversion:
-└──MNE-alexeeg-data
-   └──record
-      └──806023
-         └──files
-            ├──subject2.raw.fif
-            ├──subject3.raw.fif
-            ├──subject5.raw.fif
-            ├──subject1.raw.fif
-            ├──subject8.raw.fif
-            ├──subject4.raw.fif
-            ├──subject7.raw.fif
-            └──subject6.raw.fif
+<span class="n">print_tree</span><span class="p">(</span><span class="n">mne_data</span> <span class="o">/</span> <span class="s2">&quot;MNE-alexeeg-data&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>As we can see, before conversion, all the data (i.e. from all subjects,
@@ -886,95 +679,7 @@ sessions and runs) is stored in a single folder. This follows no particular
 standard and can vary from one dataset to another.</p>
 <p>After conversion, the data is stored in a BIDS-compliant way:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;After conversion:&quot;</span><span class="p">)</span>
-<span class="n">print_tree</span><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a> <span class="o">/</span> <span class="s2">&quot;MNE-BIDS-alexandre-motor-imagery&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>After conversion:
-└──MNE-BIDS-alexandre-motor-imagery
-   ├──sub-5
-   │  ├──sub-5_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_lockfile.json
-   │  └──ses-0
-   │     ├──eeg
-   │     │  ├──sub-5_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.json
-   │     │  ├──sub-5_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.tsv
-   │     │  ├──sub-5_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.edf
-   │     │  ├──sub-5_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.json
-   │     │  └──sub-5_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_channels.tsv
-   │     └──sub-5_ses-0_scans.tsv
-   ├──dataset_description.json
-   ├──participants.json
-   ├──sub-2
-   │  ├──ses-0
-   │  │  ├──sub-2_ses-0_scans.tsv
-   │  │  └──eeg
-   │  │     ├──sub-2_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.edf
-   │  │     ├──sub-2_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.json
-   │  │     ├──sub-2_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.json
-   │  │     ├──sub-2_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.tsv
-   │  │     └──sub-2_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_channels.tsv
-   │  └──sub-2_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_lockfile.json
-   ├──sub-4
-   │  ├──ses-0
-   │  │  ├──eeg
-   │  │  │  ├──sub-4_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_channels.tsv
-   │  │  │  ├──sub-4_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.edf
-   │  │  │  ├──sub-4_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.tsv
-   │  │  │  ├──sub-4_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.json
-   │  │  │  └──sub-4_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.json
-   │  │  └──sub-4_ses-0_scans.tsv
-   │  └──sub-4_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_lockfile.json
-   ├──sub-1
-   │  ├──ses-0
-   │  │  ├──eeg
-   │  │  │  ├──sub-1_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.edf
-   │  │  │  ├──sub-1_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.json
-   │  │  │  ├──sub-1_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.json
-   │  │  │  ├──sub-1_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_channels.tsv
-   │  │  │  └──sub-1_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.tsv
-   │  │  └──sub-1_ses-0_scans.tsv
-   │  └──sub-1_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_lockfile.json
-   ├──sub-8
-   │  ├──ses-0
-   │  │  ├──eeg
-   │  │  │  ├──sub-8_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.edf
-   │  │  │  ├──sub-8_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_channels.tsv
-   │  │  │  ├──sub-8_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.tsv
-   │  │  │  ├──sub-8_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.json
-   │  │  │  └──sub-8_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.json
-   │  │  └──sub-8_ses-0_scans.tsv
-   │  └──sub-8_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_lockfile.json
-   ├──sub-7
-   │  ├──ses-0
-   │  │  ├──eeg
-   │  │  │  ├──sub-7_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.json
-   │  │  │  ├──sub-7_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.tsv
-   │  │  │  ├──sub-7_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_channels.tsv
-   │  │  │  ├──sub-7_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.json
-   │  │  │  └──sub-7_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.edf
-   │  │  └──sub-7_ses-0_scans.tsv
-   │  └──sub-7_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_lockfile.json
-   ├──sub-3
-   │  ├──sub-3_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_lockfile.json
-   │  └──ses-0
-   │     ├──eeg
-   │     │  ├──sub-3_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_channels.tsv
-   │     │  ├──sub-3_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.json
-   │     │  ├──sub-3_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.tsv
-   │     │  ├──sub-3_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.edf
-   │     │  └──sub-3_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.json
-   │     └──sub-3_ses-0_scans.tsv
-   ├──sub-6
-   │  ├──ses-0
-   │  │  ├──eeg
-   │  │  │  ├──sub-6_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.edf
-   │  │  │  ├──sub-6_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_channels.tsv
-   │  │  │  ├──sub-6_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.json
-   │  │  │  ├──sub-6_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_eeg.json
-   │  │  │  └──sub-6_ses-0_task-imagery_run-0_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_events.tsv
-   │  │  └──sub-6_ses-0_scans.tsv
-   │  └──sub-6_desc-9eab2c90a1e95be8cd834a61f3a4ddc0_lockfile.json
-   ├──participants.tsv
-   └──README
+<span class="n">print_tree</span><span class="p">(</span><span class="n">temp_dir</span> <span class="o">/</span> <span class="s2">&quot;MNE-BIDS-alexandre-motor-imagery&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In the BIDS version of our dataset, the raw files are saved in EDF.
@@ -995,7 +700,7 @@ please refer to the tutorial <a class="reference internal" href="plot_disk_cache
 <section id="cleanup">
 <h2>Cleanup<a class="headerlink" href="#cleanup" title="Permalink to this heading">#</a></h2>
 <p>Finally, we can delete the temporary folder:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">temp_dir</span></a><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -1024,14 +729,14 @@ Université de Grenoble).
 <a class="reference external" href="https://tel.archives-ouvertes.fr/tel-01196752">https://tel.archives-ouvertes.fr/tel-01196752</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  46.992 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  227 MB</p>
-<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-bids-conversion-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  0 MB</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-noplot-bids-conversion-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/31c669584bbd313316e3f0842fdb0162/plot_bids_conversion.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_bids_conversion.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/9ab89018120aed26b30f3efdfdef47fe/noplot_bids_conversion.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">noplot_bids_conversion.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/dc7978877033b6f837f2e8462fbb451f/plot_bids_conversion.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_bids_conversion.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/1e19389137690794e1345c2b750ca301/noplot_bids_conversion.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">noplot_bids_conversion.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -1050,20 +755,20 @@ Université de Grenoble).
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="plot_benchmark_grid_search.html"
+       href="load_model.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Benchmarking with MOABB with Grid Search</p>
+        <p class="prev-next-title">Load Model (Scikit, Pytorch, Keras) with MOABB</p>
       </div>
     </a>
     <a class="right-next"
-       href="plot_braindecode.html"
+       href="noplot_phmd_ml_spectrum.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Cross-session motor imagery with deep learning EEGNet v4 model</p>
+        <p class="prev-next-title">Spectral analysis of the trials</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

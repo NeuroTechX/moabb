@@ -17,6 +17,7 @@ html[data-theme="light"] .highlight .c1 { color: #3D7B7B; font-style: italic } /
 html[data-theme="light"] .highlight .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
 html[data-theme="light"] .highlight .gd { color: #A00000 } /* Generic.Deleted */
 html[data-theme="light"] .highlight .ge { font-style: italic } /* Generic.Emph */
+html[data-theme="light"] .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
 html[data-theme="light"] .highlight .gr { color: #E40000 } /* Generic.Error */
 html[data-theme="light"] .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
 html[data-theme="light"] .highlight .gi { color: #008400 } /* Generic.Inserted */
