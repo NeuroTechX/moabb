@@ -73,7 +73,7 @@ class BaseMotorImagery(BaseParadigm):
 class LeftRightImagery(BaseMotorImagery):
     """Motor Imagery for left hand/right hand classification.
 
-    Attributes
+    Parameters
     -----------
 
     fmin: float (default 8)
@@ -119,7 +119,7 @@ class FilterBankLeftRightImagery(LeftRightImagery):
 class MotorImagery(BaseMotorImagery):
     """N-class Motor Imagery.
 
-    Attributes
+    Parameters
     -----------
 
     fmin: float (default 8)
@@ -202,7 +202,7 @@ class MotorImagery(BaseMotorImagery):
 class FilterBankMotorImagery(MotorImagery):
     """Filter bank N-class motor imagery.
 
-    Attributes
+    Parameters
     -----------
 
     n_classes: int (default number of available classes)

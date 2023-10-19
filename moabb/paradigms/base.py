@@ -33,7 +33,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
 
     Please use one of the child classes
 
-    Attributes
+    Parameters
     ----------
 
     filters: list of list (defaults [[7, 35]])
@@ -474,7 +474,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
 class BaseParadigm(BaseProcessing):
     """Base class for paradigms.
 
-    Attributes
+    Parameters
     ----------
 
     events: List of str | None (default None)
