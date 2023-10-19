@@ -229,5 +229,5 @@ def depreciated_alias(name, expire_version):
     return factory
 
 
-class MoabbMetaClass(abc.ABCMeta, NumpyDocstringInheritanceMeta):
+class MoabbMetaClass(abc.ABCMeta, NumpyDocstringInheritanceInitMeta):
     pass
