@@ -244,7 +244,7 @@ class RawToEpochs(FixedTransformer):
                 raw.info["bads"].extend(missing_channels)
                 # ...and use mne bad channel interpolation to generate the value of the missing channels
                 try:
-                    raw.interpolate_bads(origin='auto')
+                    raw.interpolate_bads(origin="auto")
                 except ValueError:
                     # use default origin if montage info not available
                     raw.interpolate_bads(origin=(0, 0, 0.04))
