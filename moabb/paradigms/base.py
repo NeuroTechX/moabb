@@ -431,7 +431,13 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             return None
         return Pipeline(steps)
 
-    def match_all(self, datasets: List[BaseDataset], shift=-0.5, channel_merge_strategy: str = 'intersect', ignore=['stim']):
+    def match_all(
+        self,
+        datasets: List[BaseDataset],
+        shift=-0.5,
+        channel_merge_strategy: str = "intersect",
+        ignore=["stim"],
+    ):
         """
         Initialize this paradigm to match all datasets in parameter:
         - `self.resample` is set to match the minimum frequency in all datasets, minus `shift`.
@@ -460,7 +466,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         channels: set = None
         for dataset in datasets:
             first_subject = dataset.subject_list[0]
-            data = dataset.get_data(subjects = [first_subject])[first_subject]
+            data = dataset.get_data(subjects=[first_subject])[first_subject]
             first_session = list(data.keys())[0]
             session = data[first_session]
             first_run = list(session.keys())[0]
@@ -473,7 +479,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             # get the channels common to all datasets
             if channels is None:
                 channels = set(ch_names)
-            elif channel_merge_strategy == 'intersect':
+            elif channel_merge_strategy == "intersect":
                 channels = channels.intersection(ch_names)
                 self.interpolate_missing_channels = False
             else:

@@ -408,7 +408,7 @@ class Test_CompoundDataset(unittest.TestCase):
             n_runs=self.n_runs,
             n_subjects=self.n_subjects,
             event_list=["Target", "NonTarget"],
-            paradigm=self.ds.paradigm
+            paradigm=self.ds.paradigm,
         )
 
         # Add the two datasets to a CompoundDataset
@@ -432,7 +432,7 @@ class Test_CompoundDataset(unittest.TestCase):
             n_runs=self.n_runs,
             n_subjects=self.n_subjects,
             event_list=["Target2", "NonTarget2"],
-            paradigm=self.ds.paradigm
+            paradigm=self.ds.paradigm,
         )
 
         # Add the two datasets to a CompoundDataset

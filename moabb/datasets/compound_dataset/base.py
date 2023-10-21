@@ -4,8 +4,6 @@ from sklearn.pipeline import Pipeline
 
 from ..base import BaseDataset
 
-import numpy as np
-
 
 class CompoundDataset(BaseDataset):
     """CompoundDataset class.
@@ -59,7 +57,7 @@ class CompoundDataset(BaseDataset):
         found_flags = set()
         filtered_dataset = []
         for dataset in all_datasets:
-            if not dataset.code in found_flags:
+            if dataset.code not in found_flags:
                 filtered_dataset.append(dataset)
                 found_flags.add(dataset.code)
         return filtered_dataset
@@ -99,7 +97,7 @@ class CompoundDataset(BaseDataset):
             dataset = entry[0]
             assert dataset.paradigm == paradigm
         return paradigm
-    
+
     def _with_data_origin(self, data: dict, shopped_subject):
         data_origin = self.subjects_list[shopped_subject - 1]
 

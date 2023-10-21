@@ -200,7 +200,7 @@ class RawToEpochs(FixedTransformer):
         tmax: float,
         baseline: Tuple[float, float],
         channels: List[str] = None,
-        interpolate_missing_channels: bool = False
+        interpolate_missing_channels: bool = False,
     ):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
@@ -231,20 +231,22 @@ class RawToEpochs(FixedTransformer):
                 except IndexError:
                     # Index error can occurs if the channels we add are not part of this epoch montage
                     # Then log a warning
-                    montage = raw.info['dig']
-                    warn(f'Montage disabled as one of these channels, {missing_channels}, is not part of the montage {montage}')
+                    montage = raw.info["dig"]
+                    warn(
+                        f"Montage disabled as one of these channels, {missing_channels}, is not part of the montage {montage}"
+                    )
                     # and disable the montage
-                    raw.info.pop('dig')
+                    raw.info.pop("dig")
                     # run again with montage disabled
                     raw.add_reference_channels(missing_channels)
 
                 # Trick: mark these channels as bad
-                raw.info['bads'].extend(missing_channels)
+                raw.info["bads"].extend(missing_channels)
                 # ...and use mne bad channel interpolation to generate the value of the missing channels
                 raw.interpolate_bads(origin=(0, 0, 0.04))
                 # update the name of the available channels
                 available_channels = self.channels
-            
+
             picks = mne.pick_channels(
                 available_channels, include=self.channels, ordered=True
             )
