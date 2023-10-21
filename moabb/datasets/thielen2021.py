@@ -238,7 +238,7 @@ class Thielen2021(BaseDataset):
         montage = mne.channels.read_custom_montage(file_path_list[-1])
 
         # There is only one session, each of 5 blocks (i.e., runs)
-        sessions = {"session_1": {}}
+        sessions = {"0": {}}
         for i_b in range(NR_BLOCKS):
             # EEG
             raw = mne.io.read_raw_gdf(
@@ -288,7 +288,8 @@ class Thielen2021(BaseDataset):
             )
 
             # Add data as a new run
-            sessions["session_1"][f"run_{1 + i_b:02d}"] = raw
+            run_name = str(i_b)
+            sessions["0"][run_name] = raw
 
         return sessions
 

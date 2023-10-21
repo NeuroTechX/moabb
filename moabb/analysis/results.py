@@ -120,9 +120,9 @@ class Results:
         """Add results."""
 
         def to_list(res):
-            if type(res) is dict:
+            if isinstance(res, dict):
                 return [res]
-            elif type(res) is not list:
+            elif not isinstance(res, list):
                 raise ValueError(
                     "Results are given as neither dict nor"
                     "list but {}".format(type(res).__name__)

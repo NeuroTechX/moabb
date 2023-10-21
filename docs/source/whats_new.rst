@@ -18,6 +18,24 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
+- None
+
+Bugs
+~~~~
+
+- None
+
+API changes
+~~~~~~~~~~~
+
+- None
+
+
+Version - 1.0.0  (Stable - PyPi)
+---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
 
 - Adding extra thank you section in the documentation (:gh:`390` by `Bruno Aristimunha`_)
 - Adding new script to get the meta information of the datasets (:gh:`389` by `Bruno Aristimunha`_)
@@ -48,16 +66,18 @@ Enhancements
 - Add :obj:`moabb.datasets.compound_dataset.utils.compound_dataset_list`  (:gh:`455` by `Pierre Guetschel`_)
 - Add c-VEP paradigm and Thielen2021 c-VEP dataset (:gh:`463` by `Jordy Thielen`_)
 - Add option to plot scores vertically. (:gh:`417` by `Sara Sedlar`_)
+- Change naming scheme for runs and sessions to align to BIDS standard (:gh:`471` by `Pierre Guetschel`_)
 - Increase the python version to 3.11 (:gh:`470` by `Bruno Aristimunha`_)
 - Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
 - Automate setting of event_id in compound dataset and add `data_origin` information to the data (:gh:`475` by `Gregoire Cattan`_)
+- Add possibility of not saving the model (:gh:`489` by `Igor Carrara`_)
 
 Bugs
 ~~~~
 
 - Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
 - Correct downloading with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_)
-- Rename event `substraction` to `subtraction` in :func:`moabb.datasets.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
+- Rename event `subtraction` in :func:`moabb.datasets.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
 - Save parameters of :func:`moabb.datasets.PhysionetMI` (:gh:`403` by `Pierre Guetschel`_)
 - Fixing issue with parallel evaluation (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Fixing SSLError from BCI competition IV (:gh:`404` by `Bruno Aristimunha`_)
@@ -75,6 +95,11 @@ Bugs
 - Fixing dataset downloader from servers with non-http (PR :gh:`433` by `Sara Sedlar`_)
 - Fix ``dataset_list`` to include deprecated datasets (PR :gh:`464` by `Bruno Aristimunha`_)
 - Fixed bug in :func:`moabb.analysis.results.get_string_rep` to handle addresses such as 0x__0A as well (PR :gh:`468` by `Anton Andreev`_)
+- Moving the :func:`moabb.evualation.grid_search` to inside the base evaluation (:gh:`487` by `Bruno Aristimunha`_)
+- Removing joblib Parallel (:gh:`488` by `Igor Carrara`_)
+- Fix case when events specified via ``raw.annotations`` but no events (:gh:`491` by `Pierre Guetschel`_)
+- Fix bug in downloading Shin2017A dataset (:gh:`493` by `Igor Carrara`_)
+- Fix the cropped option in the dataset preprocessing (:gh:`502` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -82,8 +107,8 @@ API changes
 - None
 
 
-Version - 0.5.0  (Stable - PyPi)
----------------------------------
+Version - 0.5.0
+---------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -310,7 +335,7 @@ Bugs
 - Use stim_channels or check annotation when loading files in Paradigm  (:gh:`72` by `Jan Sosulski`_)
 - Correct MNE issues (:gh:`76` by `Sylvain Chevallier`_)
 - Fix capitalization in channel names of cho dataset  (:gh:`90` by `Jan Sosulski`_)
-- Correct failling CI tests (:gh:`100` by `Sylvain Chevallier`_)
+- Correct failing CI tests (:gh:`100` by `Sylvain Chevallier`_)
 - Fix EPFL dataset flat signal sections and wrong scaling (:gh:`104` and :gh:`96` by  `Jan Sosulski`_)
 - Fix schirrmeister dataset for Python3.8 (:gh:`105` by `Robin Schirrmeister`_)
 - Correct event detection problem and duplicate event error (:gh:`106` by `Sylvain Chevallier`_)

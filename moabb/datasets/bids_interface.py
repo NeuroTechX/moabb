@@ -56,29 +56,6 @@ def subject_bids_to_moabb(subject: str):
     return int(subject)
 
 
-def session_moabb_to_bids(session: str):
-    """Replace the session_* to *."""
-    return session.replace("session_", "")
-
-
-def session_bids_to_moabb(session: str):
-    """Replace the * to session_*."""
-    return "session_" + session
-
-
-# Note: the runs are expected to be indexes in the BIDS standard.
-#       This is not always the case in MOABB.  See:
-# bids-specification.readthedocs.io/en/stable/glossary.html#run-entities
-def run_moabb_to_bids(run: str):
-    """Replace the run_* to *."""
-    return run.replace("run_", "")
-
-
-def run_bids_to_moabb(run: str):
-    """Replace the * to run_*."""
-    return "run_" + run
-
-
 @dataclass
 class BIDSInterfaceBase(abc.ABC):
     """Base class for BIDSInterface.
@@ -98,6 +75,12 @@ class BIDSInterfaceBase(abc.ABC):
         The processing pipeline used to convert the data.
     verbose : str
         The verbosity level.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.0
+
     """
 
     dataset: "BaseDataset"
@@ -174,7 +157,7 @@ class BIDSInterfaceBase(abc.ABC):
         log.info("Attempting to retrieve cache of %s...", repr(self))
         self.lock_file.mkdir(exist_ok=True)
         if not self.lock_file.fpath.exists():
-            log.info("No cache found at %s.", {str(self.lock_file.directory)})
+            log.info("No cache found at %s.", str(self.lock_file.directory))
             return None
         paths = mne_bids.find_matching_paths(
             root=self.root,
@@ -187,11 +170,11 @@ class BIDSInterfaceBase(abc.ABC):
         )
         sessions_data = {}
         for path in paths:
-            session_moabb = session_bids_to_moabb(path.session)
+            session_moabb = path.session
             session = sessions_data.setdefault(session_moabb, {})
             run = self._load_file(path, preload=preload)
-            session[run_bids_to_moabb(path.run)] = run
-        log.info("Finished reading cache of %s", {repr(self)})
+            session[path.run] = run
+        log.info("Finished reading cache of %s", repr(self))
         return sessions_data
 
     def save(self, sessions_data):
@@ -207,7 +190,7 @@ class BIDSInterfaceBase(abc.ABC):
 
         The type of the ``run`` object can vary (see the subclases).
         """
-        log.info("Starting caching %s", {repr(self)})
+        log.info("Starting caching %s", repr(self))
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
         mne_bids.make_dataset_description(
             path=str(self.root),
@@ -243,9 +226,9 @@ class BIDSInterfaceBase(abc.ABC):
                 bids_path = mne_bids.BIDSPath(
                     root=self.root,
                     subject=subject_moabb_to_bids(self.subject),
-                    session=session_moabb_to_bids(session),
+                    session=session,
                     task=self.dataset.paradigm,
-                    run=run_moabb_to_bids(run),
+                    run=run,
                     description=self.desc,
                     extension=self._extension,
                     datatype=self._datatype,
@@ -323,7 +306,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         if raw.info.get("subject_info", None) is None:
             # specify subject info as required by BIDS
             raw.info["subject_info"] = {
-                "his_id": self.subject,
+                "his_id": subject_moabb_to_bids(self.subject),
             }
         if raw.info.get("device_info", None) is None:
             # specify device info as required by BIDS

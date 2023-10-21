@@ -65,8 +65,8 @@ sessions = dataset.get_data(subjects=[1])
 # multiple subjects, MOABB ends up being a more appropriate option.
 
 subject = 1
-session_name = "session_T"
-run_name = "run_1"
+session_name = "0train"
+run_name = "0"
 raw = sessions[subject][session_name][run_name]
 
 ##############################################################################

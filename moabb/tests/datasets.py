@@ -6,6 +6,7 @@ import unittest
 
 import mne
 import numpy as np
+import pytest
 
 import moabb.datasets as db
 import moabb.datasets.compound_dataset as db_compound
@@ -30,7 +31,7 @@ def _run_tests_on_dataset(d):
         assert isinstance(data, dict)
 
         # We should get a raw array at the end
-        rawdata = data[s]["session_0"]["run_0"]
+        rawdata = data[s]["0"]["0"]
         assert issubclass(type(rawdata), mne.io.BaseRaw), type(rawdata)
 
         # print events
@@ -90,10 +91,10 @@ class Test_Datasets(unittest.TestCase):
             self.assertEqual(len(data[1]), n_sessions)
 
             # right number of run
-            self.assertEqual(len(data[1]["session_0"]), n_runs)
+            self.assertEqual(len(data[1]["0"]), n_runs)
 
             # We should get a raw array at the end
-            self.assertIsInstance(data[1]["session_0"]["run_0"], mne.io.BaseRaw)
+            self.assertIsInstance(data[1]["0"]["0"], mne.io.BaseRaw)
 
             # bad subject id must raise error
             self.assertRaises(ValueError, ds.get_data, [1000])
@@ -267,6 +268,34 @@ class Test_Datasets(unittest.TestCase):
         assert len(dataset_list) == len(all_datasets)
         assert set(dataset_list) == set(all_datasets)
 
+    def test_bad_subject_name(self):
+        ds = FakeDataset()
+        ds.subject_list = ["1", "2", "3"]
+        with pytest.raises(ValueError, match=r"Subject names must be "):
+            ds.get_data()
+
+    def test_bad_session_name(self):
+        class BadSessionDataset(FakeDataset):
+            def _get_single_subject_data(self, subject):
+                data = super()._get_single_subject_data(subject)
+                data["session_0"] = data.pop("0")
+                return data
+
+        ds = BadSessionDataset()
+        with pytest.raises(ValueError, match=r"Session names must be "):
+            ds.get_data()
+
+    def test_bad_run_name(self):
+        class BadRunDataset(FakeDataset):
+            def _get_single_subject_data(self, subject):
+                data = super()._get_single_subject_data(subject)
+                data["0"]["run_0"] = data["0"].pop("0")
+                return data
+
+        ds = BadRunDataset()
+        with pytest.raises(ValueError, match=r"Run names must be "):
+            ds.get_data()
+
 
 class Test_VirtualReality_Dataset(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -279,12 +308,13 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         with self.assertWarns(UserWarning):
             Cattan2019_VR(virtual_reality=False, screen_display=False)
 
-    def test_data_path(self):
-        ds = Cattan2019_VR(virtual_reality=True, screen_display=True)
-        data_path = ds.data_path(1)
-        assert len(data_path) == 2
-        assert "subject_01_VR.mat" in data_path[0]
-        assert "subject_01_PC.mat" in data_path[1]
+    # Access to Zenodo could fail on CI
+    # def test_data_path(self):
+    #     ds = Cattan2019_VR(virtual_reality=True, screen_display=True)
+    #     data_path = ds.data_path(1)
+    #     assert len(data_path) == 2
+    #     assert "subject_01_VR.mat" in data_path[0]
+    #     assert "subject_01_PC.mat" in data_path[1]
 
     def test_get_block_repetition(self):
         ds = FakeVirtualRealityDataset()
@@ -293,7 +323,7 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         repetition = 4
         _, _, ret = ds.get_block_repetition(P300(), [subject], [block], [repetition])
         assert ret.subject.unique()[0] == subject
-        assert ret.run.unique()[0] == block_rep(block, repetition)
+        assert ret.run.unique()[0] == block_rep(block, repetition, ds.n_repetitions)
 
 
 class Test_CompoundDataset(unittest.TestCase):
@@ -313,7 +343,7 @@ class Test_CompoundDataset(unittest.TestCase):
 
     def test_fake_dataset(self):
         """This test will insure the basedataset works."""
-        param_list = [(None, None), ("session_0", "run_0"), (["session_0"], ["run_0"])]
+        param_list = [(None, None), ("0", "0"), (["0"], ["0"])]
         for sessions, runs in param_list:
             with self.subTest():
                 subjects_list = [(self.ds, 1, sessions, runs)]
@@ -333,14 +363,14 @@ class Test_CompoundDataset(unittest.TestCase):
 
                 # Check data type
                 self.assertTrue(isinstance(data, dict))
-                self.assertIsInstance(data[1]["session_0"]["run_0"], mne.io.BaseRaw)
+                self.assertIsInstance(data[1]["0"]["0"], mne.io.BaseRaw)
 
                 # Check data size
                 self.assertEqual(len(data), 1)
                 expected_session_number = self.n_sessions if sessions is None else 1
                 self.assertEqual(len(data[1]), expected_session_number)
                 expected_runs_number = self.n_runs if runs is None else 1
-                self.assertEqual(len(data[1]["session_0"]), expected_runs_number)
+                self.assertEqual(len(data[1]["0"]), expected_runs_number)
 
                 # bad subject id must raise error
                 self.assertRaises(ValueError, compound_data.get_data, [1000])

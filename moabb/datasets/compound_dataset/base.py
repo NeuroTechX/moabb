@@ -20,8 +20,8 @@ class CompoundDataset(BaseDataset):
         A list of subject or CompoundDataset (exclusive).
         Example, with a list of selected subject:
         [
-            (bi2013(), 1, "session_0", "run_0")
-            (bi2014(), 1, "session_0", None)
+            (bi2013(), 1, "0", "0")   # dataset, subject 1, session 0, run 0
+            (bi2014(), 1, "0", None)  # dataset, subject 1, session 0, all runs
         ]
         Example of building a dataset compounded of CompoundDatasets:
         [

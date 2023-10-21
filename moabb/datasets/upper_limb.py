@@ -93,13 +93,14 @@ class Ofner2017(BaseDataset):
 
         sessions = []
         if self.imagined:
-            sessions.append("imagination")
+            sessions.append((1, "imagination"))
 
         if self.executed:
-            sessions.append("execution")
+            sessions.append((0, "execution"))
 
         out = {}
-        for session in sessions:
+        for ses_idx, session in sessions:
+            session_name = f"{ses_idx}{session}"
             paths = self.data_path(subject, session=session)
 
             eog = ["eog-l", "eog-m", "eog-r"]
@@ -122,9 +123,9 @@ class Ofner2017(BaseDataset):
                 stim[stim == "1541"] = "right_hand_open"
                 stim[stim == "1542"] = "rest"
                 raw.annotations.description = stim
-                data["run_%d" % ii] = raw
+                data[str(ii)] = raw
 
-            out[session] = data
+            out[session_name] = data
         return out
 
     def data_path(
