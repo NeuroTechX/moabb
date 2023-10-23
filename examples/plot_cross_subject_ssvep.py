@@ -27,7 +27,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import SSVEPExo
+from moabb.datasets import Kalunga2016
 from moabb.evaluations import CrossSubjectEvaluation
 from moabb.paradigms import SSVEP, FilterBankSSVEP
 from moabb.pipelines import SSVEP_CCA, SSVEP_TRCA, ExtendedSSVEPSignal, SSVEP_MsetCCA
@@ -49,7 +49,7 @@ moabb.set_log_level("info")
 # frequency.
 
 n_subject = 2
-dataset = SSVEPExo()
+dataset = Kalunga2016()
 dataset.subject_list = dataset.subject_list[:n_subject]
 interval = dataset.interval
 
@@ -58,7 +58,7 @@ interval = dataset.interval
 # ---------------
 #
 # We define the paradigms (SSVEP, SSVEP TRCA, SSVEP MsetCCA, and FilterBankSSVEP) and
-# use the dataset SSVEPExo. All 3 SSVEP paradigms applied a bandpass filter (10-42 Hz) on
+# use the dataset Kalunga2016. All 3 SSVEP paradigms applied a bandpass filter (10-42 Hz) on
 # the data, which include all stimuli frequencies and their first harmonics,
 # while the FilterBankSSVEP paradigm uses as many bandpass filters as
 # there are stimulation frequencies (here 3). For each stimulation frequency

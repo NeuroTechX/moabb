@@ -16,7 +16,7 @@ jobs:
         python-version: ["3.9"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create local data folder
         run: |
@@ -44,10 +44,10 @@ jobs:
 
       - name: Install dependencies
         if: steps.cached-dataset-docs.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root --with docs,deeplearning
+        run: poetry install --no-interaction --no-root --with docs --extras deeplearning
 
       - name: Install library
-        run: poetry install --no-interaction --with docs,deeplearning
+        run: poetry install --no-interaction --with docs --extras deeplearning
 
       - name: Build docs
         run: |
@@ -69,7 +69,7 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create local data folder
         run: |
@@ -85,22 +85,11 @@ jobs:
             docs/build
 
       - name: Checkout moabb.github.io
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: "NeuroTechX/moabb.github.io"
           path: moabb-ghio
           token: ${{ secrets.MOABB_GHIO }}
-
-      - name: Deploy on moabb.neurotechx.com
-        run: |
-          git config --global user.email "ci@neurotechx.com"
-          git config --global user.name "Github Actions"
-          cd ~/work/moabb/moabb/moabb-ghio
-          rm -Rf docs
-          cp -a ~/work/moabb/moabb/docs/build/html ./docs
-          git add -A
-          git commit -m "GH Actions update of docs ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)"
-          git push origin master
 
   deploy_gh_pages:
     if: ${{ github.ref == 'refs/heads/develop' }}
@@ -112,7 +101,7 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create local data folder
         run: |
@@ -128,10 +117,20 @@ jobs:
             docs/build
 
       - name: Checkout gh pages
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: moabb-ghpages
+
+      - name: Deploy Neurotechx Subpage
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: NeuroTechX/moabb.github.io
+          destination_dir: docs/
+          publish_branch: master
+          publish_dir: ./docs/build/html
+          cname: moabb.neurotechx.com/
 
       - name: Deploy on gh-pages
         run: |
@@ -143,60 +142,3 @@ jobs:
           git add -A
           git commit -m "GH Actions update of GH pages ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)"
           git push origin gh-pages
-
-      - name: Deploy to moabb.neurotechx.com/
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop'}}
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          external_repository: NeuroTechX/moabb.github.io
-          destination_dir: docs/
-          publish_branch: master
-          publish_dir: ./docs/build/html
-          cname: moabb.neurotechx.com/
-
-      # Previous test with moabb GH pages, official docs point to moabb.github.io
-      ###########################################################################
-      # Since we want the URL to be neurotechx.github.io/docs/ the html output needs to be put in a ./docs subfolder of the publish_dir
-      # - name: Move docs into site folder
-      #   run: |
-      #     mkdir site
-      #     mv docs/build/html site/docs
-
-      # - name: Deploy on moabb gh-pages
-      #   uses: peaceiris/actions-gh-pages@v3
-      #   if: github.ref == 'refs/heads/master'
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_dir: site
-
-      # Using checkout and push actions, not working
-      ##############################################
-      # - name: Install SSH key
-      #   uses: shimataro/ssh-key-action@v2
-      #   with:
-      #     key: ${{ secrets.MOABB_DOCS_SSH }}
-      #     known_hosts: ${{ secrets.KNOWN_HOST_GH }}
-
-      # - name: Checkout moabb.github.io
-      #   uses: actions/checkout@v2
-      #   with:
-      #     repository: "NeuroTechX/moabb.github.io"
-      #     path: moabb-ghio
-      #     fetch-depth: 0
-      #     persist-credentials: false
-
-      # - name: Add html files
-      #   run: |
-      #     cd ~/work/moabb/moabb/moabb-ghio
-      #     rm -Rf docs
-      #     cp -a ~/work/moabb/moabb/docs/build/html ./docs
-      #     git config --global user.email "ci@neurotechx.com"
-      #     git config --global user.name "Github Actions"
-      #     git commit -m "GH Actions update of docs ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)" -a
-
-      # - name: Push
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.MOABB_GHIO }}
-      #     repository: "NeuroTechX/moabb.github.io"

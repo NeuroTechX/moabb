@@ -1,6 +1,4 @@
-"""
-BBCI EEG fNIRS Motor imagery dataset.
-"""
+"""BBCI EEG fNIRS Motor imagery dataset."""
 
 import os
 import os.path as op
@@ -12,6 +10,7 @@ from mne.channels import make_standard_montage
 from mne.datasets.utils import _get_path
 from mne.io import RawArray
 from pooch import retrieve
+from pooch.downloaders import choose_downloader
 from scipy.io import loadmat
 
 from .base import BaseDataset
@@ -34,14 +33,17 @@ def eeg_data_path(base_path, subject, accept):
                     if not accept:
                         raise AttributeError(
                             "You must accept licence term to download this dataset,"
-                            "set accept=True when instanciating the dataset."
+                            "set accept=True when instantiating the dataset."
                         )
+                    downloader = choose_downloader(SHIN_URL, progressbar=True)
+                    downloader.kwargs.setdefault("verify", False)
                     retrieve(
                         "{}/EEG/EEG_{:02d}-{:02d}.zip".format(SHIN_URL, low, high),
                         None,
                         fname="EEG.zip",
                         path=base_path,
                         progressbar=True,
+                        downloader=downloader,
                     )
                 with z.ZipFile(op.join(base_path, "EEG.zip"), "r") as f:
                     f.extractall(op.join(base_path, "EEG"))
@@ -59,7 +61,7 @@ def fnirs_data_path(path, subject, accept):
             if not accept:
                 raise AttributeError(
                     "You must accept licence term to download this dataset,"
-                    "set accept=True when instanciating the dataset."
+                    "set accept=True when instantiating the dataset."
                 )
             retrieve(
                 "http://doc.ml.tu-berlin.de/hBCI/NIRS/NIRS_01-29.zip",
@@ -76,11 +78,16 @@ def fnirs_data_path(path, subject, accept):
     return [op.join(datapath, fn) for fn in ["cnt.mat", "mrk.mat"]]
 
 
-class Shin2017(BaseDataset):
+class BaseShin2017(BaseDataset):
     """Not to be used."""
 
     def __init__(
-        self, fnirs=False, motor_imagery=True, mental_arithmetic=False, accept=False
+        self,
+        suffix,
+        fnirs=False,
+        motor_imagery=True,
+        mental_arithmetic=False,
+        accept=False,
     ):
         if not any([motor_imagery, mental_arithmetic]):
             raise (
@@ -97,7 +104,7 @@ class Shin2017(BaseDataset):
             n_sessions += 3
 
         if mental_arithmetic:
-            events.update(dict(substraction=3, rest=4))
+            events.update(dict(subtraction=3, rest=4))
             paradigms.append("arithmetic")
             n_sessions += 3
 
@@ -109,7 +116,7 @@ class Shin2017(BaseDataset):
             subjects=list(range(1, 30)),
             sessions_per_subject=n_sessions,
             events=events,
-            code="Shin2017",
+            code="Shin2017" + suffix,
             # marker is for *task* start not cue start
             interval=[0, 10],
             paradigm=("/").join(paradigms),
@@ -121,7 +128,7 @@ class Shin2017(BaseDataset):
         self.fnirs = fnirs  # TODO: actually incorporate fNIRS somehow
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         fname, fname_mrk = self.data_path(subject)
         data = loadmat(fname, squeeze_me=True, struct_as_record=False)["cnt"]
         mrk = loadmat(fname_mrk, squeeze_me=True, struct_as_record=False)["mrk"]
@@ -131,13 +138,13 @@ class Shin2017(BaseDataset):
         if self.motor_imagery:
             for ii in [0, 2, 4]:
                 session = self._convert_one_session(data, mrk, ii, trig_offset=0)
-                sessions["session_%d" % ii] = session
+                sessions[f"{ii}imagery"] = session
 
         # arithmetic/rest
         if self.mental_arithmetic:
             for ii in [1, 3, 5]:
                 session = self._convert_one_session(data, mrk, ii, trig_offset=2)
-                sessions["session_%d" % ii] = session
+                sessions[f"{ii}arithmetic"] = session
 
         return sessions
 
@@ -154,7 +161,7 @@ class Shin2017(BaseDataset):
         info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=200.0)
         raw = RawArray(data=eeg, info=info, verbose=False)
         raw.set_montage(montage)
-        return {"run_0": raw}
+        return {"0": raw}
 
     def data_path(
         self,
@@ -182,8 +189,8 @@ class Shin2017(BaseDataset):
             return eeg_data_path(op.join(path, "MNE-eegfnirs-data"), subject, self.accept)
 
 
-class Shin2017A(Shin2017):
-    """Motor Imagey Dataset from Shin et al 2017
+class Shin2017A(BaseShin2017):
+    """Motor Imagey Dataset from Shin et al 2017.
 
     .. admonition:: Dataset summary
 
@@ -297,13 +304,16 @@ class Shin2017A(Shin2017):
 
     def __init__(self, accept=False):
         super().__init__(
-            fnirs=False, motor_imagery=True, mental_arithmetic=False, accept=accept
+            suffix="A",
+            fnirs=False,
+            motor_imagery=True,
+            mental_arithmetic=False,
+            accept=accept,
         )
-        self.code = "Shin2017A"
 
 
-class Shin2017B(Shin2017):
-    """Mental Arithmetic Dataset from Shin et al 2017
+class Shin2017B(BaseShin2017):
+    """Mental Arithmetic Dataset from Shin et al 2017.
 
     .. admonition:: Dataset summary
 
@@ -410,6 +420,9 @@ class Shin2017B(Shin2017):
 
     def __init__(self, accept=False):
         super().__init__(
-            fnirs=False, motor_imagery=False, mental_arithmetic=True, accept=accept
+            suffix="B",
+            fnirs=False,
+            motor_imagery=False,
+            mental_arithmetic=True,
+            accept=accept,
         )
-        self.code = "Shin2017B"

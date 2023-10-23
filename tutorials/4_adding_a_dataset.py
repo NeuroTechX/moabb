@@ -33,7 +33,7 @@ from moabb.paradigms import LeftRightImagery
 
 
 def create_example_dataset():
-    """Create a fake example for a dataset"""
+    """Create a fake example for a dataset."""
     sfreq = 256
     t_recording = 150
     t_trial = 1  # duration of a trial
@@ -66,7 +66,6 @@ for subject in [1, 2, 3]:
     mdict["fs"] = fs
     savemat(filename, mdict)
 
-
 ##############################################################################
 # Creating a Dataset Class
 # ------------------------
@@ -86,6 +85,7 @@ for subject in [1, 2, 3]:
 
 ExampleDataset_URL = "https://sandbox.zenodo.org/record/369543/files/"
 
+
 ##############################################################################
 # The ``ExampleDataset`` needs to implement only 3 functions:
 #
@@ -96,10 +96,10 @@ ExampleDataset_URL = "https://sandbox.zenodo.org/record/369543/files/"
 
 
 class ExampleDataset(BaseDataset):
-    """
-    Dataset used to exemplify the creation of a dataset class in MOABB.
-    The data samples have been simulated and has no physiological meaning
-    whatsoever.
+    """Dataset used to exemplify the creation of a dataset class in MOABB.
+
+    The data samples have been simulated and has no physiological
+    meaning whatsoever.
     """
 
     def __init__(self):
@@ -107,14 +107,14 @@ class ExampleDataset(BaseDataset):
             subjects=[1, 2, 3],
             sessions_per_subject=1,
             events={"left_hand": 1, "right_hand": 2},
-            code="Example dataset",
+            code="ExampleDataset",
             interval=[0, 0.75],
             paradigm="imagery",
             doi="",
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         file_path_list = self.data_path(subject)
 
         data = loadmat(file_path_list[0])
@@ -126,14 +126,14 @@ class ExampleDataset(BaseDataset):
         raw = mne.io.RawArray(x, info)
 
         sessions = {}
-        sessions["session_1"] = {}
-        sessions["session_1"]["run_1"] = raw
+        sessions["0"] = {}
+        sessions["0"]["0"] = raw
         return sessions
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Download the data from one subject"""
+        """Download the data from one subject."""
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
@@ -146,7 +146,7 @@ class ExampleDataset(BaseDataset):
 # Using the ExampleDataset
 # ------------------------
 #
-# Now that the `ExampleDataset` is defined, it could be instanciated directly.
+# Now that the `ExampleDataset` is defined, it could be instantiated directly.
 # The rest of the code follows the steps described in the previous tutorials.
 
 dataset = ExampleDataset()

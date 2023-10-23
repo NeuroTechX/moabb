@@ -1,28 +1,28 @@
-"""
-Munich MI dataset
-"""
+"""Munich MI dataset."""
 
 import mne
 import numpy as np
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.utils import depreciated_alias
 
 
 DOWNLOAD_URL = "https://zenodo.org/record/1217449/files/"
 
 
-class MunichMI(BaseDataset):
+@depreciated_alias("MunichMI", "1.1")
+class GrosseWentrup2009(BaseDataset):
     """Munich Motor Imagery dataset.
 
     .. admonition:: Dataset summary
 
 
-        ========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name        #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ========  =======  =======  ==========  =================  ============  ===============  ===========
-        MunichMI       10      128           2                150  7s            500Hz                      1
-        ========  =======  =======  ==========  =================  ============  ===============  ===========
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
+        Name                 #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
+        GrosseWentrup2009       10      128           2                150  7s            500Hz                      1
+        =================  =======  =======  ==========  =================  ============  ===============  ===========
 
     Motor imagery dataset from Grosse-Wentrup et al. 2009 [1]_.
 
@@ -62,7 +62,6 @@ class MunichMI(BaseDataset):
     .. [1] Grosse-Wentrup, Moritz, et al. "Beamforming in noninvasive
            brain–computer interfaces." IEEE Transactions on Biomedical
            Engineering 56.4 (2009): 1209-1219.
-
     """
 
     def __init__(self):
@@ -70,14 +69,14 @@ class MunichMI(BaseDataset):
             subjects=list(range(1, 11)),
             sessions_per_subject=1,
             events=dict(right_hand=2, left_hand=1),
-            code="Grosse-Wentrup 2009",
+            code="GrosseWentrup2009",
             interval=[0, 7],
             paradigm="imagery",
             doi="10.1109/TBME.2008.2009768",
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         raw = mne.io.read_raw_eeglab(
             self.data_path(subject), preload=True, verbose="ERROR"
         )
@@ -86,7 +85,7 @@ class MunichMI(BaseDataset):
         stim[stim == "20"] = "right_hand"
         stim[stim == "10"] = "left_hand"
         raw.annotations.description = stim
-        return {"session_0": {"run_0": raw}}
+        return {"0": {"0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

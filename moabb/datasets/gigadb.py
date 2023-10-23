@@ -1,6 +1,4 @@
-"""
-GigaDb Motor imagery dataset.
-"""
+"""GigaDb Motor imagery dataset."""
 
 import logging
 
@@ -27,7 +25,7 @@ class Cho2017(BaseDataset):
         =======  =======  =======  ==========  =================  ============  ===============  ===========
         Name       #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
         =======  =======  =======  ==========  =================  ============  ===============  ===========
-        Cho2017       53       64           2                100  3s            512Hz                      1
+        Cho2017       52       64           2                100  3s            512Hz                      1
         =======  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from the paper [1]_.
@@ -77,11 +75,8 @@ class Cho2017(BaseDataset):
             doi="10.5524/100295",
         )
 
-        for ii in [32, 46, 49]:
-            self.subject_list.remove(ii)
-
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         fname = self.data_path(subject)
 
         data = loadmat(
@@ -127,7 +122,7 @@ class Cho2017(BaseDataset):
         raw = RawArray(data=eeg_data, info=info, verbose=False)
         raw.set_montage(montage)
 
-        return {"session_0": {"run_0": raw}}
+        return {"0": {"0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

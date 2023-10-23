@@ -75,7 +75,7 @@ class EPFLP300(BaseDataset):
             subjects=[1, 2, 3, 4, 6, 7, 8, 9],
             sessions_per_subject=4,
             events=dict(Target=2, NonTarget=1),
-            code="EPFL P300 dataset",
+            code="EPFLP300",
             interval=[0, 1],
             paradigm="p300",
             doi="10.1016/j.jneumeth.2007.03.005",
@@ -150,18 +150,20 @@ class EPFLP300(BaseDataset):
         return raw
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
 
         file_path_list = self.data_path(subject)
         sessions = {}
 
         for file_path in sorted(file_path_list):
-            session_name = "session_" + file_path.split(os.sep)[-2].replace("session", "")
+            session_number = file_path.split(os.sep)[-2].replace("session", "")
+            session_number = int(session_number) - 1
+            session_name = str(session_number)
 
             if session_name not in sessions.keys():
                 sessions[session_name] = {}
 
-            run_name = "run_" + str(len(sessions[session_name]) + 1)
+            run_name = str(len(sessions[session_name]))
             sessions[session_name][run_name] = self._get_single_run_data(file_path)
 
         return sessions

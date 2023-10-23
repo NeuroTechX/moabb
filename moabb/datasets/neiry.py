@@ -12,7 +12,8 @@ from .base import BaseDataset
 
 
 class DemonsP300(BaseDataset):
-    """Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons versus Demons.
+    """Visual P300 dataset recorded in Virtual Reality (VR) game Raccoons
+    versus Demons.
 
     .. admonition:: Dataset summary
 
@@ -54,8 +55,8 @@ class DemonsP300(BaseDataset):
     The player was supposed to feed animals and protect them from demons.
     Game mechanics consisted in demons jumping (visually activating),
     so player have to concentrate on one demon (chosen freely). That produced
-    P300 response in time of the deamon jump. That was the way to trigger fireball
-    torwards a deamon predicted by classifier from EEG data.
+    P300 response in time of the daemon jump. That was the way to trigger fireball
+    towards a daemon predicted by classifier from EEG data.
 
     More info can be found in [1]_ [2]_ [3]_.
 
@@ -66,7 +67,7 @@ class DemonsP300(BaseDataset):
            Raccoons vs Demons: multiclass labeled P300 dataset,
            https://arxiv.org/abs/2005.02251
     .. [2] Goncharenko V., Grigoryan R., and Samokhina A.,
-           Approaches to multiclass classifcation of P300 potential datasets,
+           Approaches to multiclass classification of P300 potential datasets,
            Intelligent Data Processing: Theory and Applications:Book of abstract of
            the 13th International Conference, Moscow, 2020. — Moscow: Russian
            Academy of Sciences, 2020. — 472 p.ISBN 978-5-907366-16-9
@@ -109,7 +110,7 @@ class DemonsP300(BaseDataset):
             subjects=list(range(60)),
             sessions_per_subject=1,
             events={"Target": 1, "NonTarget": 2},
-            code="Demons P300",
+            code="DemonsP300",
             interval=[0, 1],
             paradigm="p300",
         )
@@ -118,7 +119,8 @@ class DemonsP300(BaseDataset):
 
     @staticmethod
     def _strip(session) -> tuple:
-        """Strips nans (from right side of all channels) added during hdf5 packaging
+        """Strips nans (from right side of all channels) added during hdf5
+        packaging.
 
         Returns:
             tuple ready to be converted to `_session_dtype`
@@ -131,7 +133,7 @@ class DemonsP300(BaseDataset):
 
     @classmethod
     def read_hdf(cls, filename) -> np.ndarray:
-        """Reads data from HDF file
+        """Reads data from HDF file.
 
         Returns:
             array of `_act_dtype`
@@ -181,8 +183,8 @@ class DemonsP300(BaseDataset):
 
             raw = RawArray(np.hstack(run_data), info)
             raw.set_montage(montage)
-            runs_raw[f"run_{i}"] = raw
-        return {"session_0": runs_raw}
+            runs_raw[str(i)] = raw
+        return {"0": runs_raw}
 
     def data_path(
         self, subject: int, path=None, force_update=False, update_path=None, verbose=None
