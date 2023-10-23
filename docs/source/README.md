@@ -12,8 +12,10 @@
 **This is an open science project that may evolve depending on the need of the
 community.**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10034224.svg)](https://doi.org/10.5281/zenodo.10034224)
 [![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![codecov](https://codecov.io/gh/NeuroTechX/moabb/graph/badge.svg?token=NwHD3ethB5)](https://codecov.io/gh/NeuroTechX/moabb)
 [![PyPI](https://img.shields.io/pypi/v/moabb?color=blue&style=plastic)](https://img.shields.io/pypi/v/moabb)
 [![Downloads](https://pepy.tech/badge/moabb)](https://pepy.tech/project/moabb)
 
