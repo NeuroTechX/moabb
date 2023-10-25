@@ -111,9 +111,9 @@ class Test_MotorImagery(unittest.TestCase):
             return_epochs=True, return_raws=False, dataset=dataset
         )
         # no stim channel after loading cache
-        raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1][
-            "session_0"
-        ]["run_0"]
+        raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1]["0"][
+            "0"
+        ]
         raw.load_data()
         self.assertEqual("stim", raw.ch_names[-1])
         # add something on the event channel
@@ -453,9 +453,9 @@ class Test_P300(unittest.TestCase):
             return_epochs=True, return_raws=False, dataset=dataset
         )
         # no stim channel after loading cache
-        raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1][
-            "session_0"
-        ]["run_0"]
+        raw = dataset.get_data([1], cache_config=dict(use=False, save_raw=False))[1]["0"][
+            "0"
+        ]
         raw.load_data()
         self.assertEqual("stim", raw.ch_names[-1])
         # add something on the event channel

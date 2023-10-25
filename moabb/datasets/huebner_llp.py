@@ -53,9 +53,11 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
             # TODO: raise a wild exception?
             print(vhdr_file_path)
 
-        session_name = vhdr_file_path.parent.name
+        session_name = "0"
         block_idx = vhdr_file_patter_match.group(1)
+        block_idx = int(block_idx) - 1
         run_idx = vhdr_file_patter_match.group(2)
+        run_idx = int(run_idx) - 1
         return session_name, block_idx, run_idx
 
     def _get_single_subject_data(self, subject):
@@ -78,12 +80,11 @@ class _BaseVisualMatrixSpellerDataset(BaseDataset, ABC):
             raw_bvr_list[0].annotations.rename(self.description_map)
 
             if self.use_blocks_as_sessions:
-                session_name = f"{session_name}_block_{block_idx}"
-            else:
-                session_name = f"{session_name}"
+                session_name = str(block_idx)
             if session_name not in sessions.keys():
                 sessions[session_name] = dict()
-            sessions[session_name][run_idx] = raw_bvr_list[0]
+            run_name = str(run_idx)
+            sessions[session_name][run_name] = raw_bvr_list[0]
 
         return sessions
 

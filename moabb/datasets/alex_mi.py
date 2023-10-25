@@ -57,7 +57,7 @@ class AlexMI(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
         raw = Raw(self.data_path(subject), preload=True, verbose="ERROR")
-        return {"session_0": {"run_0": raw}}
+        return {"0": {"0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

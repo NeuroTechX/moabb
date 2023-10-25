@@ -44,6 +44,12 @@ class CacheConfig:
         will be automatically downloaded to the specified folder.
     verbose:
         Verbosity level. See mne.verbose.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.0
+
     """
 
     save_raw: bool = False
@@ -111,6 +117,64 @@ def is_abbrev(abbrev_name: str, full_name: str):
     and in the same order. They must share the same capital letters."""
     pattern = re.sub(r"([A-Za-z])", r"\1[a-z0-9\-]*", re.escape(abbrev_name))
     return re.fullmatch(pattern, full_name) is not None
+
+
+def check_subject_names(data):
+    for subject in data.keys():
+        if not isinstance(subject, int):
+            raise ValueError(
+                f"Subject names must be integers, found {type(subject)}: {subject!r}. "
+                f"If you used cache, you may need to erase it using overwrite=True."
+            )
+
+
+def session_run_pattern():
+    return r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)"  # g1: index, g2: description
+
+
+constraint_message = (
+    "names must be strings starting with an integer "
+    "identifying the order in which they were recorded, "
+    "optionally followed by a description only containing "
+    "letters and numbers."
+)
+
+
+def check_session_names(data):
+    pattern = session_run_pattern()
+    for subject, sessions in data.items():
+        indexes = []
+        for session in sessions.keys():
+            match = re.fullmatch(pattern, session)
+            if not isinstance(session, str) or not match:
+                raise ValueError(
+                    f"Session {constraint_message} Found key {session!r} instead. "
+                    f"If you used cache, you may need to erase it using overwrite=True."
+                )
+            indexes.append(int(match.groups()[0]))
+        if not len(indexes) == len(set(indexes)):
+            raise ValueError(
+                f"Session {constraint_message} Found duplicate index {list(sessions.keys())}."
+            )
+
+
+def check_run_names(data):
+    pattern = session_run_pattern()
+    for subject, sessions in data.items():
+        for session, runs in sessions.items():
+            indexes = []
+            for run in runs.keys():
+                match = re.fullmatch(pattern, run)
+                if not isinstance(run, str) or not match:
+                    raise ValueError(
+                        f"Run {constraint_message} Found key {run!r} instead. "
+                        f"If you used cache, you may need to erase it using overwrite=True."
+                    )
+                indexes.append(int(match.groups()[0]))
+            if not len(indexes) == len(set(indexes)):
+                raise ValueError(
+                    f"Run {constraint_message} Found duplicate index {list(runs.keys())}."
+                )
 
 
 class BaseDataset(metaclass=abc.ABCMeta):
@@ -214,7 +278,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
         process_pipeline=None,
     ):
         """
-        Return the data correspoonding to a list of subjects.
+        Return the data corresponding to a list of subjects.
 
         The returned data is a dictionary with the following structure::
 
@@ -280,7 +344,9 @@ class BaseDataset(metaclass=abc.ABCMeta):
                 cache_config,
                 process_pipeline,
             )
-
+        check_subject_names(data)
+        check_session_names(data)
+        check_run_names(data)
         return data
 
     def download(

@@ -132,7 +132,7 @@ class PhysionetMI(BaseDataset):
             stim[stim == "T1"] = "left_hand"
             stim[stim == "T2"] = "right_hand"
             raw.annotations.description = stim
-            data[f"run_{idx}"] = raw
+            data[str(idx)] = raw
             idx += 1
 
         # feet runs
@@ -145,10 +145,10 @@ class PhysionetMI(BaseDataset):
             stim[stim == "T1"] = "hands"
             stim[stim == "T2"] = "feet"
             raw.annotations.description = stim
-            data[f"run_{idx}"] = raw
+            data[str(idx)] = raw
             idx += 1
 
-        return {"session_0": data}
+        return {"0": data}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

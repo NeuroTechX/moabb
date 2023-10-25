@@ -108,7 +108,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 raise ValueError(
                     "When passing data_size, please also indicate number of permutations"
                 )
-            if type(n_perms) is int:
+            if isinstance(n_perms, int):
                 self.n_perms = np.full_like(self.data_size["value"], n_perms, dtype=int)
             elif len(self.n_perms) != len(self.data_size["value"]):
                 raise ValueError(
