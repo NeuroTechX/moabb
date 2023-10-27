@@ -161,6 +161,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 subjects=[subject],
                 return_epochs=self.return_epochs,
                 return_raws=self.return_raws,
+                cache_config=self.cache_config,
                 postprocess_pipeline=postprocess_pipeline,
             )
             # iterate over sessions
@@ -490,6 +491,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                 subjects=[subject],
                 return_epochs=self.return_epochs,
                 return_raws=self.return_raws,
+                cache_config=self.cache_config,
                 postprocess_pipeline=postprocess_pipeline,
             )
             le = LabelEncoder()
@@ -657,6 +659,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             dataset=dataset,
             return_epochs=self.return_epochs,
             return_raws=self.return_raws,
+            cache_config=self.cache_config,
             postprocess_pipeline=postprocess_pipeline,
         )
 
