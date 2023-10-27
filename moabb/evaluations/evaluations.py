@@ -678,10 +678,10 @@ class CrossSubjectEvaluation(BaseEvaluation):
         # perform leave one subject out CV
         if self.n_splits is None:
             cv = LeaveOneGroupOut()
-            # cv = GroupKFold(n_splits=n_subjects)
         else:
             cv = GroupKFold(n_splits=self.n_splits)
             n_subjects = self.n_splits
+
         inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
 
         # Implement Grid Search
