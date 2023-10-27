@@ -59,8 +59,7 @@ jobs:
       - name: Run tests
         run: |
           source $VENV
-          poetry run coverage run -m unittest moabb.tests
-          poetry run coverage xml
+          pytest --cov=moabb tests/ --cov-report term --cov-report xml:coverage.xml
 
       - name: Run pipelines
         run: |

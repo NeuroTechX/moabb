@@ -398,7 +398,7 @@ class UtilEvaluation(unittest.TestCase):
         step = NeuralNetClassifier(module=torch.nn.Linear(10, 2))
         step.initialize()
         model = Pipeline([("step", step)])
-        save_path = "."
+        save_path = ""
         cv_index = 0
         save_model_cv(model, save_path, cv_index)
 
