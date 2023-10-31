@@ -1,6 +1,7 @@
-"""=========================
-Getting Started
-=========================
+"""
+============================
+Tutorial 0: Getting Started
+============================
 
 This tutorial takes you through a basic working example of how to use this
 codebase, including all the different components, up to the results
