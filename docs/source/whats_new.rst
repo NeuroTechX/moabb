@@ -18,7 +18,7 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
-- None
+- Adding cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
