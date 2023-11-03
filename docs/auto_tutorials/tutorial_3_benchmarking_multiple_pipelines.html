@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Basic tutorial on how to use MOABB. &#8212; moabb 1.0.0 documentation</title>
+    <title>Tutorial 3: Benchmarking multiple pipelines &#8212; moabb 1.0.0 documentation</title>
   
   
   
@@ -380,11 +380,10 @@ document.write(`
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Getting Started</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="noplot_tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_Getting_Started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_Getting_Started.html">Tutorial 0: Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Basic tutorial on how to use MOABB.</a></li>
-
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Tutorial 3: Benchmarking multiple pipelines</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../auto_examples/index.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -579,7 +578,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Getting Started</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Basic tutorial on how to use MOABB.</li>
+    <li class="breadcrumb-item active" aria-current="page">Tutorial 3: Benchmarking multiple pipelines</li>
   </ul>
 </nav>
 </div>
@@ -601,11 +600,8 @@ document.write(`
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<section class="sphx-glr-example-title" id="basic-tutorial-on-how-to-use-moabb">
-<span id="sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"></span><h1>Basic tutorial on how to use MOABB.<a class="headerlink" href="#basic-tutorial-on-how-to-use-moabb" title="Permalink to this heading">#</a></h1>
-</section>
-<section id="tutorial-3-benchmarking-multiple-pipelines">
-<h1>Tutorial 3: Benchmarking multiple pipelines<a class="headerlink" href="#tutorial-3-benchmarking-multiple-pipelines" title="Permalink to this heading">#</a></h1>
+<section class="sphx-glr-example-title" id="tutorial-3-benchmarking-multiple-pipelines">
+<span id="sphx-glr-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py"></span><h1>Tutorial 3: Benchmarking multiple pipelines<a class="headerlink" href="#tutorial-3-benchmarking-multiple-pipelines" title="Permalink to this heading">#</a></h1>
 <p>In this last part, we extend the previous example by assessing the
 classification score of not one but three classification pipelines.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pedro L. C. Rodrigues, Sylvain Chevallier</span>
@@ -670,18 +666,18 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  33%|###3      | 1/3 [00:14&lt;00:28, 14.35s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  33%|###3      | 1/3 [00:11&lt;00:22, 11.34s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  67%|######6   | 2/3 [00:29&lt;00:14, 14.61s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  67%|######6   | 2/3 [00:21&lt;00:10, 10.93s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|##########| 3/3 [00:42&lt;00:00, 14.20s/it]
-BNCI2014-001-WithinSession: 100%|##########| 3/3 [00:42&lt;00:00, 14.28s/it]
+BNCI2014-001-WithinSession: 100%|##########| 3/3 [00:32&lt;00:00, 10.82s/it]
+BNCI2014-001-WithinSession: 100%|##########| 3/3 [00:32&lt;00:00, 10.89s/it]
 
 Zhou2016-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
@@ -690,22 +686,22 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  33%|###3      | 1/3 [00:12&lt;00:25, 12.69s/it]No hdf5_path provided, models will not be saved.
+Zhou2016-WithinSession:  33%|###3      | 1/3 [00:10&lt;00:20, 10.13s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  67%|######6   | 2/3 [00:24&lt;00:12, 12.05s/it]No hdf5_path provided, models will not be saved.
+Zhou2016-WithinSession:  67%|######6   | 2/3 [00:19&lt;00:09,  9.51s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession: 100%|##########| 3/3 [00:35&lt;00:00, 11.84s/it]
-Zhou2016-WithinSession: 100%|##########| 3/3 [00:35&lt;00:00, 11.96s/it]
+Zhou2016-WithinSession: 100%|##########| 3/3 [00:28&lt;00:00,  9.45s/it]
+Zhou2016-WithinSession: 100%|##########| 3/3 [00:28&lt;00:00,  9.53s/it]
 </pre></div>
 </div>
 <p>As <cite>overwrite</cite> is set to False, the results from the previous tutorial are reused and
@@ -732,8 +728,8 @@ for each subject of each dataset.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" srcset="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" alt="dataset = Zhou2016" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  21.740 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  239 MB</p>
+<img src="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" srcset="../_images/sphx_glr_tutorial_3_benchmarking_multiple_pipelines_001.png" alt="dataset = BNCI2014-001, dataset = Zhou2016" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  4.810 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  306 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-tutorial-3-benchmarking-multiple-pipelines-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fe7c33d68ac9fa4d60c0efbc341f93f3/tutorial_3_benchmarking_multiple_pipelines.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">tutorial_3_benchmarking_multiple_pipelines.py</span></code></a></p>
@@ -793,14 +789,9 @@ for each subject of each dataset.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Basic tutorial on how to use MOABB.</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorial-3-benchmarking-multiple-pipelines">Tutorial 3: Benchmarking multiple pipelines</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-pipelines">Creating Pipelines</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-results">Plotting Results</a></li>
 </ul>
-</li>
-</ul>
-
   </nav></div>
 
 </div></div>

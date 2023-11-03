@@ -380,11 +380,10 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../auto_tutorials/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/noplot_tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/plot_Getting_Started.html">Tutorial 0: Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
-
+<li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking multiple pipelines</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -720,46 +719,44 @@ ROC-AUC metric.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-CrossSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:07&lt;00:14,  7.18s/it]
-BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:13&lt;00:06,  6.79s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:04&lt;00:09,  4.93s/it]
+BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:09&lt;00:04,  4.70s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/18.5M [00:00&lt;03:48, 80.9kB/s]
+  0%|                                     | 8.19k/18.5M [00:00&lt;04:38, 66.5kB/s]
 
-  0%|                                      | 32.8k/18.5M [00:00&lt;01:45, 175kB/s]
+  0%|                                      | 32.8k/18.5M [00:00&lt;02:09, 143kB/s]
 
-  1%|▏                                     | 96.3k/18.5M [00:00&lt;00:48, 378kB/s]
+  0%|▏                                     | 88.1k/18.5M [00:00&lt;01:05, 280kB/s]
 
-  1%|▍                                      | 184k/18.5M [00:00&lt;00:32, 567kB/s]
+  1%|▍                                      | 193k/18.5M [00:00&lt;00:36, 499kB/s]
 
-  2%|▊                                     | 384k/18.5M [00:00&lt;00:17, 1.06MB/s]
+  2%|▊                                      | 409k/18.5M [00:00&lt;00:19, 935kB/s]
 
-  4%|█▌                                    | 784k/18.5M [00:00&lt;00:08, 2.02MB/s]
+  5%|█▋                                    | 841k/18.5M [00:00&lt;00:09, 1.79MB/s]
 
-  9%|███▏                                 | 1.58M/18.5M [00:00&lt;00:04, 3.87MB/s]
+  9%|███▍                                 | 1.71M/18.5M [00:00&lt;00:04, 3.47MB/s]
 
- 17%|██████▎                              | 3.18M/18.5M [00:00&lt;00:02, 7.59MB/s]
+ 19%|██████▊                              | 3.44M/18.5M [00:01&lt;00:02, 6.76MB/s]
 
- 31%|███████████▎                         | 5.67M/18.5M [00:00&lt;00:01, 12.8MB/s]
+ 35%|█████████████                        | 6.54M/18.5M [00:01&lt;00:00, 12.4MB/s]
 
- 42%|███████████████▍                     | 7.70M/18.5M [00:01&lt;00:00, 15.0MB/s]
+ 51%|██████████████████▋                  | 9.37M/18.5M [00:01&lt;00:00, 15.5MB/s]
 
- 55%|████████████████████▎                | 10.2M/18.5M [00:01&lt;00:00, 17.7MB/s]
+ 65%|████████████████████████▏            | 12.1M/18.5M [00:01&lt;00:00, 17.4MB/s]
 
- 66%|████████████████████████▌            | 12.3M/18.5M [00:01&lt;00:00, 18.7MB/s]
+ 81%|█████████████████████████████▊       | 14.9M/18.5M [00:01&lt;00:00, 19.1MB/s]
 
- 79%|█████████████████████████████▎       | 14.6M/18.5M [00:01&lt;00:00, 19.9MB/s]
-
- 91%|█████████████████████████████████▊   | 16.9M/18.5M [00:01&lt;00:00, 20.6MB/s]
+ 96%|███████████████████████████████████▍ | 17.8M/18.5M [00:01&lt;00:00, 20.1MB/s]
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 24.3GB/s]
+100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 39.9GB/s]
 
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:24&lt;00:00,  8.56s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:24&lt;00:00,  8.12s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:18&lt;00:00,  6.54s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:18&lt;00:00,  6.07s/it]
 </pre></div>
 </div>
 </section>
@@ -789,10 +786,10 @@ then apply a logistic regression.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-CrossSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:07&lt;00:15,  7.75s/it]
-BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:13&lt;00:06,  6.55s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:23&lt;00:00,  8.07s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:23&lt;00:00,  7.78s/it]
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:05&lt;00:10,  5.39s/it]
+BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:09&lt;00:04,  4.66s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:15&lt;00:00,  5.42s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:15&lt;00:00,  5.29s/it]
 </pre></div>
 </div>
 </section>
@@ -817,10 +814,10 @@ on the tangent space and classified with a logistic regression.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-009-CrossSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:10&lt;00:21, 10.90s/it]
-BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:21&lt;00:11, 11.01s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:32&lt;00:00, 10.86s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:32&lt;00:00, 10.89s/it]
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:08&lt;00:16,  8.21s/it]
+BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:16&lt;00:07,  7.97s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:23&lt;00:00,  7.87s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:23&lt;00:00,  7.92s/it]
 </pre></div>
 </div>
 </section>
@@ -847,8 +844,8 @@ differences between pipelines.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  27.854 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  256 MB</p>
+<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  3.770 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  270 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3bb6d35e266c94de44c44ec75aa9d550/plot_mne_and_scikit_estimators.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_mne_and_scikit_estimators.py</span></code></a></p>

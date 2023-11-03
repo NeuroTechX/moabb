@@ -380,11 +380,10 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../auto_tutorials/index.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/4_adding_a_dataset.html">Tutorial 4: Creating a dataset class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/noplot_tutorial_5_build_a_custom_dataset.html">Tutorial 5: Creating a dataset class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/plot_Getting_Started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/plot_Getting_Started.html">Tutorial 0: Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_1_simple_example_motor_imagery.html">Tutorial 1: Simple Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_2_using_mulitple_datasets.html">Tutorial 2: Using multiple datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Basic tutorial on how to use MOABB.</a></li>
-
+<li class="toctree-l2"><a class="reference internal" href="../../auto_tutorials/tutorial_3_benchmarking_multiple_pipelines.html">Tutorial 3: Benchmarking multiple pipelines</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -669,34 +668,34 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  50%|#####     | 1/2 [00:09&lt;00:09,  9.12s/it]No hdf5_path provided, models will not be saved.
+Zhou2016-WithinSession:  50%|#####     | 1/2 [00:06&lt;00:06,  6.34s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession: 100%|##########| 2/2 [00:16&lt;00:00,  8.12s/it]
-Zhou2016-WithinSession: 100%|##########| 2/2 [00:16&lt;00:00,  8.27s/it]
+Zhou2016-WithinSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.72s/it]
+Zhou2016-WithinSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.81s/it]
 
 BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  50%|#####     | 1/2 [00:07&lt;00:07,  7.23s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.69s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:14&lt;00:00,  7.21s/it]
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:14&lt;00:00,  7.21s/it]
-      score      time  samples  ... n_sessions       dataset  pipeline
-0  0.855374  0.123464    144.0  ...          2  BNCI2014-001     ts+lr
-1  0.856735  0.120078    144.0  ...          2  BNCI2014-001     ts+lr
-2  0.553946  0.120713    144.0  ...          2  BNCI2014-001     ts+lr
-3  0.535442  0.122002    144.0  ...          2  BNCI2014-001     ts+lr
-4  0.869524  0.038360    144.0  ...          2  BNCI2014-001   csp+lda
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.64s/it]
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.65s/it]
+      score      time  samples subject  ... channels  n_sessions   dataset pipeline
+0  0.838889  0.029546    119.0       1  ...        3           3  Zhou2016  csp+lda
+1  0.918000  0.022466    100.0       1  ...        3           3  Zhou2016  csp+lda
+2  0.940000  0.024456    100.0       1  ...        3           3  Zhou2016  csp+lda
+3  0.916000  0.023038    100.0       2  ...        3           3  Zhou2016  csp+lda
+4  0.817284  0.021899     90.0       2  ...        3           3  Zhou2016  csp+lda
 
 [5 rows x 9 columns]
 </pre></div>
@@ -726,34 +725,34 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  50%|#####     | 1/2 [00:07&lt;00:07,  7.51s/it]No hdf5_path provided, models will not be saved.
+Zhou2016-WithinSession:  50%|#####     | 1/2 [00:06&lt;00:06,  6.08s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession: 100%|##########| 2/2 [00:14&lt;00:00,  6.95s/it]
-Zhou2016-WithinSession: 100%|##########| 2/2 [00:14&lt;00:00,  7.04s/it]
+Zhou2016-WithinSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.58s/it]
+Zhou2016-WithinSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.65s/it]
 
 BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  50%|#####     | 1/2 [00:07&lt;00:07,  7.47s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.63s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:14&lt;00:00,  7.49s/it]
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:14&lt;00:00,  7.49s/it]
-      score      time  samples  ... n_sessions       dataset  pipeline
-0  0.859184  0.138616    144.0  ...          2  BNCI2014-001     ts+lr
-1  0.866735  0.130054    144.0  ...          2  BNCI2014-001     ts+lr
-2  0.539252  0.123602    144.0  ...          2  BNCI2014-001     ts+lr
-3  0.535918  0.126736    144.0  ...          2  BNCI2014-001     ts+lr
-4  0.859796  0.048882    144.0  ...          2  BNCI2014-001   csp+lda
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.59s/it]
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.59s/it]
+      score      time  samples subject  ... channels  n_sessions   dataset pipeline
+0  0.850126  0.028667    119.0       1  ...        3           3  Zhou2016  csp+lda
+1  0.878000  0.022481    100.0       1  ...        3           3  Zhou2016  csp+lda
+2  0.950000  0.021628    100.0       1  ...        3           3  Zhou2016  csp+lda
+3  0.934000  0.024571    100.0       2  ...        3           3  Zhou2016  csp+lda
+4  0.856790  0.021608     90.0       2  ...        3           3  Zhou2016  csp+lda
 
 [5 rows x 9 columns]
 </pre></div>
@@ -767,8 +766,8 @@ regression computed in the tangent space of the covariance matrices.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  10.823 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  374 MB</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  54.320 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  385 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/83c876b60654b8a0b9ebaf6714ef3607/plot_select_electrodes_resample.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_select_electrodes_resample.py</span></code></a></p>
