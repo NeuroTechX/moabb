@@ -1,6 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 
+import pandas as pd
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import GridSearchCV
 
@@ -66,6 +67,7 @@ class BaseEvaluation(ABC):
         return_raws=False,
         mne_labels=False,
         save_model=False,
+        cache_config=None,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -76,6 +78,7 @@ class BaseEvaluation(ABC):
         self.return_raws = return_raws
         self.mne_labels = mne_labels
         self.save_model = save_model
+        self.cache_config = cache_config
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
@@ -168,6 +171,8 @@ class BaseEvaluation(ABC):
         for _, pipeline in pipelines.items():
             if not (isinstance(pipeline, BaseEstimator)):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
+
+        res_per_db = []
         for dataset in self.datasets:
             log.info("Processing dataset: {}".format(dataset.code))
             process_pipeline = self.paradigm.make_process_pipelines(
@@ -187,10 +192,13 @@ class BaseEvaluation(ABC):
             )
             for res in results:
                 self.push_result(res, pipelines, process_pipeline)
+            res_per_db.append(
+                self.results.to_dataframe(
+                    pipelines=pipelines, process_pipeline=process_pipeline
+                )
+            )
 
-        return self.results.to_dataframe(
-            pipelines=pipelines, process_pipeline=process_pipeline
-        )
+        return pd.concat(res_per_db, ignore_index=True)
 
     def push_result(self, res, pipelines, process_pipeline):
         message = "{} | ".format(res["pipeline"])
