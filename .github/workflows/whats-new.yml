@@ -18,7 +18,7 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/pulls/${pr_number}/files")
 
           file_changed=false
-          file_to_check="docs/whats_new.rst" # Specify the path to your file
+          file_to_check="docs/source/whats_new.rst" # Specify the path to your file
 
           for file in $(echo "${response}" | jq -r '.[] | .filename'); do
             if [ "$file" == "$file_to_check" ]; then
