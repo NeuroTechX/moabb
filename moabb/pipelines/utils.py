@@ -329,7 +329,7 @@ def filterbank(X, sfreq, idx_fb, peaks):
     Wp = [passband[idx_fb] / sfreq, top / sfreq]
     Ws = [stopband[idx_fb] / sfreq, (top + 20) / sfreq]
 
-    N, Wn = scp.cheb1ord(Wp, Ws, 3, 40)  # Chebyshev type I filter order selection.
+    N, Wn = scp.cheb1ord(Wp, Ws, 3, 15)  # Chebyshev type I filter order selection.
 
     B, A = scp.cheby1(N, 0.5, Wn, btype="bandpass")  # Chebyshev type I filter design
 
