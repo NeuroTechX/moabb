@@ -289,6 +289,10 @@ def filterbank(X, sfreq, idx_fb, peaks):
     Code based on the Matlab implementation from authors of [1]_
     (https://github.com/mnakanishi/TRCA-SSVEP).
     """
+    if idx_fb > len(peaks):
+        raise (
+            ValueError("idx_fb should be less than number of SSVEP stimulus frequency")
+        )
 
     # Calibration data comes in batches of trials
     if X.ndim == 3:
@@ -299,37 +303,31 @@ def filterbank(X, sfreq, idx_fb, peaks):
     elif X.ndim == 2:
         num_chans = X.shape[0]
         num_trials = 1
+    else:
+        print("error")
 
     sfreq = sfreq / 2
 
-    min_freq = np.min(peaks)
+    peaks = np.sort(peaks)
     max_freq = np.max(peaks)
 
     if max_freq < 40:
-        top = 100
+        top = 40
     else:
-        top = 115
+        top = 60
     # Check for Nyquist
     if top >= sfreq:
         top = sfreq - 10
 
-    diff = max_freq - min_freq
     # Lowcut frequencies for the pass band (depends on the frequencies of SSVEP)
     # No more than 3dB loss in the passband
-
-    passband = [min_freq - 2 + x * diff for x in range(7)]
+    passband = [peaks[i] - 1 for i in range(len(peaks))]
 
     # At least 40db attenuation in the stopband
-    if min_freq - 4 > 0:
-        stopband = [
-            min_freq - 4 + x * (diff - 2) if x < 3 else min_freq - 4 + x * diff
-            for x in range(7)
-        ]
-    else:
-        stopband = [2 + x * (diff - 2) if x < 3 else 2 + x * diff for x in range(7)]
+    stopband = [peaks[i] - 2 for i in range(len(peaks))]
 
     Wp = [passband[idx_fb] / sfreq, top / sfreq]
-    Ws = [stopband[idx_fb] / sfreq, (top + 7) / sfreq]
+    Ws = [stopband[idx_fb] / sfreq, (top + 20) / sfreq]
 
     N, Wn = scp.cheb1ord(Wp, Ws, 3, 40)  # Chebyshev type I filter order selection.
 
