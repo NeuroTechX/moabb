@@ -23,7 +23,7 @@ Enhancements
 Bugs
 ~~~~
 
-- None
+- Fix TRCA implementation for different stimulation freqs and for signal filtering (:gh:522 by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
