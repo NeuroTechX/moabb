@@ -104,9 +104,7 @@ pipelines = {}
 pipelines["CCA"] = make_pipeline(SSVEP_CCA(interval=interval, freqs=freqs, n_harmonics=2))
 
 pipelines_TRCA = {}
-pipelines_TRCA["TRCA"] = make_pipeline(
-    SSVEP_TRCA(interval=interval, freqs=freqs, n_fbands=5)
-)
+pipelines_TRCA["TRCA"] = make_pipeline(SSVEP_TRCA(interval=interval, freqs=freqs))
 
 pipelines_MSET_CCA = {}
 pipelines_MSET_CCA["MSET_CCA"] = make_pipeline(SSVEP_MsetCCA(freqs=freqs))
