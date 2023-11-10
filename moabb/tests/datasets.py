@@ -351,7 +351,6 @@ class Test_CompoundDataset(unittest.TestCase):
                     subjects_list,
                     code="CompoundDataset-test",
                     interval=[0, 1],
-                    paradigm=self.paradigm,
                 )
 
                 data = compound_data.get_data()
@@ -385,7 +384,6 @@ class Test_CompoundDataset(unittest.TestCase):
             subjects_list,
             code="CompoundDataset-test",
             interval=[0, 1],
-            paradigm=self.paradigm,
         )
 
         # Add it two time to a subjects_list
@@ -394,8 +392,10 @@ class Test_CompoundDataset(unittest.TestCase):
             subjects_list,
             code="CompoundDataset-test",
             interval=[0, 1],
-            paradigm=self.paradigm,
         )
+
+        # Assert there is only one source dataset in the compound dataset
+        self.assertEqual(len(compound_data.datasets), 1)
 
         # Assert that the coumpouned dataset has two times more subject than the original one.
         data = compound_data.get_data()
@@ -408,7 +408,7 @@ class Test_CompoundDataset(unittest.TestCase):
             n_runs=self.n_runs,
             n_subjects=self.n_subjects,
             event_list=["Target", "NonTarget"],
-            paradigm=self.paradigm,
+            paradigm=self.ds.paradigm,
         )
 
         # Add the two datasets to a CompoundDataset
@@ -417,8 +417,10 @@ class Test_CompoundDataset(unittest.TestCase):
             subjects_list,
             code="CompoundDataset",
             interval=[0, 1],
-            paradigm=self.paradigm,
         )
+
+        # Assert there are two source datasets (ds and ds2) in the compound dataset
+        self.assertEqual(len(compound_dataset.datasets), 2)
 
         # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
         self.assertEqual(compound_dataset._get_sessions_per_subject(), self.n_sessions)
@@ -430,7 +432,7 @@ class Test_CompoundDataset(unittest.TestCase):
             n_runs=self.n_runs,
             n_subjects=self.n_subjects,
             event_list=["Target2", "NonTarget2"],
-            paradigm=self.paradigm,
+            paradigm=self.ds.paradigm,
         )
 
         # Add the two datasets to a CompoundDataset
@@ -440,7 +442,6 @@ class Test_CompoundDataset(unittest.TestCase):
             subjects_list,
             code="CompoundDataset",
             interval=[0, 1],
-            paradigm=self.paradigm,
         )
 
         # Check that the event_id of the compound_dataset is the same has the first dataset
