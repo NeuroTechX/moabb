@@ -15,7 +15,6 @@ class _base_bi_il(CompoundDataset):
             subjects_list=subjects_list,
             code=code,
             interval=[0, 1.0],
-            paradigm="p300",
         )
 
 
