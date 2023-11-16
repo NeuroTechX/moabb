@@ -62,15 +62,15 @@ def run_moabb_to_bids(run: str):
     idx, desc = re.fullmatch(p, run).groups()
     out = {"run": idx}
     if desc:
-        out["task"] = desc
+        out["recording"] = desc
     return out
 
 
 def run_bids_to_moabb(path: mne_bids.BIDSPath):
     """Extracts the run index plus eventually description from a path."""
-    if path.task is None:
+    if path.recording is None:
         return path.run
-    return f"{path.run}{path.task}"
+    return f"{path.run}{path.recording}"
 
 
 @dataclass
@@ -245,6 +245,7 @@ class BIDSInterfaceBase(abc.ABC):
                     root=self.root,
                     subject=subject_moabb_to_bids(self.subject),
                     session=session,
+                    task=self.dataset.paradigm,
                     **run_kwargs,
                     description=self.desc,
                     extension=self._extension,
