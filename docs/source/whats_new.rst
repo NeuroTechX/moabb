@@ -25,6 +25,7 @@ Bugs
 ~~~~
 
 - Fix TRCA implementation for different stimulation freqs and for signal filtering (:gh:522 by `Sylvain Chevallier`_)
+- Fix saving to BIDS runs with a description string in their name (:gh:`530` by `Pierre Guetschel`_)
 
 API changes
 ~~~~~~~~~~~
