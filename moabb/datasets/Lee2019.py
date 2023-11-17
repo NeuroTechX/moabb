@@ -1,6 +1,4 @@
-"""
-BMI/OpenBMI dataset
-"""
+"""BMI/OpenBMI dataset."""
 from functools import partialmethod
 
 import numpy as np
@@ -17,7 +15,7 @@ Lee2019_URL = "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100542/
 
 
 class Lee2019(BaseDataset):
-    """Base dataset class for Lee2019"""
+    """Base dataset class for Lee2019."""
 
     def __init__(
         self,
@@ -59,14 +57,14 @@ class Lee2019(BaseDataset):
             raise ValueError('unknown paradigm "{}"'.format(paradigm))
         for s in sessions:
             if s not in [1, 2]:
-                raise ValueError("inexistant session {}".format(s))
+                raise ValueError("inexistent session {}".format(s))
         self.sessions = sessions
 
         super().__init__(
             subjects=list(range(1, 55)),
             sessions_per_subject=2,
             events=events,
-            code="Lee2019_" + code_suffix,
+            code="Lee2019-" + code_suffix,
             interval=interval,
             paradigm=paradigm,
             doi="10.5524/100542",
@@ -164,7 +162,7 @@ class Lee2019(BaseDataset):
         return raw
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subejct"""
+        """Return data for a single subejct."""
 
         sessions = {}
         file_path_list = self.data_path(subject)
@@ -173,37 +171,29 @@ class Lee2019(BaseDataset):
             if self.train_run or self.test_run:
                 mat = loadmat(file_path_list[self.sessions.index(session)])
 
-            session_name = "session_{}".format(session)
+            session_name = str(session - 1)
             sessions[session_name] = {}
             if self.train_run:
-                sessions[session_name]["train"] = self._get_single_run(
+                sessions[session_name]["1train"] = self._get_single_run(
                     mat["EEG_{}_train".format(self.code_suffix)][0, 0]
                 )
             if self.test_run:
-                sessions[session_name]["test"] = self._get_single_run(
+                sessions[session_name]["4test"] = self._get_single_run(
                     mat["EEG_{}_test".format(self.code_suffix)][0, 0]
                 )
             if self.resting_state:
                 prefix = "pre"
-                sessions[session_name][
-                    "test_{}_rest".format(prefix)
-                ] = self._get_single_rest_run(
+                sessions[session_name][f"3{prefix}TestRest"] = self._get_single_rest_run(
                     mat["EEG_{}_test".format(self.code_suffix)][0, 0], prefix
                 )
-                sessions[session_name][
-                    "train_{}_rest".format(prefix)
-                ] = self._get_single_rest_run(
+                sessions[session_name][f"0{prefix}TrainRest"] = self._get_single_rest_run(
                     mat["EEG_{}_train".format(self.code_suffix)][0, 0], prefix
                 )
                 prefix = "post"
-                sessions[session_name][
-                    "test_{}_rest".format(prefix)
-                ] = self._get_single_rest_run(
+                sessions[session_name][f"5{prefix}TestRest"] = self._get_single_rest_run(
                     mat["EEG_{}_test".format(self.code_suffix)][0, 0], prefix
                 )
-                sessions[session_name][
-                    "train_{}_rest".format(prefix)
-                ] = self._get_single_rest_run(
+                sessions[session_name][f"2{prefix}TrainRest"] = self._get_single_rest_run(
                     mat["EEG_{}_train".format(self.code_suffix)][0, 0], prefix
                 )
 
@@ -235,7 +225,7 @@ class Lee2019_MI(Lee2019):
         ==========  =======  =======  ==========  =================  ============  ===============  ===========
         Name          #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
         ==========  =======  =======  ==========  =================  ============  ===============  ===========
-        Lee2019_MI       55       62           2                100  4s            1000Hz                     2
+        Lee2019_MI       54       62           2                100  4s            1000Hz                     2
         ==========  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from Lee et al 2019 [1]_.

@@ -28,8 +28,8 @@ P300 Paradigms
     :toctree: generated/
     :template: class.rst
 
-	 SinglePass
-	 P300
+     SinglePass
+     P300
 
 ---------------
 SSVEP Paradigms
@@ -39,8 +39,32 @@ SSVEP Paradigms
     :toctree: generated/
     :template: class.rst
 
-	 SSVEP
-	 FilterBankSSVEP
+    SSVEP
+    FilterBankSSVEP
+
+
+---------------
+c-VEP Paradigms
+---------------
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    CVEP
+    FilterBankCVEP
+
+
+--------------
+Fixed Interval Windows Processings
+--------------
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    FixedIntervalWindowsProcessing
+    FilterBankFixedIntervalWindowsProcessing
 
 ------------
 Base & Utils
@@ -53,6 +77,8 @@ Base & Utils
     motor_imagery.BaseMotorImagery
     motor_imagery.SinglePass
     motor_imagery.FilterBank
-	 p300.BaseP300
-	 ssvep.BaseSSVEP
+    p300.BaseP300
+    ssvep.BaseSSVEP
+    BaseFixedIntervalWindowsProcessing
     base.BaseParadigm
+    base.BaseProcessing

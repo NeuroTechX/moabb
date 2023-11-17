@@ -12,13 +12,13 @@ import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
 from mne.utils import _url_to_local_path, verbose
-from pooch import HTTPDownloader, file_hash, retrieve
+from pooch import file_hash, retrieve
+from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
 
 
 def get_dataset_path(sign, path):
-    """Returns the dataset path allowing for changes in MNE_DATA
-     config
+    """Returns the dataset path allowing for changes in MNE_DATA config.
 
     Parameters
     ----------
@@ -88,7 +88,6 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
     path : list of str
         Local path to the given data file. This path is contained inside a list
         of length one, for compatibility.
-
     """  # noqa: E501
     path = get_dataset_path(sign, path)
     key_dest = "MNE-{:s}-data".format(sign.lower())
@@ -105,7 +104,7 @@ def data_path(url, sign, path=None, force_update=False, update_path=True, verbos
 
 @verbose
 def data_dl(url, sign, path=None, force_update=False, verbose=None):
-    """Download file from url to specified path
+    """Download file from url to specified path.
 
     This function should replace data_path as the MNE will not support the download
     of dataset anymore. This version is using Pooch.
@@ -141,14 +140,15 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
     table = {ord(c): "-" for c in ':*?"<>|'}
     destination = Path(str(path) + destination.split(str(path))[1].translate(table))
 
-    downloader = HTTPDownloader(verify=False)
+    downloader = choose_downloader(url, progressbar=True)
+    if type(downloader).__name__ in ["HTTPDownloader", "DOIDownloader"]:
+        downloader.kwargs.setdefault("verify", False)
 
     # Fetch the file
     if not destination.is_file() or force_update:
         if destination.is_file():
             destination.unlink()
-        if not destination.parent.is_dir():
-            destination.parent.mkdir(parents=True)
+        destination.parent.mkdir(parents=True, exist_ok=True)
         known_hash = None
     else:
         known_hash = file_hash(str(destination))
@@ -165,7 +165,7 @@ def data_dl(url, sign, path=None, force_update=False, verbose=None):
 
 # This function is from https://github.com/cognoma/figshare (BSD-3-Clause)
 def fs_issue_request(method, url, headers, data=None, binary=False):
-    """Wrapper for HTTP request
+    """Wrapper for HTTP request.
 
     Parameters
     ----------
@@ -233,7 +233,7 @@ def fs_get_file_list(article_id, version=None):
 
 
 def fs_get_file_hash(filelist):
-    """Returns a dict associating figshare file id to MD5 hash
+    """Returns a dict associating figshare file id to MD5 hash.
 
     Parameters
     ----------
@@ -249,7 +249,7 @@ def fs_get_file_hash(filelist):
 
 
 def fs_get_file_id(filelist):
-    """Returns a dict associating filename to figshare file id
+    """Returns a dict associating filename to figshare file id.
 
     Parameters
     ----------
@@ -259,13 +259,13 @@ def fs_get_file_id(filelist):
     Returns
     -------
     response : dict
-        keys are filname and values are file_id
+        keys are filename and values are file_id
     """
     return {f["name"]: str(f["id"]) for f in filelist}
 
 
 def fs_get_file_name(filelist):
-    """Returns a dict associating figshare file id to filename
+    """Returns a dict associating figshare file id to filename.
 
     Parameters
     ----------

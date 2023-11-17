@@ -28,7 +28,6 @@ try:
 except ImportError:
     _carbonfootprint = False
 
-
 log = logging.getLogger(__name__)
 
 
@@ -46,7 +45,7 @@ def benchmark(  # noqa: C901
     include_datasets=None,
     exclude_datasets=None,
 ):
-    """Run benchmarks for selected pipelines and datasets
+    """Run benchmarks for selected pipelines and datasets.
 
     Load from saved pipeline configurations to determine associated paradigms. It is
     possible to include or exclude specific datasets and to choose the type of
@@ -220,7 +219,7 @@ def benchmark(  # noqa: C901
 
 
 def _display_results(results):
-    """Print results after computation"""
+    """Print results after computation."""
     tab = []
     for d in results["dataset"].unique():
         for p in results["pipeline"].unique():
@@ -247,7 +246,7 @@ def _display_results(results):
 
 
 def _combine_paradigms(prdgm_results):
-    """Combining FilterBank and direct paradigms
+    """Combining FilterBank and direct paradigms.
 
     Applied only on SSVEP for now.
 
@@ -273,7 +272,7 @@ def _combine_paradigms(prdgm_results):
 
 
 def _save_results(eval_results, output, plot):
-    """Save results in specified folder
+    """Save results in specified folder.
 
     Parameters
     ----------
@@ -305,14 +304,14 @@ def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
         else:
             # The case where the class instances have been given
             # can be passed on directly
-            d = include_datasets
+            d = list(include_datasets)
         if exclude_datasets is not None:
             raise AttributeError(
                 "You could not specify both include and exclude datasets"
             )
 
     elif exclude_datasets is not None:
-        d = datasets
+        d = list(datasets)
         # Assert if the inputs are not key_codes i.e. expected to be dataset class objects
         if not isinstance(exclude_datasets[0], str):
             # Convert the input to key_codes
@@ -323,5 +322,5 @@ def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
         for excdat in exclude_datasets:
             del d[datasets_codes.index(excdat)]
     else:
-        d = datasets
+        d = list(datasets)
     return d

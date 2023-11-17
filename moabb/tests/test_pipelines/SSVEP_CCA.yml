@@ -9,4 +9,4 @@ pipeline:
     parameters:
       n_harmonics: 3
       interval: [1, 3]
-      freqs: { "13": 0, "17": 1 }
+      freqs: {"13":0, "17":1}

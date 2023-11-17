@@ -1,5 +1,5 @@
-"""
-Simple and compound motor imagery.
+"""Simple and compound motor imagery.
+
 https://doi.org/10.1371/journal.pone.0114853
 """
 
@@ -90,7 +90,7 @@ class Zhou2016(BaseDataset):
             subjects=list(range(1, 5)),
             sessions_per_subject=3,
             events=dict(left_hand=1, right_hand=2, feet=3),
-            code="Zhou 2016",
+            code="Zhou2016",
             # MI 1-6s, prepare 0-1, break 6-10
             # boundary effects
             interval=[0, 5],
@@ -99,15 +99,15 @@ class Zhou2016(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
         files = self.data_path(subject)
 
         out = {}
         for sess_ind, runlist in enumerate(files):
-            sess_key = "session_{}".format(sess_ind)
+            sess_key = str(sess_ind)
             out[sess_key] = {}
             for run_ind, fname in enumerate(runlist):
-                run_key = "run_{}".format(run_ind)
+                run_key = str(run_ind)
                 raw = read_raw_cnt(fname, preload=True, eog=["VEOU", "VEOL"])
                 stim = raw.annotations.description.astype(np.dtype("<10U"))
                 stim[stim == "1"] = "left_hand"

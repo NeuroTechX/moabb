@@ -15,7 +15,7 @@ GIN_URL = (
 
 
 class Schirrmeister2017(BaseDataset):
-    """High-gamma dataset discribed in Schirrmeister et al. 2017
+    """High-gamma dataset described in Schirrmeister et al. 2017.
 
     .. admonition:: Dataset summary
 
@@ -61,7 +61,6 @@ class Schirrmeister2017(BaseDataset):
     .. [1] Schirrmeister, Robin Tibor, et al. "Deep learning with convolutional
            neural networks for EEG decoding and visualization." Human brain mapping 38.11
            (2017): 5391-5420.
-
     """
 
     def __init__(self):
@@ -102,6 +101,6 @@ class Schirrmeister2017(BaseDataset):
             raw.pick_types(eeg=True).set_montage(montage) for raw in (train_raw, test_raw)
         ]
         sessions = {
-            "session_0": {"train": train_raw, "test": test_raw},
+            "0": {"0train": train_raw, "1test": test_raw},
         }
         return sessions

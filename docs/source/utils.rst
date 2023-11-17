@@ -27,3 +27,4 @@ Utils
     set_log_level
     setup_seed
     set_download_dir
+    make_process_pipelines

@@ -1,6 +1,4 @@
-"""
-SSVEP Nakanishi dataset.
-"""
+"""SSVEP Nakanishi dataset."""
 
 import logging
 
@@ -20,7 +18,7 @@ NAKAHISHI_URL = "https://github.com/mnakanishi/12JFPM_SSVEP/raw/master/data/"
 
 
 class Nakanishi2015(BaseDataset):
-    """SSVEP Nakanishi 2015 dataset
+    """SSVEP Nakanishi 2015 dataset.
 
     .. admonition:: Dataset summary
 
@@ -63,14 +61,14 @@ class Nakanishi2015(BaseDataset):
                 "12.75": 11,
                 "14.75": 12,
             },
-            code="Nakanishi_SSVEP",
+            code="Nakanishi2015",
             interval=[0.15, 4.3],
             paradigm="ssvep",
             doi="doi.org/10.1371/journal.pone.0140703",
         )
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject"""
+        """Return the data of a single subject."""
         n_samples, n_channels, n_trials = 1114, 8, 15
         n_classes = len(self.event_id)
 
@@ -98,7 +96,7 @@ class Nakanishi2015(BaseDataset):
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
         montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
-        return {"session_0": {"run_0": raw}}
+        return {"0": {"0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

@@ -33,7 +33,6 @@ def create_pipeline_from_config(config):
     -------
     pipeline : Pipeline
         sklearn Pipeline
-
     """
     components = []
 
@@ -73,9 +72,9 @@ def create_pipeline_from_config(config):
 
 
 def parse_pipelines_from_directory(dir_path):
-    """
-    Takes in the path to a directory with pipeline configuration files and returns a dictionary
-    of pipelines.
+    """Takes in the path to a directory with pipeline configuration files and
+    returns a dictionary of pipelines.
+
     Parameters
     ----------
     dir_path: str
@@ -136,10 +135,10 @@ def parse_pipelines_from_directory(dir_path):
 
 
 def generate_paradigms(pipeline_configs, context=None, logger=log):
-    """
-    Takes in a dictionary of pipelines configurations as returned by
-    parse_pipelines_from_directory and returns a dictionary of unique paradigms with all pipeline
-    configurations compatible with that paradigm.
+    """Takes in a dictionary of pipelines configurations as returned by
+    parse_pipelines_from_directory and returns a dictionary of unique paradigms
+    with all pipeline configurations compatible with that paradigm.
+
     Parameters
     ----------
     pipeline_configs:
@@ -154,7 +153,6 @@ def generate_paradigms(pipeline_configs, context=None, logger=log):
     paradigms: dict
         Dictionary of dictionaries with the unique paradigms and the configuration of the
         pipelines compatible with the paradigm
-
     """
     context = context or {}
     paradigms = OrderedDict()
@@ -209,7 +207,7 @@ def generate_param_grid(pipeline_configs, context=None, logger=log):
 
 
 class FilterBank(BaseEstimator, TransformerMixin):
-    """Apply a given indentical pipeline over a bank of filter.
+    """Apply a given identical pipeline over a bank of filter.
 
     The pipeline provided with the constrictor will be appield on the 4th
     axis of the input data. This pipeline should be used with a FilterBank
@@ -260,8 +258,8 @@ class FilterBank(BaseEstimator, TransformerMixin):
 
 
 def filterbank(X, sfreq, idx_fb, peaks):
-    """
-    Filter bank design for decomposing EEG data into sub-band components [1]_
+    """Filter bank design for decomposing EEG data into sub-band components
+    [1]_
 
     Parameters
     ----------
@@ -291,6 +289,10 @@ def filterbank(X, sfreq, idx_fb, peaks):
     Code based on the Matlab implementation from authors of [1]_
     (https://github.com/mnakanishi/TRCA-SSVEP).
     """
+    if idx_fb > len(peaks):
+        raise (
+            ValueError("idx_fb should be less than number of SSVEP stimulus frequency")
+        )
 
     # Calibration data comes in batches of trials
     if X.ndim == 3:
@@ -301,39 +303,33 @@ def filterbank(X, sfreq, idx_fb, peaks):
     elif X.ndim == 2:
         num_chans = X.shape[0]
         num_trials = 1
+    else:
+        print("error")
 
     sfreq = sfreq / 2
 
-    min_freq = np.min(peaks)
+    peaks = np.sort(peaks)
     max_freq = np.max(peaks)
 
     if max_freq < 40:
-        top = 100
+        top = 40
     else:
-        top = 115
+        top = 60
     # Check for Nyquist
     if top >= sfreq:
         top = sfreq - 10
 
-    diff = max_freq - min_freq
     # Lowcut frequencies for the pass band (depends on the frequencies of SSVEP)
     # No more than 3dB loss in the passband
-
-    passband = [min_freq - 2 + x * diff for x in range(7)]
+    passband = [peaks[i] - 1 for i in range(len(peaks))]
 
     # At least 40db attenuation in the stopband
-    if min_freq - 4 > 0:
-        stopband = [
-            min_freq - 4 + x * (diff - 2) if x < 3 else min_freq - 4 + x * diff
-            for x in range(7)
-        ]
-    else:
-        stopband = [2 + x * (diff - 2) if x < 3 else 2 + x * diff for x in range(7)]
+    stopband = [peaks[i] - 2 for i in range(len(peaks))]
 
     Wp = [passband[idx_fb] / sfreq, top / sfreq]
-    Ws = [stopband[idx_fb] / sfreq, (top + 7) / sfreq]
+    Ws = [stopband[idx_fb] / sfreq, (top + 20) / sfreq]
 
-    N, Wn = scp.cheb1ord(Wp, Ws, 3, 40)  # Chebyshev type I filter order selection.
+    N, Wn = scp.cheb1ord(Wp, Ws, 3, 15)  # Chebyshev type I filter order selection.
 
     B, A = scp.cheby1(N, 0.5, Wn, btype="bandpass")  # Chebyshev type I filter design
 

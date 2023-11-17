@@ -21,7 +21,6 @@ from moabb.analysis.plotting import score_plot
 
 set_log_level("info")
 
-
 ###############################################################################
 # In this example, we will use only the dataset 'Zhou 2016'.
 #
@@ -51,7 +50,7 @@ results = benchmark(
     pipelines="./pipelines_grid/",
     evaluations=["WithinSession"],
     paradigms=["LeftRightImagery"],
-    include_datasets=["Zhou 2016"],
+    include_datasets=["Zhou2016"],
     results="./results/",
     overwrite=False,
     plot=False,

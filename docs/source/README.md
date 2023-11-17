@@ -12,8 +12,10 @@
 **This is an open science project that may evolve depending on the need of the
 community.**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10034224.svg)](https://doi.org/10.5281/zenodo.10034224)
 [![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![codecov](https://codecov.io/gh/NeuroTechX/moabb/graph/badge.svg?token=NwHD3ethB5)](https://codecov.io/gh/NeuroTechX/moabb)
 [![PyPI](https://img.shields.io/pypi/v/moabb?color=blue&style=plastic)](https://img.shields.io/pypi/v/moabb)
 [![Downloads](https://pepy.tech/badge/moabb)](https://pepy.tech/project/moabb)
 
@@ -85,14 +87,18 @@ The project is currently maintained by:
       <th>Sylvain Chevallier</th>
       <th>Bruno Aristimunha</th>
       <th>Igor Carrara</th>
+      <th>Pierre Guetschel</th>
+      <th>Sara Sedlar</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td style="padding: 0 15px;"><img src="https://avatars.githubusercontent.com/u/5824988?s=150&amp;v=4" alt="Sylvain Chevallier"></td>
-      <td style="padding: 0 15px;"><img src="https://avatars.githubusercontent.com/u/42702466?s=150&amp;v=4" alt="Bruno Aristimunha"></td>
-      <td style="padding: 0 15px;"><img src="https://avatars.githubusercontent.com/u/94047258?s=150&amp;v=4" alt="Igor Carrara"></td>
-    </tr>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/5824988?s=150&amp;v=4" alt="Sylvain Chevallier"></td>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/42702466?s=150&amp;v=4" alt="Bruno Aristimunha"></td>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/94047258?s=150&amp;v=4" alt="Igor Carrara"></td>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/25532709?s=150&amp;v=4" alt="Pierre Guetschel"></td>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/5344945?s=150&amp;v=4" alt="Sara Sedlar"></td>
+</tr>
   </tbody>
 </table>
 
@@ -123,7 +129,7 @@ The MOABB is a community project, and we are always thankful for all the contrib
 <script>
 const endpoint = 'https://api.github.com/repos/NeuroTechX/moabb/contributors';
 const container = document.getElementById('contributors-container');
-const filterList = ["bruAristimunha", "sylvchev", "carraraig", "pre-commit-ci[bot]", "dependabot[bot]", "alexandrebarachant", "vinay-jayaram"];
+const filterList = ["bruAristimunha", "sylvchev", "carraraig", "pierreGtch", "sara04", "pre-commit-ci[bot]", "dependabot[bot]", "alexandrebarachant", "vinay-jayaram"];
 fetch(endpoint)
   .then(response => response.json())
   .then(contributors => {
@@ -199,6 +205,8 @@ BCI algorithms applied on an extensive list of freely available EEG datasets.
 [link_sylvain]: https://sylvchev.github.io/
 [link_bruno]: https://www.linkedin.com/in/bruaristimunha/
 [link_igor]: https://www.linkedin.com/in/carraraig/
+[link_pierre]: https://www.linkedin.com/in/pierreguetschel/
+[link_sara]: https://www.linkedin.com/in/sara-sedlar-28709893/
 [link_neurotechx_signup]: https://neurotechx.com/
 [link_gitter]: https://app.gitter.im/#/room/#moabb_dev_community:gitter.im
 [link_moabb_docs]: https://neurotechx.github.io/moabb/

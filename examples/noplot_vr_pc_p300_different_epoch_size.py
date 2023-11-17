@@ -1,7 +1,8 @@
-"""
-=============================
+""" Example of P300 classification with different epoch size.
+
+=======================================
 Changing epoch size in P300 VR dataset
-=============================
+=======================================
 
 This example shows how to extract the epochs from the P300-VR dataset of a given
 subject and then classify them using Riemannian Geometry framework for BCI.
@@ -26,7 +27,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
-from moabb.datasets import VirtualReality
+from moabb.datasets import Cattan2019_VR
 from moabb.paradigms import P300
 
 
@@ -45,7 +46,7 @@ warnings.filterwarnings("ignore")
 # 3) Encode categorical variable (Target/NonTarget) to numerical values.
 #    We will be using label encoding.
 
-dataset = VirtualReality()
+dataset = Cattan2019_VR()
 paradigm = P300()
 le = LabelEncoder().fit(["Target", "NonTarget"])
 
@@ -60,7 +61,7 @@ nsubjects = 2
 # tmax, subjects and experimental conditions (VR or PC).
 #
 # Not all the data will be used for this validation.
-# The VirtualReality dataset contains the data from a randomized experiment.
+# The Cattan2019_VR dataset contains the data from a randomized experiment.
 # We will only be using the two first repetitions of the 12 experimental blocks.
 # Data will be selected thanks to the `get_block_repetition` method.
 
@@ -112,7 +113,7 @@ for tmax in [0.2, 1.0]:
                     paradigm, [subject], blocks[test_idx], repetitions
                 )
 
-                # We use riemannian geometry processing technics with MDM algorithm.
+                # We use riemannian geometry processing techniques with MDM algorithm.
                 pipe = make_pipeline(ERPCovariances(estimator="lwf"), MDM())
                 pipe.fit(X_train, y_train)
                 y_pred = pipe.predict(X_test)

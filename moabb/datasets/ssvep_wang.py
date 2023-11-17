@@ -1,6 +1,4 @@
-"""
-SSVEP Wang dataset.
-"""
+"""SSVEP Wang dataset."""
 
 import logging
 
@@ -18,11 +16,13 @@ log = logging.getLogger(__name__)
 
 # WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
 WANG_URL = "ftp://sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
+
+
 # WANG_URL = "http://www.thubci.com/uploads/down/"
 
 
 class Wang2016(BaseDataset):
-    """SSVEP Wang 2016 dataset
+    """SSVEP Wang 2016 dataset.
 
     .. admonition:: Dataset summary
 
@@ -106,6 +106,7 @@ class Wang2016(BaseDataset):
         "P8", "PO7", "PO5", "PO3", "POz", "PO4", "PO6", "PO8", "CB1", "O1", "Oz", "O2",
         "CB2", "stim",
     ]
+
     # fmt: on
 
     def __init__(self):
@@ -113,14 +114,14 @@ class Wang2016(BaseDataset):
             subjects=list(range(1, 35)),
             sessions_per_subject=1,
             events=self._events,
-            code="Wang_SSVEP",
+            code="Wang2016",
             interval=[0.5, 5.5],
             paradigm="ssvep",
             doi="doi://10.1109/TNSRE.2016.2627556",
         )
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject"""
+        """Return the data of a single subject."""
         n_samples, n_channels, n_trials = 1500, 64, 6
         n_classes = len(self.event_id)
 
@@ -149,7 +150,7 @@ class Wang2016(BaseDataset):
         raw = RawArray(data=np.concatenate(list(data), axis=1), info=info, verbose=False)
         montage = make_standard_montage("standard_1005")
         raw.set_montage(montage)
-        return {"session_0": {"run_0": raw}}
+        return {"0": {"0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

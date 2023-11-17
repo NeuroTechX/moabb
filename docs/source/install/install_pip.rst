@@ -5,10 +5,13 @@ Installing from PyPI
 
 MOABB can be installed via pip from `PyPI <https://pypi.org/project/moabb>`__.
 
+.. warning::
+    MOABB is only compatible with **Python 3.8, 3.9, 3.10 and 3.11**.
+
 .. note::
     We recommend the most updated version of pip to install from PyPI.
 
-Bellow are the installation commands for the most common use cases.
+Below are the installation commands for the most common use cases.
 
 .. code-block:: console
 

@@ -62,7 +62,6 @@ class Ofner2017(BaseDataset):
            Upper limb movements can be decoded from the time-domain of
            low-frequency EEG. PloS one, 12(8), p.e0182578.
            https://doi.org/10.1371/journal.pone.0182578
-
     """
 
     def __init__(self, imagined=True, executed=False):
@@ -90,17 +89,18 @@ class Ofner2017(BaseDataset):
         )
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
 
         sessions = []
         if self.imagined:
-            sessions.append("imagination")
+            sessions.append((1, "imagination"))
 
         if self.executed:
-            sessions.append("execution")
+            sessions.append((0, "execution"))
 
         out = {}
-        for session in sessions:
+        for ses_idx, session in sessions:
+            session_name = f"{ses_idx}{session}"
             paths = self.data_path(subject, session=session)
 
             eog = ["eog-l", "eog-m", "eog-r"]
@@ -123,9 +123,9 @@ class Ofner2017(BaseDataset):
                 stim[stim == "1541"] = "right_hand_open"
                 stim[stim == "1542"] = "rest"
                 raw.annotations.description = stim
-                data["run_%d" % ii] = raw
+                data[str(ii)] = raw
 
-            out[session] = data
+            out[session_name] = data
         return out
 
     def data_path(

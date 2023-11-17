@@ -12,7 +12,7 @@ from .utils import filterbank
 
 
 class SSVEP_CCA(BaseEstimator, ClassifierMixin):
-    """Classifier based on Canonical Correlation Analysis for SSVEP
+    """Classifier based on Canonical Correlation Analysis for SSVEP.
 
     A CCA is computed from the set of training signals and some pure
     sinusoids to act as reference.
@@ -21,7 +21,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
     Parameters
     ----------
-    interval : list of lenght 2
+    interval : list of length 2
         List of form [tmin, tmax]. With tmin and tmax as defined in the SSVEP
         paradigm :meth:`moabb.paradigms.SSVEP`
 
@@ -30,7 +30,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         They are used to identify SSVEP classes presents in the data.
 
     n_harmonics: int
-        Number of stimulation frequency's harmonics to be used in the genration
+        Number of stimulation frequency's harmonics to be used in the generation
         of the CCA reference signal.
 
 
@@ -51,12 +51,14 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         self.slen = interval[1] - interval[0]
         self.freqs = freqs
         self.n_harmonics = n_harmonics
+        self.classes_ = []
         self.one_hot = {}
         for i, k in enumerate(freqs.keys()):
+            self.classes_.append(i)
             self.one_hot[k] = i
 
     def fit(self, X, y, sample_weight=None):
-        """Compute reference sinusoid signal
+        """Compute reference sinusoid signal.
 
         These sinusoid are generated for each frequency in the dataset
         """
@@ -77,7 +79,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         return self
 
     def predict(self, X):
-        """Predict is made by taking the maximum correlation coefficient"""
+        """Predict is made by taking the maximum correlation coefficient."""
         y = []
         for x in X:
             corr_f = {}
@@ -89,7 +91,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         return y
 
     def predict_proba(self, X):
-        """Probabilty could be computed from the correlation coefficient"""
+        """Probability could be computed from the correlation coefficient."""
         P = np.zeros(shape=(len(X), len(self.freqs)))
         for i, x in enumerate(X):
             for j, f in enumerate(self.freqs):
@@ -100,7 +102,8 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
 
 class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
-    """Classifier based on the Task-Related Component Analysis method [1]_ for SSVEP.
+    """Classifier based on the Task-Related Component Analysis method [1]_ for
+    SSVEP.
 
     Parameters
     ----------
@@ -110,9 +113,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     freqs : dict with n_classes keys
         Frequencies corresponding to the SSVEP components. These are
         necessary to design the filterbank bands.
-
-    n_fbands : int, default=5
-        Number of sub-bands considered for filterbank analysis.
 
     downsample: int, default=1
         Factor by which downsample the data. A downsample value of N will result
@@ -185,7 +185,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         self,
         interval,
         freqs,
-        n_fbands=5,
         downsample=1,
         is_ensemble=True,
         method="original",
@@ -193,7 +192,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     ):
         self.freqs = freqs
         self.peaks = np.array([float(f) for f in freqs.keys()])
-        self.n_fbands = n_fbands
+        self.n_fbands = len(self.peaks)
         self.downsample = downsample
         self.interval = interval
         self.slen = interval[1] - interval[0]
@@ -241,7 +240,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 )
                 cov = np.squeeze(cov)
 
-                # Compute empirical covariance betwwen the two selected trials and sum it
+                # Compute empirical covariance between the two selected trials and sum it
                 if n_channels > 1:
                     S = S + cov[:n_channels, n_channels:] + cov[n_channels:, :n_channels]
 
@@ -325,7 +324,8 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         return W[:, 0], W
 
     def fit(self, X, y):
-        """Extract spatial filters and templates from the given calibration data.
+        """Extract spatial filters and templates from the given calibration
+        data.
 
         Parameters
         ----------
@@ -453,7 +453,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         return y_pred
 
     def predict_proba(self, X):
-        """Make predictions on unseen data with the asociated probabilities.
+        """Make predictions on unseen data with the associated probabilities.
 
         The new data observation X will be filtered
         with weights previously extracted and compared to the templates to assess
@@ -534,7 +534,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
 
 def _whitening(X):
-    """utility function to whiten EEG signal
+    """Utility function to whiten EEG signal.
 
     Parameters
     ----------
@@ -554,7 +554,7 @@ def _whitening(X):
 
 
 class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
-    """Classifier based on MsetCCA for SSVEP
+    """Classifier based on MsetCCA for SSVEP.
 
      The MsetCCA method learns multiple linear transforms to extract
      SSVEP common features from multiple sets of EEG data. These are then used
@@ -592,9 +592,8 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         self.cca = CCA(n_components=1)
 
     def fit(self, X, y, sample_weight=None):
-        """
-        Compute the optimized reference signal at each stimulus frequency
-        """
+        """Compute the optimized reference signal at each stimulus
+        frequency."""
         self.classes_ = np.unique(y)
         self.one_hot = {}
         for i, k in enumerate(self.classes_):
@@ -638,7 +637,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         return self
 
     def predict(self, X):
-        """Predict is made by taking the maximum correlation coefficient"""
+        """Predict is made by taking the maximum correlation coefficient."""
 
         # Check is fit had been called
         check_is_fitted(self)
@@ -653,7 +652,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         return y
 
     def predict_proba(self, X):
-        """Probabilty could be computed from the correlation coefficient"""
+        """Probability could be computed from the correlation coefficient."""
 
         # Check is fit had been called
         check_is_fitted(self)

@@ -1,5 +1,5 @@
-"""
-Utils for Deep learning integrated on MOABB.
+"""Utils for Deep learning integrated on MOABB.
+
 Implementation using the tensorflow, keras and scikeras framework.
 """
 
@@ -26,8 +26,7 @@ from keras.layers.normalization.batch_normalization import BatchNormalization
 def EEGNet(
     data, input_layer, filters_1=8, kernel_size=64, depth=2, dropout=0.5, activation="elu"
 ):
-    """
-    EEGNet block implementation as described in [1]_.
+    """EEGNet block implementation as described in [1]_.
 
     This implementation is taken from code by The Integrated Systems Laboratory of ETH Zurich
     at https://github.com/iis-eth-zurich/eeg-tcnet

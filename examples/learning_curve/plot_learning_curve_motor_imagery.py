@@ -30,7 +30,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import BNCI2014001
+from moabb.datasets import BNCI2014_001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import LeftRightImagery
 
@@ -44,7 +44,7 @@ moabb.set_log_level("info")
 # Pipelines must be a dict of sklearn pipeline transformer.
 #
 # The CSP implementation from MNE is used. We selected 8 CSP components, as
-# usually done in the litterature.
+# usually done in the literature.
 #
 # The Riemannian geometry pipeline consists in covariance estimation, tangent
 # space mapping and finally a logistic regression for the classification.
@@ -63,7 +63,7 @@ pipelines["RG+LR"] = make_pipeline(
 # Evaluation
 # ----------
 #
-# We define the paradigm (LeftRightImagery) and the dataset (BNCI2014001).
+# We define the paradigm (LeftRightImagery) and the dataset (BNCI2014_001).
 # The evaluation will return a DataFrame containing a single AUC score for
 # each subject / session of the dataset, and for each pipeline.
 #
@@ -72,13 +72,13 @@ pipelines["RG+LR"] = make_pipeline(
 # be overwritten if necessary.
 
 paradigm = LeftRightImagery()
-dataset = BNCI2014001()
+dataset = BNCI2014_001()
 dataset.subject_list = dataset.subject_list[:1]
 datasets = [dataset]
 overwrite = True  # set to True if we want to overwrite cached results
 # Evaluate for a specific number of training samples per class
 data_size = dict(policy="per_class", value=np.array([5, 10, 30, 50]))
-# When the training data is sparse, peform more permutations than when we have a lot of data
+# When the training data is sparse, perform more permutations than when we have a lot of data
 n_perms = np.floor(np.geomspace(20, 2, len(data_size["value"]))).astype(int)
 evaluation = WithinSessionEvaluation(
     paradigm=paradigm,

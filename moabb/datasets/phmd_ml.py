@@ -4,6 +4,8 @@ import mne
 import numpy as np
 from scipy.io import loadmat
 
+from moabb.utils import depreciated_alias
+
 from . import download as dl
 from .base import BaseDataset
 
@@ -11,18 +13,18 @@ from .base import BaseDataset
 HEADMOUNTED_URL = "https://zenodo.org/record/2617085/files/"
 
 
-class HeadMountedDisplay(BaseDataset):
-    """
-    Passive Head Mounted Display with Music Listening dataset.
+@depreciated_alias("HeadMountedDisplay", "1.1")
+class Cattan2019_PHMD(BaseDataset):
+    """Passive Head Mounted Display with Music Listening dataset.
 
     .. admonition:: Dataset summary
 
 
-        =================  =======  =======  ==========  =================  ============  ===============  ===========
-        Name                 #Subj    #Chan    #Classes    #Blocks/class     Trials len    Sampling rate    #Sessions
-        ================== =======  =======  ==========  =================  ============  ===============  ===========
-        HeadMountedDisplay      12       16           2                 10   60s            512Hz                   1
-        ================== =======  =======  ==========  =================  ============  ===============  ===========
+        ==============  =======  =======  ==========  =================  ============  ===============  ===========
+        Name              #Subj    #Chan    #Classes    #Blocks/class     Trials len    Sampling rate    #Sessions
+        =============== =======  =======  ==========  =================  ============  ===============  ===========
+        Cattan2019_PHMD      12       16           2                 10   60s            512Hz                   1
+        =============== =======  =======  ==========  =================  ============  ===============  ===========
 
     We describe the experimental procedures for a dataset that we have made publicly available
     at https://doi.org/10.5281/zenodo.2617084 in mat (Mathworks, Natick, USA) and csv formats.
@@ -50,7 +52,7 @@ class HeadMountedDisplay(BaseDataset):
     Notes
     -----
 
-    .. versionadded:: 0.6.0
+    .. versionadded:: 1.0.0
 
     References
     ----------
@@ -58,8 +60,6 @@ class HeadMountedDisplay(BaseDataset):
     .. [1] G. Cattan, P. L. Coelho Rodrigues, and M. Congedo,
         ‘Passive Head-Mounted Display Music-Listening EEG dataset’,
         Gipsa-Lab ; IHMTEK, Research Report 2, Mar. 2019. doi: 10.5281/zenodo.2617084.
-
-
     """
 
     def __init__(self):
@@ -67,7 +67,7 @@ class HeadMountedDisplay(BaseDataset):
             subjects=list(range(1, 12 + 1)),
             sessions_per_subject=1,
             events=dict(on=1, off=2),
-            code="PHMD-ML",
+            code="Cattan2019-PHMD",  # Before: "PHMD-ML"
             interval=[0, 1],
             paradigm="rstate",
             doi="https://doi.org/10.5281/zenodo.2617084 ",
@@ -94,7 +94,7 @@ class HeadMountedDisplay(BaseDataset):
         self._chtypes = ["eeg"] * 16 + ["stim"]
 
     def _get_single_subject_data(self, subject):
-        """return data for a single subject"""
+        """Return data for a single subject."""
 
         filepath = self.data_path(subject)[0]
         data = loadmat(os.path.join(filepath, os.listdir(filepath)[0]))
@@ -110,7 +110,7 @@ class HeadMountedDisplay(BaseDataset):
             ch_names=self._chnames, sfreq=512, ch_types=self._chtypes, verbose=False
         )
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
-        return {"session_0": {"run_0": raw}}
+        return {"0": {"0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
