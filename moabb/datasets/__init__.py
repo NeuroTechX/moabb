@@ -47,6 +47,7 @@ from .braininvaders import (
     BI2015b,
     Cattan2019_VR,
 )
+from .Dreyer2023 import Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
 from .fake import FakeDataset, FakeVirtualRealityDataset
 from .gigadb import Cho2017
