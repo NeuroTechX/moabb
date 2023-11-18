@@ -20,12 +20,14 @@ Enhancements
 
 - Adding cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
 - Option to interpolate channel in paradigms' `match_all` method (:gh:`480` by `Gregoire Cattan`_)
+- Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_ and `Sylvain Chevallier`_)
 
 Bugs
 ~~~~
 
 - Fix TRCA implementation for different stimulation freqs and for signal filtering (:gh:522 by `Sylvain Chevallier`_)
 - Fix saving to BIDS runs with a description string in their name (:gh:`530` by `Pierre Guetschel`_)
+- Fix issue with WithinSessionEvaluation with multiple datasets (PR :gh: `521`, issue :gh: `514` by `Sara Sedlar`_)
 
 API changes
 ~~~~~~~~~~~
