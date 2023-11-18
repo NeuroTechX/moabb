@@ -110,7 +110,7 @@ class Dreyer2023Base(BaseDataset):
         if isinstance(subjects, type(None)):
             subjects = self.subject_list
         if len([s for s in subjects if s not in self.subject_list]):
-            raise ValueError("Ivalid subject selection")
+            raise ValueError("Invalid subject selection")
 
         if isinstance(infos, type(None)):
             infos = list(RECORD_INFO.keys())
@@ -155,7 +155,7 @@ class Dreyer2023Base(BaseDataset):
             elif i in df.columns:
                 info_select.append(i)
             else:
-                raise ValueError("Ivalid info selection.")
+                raise ValueError("Invalid info selection.")
 
         return df[info_select].reset_index(drop=True)
 
@@ -201,20 +201,20 @@ class Dreyer2023Base(BaseDataset):
             if r_i > 3 and self.db_id == "A" and subject == 59:
                 continue
 
-            recordings["run_%d" % r_i] = read_raw_gdf(
+            recordings["%d" % r_i] = read_raw_gdf(
                 join(subj_dir, subj_id + "_{0}_{1}.gdf".format(r_n, r_t)),
                 preload=True,
                 eog=["EOG1", "EOG2", "EOG3"],
                 misc=["EMGg", "EMGd"],
                 verbose="WARNING",
             )
-            recordings["run_%d" % r_i].set_channel_types(ch_map)
+            recordings["%d" % r_i].set_channel_types(ch_map)
 
-            recordings["run_%d" % r_i].annotations.rename(
+            recordings["%d" % r_i].annotations.rename(
                 {"769": "left_hand", "770": "right_hand"}
             )
 
-        return {"session_0": recordings}
+        return {"0": recordings}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
@@ -271,9 +271,9 @@ class Dreyer2023A(Dreyer2023Base):
 
     Each trial was recorded as follows [1]:
         - t=0.00s  cross displayed on screen
-        - t=2.00s  accoustic signal announced appearance of a red arrow
+        - t=2.00s  acoustic signal announced appearance of a red arrow
         - t=3.00s  a red arrow appears (subject starts to perform task)
-        - t=4.25s  the red arrow disapears
+        - t=4.25s  the red arrow disappears
         - t=4.25s  the feedback on performance is given in form of a blue bar
                    with update frequency of 16 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
@@ -370,9 +370,9 @@ class Dreyer2023B(Dreyer2023Base):
 
     Each trial was recorded as follows [1]:
         - t=0.00s  cross displayed on screen
-        - t=2.00s  accoustic signal announced appearance of a red arrow
+        - t=2.00s  acoustic signal announced appearance of a red arrow
         - t=3.00s  a red arrow appears (subject starts to perform task)
-        - t=4.25s  the red arrow disapears
+        - t=4.25s  the red arrow disappears
         - t=4.25s  the feedback on performance is given in form of a blue bar
                    with update frequency of 16 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
@@ -467,9 +467,9 @@ class Dreyer2023C(Dreyer2023Base):
 
     Each trial was recorded as follows [1]:
         - t=0.00s  cross displayed on screen
-        - t=2.00s  accoustic signal announced appearance of a red arrow
+        - t=2.00s  acoustic signal announced appearance of a red arrow
         - t=3.00s  a red arrow appears (subject starts to perform task)
-        - t=4.25s  the red arrow disapears
+        - t=4.25s  the red arrow disappears
         - t=4.25s  the feedback on performance is given in form of a blue bar
                    with update frequency of 16 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
