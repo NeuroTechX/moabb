@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import h5py
 import mne
 import numpy as np
@@ -17,9 +18,16 @@ Castillos2023_URL = "https://zenodo.org/records/8255618"
 # Each trial contained 12 cycles of a 2.2 second code
 NR_CYCLES_PER_TRIAL = 15
 
-# Codes were presented at a 60 Hz monitor refresh rate
-PRESENTATION_RATE = 60
 
+
+def code2array(event_id):
+    codes = OrderedDict()
+    for k, v in event_id.items():
+        code = k.split('_')[0]
+        code = code.replace('.','').replace('2','')
+        codes[v-1] = np.array(list(map(int, code)))
+    
+    return codes
 
 class BaseCastillos2023(BaseDataset):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
@@ -73,7 +81,7 @@ class BaseCastillos2023(BaseDataset):
 
     """
 
-    def __init__(self, events, sessions_per_subject, code, paradigm,paradigm_type):
+    def __init__(self, events, sessions_per_subject, code, paradigm,paradigm_type,window_size=0.25):
         super().__init__(
             subjects=list(range(1, 12 + 1)),
             sessions_per_subject=sessions_per_subject,
@@ -84,21 +92,165 @@ class BaseCastillos2023(BaseDataset):
             doi="https://doi.org/10.1016/j.neuroimage.2023.120446",
         )
         self.paradigm_type = paradigm_type
+        self.sfreq = 500
+        self.fps = 60
+        self.n_channels = 32
+        self.window_size = window_size
+    
+    def _add_stim_channel_trial(
+        self, raw, onsets, labels, offset=200, ch_name="stim_trial"
+    ):
+        """
+        Add a stimulus channel with trial onsets and their labels.
+
+        Parameters
+        ----------
+        raw: mne.Raw
+            The raw object to add the stimulus channel to.
+        onsets: List | np.ndarray
+            The onsets of the trials in sample numbers.
+        labels: List | np.ndarray
+            The labels of the trials.
+        offset: int (default: 200)
+            The integer value to start markers with. For instance, if 200, then label 0 will be marker 200, label 1
+            will be be marker 201, etc.
+        ch_name: str (default: "stim_trial")
+            The name of the added stimulus channel.
+        Returns
+        -------
+        mne.Raw
+            The raw object with the added stimulus channel.
+        """
+        stim_chan = np.zeros((1, len(raw)))
+        for onset, label in zip(onsets, labels):
+            stim_chan[0, onset] = offset + label
+        info = create_info(
+            ch_names=[ch_name],
+            ch_types=["stim"],
+            sfreq=raw.info["sfreq"],
+            verbose=False,
+        )
+        raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
+        return raw
+
+    def _add_stim_channel_epoch(
+        self,
+        raw,
+        onsets,
+        labels,
+        offset=100,
+        ch_name="stim_epoch",
+    ):
+        """
+        Add a stimulus channel with epoch onsets and their labels, which are the values of the presented code for each
+        of the trials.
+
+        Parameters
+        ----------
+        raw: mne.Raw
+            The raw object to add the stimulus channel to.
+        onsets: List | np.ndarray
+            The onsets of the trials in sample numbers.
+        labels: List | np.ndarray
+            The labels of the trials.
+        codes: np.ndarray
+            The codebook containing each presented code of shape (nr_bits, nr_codes), sampled at the presentation rate.
+        offset: int (default: 100)
+            The integer value to start markers with. For instance, if 100, then label 0 will be marker 100, label 1
+            will be be marker 101, etc.
+        ch_name: str (default: "stim_epoch")
+            The name of the added stimulus channel.
+        Returns
+        -------
+        mne.Raw
+            The raw object with the added stimulus channel.
+        """
+        stim_chan = np.zeros((1, len(raw)))
+        for onset, label in zip(onsets, labels):
+            stim_chan[0, int(onset*self.sfreq)] = offset + label #codes[:, label]
+        info = create_info(
+            ch_names=[ch_name],
+            ch_types=["stim"],
+            sfreq=raw.info["sfreq"],
+            verbose=False,
+        )
+        raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
+        return raw
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject."""
         file_path_list = self.data_path(subject,self.paradigm_type)
 
-        # Codes
-        #################### METTRE LES CODE#########################
-        
         raw = mne.io.read_raw_eeglab(file_path_list[0],preload=True, verbose=False)
 
+
+        # Strip the annotations that were script to make them easier to process
+        events, event_id = mne.events_from_annotations(raw, event_id='auto', verbose=False)
+        to_remove = []
+        for idx in range(len(raw.annotations.description)):
+            if (('collects' in raw.annotations.description[idx]) or
+                ('iti' in raw.annotations.description[idx]) or
+                (raw.annotations.description[idx] == '[]')):
+                to_remove.append(idx)
+            else:
+                code = raw.annotations.description[idx].split('_')[0]
+                lab = raw.annotations.description[idx].split('_')[1]
+                code = code.replace('\n', '')
+                code = code.replace('[', '')
+                code = code.replace(']', '')
+                code = code.replace(' ', '')
+                raw.annotations.description[idx] = code + '_' + lab
+        to_remove = np.array(to_remove)
+        if len(to_remove) > 0:
+            raw.annotations.delete(to_remove)
+
+        # Get the labels and data 
+        events, event_id = mne.events_from_annotations(raw, event_id='auto', verbose=False)
+        shift = 0.0
+        epochs = mne.Epochs(raw, events, event_id=event_id, tmin=shift, \
+                    tmax=2.2+shift, baseline=(None, None), preload=False, verbose=False)
+        labels = epochs.events[..., -1]
+        onset_code = epochs.events[..., 0]
+        labels -= np.min(labels)
+        data = epochs.get_data()
+        self.codes = self.__code2array(event_id)
+        
+        n_samples_windows = int(self.window_size*self.sfreq)
+
+        # Get the windows epoch of each frame, the label of each frame and the onset for each frame in sample time
+        raw_window, y_window, frame_taken = self.__to_window_by_frame(data,labels,n_samples_windows,self.codes)
+        onset,onset_0 = self.__onset_anno(frame_taken,y_window,onset_code,1,60)
+
+        # Create stim channel with trial information (i.e., symbols)
+        # Specifically: 200 = symbol-0, 201 = symbol-1, 202 = symbol-2, etc.
+        raw = self._add_stim_channel_trial(
+            raw, onset_code, labels, offset=200
+        )
+        # Create stim channel with epoch information (i.e., 1 / 0, or on / off)
+        # Specifically: 100 = "0", 101 = "1"
+        raw = self._add_stim_channel_epoch(
+            raw, np.concatenate([onset,onset_0]), np.concatenate([np.ones(onset.shape),np.zeros(onset_0.shape)]), offset=100
+        )
+        
+        # Put the reference to the average
+        mne.set_eeg_reference(raw, 'average', copy=False, verbose=False)
+
+        
         # There is only one session, one trial of 60 subtrials
         sessions = {"0": {}}
         sessions["0"]["0"] = raw
 
         return sessions
+
+    def __code2array(self,event_id):
+        """ Return the code of the event ID in a good format """
+        codes = OrderedDict()
+        for k, v in event_id.items():
+            code = k.split('_')[0]
+            code = code.replace('.','').replace('2','')
+            codes[v-1] = np.array(list(map(int, code)))
+        return codes
+
 
     def data_path(
         self, subject, paradigm_type, path=None, force_update=False, update_path=None, verbose=None
@@ -106,8 +258,7 @@ class BaseCastillos2023(BaseDataset):
         """Return the data paths of a single subject."""
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
-
-        sub = f"P{subject:2d}"
+        
         subject_paths = []
 
         url = "https://zenodo.org/records/8255618/files/4Class-CVEP.zip"
@@ -122,6 +273,126 @@ class BaseCastillos2023(BaseDataset):
         subject_paths.append(path_folder+"4Class-CVEP/P{:d}/P{:d}_{:s}.set".format(subject, subject, paradigm_type))
 
         return subject_paths
+
+    def __to_window_by_frame(self,data, labels,n_samples_windows,codes,offset=0,
+                        focus_rising=None):
+        """
+        Return the window epochs, the labels and the taken index of each frame during the presentation of the
+        different stimuli
+
+        Parameters
+        ----------
+        data: List | np.ndarray
+            The data array of the epochs of the trials of the experiment.
+        labels: List | np.ndarray
+            The labels of the epochs(ie. frame)
+        n_samples_windows: List | np.ndarray
+            The number of sample time in the window.
+        codes: np.ndarray
+            The codebook containing each presented code of shape (nr_bits, nr_codes), sampled at the presentation rate.
+        offset: int (default: 100)
+            The integer value to start the window after the onset of the corresponding frame
+        focus_rising: bool (default: "stim_epoch")
+            Boolean to focus on the rising or on the all the code.
+        Returns
+        -------
+        X : np.array 
+            The array of the epoch starting at each frame.
+        Y : np.array
+            The array of the label of each epochs
+        idx_taken : np.array
+            The array of the array taken 
+        """
+        length = int((2.2-self.window_size)*self.fps)
+        X = np.empty(shape=((length)*data.shape[0], self.n_channels, n_samples_windows))
+        Y = np.empty(shape=((length)*data.shape[0]), dtype=int)
+        idx_taken = []
+        for trial_nb, trial in enumerate(data):
+            lab = labels[trial_nb]
+            c = codes[lab]
+            labels_upsampled = np.repeat(c, self.fps//self.fps)
+            labels_upsampled = np.concatenate((np.zeros(int(offset*self.fps), dtype=int), np.array(labels_upsampled)))
+            if (focus_rising is not None):
+                hi_indices = []
+                for idx in range(1, len(labels_upsampled)):
+                    if (focus_rising is not None) and (labels_upsampled[idx-1] == 0) and (labels_upsampled[idx] == 1):
+                        hi_indices.append(idx)
+                focused_labels = np.zeros(length)
+                for idx in hi_indices:
+                    focused_labels[idx:idx+4] = 1
+                    # focused_labels[idx+1:idx+4] = -1
+            else:
+                focused_labels = labels_upsampled.copy()
+
+            for idx in range(length):
+                # print('Xidx:', trial_nb*length+idx, "Tidxm:", idx, 'TidxM:', idx +
+                #       n_samples_windows, 'Ltrial', trial[:, idx:idx+n_samples_windows].shape)
+                X[trial_nb*length+idx] = trial[:, idx:idx+n_samples_windows]
+                Y[trial_nb*length+idx] = focused_labels[idx]
+                idx_taken.append(trial_nb*length+idx)
+        X = X.astype(np.float32)
+        # X = np.delete(X,np.where(Y==-1),0)
+        # idx_taken = np.delete(idx_taken,np.where(Y==-1))
+        # Y = np.delete(Y,np.where(Y==-1))
+        return X, Y, idx_taken
+
+    def __onset_anno(self,onset_window,label_window,onset_code,nb_seq_min,nb_seq_max):
+        """
+        Return the onset in second of the frame where the flash is on and the onset in second of the frame where the flash is off
+
+        Parameters
+        ----------
+        onset_window: List | np.ndarray
+            The list of the onset of all the frame taken that appear in the stimuli
+        label_window: List | np.ndarray
+            The labels of the epochs(ie. frame)
+        onset_code: List | np.ndarray
+            The list of the onset of the first frame of each code
+        nb_seq_min: int
+            The first sequence (ie code) to start from
+        nb_seq_max: int 
+            The last sequence (ie code) + 1 to finish calcul of the onset
+        Returns
+        -------
+        onset_1 : np.array 
+            the onset in second of the frame where the flash is on
+        onset_0 : np.array
+            the onset in second of the frame where the flash is off
+        """
+        assert(self.sfreq!=0)
+        new_onset = []
+        new_onset_0 = []
+        current_code = 0
+        onset_code = np.ceil(onset_code*self.fps/self.sfreq)
+        nb_seq_min-=1
+        onset_shift = onset_code[current_code+nb_seq_min]
+        time_trial = (2.2-self.window_size)
+        # onset_window = np.arange(0,time_trial*fps*(nb_seq_max-nb_seq_min)-1,1,dtype=int)
+        for i,o in enumerate(onset_window):
+            if label_window[i]==1:
+                # print(i)
+                if current_code==nb_seq_max-1-nb_seq_min:
+                    new_onset.append(o+onset_shift)
+                else:
+                    if o+onset_shift >= onset_code[current_code+nb_seq_min]+time_trial*self.fps:
+                        current_code+=1
+                        onset_shift = onset_code[current_code+nb_seq_min]-time_trial*self.fps*current_code
+                    new_onset.append(o+onset_shift)
+            else:
+                if current_code==nb_seq_max-1-nb_seq_min:
+                    new_onset_0.append(o+onset_shift)
+                else:
+                    if o+onset_shift >= onset_code[current_code+nb_seq_min]+time_trial*self.fps:
+                        current_code+=1
+                        onset_shift = onset_code[current_code+nb_seq_min]-time_trial*self.fps*current_code
+                    new_onset_0.append(o+onset_shift)
+        
+        # modified_onset_code = [onset_code[i]-time_trial*sfreq*i for i in range(nb_seq_min,nb_seq_max)]
+        # new_onset_0 = np.concatenate([np.arange(onset_code[i],onset_code[i]+time_trial*sfreq,sfreq//60) for i in range(nb_seq_min,nb_seq_max)])
+        new_onset_0 = np.array(list(filter(lambda i: i not in new_onset, new_onset_0)))
+        # print(new_onset_0.shape)
+        return np.array(new_onset)/self.fps, np.array(new_onset_0)/self.fps
+            
 
 
 class CasitllosBurstVEP100(BaseCastillos2023):
@@ -140,13 +411,10 @@ class CasitllosBurstVEP100(BaseCastillos2023):
 
     def __init__(self):
         super().__init__(
-            events={'011110000000000000000000000000111100000000000000000000000011110000000000000000000001111000000000000000000000011110000000000000000011110000000000000000000111100000000000000111100000011110000000000000000000000000111100000000000000000000000011110000000000000000000001111000000000000000000000011110000000000000000011110000000000000000000111100000000000000111100000_1': 1,
-                    '000000000000000000000001111000000000000000000011110000000000000011110000000000000111100000000000000001111000000000000000000011110000000000000000000000111100000000000000000011110000000000000000000000000001111000000000000000000011110000000000000011110000000000000111100000000000000001111000000000000000000011110000000000000000000000111100000000000000000011110000_2': 2,
-                    '000000000000000000111100000000000000000000111100000000000001111000000000000000000111100000000000000000000000011110000000000000000000000001111000000000000000000000000111100000000000000000000000000000111100000000000000000000111100000000000001111000000000000000000111100000000000000000000000011110000000000000000000000001111000000000000000000000000111100000000000_3': 3,
-                    '000000000000000111100000000000000000000001111000000000000000000000000111100000000000000111100000000000000000000001111000000000001111000000000000000000001111000000000000000000000111000000000000000111100000000000000000000001111000000000000000000000000111100000000000000111100000000000000000000001111000000000001111000000000000000000001111000000000000000000000111_4': 4},
+            events={'0': 100,'1':101},
             sessions_per_subject=1,
             code="CasitllosBurstVEP100",
-            paradigm="burstVEP",
+            paradigm="cvep",
             paradigm_type="burst100",
         )
 
@@ -166,13 +434,10 @@ class CasitllosBurstVEP40(BaseCastillos2023):
 
     def __init__(self):
         super().__init__(
-            events={'011110000000000000000000000000111100000000000000000000000011110000000000000000000001111000000000000000000000011110000000000000000011110000000000000000000111100000000000000111100000011110000000000000000000000000111100000000000000000000000011110000000000000000000001111000000000000000000000011110000000000000000011110000000000000000000111100000000000000111100000_1': 1,
-                    '000000000000000000000001111000000000000000000011110000000000000011110000000000000111100000000000000001111000000000000000000011110000000000000000000000111100000000000000000011110000000000000000000000000001111000000000000000000011110000000000000011110000000000000111100000000000000001111000000000000000000011110000000000000000000000111100000000000000000011110000_2': 2,
-                    '000000000000000000111100000000000000000000111100000000000001111000000000000000000111100000000000000000000000011110000000000000000000000001111000000000000000000000000111100000000000000000000000000000111100000000000000000000111100000000000001111000000000000000000111100000000000000000000000011110000000000000000000000001111000000000000000000000000111100000000000_3': 3,
-                    '000000000000000111100000000000000000000001111000000000000000000000000111100000000000000111100000000000000000000001111000000000001111000000000000000000001111000000000000000000000111000000000000000111100000000000000000000001111000000000000000000000000111100000000000000111100000000000000000000001111000000000001111000000000000000000001111000000000000000000000111_4': 4},
+            events= {'0': 1,'1':2},
             sessions_per_subject=1,
             code="CasitllosBurstVEP40",
-            paradigm="burstVEP",
+            paradigm="cvep",
             paradigm_type="burst40",
         )
 
@@ -192,10 +457,8 @@ class CasitllosCVEP100(BaseCastillos2023):
 
     def __init__(self):
         super().__init__(
-            events={'111111111111110000111100001111000011001111001100001100111111000000110011111100001100110000001111001100000011001100001100000000001100_1': 1,
-                    '000011110000000011111111110000000000001111000011001100110011110011000000110000001111110011001111111111000011000000111100001100111111_2': 2,
-                    '111100000000110000111100000000000011001111001100110011000000111111001111110011001111000000111100111111000000000011111100001100110011_3': 3,
-                    '111100111100111100111100000011111100000011111111110000110011000011110000000011000000001111111111110011001100001111000011000000110011_4': 4},
+            events={'0':0,
+                    '1':1},
             sessions_per_subject=1,
             code="CasitllosBurstVEP100",
             paradigm="cvep",
