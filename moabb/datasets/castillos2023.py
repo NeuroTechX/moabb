@@ -1,12 +1,11 @@
+import os.path as osp
+import zipfile as z
 from collections import OrderedDict
+
 import mne
 import numpy as np
 from mne import create_info
 from mne.io import RawArray
-import os.path as osp
-import zipfile as z
-
-import mne
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -22,11 +21,12 @@ NR_CYCLES_PER_TRIAL = 15
 def code2array(event_id):
     codes = OrderedDict()
     for k, v in event_id.items():
-        code = k.split('_')[0]
-        code = code.replace('.','').replace('2','')
-        codes[v-1] = np.array(list(map(int, code)))
-    
+        code = k.split("_")[0]
+        code = code.replace(".", "").replace("2", "")
+        codes[v - 1] = np.array(list(map(int, code)))
+
     return codes
+
 
 class BaseCastillos2023(BaseDataset):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
@@ -80,7 +80,15 @@ class BaseCastillos2023(BaseDataset):
 
     """
 
-    def __init__(self, events, sessions_per_subject, code, paradigm,paradigm_type,window_size=0.25):
+    def __init__(
+        self,
+        events,
+        sessions_per_subject,
+        code,
+        paradigm,
+        paradigm_type,
+        window_size=0.25,
+    ):
         super().__init__(
             subjects=list(range(1, 12 + 1)),
             sessions_per_subject=sessions_per_subject,
@@ -95,7 +103,7 @@ class BaseCastillos2023(BaseDataset):
         self.fps = 60
         self.n_channels = 32
         self.window_size = window_size
-    
+
     def _add_stim_channel_trial(
         self, raw, onsets, labels, offset=200, ch_name="stim_trial"
     ):
@@ -166,7 +174,7 @@ class BaseCastillos2023(BaseDataset):
         """
         stim_chan = np.zeros((1, len(raw)))
         for onset, label in zip(onsets, labels):
-            stim_chan[0, int(onset*self.sfreq)] = offset + label #codes[:, label]
+            stim_chan[0, int(onset * self.sfreq)] = offset + label  # codes[:, label]
         info = create_info(
             ch_names=[ch_name],
             ch_types=["stim"],
@@ -178,76 +186,91 @@ class BaseCastillos2023(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject."""
-        file_path_list = self.data_path(subject,self.paradigm_type)
-        raw = mne.io.read_raw_eeglab(file_path_list[0],preload=True, verbose=False)
+        file_path_list = self.data_path(subject, self.paradigm_type)
+        raw = mne.io.read_raw_eeglab(file_path_list[0], preload=True, verbose=False)
 
-         # Strip the annotations that were script to make them easier to process
-        events, event_id = mne.events_from_annotations(raw, event_id='auto', verbose=False)
+        # Strip the annotations that were script to make them easier to process
+        events, event_id = mne.events_from_annotations(
+            raw, event_id="auto", verbose=False
+        )
         to_remove = []
         for idx in range(len(raw.annotations.description)):
-            if (('collects' in raw.annotations.description[idx]) or
-                ('iti' in raw.annotations.description[idx]) or
-                (raw.annotations.description[idx] == '[]')):
+            if (
+                ("collects" in raw.annotations.description[idx])
+                or ("iti" in raw.annotations.description[idx])
+                or (raw.annotations.description[idx] == "[]")
+            ):
                 to_remove.append(idx)
             else:
-                code = raw.annotations.description[idx].split('_')[0]
-                lab = raw.annotations.description[idx].split('_')[1]
-                code = code.replace('\n', '')
-                code = code.replace('[', '')
-                code = code.replace(']', '')
-                code = code.replace(' ', '')
-                raw.annotations.description[idx] = code + '_' + lab
+                code = raw.annotations.description[idx].split("_")[0]
+                lab = raw.annotations.description[idx].split("_")[1]
+                code = code.replace("\n", "")
+                code = code.replace("[", "")
+                code = code.replace("]", "")
+                code = code.replace(" ", "")
+                raw.annotations.description[idx] = code + "_" + lab
         to_remove = np.array(to_remove)
         if len(to_remove) > 0:
             raw.annotations.delete(to_remove)
 
-        # Get the labels and data 
-        events, event_id = mne.events_from_annotations(raw, event_id='auto', verbose=False)
+        # Get the labels and data
+        events, event_id = mne.events_from_annotations(
+            raw, event_id="auto", verbose=False
+        )
         shift = 0.0
-        epochs = mne.Epochs(raw, events, event_id=event_id, tmin=shift, \
-                    tmax=2.2+shift, baseline=(None, None), preload=False, verbose=False)
+        epochs = mne.Epochs(
+            raw,
+            events,
+            event_id=event_id,
+            tmin=shift,
+            tmax=2.2 + shift,
+            baseline=(None, None),
+            preload=False,
+            verbose=False,
+        )
         labels = epochs.events[..., -1]
         onset_code = epochs.events[..., 0]
         labels -= np.min(labels)
         data = epochs.get_data()
         self.codes = self.__code2array(event_id)
-        
-        n_samples_windows = int(self.window_size*self.sfreq)
+
+        n_samples_windows = int(self.window_size * self.sfreq)
 
         # Get the windows epoch of each frame, the label of each frame and the onset for each frame in sample time
-        raw_window, y_window, frame_taken = self.__to_window_by_frame(data,labels,n_samples_windows,self.codes)
-        onset,onset_0 = self.__onset_anno(frame_taken,y_window,onset_code,1,60)
+        raw_window, y_window, frame_taken = self.__to_window_by_frame(
+            data, labels, n_samples_windows, self.codes
+        )
+        onset, onset_0 = self.__onset_anno(frame_taken, y_window, onset_code, 1, 60)
 
         # Create stim channel with trial information (i.e., symbols)
         # Specifically: 200 = symbol-0, 201 = symbol-1, 202 = symbol-2, etc.
-        raw = self._add_stim_channel_trial(
-            raw, onset_code, labels, offset=200
-        )
+        raw = self._add_stim_channel_trial(raw, onset_code, labels, offset=200)
         # Create stim channel with epoch information (i.e., 1 / 0, or on / off)
         # Specifically: 100 = "0", 101 = "1"
         raw = self._add_stim_channel_epoch(
-            raw, np.concatenate([onset,onset_0]), np.concatenate([np.ones(onset.shape),np.zeros(onset_0.shape)]), offset=100
+            raw,
+            np.concatenate([onset, onset_0]),
+            np.concatenate([np.ones(onset.shape), np.zeros(onset_0.shape)]),
+            offset=100,
         )
-        
-        # Put the reference to the average
-        mne.set_eeg_reference(raw, 'average', copy=False, verbose=False)
 
-        
+        # Put the reference to the average
+        mne.set_eeg_reference(raw, "average", copy=False, verbose=False)
+
         # There is only one session, one trial of 60 subtrials
         sessions = {"0": {}}
         sessions["0"]["0"] = raw
 
         return sessions
 
-    def __code2array(self,event_id):
-        """ Return the code of the event ID in a good format """
+    def __code2array(self, event_id):
+        """Return the code of the event ID in a good format"""
         codes = OrderedDict()
         for k, v in event_id.items():
-            code = k.split('_')[0]
-            code = code.replace('.','').replace('2','')
-            codes[v-1] = np.array(list(map(int, code)))
+            code = k.split("_")[0]
+            code = code.replace(".", "").replace("2", "")
+            codes[v - 1] = np.array(list(map(int, code)))
         return codes
-
 
     def data_path(
         self,
@@ -262,7 +285,6 @@ class BaseCastillos2023(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
-        
         subject_paths = []
 
         url = "https://zenodo.org/records/8255618/files/4Class-CVEP.zip"
@@ -283,8 +305,9 @@ class BaseCastillos2023(BaseDataset):
 
         return subject_paths
 
-    def __to_window_by_frame(self,data, labels,n_samples_windows,codes,offset=0,
-                        focus_rising=None):
+    def __to_window_by_frame(
+        self, data, labels, n_samples_windows, codes, offset=0, focus_rising=None
+    ):
         """
         Return the window epochs, the labels and the taken index of each frame during the presentation of the
         different stimuli
@@ -305,30 +328,36 @@ class BaseCastillos2023(BaseDataset):
             Boolean to focus on the rising or on the all the code.
         Returns
         -------
-        X : np.array 
+        X : np.array
             The array of the epoch starting at each frame.
         Y : np.array
             The array of the label of each epochs
         idx_taken : np.array
-            The array of the array taken 
+            The array of the array taken
         """
-        length = int((2.2-self.window_size)*self.fps)
-        X = np.empty(shape=((length)*data.shape[0], self.n_channels, n_samples_windows))
-        Y = np.empty(shape=((length)*data.shape[0]), dtype=int)
+        length = int((2.2 - self.window_size) * self.fps)
+        X = np.empty(shape=((length) * data.shape[0], self.n_channels, n_samples_windows))
+        Y = np.empty(shape=((length) * data.shape[0]), dtype=int)
         idx_taken = []
         for trial_nb, trial in enumerate(data):
             lab = labels[trial_nb]
             c = codes[lab]
-            labels_upsampled = np.repeat(c, self.fps//self.fps)
-            labels_upsampled = np.concatenate((np.zeros(int(offset*self.fps), dtype=int), np.array(labels_upsampled)))
-            if (focus_rising is not None):
+            labels_upsampled = np.repeat(c, self.fps // self.fps)
+            labels_upsampled = np.concatenate(
+                (np.zeros(int(offset * self.fps), dtype=int), np.array(labels_upsampled))
+            )
+            if focus_rising is not None:
                 hi_indices = []
                 for idx in range(1, len(labels_upsampled)):
-                    if (focus_rising is not None) and (labels_upsampled[idx-1] == 0) and (labels_upsampled[idx] == 1):
+                    if (
+                        (focus_rising is not None)
+                        and (labels_upsampled[idx - 1] == 0)
+                        and (labels_upsampled[idx] == 1)
+                    ):
                         hi_indices.append(idx)
                 focused_labels = np.zeros(length)
                 for idx in hi_indices:
-                    focused_labels[idx:idx+4] = 1
+                    focused_labels[idx : idx + 4] = 1
                     # focused_labels[idx+1:idx+4] = -1
             else:
                 focused_labels = labels_upsampled.copy()
@@ -336,16 +365,18 @@ class BaseCastillos2023(BaseDataset):
             for idx in range(length):
                 # print('Xidx:', trial_nb*length+idx, "Tidxm:", idx, 'TidxM:', idx +
                 #       n_samples_windows, 'Ltrial', trial[:, idx:idx+n_samples_windows].shape)
-                X[trial_nb*length+idx] = trial[:, idx:idx+n_samples_windows]
-                Y[trial_nb*length+idx] = focused_labels[idx]
-                idx_taken.append(trial_nb*length+idx)
+                X[trial_nb * length + idx] = trial[:, idx : idx + n_samples_windows]
+                Y[trial_nb * length + idx] = focused_labels[idx]
+                idx_taken.append(trial_nb * length + idx)
         X = X.astype(np.float32)
         # X = np.delete(X,np.where(Y==-1),0)
         # idx_taken = np.delete(idx_taken,np.where(Y==-1))
         # Y = np.delete(Y,np.where(Y==-1))
         return X, Y, idx_taken
 
-    def __onset_anno(self,onset_window,label_window,onset_code,nb_seq_min,nb_seq_max):
+    def __onset_anno(
+        self, onset_window, label_window, onset_code, nb_seq_min, nb_seq_max
+    ):
         """
         Return the onset in second of the frame where the flash is on and the onset in second of the frame where the flash is off
 
@@ -359,49 +390,60 @@ class BaseCastillos2023(BaseDataset):
             The list of the onset of the first frame of each code
         nb_seq_min: int
             The first sequence (ie code) to start from
-        nb_seq_max: int 
+        nb_seq_max: int
             The last sequence (ie code) + 1 to finish calcul of the onset
         Returns
         -------
-        onset_1 : np.array 
+        onset_1 : np.array
             the onset in second of the frame where the flash is on
         onset_0 : np.array
             the onset in second of the frame where the flash is off
         """
-        assert(self.sfreq!=0)
+        assert self.sfreq != 0
         new_onset = []
         new_onset_0 = []
         current_code = 0
-        onset_code = np.ceil(onset_code*self.fps/self.sfreq)
-        nb_seq_min-=1
-        onset_shift = onset_code[current_code+nb_seq_min]
-        time_trial = (2.2-self.window_size)
+        onset_code = np.ceil(onset_code * self.fps / self.sfreq)
+        nb_seq_min -= 1
+        onset_shift = onset_code[current_code + nb_seq_min]
+        time_trial = 2.2 - self.window_size
         # onset_window = np.arange(0,time_trial*fps*(nb_seq_max-nb_seq_min)-1,1,dtype=int)
-        for i,o in enumerate(onset_window):
-            if label_window[i]==1:
+        for i, o in enumerate(onset_window):
+            if label_window[i] == 1:
                 # print(i)
-                if current_code==nb_seq_max-1-nb_seq_min:
-                    new_onset.append(o+onset_shift)
+                if current_code == nb_seq_max - 1 - nb_seq_min:
+                    new_onset.append(o + onset_shift)
                 else:
-                    if o+onset_shift >= onset_code[current_code+nb_seq_min]+time_trial*self.fps:
-                        current_code+=1
-                        onset_shift = onset_code[current_code+nb_seq_min]-time_trial*self.fps*current_code
-                    new_onset.append(o+onset_shift)
+                    if (
+                        o + onset_shift
+                        >= onset_code[current_code + nb_seq_min] + time_trial * self.fps
+                    ):
+                        current_code += 1
+                        onset_shift = (
+                            onset_code[current_code + nb_seq_min]
+                            - time_trial * self.fps * current_code
+                        )
+                    new_onset.append(o + onset_shift)
             else:
-                if current_code==nb_seq_max-1-nb_seq_min:
-                    new_onset_0.append(o+onset_shift)
+                if current_code == nb_seq_max - 1 - nb_seq_min:
+                    new_onset_0.append(o + onset_shift)
                 else:
-                    if o+onset_shift >= onset_code[current_code+nb_seq_min]+time_trial*self.fps:
-                        current_code+=1
-                        onset_shift = onset_code[current_code+nb_seq_min]-time_trial*self.fps*current_code
-                    new_onset_0.append(o+onset_shift)
-        
+                    if (
+                        o + onset_shift
+                        >= onset_code[current_code + nb_seq_min] + time_trial * self.fps
+                    ):
+                        current_code += 1
+                        onset_shift = (
+                            onset_code[current_code + nb_seq_min]
+                            - time_trial * self.fps * current_code
+                        )
+                    new_onset_0.append(o + onset_shift)
+
         # modified_onset_code = [onset_code[i]-time_trial*sfreq*i for i in range(nb_seq_min,nb_seq_max)]
         # new_onset_0 = np.concatenate([np.arange(onset_code[i],onset_code[i]+time_trial*sfreq,sfreq//60) for i in range(nb_seq_min,nb_seq_max)])
         new_onset_0 = np.array(list(filter(lambda i: i not in new_onset, new_onset_0)))
         # print(new_onset_0.shape)
-        return np.array(new_onset)/self.fps, np.array(new_onset_0)/self.fps
-            
+        return np.array(new_onset) / self.fps, np.array(new_onset_0) / self.fps
 
 
 class CasitllosBurstVEP100(BaseCastillos2023):
@@ -420,7 +462,7 @@ class CasitllosBurstVEP100(BaseCastillos2023):
 
     def __init__(self):
         super().__init__(
-            events={'0': 100,'1':101},
+            events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CasitllosBurstVEP100",
             paradigm="cvep",
@@ -444,7 +486,7 @@ class CasitllosBurstVEP40(BaseCastillos2023):
 
     def __init__(self):
         super().__init__(
-            events={'0': 100,'1':101},
+            events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CasitllosBurstVEP40",
             paradigm="cvep",
@@ -468,7 +510,7 @@ class CasitllosCVEP100(BaseCastillos2023):
 
     def __init__(self):
         super().__init__(
-            events={'0': 100,'1':101},
+            events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CasitllosBurstVEP100",
             paradigm="cvep",
@@ -492,7 +534,7 @@ class CasitllosCVEP40(BaseCastillos2023):
 
     def __init__(self):
         super().__init__(
-            events={'0': 100,'1':101},
+            events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CasitllosBurstVEP40",
             paradigm="cvep",
