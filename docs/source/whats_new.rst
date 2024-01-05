@@ -245,7 +245,7 @@ Version - 0.4.2
 
 Enhancements
 ~~~~~~~~~~~~
-- Adding cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
+- None
 
 Bugs
 ~~~~
