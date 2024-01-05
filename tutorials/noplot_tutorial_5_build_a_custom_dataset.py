@@ -65,7 +65,6 @@ class CustomDataset1(CompoundDataset):
             subjects_list=subjects_list,
             code="CustomDataset1",
             interval=[0, 1.0],
-            paradigm="p300",
         )
 
 
@@ -81,7 +80,6 @@ class CustomDataset2(CompoundDataset):
             subjects_list=subjects_list,
             code="CustomDataset2",
             interval=[0, 1.0],
-            paradigm="p300",
         )
 
 
@@ -103,7 +101,6 @@ class CustomDataset3(CompoundDataset):
             subjects_list=subjects_list,
             code="CustomDataset3",
             interval=[0, 1.0],
-            paradigm="p300",
         )
 
 

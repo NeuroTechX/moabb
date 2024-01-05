@@ -114,9 +114,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         Frequencies corresponding to the SSVEP components. These are
         necessary to design the filterbank bands.
 
-    n_fbands : int, default=5
-        Number of sub-bands considered for filterbank analysis.
-
     downsample: int, default=1
         Factor by which downsample the data. A downsample value of N will result
         on a sampling frequency of (sfreq // N) by taking one sample every N of
@@ -188,7 +185,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         self,
         interval,
         freqs,
-        n_fbands=5,
         downsample=1,
         is_ensemble=True,
         method="original",
@@ -196,7 +192,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     ):
         self.freqs = freqs
         self.peaks = np.array([float(f) for f in freqs.keys()])
-        self.n_fbands = n_fbands
+        self.n_fbands = len(self.peaks)
         self.downsample = downsample
         self.interval = interval
         self.slen = interval[1] - interval[0]

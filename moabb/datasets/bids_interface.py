@@ -56,6 +56,23 @@ def subject_bids_to_moabb(subject: str):
     return int(subject)
 
 
+def run_moabb_to_bids(run: str):
+    """Convert the run to run index plus eventually description."""
+    p = r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)"
+    idx, desc = re.fullmatch(p, run).groups()
+    out = {"run": idx}
+    if desc:
+        out["recording"] = desc
+    return out
+
+
+def run_bids_to_moabb(path: mne_bids.BIDSPath):
+    """Extracts the run index plus eventually description from a path."""
+    if path.recording is None:
+        return path.run
+    return f"{path.run}{path.recording}"
+
+
 @dataclass
 class BIDSInterfaceBase(abc.ABC):
     """Base class for BIDSInterface.
@@ -173,7 +190,7 @@ class BIDSInterfaceBase(abc.ABC):
             session_moabb = path.session
             session = sessions_data.setdefault(session_moabb, {})
             run = self._load_file(path, preload=preload)
-            session[path.run] = run
+            session[run_bids_to_moabb(path)] = run
         log.info("Finished reading cache of %s", repr(self))
         return sessions_data
 
@@ -223,12 +240,13 @@ class BIDSInterfaceBase(abc.ABC):
                     )
                     continue
 
+                run_kwargs = run_moabb_to_bids(run)
                 bids_path = mne_bids.BIDSPath(
                     root=self.root,
                     subject=subject_moabb_to_bids(self.subject),
                     session=session,
                     task=self.dataset.paradigm,
-                    run=run,
+                    **run_kwargs,
                     description=self.desc,
                     extension=self._extension,
                     datatype=self._datatype,
