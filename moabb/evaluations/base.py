@@ -66,6 +66,7 @@ class BaseEvaluation(ABC):
         return_epochs=False,
         return_raws=False,
         mne_labels=False,
+        n_splits=None,
         save_model=False,
         cache_config=None,
     ):
@@ -77,6 +78,7 @@ class BaseEvaluation(ABC):
         self.return_epochs = return_epochs
         self.return_raws = return_raws
         self.mne_labels = mne_labels
+        self.n_splits = n_splits
         self.save_model = save_model
         self.cache_config = cache_config
         # check paradigm
