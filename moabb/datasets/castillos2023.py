@@ -47,7 +47,7 @@ class BaseCastillos2023(BaseDataset):
     using a BrainProduct LiveAmp 32 active electrodes wet-EEG setup with a sample rate of 500 Hz to record the surface
     brain activity. The 32 electrodes were placed following the 10–20 international system on a BrainProduct Acticap. The
     ground electrode was placed at the FPz electrode location and all electrodes were referenced to the FCz electrode. The
-    impedance of all electrodes was brought below 25kΩ prior to recording onset. Once equipped with the EEG system,
+    impedance of all electrodes was brought below 25kOhm prior to recording onset. Once equipped with the EEG system,
     volunteers were asked to focus on four targets that were cued sequentially in a random order for 0.5 s, followed by a
     2.2 s stimulation phase, before a 0.7 s inter-trial period. The cue sequence for each trial was pseudo-random and
     different for each block. After each block, a pause was observed and subjects had to press the space bar to continue.
