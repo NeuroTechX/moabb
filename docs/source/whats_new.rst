@@ -21,6 +21,7 @@ Enhancements
 - Adding cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
 - Option to interpolate channel in paradigms' `match_all` method (:gh:`480` by `Gregoire Cattan`_)
 - Adding leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
+- Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
