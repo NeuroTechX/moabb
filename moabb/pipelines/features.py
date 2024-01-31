@@ -1,7 +1,7 @@
 import mne
 import numpy as np
 import scipy.signal as signal
-from numpy import concatenate, ndarray
+from numpy import ndarray
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import StandardScaler
 
@@ -103,7 +103,7 @@ class AugmentedDataset(BaseEstimator, TransformerMixin):
         else:
             X_new = np.concatenate(
                 [
-                    X[:, :, p * self.lag: -(self.order - p) * self.lag]
+                    X[:, :, p * self.lag : -(self.order - p) * self.lag]
                     for p in range(0, self.order)
                 ],
                 axis=1,
