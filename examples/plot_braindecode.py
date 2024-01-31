@@ -23,7 +23,6 @@ from skorch.dataset import ValidSplit
 from moabb.datasets import BNCI2014_001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import MotorImagery
-from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader
 from moabb.utils import setup_seed
 
 
@@ -81,8 +80,6 @@ paradigm = MotorImagery(
 )
 subjects = [1]
 X, _, _ = paradigm.get_data(dataset=dataset, subjects=subjects)
-# Define Transformer of Dataset compatible with Brain Decode
-create_dataset = BraindecodeDatasetLoader()
 
 ##############################################################################
 # Create Pipelines
@@ -94,11 +91,9 @@ create_dataset = BraindecodeDatasetLoader()
 # callbacks InputShapeSetterEEG, where we have to specify the correct name of the parameter.
 # Here, we will use the EEGNet v4 model [1]_ .
 
-model_cls = EEGNetv4
-
 # Define a Skorch classifier
 clf = EEGClassifier(
-    module=model_cls,
+    module=EEGNetv4,
     optimizer=torch.optim.Adam,
     optimizer__lr=LEARNING_RATE,
     batch_size=BATCH_SIZE,

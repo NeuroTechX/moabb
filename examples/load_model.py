@@ -22,7 +22,6 @@ from skorch.dataset import ValidSplit
 
 from moabb import set_log_level
 from moabb.pipelines.features import StandardScaler_Epoch
-from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader
 from moabb.utils import setup_seed
 
 
@@ -70,9 +69,6 @@ pipes_keras = Pipeline(
 ###############################################################################
 # Loading the PyTorch model
 
-# Set EEG Inception model
-model_cls = EEGInception
-
 # Hyperparameter
 LEARNING_RATE = 0.0001
 WEIGHT_DECAY = 0
@@ -84,7 +80,7 @@ PATIENCE = 3
 
 # Define a Skorch classifier
 clf = EEGClassifier(
-    module=model_cls,
+    module=EEGInception,
     optimizer=torch.optim.Adam,
     optimizer__lr=LEARNING_RATE,
     batch_size=BATCH_SIZE,
@@ -109,9 +105,6 @@ f_optimizer = "./results/Models_CrossSession/BNCI2014-001/1/braindecode_EEGIncep
 f_history = "./results/Models_CrossSession/BNCI2014-001/1/braindecode_EEGInception/EEGInception_fitted_best_history.json"
 
 clf.load_params(f_params=f_params, f_optimizer=f_optimizer, f_history=f_history)
-
-# Create the dataset
-create_dataset = BraindecodeDatasetLoader(drop_last_window=False)
 
 # Create the pipelines
 pipes_pytorch = make_pipeline(clf)
