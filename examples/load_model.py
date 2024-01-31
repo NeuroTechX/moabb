@@ -16,13 +16,13 @@ import torch
 from braindecode import EEGClassifier
 from braindecode.models import EEGInception
 from scikeras.wrappers import KerasClassifier
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, make_pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
 
 from moabb import set_log_level
 from moabb.pipelines.features import StandardScaler_Epoch
-from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader, InputShapeSetterEEG
+from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader
 from moabb.utils import setup_seed
 
 
@@ -71,7 +71,7 @@ pipes_keras = Pipeline(
 # Loading the PyTorch model
 
 # Set EEG Inception model
-model = EEGInception(in_channels=22, n_classes=2)
+model_cls = EEGInception
 
 # Hyperparameter
 LEARNING_RATE = 0.0001
@@ -84,8 +84,7 @@ PATIENCE = 3
 
 # Define a Skorch classifier
 clf = EEGClassifier(
-    module=model,
-    criterion=torch.nn.CrossEntropyLoss,
+    module=model_cls,
     optimizer=torch.optim.Adam,
     optimizer__lr=LEARNING_RATE,
     batch_size=BATCH_SIZE,
@@ -98,9 +97,6 @@ clf = EEGClassifier(
         ),
         EpochScoring(
             scoring="accuracy", on_train=False, name="valid_acc", lower_is_better=False
-        ),
-        InputShapeSetterEEG(
-            params_list=["in_channels", "input_window_samples", "n_classes"],
         ),
     ],
     verbose=VERBOSE,  # Not printing the results for each epoch
@@ -118,4 +114,4 @@ clf.load_params(f_params=f_params, f_optimizer=f_optimizer, f_history=f_history)
 create_dataset = BraindecodeDatasetLoader(drop_last_window=False)
 
 # Create the pipelines
-pipes_pytorch = Pipeline([("Braindecode_dataset", create_dataset), ("EEGInception", clf)])
+pipes_pytorch = make_pipeline(clf)
