@@ -16,9 +16,7 @@ Castillos2023_URL = "https://zenodo.org/records/8255618"
 TRIAL_PRESENTATION_TIME = 2.2
 
 
-
 class BaseCastillos2023(BaseDataset):
-
     def __init__(
         self,
         events,
@@ -107,7 +105,7 @@ class BaseCastillos2023(BaseDataset):
             will be be marker 101, etc.
         ch_name: str (default: "stim_epoch")
             The name of the added stimulus channel.
-        
+
         Returns
         -------
         mne.Raw
@@ -226,9 +224,7 @@ class BaseCastillos2023(BaseDataset):
         subject_paths = []
 
         url = "https://zenodo.org/records/8255618/files/4Class-CVEP.zip"
-        path_zip = dl.data_dl(
-            url, "4Class-VEP", path, force_update, verbose
-        )
+        path_zip = dl.data_dl(url, "4Class-VEP", path, force_update, verbose)
         path_folder = "C" + path_zip.strip("4Class-VEP.zip")
         print(path_folder)
 
@@ -265,7 +261,7 @@ class BaseCastillos2023(BaseDataset):
             The integer value to start the window after the onset of the corresponding frame
         focus_rising: bool (default: "stim_epoch")
             Boolean to focus on the rising or on the all the code.
-        
+
         Returns
         -------
         X : np.array
@@ -326,7 +322,7 @@ class BaseCastillos2023(BaseDataset):
             The first sequence (ie code) to start from
         nb_seq_max: int
             The last sequence (ie code) + 1 to finish calcul of the onset
-        
+
         Returns
         -------
         onset_1 : np.array
