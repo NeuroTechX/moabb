@@ -17,9 +17,6 @@ TRIAL_PRESENTATION_TIME = 2.2
 
 
 
-
-
-
 class BaseCastillos2023(BaseDataset):
 
     def __init__(
