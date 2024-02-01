@@ -610,13 +610,12 @@ to download the full example code</p>
 <span class="kn">from</span> <span class="nn">braindecode</span> <span class="kn">import</span> <span class="n">EEGClassifier</span>
 <span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <span class="n">EEGInception</span>
 <span class="kn">from</span> <span class="nn">scikeras.wrappers</span> <span class="kn">import</span> <span class="n">KerasClassifier</span>
-<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Pipeline</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Pipeline</span></a><span class="p">,</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
 <span class="kn">from</span> <span class="nn">skorch.callbacks</span> <span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">EarlyStopping</span></a><span class="p">,</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EpochScoring" title="skorch.callbacks.EpochScoring" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">EpochScoring</span></a>
 <span class="kn">from</span> <span class="nn">skorch.dataset</span> <span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit" class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ValidSplit</span></a>
 
 <span class="kn">from</span> <span class="nn">moabb</span> <span class="kn">import</span> <a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a>
 <span class="kn">from</span> <span class="nn">moabb.pipelines.features</span> <span class="kn">import</span> <a href="../generated/moabb.pipelines.features.StandardScaler_Epoch.html#moabb.pipelines.features.StandardScaler_Epoch" title="moabb.pipelines.features.StandardScaler_Epoch" class="sphx-glr-backref-module-moabb-pipelines-features sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">StandardScaler_Epoch</span></a>
-<span class="kn">from</span> <span class="nn">moabb.pipelines.utils_pytorch</span> <span class="kn">import</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">BraindecodeDatasetLoader</span></a><span class="p">,</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.InputShapeSetterEEG.html#moabb.pipelines.utils_pytorch.InputShapeSetterEEG" title="moabb.pipelines.utils_pytorch.InputShapeSetterEEG" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">InputShapeSetterEEG</span></a>
 <span class="kn">from</span> <span class="nn">moabb.utils</span> <span class="kn">import</span> <a href="../generated/moabb.setup_seed.html#moabb.setup_seed" title="moabb.setup_seed" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">setup_seed</span></a>
 
 
@@ -661,10 +660,7 @@ We load the single Keras model, if we want we can set in the exact same pipeline
 </pre></div>
 </div>
 <p>Loading the PyTorch model</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set EEG Inception model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">EEGInception</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-
-<span class="c1"># Hyperparameter</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Hyperparameter</span>
 <span class="n">LEARNING_RATE</span> <span class="o">=</span> <span class="mf">0.0001</span>
 <span class="n">WEIGHT_DECAY</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">64</span>
@@ -675,8 +671,7 @@ We load the single Keras model, if we want we can set in the exact same pipeline
 
 <span class="c1"># Define a Skorch classifier</span>
 <span class="n">clf</span> <span class="o">=</span> <span class="n">EEGClassifier</span><span class="p">(</span>
-    <span class="n">module</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-    <span class="n">criterion</span><span class="o">=</span><a href="https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html#torch.nn.CrossEntropyLoss" title="torch.nn.CrossEntropyLoss" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span></a><span class="p">,</span>
+    <span class="n">module</span><span class="o">=</span><span class="n">EEGInception</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><a href="https://pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="torch.optim.Adam" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span></a><span class="p">,</span>
     <span class="n">optimizer__lr</span><span class="o">=</span><span class="n">LEARNING_RATE</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">,</span>
@@ -690,9 +685,6 @@ We load the single Keras model, if we want we can set in the exact same pipeline
         <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EpochScoring" title="skorch.callbacks.EpochScoring" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">EpochScoring</span></a><span class="p">(</span>
             <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="n">on_train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;valid_acc&quot;</span><span class="p">,</span> <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">),</span>
-        <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.InputShapeSetterEEG.html#moabb.pipelines.utils_pytorch.InputShapeSetterEEG" title="moabb.pipelines.utils_pytorch.InputShapeSetterEEG" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">InputShapeSetterEEG</span></a><span class="p">(</span>
-            <span class="n">params_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;in_channels&quot;</span><span class="p">,</span> <span class="s2">&quot;input_window_samples&quot;</span><span class="p">,</span> <span class="s2">&quot;n_classes&quot;</span><span class="p">],</span>
-        <span class="p">),</span>
     <span class="p">],</span>
     <span class="n">verbose</span><span class="o">=</span><span class="n">VERBOSE</span><span class="p">,</span>  <span class="c1"># Not printing the results for each epoch</span>
 <span class="p">)</span>
@@ -705,11 +697,8 @@ We load the single Keras model, if we want we can set in the exact same pipeline
 
 <span class="n">clf</span><span class="o">.</span><span class="n">load_params</span><span class="p">(</span><span class="n">f_params</span><span class="o">=</span><span class="n">f_params</span><span class="p">,</span> <span class="n">f_optimizer</span><span class="o">=</span><span class="n">f_optimizer</span><span class="p">,</span> <span class="n">f_history</span><span class="o">=</span><span class="n">f_history</span><span class="p">)</span>
 
-<span class="c1"># Create the dataset</span>
-<span class="n">create_dataset</span> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">BraindecodeDatasetLoader</span></a><span class="p">(</span><span class="n">drop_last_window</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
 <span class="c1"># Create the pipelines</span>
-<span class="n">pipes_pytorch</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Pipeline</span></a><span class="p">([(</span><span class="s2">&quot;Braindecode_dataset&quot;</span><span class="p">,</span> <span class="n">create_dataset</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;EEGInception&quot;</span><span class="p">,</span> <span class="n">clf</span><span class="p">)])</span>
+<span class="n">pipes_pytorch</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><span class="n">clf</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>

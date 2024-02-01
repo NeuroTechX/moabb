@@ -16,14 +16,13 @@ import seaborn as sns
 import torch
 from braindecode import EEGClassifier
 from braindecode.models import EEGNetv4
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import make_pipeline
 from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
 
 from moabb.datasets import BNCI2014_001
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import MotorImagery
-from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader, InputShapeSetterEEG
 from moabb.utils import setup_seed
 
 
@@ -81,8 +80,6 @@ paradigm = MotorImagery(
 )
 subjects = [1]
 X, _, _ = paradigm.get_data(dataset=dataset, subjects=subjects)
-# Define Transformer of Dataset compatible with Brain Decode
-create_dataset = BraindecodeDatasetLoader()
 
 ##############################################################################
 # Create Pipelines
@@ -94,16 +91,9 @@ create_dataset = BraindecodeDatasetLoader()
 # callbacks InputShapeSetterEEG, where we have to specify the correct name of the parameter.
 # Here, we will use the EEGNet v4 model [1]_ .
 
-model = EEGNetv4(in_chans=1, n_classes=1, input_window_samples=100)
-
-# Send model to GPU
-if cuda:
-    model.cuda()
-
 # Define a Skorch classifier
 clf = EEGClassifier(
-    module=model,
-    criterion=torch.nn.CrossEntropyLoss,
+    module=EEGNetv4,
     optimizer=torch.optim.Adam,
     optimizer__lr=LEARNING_RATE,
     batch_size=BATCH_SIZE,
@@ -118,16 +108,13 @@ clf = EEGClassifier(
         EpochScoring(
             scoring="accuracy", on_train=False, name="valid_acc", lower_is_better=False
         ),
-        InputShapeSetterEEG(
-            params_list=["in_chans", "input_window_samples", "n_classes"],
-        ),
     ],
     verbose=1,  # Not printing the results for each epoch
 )
 
 # Create the pipelines
 pipes = {}
-pipes["EEGNetV4"] = Pipeline([("Braindecode_dataset", create_dataset), ("Net", clf)])
+pipes["EEGNetV4"] = make_pipeline(clf)
 
 ##############################################################################
 # Evaluation

@@ -615,14 +615,13 @@ In this example, we use the architecture EEGNetv4.</p>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">braindecode</span> <span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a>
 <span class="kn">from</span> <span class="nn">braindecode.models</span> <span class="kn">import</span> <a href="https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html#torch.nn.Sequential" title="torch.nn.Sequential" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">EEGNetv4</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class"><span class="n">Pipeline</span></a>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
 <span class="kn">from</span> <span class="nn">skorch.callbacks</span> <span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EarlyStopping" title="skorch.callbacks.EarlyStopping" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EarlyStopping</span></a><span class="p">,</span> <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EpochScoring" title="skorch.callbacks.EpochScoring" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EpochScoring</span></a>
 <span class="kn">from</span> <span class="nn">skorch.dataset</span> <span class="kn">import</span> <a href="https://skorch.readthedocs.io/en/stable/dataset.html#skorch.dataset.ValidSplit" title="skorch.dataset.ValidSplit" class="sphx-glr-backref-module-skorch-dataset sphx-glr-backref-type-py-class"><span class="n">ValidSplit</span></a>
 
 <span class="kn">from</span> <span class="nn">moabb.datasets</span> <span class="kn">import</span> <a href="../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a>
 <span class="kn">from</span> <span class="nn">moabb.evaluations</span> <span class="kn">import</span> <a href="../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">CrossSessionEvaluation</span></a>
 <span class="kn">from</span> <span class="nn">moabb.paradigms</span> <span class="kn">import</span> <a href="../generated/moabb.paradigms.MotorImagery.html#moabb.paradigms.MotorImagery" title="moabb.paradigms.MotorImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">MotorImagery</span></a>
-<span class="kn">from</span> <span class="nn">moabb.pipelines.utils_pytorch</span> <span class="kn">import</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">BraindecodeDatasetLoader</span></a><span class="p">,</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.InputShapeSetterEEG.html#moabb.pipelines.utils_pytorch.InputShapeSetterEEG" title="moabb.pipelines.utils_pytorch.InputShapeSetterEEG" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">InputShapeSetterEEG</span></a>
 <span class="kn">from</span> <span class="nn">moabb.utils</span> <span class="kn">import</span> <a href="../generated/moabb.setup_seed.html#moabb.setup_seed" title="moabb.setup_seed" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">setup_seed</span></a>
 
 
@@ -678,8 +677,6 @@ PATIENCE = 300</p>
 <span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.paradigms.base.BaseProcessing.html#moabb.paradigms.base.BaseProcessing.get_data" title="moabb.paradigms.base.BaseProcessing.get_data" class="sphx-glr-backref-module-moabb-paradigms-base sphx-glr-backref-type-py-method"><span class="n">paradigm</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(</span><a href="../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">=</span><a href="../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects</span></a><span class="p">)</span>
-<span class="c1"># Define Transformer of Dataset compatible with Brain Decode</span>
-<a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">create_dataset</span></a> <span class="o">=</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">BraindecodeDatasetLoader</span></a><span class="p">()</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
@@ -741,16 +738,9 @@ that allows converting the PyTorch model in a scikit-learn classifier.
 Initialize the model’s parameter as a dummy value since this parameter will be set dynamically using the
 callbacks InputShapeSetterEEG, where we have to specify the correct name of the parameter.
 Here, we will use the EEGNet v4 model <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> .</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <a href="https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html#torch.nn.Sequential" title="torch.nn.Sequential" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">EEGNetv4</span></a><span class="p">(</span><span class="n">in_chans</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">input_window_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-
-<span class="c1"># Send model to GPU</span>
-<span class="k">if</span> <a href="https://docs.python.org/3/library/functions.html#bool" title="builtins.bool" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cuda</span></a><span class="p">:</span>
-    <a href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.cuda" title="torch.nn.Module.cuda" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-method"><span class="n">model</span><span class="o">.</span><span class="n">cuda</span></a><span class="p">()</span>
-
-<span class="c1"># Define a Skorch classifier</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define a Skorch classifier</span>
 <span class="n">clf</span> <span class="o">=</span> <a href="https://skorch.readthedocs.io/en/stable/classifier.html#skorch.classifier.NeuralNetClassifier" title="skorch.classifier.NeuralNetClassifier" class="sphx-glr-backref-module-skorch-classifier sphx-glr-backref-type-py-class"><span class="n">EEGClassifier</span></a><span class="p">(</span>
-    <span class="n">module</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-    <span class="n">criterion</span><span class="o">=</span><a href="https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html#torch.nn.CrossEntropyLoss" title="torch.nn.CrossEntropyLoss" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span></a><span class="p">,</span>
+    <span class="n">module</span><span class="o">=</span><a href="https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html#torch.nn.Sequential" title="torch.nn.Sequential" class="sphx-glr-backref-module-torch-nn sphx-glr-backref-type-py-class"><span class="n">EEGNetv4</span></a><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><a href="https://pytorch.org/docs/stable/generated/torch.optim.Adam.html#torch.optim.Adam" title="torch.optim.Adam" class="sphx-glr-backref-module-torch-optim sphx-glr-backref-type-py-class"><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span></a><span class="p">,</span>
     <span class="n">optimizer__lr</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">LEARNING_RATE</span></a><span class="p">,</span>
     <span class="n">batch_size</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">BATCH_SIZE</span></a><span class="p">,</span>
@@ -765,16 +755,13 @@ Here, we will use the EEGNet v4 model <a class="footnote-reference brackets" hre
         <a href="https://skorch.readthedocs.io/en/stable/callbacks.html#skorch.callbacks.EpochScoring" title="skorch.callbacks.EpochScoring" class="sphx-glr-backref-module-skorch-callbacks sphx-glr-backref-type-py-class"><span class="n">EpochScoring</span></a><span class="p">(</span>
             <span class="n">scoring</span><span class="o">=</span><span class="s2">&quot;accuracy&quot;</span><span class="p">,</span> <span class="n">on_train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;valid_acc&quot;</span><span class="p">,</span> <span class="n">lower_is_better</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">),</span>
-        <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.InputShapeSetterEEG.html#moabb.pipelines.utils_pytorch.InputShapeSetterEEG" title="moabb.pipelines.utils_pytorch.InputShapeSetterEEG" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">InputShapeSetterEEG</span></a><span class="p">(</span>
-            <span class="n">params_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;in_chans&quot;</span><span class="p">,</span> <span class="s2">&quot;input_window_samples&quot;</span><span class="p">,</span> <span class="s2">&quot;n_classes&quot;</span><span class="p">],</span>
-        <span class="p">),</span>
     <span class="p">],</span>
     <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Not printing the results for each epoch</span>
 <span class="p">)</span>
 
 <span class="c1"># Create the pipelines</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipes</span></a> <span class="o">=</span> <span class="p">{}</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipes</span></a><span class="p">[</span><span class="s2">&quot;EEGNetV4&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class"><span class="n">Pipeline</span></a><span class="p">([(</span><span class="s2">&quot;Braindecode_dataset&quot;</span><span class="p">,</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html#moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" title="moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader" class="sphx-glr-backref-module-moabb-pipelines-utils_pytorch sphx-glr-backref-type-py-function"><span class="n">create_dataset</span></a><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Net&quot;</span><span class="p">,</span> <span class="n">clf</span><span class="p">)])</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipes</span></a><span class="p">[</span><span class="s2">&quot;EEGNetV4&quot;</span><span class="p">]</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a><span class="p">(</span><span class="n">clf</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -849,26 +836,32 @@ BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/
   warn(f&quot;warnEpochs {epochs}&quot;)
 /home/runner/work/moabb/moabb/moabb/paradigms/base.py:355: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
   X = mne.concatenate_epochs(X)
-Re-initializing module because the following parameters were re-set: module.
-Re-initializing criterion.
-Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.3594        0.6934       0.5172        0.6931  0.2426
-      2       0.5156        0.6932       0.5172        0.6931  0.2080
-      3       0.5781        0.6933       0.4828        0.6932  0.2148
-Stopping since valid_loss has not improved in the last 3 epochs.
-Re-initializing module because the following parameters were re-set: module.
-Re-initializing criterion.
-Re-initializing optimizer.
+      1       0.5156        0.7659       0.5172        0.6932  0.2012
+      2       0.5781        0.7363       0.5172        0.6925  0.2082
+      3       0.4375        0.7591       0.5517        0.6919  0.1732
+      4       0.5938        0.6669       0.5172        0.6913  0.1744
+      5       0.5781        0.6621       0.5172        0.6907  0.1738
+      6       0.5312        0.7085       0.4828        0.6903  0.1733
+      7       0.5469        0.7184       0.5172        0.6900  0.1733
+      8       0.4531        0.7167       0.5172        0.6897  0.1928
+      9       0.5938        0.6647       0.5172        0.6894  0.1731
+     10       0.5156        0.6890       0.5172        0.6890  0.1735
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156        0.6931       0.5172        0.6931  0.2305
-      2       0.5781        0.6926       0.5172        0.6931  0.2195
-      3       0.5156        0.6921       0.5172        0.6931  0.2175
-Stopping since valid_loss has not improved in the last 3 epochs.
+      1       0.5156        0.7365       0.4138        0.7091  0.1743
+      2       0.5781        0.6883       0.4483        0.7075  0.1896
+      3       0.6094        0.6824       0.4483        0.7060  0.1726
+      4       0.5312        0.7151       0.4138        0.7049  0.1726
+      5       0.4844        0.7221       0.4138        0.7040  0.1732
+      6       0.5469        0.7016       0.4483        0.7032  0.1732
+      7       0.5781        0.6593       0.4483        0.7025  0.1728
+      8       0.5469        0.6934       0.4828        0.7019  0.1912
+      9       0.5469        0.6745       0.4828        0.7014  0.1726
+     10       0.5469        0.6874       0.4828        0.7010  0.1732
 
-BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:07&lt;00:07,  7.34s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
+BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:06&lt;00:06,  6.40s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;right_hand&#39;: 12
  &#39;left_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -918,32 +911,26 @@ BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:07&lt;00:07,  7.34s/it]/home
   warn(f&quot;warnEpochs {epochs}&quot;)
 /home/runner/work/moabb/moabb/moabb/paradigms/base.py:355: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
   X = mne.concatenate_epochs(X)
-Re-initializing module because the following parameters were re-set: module.
-Re-initializing criterion.
-Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5469        0.6931       0.5172        0.6931  0.2211
-      2       0.4688        0.6935       0.4828        0.6932  0.2165
-      3       0.4688        0.6931       0.4828        0.6932  0.2104
+      1       0.4219        0.7449       0.6207        0.6832  0.1739
+      2       0.4688        0.7881       0.6207        0.6865  0.1861
+      3       0.5000        0.7344       0.6207        0.6874  0.1801
 Stopping since valid_loss has not improved in the last 3 epochs.
-Re-initializing module because the following parameters were re-set: module.
-Re-initializing criterion.
-Re-initializing optimizer.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156        0.6936       0.4828        0.6932  0.2189
-      2       0.5625        0.6926       0.4828        0.6932  0.2184
-      3       0.5000        0.6931       0.4828        0.6933  0.2159
+      1       0.4844        0.7113       0.5517        0.6901  0.1724
+      2       0.4531        0.7591       0.5517        0.6905  0.1728
+      3       0.4531        0.7438       0.5517        0.6908  0.1909
 Stopping since valid_loss has not improved in the last 3 epochs.
 
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:14&lt;00:00,  7.35s/it]
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:14&lt;00:00,  7.35s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  4.99s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.20s/it]
       score      time  samples  ... n_sessions       dataset  pipeline
-0  0.495177  2.517710    144.0  ...          2  BNCI2014-001  EEGNetV4
-1  0.493152  2.456941    144.0  ...          2  BNCI2014-001  EEGNetV4
-2  0.445891  2.435587    144.0  ...          2  BNCI2014-001  EEGNetV4
-3  0.430556  2.710374    144.0  ...          2  BNCI2014-001  EEGNetV4
+0  0.521026  2.029151    144.0  ...          2  BNCI2014-001  EEGNetV4
+1  0.494985  1.948581    144.0  ...          2  BNCI2014-001  EEGNetV4
+2  0.493441  0.879028    144.0  ...          2  BNCI2014-001  EEGNetV4
+3  0.544367  0.874414    144.0  ...          2  BNCI2014-001  EEGNetV4
 
 [4 rows x 9 columns]
 </pre></div>
@@ -968,8 +955,8 @@ network for EEG-based brain-computer interfaces.</a>
 Journal of neural engineering, 15(5), 056013.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  18.636 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  215 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.381 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  168 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-braindecode-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/c9b0437022c98a63476dd3cad6cb69c7/plot_braindecode.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_braindecode.py</span></code></a></p>
