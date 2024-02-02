@@ -87,9 +87,10 @@ X, _, _ = paradigm.get_data(dataset=dataset, subjects=subjects)
 # In order to create a pipeline, we need to load a model from braindecode.
 # the second step is to define a skorch model using EEGClassifier from braindecode
 # that allows converting the PyTorch model in a scikit-learn classifier.
-# Initialize the model's parameter as a dummy value since this parameter will be set dynamically using the
-# callbacks InputShapeSetterEEG, where we have to specify the correct name of the parameter.
 # Here, we will use the EEGNet v4 model [1]_ .
+# This model has mandatory hyperparameters (the number of channels, the number of classes,
+# and the temporal length of the input) but we do not need to specify them because they will
+# be set dynamically by EEGClassifier using the input data during the call to the ``.fit()`` method.
 
 # Define a Skorch classifier
 clf = EEGClassifier(
