@@ -14,12 +14,12 @@ from keras.layers import (
     Activation,
     Add,
     AveragePooling2D,
+    BatchNormalization,
     Conv1D,
     Conv2D,
     DepthwiseConv2D,
     Dropout,
     SeparableConv2D,
-    BatchNormalization,
 )
 
 
