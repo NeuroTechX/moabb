@@ -28,8 +28,8 @@ from keras.layers import (
     LayerNormalization,
     MaxPooling2D,
     Permute,
+    BatchNormalization,
 )
-from keras.layers.normalization.batch_normalization import BatchNormalization
 from keras.models import Model, Sequential
 from scikeras.wrappers import KerasClassifier
 

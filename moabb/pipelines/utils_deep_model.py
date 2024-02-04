@@ -19,8 +19,8 @@ from keras.layers import (
     DepthwiseConv2D,
     Dropout,
     SeparableConv2D,
+    BatchNormalization,
 )
-from keras.layers.normalization.batch_normalization import BatchNormalization
 
 
 def EEGNet(
