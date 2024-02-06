@@ -29,6 +29,7 @@ Bugs
 
 - Fix TRCA implementation for different stimulation freqs and for signal filtering (:gh:522 by `Sylvain Chevallier`_)
 - Fix saving to BIDS runs with a description string in their name (:gh:`530` by `Pierre Guetschel`_)
+- Fix import of keras BatchNormalization for TF 2.13 and higher (:gh:`544` by `Brian Irvine`_)
 
 API changes
 ~~~~~~~~~~~
@@ -418,3 +419,4 @@ API changes
 .. _Ludovic Darmet: https://github.com/ludovicdmt
 .. _Thomas Moreau: https://github.com/tommoral
 .. _Jordy Thielen: https://github.com/thijor
+.. _Brian Irvine: https://github.com/brianjohannes
