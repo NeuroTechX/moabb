@@ -21,12 +21,15 @@ Enhancements
 - Adding cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
 - Option to interpolate channel in paradigms' `match_all` method (:gh:`480` by `Gregoire Cattan`_)
 - Adding leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
+- Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
+- Improve transform function of AugmentedDataset (:gh:`541` by `Quentin Barthelemy`_)
 
 Bugs
 ~~~~
 
 - Fix TRCA implementation for different stimulation freqs and for signal filtering (:gh:522 by `Sylvain Chevallier`_)
 - Fix saving to BIDS runs with a description string in their name (:gh:`530` by `Pierre Guetschel`_)
+- Fix import of keras BatchNormalization for TF 2.13 and higher (:gh:`544` by `Brian Irvine`_)
 
 API changes
 ~~~~~~~~~~~
@@ -418,3 +421,4 @@ API changes
 .. _Thomas Moreau: https://github.com/tommoral
 .. _Jordy Thielen: https://github.com/thijor
 .. _Sebastien Velut: https://github.com/swetbear
+.. _Brian Irvine: https://github.com/brianjohannes
