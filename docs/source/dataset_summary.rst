@@ -74,7 +74,7 @@ SSVEP
    :header: Dataset, #Subj, #Chan, #Classes, #Trials / class, Trials length, Sampling rate, #Sessions
    :class: sortable
 
-   :class:`Lee2019_SSVEP`,54,62,4,25,4s,1000Hz,1
+   :class:`Lee2019_SSVEP`,54,62,4,25,4s,1000Hz,2
    :class:`Kalunga2016`,12,8,4,16,2s,256Hz,1
    :class:`MAMEM1`,10,256,5,12-15,3s,250Hz,1
    :class:`MAMEM2`,10,256,5,20-30,3s,250Hz,1
