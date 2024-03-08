@@ -19,7 +19,7 @@ DATASET="/workdir/dataset/"
 # -v : mount a volume from host machine at $MOUNT_POINT to container's /root/mne_data/
 # "${TAG}" : use the image with the tag 'moabb'
 # /usr/bin/python : use python command
-# /workdir/moabb/run.py : run the script 'run.py' located at '/workdir/moabb/'
+# /workdir/moabb/benchmark.py : run the script 'benchmark.py' located at '/workdir/moabb/'
 # --pipeline $PIPELINE : use pipelines located at $PIPELINE
 # --results $RESULTS : store results in $RESULTS
 # --output $OUTPUTS : store outputs in $OUTPUTS
@@ -30,7 +30,7 @@ docker run -it \
     -v "${MOUNT_POINT}/output/:/workdir/output" \
     "$TAG" \
     /usr/bin/python \
-    /workdir/moabb/run.py \
+    /workdir/moabb/benchmark.py \
     --pipeline "$PIPELINE" \
     --results "$RESULTS" \
     --output "$OUTPUTS" \

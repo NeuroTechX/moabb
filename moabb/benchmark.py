@@ -2,6 +2,7 @@ import logging
 import os
 import os.path as osp
 from pathlib import Path
+from typing import List, Union
 
 import mne
 import pandas as pd
@@ -9,6 +10,7 @@ import yaml
 
 from moabb import paradigms as moabb_paradigms
 from moabb.analysis import analyze
+from moabb.datasets.base import BaseDataset
 from moabb.evaluations import (
     CrossSessionEvaluation,
     CrossSubjectEvaluation,
@@ -19,6 +21,7 @@ from moabb.pipelines.utils import (
     generate_param_grid,
     parse_pipelines_from_directory,
 )
+from moabb.utils import set_download_dir
 
 
 try:
@@ -32,18 +35,19 @@ log = logging.getLogger(__name__)
 
 
 def benchmark(  # noqa: C901
-    pipelines="./pipelines/",
-    evaluations=None,
-    paradigms=None,
-    results="./results/",
-    overwrite=False,
-    output="./benchmark/",
-    n_jobs=-1,
-    n_jobs_evaluation=1,
-    plot=False,
-    contexts=None,
-    include_datasets=None,
-    exclude_datasets=None,
+    pipelines: str = "./pipelines/",
+    evaluations: List[str] = None,
+    paradigms: List[str] = None,
+    results: str = "./results/",
+    overwrite: bool = False,
+    output: str = "./benchmark/",
+    n_jobs: int = -1,
+    n_jobs_evaluation: int = 1,
+    plot: bool = False,
+    contexts: str = None,
+    include_datasets: List[Union[str, BaseDataset]] = None,
+    exclude_datasets: List[Union[str, BaseDataset]] = None,
+    mne_data: str = None,
 ):
     """Run benchmarks for selected pipelines and datasets.
 
@@ -100,6 +104,8 @@ def benchmark(  # noqa: C901
         and exclude_datasets are specified, raise an error.
     exclude_datasets: list of str or Dataset object
         Datasets to exclude from the benchmark run
+    mne_data: str
+        Folder where to save and load the datasets with mne structure.
 
     Returns
     -------
@@ -122,6 +128,9 @@ def benchmark(  # noqa: C901
 
     mne.set_log_level(False)
     # logging.basicConfig(level=logging.WARNING)
+
+    if mne_data is not None:
+        set_download_dir(mne_data)
 
     output = Path(output)
     if not osp.isdir(output):
@@ -324,3 +333,9 @@ def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
     else:
         d = list(datasets)
     return d
+
+
+if __name__ == "__main__":
+    import fire
+
+    fire.Fire(benchmark)
