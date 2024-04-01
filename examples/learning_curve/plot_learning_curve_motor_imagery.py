@@ -14,6 +14,7 @@ We will compare two pipelines :
 We will use the LeftRightImagery paradigm. This will restrict the analysis
 to two classes (left- vs right-hand) and use AUC as metric.
 """
+
 # Original author: Alexandre Barachant <alexandre.barachant@gmail.com>
 # Learning curve modification: Jan Sosulski
 #

@@ -12,6 +12,7 @@ We will compare four pipelines :
 
 We will use the SSVEP paradigm, which uses the AUC as metric.
 """
+
 # Authors: Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
 #
 # License: BSD (3-clause)

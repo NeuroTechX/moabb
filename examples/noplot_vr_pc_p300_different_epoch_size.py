@@ -11,6 +11,7 @@ We compare the scores in the VR and PC conditions, using different epoch size.
 This example demonstrates the use of `get_block_repetition`, which allows
 to specify the experimental blocks and repetitions for analysis.
 """
+
 # Authors: Pedro Rodrigues <pedro.rodrigues01@gmail.com>
 # Modified by: Gregoire Cattan <gcattan@hotmail.fr>
 # License: BSD (3-clause)
