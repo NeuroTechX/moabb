@@ -9,7 +9,7 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
 
-Thielen2021_URL = "https://public.data.donders.ru.nl/dcc/DSC_2018.00122_448_v3"
+Thielen2021_URL = "https://public.data.ru.nl/dcc/DSC_2018.00122_448_v3"
 
 # The default electrode locations in the raw file are wrong. We used the ExG channels on the Biosemi with a custom 8
 # channel set, according to an optimization as published in the following article:
@@ -80,7 +80,7 @@ class Thielen2021(BaseDataset):
         =============  =======  =======  ==================  ===============  ===============  ===========
         Name             #Subj    #Chan     #Trials / class  Trials length    Sampling rate      #Sessions
         =============  =======  =======  ==================  ===============  ===============  ===========
-        Thielen2021         30        8  18900 NT / 18900 T  0.3s             512Hz                      1
+        Thielen2021         30        8  94500 NT / 94500 T  0.3s             512Hz                      1
         =============  =======  =======  ==================  ===============  ===============  ===========
 
     **Dataset description**
@@ -168,7 +168,7 @@ class Thielen2021(BaseDataset):
         for onset, label in zip(onsets, labels):
             stim_chan[0, onset] = offset + label
         info = create_info(
-            ch_names=["stim_trial"],
+            ch_names=[ch_name],
             ch_types=["stim"],
             sfreq=raw.info["sfreq"],
             verbose=False,
