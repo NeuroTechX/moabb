@@ -30,7 +30,7 @@ def dataset_search(  # noqa: C901
     Parameters
     ----------
     paradigm: str | None
-        'imagery', 'p300', 'ssvep', None
+        'imagery', 'p300', 'ssvep', 'cvep', None
 
     multi_session: bool
         if True only returns datasets with more than one session per subject.
@@ -62,7 +62,7 @@ def dataset_search(  # noqa: C901
         n_classes = len(events)
     else:
         n_classes = None
-    assert paradigm in ["imagery", "p300", "ssvep", None]
+    assert paradigm in ["imagery", "p300", "ssvep", "cvep", None]
 
     for type_d in dataset_list:
         if type_d.__name__ in deprecated_names:
