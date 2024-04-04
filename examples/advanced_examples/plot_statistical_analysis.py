@@ -8,6 +8,7 @@ statistical testing. This tutorial focuses on what those exactly are and how
 they can be used.
 
 """
+
 # Authors: Vinay Jayaram <vinayjayaram13@gmail.com>
 #
 # License: BSD (3-clause)
