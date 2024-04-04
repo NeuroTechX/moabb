@@ -3,6 +3,7 @@
 Tutorial 4: Creating a dataset class
 ====================================
 """
+
 # Authors: Pedro L. C. Rodrigues, Sylvain Chevallier
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019

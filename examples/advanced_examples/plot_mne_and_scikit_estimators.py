@@ -13,6 +13,7 @@ We will compare different pipelines for P300:
 - XDAWN extended covariance and LR on tangent space, based on Numpy
 
 """
+
 # Authors: Sylvain Chevallier
 #
 # License: BSD (3-clause)

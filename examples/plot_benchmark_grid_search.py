@@ -9,6 +9,7 @@ and save the gridsearch.
 For this example, we will use only one dataset to keep the computation time low, but this benchmark is designed
 to easily scale to many datasets.
 """
+
 # Authors: Igor Carrara <igor.carrara@inria.fr>
 #
 # License: BSD (3-clause)

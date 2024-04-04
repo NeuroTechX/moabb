@@ -3,6 +3,7 @@
 Tutorial 5: Creating a dataset class
 ====================================
 """
+
 # Author: Gregoire Cattan
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019
