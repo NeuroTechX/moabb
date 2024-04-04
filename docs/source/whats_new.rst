@@ -108,6 +108,8 @@ Bugs
 - Fix case when events specified via ``raw.annotations`` but no events (:gh:`491` by `Pierre Guetschel`_)
 - Fix bug in downloading Shin2017A dataset (:gh:`493` by `Igor Carrara`_)
 - Fix the cropped option in the dataset preprocessing (:gh:`502` by `Bruno Aristimunha`_)
+- Fix bug in :func:`moabb.datasets.utils.dataset_search` with missing cvep paradigm (:gh:`554` by `Jordy Thielen`_)
+- Fix mistakes in :func:`moabb.datasets.thielen2021` considering wrong docs and hardcoded trial stim channel (:gh:`555` by `Jordy Thielen`_)
 
 API changes
 ~~~~~~~~~~~
