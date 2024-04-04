@@ -16,6 +16,7 @@ We will compare three pipelines :
 
 We will use the P300 paradigm, which uses the AUC as metric.
 """
+
 # Authors: Jan Sosulski
 #
 # License: BSD (3-clause)

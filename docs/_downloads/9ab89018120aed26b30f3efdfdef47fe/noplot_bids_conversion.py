@@ -21,6 +21,7 @@ a cache for the next time the dataset is used.
 We will use the AlexMI dataset [3]_, one of the smallest in
 people and one that can be downloaded quickly.
 """
+
 # Authors: Pierre Guetschel <pierre.guetschel@gmail.com>
 #
 # License: BSD (3-clause)

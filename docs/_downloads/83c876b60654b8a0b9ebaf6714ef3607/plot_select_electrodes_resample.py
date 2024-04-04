@@ -8,6 +8,7 @@ electrodes and to resample to a specific sampling rate. There is also a
 utility function to select common electrodes shared between datasets.
 This tutorial demonstrates how to use this functionality.
 """
+
 # Authors: Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
 #
 # License: BSD (3-clause)

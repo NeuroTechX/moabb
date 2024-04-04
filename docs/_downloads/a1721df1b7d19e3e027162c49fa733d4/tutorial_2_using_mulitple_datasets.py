@@ -7,6 +7,7 @@ We extend the previous example to a case where we want to analyze the score of
 a classifier with three different MI datasets instead of just one. As before,
 we begin by importing all relevant libraries.
 """
+
 # Authors: Pedro L. C. Rodrigues, Sylvain Chevallier
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019

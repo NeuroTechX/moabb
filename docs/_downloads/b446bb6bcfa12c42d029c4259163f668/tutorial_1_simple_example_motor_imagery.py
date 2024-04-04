@@ -9,6 +9,7 @@ choose the dataset 2a from BCI Competition IV, a motor imagery task. We will
 use a CSP to enhance the signal-to-noise ratio of the EEG epochs and a LDA to
 classify these signals.
 """
+
 # Authors: Pedro L. C. Rodrigues, Sylvain Chevallier
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019
