@@ -216,8 +216,12 @@ class Thielen2015(BaseDataset):
             trial_labels = tmp["labels"].astype("uint8").flatten() - 1
 
             # Codes (select optimized subset and layout, and repeat to trial length)
-            subset = tmp["subset"].astype("uint8").flatten() - 1  # the optimized subset of 36 codes from a set of 65
-            layout = tmp["layout"].astype("uint8").flatten() - 1  # the optimized position of the 36 codes in the grid
+            subset = (
+                tmp["subset"].astype("uint8").flatten() - 1
+            )  # the optimized subset of 36 codes from a set of 65
+            layout = (
+                tmp["layout"].astype("uint8").flatten() - 1
+            )  # the optimized position of the 36 codes in the grid
             codes = tmp["codes"][:, subset[layout]]
             codes = np.tile(codes, (NR_CYCLES_PER_TRIAL, 1))
 
