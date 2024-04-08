@@ -6,6 +6,7 @@ Tutorial 3: Benchmarking multiple pipelines
 In this last part, we extend the previous example by assessing the
 classification score of not one but three classification pipelines.
 """
+
 # Authors: Pedro L. C. Rodrigues, Sylvain Chevallier
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019

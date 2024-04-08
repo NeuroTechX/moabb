@@ -6,6 +6,7 @@ different recording sessions per subject or to evaluate them separately.
 See https://github.com/NeuroTechX/moabb/wiki/Datasets-Support for detail
 on datasets (electrodes, number of trials, sessions, etc.)
 """
+
 from . import compound_dataset
 
 # flake8: noqa

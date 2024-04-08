@@ -1,4 +1,5 @@
 """BMI/OpenBMI dataset."""
+
 from functools import partialmethod
 
 import numpy as np

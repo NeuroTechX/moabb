@@ -6,6 +6,7 @@ FilterBank CSP versus CSP
 This example show a comparison of CSP versus FilterBank CSP on the
 very popular dataset 2a from the BCI competition IV.
 """
+
 # Authors: Alexandre Barachant <alexandre.barachant@gmail.com>
 #
 # License: BSD (3-clause)
