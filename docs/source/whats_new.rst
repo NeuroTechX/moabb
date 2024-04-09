@@ -23,6 +23,7 @@ Enhancements
 - Adding leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
 - Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
 - Improve transform function of AugmentedDataset (:gh:`541` by `Quentin Barthelemy`_)
+- Add scripts to upload results on PapersWithCode (:gh:`561` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
