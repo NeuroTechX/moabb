@@ -1,13 +1,25 @@
 import pickle
 from argparse import ArgumentParser
+from dataclasses import dataclass
+from math import isnan
 
 import pandas as pd
 from paperswithcode import PapersWithCodeClient
 from paperswithcode.models import (
+    EvaluationTableCreateRequest,
     EvaluationTableSyncRequest,
     MetricSyncRequest,
     ResultSyncRequest,
 )
+
+
+@dataclass
+class Task:
+    id: str
+    name: str
+    description: str
+    area: str
+    parent_task: str
 
 
 _metrics = {
@@ -25,6 +37,7 @@ def make_table(results_csv, metric):
         .mean()
         .reset_index()
     )
+    df.score = df.score * 100
     columns = dict(**_metrics, score=metric)
     df.rename(columns=columns, inplace=True)
     df.paradigm = df.paradigm.replace(
@@ -35,42 +48,58 @@ def make_table(results_csv, metric):
 
 
 def upload_subtable(client, df, dataset, task, paper, evaluated_on):
-    r = EvaluationTableSyncRequest(
+    kwargs = dict(
         task=task.id,
         dataset=dataset.id,
         description=task.description,
-        metrics=[
+        mirror_url="http://moabb.neurotechx.com/docs/benchmark_summary.html",
+    )
+    client.evaluation_create(EvaluationTableCreateRequest(**kwargs))
+
+    r = EvaluationTableSyncRequest(
+        **kwargs,
+        metric=[
             MetricSyncRequest(name=metric, is_loss=metric in _metrics.values())
             for metric in df.columns
         ],
         results=[
             ResultSyncRequest(
-                metrics=row.to_dict(),
+                metrics={k: str(v) for k, v in row.to_dict().items() if not isnan(v)},
                 paper=paper,
                 methodology=pipeline,
                 external_id=f"{dataset.id}-{task.id}-{pipeline}",
                 evaluated_on=evaluated_on,
-                external_source_url="http://moabb.neurotechx.com/docs/benchmark_summary.html",
+                # external_source_url="http://moabb.neurotechx.com/docs/benchmark_summary.html",
                 # TODO: maybe update url with the exact row of the result
             )
             for pipeline, row in df.iterrows()
         ],
     )
-
-    client.evaluation_synchronize(r)
+    leaderboard_id = client.evaluation_synchronize(r)
+    print(f"{leaderboard_id=}")
+    return leaderboard_id
 
 
 def upload_table(client, df, datasets, tasks, paper, evaluated_on, subsubtask):
-    df_gp = df.reset_index().groupby(["dataset", "paradigm", "evaluation"])
+    gp_cols = ["dataset", "paradigm", "evaluation"]
+    df_gp = df.groupby(gp_cols)
+    ids = []
     for (dataset_name, paradigm_name, evaluation_name), sub_df in df_gp:
         dataset = datasets[dataset_name]
         task_key = (paradigm_name, evaluation_name)
         if subsubtask is not None:
             task_key += (subsubtask,)
         task = tasks[task_key]
-        upload_subtable(
-            client, sub_df.set_index("pipeline"), dataset, task, paper, evaluated_on
+        id = upload_subtable(
+            client,
+            sub_df.set_index("pipeline").drop(columns=gp_cols),
+            dataset,
+            task,
+            paper,
+            evaluated_on,
         )
+        ids.append(id)
+    return ids
 
 
 if __name__ == "__main__":
@@ -103,7 +132,7 @@ if __name__ == "__main__":
         help="Pickle output file",
         default="paperswithcode_results.pickle",
     )
-    parser.add_argument("-p", "--paper", type=str, help="Paper URL", default=None)
+    parser.add_argument("-p", "--paper", type=str, help="Paper URL", default="")
     parser.add_argument(
         "-e",
         "--evaluated_on",
@@ -118,7 +147,6 @@ if __name__ == "__main__":
     summary_table = make_table(args.results_csv, metric=args.metric)
 
     client = PapersWithCodeClient(token=args.token)
-    exit(0)
 
     upload_table(
         client,
