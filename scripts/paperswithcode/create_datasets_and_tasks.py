@@ -1,13 +1,14 @@
 import pickle
 import re
 from argparse import ArgumentParser
+from dataclasses import dataclass
 
 from paperswithcode import PapersWithCodeClient
-from paperswithcode.models import DatasetCreateRequest, TaskCreateRequest
+from paperswithcode.models import DatasetCreateRequest
 
 
 def dataset_name(dataset):
-    return f"{dataset.__name__} MOABB"
+    return f"{dataset.code} MOABB"
 
 
 def dataset_full_name(dataset):
@@ -18,7 +19,7 @@ def dataset_full_name(dataset):
 
 
 def dataset_url(dataset):
-    return f"http://moabb.neurotechx.com/docs/generated/moabb.datasets.{dataset.__name__}.html"
+    return f"http://moabb.neurotechx.com/docs/generated/moabb.datasets.{dataset.__class__.__name__}.html"
 
 
 def valid_datasets():
@@ -50,6 +51,19 @@ _evaluations = {
 }
 
 
+@dataclass
+class Task:
+    id: str
+    name: str
+    description: str
+    area: str
+    parent_task: str
+
+    @classmethod
+    def make(cls, name, description, area, parent_task):
+        return cls(name, name, description, area, parent_task)
+
+
 def create_tasks(client: PapersWithCodeClient):
     tasks = {}
     for paradigm_class, (
@@ -58,37 +72,41 @@ def create_tasks(client: PapersWithCodeClient):
         paradigm_fullname,
     ) in _paradigms.items():
         description = f"Classification of examples recorded under the {paradigm_fullname} paradigm, as part of Brain-Computer Interfaces (BCI)."
-        task = client.task_add(
-            TaskCreateRequest(
-                name=paradigm_name,
-                description=description,
-                area="medical",
-                parent_task="brain-computer-interface",
-            )
+        d = dict(
+            name=paradigm_name,
+            description=description,
+            area="Medical",
+            parent_task="Brain Computer Interface",
         )
+        # task = client.task_add(TaskCreateRequest(**d))
+        task = Task.make(**d)
         tasks[paradigm_class] = task
         for evaluation_class, evaluation in _evaluations.items():
             eval_url = f'http://moabb.neurotechx.com/docs/generated/moabb.evaluations.{evaluation.replace("-", "")}Evaluation.html'
-            subtask = client.task_add(
-                TaskCreateRequest(
-                    name=f"{evaluation} {paradigm_name}",
-                    description=f"MOABB's {evaluation} evaluation for the {paradigm_name} paradigm.\n\nEvaluation details: {eval_url}",
-                    area="medical",
-                    parent_task=task.id,
-                )
+            d = dict(
+                name=f"{evaluation} {paradigm_name}",
+                description=f"""MOABB's {evaluation} evaluation for the {paradigm_name} paradigm.
+
+Evaluation details: [{eval_url}]({eval_url})""",
+                area="medical",
+                parent_task=task.id,
             )
+            # subtask = client.task_add(TaskCreateRequest(**d))
+            subtask = Task.make(**d)
             tasks[(paradigm_class, evaluation_class)] = subtask
             if subparadigms is not None:
                 for subparadigm in subparadigms:
-                    client.task_add(
-                        TaskCreateRequest(
-                            name=f"{evaluation} {paradigm_name} ({subparadigm})",
-                            description=f"MOABB's {evaluation} evaluation for the {paradigm_name} paradigm ({subparadigm}).\n\nEvaluation details: {eval_url}",
-                            area="medical",
-                            parent_task=subtask.id,
-                        )
+                    d = dict(
+                        name=f"{evaluation} {paradigm_name} ({subparadigm})",
+                        description=f"""MOABB's {evaluation} evaluation for the {paradigm_name} paradigm ({subparadigm}).
+
+Evaluation details: [{eval_url}]({eval_url})""",
+                        area="medical",
+                        parent_task=subtask.id,
                     )
-                    tasks[(paradigm_class, evaluation_class, subparadigm)] = subtask
+                    # subsubtask = client.task_add(TaskCreateRequest(**d))
+                    subsubtask = Task.make(**d)
+                    tasks[(paradigm_class, evaluation_class, subparadigm)] = subsubtask
     return tasks
 
 
