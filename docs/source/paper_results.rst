@@ -1,5 +1,7 @@
+:html_theme.sidebar_secondary.remove:
 .. _paper_results:
 
+.. currentmodule:: moabb.datasets
 
 What are the states of art for BCI?
 ===================================
@@ -11,7 +13,7 @@ Motor Imagery - All classes
 =============================
 
 .. csv-table::
-   :header: Method,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Weibo2014`,:class:`Zhou2016`,Average
+   :header: Pipelines,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Weibo2014`,:class:`Zhou2016`
    :class: sortable
 
     `ACM+TS+SVM`_,69.37±15.07,77.82±12.23,55.44±14.87,82.50±10.20,63.89±11.01,85.25±4.06
@@ -35,7 +37,7 @@ Motor Imagery - Left vs Right Hand
 ===================================
 
 .. csv-table::
-   :header: Method,:class:`BNCI2014_001`,:class:`BNCI2014_004`,:class:`Cho2017`,:class:`GrosseWentrup2009`,:class:`Lee2019_MI`,:class:`PhysionetMotorImagery`,:class:`Schirrmeister2017`,:class:`Shin2017A`,:class:`Weibo2014`,:class:`Zhou2016`,Average
+   :header: Pipelines,:class:`BNCI2014_001`,:class:`BNCI2014_004`,:class:`Cho2017`,:class:`GrosseWentrup2009`,:class:`Lee2019_MI`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Shin2017A`,:class:`Weibo2014`,:class:`Zhou2016`
    :class: sortable
 
     `ACM+TS+SVM`_,91.71±10.30,82.67±15.33,73.56±14.54,86.60±15.12,83.05±13.97,63.55±21.24,85.82±13.98,68.97±23.45,84.78±13.33,95.03±4.76
@@ -63,7 +65,7 @@ Motor Imagery - Right Hand vs Feet
 ==================================
 
 .. csv-table::
-   :header: Method,:class:`AlexMI`,:class:`BNCI2014-001`,:class:`BNCI2014-002`,:class:`BNCI2015-001`,:class:`BNCI2015-004`,:class:`PhysionetMotorImagery`,:class:`Schirrmeister2017`,:class:`Weibo2014`,:class:`Zhou2016`
+   :header: Pipelines,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`BNCI2014_002`,:class:`BNCI2015_001`,:class:`BNCI2015_004`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Weibo2014`,:class:`Zhou2016`
    :class: sortable
 
     `ACM+TS+SVM`_,86.56±12.26,97.32±3.35,88.60±10.71,93.01±8.09,62.60±14.62,93.33±8.46,98.67±3.06,93.25±4.12,97.18±3.00
@@ -87,7 +89,7 @@ P300/ERP (All classes)
 ======================
 
 .. csv-table::
-   :header: Method,:class:`BNCI2014_008`,:class:`BNCI2014_009`,:class:`BNCI2015_003`,:class:`BrainInvaders2012`,:class:`BrainInvaders2013a`,:class:`BrainInvaders2014a`,:class:`BrainInvaders2014b`,:class:`BrainInvaders2015a`,:class:`BrainInvaders2015b`,:class:`Cattan2019_VR`,:class:`EPFLP300`,:class:`Huebner2017`,:class:`Huebner2018`,:class:`Lee2019_ERP`,:class:`Sosulski2019`
+   :header: Pipelines,:class:`BNCI2014_008`,:class:`BNCI2014_009`,:class:`BNCI2015_003`,:class:`BI2012`,:class:`BI2013a`,:class:`BI2014a`,:class:`BI2014b`,:class:`BI2015a`,:class:`BI2015b`,:class:`Cattan2019_VR`,:class:`EPFLP300`,:class:`Huebner2017`,:class:`Huebner2018`,:class:`Lee2019_ERP`,:class:`Sosulski2019`
    :class: sortable
 
     `ERPCov+MDM`_,74.30±9.77,81.16±10.13,76.79±10.95,78.77±10.32,80.59±9.36,71.62±11.17,78.57±12.36,80.02±10.07,75.04±15.85,80.76±10.07,71.97±10.88,94.47±8.26,95.15±3.72,74.43±13.26,68.17±13.59
@@ -102,7 +104,7 @@ SSVEP (All classes)
 
 
 .. csv-table::
-   :header: Methods,:class:`Kalunga2016`,:class:`Lee2019-SSVEP`,:class:`MAMEM1`,:class:`MAMEM2`,:class:`MAMEM3`,:class:`Nakanishi2015`,:class:`Wang2016`
+   :header: Methods,:class:`Kalunga2016`,:class:`Lee2019_SSVEP`,:class:`MAMEM1`,:class:`MAMEM2`,:class:`MAMEM3`,:class:`Nakanishi2015`,:class:`Wang2016`
    :class: sortable
 
     `SSVEP_CCA`_,25.40±2.51,23.86±3.72,19.17±5.01,23.60±4.10,13.80±7.47,8.15±0.74,2.48±1.01
@@ -117,8 +119,7 @@ SSVEP (All classes)
     :hidden:
 
 
-Pipeline List
-~~~~~~~~~~~~~
+
 .. _SSVEP_CCA: https://github.com/NeuroTechX/moabb/blob/develop/pipelines/CCA-SSVEP.yml
 .. _SSVEP_MsetCCA: https://github.com/NeuroTechX/moabb/blob/develop/pipelines/MsetCCA-SSVEP.yml
 .. _SSVEP_MDM: https://github.com/NeuroTechX/moabb/blob/develop/pipelines/MDM-SSVEP.yml

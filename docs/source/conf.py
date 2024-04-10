@@ -233,8 +233,9 @@ html_theme_options = {
     "use_edit_page_button": False,
     "navigation_with_keys": False,
     "collapse_navigation": False,
-    "navigation_depth": 4,
+    "navigation_depth": -1,
     "show_toc_level": 1,
+    "nosidebar": "true",
     "navbar_end": ["theme-switcher"],
     "footer_items": ["copyright"],
     "pygment_light_style": "default",
@@ -279,7 +280,7 @@ html_context = {
     "pygment_light_style": "friendly",
     "pygment_dark_style": "native",
     "icon_links_label": "Quick Links",  # for screen reader
-    "show_toc_level": 2,
+    "show_toc_level": 1,
 }
 
 
