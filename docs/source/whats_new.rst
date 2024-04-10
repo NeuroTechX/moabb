@@ -32,6 +32,7 @@ Bugs
 - Fix import of keras BatchNormalization for TF 2.13 and higher (:gh:`544` by `Brian Irvine`_)
 - Fix the doc summary tables of :class:`moabb.datasets.Lee2019_SSVEP` (:gh:`548` :gh:`547` :gh:`546` by `Pierre Guetschel`_)
 - Fix the doc summary for Castillos2023 dataset (:gh:`561` by `Bruno Aristimunha`_)
+- Fix format string receiving incorrect number of args in bids interface (:gh:`563` by `Pierre Guetschel`_)
 
 API changes
 ~~~~~~~~~~~
