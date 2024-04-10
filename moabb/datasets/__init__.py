@@ -49,8 +49,8 @@ from .braininvaders import (
     Cattan2019_VR,
 )
 from .castillos2023 import (
-    CasitllosBurstVEP100,
     CastillosBurstVEP40,
+    CastillosBurstVEP100,
     CastillosCVEP40,
     CastillosCVEP100,
 )
