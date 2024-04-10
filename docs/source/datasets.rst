@@ -77,7 +77,7 @@ SSVEP Datasets
 
 
 --------------
-c-VEP and Burst-VEP Datasets
+c-VEP Datasets
 --------------
 
 .. autosummary::

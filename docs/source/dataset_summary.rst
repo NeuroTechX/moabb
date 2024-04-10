@@ -82,7 +82,7 @@ SSVEP
    :class:`Nakanishi2015`,9,8,12,15,4.15s,256Hz,1
    :class:`Wang2016`,34,62,40,6,5s,250Hz,1
 
-c-VEP and Burst-VEP
+c-VEP
 ======================
 
 Include neuro experiments where the participant is presented with psuedo-random noise-codes,
