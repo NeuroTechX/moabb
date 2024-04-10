@@ -48,6 +48,12 @@ from .braininvaders import (
     BI2015b,
     Cattan2019_VR,
 )
+from .castillos2023 import (
+    CasitllosBurstVEP100,
+    CastillosBurstVEP40,
+    CastillosCVEP40,
+    CastillosCVEP100,
+)
 from .epfl import EPFLP300
 from .fake import FakeDataset, FakeVirtualRealityDataset
 from .gigadb import Cho2017

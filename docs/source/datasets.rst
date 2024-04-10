@@ -73,10 +73,11 @@ SSVEP Datasets
     MAMEM2
     MAMEM3
     Lee2019_SSVEP
+    CastillosSSVEP40
 
 
 --------------
-c-VEP Datasets
+c-VEP and Burst-VEP Datasets
 --------------
 
 .. autosummary::
@@ -84,7 +85,10 @@ c-VEP Datasets
     :template: class.rst
 
     Thielen2021
-
+    CastillosBurstVEP40
+    CastillosBurstVEP100
+    CastillosCVEP40
+    CastillosCVEP100
 
 ----------------------
 Resting State Datasets

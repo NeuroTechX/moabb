@@ -378,11 +378,11 @@ class CasitllosBurstVEP100(BaseCastillos2023):
 
     .. admonition:: Dataset summary
 
-        =============            =======  =======  ==============================  ===============  ===============  ===========
-        Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
-        =============            =======  =======  ==============================  ===============  ===============  ===========
+        =======================    =======  =======  ==============================  ===============  ===============  ===========
+        Name                       #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
+        =======================   =======  =======  ==============================  ===============  ===============  ===========
         Castillos202BurstVEP100       12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
-        =============            =======  =======  ==============================  ===============  ===============  ===========
+        =======================  =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
 
@@ -433,7 +433,7 @@ class CasitllosBurstVEP100(BaseCastillos2023):
         )
 
 
-class CasitllosBurstVEP40(BaseCastillos2023):
+class CastillosBurstVEP40(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
@@ -489,13 +489,13 @@ class CasitllosBurstVEP40(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP40",
+            code="CastillosBurstVEP40",
             paradigm="cvep",
             paradigm_type="burst40",
         )
 
 
-class CasitllosCVEP100(BaseCastillos2023):
+class CastillosCVEP100(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
@@ -551,24 +551,24 @@ class CasitllosCVEP100(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP100",
+            code="CastillosCVEP100",
             paradigm="cvep",
             paradigm_type="mseq100",
         )
 
 
-class CasitllosCVEP40(BaseCastillos2023):
+class CastillosCVEP40(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
     .. admonition:: Dataset summary
 
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202CVEP40            12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
+        ===================   =======  =======  ==============================  ===============  ===============  ===========
+        Name                   #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
+        ===================   =======  =======  ==============================  ===============  ===============  ===========
+        Castillos202CVEP40        12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
+        ===================   =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
 
@@ -613,7 +613,7 @@ class CasitllosCVEP40(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP40",
+            code="CastillosCVEP40",
             paradigm="cvep",
             paradigm_type="mseq40",
         )

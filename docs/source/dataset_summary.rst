@@ -82,7 +82,6 @@ SSVEP
    :class:`Nakanishi2015`,9,8,12,15,4.15s,256Hz,1
    :class:`Wang2016`,34,62,40,6,5s,250Hz,1
 
-
 c-VEP
 ======================
 
@@ -101,7 +100,10 @@ DOI: https://doi.org/10.1088/1741-2552/ac38cf
    :class: sortable
 
    :class:`Thielen2021`,30,8,20,5,31.5s,18900 NT / 18900 T,512Hz,1,Gold codes,60Hz
-
+   :class:`CastillosCVEP100`,12,32,4,0.25s,,512Hz,1,Burst-CVEP,60Hz
+   :class:`CastillosCVEP40`,12,32,4,0.25s,,512Hz,1,Burst-CVEP,60Hz
+   :class:`CastillosBurstVEP40`,12,32,4,0.25s,,512Hz,1,Burst-CVEP,60Hz
+   :class:`CastillosBurstVEP100`,12,32,4,0.25s,,512Hz,1,Burst-CVEP,60Hz
 
 Resting States
 ======================
