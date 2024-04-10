@@ -11,7 +11,7 @@
 
    Install <install/install>
    Overview <overview>
-   MOABB Results Table <benchmark_summary>
+   MOABB Results Table <paper_results>
    Getting Started <auto_tutorials/index>
    Datasets <dataset_summary>
    How does Moabb work? <main_concepts>
