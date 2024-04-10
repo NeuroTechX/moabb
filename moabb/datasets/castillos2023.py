@@ -371,7 +371,7 @@ class BaseCastillos2023(BaseDataset):
         return np.array(new_onset_1) / self.fps, np.array(new_onset_0) / self.fps
 
 
-class CasitllosBurstVEP100(BaseCastillos2023):
+class CastillosBurstVEP100(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
@@ -380,8 +380,8 @@ class CasitllosBurstVEP100(BaseCastillos2023):
 
         =======================    =======  =======  ==============================  ===============  ===============  ===========
         Name                       #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
-        =======================   =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202BurstVEP100       12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
+        ========================   =======  =======  ==============================  ===============  ===============  ===========
+        CastillosBurstVEP100       12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
         =======================  =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
@@ -427,7 +427,7 @@ class CasitllosBurstVEP100(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP100",
+            code="CastillosBurstVEP100",
             paradigm="cvep",
             paradigm_type="burst100",
         )
@@ -443,7 +443,7 @@ class CastillosBurstVEP40(BaseCastillos2023):
         ======================   =======  =======  ==============================  ===============  ===============  ===========
         Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
         ======================   =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202BurstVEP40        12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
+        CastillosBurstVEP40        12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
         ======================   =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
@@ -503,9 +503,9 @@ class CastillosCVEP100(BaseCastillos2023):
     .. admonition:: Dataset summary
 
         ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
+        Name                     #Subj    #Chan     #Trials / class                Trials length    Sampling rate      #Sessions
         ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202CVEP100           12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
+        CastillosCVEP100              12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
         ===================      =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
@@ -565,9 +565,9 @@ class CastillosCVEP40(BaseCastillos2023):
     .. admonition:: Dataset summary
 
         ===================   =======  =======  ==============================  ===============  ===============  ===========
-        Name                   #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
+        Name                   #Subj    #Chan     #Trials / class               Trials length    Sampling rate      #Sessions
         ===================   =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202CVEP40        12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
+        CastillosCVEP40            12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
         ===================   =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**

@@ -73,7 +73,7 @@ SSVEP Datasets
     MAMEM2
     MAMEM3
     Lee2019_SSVEP
-    CastillosSSVEP40
+
 
 
 --------------
