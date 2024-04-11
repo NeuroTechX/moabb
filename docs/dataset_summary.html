@@ -865,13 +865,14 @@ DOI: <a class="reference external" href="https://doi.org/10.1088/1741-2552/ac38c
 <thead>
 <tr class="row-odd"><th class="head"><p>Dataset</p></th>
 <th class="head"><p>#Subj</p></th>
-<th class="head"><p>#Chan</p></th>
-<th class="head"><p>#Classes</p></th>
-<th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trials length</p></th>
-<th class="head"><p>#Epochs / class</p></th>
-<th class="head"><p>Sampling rate</p></th>
 <th class="head"><p>#Sessions</p></th>
+<th class="head"><p>Sampling rate</p></th>
+<th class="head"><p>#Chan</p></th>
+<th class="head"><p>Trials length</p></th>
+<th class="head"><p>#Trial classes</p></th>
+<th class="head"><p>#Trials / class</p></th>
+<th class="head"><p>#Epochs classes</p></th>
+<th class="head"><p>#Epochs / class</p></th>
 <th class="head"><p>Codes</p></th>
 <th class="head"><p>Presentation rate</p></th>
 </tr>
@@ -879,26 +880,80 @@ DOI: <a class="reference external" href="https://doi.org/10.1088/1741-2552/ac38c
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Thielen2015.html#moabb.datasets.Thielen2015" title="moabb.datasets.Thielen2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">Thielen2015</span></code></a></p></td>
 <td><p>12</p></td>
+<td><p>1</p></td>
+<td><p>2048Hz</p></td>
 <td><p>64</p></td>
+<td><p>4.2s</p></td>
 <td><p>36</p></td>
 <td><p>3</p></td>
-<td><p>4.2s</p></td>
+<td><p>2</p></td>
 <td><p>27216 NT / 27216 T</p></td>
-<td><p>2048Hz</p></td>
-<td><p>1</p></td>
 <td><p>Gold codes</p></td>
 <td><p>120Hz</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Thielen2021.html#moabb.datasets.Thielen2021" title="moabb.datasets.Thielen2021"><code class="xref py py-class docutils literal notranslate"><span class="pre">Thielen2021</span></code></a></p></td>
 <td><p>30</p></td>
+<td><p>1</p></td>
+<td><p>512Hz</p></td>
 <td><p>8</p></td>
+<td><p>31.5s</p></td>
 <td><p>20</p></td>
 <td><p>5</p></td>
-<td><p>31.5s</p></td>
-<td><p>94500 NT / 94500 T</p></td>
-<td><p>512Hz</p></td>
-<td><p>1</p></td>
+<td><p>2</p></td>
+<td><p>18900 NT / 18900 T</p></td>
 <td><p>Gold codes</p></td>
+<td><p>60Hz</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.CastillosCVEP100.html#moabb.datasets.CastillosCVEP100" title="moabb.datasets.CastillosCVEP100"><code class="xref py py-class docutils literal notranslate"><span class="pre">CastillosCVEP100</span></code></a></p></td>
+<td><p>12</p></td>
+<td><p>1</p></td>
+<td><p>500Hz</p></td>
+<td><p>32</p></td>
+<td><p>2.2s</p></td>
+<td><p>4</p></td>
+<td><p>15/15/15/15</p></td>
+<td><p>2</p></td>
+<td><p>3525 NT / 3495 T</p></td>
+<td><p>Burst-CVEP</p></td>
+<td><p>60Hz</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.CastillosCVEP40.html#moabb.datasets.CastillosCVEP40" title="moabb.datasets.CastillosCVEP40"><code class="xref py py-class docutils literal notranslate"><span class="pre">CastillosCVEP40</span></code></a></p></td>
+<td><p>12</p></td>
+<td><p>1</p></td>
+<td><p>500Hz</p></td>
+<td><p>32</p></td>
+<td><p>2.2s</p></td>
+<td><p>4</p></td>
+<td><p>15/15/15/15</p></td>
+<td><p>2</p></td>
+<td><p>3525 NT / 3495 T</p></td>
+<td><p>Burst-CVEP</p></td>
+<td><p>60Hz</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.CastillosBurstVEP40.html#moabb.datasets.CastillosBurstVEP40" title="moabb.datasets.CastillosBurstVEP40"><code class="xref py py-class docutils literal notranslate"><span class="pre">CastillosBurstVEP40</span></code></a></p></td>
+<td><p>12</p></td>
+<td><p>1</p></td>
+<td><p>500Hz</p></td>
+<td><p>32</p></td>
+<td><p>2.2s</p></td>
+<td><p>4</p></td>
+<td><p>15/15/15/15</p></td>
+<td><p>2</p></td>
+<td><p>5820 NT / 1200 T</p></td>
+<td><p>Burst-CVEP</p></td>
+<td><p>60Hz</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.CastillosBurstVEP100.html#moabb.datasets.CastillosBurstVEP100" title="moabb.datasets.CastillosBurstVEP100"><code class="xref py py-class docutils literal notranslate"><span class="pre">CastillosBurstVEP100</span></code></a></p></td>
+<td><p>12</p></td>
+<td><p>1</p></td>
+<td><p>500Hz</p></td>
+<td><p>32</p></td>
+<td><p>2.2s</p></td>
+<td><p>4</p></td>
+<td><p>15/15/15/15</p></td>
+<td><p>2</p></td>
+<td><p>5820 NT / 1200 T</p></td>
+<td><p>Burst-CVEP</p></td>
 <td><p>60Hz</p></td>
 </tr>
 </tbody>

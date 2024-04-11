@@ -454,6 +454,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Thielen2015.html">moabb.datasets.Thielen2015</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Thielen2021.html">moabb.datasets.Thielen2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosBurstVEP40.html">moabb.datasets.CastillosBurstVEP40</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosBurstVEP100.html">moabb.datasets.CastillosBurstVEP100</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosCVEP40.html">moabb.datasets.CastillosCVEP40</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosCVEP100.html">moabb.datasets.CastillosCVEP100</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Cattan2019_PHMD.html">moabb.datasets.Cattan2019_PHMD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
@@ -717,7 +721,7 @@ each subject / session of the dataset, and for each pipeline.</p>
  &#39;right_hand&#39;: 25&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-Zhou2016-CrossSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.77s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  50 events (all good), 0 – 5 s, baseline off, ~6.7 MB, data loaded,
+Zhou2016-CrossSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.89s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  50 events (all good), 0 – 5 s, baseline off, ~6.7 MB, data loaded,
  &#39;left_hand&#39;: 25
  &#39;right_hand&#39;: 25&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -742,8 +746,8 @@ Zhou2016-CrossSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.77s/it]/home/run
  &#39;right_hand&#39;: 25&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-Zhou2016-CrossSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.30s/it]
-Zhou2016-CrossSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.37s/it]
+Zhou2016-CrossSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.33s/it]
+Zhou2016-CrossSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.41s/it]
 
 BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
@@ -794,7 +798,7 @@ BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:02&lt;00:02,  2.92s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
+BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:02&lt;00:02,  2.98s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -843,14 +847,14 @@ BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:02&lt;00:02,  2.92s/it]/home
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:05&lt;00:00,  2.90s/it]
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:05&lt;00:00,  2.91s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:05&lt;00:00,  2.95s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:05&lt;00:00,  2.96s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.851412  0.329836    200.0       1  ...       14           3  Zhou2016  CSP+LDA
-1  0.935200  0.237178    219.0       1  ...       14           3  Zhou2016  CSP+LDA
-2  0.939200  0.319971    219.0       1  ...       14           3  Zhou2016  CSP+LDA
-3  0.908000  0.232867    190.0       2  ...       14           3  Zhou2016  CSP+LDA
-4  0.770370  0.172191    200.0       2  ...       14           3  Zhou2016  CSP+LDA
+0  0.851412  0.389654    200.0       1  ...       14           3  Zhou2016  CSP+LDA
+1  0.935200  0.314728    219.0       1  ...       14           3  Zhou2016  CSP+LDA
+2  0.939200  0.244607    219.0       1  ...       14           3  Zhou2016  CSP+LDA
+3  0.908000  0.184288    190.0       2  ...       14           3  Zhou2016  CSP+LDA
+4  0.770370  0.243845    200.0       2  ...       14           3  Zhou2016  CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -871,8 +875,8 @@ BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:05&lt;00:00,  2.91s/it]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  15.196 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  279 MB</p>
+<img src="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  15.512 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  192 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fa1ca889a5b6c6678d3af932651fcf7f/plot_cross_session_multiple_datasets.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_multiple_datasets.py</span></code></a></p>

@@ -454,6 +454,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Thielen2015.html">moabb.datasets.Thielen2015</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Thielen2021.html">moabb.datasets.Thielen2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosBurstVEP40.html">moabb.datasets.CastillosBurstVEP40</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosBurstVEP100.html">moabb.datasets.CastillosBurstVEP100</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosCVEP40.html">moabb.datasets.CastillosCVEP40</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosCVEP100.html">moabb.datasets.CastillosCVEP100</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Cattan2019_PHMD.html">moabb.datasets.Cattan2019_PHMD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
@@ -840,30 +844,30 @@ BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/
   X = mne.concatenate_epochs(X)
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156        0.7659       0.5172        0.6932  0.2006
-      2       0.5781        0.7363       0.5172        0.6925  0.1796
-      3       0.4375        0.7591       0.5517        0.6919  0.1963
+      1       0.5156        0.7659       0.5172        0.6932  0.2036
+      2       0.5781        0.7363       0.5172        0.6925  0.1789
+      3       0.4375        0.7591       0.5517        0.6919  0.1787
       4       0.5938        0.6669       0.5172        0.6913  0.1771
-      5       0.5781        0.6621       0.5172        0.6907  0.1769
-      6       0.5312        0.7085       0.4828        0.6903  0.2221
-      7       0.5469        0.7184       0.5172        0.6900  0.1768
-      8       0.4531        0.7167       0.5172        0.6897  0.1944
-      9       0.5938        0.6647       0.5172        0.6894  0.1782
-     10       0.5156        0.6890       0.5172        0.6890  0.1768
+      5       0.5781        0.6621       0.5172        0.6907  0.1993
+      6       0.5312        0.7085       0.4828        0.6903  0.1758
+      7       0.5469        0.7184       0.5172        0.6900  0.1763
+      8       0.4531        0.7167       0.5172        0.6897  0.1763
+      9       0.5938        0.6647       0.5172        0.6894  0.1763
+     10       0.5156        0.6890       0.5172        0.6890  0.1794
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156        0.7365       0.4138        0.7091  0.1787
-      2       0.5781        0.6883       0.4483        0.7075  0.1806
-      3       0.6094        0.6824       0.4483        0.7060  0.1944
-      4       0.5312        0.7151       0.4138        0.7049  0.1775
-      5       0.4844        0.7221       0.4138        0.7040  0.1790
-      6       0.5469        0.7016       0.4483        0.7032  0.1773
-      7       0.5781        0.6593       0.4483        0.7025  0.1781
-      8       0.5469        0.6934       0.4828        0.7019  0.1937
-      9       0.5469        0.6745       0.4828        0.7014  0.1791
-     10       0.5469        0.6874       0.4828        0.7010  0.1771
+      1       0.5156        0.7365       0.4138        0.7091  0.1813
+      2       0.5781        0.6883       0.4483        0.7075  0.1763
+      3       0.6094        0.6824       0.4483        0.7060  0.1776
+      4       0.5312        0.7151       0.4138        0.7049  0.1771
+      5       0.4844        0.7221       0.4138        0.7040  0.1992
+      6       0.5469        0.7016       0.4483        0.7032  0.1779
+      7       0.5781        0.6593       0.4483        0.7025  0.1772
+      8       0.5469        0.6934       0.4828        0.7019  0.1789
+      9       0.5469        0.6745       0.4828        0.7014  0.1771
+     10       0.5469        0.6874       0.4828        0.7010  0.1778
 
-BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:06&lt;00:06,  6.54s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
+BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:06&lt;00:06,  6.53s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;right_hand&#39;: 12
  &#39;left_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -915,24 +919,24 @@ BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:06&lt;00:06,  6.54s/it]/home
   X = mne.concatenate_epochs(X)
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4219        0.7449       0.6207        0.6832  0.1779
-      2       0.4688        0.7881       0.6207        0.6865  0.1956
-      3       0.5000        0.7344       0.6207        0.6874  0.1802
+      1       0.4219        0.7449       0.6207        0.6832  0.1782
+      2       0.4688        0.7881       0.6207        0.6865  0.1785
+      3       0.5000        0.7344       0.6207        0.6874  0.1797
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.7113       0.5517        0.6901  0.1777
-      2       0.4531        0.7591       0.5517        0.6905  0.1774
-      3       0.4531        0.7438       0.5517        0.6908  0.1958
+      1       0.4844        0.7113       0.5517        0.6901  0.1786
+      2       0.4531        0.7591       0.5517        0.6905  0.1787
+      3       0.4531        0.7438       0.5517        0.6908  0.1783
 Stopping since valid_loss has not improved in the last 3 epochs.
 
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.10s/it]
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.31s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.11s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.33s/it]
       score      time  samples  ... n_sessions       dataset  pipeline
-0  0.521026  2.090421    144.0  ...          2  BNCI2014-001  EEGNetV4
-1  0.494985  2.007030    144.0  ...          2  BNCI2014-001  EEGNetV4
-2  0.493441  0.904857    144.0  ...          2  BNCI2014-001  EEGNetV4
-3  0.544367  0.901210    144.0  ...          2  BNCI2014-001  EEGNetV4
+0  0.521026  2.066702    144.0  ...          2  BNCI2014-001  EEGNetV4
+1  0.494985  2.018728    144.0  ...          2  BNCI2014-001  EEGNetV4
+2  0.493441  0.917284    144.0  ...          2  BNCI2014-001  EEGNetV4
+3  0.544367  0.890410    144.0  ...          2  BNCI2014-001  EEGNetV4
 
 [4 rows x 9 columns]
 </pre></div>
@@ -957,8 +961,8 @@ network for EEG-based brain-computer interfaces.</a>
 Journal of neural engineering, 15(5), 056013.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.440 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  323 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.578 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  221 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-braindecode-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/c9b0437022c98a63476dd3cad6cb69c7/plot_braindecode.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_braindecode.py</span></code></a></p>

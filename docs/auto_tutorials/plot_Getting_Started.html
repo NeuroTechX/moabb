@@ -454,6 +454,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Thielen2015.html">moabb.datasets.Thielen2015</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Thielen2021.html">moabb.datasets.Thielen2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosBurstVEP40.html">moabb.datasets.CastillosBurstVEP40</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosBurstVEP100.html">moabb.datasets.CastillosBurstVEP100</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosCVEP40.html">moabb.datasets.CastillosCVEP40</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosCVEP100.html">moabb.datasets.CastillosCVEP100</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Cattan2019_PHMD.html">moabb.datasets.Cattan2019_PHMD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
@@ -664,14 +668,14 @@ is the name of the pipeline and the value is the Pipeline object</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a><span class="p">()</span><span class="o">.</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7f643c3f9fa0&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7f643c3f9b50&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f643c3f9c40&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f643c3f96a0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f643c3f94f0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f643c3f9340&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f643c3f9b20&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f643c3f9f70&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f643c3f9940&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7f643c3f9130&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7f66fabfd430&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7f66fabfdd60&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f66fabfd100&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f66fabfd220&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f66fabfd7f0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f66fabfd7c0&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f66fabfda60&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f66fabfde80&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f66fabfdf70&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7f66fabfd940&gt;]
 </pre></div>
 </div>
 <p>Or you can run a search through the available datasets:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/moabb.datasets.utils.dataset_search.html#moabb.datasets.utils.dataset_search" title="moabb.datasets.utils.dataset_search" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">utils</span><span class="o">.</span><span class="n">dataset_search</span></a><span class="p">(</span><a href="../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span> <span class="n">min_subjects</span><span class="o">=</span><span class="mi">6</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.alex_mi.AlexMI object at 0x7f643c3f9490&gt;, &lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7f643c3f90a0&gt;, &lt;moabb.datasets.bnci.BNCI2014_002 object at 0x7f643c3f9b50&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7f643c3f9130&gt;, &lt;moabb.datasets.bnci.BNCI2015_001 object at 0x7f643c3f98b0&gt;, &lt;moabb.datasets.bnci.BNCI2015_004 object at 0x7f643c3f9520&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f643c3f9f10&gt;, &lt;moabb.datasets.fake.FakeDataset object at 0x7f643c3f9940&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f643c3f9ac0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f643c3f9df0&gt;, &lt;moabb.datasets.upper_limb.Ofner2017 object at 0x7f643c3f91f0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f643c3f92e0&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f643c3f92b0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f643c3f9070&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f643c3f9a30&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.alex_mi.AlexMI object at 0x7f66fabfdf10&gt;, &lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7f66fabfd610&gt;, &lt;moabb.datasets.bnci.BNCI2014_002 object at 0x7f66fabfd820&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7f66fabfd970&gt;, &lt;moabb.datasets.bnci.BNCI2015_001 object at 0x7f66fabfde80&gt;, &lt;moabb.datasets.bnci.BNCI2015_004 object at 0x7f66fabfdc10&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f66fabfd370&gt;, &lt;moabb.datasets.fake.FakeDataset object at 0x7f66fabfd430&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f66fabfd400&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f66fabfdfd0&gt;, &lt;moabb.datasets.upper_limb.Ofner2017 object at 0x7f66fabfd280&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f66fabfde50&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f66fabfdfa0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f66fabfd340&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f66fabfdd30&gt;]
 </pre></div>
 </div>
 <p>Or you can simply make your own list (which we do here due to computational
@@ -755,7 +759,7 @@ subjects. This also is the correct place to specify multiple threads.</p>
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.39s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
+BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.41s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -804,8 +808,8 @@ BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.39s/it]/home
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.35s/it]
 BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.36s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.37s/it]
 </pre></div>
 </div>
 <p>Results are returned as a pandas DataFrame, and from here you can do as you
@@ -814,17 +818,17 @@ want with them</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ... n_sessions       dataset  pipeline
-0  0.797068  0.147233    144.0  ...          2  BNCI2014-001    AM+SVM
-1  0.773920  0.148203    144.0  ...          2  BNCI2014-001    AM+SVM
-2  0.550733  0.251136    144.0  ...          2  BNCI2014-001    AM+SVM
-3  0.471451  0.168277    144.0  ...          2  BNCI2014-001    AM+SVM
-4  0.786458  0.023575    144.0  ...          2  BNCI2014-001    AM+LDA
+0  0.797068  0.151603    144.0  ...          2  BNCI2014-001    AM+SVM
+1  0.773920  0.140912    144.0  ...          2  BNCI2014-001    AM+SVM
+2  0.550733  0.251720    144.0  ...          2  BNCI2014-001    AM+SVM
+3  0.471451  0.173240    144.0  ...          2  BNCI2014-001    AM+SVM
+4  0.786458  0.023309    144.0  ...          2  BNCI2014-001    AM+LDA
 
 [5 rows x 9 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.375 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  268 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.560 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  182 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-plot-getting-started-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/55cdcc1a57595324be0a4f77a5294187/plot_Getting_Started.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_Getting_Started.py</span></code></a></p>

@@ -454,6 +454,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Lee2019_SSVEP.html">moabb.datasets.Lee2019_SSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Thielen2015.html">moabb.datasets.Thielen2015</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Thielen2021.html">moabb.datasets.Thielen2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosBurstVEP40.html">moabb.datasets.CastillosBurstVEP40</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosBurstVEP100.html">moabb.datasets.CastillosBurstVEP100</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosCVEP40.html">moabb.datasets.CastillosCVEP40</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosCVEP100.html">moabb.datasets.CastillosCVEP100</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Cattan2019_PHMD.html">moabb.datasets.Cattan2019_PHMD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
@@ -727,30 +731,31 @@ be overwritten if necessary.</p>
   warnings.warn(
 
   0%|                                              | 0.00/2.06M [00:00&lt;?, ?B/s]
-  1%|▏                                    | 13.3k/2.06M [00:00&lt;00:26, 75.6kB/s]
-  2%|▊                                     | 45.1k/2.06M [00:00&lt;00:13, 144kB/s]
-  6%|██▏                                    | 118k/2.06M [00:00&lt;00:06, 281kB/s]
- 10%|███▉                                   | 207k/2.06M [00:00&lt;00:04, 386kB/s]
- 21%|████████▎                              | 440k/2.06M [00:00&lt;00:02, 763kB/s]
- 44%|████████████████▌                     | 898k/2.06M [00:00&lt;00:00, 1.46MB/s]
- 88%|████████████████████████████████▋    | 1.81M/2.06M [00:01&lt;00:00, 2.83MB/s]
+  1%|▎                                    | 14.3k/2.06M [00:00&lt;00:24, 81.7kB/s]
+  2%|▌                                     | 33.8k/2.06M [00:00&lt;00:19, 103kB/s]
+  6%|██▏                                    | 116k/2.06M [00:00&lt;00:06, 283kB/s]
+ 12%|████▌                                  | 243k/2.06M [00:00&lt;00:03, 478kB/s]
+ 26%|█████████▉                             | 526k/2.06M [00:00&lt;00:01, 933kB/s]
+ 52%|███████████████████▏                 | 1.07M/2.06M [00:00&lt;00:00, 1.74MB/s]
   0%|                                              | 0.00/2.06M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.06M/2.06M [00:00&lt;00:00, 10.4GB/s]
+100%|█████████████████████████████████████| 2.06M/2.06M [00:00&lt;00:00, 10.6GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
   0%|                                              | 0.00/2.82M [00:00&lt;?, ?B/s]
-  1%|▏                                    | 14.3k/2.82M [00:00&lt;00:35, 79.3kB/s]
-  1%|▌                                     | 38.9k/2.82M [00:00&lt;00:23, 118kB/s]
-  4%|█▌                                     | 111k/2.82M [00:00&lt;00:10, 261kB/s]
-  9%|███▍                                   | 250k/2.82M [00:00&lt;00:05, 492kB/s]
- 19%|███████▎                               | 527k/2.82M [00:00&lt;00:02, 925kB/s]
- 38%|██████████████                       | 1.07M/2.82M [00:00&lt;00:01, 1.74MB/s]
- 77%|████████████████████████████▍        | 2.16M/2.82M [00:01&lt;00:00, 3.36MB/s]
+  1%|▏                                    | 14.3k/2.82M [00:00&lt;00:36, 76.6kB/s]
+  2%|▌                                     | 44.0k/2.82M [00:00&lt;00:20, 135kB/s]
+  4%|█▍                                     | 108k/2.82M [00:00&lt;00:10, 248kB/s]
+  8%|███▏                                   | 233k/2.82M [00:00&lt;00:05, 452kB/s]
+ 17%|██████▌                                | 478k/2.82M [00:00&lt;00:02, 828kB/s]
+ 35%|█████████████▎                        | 985k/2.82M [00:00&lt;00:01, 1.60MB/s]
+ 70%|██████████████████████████           | 1.98M/2.82M [00:01&lt;00:00, 3.08MB/s]
+ 88%|████████████████████████████████▍    | 2.47M/2.82M [00:01&lt;00:00, 3.05MB/s]
+ 99%|████████████████████████████████████▊| 2.80M/2.82M [00:01&lt;00:00, 2.73MB/s]
   0%|                                              | 0.00/2.82M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.82M/2.82M [00:00&lt;00:00, 11.3GB/s]
+100%|█████████████████████████████████████| 2.82M/2.82M [00:00&lt;00:00, 12.0GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 4 s, baseline off, ~784 kB, data loaded,
  &#39;13&#39;: 8
  &#39;17&#39;: 8
@@ -767,29 +772,29 @@ be overwritten if necessary.</p>
   warnings.warn(
 
   0%|                                              | 0.00/2.58M [00:00&lt;?, ?B/s]
-  1%|▏                                    | 15.4k/2.58M [00:00&lt;00:31, 81.5kB/s]
-  2%|▋                                     | 45.1k/2.58M [00:00&lt;00:18, 138kB/s]
-  4%|█▌                                     | 103k/2.58M [00:00&lt;00:10, 236kB/s]
-  8%|███▏                                   | 208k/2.58M [00:00&lt;00:06, 394kB/s]
- 17%|██████▌                                | 434k/2.58M [00:00&lt;00:02, 751kB/s]
- 35%|█████████████                         | 892k/2.58M [00:00&lt;00:01, 1.45MB/s]
- 69%|█████████████████████████▋           | 1.79M/2.58M [00:01&lt;00:00, 2.78MB/s]
+  1%|▏                                    | 15.4k/2.58M [00:00&lt;00:28, 88.9kB/s]
+  2%|▋                                     | 45.1k/2.58M [00:00&lt;00:17, 143kB/s]
+  4%|█▌                                     | 108k/2.58M [00:00&lt;00:09, 252kB/s]
+ 10%|███▊                                   | 253k/2.58M [00:00&lt;00:04, 504kB/s]
+ 20%|███████▉                               | 524k/2.58M [00:00&lt;00:02, 923kB/s]
+ 41%|███████████████▏                     | 1.06M/2.58M [00:00&lt;00:00, 1.74MB/s]
+ 84%|██████████████████████████████▉      | 2.16M/2.58M [00:01&lt;00:00, 3.37MB/s]
   0%|                                              | 0.00/2.58M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.58M/2.58M [00:00&lt;00:00, 11.7GB/s]
+100%|█████████████████████████████████████| 2.58M/2.58M [00:00&lt;00:00, 13.8GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
   0%|                                              | 0.00/2.14M [00:00&lt;?, ?B/s]
-  1%|▏                                    | 13.3k/2.14M [00:00&lt;00:27, 76.9kB/s]
-  2%|▊                                     | 45.1k/2.14M [00:00&lt;00:14, 145kB/s]
-  5%|██                                     | 115k/2.14M [00:00&lt;00:07, 273kB/s]
- 12%|████▌                                  | 252k/2.14M [00:00&lt;00:03, 498kB/s]
- 24%|█████████▍                             | 517k/2.14M [00:00&lt;00:01, 907kB/s]
- 50%|██████████████████▌                  | 1.07M/2.14M [00:00&lt;00:00, 1.76MB/s]
+  1%|▏                                    | 14.3k/2.14M [00:00&lt;00:24, 87.9kB/s]
+  2%|▊                                     | 48.1k/2.14M [00:00&lt;00:13, 158kB/s]
+  5%|█▉                                     | 110k/2.14M [00:00&lt;00:07, 259kB/s]
+ 11%|████▍                                  | 243k/2.14M [00:00&lt;00:03, 480kB/s]
+ 24%|█████████▌                             | 523k/2.14M [00:00&lt;00:01, 930kB/s]
+ 50%|██████████████████▎                  | 1.06M/2.14M [00:00&lt;00:00, 1.74MB/s]
   0%|                                              | 0.00/2.14M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.14M/2.14M [00:00&lt;00:00, 8.19GB/s]
+100%|█████████████████████████████████████| 2.14M/2.14M [00:00&lt;00:00, 8.79GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 4 s, baseline off, ~784 kB, data loaded,
  &#39;13&#39;: 8
  &#39;17&#39;: 8
@@ -877,9 +882,9 @@ stimulation frequency values of events.</p>
   warn(f&quot;warnEpochs {epochs}&quot;)
 
 Kalunga2016-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Kalunga2016-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  2.24it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.22it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.22it/s]
+Kalunga2016-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  2.27it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.23it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.24it/s]
 </pre></div>
 </div>
 <p>TRCA processing also relies on filter bank that is automatically designed.</p>
@@ -946,8 +951,8 @@ Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.18it/s]
 
 Kalunga2016-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
 Kalunga2016-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  1.54it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.53it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.54it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.52it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.52it/s]
 </pre></div>
 </div>
 <p>After processing the four, we simply concatenate the results.</p>
@@ -975,8 +980,8 @@ Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.54it/s]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" srcset="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" alt="plot cross subject ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  17.983 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  21 MB</p>
+<img src="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" srcset="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" alt="plot cross subject ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  18.491 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  23 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-subject-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5459b5c2be76a529eb282ae496a50415/plot_cross_subject_ssvep.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_subject_ssvep.py</span></code></a></p>

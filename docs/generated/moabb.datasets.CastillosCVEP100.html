@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>moabb.datasets.Thielen2015 &#8212; moabb 1.0.0 documentation</title>
+    <title>moabb.datasets.CastillosCVEP100 &#8212; moabb 1.0.0 documentation</title>
   
   
   
@@ -55,11 +55,11 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.Thielen2015';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.CastillosCVEP100';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.Thielen2021" href="moabb.datasets.Thielen2021.html" />
-    <link rel="prev" title="moabb.datasets.Lee2019_SSVEP" href="moabb.datasets.Lee2019_SSVEP.html" />
+    <link rel="next" title="moabb.datasets.Cattan2019_PHMD" href="moabb.datasets.Cattan2019_PHMD.html" />
+    <link rel="prev" title="moabb.datasets.CastillosCVEP40" href="moabb.datasets.CastillosCVEP40.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -410,7 +410,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.Thielen2015</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.CastillosCVEP100</li>
   </ul>
 </nav>
 </div>
@@ -427,13 +427,13 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-thielen2015">
-<h1>moabb.datasets.Thielen2015<a class="headerlink" href="#moabb-datasets-thielen2015" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-datasets-castilloscvep100">
+<h1>moabb.datasets.CastillosCVEP100<a class="headerlink" href="#moabb-datasets-castilloscvep100" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.Thielen2015">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Thielen2015</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/thielen2015.py#L22-L185"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Thielen2015" title="Permalink to this definition">#</a></dt>
-<dd><p>c-VEP dataset from Thielen et al. (2015)</p>
-<p>Dataset <a class="reference internal" href="#r88057a8367d2-1" id="id1">[1]</a> from the study on reconvolution for c-VEP <a class="reference internal" href="#r88057a8367d2-2" id="id2">[2]</a>.</p>
+<dt class="sig sig-object py" id="moabb.datasets.CastillosCVEP100">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">CastillosCVEP100</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/castillos2023.py#L415-L475"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.CastillosCVEP100" title="Permalink to this definition">#</a></dt>
+<dd><p>c-VEP and Burst-VEP dataset from Castillos et al. (2023)</p>
+<p>Dataset <a class="reference internal" href="#rfa6c5d763236-1" id="id1">[1]</a> from the study on burst-VEP <a class="reference internal" href="#rfa6c5d763236-2" id="id2">[2]</a>.</p>
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <table class="table">
@@ -453,75 +453,60 @@ document.write(`
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Thielen2015</p></td>
+<tr class="row-even"><td><p>CastillosCVEP100</p></td>
 <td><p>12</p></td>
 <td><p>1</p></td>
-<td><p>2048Hz</p></td>
-<td><p>64</p></td>
-<td><p>4.2s</p></td>
-<td><p>36</p></td>
-<td><p>3</p></td>
+<td><p>500Hz</p></td>
+<td><p>32</p></td>
+<td><p>2.2s</p></td>
+<td><p>4</p></td>
+<td><p>15/15/15/15</p></td>
 <td><p>2</p></td>
-<td><p>27216 NT / 27216 T</p></td>
-<td><p>Gold codes</p></td>
-<td><p>120Hz</p></td>
+<td><p>3525NT/3495T</p></td>
+<td><p>Burst-CVEP</p></td>
+<td><p>60Hz</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p><strong>Dataset description</strong></p>
-<p>EEG recordings were obtained with a sampling rate of 2048 Hz, using a setup comprising 64 Ag/AgCl electrodes, and
-amplified by a Biosemi ActiveTwo EEG amplifier. Electrode placement followed the international 10-10 system.</p>
-<p>During the experimental sessions, participants actively operated a 6 x 6 visual speller brain-computer interface
-(BCI) with real-time feedback, encompassing 36 distinct classes. Each cell within the symbol grid underwent
-luminance modulation at full contrast, achieved through the application of pseudo-random noise-codes derived from a
-set of modulated Gold codes. These binary codes have a balanced distribution of ones and zeros while adhering to a
-limited run-length pattern, with a maximum run-length of 2 bits. Codes were presented at a rate of 120 Hz. Given
-that one cycle of these modulated Gold codes comprises 126 bits, the duration of a complete cycle spans 1.05
-seconds.</p>
-<p>Throughout the experiment, participants underwent four distinct blocks: an initial practice block consisting of two
-runs, followed by a training block of one run. Subsequently, they engaged in a copy-spelling block comprising six
-runs, and finally, a free-spelling block consisting of one run. Between the training and copy-spelling block, a
-classifier was calibrated using data from the training block. This calibrated classifier was then applied during
-both the copy-spelling and free-spelling runs. Additionally, during calibration, the stimulation codes were
-tailored and optimized specifically for each individual participant.</p>
-<p>Among the six copy-spelling runs, there were three fixed-length runs. Trials in these runs started with a cueing
-phase, where the target symbol was highlighted in a green hue for 1 second. Participants maintained their gaze
-fixated on the target symbol as all symbols flashed in sync with their corresponding pseudo-random noise-codes for a
-duration of 4.2 seconds (equivalent to 4 code cycles). Immediately following this stimulation, the output of the
-classifier was shown by coloring the cell blue for 1 second. Each run consisted of 36 trials, presented in a
-randomized order.</p>
-<p>Here, our focus is solely on the three copy-spelling runs characterized by fixed-length trials lasting 4.2 seconds
-(equivalent to four code cycles). The other three runs utilized a dynamic stopping procedure, resulting in trials of
-varying durations, rendering them unsuitable for benchmarking purposes. Similarly, the practice and free-spelling
-runs included dynamic stopping and are ignored in this dataset. The training dataset, comprising 36 trials, used a
-different noise-code set, and is therefore also ignored in this dataset. In total, this dataset should contain 108
-trials of 4.2 seconds each, with 3 repetitions for each of the 36 codes.</p>
+<p>Participants were comfortably seated and instructed to read and sign the informed consent. EEG data were recorded
+using a BrainProduct LiveAmp 32 active electrodes wet-EEG setup with a sample rate of 500 Hz to record the surface
+brain activity. The 32 electrodes were placed following the 10–20 international system on a BrainProduct Acticap. The
+ground electrode was placed at the FPz electrode location and all electrodes were referenced to the FCz electrode. The
+impedance of all electrodes was brought below 25kOhm prior to recording onset. Once equipped with the EEG system,
+volunteers were asked to focus on four targets that were cued sequentially in a random order for 0.5 s, followed by a
+2.2 s stimulation phase, before a 0.7 s inter-trial period. The cue sequence for each trial was pseudo-random and
+different for each block. After each block, a pause was observed and subjects had to press the space bar to continue.
+The participants were presented with fifteen blocks of four trials for each of the four conditions (burst or msequence x
+40% or 100%). The task was implemented in Python using the Psychopy toolbox. The four discs were all
+150 pixels, without borders, and were presented on the following LCD monitor: Dell P2419HC, 1920 x 1080 pixels, 265
+cd/m2, and 60 Hz refresh rate. After completing the experiment and removing the EEG equipment, the participants were
+asked to provide subjective ratings for the different stimuli conditions. These stimuli included burst c-VEP with 100%
+amplitude, burst c-VEP with 40% amplitude, m-sequences with 100% amplitude, and m-sequences with 40% amplitude. Each
+stimulus was presented three times in a pseudo-random order. Following the presentation of each stimulus, participants
+were presented with three 11-points scales and were asked to rate the visual comfort, visual tiredness, and
+intrusiveness using a mouse. In total, participants completed 12 ratings (3 repetitions x 4 types of stimuli) for
+each of the three scales.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
-<div class="citation" id="r88057a8367d2-1" role="doc-biblioentry">
+<div class="citation" id="rfa6c5d763236-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Thielen, J. (Jordy), Jason Farquhar, Desain, P.W.M. (Peter) (2023): Broad-Band Visually Evoked Potentials:
-Re(con)volution in Brain-Computer Interfacing. Version 2. Radboud University. (dataset).
-DOI: <a class="reference external" href="https://doi.org/10.34973/1ecz-1232">https://doi.org/10.34973/1ecz-1232</a></p>
+<p>Kalou Cabrera Castillos. (2023). 4-class code-VEP EEG data [Data set]. Zenodo.(dataset).
+DOI: <a class="reference external" href="https://doi.org/10.5281/zenodo.8255618">https://doi.org/10.5281/zenodo.8255618</a></p>
 </div>
-<div class="citation" id="r88057a8367d2-2" role="doc-biblioentry">
+<div class="citation" id="rfa6c5d763236-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
-<p>Thielen, J., Van Den Broek, P., Farquhar, J., &amp; Desain, P. (2015). Broad-Band visually evoked potentials:
-re(con)volution in brain-computer interfacing. PLOS ONE, 10(7), e0133797.
-DOI: <a class="reference external" href="https://doi.org/10.1371/journal.pone.0133797">https://doi.org/10.1371/journal.pone.0133797</a></p>
+<p>Kalou Cabrera Castillos, Simon Ladouce, Ludovic Darmet, Frédéric Dehais. Burst c-VEP Based BCI: Optimizing stimulus
+design for enhanced classification with minimal calibration data and improved user experience,NeuroImage,Volume 284,
+2023,120446,ISSN 1053-8119
+DOI: <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2023.120446">https://doi.org/10.1016/j.neuroimage.2023.120446</a></p>
 </div>
 </div>
 <p class="rubric">Notes</p>
 <div class="versionadded">
-<p><span class="versionmodified added">New in version 1.0.0.</span></p>
+<p><span class="versionmodified added">New in version 1.1.0.</span></p>
 </div>
-<dl class="py method">
-<dt class="sig sig-object py" id="moabb.datasets.Thielen2015.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/thielen2015.py#L161-L185"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Thielen2015.data_path" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the data paths of a single subject.</p>
-</dd></dl>
-
 </dd></dl>
 
 <div style='clear:both'></div></section>
@@ -538,20 +523,20 @@ DOI: <a class="reference external" href="https://doi.org/10.1371/journal.pone.01
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.Lee2019_SSVEP.html"
+       href="moabb.datasets.CastillosCVEP40.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.Lee2019_SSVEP</p>
+        <p class="prev-next-title">moabb.datasets.CastillosCVEP40</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.Thielen2021.html"
+       href="moabb.datasets.Cattan2019_PHMD.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.Thielen2021</p>
+        <p class="prev-next-title">moabb.datasets.Cattan2019_PHMD</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -573,10 +558,7 @@ DOI: <a class="reference external" href="https://doi.org/10.1371/journal.pone.01
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.Thielen2015"><code class="docutils literal notranslate"><span class="pre">Thielen2015</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.Thielen2015.data_path"><code class="docutils literal notranslate"><span class="pre">Thielen2015.data_path()</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.CastillosCVEP100"><code class="docutils literal notranslate"><span class="pre">CastillosCVEP100</span></code></a></li>
 </ul>
   </nav></div>
 
