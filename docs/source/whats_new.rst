@@ -78,7 +78,7 @@ Enhancements
 - Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
 - Automate setting of event_id in compound dataset and add `data_origin` information to the data (:gh:`475` by `Gregoire Cattan`_)
 - Add possibility of not saving the model (:gh:`489` by `Igor Carrara`_)
-- Add CVEP and BurstVEP dataset from Castillos from Toulouse lab (by `Seabstien Velut`_)
+- Add CVEP and BurstVEP dataset from Castillos from Toulouse lab (:gh:`531` by `Seabstien Velut`_)
 - Add c-VEP dataset from Thielen et al. 2015 (:gh:`557` by `Jordy Thielen`_)
 
 Bugs
