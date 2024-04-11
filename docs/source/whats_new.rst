@@ -24,6 +24,7 @@ Enhancements
 - Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
 - Improve transform function of AugmentedDataset (:gh:`541` by `Quentin Barthelemy`_)
 - Move cVEP common functions to :mod:`moabb.datasets.utils` (:gh:`564` :gh:`557` by `Pierre Guetschel`_)
+- Normalize c-VEP description tables (:gh:`562` :gh:`566` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
@@ -32,6 +33,7 @@ Bugs
 - Fix saving to BIDS runs with a description string in their name (:gh:`530` by `Pierre Guetschel`_)
 - Fix import of keras BatchNormalization for TF 2.13 and higher (:gh:`544` by `Brian Irvine`_)
 - Fix the doc summary tables of :class:`moabb.datasets.Lee2019_SSVEP` (:gh:`548` :gh:`547` :gh:`546` by `Pierre Guetschel`_)
+- Fix the doc summary for Castillos2023 dataset (:gh:`561` by `Bruno Aristimunha`_)
 - Fix format string receiving incorrect number of args in bids interface (:gh:`563` by `Pierre Guetschel`_)
 - Fix number of sessions in doc of :class:`moabb.datasets.Sosulski2019` (:gh:`565` by `Pierre Guetschel`_)
 
