@@ -23,6 +23,7 @@ Enhancements
 - Adding leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
 - Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
 - Improve transform function of AugmentedDataset (:gh:`541` by `Quentin Barthelemy`_)
+- Move cVEP common functions to :mod:`moabb.datasets.utils` (:gh:`564` :gh:`557` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
@@ -81,7 +82,8 @@ Enhancements
 - Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
 - Automate setting of event_id in compound dataset and add `data_origin` information to the data (:gh:`475` by `Gregoire Cattan`_)
 - Add possibility of not saving the model (:gh:`489` by `Igor Carrara`_)
-- Add CVEP and BurstVEP dataset from Castillos from Toulouse lab (by `Seabstien Velut`_)
+- Add CVEP and BurstVEP dataset from Castillos from Toulouse lab (:gh:`531` by `Sebastien Velut`_)
+- Add c-VEP dataset from Thielen et al. 2015 (:gh:`557` by `Jordy Thielen`_)
 
 Bugs
 ~~~~
@@ -111,6 +113,8 @@ Bugs
 - Fix case when events specified via ``raw.annotations`` but no events (:gh:`491` by `Pierre Guetschel`_)
 - Fix bug in downloading Shin2017A dataset (:gh:`493` by `Igor Carrara`_)
 - Fix the cropped option in the dataset preprocessing (:gh:`502` by `Bruno Aristimunha`_)
+- Fix bug in :func:`moabb.datasets.utils.dataset_search` with missing cvep paradigm (:gh:`557` by `Jordy Thielen`_)
+- Fix mistakes in :func:`moabb.datasets.thielen2021` considering wrong docs and hardcoded trial stim channel (:gh:`557` by `Jordy Thielen`_)
 
 API changes
 ~~~~~~~~~~~

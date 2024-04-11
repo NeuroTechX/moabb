@@ -99,11 +99,15 @@ DOI: https://doi.org/10.1088/1741-2552/ac38cf
    :header: Dataset, #Subj, #Chan, #Classes, Trials length, #Trial classes, #Trials / class, #Epochs classes, Sampling rate, #Sessions, Codes, Presentation rate
    :class: sortable
 
-   :class:`Thielen2021`,30,8,20,5,31.5s,18900 NT / 18900 T,512Hz,1,Gold codes,60Hz
+   :class:`Thielen2015`,12,64,36,3,4.2s,27216 NT / 27216 T,2048Hz,1,Gold codes,120Hz
+   :class:`Thielen2021`,30,8,20,5,31.5s,94500 NT / 94500 T,512Hz,1,Gold codes,60Hz
    :class:`CastillosCVEP100`,12,32,4,2.2s,15/15/15/15,2,3525NT/3495T,512Hz,1,Burst-CVEP,60Hz
    :class:`CastillosCVEP40`,12,32,4,2.2s,15/15/15/15,2,3525NT/3495T,512Hz,1,Burst-CVEP,60Hz
    :class:`CastillosBurstVEP40`,12,32,4,2.2s,15/15/15/15,2,5820NT/1200T,512Hz,1,Burst-CVEP,60Hz
    :class:`CastillosBurstVEP100`,12,32,4,2.2s,15/15/15/15,2,5820NT/1200T,512Hz,1,Burst-CVEP,60Hz
+
+
+
 
 Resting States
 ======================
