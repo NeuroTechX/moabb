@@ -61,7 +61,7 @@ P300/ERP
    :class:`Cattan2019_VR`, 21, 16, 600 NT / 120 T, 1s, 512Hz, 2
    :class:`Huebner2017`, 13, 31, 364 NT / 112 T, 0.9s, 1000Hz, 3
    :class:`Huebner2018`, 12, 31, 364 NT / 112 T, 0.9s, 1000Hz, 3
-   :class:`Sosulski2019`, 13, 31, 75 NT / 15 T, 1.2s, 1000Hz, 3
+   :class:`Sosulski2019`, 13, 31, 7500 NT / 1500 T, 1.2s, 1000Hz, 1
    :class:`EPFLP300`, 8, 32, 2753 NT / 551 T, 1s, 2048Hz, 4
    :class:`Lee2019_ERP`, 54, 62, 6900 NT / 1380 T, 1s, 1000Hz, 2
 
