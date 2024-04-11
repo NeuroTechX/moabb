@@ -24,6 +24,8 @@ Enhancements
 - Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
 - Improve transform function of AugmentedDataset (:gh:`541` by `Quentin Barthelemy`_)
 - Add scripts to upload results on PapersWithCode (:gh:`561` by `Pierre Guetschel`_)
+- Move cVEP common functions to :mod:`moabb.datasets.utils` (:gh:`564` :gh:`557` by `Pierre Guetschel`_)
+- Normalize c-VEP description tables (:gh:`562` :gh:`566` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
@@ -32,6 +34,9 @@ Bugs
 - Fix saving to BIDS runs with a description string in their name (:gh:`530` by `Pierre Guetschel`_)
 - Fix import of keras BatchNormalization for TF 2.13 and higher (:gh:`544` by `Brian Irvine`_)
 - Fix the doc summary tables of :class:`moabb.datasets.Lee2019_SSVEP` (:gh:`548` :gh:`547` :gh:`546` by `Pierre Guetschel`_)
+- Fix the doc summary for Castillos2023 dataset (:gh:`561` by `Bruno Aristimunha`_)
+- Fix format string receiving incorrect number of args in bids interface (:gh:`563` by `Pierre Guetschel`_)
+- Fix number of sessions in doc of :class:`moabb.datasets.Sosulski2019` (:gh:`565` by `Pierre Guetschel`_)
 
 API changes
 ~~~~~~~~~~~
@@ -79,7 +84,8 @@ Enhancements
 - Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
 - Automate setting of event_id in compound dataset and add `data_origin` information to the data (:gh:`475` by `Gregoire Cattan`_)
 - Add possibility of not saving the model (:gh:`489` by `Igor Carrara`_)
-- Add CVEP and BurstVEP dataset from Castillos from Toulouse lab (by `Seabstien Velut`_)
+- Add CVEP and BurstVEP dataset from Castillos from Toulouse lab (:gh:`531` by `Sebastien Velut`_)
+- Add c-VEP dataset from Thielen et al. 2015 (:gh:`557` by `Jordy Thielen`_)
 
 Bugs
 ~~~~
@@ -109,6 +115,8 @@ Bugs
 - Fix case when events specified via ``raw.annotations`` but no events (:gh:`491` by `Pierre Guetschel`_)
 - Fix bug in downloading Shin2017A dataset (:gh:`493` by `Igor Carrara`_)
 - Fix the cropped option in the dataset preprocessing (:gh:`502` by `Bruno Aristimunha`_)
+- Fix bug in :func:`moabb.datasets.utils.dataset_search` with missing cvep paradigm (:gh:`557` by `Jordy Thielen`_)
+- Fix mistakes in :func:`moabb.datasets.thielen2021` considering wrong docs and hardcoded trial stim channel (:gh:`557` by `Jordy Thielen`_)
 
 API changes
 ~~~~~~~~~~~
