@@ -9,6 +9,7 @@ generation. If you'd like to know about the statistics and plotting, see the
 next tutorial.
 
 """
+
 # Authors: Vinay Jayaram <vinayjayaram13@gmail.com>
 #
 # License: BSD (3-clause)

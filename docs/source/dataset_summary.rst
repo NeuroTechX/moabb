@@ -61,7 +61,7 @@ P300/ERP
    :class:`Cattan2019_VR`, 21, 16, 600 NT / 120 T, 1s, 512Hz, 2
    :class:`Huebner2017`, 13, 31, 364 NT / 112 T, 0.9s, 1000Hz, 3
    :class:`Huebner2018`, 12, 31, 364 NT / 112 T, 0.9s, 1000Hz, 3
-   :class:`Sosulski2019`, 13, 31, 75 NT / 15 T, 1.2s, 1000Hz, 3
+   :class:`Sosulski2019`, 13, 31, 7500 NT / 1500 T, 1.2s, 1000Hz, 1
    :class:`EPFLP300`, 8, 32, 2753 NT / 551 T, 1s, 2048Hz, 4
    :class:`Lee2019_ERP`, 54, 62, 6900 NT / 1380 T, 1s, 1000Hz, 2
 
@@ -74,7 +74,7 @@ SSVEP
    :header: Dataset, #Subj, #Chan, #Classes, #Trials / class, Trials length, Sampling rate, #Sessions
    :class: sortable
 
-   :class:`Lee2019_SSVEP`,54,62,4,25,1s,1000Hz,1
+   :class:`Lee2019_SSVEP`,54,62,4,50,4s,1000Hz,2
    :class:`Kalunga2016`,12,8,4,16,2s,256Hz,1
    :class:`MAMEM1`,10,256,5,12-15,3s,250Hz,1
    :class:`MAMEM2`,10,256,5,20-30,3s,250Hz,1
@@ -100,7 +100,10 @@ DOI: https://doi.org/10.1088/1741-2552/ac38cf
    :header: Dataset, #Subj, #Chan, #Classes, #Trials / class, Trials length, #Epochs / class, Sampling rate, #Sessions, Codes, Presentation rate
    :class: sortable
 
-   :class:`Thielen2021`,30,8,20,5,31.5s,18900 NT / 18900 T,512Hz,1,Gold codes,60Hz
+   :class:`Thielen2015`,12,64,36,3,4.2s,27216 NT / 27216 T,2048Hz,1,Gold codes,120Hz
+   :class:`Thielen2021`,30,8,20,5,31.5s,94500 NT / 94500 T,512Hz,1,Gold codes,60Hz
+
+
 
 
 Resting States

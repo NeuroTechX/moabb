@@ -86,6 +86,7 @@ c-VEP Datasets
     :toctree: generated/
     :template: class.rst
 
+    Thielen2015
     Thielen2021
 
 

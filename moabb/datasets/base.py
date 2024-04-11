@@ -1,4 +1,5 @@
 """Base class for a dataset."""
+
 import abc
 import logging
 import re

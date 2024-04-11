@@ -19,6 +19,7 @@ This tutorial explores the paradigm object, with 3 examples of paradigm :
      - LeftRightImagery
 
 """
+
 # Authors: Alexandre Barachant <alexandre.barachant@gmail.com>
 #          Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
 #

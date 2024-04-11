@@ -1,4 +1,5 @@
 """BMI/OpenBMI dataset."""
+
 from functools import partialmethod
 
 import numpy as np
@@ -385,7 +386,7 @@ class Lee2019_SSVEP(Lee2019):
         =============  =======  =======  ==========  =================  ===============  ===============  ===========
         Name             #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
         =============  =======  =======  ==========  =================  ===============  ===============  ===========
-        Lee2019_SSVEP       54       16           4                 25  1s               1000Hz                     1
+        Lee2019_SSVEP       54       62           4                 50  4s               1000Hz                     2
         =============  =======  =======  ==========  =================  ===============  ===============  ===========
 
     Dataset from Lee et al 2019 [1]_.

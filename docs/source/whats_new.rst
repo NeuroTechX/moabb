@@ -21,6 +21,10 @@ Enhancements
 - Adding cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
 - Option to interpolate channel in paradigms' `match_all` method (:gh:`480` by `Gregoire Cattan`_)
 - Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_ and `Sylvain Chevallier`_)
+- Adding leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
+- Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
+- Improve transform function of AugmentedDataset (:gh:`541` by `Quentin Barthelemy`_)
+- Move cVEP common functions to :mod:`moabb.datasets.utils` (:gh:`564` :gh:`557` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
@@ -28,6 +32,10 @@ Bugs
 - Fix TRCA implementation for different stimulation freqs and for signal filtering (:gh:522 by `Sylvain Chevallier`_)
 - Fix saving to BIDS runs with a description string in their name (:gh:`530` by `Pierre Guetschel`_)
 - Fix issue with WithinSessionEvaluation with multiple datasets (PR :gh: `521`, issue :gh: `514` by `Sara Sedlar`_)
+- Fix import of keras BatchNormalization for TF 2.13 and higher (:gh:`544` by `Brian Irvine`_)
+- Fix the doc summary tables of :class:`moabb.datasets.Lee2019_SSVEP` (:gh:`548` :gh:`547` :gh:`546` by `Pierre Guetschel`_)
+- Fix format string receiving incorrect number of args in bids interface (:gh:`563` by `Pierre Guetschel`_)
+- Fix number of sessions in doc of :class:`moabb.datasets.Sosulski2019` (:gh:`565` by `Pierre Guetschel`_)
 
 API changes
 ~~~~~~~~~~~
@@ -75,6 +83,8 @@ Enhancements
 - Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
 - Automate setting of event_id in compound dataset and add `data_origin` information to the data (:gh:`475` by `Gregoire Cattan`_)
 - Add possibility of not saving the model (:gh:`489` by `Igor Carrara`_)
+- Add CVEP and BurstVEP dataset from Castillos from Toulouse lab (:gh:`531` by `Sebastien Velut`_)
+- Add c-VEP dataset from Thielen et al. 2015 (:gh:`557` by `Jordy Thielen`_)
 
 Bugs
 ~~~~
@@ -104,6 +114,8 @@ Bugs
 - Fix case when events specified via ``raw.annotations`` but no events (:gh:`491` by `Pierre Guetschel`_)
 - Fix bug in downloading Shin2017A dataset (:gh:`493` by `Igor Carrara`_)
 - Fix the cropped option in the dataset preprocessing (:gh:`502` by `Bruno Aristimunha`_)
+- Fix bug in :func:`moabb.datasets.utils.dataset_search` with missing cvep paradigm (:gh:`557` by `Jordy Thielen`_)
+- Fix mistakes in :func:`moabb.datasets.thielen2021` considering wrong docs and hardcoded trial stim channel (:gh:`557` by `Jordy Thielen`_)
 
 API changes
 ~~~~~~~~~~~
@@ -417,3 +429,5 @@ API changes
 .. _Ludovic Darmet: https://github.com/ludovicdmt
 .. _Thomas Moreau: https://github.com/tommoral
 .. _Jordy Thielen: https://github.com/thijor
+.. _Sebastien Velut: https://github.com/swetbear
+.. _Brian Irvine: https://github.com/brianjohannes

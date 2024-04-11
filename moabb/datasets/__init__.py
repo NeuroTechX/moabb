@@ -6,6 +6,7 @@ different recording sessions per subject or to evaluate them separately.
 See https://github.com/NeuroTechX/moabb/wiki/Datasets-Support for detail
 on datasets (electrodes, number of trials, sessions, etc.)
 """
+
 from . import compound_dataset
 
 # flake8: noqa
@@ -66,6 +67,7 @@ from .ssvep_exo import Kalunga2016
 from .ssvep_mamem import MAMEM1, MAMEM2, MAMEM3
 from .ssvep_nakanishi import Nakanishi2015
 from .ssvep_wang import Wang2016
+from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021
 from .upper_limb import Ofner2017
 from .utils import _init_dataset_list
