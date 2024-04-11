@@ -10,6 +10,7 @@ subjects (gender and age) and experimenters (gender).
 To reduce computational time, the example is provided for four subjects.
 
 """
+
 # Authors: Sara Sedlar <sara.sedlar@gmail.com>
 #          Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>
 # License: BSD (3-clause)

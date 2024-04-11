@@ -135,9 +135,11 @@ class Dreyer2023Base(BaseDataset):
         df.columns.name = None
 
         subjects = [
-            self.db_id + str(s + self.db_idx_off[self.db_id])
-            if not str(s).startswith(self.db_id)
-            else str(s)
+            (
+                self.db_id + str(s + self.db_idx_off[self.db_id])
+                if not str(s).startswith(self.db_id)
+                else str(s)
+            )
             for s in subjects
         ]
 
