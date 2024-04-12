@@ -5,6 +5,7 @@ end with a sklearn compatible estimator.
 """
 
 # flake8: noqa
+from mne.utils import warn
 
 from .classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
 from .features import FM, AugmentedDataset, ExtendedSSVEPSignal, LogVariance
@@ -22,7 +23,14 @@ try:
     )
     from .utils_deep_model import EEGNet, TCN_block
 except ModuleNotFoundError as err:
-    print("Tensorflow not install, you could not use those pipelines")
+    warn(
+        "Tensorflow is not installed. "
+        "You won't be able to use these MOABB pipelines if you attempt to do "
+        "so.",
+        category=ModuleNotFoundError,
+        module="moabb.pipelines",
+    )
+
 
 try:
     from .utils_pytorch import (

@@ -61,6 +61,7 @@ reduce the disk space used.
     method of the datasets. It works the same way as for a
     paradigm except that it will save un-processed raw recordings.
 """
+
 # Authors: Pierre Guetschel <pierre.guetschel@gmail.com>
 #
 # License: BSD (3-clause)

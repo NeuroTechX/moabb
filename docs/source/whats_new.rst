@@ -18,6 +18,36 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
+- Adding cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
+- Option to interpolate channel in paradigms' `match_all` method (:gh:`480` by `Gregoire Cattan`_)
+- Adding leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
+- Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
+- Improve transform function of AugmentedDataset (:gh:`541` by `Quentin Barthelemy`_)
+- Move cVEP common functions to :mod:`moabb.datasets.utils` (:gh:`564` :gh:`557` by `Pierre Guetschel`_)
+- Normalize c-VEP description tables (:gh:`562` :gh:`566` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
+
+Bugs
+~~~~
+
+- Fix TRCA implementation for different stimulation freqs and for signal filtering (:gh:522 by `Sylvain Chevallier`_)
+- Fix saving to BIDS runs with a description string in their name (:gh:`530` by `Pierre Guetschel`_)
+- Fix import of keras BatchNormalization for TF 2.13 and higher (:gh:`544` by `Brian Irvine`_)
+- Fix the doc summary tables of :class:`moabb.datasets.Lee2019_SSVEP` (:gh:`548` :gh:`547` :gh:`546` by `Pierre Guetschel`_)
+- Fix the doc summary for Castillos2023 dataset (:gh:`561` by `Bruno Aristimunha`_)
+- Fix format string receiving incorrect number of args in bids interface (:gh:`563` by `Pierre Guetschel`_)
+- Fix number of sessions in doc of :class:`moabb.datasets.Sosulski2019` (:gh:`565` by `Pierre Guetschel`_)
+
+API changes
+~~~~~~~~~~~
+
+- None
+
+
+Version - 1.0.0  (Stable - PyPi)
+---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
 
 - Adding extra thank you section in the documentation (:gh:`390` by `Bruno Aristimunha`_)
 - Adding new script to get the meta information of the datasets (:gh:`389` by `Bruno Aristimunha`_)
@@ -53,13 +83,15 @@ Enhancements
 - Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
 - Automate setting of event_id in compound dataset and add `data_origin` information to the data (:gh:`475` by `Gregoire Cattan`_)
 - Add possibility of not saving the model (:gh:`489` by `Igor Carrara`_)
+- Add CVEP and BurstVEP dataset from Castillos from Toulouse lab (:gh:`531` by `Sebastien Velut`_)
+- Add c-VEP dataset from Thielen et al. 2015 (:gh:`557` by `Jordy Thielen`_)
 
 Bugs
 ~~~~
 
 - Restore 3 subject from Cho2017 (:gh:`392` by `Igor Carrara`_ and `Sylvain Chevallier`_)
 - Correct downloading with VirtualReality BrainInvaders dataset (:gh:`393` by `Gregoire Cattan`_)
-- Rename event `substraction` to `subtraction` in :func:`moabb.datasets.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
+- Rename event `subtraction` in :func:`moabb.datasets.Shin2017B` (:gh:`397` by `Pierre Guetschel`_)
 - Save parameters of :func:`moabb.datasets.PhysionetMI` (:gh:`403` by `Pierre Guetschel`_)
 - Fixing issue with parallel evaluation (:gh:`401` by `Bruno Aristimunha`_ and `Igor Carrara`_)
 - Fixing SSLError from BCI competition IV (:gh:`404` by `Bruno Aristimunha`_)
@@ -81,6 +113,9 @@ Bugs
 - Removing joblib Parallel (:gh:`488` by `Igor Carrara`_)
 - Fix case when events specified via ``raw.annotations`` but no events (:gh:`491` by `Pierre Guetschel`_)
 - Fix bug in downloading Shin2017A dataset (:gh:`493` by `Igor Carrara`_)
+- Fix the cropped option in the dataset preprocessing (:gh:`502` by `Bruno Aristimunha`_)
+- Fix bug in :func:`moabb.datasets.utils.dataset_search` with missing cvep paradigm (:gh:`557` by `Jordy Thielen`_)
+- Fix mistakes in :func:`moabb.datasets.thielen2021` considering wrong docs and hardcoded trial stim channel (:gh:`557` by `Jordy Thielen`_)
 
 API changes
 ~~~~~~~~~~~
@@ -88,8 +123,8 @@ API changes
 - None
 
 
-Version - 0.5.0  (Stable - PyPi)
----------------------------------
+Version - 0.5.0
+---------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -316,7 +351,7 @@ Bugs
 - Use stim_channels or check annotation when loading files in Paradigm  (:gh:`72` by `Jan Sosulski`_)
 - Correct MNE issues (:gh:`76` by `Sylvain Chevallier`_)
 - Fix capitalization in channel names of cho dataset  (:gh:`90` by `Jan Sosulski`_)
-- Correct failling CI tests (:gh:`100` by `Sylvain Chevallier`_)
+- Correct failing CI tests (:gh:`100` by `Sylvain Chevallier`_)
 - Fix EPFL dataset flat signal sections and wrong scaling (:gh:`104` and :gh:`96` by  `Jan Sosulski`_)
 - Fix schirrmeister dataset for Python3.8 (:gh:`105` by `Robin Schirrmeister`_)
 - Correct event detection problem and duplicate event error (:gh:`106` by `Sylvain Chevallier`_)
@@ -394,3 +429,5 @@ API changes
 .. _Ludovic Darmet: https://github.com/ludovicdmt
 .. _Thomas Moreau: https://github.com/tommoral
 .. _Jordy Thielen: https://github.com/thijor
+.. _Sebastien Velut: https://github.com/swetbear
+.. _Brian Irvine: https://github.com/brianjohannes

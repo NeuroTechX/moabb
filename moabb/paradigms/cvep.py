@@ -61,6 +61,12 @@ class BaseCVEP(BaseParadigm):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.0
+
     """
 
     def __init__(

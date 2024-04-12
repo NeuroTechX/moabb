@@ -68,9 +68,8 @@ jobs:
       - name: Install and test braindecode
         run: |
           source $VENV
-          poetry run pip install torch
           cd braindecode
-          poetry run pip install -e .[tests]
-          poetry run pytest test/
+          pip install -e .[tests]
+          pytest test/
 
       # poetry run pip install -U https://api.github.com/repos/braindecode/braindecode/zipball/master

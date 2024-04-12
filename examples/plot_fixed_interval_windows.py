@@ -15,6 +15,7 @@ for unsupervised algorithms.
 In this example, we will use the Zhou2016 dataset because
 it is relatively small and can be downloaded quickly.
 """
+
 # Authors: Pierre Guetschel <pierre.guetschel@gmail.com>
 #
 # License: BSD (3-clause)

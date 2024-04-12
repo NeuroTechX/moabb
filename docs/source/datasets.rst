@@ -75,6 +75,7 @@ SSVEP Datasets
     Lee2019_SSVEP
 
 
+
 --------------
 c-VEP Datasets
 --------------
@@ -83,8 +84,12 @@ c-VEP Datasets
     :toctree: generated/
     :template: class.rst
 
+    Thielen2015
     Thielen2021
-
+    CastillosBurstVEP40
+    CastillosBurstVEP100
+    CastillosCVEP40
+    CastillosCVEP100
 
 ----------------------
 Resting State Datasets

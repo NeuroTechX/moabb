@@ -17,6 +17,7 @@ from keras.layers import (
     Add,
     AveragePooling2D,
     AvgPool2D,
+    BatchNormalization,
     Concatenate,
     Conv2D,
     Dense,
@@ -29,7 +30,6 @@ from keras.layers import (
     MaxPooling2D,
     Permute,
 )
-from keras.layers.normalization.batch_normalization import BatchNormalization
 from keras.models import Model, Sequential
 from scikeras.wrappers import KerasClassifier
 

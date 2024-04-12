@@ -7,6 +7,7 @@ This example demonstrates how to make a model selection in pipelines
 for finding the best model parameter, using grid search. Two models
 are compared, one "vanilla" model with model tuned via grid search.
 """
+
 import os
 from pickle import load
 

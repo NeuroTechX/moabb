@@ -51,8 +51,10 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         self.slen = interval[1] - interval[0]
         self.freqs = freqs
         self.n_harmonics = n_harmonics
+        self.classes_ = []
         self.one_hot = {}
         for i, k in enumerate(freqs.keys()):
+            self.classes_.append(i)
             self.one_hot[k] = i
 
     def fit(self, X, y, sample_weight=None):
@@ -111,9 +113,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     freqs : dict with n_classes keys
         Frequencies corresponding to the SSVEP components. These are
         necessary to design the filterbank bands.
-
-    n_fbands : int, default=5
-        Number of sub-bands considered for filterbank analysis.
 
     downsample: int, default=1
         Factor by which downsample the data. A downsample value of N will result
@@ -186,7 +185,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         self,
         interval,
         freqs,
-        n_fbands=5,
         downsample=1,
         is_ensemble=True,
         method="original",
@@ -194,7 +192,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     ):
         self.freqs = freqs
         self.peaks = np.array([float(f) for f in freqs.keys()])
-        self.n_fbands = n_fbands
+        self.n_fbands = len(self.peaks)
         self.downsample = downsample
         self.interval = interval
         self.slen = interval[1] - interval[0]

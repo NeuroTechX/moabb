@@ -36,13 +36,12 @@ class CompoundDataset(BaseDataset):
     interval: list with 2 entries
         See `BaseDataset`.
 
-    paradigm: ['p300','imagery', 'ssvep', 'rstate']
-        Defines what sort of dataset this is
     """
 
-    def __init__(self, subjects_list: list, code: str, interval: list, paradigm: str):
+    def __init__(self, subjects_list: list, code: str, interval: list):
         self._set_subjects_list(subjects_list)
         dataset, _, _, _ = self.subjects_list[0]
+        paradigm = self._get_paradigm()
         super().__init__(
             subjects=list(range(1, self.count + 1)),
             sessions_per_subject=self._get_sessions_per_subject(),
@@ -51,6 +50,17 @@ class CompoundDataset(BaseDataset):
             interval=interval,
             paradigm=paradigm,
         )
+
+    @property
+    def datasets(self):
+        all_datasets = [entry[0] for entry in self.subjects_list]
+        found_flags = set()
+        filtered_dataset = []
+        for dataset in all_datasets:
+            if dataset.code not in found_flags:
+                filtered_dataset.append(dataset)
+                found_flags.add(dataset.code)
+        return filtered_dataset
 
     @property
     def count(self):
@@ -77,6 +87,16 @@ class CompoundDataset(BaseDataset):
             self.subjects_list = []
             for compoundDataset in subjects_list:
                 self.subjects_list.extend(compoundDataset.subjects_list)
+
+    def _get_paradigm(self):
+        dataset, _, _, _ = self.subjects_list[0]
+        paradigm = dataset.paradigm
+        # Check all of the datasets have the same paradigm
+        for i in range(1, len(self.subjects_list)):
+            entry = self.subjects_list[i]
+            dataset = entry[0]
+            assert dataset.paradigm == paradigm
+        return paradigm
 
     def _with_data_origin(self, data: dict, shopped_subject):
         data_origin = self.subjects_list[shopped_subject - 1]

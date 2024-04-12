@@ -8,6 +8,7 @@ from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import (
+    GroupKFold,
     LeaveOneGroupOut,
     StratifiedKFold,
     StratifiedShuffleSplit,
@@ -107,7 +108,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 raise ValueError(
                     "When passing data_size, please also indicate number of permutations"
                 )
-            if type(n_perms) is int:
+            if isinstance(n_perms, int):
                 self.n_perms = np.full_like(self.data_size["value"], n_perms, dtype=int)
             elif len(self.n_perms) != len(self.data_size["value"]):
                 raise ValueError(
@@ -161,6 +162,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 subjects=[subject],
                 return_epochs=self.return_epochs,
                 return_raws=self.return_raws,
+                cache_config=self.cache_config,
                 postprocess_pipeline=postprocess_pipeline,
             )
             # iterate over sessions
@@ -490,6 +492,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                 subjects=[subject],
                 return_epochs=self.return_epochs,
                 return_raws=self.return_raws,
+                cache_config=self.cache_config,
                 postprocess_pipeline=postprocess_pipeline,
             )
             le = LabelEncoder()
@@ -630,6 +633,9 @@ class CrossSubjectEvaluation(BaseEvaluation):
         use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
+    n_splits: int, default=None
+        Number of splits for cross-validation. If None, the number of splits
+        is equal to the number of subjects.
     """
 
     # flake8: noqa: C901
@@ -657,6 +663,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
             dataset=dataset,
             return_epochs=self.return_epochs,
             return_raws=self.return_raws,
+            cache_config=self.cache_config,
             postprocess_pipeline=postprocess_pipeline,
         )
 
@@ -672,7 +679,12 @@ class CrossSubjectEvaluation(BaseEvaluation):
         scorer = get_scorer(self.paradigm.scoring)
 
         # perform leave one subject out CV
-        cv = LeaveOneGroupOut()
+        if self.n_splits is None:
+            cv = LeaveOneGroupOut()
+        else:
+            cv = GroupKFold(n_splits=self.n_splits)
+            n_subjects = self.n_splits
+
         inner_cv = StratifiedKFold(3, shuffle=True, random_state=self.random_state)
 
         # Implement Grid Search
