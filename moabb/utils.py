@@ -1,4 +1,5 @@
 """Util functions for moabb."""
+
 import abc
 import inspect
 import logging
