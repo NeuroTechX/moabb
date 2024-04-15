@@ -82,7 +82,6 @@ SSVEP
    :class:`Nakanishi2015`,9,8,12,15,4.15s,256Hz,1
    :class:`Wang2016`,34,62,40,6,5s,250Hz,1
 
-
 c-VEP
 ======================
 
@@ -97,13 +96,15 @@ potentials (c-VEP): A literature review. Journal of Neural Engineering, 18(6), 0
 DOI: https://doi.org/10.1088/1741-2552/ac38cf
 
 .. csv-table::
-   :header: Dataset, #Subj, #Chan, #Classes, #Trials / class, Trials length, #Epochs / class, Sampling rate, #Sessions, Codes, Presentation rate
+   :header: Dataset, #Subj, #Sessions, Sampling rate, #Chan, Trials length, #Trial classes, #Trials / class, #Epochs classes, #Epochs / class, Codes, Presentation rate
    :class: sortable
 
-   :class:`Thielen2015`,12,64,36,3,4.2s,27216 NT / 27216 T,2048Hz,1,Gold codes,120Hz
-   :class:`Thielen2021`,30,8,20,5,31.5s,94500 NT / 94500 T,512Hz,1,Gold codes,60Hz
-
-
+   :class:`Thielen2015`,12,1,2048Hz,64,4.2s,36,3,2,27216 NT / 27216 T,Gold codes,120Hz
+   :class:`Thielen2021`,30,1,512Hz,8,31.5s,20,5,2,18900 NT / 18900 T,Gold codes,60Hz
+   :class:`CastillosCVEP100`,    12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,Burst-CVEP,60Hz
+   :class:`CastillosCVEP40`,     12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,Burst-CVEP,60Hz
+   :class:`CastillosBurstVEP40`, 12,1,500Hz,32,2.2s,4,15/15/15/15,2,5820 NT / 1200 T,Burst-CVEP,60Hz
+   :class:`CastillosBurstVEP100`,12,1,500Hz,32,2.2s,4,15/15/15/15,2,5820 NT / 1200 T,Burst-CVEP,60Hz
 
 
 Resting States

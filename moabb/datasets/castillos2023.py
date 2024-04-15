@@ -288,18 +288,18 @@ class BaseCastillos2023(BaseDataset):
         return np.array(new_onset_1) / self.fps, np.array(new_onset_0) / self.fps
 
 
-class CasitllosBurstVEP100(BaseCastillos2023):
+class CastillosBurstVEP100(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
     .. admonition:: Dataset summary
 
-        =============            =======  =======  ==============================  ===============  ===============  ===========
-        Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
-        =============            =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202BurstVEP100       12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
-        =============            =======  =======  ==============================  ===============  ===============  ===========
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
+        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
+        CastillosBurstVEP100  12        1          500Hz      32        2.2s            4        15/15/15/15       2            5820NT/1200T   Burst-CVEP      60Hz
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
 
     **Dataset description**
 
@@ -344,24 +344,24 @@ class CasitllosBurstVEP100(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP100",
+            code="CastillosBurstVEP100",
             paradigm="cvep",
             paradigm_type="burst100",
         )
 
 
-class CasitllosBurstVEP40(BaseCastillos2023):
+class CastillosBurstVEP40(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
     .. admonition:: Dataset summary
 
-        ======================   =======  =======  ==============================  ===============  ===============  ===========
-        Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
-        ======================   =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202BurstVEP40        12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
-        ======================   =======  =======  ==============================  ===============  ===============  ===========
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
+        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
+        CastillosBurstVEP40   12        1          500Hz      32        2.2s            4        15/15/15/15       2            5820NT/1200T   Burst-CVEP            60Hz
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
 
     **Dataset description**
 
@@ -406,24 +406,25 @@ class CasitllosBurstVEP40(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP40",
+            code="CastillosBurstVEP40",
             paradigm="cvep",
             paradigm_type="burst40",
         )
 
 
-class CasitllosCVEP100(BaseCastillos2023):
+class CastillosCVEP100(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
     .. admonition:: Dataset summary
 
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202CVEP100           12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
+        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
+        CastillosCVEP100      12        1          500Hz      32        2.2s            4        15/15/15/15       2            3525NT/3495T   Burst-CVEP    60Hz
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
+
 
     **Dataset description**
 
@@ -468,24 +469,23 @@ class CasitllosCVEP100(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP100",
+            code="CastillosCVEP100",
             paradigm="cvep",
             paradigm_type="mseq100",
         )
 
 
-class CasitllosCVEP40(BaseCastillos2023):
+class CastillosCVEP40(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
     .. admonition:: Dataset summary
-
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202CVEP40            12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
+        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
+        CastillosCVEP40       12        1          500Hz      32        2.2s            4        15/15/15/15       2            3525NT/3495T   Burst-CVEP          60Hz
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
 
     **Dataset description**
 
@@ -530,7 +530,7 @@ class CasitllosCVEP40(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP40",
+            code="CastillosCVEP40",
             paradigm="cvep",
             paradigm_type="mseq40",
         )
