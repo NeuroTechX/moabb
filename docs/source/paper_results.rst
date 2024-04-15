@@ -1,4 +1,3 @@
-:html_theme.sidebar_secondary.remove:
 .. _paper_results:
 
 .. currentmodule:: moabb.datasets
@@ -12,9 +11,9 @@ Text to introduce the benchmarking results. Create the citation for the benchmar
 Motor Imagery - All classes
 =============================
 
-.. csv-table::
-   :header: Pipelines,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Weibo2014`,:class:`Zhou2016`
-   :class: sortable
+.. csv-table:: Motor Imagery - All classes
+   :header: Pipelines,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`PhysionetMI`,`HighGamma`_,:class:`Weibo2014`,:class:`Zhou2016`
+   :class: sortable, datatable
 
     `ACM+TS+SVM`_,69.37±15.07,77.82±12.23,55.44±14.87,82.50±10.20,63.89±11.01,85.25±4.06
     `CSP+LDA`_,61.04±17.22,65.99±15.47,47.73±14.35,72.97±10.42,39.45±11.87,82.96±5.20
@@ -36,8 +35,8 @@ Motor Imagery - All classes
 Motor Imagery - Left vs Right Hand
 ===================================
 
-.. csv-table::
-   :header: Pipelines,:class:`BNCI2014_001`,:class:`BNCI2014_004`,:class:`Cho2017`,:class:`GrosseWentrup2009`,:class:`Lee2019_MI`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Shin2017A`,:class:`Weibo2014`,:class:`Zhou2016`
+.. csv-table:: Motor Imagery - Left vs Right Hand
+   :header: Pipelines,:class:`BNCI2014_001`,:class:`BNCI2014_004`,:class:`Cho2017`,`Grosse2009`_,:class:`Lee2019_MI`,:class:`PhysionetMI`,`HighGamma`_,:class:`Shin2017A`,:class:`Weibo2014`,:class:`Zhou2016`
    :class: sortable
 
     `ACM+TS+SVM`_,91.71±10.30,82.67±15.33,73.56±14.54,86.60±15.12,83.05±13.97,63.55±21.24,85.82±13.98,68.97±23.45,84.78±13.33,95.03±4.76
@@ -64,8 +63,8 @@ Motor Imagery - Left vs Right Hand
 Motor Imagery - Right Hand vs Feet
 ==================================
 
-.. csv-table::
-   :header: Pipelines,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`BNCI2014_002`,:class:`BNCI2015_001`,:class:`BNCI2015_004`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Weibo2014`,:class:`Zhou2016`
+.. csv-table:: Motor Imagery - Right Hand vs Feet
+   :header: Pipelines,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`BNCI2014_002`,:class:`BNCI2015_001`,:class:`BNCI2015_004`,:class:`PhysionetMI`,`HighGamma`_,:class:`Weibo2014`,:class:`Zhou2016`
    :class: sortable
 
     `ACM+TS+SVM`_,86.56±12.26,97.32±3.35,88.60±10.71,93.01±8.09,62.60±14.62,93.33±8.46,98.67±3.06,93.25±4.12,97.18±3.00
@@ -88,7 +87,7 @@ Motor Imagery - Right Hand vs Feet
 P300/ERP (All classes)
 ======================
 
-.. csv-table::
+.. csv-table:: P300/ERP (All classes)
    :header: Pipelines,:class:`BNCI2014_008`,:class:`BNCI2014_009`,:class:`BNCI2015_003`,:class:`BI2012`,:class:`BI2013a`,:class:`BI2014a`,:class:`BI2014b`,:class:`BI2015a`,:class:`BI2015b`,:class:`Cattan2019_VR`,:class:`EPFLP300`,:class:`Huebner2017`,:class:`Huebner2018`,:class:`Lee2019_ERP`,:class:`Sosulski2019`
    :class: sortable
 
@@ -98,28 +97,41 @@ P300/ERP (All classes)
     `XDAWNCov+MDM`_,77.62±9.81,92.04±5.97,83.08±7.55,88.22±5.90,90.97±5.52,80.88±11.01,91.58±10.02,92.57±5.03,83.48±12.05,88.53±7.34,83.20±9.05,98.07±2.09,97.78±1.04,97.70±2.68,86.07±7.15
     `XDAWNCov+TS+SVM`_,85.61±4.43,93.43±5.11,82.95±8.57,90.99±4.79,92.71±4.92,85.77±9.75,91.88±9.94,93.05±4.98,84.56±12.09,90.68±6.29,84.29±8.53,98.69±1.78,98.47±0.97,98.41±2.03,87.28±6.92
 
+.. raw:: html
 
-SSVEP (All classes)
-======================
+   <h1 align="center">SSVEP (All classes)</h1>
 
 
-.. csv-table::
-   :header: Methods,:class:`Kalunga2016`,:class:`Lee2019_SSVEP`,:class:`MAMEM1`,:class:`MAMEM2`,:class:`MAMEM3`,:class:`Nakanishi2015`,:class:`Wang2016`
+.. csv-table:: SSVEP (All classes) part 1
+   :header: Methods,:class:`Kalunga2016`,:class:`Lee2019_SSVEP`,:class:`MAMEM1`,:class:`MAMEM2`,:class:`MAMEM3`
    :class: sortable
 
-    `SSVEP_CCA`_,25.40±2.51,23.86±3.72,19.17±5.01,23.60±4.10,13.80±7.47,8.15±0.74,2.48±1.01
-    `SSVEP_MsetCCA`_,22.67±4.23,25.10±3.81,20.50±2.37,22.08±1.76,27.60±3.01,7.10±1.50,4.00±1.10
-    `SSVEP_MDM`_,70.89±13.44,75.38±18.38,27.31±11.64,23.12±6.29,34.40±9.96,78.77±19.06,54.77±21.95
-    `SSVEP_TS+LR`_,70.86±11.64,89.44±13.84,53.71±24.25,39.36±12.06,42.10±14.33,87.22±15.96,67.52±20.04
-    `SSVEP_TS+SVM`_,68.95±13.73,88.58±14.47,50.58±23.34,34.80±11.76,40.20±14.41,86.30±15.88,59.58±20.57
-    `SSVEP_TRCA`_,24.84±7.24,64.01±15.27,24.24±6.65,24.24±2.93,23.70±3.49,83.21±10.80,2.79±1.03
+    `SSVEP_CCA`_,25.40±2.51,23.86±3.72,19.17±5.01,23.60±4.10,13.80±7.47
+    `SSVEP_MsetCCA`_,22.67±4.23,25.10±3.81,20.50±2.37,22.08±1.76,27.60±3.01
+    `SSVEP_MDM`_,70.89±13.44,75.38±18.38,27.31±11.64,23.12±6.29,34.40±9.96
+    `SSVEP_TS+LR`_,70.86±11.64,89.44±13.84,53.71±24.25,39.36±12.06,42.10±14.33
+    `SSVEP_TS+SVM`_,68.95±13.73,88.58±14.47,50.58±23.34,34.80±11.76,40.20±14.41
+    `SSVEP_TRCA`_,24.84±7.24,64.01±15.27,24.24±6.65,24.24±2.93,23.70±3.49
 
+.. csv-table:: SSVEP (All classes) part 2
+   :header: Methods,:class:`Nakanishi2015`,:class:`Wang2016`
+   :class: sortable
+
+    `SSVEP_CCA`_,8.15±0.74,2.48±1.01
+    `SSVEP_MsetCCA`_,7.10±1.50,4.00±1.10
+    `SSVEP_MDM`_,78.77±19.06,54.77±21.95
+    `SSVEP_TS+LR`_,87.22±15.96,67.52±20.04
+    `SSVEP_TS+SVM`_,86.30±15.88,59.58±20.57
+    `SSVEP_TRCA`_,83.21±10.80,2.79±1.03
 
 .. toctree::
-    :hidden:
+   :hidden:
+   :caption: MOABB Results
+   :titlesonly:
 
 
-
+.. _Grosse2009: http://moabb.neurotechx.com/docs/generated/moabb.datasets.GrosseWentrup2009.html
+.. _HighGamma: http://moabb.neurotechx.com/docs/generated/moabb.datasets.Schirrmeister2017.html#
 .. _SSVEP_CCA: https://github.com/NeuroTechX/moabb/blob/develop/pipelines/CCA-SSVEP.yml
 .. _SSVEP_MsetCCA: https://github.com/NeuroTechX/moabb/blob/develop/pipelines/MsetCCA-SSVEP.yml
 .. _SSVEP_MDM: https://github.com/NeuroTechX/moabb/blob/develop/pipelines/MDM-SSVEP.yml
