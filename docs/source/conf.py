@@ -11,6 +11,7 @@ import matplotlib
 
 matplotlib.use("agg")
 
+from datetime import datetime
 
 import sphinx_gallery  # noqa
 from numpydoc import docscrape, numpydoc  # noqa
@@ -27,13 +28,14 @@ matplotlib.use("Agg")
 # -- Project information -----------------------------------------------------
 
 project = "moabb"
-copyright = "2018-2023 MOABB contributors"
+year = datetime.now().year
+copyright = f"2018-{year} MOABB contributors"
 author = "Alexandre Barachant, Vinay Jayaram, Sylvain Chevallier"
 
 # The short X.Y version
 version = moabb.__version__
 # The full version, including alpha/beta/rc tags
-release = moabb.__version__
+release = f"{moabb.__version__}-dev"
 
 
 # -- General configuration ---------------------------------------------------
