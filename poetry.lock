@@ -1877,13 +1877,13 @@ pybtex = ">=0.16"
 
 [[package]]
 name = "pydata-sphinx-theme"
-version = "0.14.4"
+version = "0.13.3"
 description = "Bootstrap-based Sphinx theme from the PyData community"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.7"
 files = [
-    {file = "pydata_sphinx_theme-0.14.4-py3-none-any.whl", hash = "sha256:ac15201f4c2e2e7042b0cad8b30251433c1f92be762ddcefdb4ae68811d918d9"},
-    {file = "pydata_sphinx_theme-0.14.4.tar.gz", hash = "sha256:f5d7a2cb7a98e35b9b49d3b02cec373ad28958c2ed5c9b1ffe6aff6c56e9de5b"},
+    {file = "pydata_sphinx_theme-0.13.3-py3-none-any.whl", hash = "sha256:bf41ca6c1c6216e929e28834e404bfc90e080b51915bbe7563b5e6fda70354f0"},
+    {file = "pydata_sphinx_theme-0.13.3.tar.gz", hash = "sha256:827f16b065c4fd97e847c11c108bf632b7f2ff53a3bca3272f63f3f3ff782ecc"},
 ]
 
 [package.dependencies]
@@ -1893,14 +1893,13 @@ beautifulsoup4 = "*"
 docutils = "!=0.17.0"
 packaging = "*"
 pygments = ">=2.7"
-sphinx = ">=5.0"
+sphinx = ">=4.2"
 typing-extensions = "*"
 
 [package.extras]
-a11y = ["pytest-playwright"]
 dev = ["nox", "pre-commit", "pydata-sphinx-theme[doc,test]", "pyyaml"]
-doc = ["ablog (>=0.11.0rc2)", "colorama", "ipykernel", "ipyleaflet", "jupyter_sphinx", "jupyterlite-sphinx", "linkify-it-py", "matplotlib", "myst-parser", "nbsphinx", "numpy", "numpydoc", "pandas", "plotly", "rich", "sphinx-autoapi (>=3.0.0)", "sphinx-copybutton", "sphinx-design", "sphinx-favicon (>=1.0.1)", "sphinx-sitemap", "sphinx-togglebutton", "sphinxcontrib-youtube (<1.4)", "sphinxext-rediraffe", "xarray"]
-test = ["pytest", "pytest-cov", "pytest-regressions"]
+doc = ["ablog (>=0.11.0rc2)", "colorama", "ipyleaflet", "jupyter_sphinx", "linkify-it-py", "matplotlib", "myst-nb", "nbsphinx", "numpy", "numpydoc", "pandas", "plotly", "rich", "sphinx-copybutton", "sphinx-design", "sphinx-favicon (>=1.0.1)", "sphinx-sitemap", "sphinx-togglebutton", "sphinxcontrib-youtube", "sphinxext-rediraffe", "xarray"]
+test = ["codecov", "pytest", "pytest-cov", "pytest-regressions"]
 
 [[package]]
 name = "pygments"
@@ -2511,38 +2510,36 @@ theme-sbt = ["sphinx-book-theme (>=0.3.0,<0.4.0)"]
 
 [[package]]
 name = "sphinx-favicon"
-version = "0.1"
+version = "1.0.1"
 description = "Sphinx Extension adding support for custom favicons"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "sphinx-favicon-0.1.tar.gz", hash = "sha256:0429ceeb84d9200ecab5c21cb4ea94ea348549fab28881ebafdd55d6c9e1020f"},
-    {file = "sphinx_favicon-0.1-py3-none-any.whl", hash = "sha256:4ca3e307ee6421a1aa6019f10529513497de88a707bd864021628d8192d51767"},
+    {file = "sphinx-favicon-1.0.1.tar.gz", hash = "sha256:df796de32125609c1b4a8964db74270ebf4502089c27cd53f542354dc0b57e8e"},
+    {file = "sphinx_favicon-1.0.1-py3-none-any.whl", hash = "sha256:7c93d6b634cb4c9687ceab67a8526f05d3b02679df94e273e51a43282e6b034c"},
 ]
 
 [package.dependencies]
 sphinx = ">=3.4"
 
+[package.extras]
+dev = ["nox", "pre-commit"]
+doc = ["pydata-sphinx-theme", "sphinx (<6)", "sphinx-copybutton", "sphinx-design"]
+test = ["beautifulsoup4", "pytest", "pytest-cov"]
+
 [[package]]
 name = "sphinx-gallery"
-version = "0.15.0"
-description = "A `Sphinx <https://www.sphinx-doc.org/en/master/>`_ extension that builds an HTML gallery of examples from any set of Python scripts."
+version = "0.11.1"
+description = "A Sphinx extension that builds an HTML version of any Python script and puts it into an examples gallery."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.7"
 files = [
-    {file = "sphinx-gallery-0.15.0.tar.gz", hash = "sha256:7217fe98f8c4cce248db798c48f34183e4cdb277d2381e188182f92a14ec26b7"},
-    {file = "sphinx_gallery-0.15.0-py3-none-any.whl", hash = "sha256:d66d38d901f6b65b6e3ee6c2584e37476b035d9e52907b1593a3f312946ae724"},
+    {file = "sphinx-gallery-0.11.1.tar.gz", hash = "sha256:56ccb29a0c2c4767d2a66617ba6ea7893e3a3885b6d972c62783a3b45b583ea5"},
+    {file = "sphinx_gallery-0.11.1-py3-none-any.whl", hash = "sha256:b165cb366a5768a0f36e60e5bc6828fbf55fd1831e71645310167375223aa25c"},
 ]
 
 [package.dependencies]
-pillow = "*"
-sphinx = ">=4"
-
-[package.extras]
-jupyterlite = ["jupyterlite-sphinx"]
-recommender = ["numpy"]
-show-api-usage = ["graphviz"]
-show-memory = ["memory-profiler"]
+sphinx = ">=3"
 
 [[package]]
 name = "sphinx-rtd-theme"
@@ -3162,4 +3159,4 @@ deeplearning = ["braindecode", "keras", "libclang", "scikeras", "tensorflow", "t
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8, <3.12"
-content-hash = "61badcbe5527dbac6167eda11defc5daa8b9f27f1a6794108904fe0c13abe1e6"
+content-hash = "12f32306f842aff71978b2899b47e3b987cafd67f9ce9005dc741610e38347f8"
