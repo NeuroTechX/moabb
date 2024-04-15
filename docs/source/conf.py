@@ -231,6 +231,7 @@ html_theme_options = {
             icon="fa-brands fa-square-github",
         ),
     ],
+    "github_url": "https://github.com/NeuroTechX/moabb",
     "icon_links_label": "External Links",  # for screen reader
     "use_edit_page_button": False,
     "navigation_with_keys": False,
@@ -241,6 +242,8 @@ html_theme_options = {
     "navbar_end": ["theme-switcher"],
     "footer_items": ["copyright"],
     "pygment_light_style": "default",
+    "announcement": "https://raw.githubusercontent.com/NeuroTechX/moabb/tree/develop/docs/source/_templates/custom-template.html",
+    "show_version_warning_banner": True,
     "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
 }
 
