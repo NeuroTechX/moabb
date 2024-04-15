@@ -37,6 +37,7 @@ Bugs
 - Fix the doc summary for Castillos2023 dataset (:gh:`561` by `Bruno Aristimunha`_)
 - Fix format string receiving incorrect number of args in bids interface (:gh:`563` by `Pierre Guetschel`_)
 - Fix number of sessions in doc of :class:`moabb.datasets.Sosulski2019` (:gh:`565` by `Pierre Guetschel`_)
+- Fix `code` column of :class:`moabb.datasets.CastillosCVEP100` and :class:`moabb.datasets.CastillosCVEP100` (:gh:`567` by `Pierre Guetschel`_)
 
 API changes
 ~~~~~~~~~~~
