@@ -169,18 +169,16 @@ sphinx_gallery_conf = {
 }
 
 
-autosummary_generate = True
 autodoc_default_options = {"inherited-members": False}
+autodoc_default_flags = {"inherited-members": None}
+autosummary_generate = True
 
 numpydoc_show_class_members = False
 
-exclude_patterns = ["_build", "_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
-
-autodoc_default_flags = {"inherited-members": None}
-autosummary_generate = True
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
