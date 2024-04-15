@@ -253,14 +253,9 @@ html_static_path = ["_static"]
 
 html_css_files = [
     "css/custom.css",
-    #'https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.min.css',
-    #'https://cdn.datatables.net/v/bm/dt-1.13.4/datatables.min.css',
 ]
 
-html_js_files = [
-    #'https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-2.0.3/cr-2.0.0/sc-2.4.1/datatables.min.js',
-    #'https://cdn.datatables.net/2.0.3/js/dataTables.min.js',
-]
+html_js_files = []
 
 # If true, links to the reST sources are added to the pages.
 html_show_sourcelink = False
