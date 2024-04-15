@@ -1,10 +1,9 @@
 :html_theme.sidebar_secondary.remove:
-
 .. _paper_results:
 
 .. currentmodule:: moabb.datasets
 
-What are the states of art for BCI?
+Benchmark
 ===================================
 
 Text to introduce the benchmarking results. Create the citation for the benchmarking paper.
@@ -127,6 +126,7 @@ P300/ERP (All classes)
     `SSVEP_TRCA`_,83.21±10.80,2.79±1.03
 
 .. toctree::
+   :glob:
    :hidden:
    :caption: MOABB Results
    :titlesonly:
