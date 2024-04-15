@@ -2,7 +2,7 @@
     font-size: 30px;
 }
 
-.bd-main .bd-content .bd-article-container .paper {
+.bd-main .bd-content .bd-article-container {
   max-width: 75em;  /* default is 60em */
 }
 .bd-page-width {
