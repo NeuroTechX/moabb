@@ -195,11 +195,6 @@ master_doc = "index"
 # Usually you set "language" from the command line for these cases.
 language = "en"
 
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path .
-exclude_patterns = []
-
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
@@ -246,7 +241,6 @@ html_theme_options = {
     "show_version_warning_banner": True,
     "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
 }
-
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
 html_logo = "images/moabb_logo.svg"
@@ -255,8 +249,16 @@ html_logo = "images/moabb_logo.svg"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
 html_css_files = [
-    "style.css",
+    "css/custom.css",
+    #'https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.min.css',
+    #'https://cdn.datatables.net/v/bm/dt-1.13.4/datatables.min.css',
+]
+
+html_js_files = [
+    #'https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-2.0.3/cr-2.0.0/sc-2.4.1/datatables.min.js',
+    #'https://cdn.datatables.net/2.0.3/js/dataTables.min.js',
 ]
 
 # If true, links to the reST sources are added to the pages.
