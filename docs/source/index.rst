@@ -1,3 +1,5 @@
+:html_theme.sidebar_secondary.remove:
+
 .. mdinclude:: README.md
 
 .. include:: cite.rst
@@ -9,12 +11,12 @@
    :caption: Main classes of MOABB:
    :titlesonly:
 
+   The largest EEG benchmark <paper_results>
+   Datasets <dataset_summary>
    Install <install/install>
    Overview <overview>
-   MOABB Results Table <paper_results>
    Getting Started <auto_tutorials/index>
-   Datasets <dataset_summary>
-   How does Moabb work? <main_concepts>
-   API <api>
    Gallery <auto_examples/index>
-   What's new <whats_new>
+   How does Moabb work? <main_concepts>
+   API reference <api>
+   Release notes <whats_new>
