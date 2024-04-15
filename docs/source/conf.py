@@ -68,9 +68,8 @@ extensions = [
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
     "m2r2",
-    "numpydoc",
-    "crate.sphinx.csv",  # noqa
-    "sphinx_favicon",
+     "numpydoc",
+     "sphinx_favicon",
     "sphinxcontrib.jquery",
 ]
 
