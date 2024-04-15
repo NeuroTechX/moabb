@@ -1,3 +1,5 @@
+:html_theme.sidebar_secondary.remove:
+
 .. _paper_results:
 
 .. currentmodule:: moabb.datasets
