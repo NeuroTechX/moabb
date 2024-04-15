@@ -288,6 +288,10 @@ html_context = {
     "pygment_dark_style": "native",
     "icon_links_label": "Quick Links",  # for screen reader
     "show_toc_level": 1,
+    "github_user": "NeuroTechX",
+    "github_repo": "moabb",
+    "github_version": "develop",
+    "doc_path": "docs",
 }
 
 
@@ -423,3 +427,12 @@ intersphinx_mapping = {
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+# -- Options for sphinx-gallery ----------------------------------------------
+favicons = [
+    {
+        "rel": "moabb icon",
+        "sizes": "180x180",
+        "href": "moabb_logo.png",  # use a local file in _static
+    },
+]
