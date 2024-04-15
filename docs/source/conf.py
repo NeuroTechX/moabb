@@ -41,8 +41,6 @@ release = f"{moabb.__version__}-dev"
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#
-# If your documentation needs a minimal Sphinx version, state it here.
 needs_sphinx = "2.0"
 
 curdir = os.path.dirname(__file__)
@@ -65,11 +63,15 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
     "sphinx.ext.mathjax",
+    "sphinx_copybutton",
     "sphinx_design",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
     "m2r2",
     "numpydoc",
+    "crate.sphinx.csv",  # noqa
+    "sphinx_favicon",
+    "sphinxcontrib.jquery",
 ]
 
 
