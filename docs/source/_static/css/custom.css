@@ -93,7 +93,6 @@ div.versionadded > p {
 }
 div.versionadded {
     margin: 0;
-    margin-left: 0.5rem;
     display: inline-block;
 }
 /* when FF supports :has(), change to →  dd > p:has(+div.versionadded) */
@@ -345,4 +344,9 @@ img.hidden {
 }
 td.justify {
     text-align-last: justify;
+}
+
+.bd-main .bd-content .bd-article-container .bd-article {
+padding-left: 0rem;
+padding-top: 0rem;
 }
