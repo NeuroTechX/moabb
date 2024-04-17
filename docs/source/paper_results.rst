@@ -58,8 +58,74 @@ All the results here are for **within-session evaluation**, a 5-fold cross-valid
     `TS+LR`_,69.17±14.79,71.97±15.46,58.55±14.06,84.60±9.28,62.76±8.39,84.88±4.63
     `TS+SVM`_,67.92±12.74,70.76±15.08,58.46±15.15,84.41±9.56,61.47±9.62,83.66±4.55
 
+.. raw:: html
+   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
+   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+
+    <table id="mi-all" class="hover row-border order-column" style="width:100%">
+        <thead>
+        <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlexMI</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></p></th>
+        </tr>
+        </thead>
+    </table>
+    <script type="text/javascript">
+        $(document).ready(function() {
+           $('#mi-right-vs-feet').DataTable( {
+              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_mi_all_classes.json',
+              "order": [[ 0, "desc" ]],
+              "bJQueryUI": true,
+              "scrollX": true,
+              "paging": false,
+              "searching": false,
+           } );
+        } );
+    </script>
+
+
 Motor Imagery - Left vs Right Hand
 ===================================
+.. raw:: html
+   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
+   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+
+    <table id="mi-left-vs-right" class="hover row-border order-column" style="width:100%">
+        <thead>
+        <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_004.html#moabb.datasets.BNCI2014_004" title="moabb.datasets.BNCI2014_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_004</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Cho2017.html#moabb.datasets.Cho2017" title="moabb.datasets.Cho2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cho2017</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.GrosseWentrup2009.html#moabb.datasets.GrosseWentrup2009" title="moabb.datasets.GrosseWentrup2009"><code class="xref py py-class docutils literal notranslate"><span class="pre">GrosseWentrup2009</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI" title="moabb.datasets.Lee2019_MI"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_MI</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Shin2017A.html#moabb.datasets.Shin2017A" title="moabb.datasets.Shin2017A"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shin2017A</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></p></th>
+        <th class="head"></th>
+        </tr>
+        </thead>
+    </table>
+    <script type="text/javascript">
+        $(document).ready(function() {
+           $('#mi-right-vs-feet').DataTable( {
+              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_mi_left_vs_right_hand.json',
+              "order": [[ 0, "desc" ]],
+              "bJQueryUI": true,
+              "scrollX": true,
+              "paging": false,
+              "searching": false,
+           } );
+        } );
+   </script>
+
 .. csv-table:: Motor Imagery - Left vs Right Hand
    :header: Pipelines,:class:`BNCI2014_001`,:class:`BNCI2014_004`,:class:`Cho2017`,:class:`GrosseWentrup2009`,:class:`Lee2019_MI`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Shin2017A`,:class:`Weibo2014`,:class:`Zhou2016`
    :class: sortable
@@ -87,6 +153,43 @@ Motor Imagery - Left vs Right Hand
 
 Motor Imagery - Right Hand vs Feet
 ==================================
+
+
+.. raw:: html
+   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
+   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+
+    <table id="mi-right-vs-feet" class="hover row-border order-column" style="width:100%">
+        <thead>
+        <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlexMI</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_002.html#moabb.datasets.BNCI2014_002" title="moabb.datasets.BNCI2014_002"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_002</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_001.html#moabb.datasets.BNCI2015_001" title="moabb.datasets.BNCI2015_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_001</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_004.html#moabb.datasets.BNCI2015_004" title="moabb.datasets.BNCI2015_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_004</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></p></th>
+        </tr>
+        </thead>
+    </table>
+
+
+   <script type="text/javascript">
+        $(document).ready(function() {
+           $('#mi-right-vs-feet').DataTable( {
+              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_mi_right_hand_vs_feet.csv',
+              "order": [[ 0, "desc" ]],
+              "bJQueryUI": true,
+              "scrollX": true,
+              "paging": false,
+              "searching": false,
+           } );
+        } );
+   </script>
+
 
 .. csv-table:: Motor Imagery - Right Hand vs Feet
    :header: Pipelines,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`BNCI2014_002`,:class:`BNCI2015_001`,:class:`BNCI2015_004`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Weibo2014`,:class:`Zhou2016`
@@ -117,16 +220,11 @@ SSVEP (All classes)
 Here, we have the results of the within-session evaluation, a 5-fold cross-validation, over the subject's session.
 We use all the classes available in the dataset.
 
-
-.. csv-table:: Motor Imagery - Right Hand vs Feet
-   :header: Pipeline,:class:`Kalunga2016`,:class:`Lee2019_SSVEP`,:class:`MAMEM1`,:class:`MAMEM2`,:class:`MAMEM3`,:class:`Nakanishi2015`,:class:`Wang2016`
-   :class: sortable
-
-    `SSVEP_CCA`_,25.40±2.51,23.86±3.72,19.17±5.01,23.60±4.10,13.80±7.47,8.15±0.74,2.48±1.01
-
-AAAAAAAAAAAAAAAAAAAA
-
 .. raw:: html
+   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
+   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+
     <table id="ssvep" class="hover row-border order-column" style="width:100%">
         <thead>
         <tr class="row-odd"><th class="head"><p>Pipeline</p></th>
