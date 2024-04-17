@@ -101,8 +101,8 @@ DOI: https://doi.org/10.1088/1741-2552/ac38cf
 
    :class:`Thielen2015`,12,1,2048Hz,64,4.2s,36,3,2,27216 NT / 27216 T,Gold codes,120Hz
    :class:`Thielen2021`,30,1,512Hz,8,31.5s,20,5,2,18900 NT / 18900 T,Gold codes,60Hz
-   :class:`CastillosCVEP100`,    12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,Burst-CVEP,60Hz
-   :class:`CastillosCVEP40`,     12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,Burst-CVEP,60Hz
+   :class:`CastillosCVEP100`,    12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,m-sequence,60Hz
+   :class:`CastillosCVEP40`,     12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,m-sequence,60Hz
    :class:`CastillosBurstVEP40`, 12,1,500Hz,32,2.2s,4,15/15/15/15,2,5820 NT / 1200 T,Burst-CVEP,60Hz
    :class:`CastillosBurstVEP100`,12,1,500Hz,32,2.2s,4,15/15/15/15,2,5820 NT / 1200 T,Burst-CVEP,60Hz
 
