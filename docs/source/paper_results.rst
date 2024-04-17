@@ -114,6 +114,7 @@ SSVEP (All classes)
     `SSVEP_TS+SVM`_,68.95±13.73,88.58±14.47,50.58±23.34,34.80±11.76,40.20±14.41,86.30±15.88,59.58±20.57
     `SSVEP_TRCA`_,24.84±7.24,64.01±15.27,24.24±6.65,24.24±2.93,23.70±3.49,83.21±10.80,2.79±1.03
 
+
 .. toctree::
    :glob:
    :hidden:
@@ -165,19 +166,27 @@ SSVEP (All classes)
 
 .. raw:: html
 
-   <table id="voted_issues_table" class="hover row-border order-column" style="width:100%">
-  <thead>
-    <tr class="row-odd"><th class="head"><p>Methods</p></th>
-    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kalunga2016</span></code></a></p></th>
-    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_SSVEP.html#moabb.datasets.Lee2019_SSVEP" title="moabb.datasets.Lee2019_SSVEP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_SSVEP</span></code></a></p></th>
-    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.MAMEM1.html#moabb.datasets.MAMEM1" title="moabb.datasets.MAMEM1"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM1</span></code></a></p></th>
-    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.MAMEM2.html#moabb.datasets.MAMEM2" title="moabb.datasets.MAMEM2"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM2</span></code></a></p></th>
-    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.MAMEM3.html#moabb.datasets.MAMEM3" title="moabb.datasets.MAMEM3"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM3</span></code></a></p></th>
-    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Nakanishi2015.html#moabb.datasets.Nakanishi2015" title="moabb.datasets.Nakanishi2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nakanishi2015</span></code></a></p></th>
-    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Wang2016.html#moabb.datasets.Wang2016" title="moabb.datasets.Wang2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wang2016</span></code></a></p></th>
-    </tr>
-    </thead>
-   </table>
+    <table id="voted_issues_table" class="hover row-border order-column" style="width:100%">
+        <thead>
+        <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_008.html#moabb.datasets.BNCI2014_008" title="moabb.datasets.BNCI2014_008"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_008</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_009</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_003.html#moabb.datasets.BNCI2015_003" title="moabb.datasets.BNCI2015_003"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_003</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2012.html#moabb.datasets.BI2012" title="moabb.datasets.BI2012"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2012</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2013a.html#moabb.datasets.BI2013a" title="moabb.datasets.BI2013a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2013a</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2014b.html#moabb.datasets.BI2014b" title="moabb.datasets.BI2014b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2015a.html#moabb.datasets.BI2015a" title="moabb.datasets.BI2015a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2015b.html#moabb.datasets.BI2015b" title="moabb.datasets.BI2015b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.EPFLP300.html#moabb.datasets.EPFLP300" title="moabb.datasets.EPFLP300"><code class="xref py py-class docutils literal notranslate"><span class="pre">EPFLP300</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Huebner2017.html#moabb.datasets.Huebner2017" title="moabb.datasets.Huebner2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2017</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Huebner2018.html#moabb.datasets.Huebner2018" title="moabb.datasets.Huebner2018"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2018</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_ERP.html#moabb.datasets.Lee2019_ERP" title="moabb.datasets.Lee2019_ERP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_ERP</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Sosulski2019.html#moabb.datasets.Sosulski2019" title="moabb.datasets.Sosulski2019"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sosulski2019</span></code></a></p></th>
+        </tr>
+        </thead>
+    </table>
 
 
    <script type="text/javascript">
@@ -187,7 +196,8 @@ SSVEP (All classes)
               "order": [[ 0, "desc" ]],
               "bJQueryUI": true,
               "scrollX": true,
-              "paging": false
+              "paging": false,
+              "searching": false,
            } );
         } );
    </script>
