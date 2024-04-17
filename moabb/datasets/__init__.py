@@ -54,6 +54,7 @@ from .castillos2023 import (
     CastillosCVEP40,
     CastillosCVEP100,
 )
+from .Dreyer2023 import Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
 from .fake import FakeDataset, FakeVirtualRealityDataset
 from .gigadb import Cho2017

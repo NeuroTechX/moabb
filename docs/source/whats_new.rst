@@ -20,6 +20,7 @@ Enhancements
 
 - Adding cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
 - Option to interpolate channel in paradigms' `match_all` method (:gh:`480` by `Gregoire Cattan`_)
+- Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_ and `Sylvain Chevallier`_)
 - Adding leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
 - Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
 - Improve transform function of AugmentedDataset (:gh:`541` by `Quentin Barthelemy`_)
@@ -31,6 +32,7 @@ Bugs
 
 - Fix TRCA implementation for different stimulation freqs and for signal filtering (:gh:522 by `Sylvain Chevallier`_)
 - Fix saving to BIDS runs with a description string in their name (:gh:`530` by `Pierre Guetschel`_)
+- Fix issue with WithinSessionEvaluation with multiple datasets (PR :gh: `521`, issue :gh: `514` by `Sara Sedlar`_)
 - Fix import of keras BatchNormalization for TF 2.13 and higher (:gh:`544` by `Brian Irvine`_)
 - Fix the doc summary tables of :class:`moabb.datasets.Lee2019_SSVEP` (:gh:`548` :gh:`547` :gh:`546` by `Pierre Guetschel`_)
 - Fix the doc summary for Castillos2023 dataset (:gh:`561` by `Bruno Aristimunha`_)
