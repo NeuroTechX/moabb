@@ -98,75 +98,27 @@ P300/ERP (All classes)
     `XDAWNCov+MDM`_,77.62±9.81,92.04±5.97,83.08±7.55,88.22±5.90,90.97±5.52,80.88±11.01,91.58±10.02,92.57±5.03,83.48±12.05,88.53±7.34,83.20±9.05,98.07±2.09,97.78±1.04,97.70±2.68,86.07±7.15
     `XDAWNCov+TS+SVM`_,85.61±4.43,93.43±5.11,82.95±8.57,90.99±4.79,92.71±4.92,85.77±9.75,91.88±9.94,93.05±4.98,84.56±12.09,90.68±6.29,84.29±8.53,98.69±1.78,98.47±0.97,98.41±2.03,87.28±6.92
 
-.. raw:: html
-
-   <h1 align="center">SSVEP (All classes)</h1>
 
 
-.. csv-table:: SSVEP (All classes) part 1
-   :header: Methods,:class:`Kalunga2016`,:class:`Lee2019_SSVEP`,:class:`MAMEM1`,:class:`MAMEM2`,:class:`MAMEM3`
-   :class: sortable
+SSVEP (All classes)
+======================
 
-    `SSVEP_CCA`_,25.40±2.51,23.86±3.72,19.17±5.01,23.60±4.10,13.80±7.47
-    `SSVEP_MsetCCA`_,22.67±4.23,25.10±3.81,20.50±2.37,22.08±1.76,27.60±3.01
-    `SSVEP_MDM`_,70.89±13.44,75.38±18.38,27.31±11.64,23.12±6.29,34.40±9.96
-    `SSVEP_TS+LR`_,70.86±11.64,89.44±13.84,53.71±24.25,39.36±12.06,42.10±14.33
-    `SSVEP_TS+SVM`_,68.95±13.73,88.58±14.47,50.58±23.34,34.80±11.76,40.20±14.41
-    `SSVEP_TRCA`_,24.84±7.24,64.01±15.27,24.24±6.65,24.24±2.93,23.70±3.49
+.. csv-table:: SSVEP (All classes)
+   :header: Methods,:class:`Kalunga2016`,:class:`Lee2019_SSVEP`,:class:`MAMEM1`,:class:`MAMEM2`,:class:`MAMEM3`,:class:`Nakanishi2015`,:class:`Wang2016`
+   :class: sortable, datatable
 
-.. csv-table:: SSVEP (All classes) part 2
-   :header: Methods,:class:`Nakanishi2015`,:class:`Wang2016`
-   :class: sortable
-
-    `SSVEP_CCA`_,8.15±0.74,2.48±1.01
-    `SSVEP_MsetCCA`_,7.10±1.50,4.00±1.10
-    `SSVEP_MDM`_,78.77±19.06,54.77±21.95
-    `SSVEP_TS+LR`_,87.22±15.96,67.52±20.04
-    `SSVEP_TS+SVM`_,86.30±15.88,59.58±20.57
-    `SSVEP_TRCA`_,83.21±10.80,2.79±1.03
+    `SSVEP_CCA`_,25.40±2.51,23.86±3.72,19.17±5.01,23.60±4.10,13.80±7.47,8.15±0.74,2.48±1.01
+    `SSVEP_MsetCCA`_,22.67±4.23,25.10±3.81,20.50±2.37,22.08±1.76,27.60±3.01,7.10±1.50,4.00±1.10
+    `SSVEP_MDM`_,70.89±13.44,75.38±18.38,27.31±11.64,23.12±6.29,34.40±9.96,78.77±19.06,54.77±21.95
+    `SSVEP_TS+LR`_,70.86±11.64,89.44±13.84,53.71±24.25,39.36±12.06,42.10±14.33,87.22±15.96,67.52±20.04
+    `SSVEP_TS+SVM`_,68.95±13.73,88.58±14.47,50.58±23.34,34.80±11.76,40.20±14.41,86.30±15.88,59.58±20.57
+    `SSVEP_TRCA`_,24.84±7.24,64.01±15.27,24.24±6.65,24.24±2.93,23.70±3.49,83.21±10.80,2.79±1.03
 
 .. toctree::
    :glob:
    :hidden:
    :caption: MOABB Results
    :titlesonly:
-
-.. raw:: html
-
-   <!-- Must import jquery before the datatables css and js files. -->
-   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.min.css">
-   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.min.js"></script>
-
-
-   <table id="voted_issues_table" class="hover row-border order-column" style="width:100%">
-      <thead>
-         <tr>
-            <th>👍</th>
-            <th>Issue</th>
-            <th>Author</th>
-            <th>Title</th>
-         </tr>
-      </thead>
-   </table>
-
-   <!-- JS to enable the datatable features: sortable, paging, search etc
-           https://datatables.net/reference/option/
-           https://datatables.net/  -->
-
-   <script type="text/javascript">
-        $(document).ready(function() {
-           $('#voted_issues_table').DataTable( {
-              <!-- "ajax": 'voted-issues.json', -->
-              "ajax": 'https://raw.githubusercontent.com/scitools/voted_issues/main/voted-issues.json',
-              "lengthMenu": [10, 25, 50, 100],
-              "pageLength": 10,
-              "order": [[ 0, "desc" ]],
-              "bJQueryUI": true,
-           } );
-        } );
-   </script>
-   <p></p>
 
 .. _Grosse2009: http://moabb.neurotechx.com/docs/generated/moabb.datasets.GrosseWentrup2009.html
 .. _HighGamma: http://moabb.neurotechx.com/docs/generated/moabb.datasets.Schirrmeister2017.html#
@@ -205,14 +157,38 @@ P300/ERP (All classes)
 
 .. raw:: html
 
-   <script type="text/javascript" src="https://cdn.datatables.net/v/bm/dt-1.13.4/datatables.min.js"></script>
-   <script type="text/javascript">
-    $(document).ready(function() {
-    $('.sortable').DataTable({
-      "paging": false,
-      "searching": false,
-      "info": false
+   <!-- Must import jquery before the datatables css and js files. -->
+   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
+   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
 
-    });
-    });
+
+.. raw:: html
+
+   <table id="voted_issues_table" class="hover row-border order-column" style="width:100%">
+  <thead>
+    <tr class="row-odd"><th class="head"><p>Methods</p></th>
+    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kalunga2016</span></code></a></p></th>
+    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_SSVEP.html#moabb.datasets.Lee2019_SSVEP" title="moabb.datasets.Lee2019_SSVEP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_SSVEP</span></code></a></p></th>
+    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.MAMEM1.html#moabb.datasets.MAMEM1" title="moabb.datasets.MAMEM1"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM1</span></code></a></p></th>
+    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.MAMEM2.html#moabb.datasets.MAMEM2" title="moabb.datasets.MAMEM2"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM2</span></code></a></p></th>
+    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.MAMEM3.html#moabb.datasets.MAMEM3" title="moabb.datasets.MAMEM3"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM3</span></code></a></p></th>
+    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Nakanishi2015.html#moabb.datasets.Nakanishi2015" title="moabb.datasets.Nakanishi2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nakanishi2015</span></code></a></p></th>
+    <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Wang2016.html#moabb.datasets.Wang2016" title="moabb.datasets.Wang2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wang2016</span></code></a></p></th>
+    </tr>
+    </thead>
+   </table>
+
+
+   <script type="text/javascript">
+        $(document).ready(function() {
+           $('#voted_issues_table').DataTable( {
+              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_erp_p300_all_classes.json',
+              "order": [[ 0, "desc" ]],
+              "bJQueryUI": true,
+              "scrollX": true,
+              "paging": false
+           } );
+        } );
    </script>
+   <p></p>
