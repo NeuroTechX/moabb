@@ -1,19 +1,44 @@
 :html_theme.sidebar_secondary.remove:
 .. _paper_results:
+.. raw:: html
+
+   <!-- Must import jquery before the datatables css and js files. -->
+   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
+   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+   <div style="font-size: 20px;">
 
 .. currentmodule:: moabb.datasets
 
-Benchmark
-===================================
+The largest EEG-based Benchmark for Open Science
+=================================================
 
-Text to introduce the benchmarking results. Create the citation for the benchmarking paper.
+We report the results of the benchmark study performed in:
+`The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark <https://universite-paris-saclay.hal.science/hal-04537061v1/file/MOABB-arXiv.pdf>`_
 
+This study conducts an extensive Brain-computer interfaces (BCI) reproducibility analysis on open electroencephalography datasets,
+aiming to assess existing solutions and establish open and reproducible benchmarks for effective comparison within the field. Please note that the results are obtained using `Within-Session evaluation <http://moabb.neurotechx.com/docs/generated/moabb.evaluations.WithinSessionEvaluation.html>`_.
+The results are reported regarding mean accuracy and standard deviation across all folds for all sessions and subjects.
+
+If you use the same evaluation procedure, you should expect similar results if you use the same pipelines and datasets, with some minor variations due to the randomness of the cross-validation procedure.
+
+You can copy and use the table in your work, but please `**cite the paper** <http://moabb.neurotechx.com/docs/cite.html>`_ if you do so.
 
 Motor Imagery - All classes
 =============================
+Motor Imagery is a BCI paradigm where the subject imagines performing a movement.
+Each imagery task is associated with a different class, and each task has its difficulty level related to how the brain generates the signal.
+
+Here, we present three different scenarios for Motor Imagery classification:
+
+#. **All classes**: We use all the classes in the dataset.
+#. **Left vs Right Hand**: We use only the classes Left Hand and Right Hand.
+#. **Right Hand vs Feet**: We use only Right Hand and Feet classes.
+
+All the results here are for **within-session evaluation**, a 5-fold cross-validation, over the subject's session.
 
 .. csv-table:: Motor Imagery - All classes
-   :header: Pipelines,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`PhysionetMI`,`HighGamma`_,:class:`Weibo2014`,:class:`Zhou2016`
+   :header: Pipelines,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Weibo2014`,:class:`Zhou2016`
    :class: sortable, datatable
 
     `ACM+TS+SVM`_,69.37±15.07,77.82±12.23,55.44±14.87,82.50±10.20,63.89±11.01,85.25±4.06
@@ -35,9 +60,8 @@ Motor Imagery - All classes
 
 Motor Imagery - Left vs Right Hand
 ===================================
-
 .. csv-table:: Motor Imagery - Left vs Right Hand
-   :header: Pipelines,:class:`BNCI2014_001`,:class:`BNCI2014_004`,:class:`Cho2017`,`Grosse2009`_,:class:`Lee2019_MI`,:class:`PhysionetMI`,`HighGamma`_,:class:`Shin2017A`,:class:`Weibo2014`,:class:`Zhou2016`
+   :header: Pipelines,:class:`BNCI2014_001`,:class:`BNCI2014_004`,:class:`Cho2017`,:class:`GrosseWentrup2009`,:class:`Lee2019_MI`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Shin2017A`,:class:`Weibo2014`,:class:`Zhou2016`
    :class: sortable
 
     `ACM+TS+SVM`_,91.71±10.30,82.67±15.33,73.56±14.54,86.60±15.12,83.05±13.97,63.55±21.24,85.82±13.98,68.97±23.45,84.78±13.33,95.03±4.76
@@ -65,7 +89,7 @@ Motor Imagery - Right Hand vs Feet
 ==================================
 
 .. csv-table:: Motor Imagery - Right Hand vs Feet
-   :header: Pipelines,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`BNCI2014_002`,:class:`BNCI2015_001`,:class:`BNCI2015_004`,:class:`PhysionetMI`,`HighGamma`_,:class:`Weibo2014`,:class:`Zhou2016`
+   :header: Pipelines,:class:`AlexMI`,:class:`BNCI2014_001`,:class:`BNCI2014_002`,:class:`BNCI2015_001`,:class:`BNCI2015_004`,:class:`PhysionetMI`,:class:`Schirrmeister2017`,:class:`Weibo2014`,:class:`Zhou2016`
    :class: sortable
 
     `ACM+TS+SVM`_,86.56±12.26,97.32±3.35,88.60±10.71,93.01±8.09,62.60±14.62,93.33±8.46,98.67±3.06,93.25±4.12,97.18±3.00
@@ -85,44 +109,92 @@ Motor Imagery - Right Hand vs Feet
     `TS+LR`_,83.75±17.47,94.45±7.06,85.86±11.01,91.09±8.71,61.01±14.22,93.15±7.40,98.60±3.08,91.53±4.53,96.76±2.58
     `TS+SVM`_,82.66±18.16,94.01±7.60,86.19±11.50,90.81±8.95,62.55±15.30,94.27±7.19,98.72±2.92,91.84±4.25,96.11±2.99
 
-P300/ERP (All classes)
-======================
-
-.. csv-table:: P300/ERP (All classes)
-   :header: Pipelines,:class:`BNCI2014_008`,:class:`BNCI2014_009`,:class:`BNCI2015_003`,:class:`BI2012`,:class:`BI2013a`,:class:`BI2014a`,:class:`BI2014b`,:class:`BI2015a`,:class:`BI2015b`,:class:`Cattan2019_VR`,:class:`EPFLP300`,:class:`Huebner2017`,:class:`Huebner2018`,:class:`Lee2019_ERP`,:class:`Sosulski2019`
-   :class: sortable
-
-    `ERPCov+MDM`_,74.30±9.77,81.16±10.13,76.79±10.95,78.77±10.32,80.59±9.36,71.62±11.17,78.57±12.36,80.02±10.07,75.04±15.85,80.76±10.07,71.97±10.88,94.47±8.26,95.15±3.72,74.43±13.26,68.17±13.59
-    `ERPCov(svd_n=4)+MDM`_,75.42±9.91,84.52±8.83,76.93±11.26,79.02±10.53,82.07±8.46,72.11±11.64,76.48±12.83,77.92±10.33,77.09±15.81,80.67±9.47,71.44±10.20,96.21±6.50,96.61±1.89,82.47±12.56,70.63±13.79
-    `XDAWN+LDA`_,82.24±5.26,64.03±3.91,78.62±7.19,64.41±4.14,76.74±7.16,66.60±7.54,83.73±10.62,76.02±10.46,77.22±13.73,67.16±6.11,62.98±5.38,97.74±2.84,97.54±1.58,96.45±3.93,67.49±7.44
-    `XDAWNCov+MDM`_,77.62±9.81,92.04±5.97,83.08±7.55,88.22±5.90,90.97±5.52,80.88±11.01,91.58±10.02,92.57±5.03,83.48±12.05,88.53±7.34,83.20±9.05,98.07±2.09,97.78±1.04,97.70±2.68,86.07±7.15
-    `XDAWNCov+TS+SVM`_,85.61±4.43,93.43±5.11,82.95±8.57,90.99±4.79,92.71±4.92,85.77±9.75,91.88±9.94,93.05±4.98,84.56±12.09,90.68±6.29,84.29±8.53,98.69±1.78,98.47±0.97,98.41±2.03,87.28±6.92
-
 
 
 SSVEP (All classes)
 ======================
 
-.. csv-table:: SSVEP (All classes)
-   :header: Methods,:class:`Kalunga2016`,:class:`Lee2019_SSVEP`,:class:`MAMEM1`,:class:`MAMEM2`,:class:`MAMEM3`,:class:`Nakanishi2015`,:class:`Wang2016`
-   :class: sortable, datatable
-
-    `SSVEP_CCA`_,25.40±2.51,23.86±3.72,19.17±5.01,23.60±4.10,13.80±7.47,8.15±0.74,2.48±1.01
-    `SSVEP_MsetCCA`_,22.67±4.23,25.10±3.81,20.50±2.37,22.08±1.76,27.60±3.01,7.10±1.50,4.00±1.10
-    `SSVEP_MDM`_,70.89±13.44,75.38±18.38,27.31±11.64,23.12±6.29,34.40±9.96,78.77±19.06,54.77±21.95
-    `SSVEP_TS+LR`_,70.86±11.64,89.44±13.84,53.71±24.25,39.36±12.06,42.10±14.33,87.22±15.96,67.52±20.04
-    `SSVEP_TS+SVM`_,68.95±13.73,88.58±14.47,50.58±23.34,34.80±11.76,40.20±14.41,86.30±15.88,59.58±20.57
-    `SSVEP_TRCA`_,24.84±7.24,64.01±15.27,24.24±6.65,24.24±2.93,23.70±3.49,83.21±10.80,2.79±1.03
+Here, we have the results of the within-session evaluation, a 5-fold cross-validation, over the subject's session.
+We use all the classes available in the dataset.
 
 
-.. toctree::
-   :glob:
-   :hidden:
-   :caption: MOABB Results
-   :titlesonly:
+.. raw:: html
+    <table id="ssvep" class="hover row-border order-column" style="width:100%">
+        <thead>
+        <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kalunga2016</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_SSVEP.html#moabb.datasets.Lee2019_SSVEP" title="moabb.datasets.Lee2019_SSVEP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_SSVEP</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.MAMEM1.html#moabb.datasets.MAMEM1" title="moabb.datasets.MAMEM1"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM1</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.MAMEM2.html#moabb.datasets.MAMEM2" title="moabb.datasets.MAMEM2"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM2</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.MAMEM3.html#moabb.datasets.MAMEM3" title="moabb.datasets.MAMEM3"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM3</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Nakanishi2015.html#moabb.datasets.Nakanishi2015" title="moabb.datasets.Nakanishi2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nakanishi2015</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Wang2016.html#moabb.datasets.Wang2016" title="moabb.datasets.Wang2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wang2016</span></code></a></p></th>
+        </tr>
+        </thead>
+    </table>
 
-.. _Grosse2009: http://moabb.neurotechx.com/docs/generated/moabb.datasets.GrosseWentrup2009.html
-.. _HighGamma: http://moabb.neurotechx.com/docs/generated/moabb.datasets.Schirrmeister2017.html#
+
+   <script type="text/javascript">
+        $(document).ready(function() {
+           $('#ssvep').DataTable( {
+              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_ssvep_all_classes.json',
+              "order": [[ 0, "desc" ]],
+              "bJQueryUI": true,
+              "scrollX": true,
+              "paging": false,
+              "searching": false,
+           } );
+        } );
+   </script>
+
+
+
+P300/ERP (All classes)
+======================
+
+Here, we have the results of the within-session evaluation, a 5-fold cross-validation, over the subject's session.
+We use all the classes available in the dataset.
+
+.. raw:: html
+
+    <table id="p300" class="hover row-border order-column" style="width:100%">
+        <thead>
+        <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_008.html#moabb.datasets.BNCI2014_008" title="moabb.datasets.BNCI2014_008"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_008</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_009</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_003.html#moabb.datasets.BNCI2015_003" title="moabb.datasets.BNCI2015_003"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_003</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2012.html#moabb.datasets.BI2012" title="moabb.datasets.BI2012"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2012</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2013a.html#moabb.datasets.BI2013a" title="moabb.datasets.BI2013a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2013a</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2014b.html#moabb.datasets.BI2014b" title="moabb.datasets.BI2014b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2015a.html#moabb.datasets.BI2015a" title="moabb.datasets.BI2015a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2015b.html#moabb.datasets.BI2015b" title="moabb.datasets.BI2015b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.EPFLP300.html#moabb.datasets.EPFLP300" title="moabb.datasets.EPFLP300"><code class="xref py py-class docutils literal notranslate"><span class="pre">EPFLP300</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Huebner2017.html#moabb.datasets.Huebner2017" title="moabb.datasets.Huebner2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2017</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Huebner2018.html#moabb.datasets.Huebner2018" title="moabb.datasets.Huebner2018"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2018</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_ERP.html#moabb.datasets.Lee2019_ERP" title="moabb.datasets.Lee2019_ERP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_ERP</span></code></a></p></th>
+        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Sosulski2019.html#moabb.datasets.Sosulski2019" title="moabb.datasets.Sosulski2019"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sosulski2019</span></code></a></p></th>
+        </tr>
+        </thead>
+    </table>
+
+
+   <script type="text/javascript">
+        $(document).ready(function() {
+           $('#p300').DataTable( {
+              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_erp_p300_all_classes.json',
+              "order": [[ 0, "desc" ]],
+              "bJQueryUI": true,
+              "scrollX": true,
+              "paging": false,
+              "searching": false,
+           } );
+        } );
+   </script>
+   <p></p>
+
+
 .. _SSVEP_CCA: https://github.com/NeuroTechX/moabb/blob/develop/pipelines/CCA-SSVEP.yml
 .. _SSVEP_MsetCCA: https://github.com/NeuroTechX/moabb/blob/develop/pipelines/MsetCCA-SSVEP.yml
 .. _SSVEP_MDM: https://github.com/NeuroTechX/moabb/blob/develop/pipelines/MDM-SSVEP.yml
@@ -154,51 +226,8 @@ SSVEP (All classes)
 .. _TS+LR: https://github.com/NeuroTechX/moabb/blob/develop/pipelines/TSLR.yml
 .. _TS+SVM: https://github.com/NeuroTechX/moabb/blob/develop/pipelines/TSSVM_grid.yml
 
-
-
-.. raw:: html
-
-   <!-- Must import jquery before the datatables css and js files. -->
-   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
-   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
-
-
-.. raw:: html
-
-    <table id="voted_issues_table" class="hover row-border order-column" style="width:100%">
-        <thead>
-        <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_008.html#moabb.datasets.BNCI2014_008" title="moabb.datasets.BNCI2014_008"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_008</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_009</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_003.html#moabb.datasets.BNCI2015_003" title="moabb.datasets.BNCI2015_003"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_003</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2012.html#moabb.datasets.BI2012" title="moabb.datasets.BI2012"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2012</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2013a.html#moabb.datasets.BI2013a" title="moabb.datasets.BI2013a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2013a</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2014b.html#moabb.datasets.BI2014b" title="moabb.datasets.BI2014b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2015a.html#moabb.datasets.BI2015a" title="moabb.datasets.BI2015a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.BI2015b.html#moabb.datasets.BI2015b" title="moabb.datasets.BI2015b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.EPFLP300.html#moabb.datasets.EPFLP300" title="moabb.datasets.EPFLP300"><code class="xref py py-class docutils literal notranslate"><span class="pre">EPFLP300</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Huebner2017.html#moabb.datasets.Huebner2017" title="moabb.datasets.Huebner2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2017</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Huebner2018.html#moabb.datasets.Huebner2018" title="moabb.datasets.Huebner2018"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2018</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_ERP.html#moabb.datasets.Lee2019_ERP" title="moabb.datasets.Lee2019_ERP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_ERP</span></code></a></p></th>
-        <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Sosulski2019.html#moabb.datasets.Sosulski2019" title="moabb.datasets.Sosulski2019"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sosulski2019</span></code></a></p></th>
-        </tr>
-        </thead>
-    </table>
-
-
-   <script type="text/javascript">
-        $(document).ready(function() {
-           $('#voted_issues_table').DataTable( {
-              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_erp_p300_all_classes.json',
-              "order": [[ 0, "desc" ]],
-              "bJQueryUI": true,
-              "scrollX": true,
-              "paging": false,
-              "searching": false,
-           } );
-        } );
-   </script>
-   <p></p>
+.. toctree::
+   :glob:
+   :hidden:
+   :caption: MOABB Results
+   :titlesonly:
