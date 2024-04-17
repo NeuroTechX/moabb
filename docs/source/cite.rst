@@ -4,8 +4,7 @@ Citing MOABB and related publications
 If you use MOABB in your experiments, please cite this library when
 publishing a paper to increase the visibility of open science initiatives:
 
--  Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Quentin, B., Schirrmeister, R. T.,Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant,A., & Chevallier, S.
--  Mother of all BCI Benchmarks (MOABB), 2023. DOI: 10.5281/zenodo.10034223.
+-  Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Quentin, B., Schirrmeister, R. T.,Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant,A., & Chevallier, S.  Mother of all BCI Benchmarks (MOABB), 2023. DOI: 10.5281/zenodo.10034223.
 
 and here is the Bibtex version:
 
@@ -24,8 +23,7 @@ If you want to cite the scientific contributions of MOABB, you could use the fol
 
 -  Vinay Jayaram and Alexandre Barachant. MOABB: trustworthy algorithm
    benchmarking for BCIs. Journal of neural engineering 15.6 (2018):
-   066011.
-   `DOI:10.1088/1741-2552 <https://doi.org/10.1088/1741-2552/aadea0>`__
+   066011. `DOI:10.1088/1741-2552 <https://doi.org/10.1088/1741-2552/aadea0>`__
 
 Here is the BibTeX entry for the above paper:
 

@@ -2,7 +2,7 @@
 
 # <p align="center">Mother of all BCI Benchmarks</p>
 
-<p align="center">
+<p align="center" class="large-text">
   <img src="https://raw.githubusercontent.com/bruAristimunha/moabb/new_theme/docs/source/_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
   Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
 </p>
@@ -67,12 +67,6 @@ state of the art by 5% ...”.
 First, you could take a look at our [tutorials](./auto_tutorials/index.html) that cover
 the most important concepts and use cases. Also, we have a gallery of
 [examples](./auto_examples/index.html) available.
-
-### Troubleshooting
-
-Currently pip install moabb fails when pip version < 21, e.g. with 20.0.2 due to an `idna`
-package conflict. Newer pip versions resolve this conflict automatically. To fix this you
-can upgrade your pip version using: `pip install -U pip` before installing `moabb`.
 
 ## Core Team
 
@@ -140,8 +134,8 @@ fetch(endpoint)
       const img = document.createElement('img');
       img.src = contributor.avatar_url;
       img.alt = contributor.login;
-      img.style.width = '150px';
-      img.style.height = '150px';
+      img.style.width = '100px';
+      img.style.height = '100px';
       img.style.objectFit = 'cover';
       img.style.borderRadius = '50%';
       link.appendChild(img);
@@ -193,11 +187,6 @@ happening on a [regular basis](https://github.com/NeuroTechX/moabb/issues/191), 
 the link on the gitter channel. We are also on NeuroTechX Slack channel
 [#moabb][link_neurotechx_signup].
 
-## Thank You!
-
-Thank you so much (Danke schön! Merci beaucoup!) for visiting the project and we do hope
-that you'll join us on this amazing journey to build a comprehensive benchmark of popular
-BCI algorithms applied on an extensive list of freely available EEG datasets.
 
 [link_alex_b]: http://alexandre.barachant.org/
 [link_vinay]: https://www.linkedin.com/in/vinay-jayaram-8635aa25

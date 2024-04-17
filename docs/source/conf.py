@@ -11,6 +11,7 @@ import matplotlib
 
 matplotlib.use("agg")
 
+from datetime import datetime
 
 import sphinx_gallery  # noqa
 from numpydoc import docscrape, numpydoc  # noqa
@@ -27,19 +28,18 @@ matplotlib.use("Agg")
 # -- Project information -----------------------------------------------------
 
 project = "moabb"
-copyright = "2018-2023 MOABB contributors"
+year = datetime.now().year
+copyright = f"2018-{year} MOABB contributors"
 author = "Alexandre Barachant, Vinay Jayaram, Sylvain Chevallier"
 
 # The short X.Y version
 version = moabb.__version__
 # The full version, including alpha/beta/rc tags
-release = moabb.__version__
+release = f"{moabb.__version__}-dev"
 
 
 # -- General configuration ---------------------------------------------------
 
-# If your documentation needs a minimal Sphinx version, state it here.
-#
 # If your documentation needs a minimal Sphinx version, state it here.
 needs_sphinx = "2.0"
 
@@ -63,11 +63,14 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.linkcode",
     "sphinx.ext.mathjax",
+    "sphinx_copybutton",
     "sphinx_design",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
     "m2r2",
     "numpydoc",
+    "sphinx_favicon",
+    "sphinxcontrib.jquery",
 ]
 
 
@@ -165,18 +168,16 @@ sphinx_gallery_conf = {
 }
 
 
-autosummary_generate = True
 autodoc_default_options = {"inherited-members": False}
+autodoc_default_flags = {"inherited-members": None}
+autosummary_generate = True
 
 numpydoc_show_class_members = False
 
-exclude_patterns = ["_build", "_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
-
-autodoc_default_flags = {"inherited-members": None}
-autosummary_generate = True
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -192,11 +193,6 @@ master_doc = "index"
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
 language = "en"
-
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path .
-exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
@@ -229,18 +225,22 @@ html_theme_options = {
             icon="fa-brands fa-square-github",
         ),
     ],
+    "github_url": "https://github.com/NeuroTechX/moabb",
     "icon_links_label": "External Links",  # for screen reader
     "use_edit_page_button": False,
     "navigation_with_keys": False,
     "collapse_navigation": False,
-    "navigation_depth": 4,
+    "navigation_depth": -1,
     "show_toc_level": 1,
+    "nosidebar": "true",
     "navbar_end": ["theme-switcher"],
     "footer_items": ["copyright"],
     "pygment_light_style": "default",
+    "announcement": "https://raw.githubusercontent.com/NeuroTechX/moabb"
+    "/develop/docs/source/_templates/custom-template.html",
+    "show_version_warning_banner": True,
     "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
 }
-
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
 html_logo = "images/moabb_logo.svg"
@@ -249,8 +249,15 @@ html_logo = "images/moabb_logo.svg"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
 html_css_files = [
-    "style.css",
+    "css/custom.css",
+    "https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css",
+]
+
+html_js_files = [
+    "https://code.jquery.com/jquery-3.7.1.min.js",
+    "https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js",
 ]
 
 # If true, links to the reST sources are added to the pages.
@@ -279,7 +286,11 @@ html_context = {
     "pygment_light_style": "friendly",
     "pygment_dark_style": "native",
     "icon_links_label": "Quick Links",  # for screen reader
-    "show_toc_level": 2,
+    "show_toc_level": 1,
+    "github_user": "NeuroTechX",
+    "github_repo": "moabb",
+    "github_version": "develop",
+    "doc_path": "docs",
 }
 
 
@@ -415,3 +426,12 @@ intersphinx_mapping = {
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+# -- Options for sphinx-gallery ----------------------------------------------
+favicons = [
+    {
+        "rel": "moabb icon",
+        "sizes": "180x180",
+        "href": "moabb_logo.png",  # use a local file in _static
+    },
+]
