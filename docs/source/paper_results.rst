@@ -6,7 +6,7 @@
    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
-   <div style="font-size: 20px;">
+   <div style="font-size: 1.5em;">
 
 .. currentmodule:: moabb.datasets
 
@@ -42,16 +42,13 @@ Motor Imagery - Left vs Right Hand
 ===================================
 .. raw:: html
    <hr>
-   <div style="font-size: 2em;">
 
 **Left vs Right Hand**: We use only the classes Left Hand and Right Hand.
 
-.. raw:: html
-
-   </div>
 
 .. raw:: html
-   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
 
@@ -79,7 +76,12 @@ Motor Imagery - Left vs Right Hand
               "bJQueryUI": true,
               "scrollX": true,
               "paging": false,
+              "info": false,
               "searching": false,
+                layout: {
+                        topStart: {
+                            buttons: ['copyHtml5']
+                        }
            } );
         } );
    </script>
@@ -122,6 +124,7 @@ Motor Imagery - Right Hand vs Feet
               "bJQueryUI": true,
               "scrollX": true,
               "paging": false,
+              "info": false,
               "searching": false,
            } );
         } );
@@ -134,7 +137,7 @@ Motor Imagery - All classes
 .. raw:: html
    <p></p>
    <hr>
-   <div style="font-size: 2em;">
+
 
 
 **All classes**: We use all the classes in the dataset, when there are more than classes that are not Left Hand and Right Hand.
@@ -165,6 +168,7 @@ Motor Imagery - All classes
               "scrollX": true,
               "paging": false,
               "searching": false,
+              "info": false,
            } );
         } );
     </script>
@@ -178,9 +182,10 @@ Here, we have the results of the within-session evaluation, a 5-fold cross-valid
 We use all the classes available in the dataset.
 
 .. raw:: html
+
    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
-   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+   <link href="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css" rel="stylesheet">
+   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
 
     <table id="ssvep" class="hover row-border order-column" style="width:100%">
         <thead>
@@ -206,6 +211,8 @@ We use all the classes available in the dataset.
               "scrollX": true,
               "paging": false,
               "searching": false,
+              "info": false,
+			  "buttons": ["copyHtml5","csvHtml5"],
            } );
         } );
    </script>
@@ -252,6 +259,8 @@ We use all the classes available in the dataset.
               "scrollX": true,
               "paging": false,
               "searching": false,
+              "info": false,
+			  "buttons": ["copyHtml5","csvHtml5"],
            } );
         } );
    </script>
