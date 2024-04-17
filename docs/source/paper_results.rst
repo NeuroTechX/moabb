@@ -118,10 +118,18 @@ Here, we have the results of the within-session evaluation, a 5-fold cross-valid
 We use all the classes available in the dataset.
 
 
+.. csv-table:: Motor Imagery - Right Hand vs Feet
+   :header: Pipeline,:class:`Kalunga2016`,:class:`Lee2019_SSVEP`,:class:`MAMEM1`,:class:`MAMEM2`,:class:`MAMEM3`,:class:`Nakanishi2015`,:class:`Wang2016`
+   :class: sortable
+
+    `SSVEP_CCA`_,25.40±2.51,23.86±3.72,19.17±5.01,23.60±4.10,13.80±7.47,8.15±0.74,2.48±1.01
+
+AAAAAAAAAAAAAAAAAAAA
+
 .. raw:: html
     <table id="ssvep" class="hover row-border order-column" style="width:100%">
         <thead>
-        <tr class="row-odd"><th class="head"><p>Pipelines</p></th>
+        <tr class="row-odd"><th class="head"><p>Pipeline</p></th>
         <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kalunga2016</span></code></a></p></th>
         <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_SSVEP.html#moabb.datasets.Lee2019_SSVEP" title="moabb.datasets.Lee2019_SSVEP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_SSVEP</span></code></a></p></th>
         <th class="head"><p><a class="reference internal" href="generated/moabb.datasets.MAMEM1.html#moabb.datasets.MAMEM1" title="moabb.datasets.MAMEM1"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM1</span></code></a></p></th>
