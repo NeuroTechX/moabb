@@ -6,7 +6,6 @@ from math import isnan
 import pandas as pd
 from paperswithcode import PapersWithCodeClient
 from paperswithcode.models import (
-    EvaluationTableCreateRequest,
     EvaluationTableSyncRequest,
     MetricSyncRequest,
     ResultSyncRequest,
@@ -52,13 +51,15 @@ def upload_subtable(client, df, dataset, task, paper, evaluated_on):
         task=task.id,
         dataset=dataset.id,
         description=task.description,
+        external_id=f"{dataset.id}-{task.id}",
         mirror_url="http://moabb.neurotechx.com/docs/benchmark_summary.html",
     )
-    client.evaluation_create(EvaluationTableCreateRequest(**kwargs))
+    print(f"Uploading {kwargs=}")
+    # client.evaluation_create(EvaluationTableCreateRequest(**kwargs))
 
     r = EvaluationTableSyncRequest(
         **kwargs,
-        metric=[
+        metrics=[
             MetricSyncRequest(name=metric, is_loss=metric in _metrics.values())
             for metric in df.columns
         ],
@@ -75,6 +76,7 @@ def upload_subtable(client, df, dataset, task, paper, evaluated_on):
             for pipeline, row in df.iterrows()
         ],
     )
+    print(r)
     leaderboard_id = client.evaluation_synchronize(r)
     print(f"{leaderboard_id=}")
     return leaderboard_id
@@ -92,7 +94,9 @@ def upload_table(client, df, datasets, tasks, paper, evaluated_on, subsubtask):
         task = tasks[task_key]
         id = upload_subtable(
             client,
-            sub_df.set_index("pipeline").drop(columns=gp_cols),
+            sub_df.set_index("pipeline").drop(
+                columns=gp_cols
+            ),  # + list(_metrics.values())),
             dataset,
             task,
             paper,

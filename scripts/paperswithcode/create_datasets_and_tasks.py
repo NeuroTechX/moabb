@@ -61,7 +61,9 @@ class Task:
 
     @classmethod
     def make(cls, name, description, area, parent_task):
-        return cls(name, name, description, area, parent_task)
+        # to snake case
+        task_id = name.lower().replace(" ", "-").replace("(", "").replace(")", "")
+        return cls(task_id, name, description, area, parent_task)
 
 
 def create_tasks(client: PapersWithCodeClient):
