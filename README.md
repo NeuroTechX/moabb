@@ -312,6 +312,10 @@ and here is the Bibtex version:
 
 If you want to cite the scientific contributions of MOABB, you could use the following paper:
 
+> Sylvain Chevallier, Igor Carrara, Bruno Aristimunha, Pierre Guetschel, Sara Sedlar, Bruna Junqueira Lopes, Sébastien Velut, Salim Khazem, Thomas Moreau
+> ["The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark"](https://cnrs.hal.science/hal-04537061/)
+> HAL: hal-04537061.
+
 > Vinay Jayaram and Alexandre Barachant.
 > ["MOABB: trustworthy algorithm benchmarking for BCIs."](http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta)
 > Journal of neural engineering 15.6 (2018): 066011.
