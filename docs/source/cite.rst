@@ -4,7 +4,7 @@ Citing MOABB and related publications
 If you use MOABB in your experiments, please cite this library when
 publishing a paper to increase the visibility of open science initiatives:
 
--  Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Quentin, B., Schirrmeister, R. T.,Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant,A., & Chevallier, S.  Mother of all BCI Benchmarks (MOABB), 2023. DOI: 10.5281/zenodo.10034223.
+-  Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Quentin, B., Schirrmeister, R. T.,Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant,A., & Chevallier, S.  Mother of all BCI Benchmarks (MOABB), 2023. DOI: `10.5281/zenodo.10034223 <https://www.doi.org/10.5281/zenodo.10034223>`__
 
 and here is the Bibtex version:
 
@@ -20,6 +20,8 @@ and here is the Bibtex version:
    }
 
 If you want to cite the scientific contributions of MOABB, you could use the following paper:
+
+-  Sylvain Chevallier, Igor Carrara, Bruno Aristimunha, Pierre Guetschel, Sara Sedlar, Bruna Junqueira Lopes, Sébastien Velut, Salim Khazem, Thomas Moreau. `The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark <https://cnrs.hal.science/hal-04537061/>`__, 2023. HAL: hal-04537061.
 
 -  Vinay Jayaram and Alexandre Barachant. MOABB: trustworthy algorithm
    benchmarking for BCIs. Journal of neural engineering 15.6 (2018):
