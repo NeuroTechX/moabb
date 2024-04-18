@@ -26,6 +26,7 @@ Enhancements
 - Adding new paper results website (:gh:`556` by `Bruno Aristimunha`_)
 - Move cVEP common functions to :mod:`moabb.datasets.utils` (:gh:`564` :gh:`557` by `Pierre Guetschel`_)
 - Normalize c-VEP description tables (:gh:`562` :gh:`566` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
+- Update citation in README (:gh:`573` by `Igor Carrara`_)
 
 Bugs
 ~~~~
