@@ -70,11 +70,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
       - name: Create local data folder
         run: |
           mkdir ~/mne_data
 
+      - name: Cache datasets and docs
+        id: cached-dataset-docs
+        uses: actions/cache@v3
+        with:
+          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
+          path: |
+            ~/mne_data
+            docs/build
 
       - name: Checkout moabb.github.io
         uses: actions/checkout@v4
@@ -98,6 +105,15 @@ jobs:
       - name: Create local data folder
         run: |
           mkdir ~/mne_data
+
+      - name: Cache datasets and docs
+        id: cached-dataset-docs
+        uses: actions/cache@v3
+        with:
+          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
+          path: |
+            ~/mne_data
+            docs/build
 
       - name: Checkout gh pages
         uses: actions/checkout@v4
