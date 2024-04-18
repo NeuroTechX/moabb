@@ -60,7 +60,7 @@ jobs:
           path: docs/build/html/
 
   deploy_docs:
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'}}
     needs: build_docs
     runs-on: ${{ matrix.os }}
     strategy:
@@ -75,14 +75,6 @@ jobs:
         run: |
           mkdir ~/mne_data
 
-      - name: Cache datasets and docs
-        id: cached-dataset-docs
-        uses: actions/cache@v3
-        with:
-          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
-          path: |
-            ~/mne_data
-            docs/build
 
       - name: Checkout moabb.github.io
         uses: actions/checkout@v4
@@ -106,15 +98,6 @@ jobs:
       - name: Create local data folder
         run: |
           mkdir ~/mne_data
-
-      - name: Cache datasets and docs
-        id: cached-dataset-docs
-        uses: actions/cache@v3
-        with:
-          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
-          path: |
-            ~/mne_data
-            docs/build
 
       - name: Checkout gh pages
         uses: actions/checkout@v4
@@ -141,4 +124,4 @@ jobs:
           cp -a ~/work/moabb/moabb/docs/build/html ./docs
           git add -A
           git commit -m "GH Actions update of GH pages ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)"
-          git diff --quiet && git diff --staged --quiet || (git commit -m "GH Actions update of GH pages ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)" && git push origin gh-pages)
+          git push origin gh-pages
