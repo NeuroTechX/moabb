@@ -131,13 +131,3 @@ jobs:
           publish_dir: ./docs/build/html
           cname: moabb.neurotechx.com/
 
-      - name: Deploy on gh-pages
-        run: |
-          git config --global user.email "ci@neurotechx.com"
-          git config --global user.name "Github Actions"
-          cd ~/work/moabb/moabb/moabb-ghpages
-          rm -Rf docs
-          cp -a ~/work/moabb/moabb/docs/build/html ./docs
-          git add -A
-          git commit -m "GH Actions update of GH pages ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)"
-          git push origin gh-pages
