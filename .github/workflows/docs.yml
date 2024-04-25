@@ -130,4 +130,3 @@ jobs:
           publish_branch: master
           publish_dir: ./docs/build/html
           cname: moabb.neurotechx.com/
-
