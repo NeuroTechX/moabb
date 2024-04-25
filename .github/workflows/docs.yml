@@ -59,36 +59,6 @@ jobs:
           name: DocumentationHTML
           path: docs/build/html/
 
-  deploy_docs:
-    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'}}
-    needs: build_docs
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Create local data folder
-        run: |
-          mkdir ~/mne_data
-
-      - name: Cache datasets and docs
-        id: cached-dataset-docs
-        uses: actions/cache@v3
-        with:
-          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
-          path: |
-            ~/mne_data
-            docs/build
-
-      - name: Checkout moabb.github.io
-        uses: actions/checkout@v4
-        with:
-          repository: "NeuroTechX/moabb.github.io"
-          path: moabb-ghio
-          token: ${{ secrets.MOABB_GHIO }}
 
   deploy_gh_pages:
     if: ${{ github.ref == 'refs/heads/develop' }}
