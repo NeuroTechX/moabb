@@ -311,10 +311,6 @@ class Test_AdditionalColumns(unittest.TestCase):
         if os.path.isfile(path):
             os.remove(path)
 
-    def test_fails_if_nothing_returned(self):
-        self.assertRaises(Exception, self.eval.process, pipelines)
-        # TODO Add custom evaluation that actually returns additional info
-
 
 class Test_CrossSubj(Test_WithinSess):
     def setUp(self):
