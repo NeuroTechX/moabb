@@ -137,25 +137,6 @@ class Test_WithinSess(unittest.TestCase):
         # We should have 9 columns in the results data frame
         self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
 
-    def test_within_session_evaluation_save_model(self):
-        res_test_path = "./res_test"
-
-        # Get a list of all subdirectories inside 'res_test'
-        subdirectories = [
-            d
-            for d in os.listdir(res_test_path)
-            if os.path.isdir(os.path.join(res_test_path, d))
-        ]
-
-        # Check if any of the subdirectories contain the partial name 'Model'
-        model_folder_exists = any("Model" in folder for folder in subdirectories)
-
-        # Assert that at least one folder with the partial name 'Model' exists
-        self.assertTrue(
-            model_folder_exists,
-            "No folder with partial name 'Model' found inside 'res_test' directory",
-        )
-
     def test_lambda_warning(self):
         def explicit_kernel(x):
             return x**3

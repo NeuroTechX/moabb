@@ -322,7 +322,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         t_start = time()
         try:
             model = clf.fit(X_train, y_train)
-            score = _score(model, X_test, y_test, scorer)
+            score = _score(estimator=model, X_test=X_test, y_test=y_test, scorer=scorer)
         except ValueError as e:
             if self.error_score == "raise":
                 raise e
@@ -738,7 +738,12 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 # we eval on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
-                    score = _score(model, X[test[ix]], y[test[ix]], scorer)
+                    score = _score(
+                        estimator=model,
+                        X_test=X[test[ix]],
+                        y_test=y[test[ix]],
+                        scorer=scorer,
+                    )
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
