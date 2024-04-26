@@ -549,12 +549,12 @@ class CrossSessionEvaluation(BaseEvaluation):
                             )
                     else:
                         result = _fit_and_score(
-                            clone(grid_clf),
-                            X,
-                            y,
-                            scorer,
-                            train,
-                            test,
+                            estimator=clone(grid_clf),
+                            X=X,
+                            y=y,
+                            scorer=scorer,
+                            train=train,
+                            test=test,
                             verbose=False,
                             parameters=None,
                             fit_params=None,
