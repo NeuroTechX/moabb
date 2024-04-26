@@ -12,10 +12,10 @@ license = "BSD-3-Clause"
 
 
 [tool.poetry.dependencies]
-python = ">=3.8, <3.12"
+python = ">=3.9, <3.12"
 numpy = "^1.22"
 scipy = "^1.9.3"
-mne = "^1.4"
+mne = "<=1.6.1"
 pandas = "^1.5.2"
 h5py = "<=3.8.0"
 scikit-learn = "^1.2.0"
@@ -37,7 +37,7 @@ mne-bids = "^0.13"
 codecarbon = { version = "^2.1.4", optional = true }
 
 # Optional dependencies for deep learning
-tensorflow = { version = ">=2.10,<2.13", optional = true }
+tensorflow = { version = ">=2.13,<=2.14", optional = true }
 keras = { version = ">=1.11.0", optional = true }
 scikeras =  { version = "^0.12.0", optional = true }
 braindecode = {version = "^0.8", optional = true}
