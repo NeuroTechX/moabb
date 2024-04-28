@@ -13,6 +13,7 @@ URL = "https://zenodo.org/record/5055046/files/"
 
 EVENTS = dict(rs=1, easy=2, medium=3, diff=4)
 
+
 class Hinss2021(BaseDataset):
     """Neuroergonomic 2021 dataset.
 

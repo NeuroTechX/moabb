@@ -2,7 +2,7 @@
 This example uses the Hinss2021 dataset.
 
 The toy question we will try to answer is:
-Which one is better between Xdawn, 
+Which one is better between Xdawn,
 electrode selection on time epoch and on covariance,
 for EEG classification?
 
@@ -10,21 +10,24 @@ for EEG classification?
 
 # License: BSD (3-clause)
 
-from matplotlib import pyplot as plt
 import warnings
+
+import numpy as np
 import seaborn as sns
-from moabb import set_log_level
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-from pyriemann.tangentspace import TangentSpace
+from matplotlib import pyplot as plt
+from pyriemann.channelselection import ElectrodeSelection
 from pyriemann.estimation import Covariances
+from pyriemann.spatialfilters import Xdawn
+from pyriemann.tangentspace import TangentSpace
 from sklearn.base import TransformerMixin
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.pipeline import make_pipeline
+
+from moabb import set_log_level
 from moabb.datasets import Hinss2021
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import RestingStateToP300Adapter
-from pyriemann.channelselection import ElectrodeSelection
-from sklearn.pipeline import make_pipeline
-from pyriemann.spatialfilters import Xdawn
-import numpy as np
+
 
 print(__doc__)
 
@@ -41,12 +44,12 @@ set_log_level("info")
 # Create util transformer
 # ----------------------
 #
-# Let's create a simple transformer, that will 
+# Let's create a simple transformer, that will
 # select electrodes based on the covariance information
 
+
 class EpochSelectChannel(TransformerMixin):
-    """Select channels based on covariance information, 
-    """
+    """Select channels based on covariance information,"""
 
     def __init__(self, n_chan, est):
         self.n_chan = n_chan
@@ -109,24 +112,15 @@ pipelines = {}
 
 
 pipelines["Xdawn+Cov+TS+LDA"] = make_pipeline(
-    Xdawn(nfilter=4), # 8 components
-    Covariances(estimator='lwf'),
-    TangentSpace(),
-    LDA()
+    Xdawn(nfilter=4), Covariances(estimator="lwf"), TangentSpace(), LDA()  # 8 components
 )
 
 pipelines["Cov+ElSel+TS+LDA"] = make_pipeline(
-    Covariances(estimator='lwf'),
-    ElectrodeSelection(nelec=8),
-    TangentSpace(),
-    LDA()
+    Covariances(estimator="lwf"), ElectrodeSelection(nelec=8), TangentSpace(), LDA()
 )
 
 pipelines["ElSel+Cov+TS+LDA"] = make_pipeline(
-    EpochSelectChannel(8, 'lwf'),
-    Covariances(estimator='lwf'),
-    TangentSpace(),
-    LDA()
+    EpochSelectChannel(8, "lwf"), Covariances(estimator="lwf"), TangentSpace(), LDA()
 )
 
 ##############################################################################
