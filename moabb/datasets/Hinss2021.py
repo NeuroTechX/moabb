@@ -10,70 +10,63 @@ URL = "https://zenodo.org/record/5055046/files/"
 
 EVENTS = dict(rs=1, easy=2, medium=3, diff=4)
 
-CH_NAMES = ["Fp1", 
-      "Fz", 
-      "F3", 
-      "F7", 
-     "FT9", 
-     "FC5", 
-     "FC1", 
-      "C3", 
-      "T7", 
-     "CP5", 
-     "CP1", 
-      "Pz", 
-      "P3", 
-      "P7", 
-      "O1", 
-      "Oz", 
-      "O2", 
-      "P4", 
-      "P8", 
-    "TP10", 
-     "CP6", 
-     "CP2", 
-     "FCz", 
-      "C4", 
-      "T8", 
-     "FT8", 
-     "FC6", 
-     "FC2", 
-      "F4", 
-      "F8", 
-     "Fp2", 
-     "AF7", 
-     "AF3", 
-     "AFz", 
-      "F1", 
-      "F5", 
-     "FT7", 
-     "FC3", 
-      "C1", 
-      "C5", 
-     "TP7", 
-     "CP3", 
-      "P1", 
-      "P5", 
-     "PO7", 
-     "PO3", 
-     "POz", 
-     "PO4", 
-     "PO8", 
-      "P6", 
-      "P2", 
-     "CPz", 
-     "CP4", 
-     "TP8", 
-      "C6", 
-      "C2", 
-     "FC4", 
-    "FT10", 
-      "F6", 
-     "AF8", 
-     "AF4", 
-      "F2", 
-]
+# 8 It encompassed
+# EEG recordings from 15 participants (6 female, with an
+# average age of 25 years). A total of 62 active Ag–AgCl
+# electrodes were available in the dataset. The reference
+# was to the right mastoid electrode. The participants engaged in 3 distinct experimental sessions, each of which
+# was separated by 1 week. At the beginning of each
+# session, the resting state of the participant (measured as
+# 1 minute with eyes open) was recorded. Subsequently,
+# participants undertook 3 tasks of varying difficulty levels
+# (i.e., easy, medium, and difficult). The task assignments
+# were randomized. A 2-second nonoverlapping epoch was
+# obtained for each task.
+    
 class Hinss2021(BaseDataset):
+
+    """Neuroergonomic 2021 dataset.
+
+    .. admonition:: Dataset summary
+
+
+        ==============  =======  =======  ==========  =================  ============  ===============  ===========
+        Name              #Subj    #Chan    #Classes    #Blocks/class     Trials len    Sampling rate    #Sessions
+        =============== =======  =======  ==========  =================  ============  ===============  ===========
+        Hinss2021            15       62           4                 1      2s            250Hz                 3
+        =============== =======  =======  ==========  =================  ============  ===============  ===========
+
+    We describe the experimental procedures for a dataset that is publicly available
+    at https://zenodo.org/records/5055046.
+    This dataset contains electroencephalographic recordings of 15 subjects (6 female, with an
+    average age of 25 years). A total of 62 active Ag–AgCl
+    electrodes were available in the dataset. 
+    
+    The participants engaged in 3 distinct experimental sessions, each of which
+    was separated by 1 week.
+    
+    At the beginning of each
+    session, the resting state of the participant (measured as
+    1 minute with eyes open) was recorded.
+    
+    Subsequently, participants undertook 3 tasks of varying difficulty levels
+    (i.e., easy, medium, and difficult). The task assignments
+    were randomized. 
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.1
+
+    References
+    ----------
+
+    .. [1] M. Hinss, B. Somon, F. Dehais & R. N. Roy (2021)
+            Open EEG Datasets for Passive Brain-Computer
+            Interface Applications: Lacks and Perspectives.
+            IEEE Neural Engineering Conference.
+    """
+
     def __init__(self):
         super().__init__(
             subjects=list(range(1, 16)),  # 15 participants
@@ -140,7 +133,7 @@ class Hinss2021(BaseDataset):
             raw_data = np.concatenate((raw_data, stim))
             
             # create info
-            self._chnames = [str(i) for i in range((raw_data.shape[0] - 1))] + ['stim'] # TODO: real chnames and location
+            self._chnames = rs_epochs.ch_names + ['stim']
             self._chtypes = ['eeg'] * (raw_data.shape[0] - 1) + ['stim']
 
             info = mne.create_info(
