@@ -13,20 +13,6 @@ URL = "https://zenodo.org/record/5055046/files/"
 
 EVENTS = dict(rs=1, easy=2, medium=3, diff=4)
 
-# 8 It encompassed
-# EEG recordings from 15 participants (6 female, with an
-# average age of 25 years). A total of 62 active Ag–AgCl
-# electrodes were available in the dataset. The reference
-# was to the right mastoid electrode. The participants engaged in 3 distinct experimental sessions, each of which
-# was separated by 1 week. At the beginning of each
-# session, the resting state of the participant (measured as
-# 1 minute with eyes open) was recorded. Subsequently,
-# participants undertook 3 tasks of varying difficulty levels
-# (i.e., easy, medium, and difficult). The task assignments
-# were randomized. A 2-second nonoverlapping epoch was
-# obtained for each task.
-
-
 class Hinss2021(BaseDataset):
     """Neuroergonomic 2021 dataset.
 
