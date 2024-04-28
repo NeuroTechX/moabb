@@ -23,7 +23,7 @@ class Hinss2021(BaseDataset):
         ==============  =======  =======  ==========  =================  ============  ===============  ===========
         Name              #Subj    #Chan    #Classes    #Blocks/class     Trials len    Sampling rate    #Sessions
         =============== =======  =======  ==========  =================  ============  ===============  ===========
-        Hinss2021            15       62           4                 1      2s            250Hz                 3
+        Hinss2021            15       62           4                 1      2s            250Hz                 2
         =============== =======  =======  ==========  =================  ============  ===============  ===========
 
     We describe the experimental procedures for a dataset that is publicly available
@@ -32,7 +32,7 @@ class Hinss2021(BaseDataset):
     average age of 25 years). A total of 62 active Ag–AgCl
     electrodes were available in the dataset.
 
-    The participants engaged in 3 distinct experimental sessions, each of which
+    The participants engaged in 3 (2 available here) distinct experimental sessions, each of which
     was separated by 1 week.
 
     At the beginning of each
@@ -63,7 +63,7 @@ class Hinss2021(BaseDataset):
             sessions_per_subject=2,  # 2 sessions per subject
             events=EVENTS,
             code="Hinss2021",
-            interval=[0, 1],  # Epochs are 2-second long
+            interval=[0, 2],  # Epochs are 2-second long
             paradigm="rstate",
         )
 
