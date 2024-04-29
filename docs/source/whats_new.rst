@@ -28,7 +28,7 @@ Enhancements
 - Normalize c-VEP description tables (:gh:`562` :gh:`566` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
 - Update citation in README (:gh:`573` by `Igor Carrara`_)
 - Update pyRiemann dependency (:gh:`577` by `Gregoire Cattan`_)
-- Add Hinss2021 dataset (:gh:`580` by `Gregoire Cattan`_)
+- Add Hinss2021 dataset (:gh:`580` by `Gregoire Cattan`_ and `Yash Chauhan`_)
 
 Bugs
 ~~~~
@@ -438,3 +438,4 @@ API changes
 .. _Jordy Thielen: https://github.com/thijor
 .. _Sebastien Velut: https://github.com/swetbear
 .. _Brian Irvine: https://github.com/brianjohannes
+.. _Yash Chauhan https://github.com/jiggychauhi
