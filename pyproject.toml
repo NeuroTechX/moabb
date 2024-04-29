@@ -31,7 +31,7 @@ coverage = "^7.0.1"
 memory-profiler = "^0.61.0"
 edflib-python = "^1.0.6"
 pytest = "^7.4.0"
-mne-bids = "^0.13"
+mne-bids = "^0.14"
 
 # Optional dependencies for carbon emission
 codecarbon = { version = "^2.1.4", optional = true }
