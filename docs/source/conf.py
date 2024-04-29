@@ -23,7 +23,6 @@ import moabb  # noqa
 sys.path.insert(0, os.path.abspath("../"))
 sys.path.insert(0, os.path.abspath("../../"))
 
-
 matplotlib.use("Agg")
 # -- Project information -----------------------------------------------------
 
@@ -36,7 +35,6 @@ author = "Alexandre Barachant, Vinay Jayaram, Sylvain Chevallier"
 version = moabb.__version__
 # The full version, including alpha/beta/rc tags
 release = f"{moabb.__version__}-dev"
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -70,6 +68,7 @@ extensions = [
     "m2r2",
     "numpydoc",
     "sphinx_favicon",
+    "sphinx_git",
     "sphinxcontrib.jquery",
 ]
 
@@ -167,7 +166,6 @@ sphinx_gallery_conf = {
     "within_subsection_order": FileNameSortKey,
 }
 
-
 autodoc_default_options = {"inherited-members": False}
 autodoc_default_flags = {"inherited-members": None}
 autosummary_generate = True
@@ -199,7 +197,6 @@ pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -293,7 +290,6 @@ html_context = {
     "doc_path": "docs",
 }
 
-
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
@@ -320,7 +316,6 @@ latex_toplevel_sectioning = "part"
 latex_documents = [
     (master_doc, "moabb.tex", "moabb Documentation", "Alexandre Barachant", "manual"),
 ]
-
 
 # -- Fontawesome support -----------------------------------------------------
 
@@ -384,13 +379,11 @@ prolog += """
 .. |ensp| unicode:: U+2002 .. EN SPACE
 """
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [(master_doc, "moabb", "moabb Documentation", [author], 1)]
-
 
 # -- Options for Texinfo output -------------------------------------------
 
