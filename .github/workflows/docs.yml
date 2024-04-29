@@ -92,7 +92,7 @@ jobs:
           token: ${{ secrets.MOABB_GHIO }}
 
   deploy_gh_pages:
-    if: ${{ github.ref == 'refs/heads/develop' }}
+    if: ${{ github.ref == 'refs/heads/develop' || 1 == 1 }}
     needs: build_docs
     runs-on: ${{ matrix.os }}
     strategy:
