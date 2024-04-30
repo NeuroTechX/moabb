@@ -1,10 +1,11 @@
 """
-This example uses the Hinss2021 dataset.
+This example show how to use the Hinss2021 dataset
+with the resting state paradigm.
 
-The toy question we will try to answer is:
-Which one is better between Xdawn,
-electrode selection on time epoch and on covariance,
-for EEG classification?
+For the sake of the example, we will try to answer which 
+channel selection strategy is the best for the Hinss2021 dataset:
+Xdawn, electrode selection on time epochs data, or
+electrode selection on covariance matrices. 
 
 """
 
@@ -29,14 +30,10 @@ from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import RestingStateToP300Adapter
 
 
-print(__doc__)
-
 ##############################################################################
 # getting rid of the warnings about the future
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
-
-warnings.filterwarnings("ignore")
 
 set_log_level("info")
 
@@ -56,9 +53,12 @@ class EpochSelectChannel(TransformerMixin):
         self.est = est
 
     def fit(self, X, _y=None, **kwargs):
+        # Get the covariances of the channels for each epoch.
         covs = Covariances(estimator=self.est).fit_transform(X)
+        # Get the average covariance between the channels
         m = np.mean(covs, axis=0)
         n_feats, _ = m.shape
+        # Selelect the `n_chan` channel having the maximum covariances.
         all_max = []
         for i in range(n_feats):
             for j in range(n_feats):
@@ -70,7 +70,7 @@ class EpochSelectChannel(TransformerMixin):
         indices = []
         for v in all_max:
             indices.extend(np.argwhere(m == v).flatten())
-
+        # We will keep only these channel for the transform step.
         indices = np.unique(indices)
         self._elec = indices
         return self
@@ -110,7 +110,6 @@ for dataset in datasets:
 
 pipelines = {}
 
-
 pipelines["Xdawn+Cov+TS+LDA"] = make_pipeline(
     Xdawn(nfilter=4), Covariances(estimator="lwf"), TangentSpace(), LDA()  # 8 components
 )
@@ -119,6 +118,8 @@ pipelines["Cov+ElSel+TS+LDA"] = make_pipeline(
     Covariances(estimator="lwf"), ElectrodeSelection(nelec=8), TangentSpace(), LDA()
 )
 
+# Pay attention here that the channel selection took lace before computing the covariances:
+# It is done on raw epochs.
 pipelines["ElSel+Cov+TS+LDA"] = make_pipeline(
     EpochSelectChannel(8, "lwf"), Covariances(estimator="lwf"), TangentSpace(), LDA()
 )
@@ -146,6 +147,13 @@ print(results.groupby("pipeline").mean("score")[["score", "time"]])
 # # ----------------
 # #
 # # Here we plot the results to compare two pipelines
+# # A few observation that you may make:
+##      - Xdawn is not appropriate for resting state paradigm.
+##        This is kind of specific are the filter was designed for ERP
+##      - Electrode selection on covariance matrices as less variability, and 
+##        in general perform best
+##      - however, it takes also more time than the simple electrode selection on 
+##        time epoch
 
 fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
 
