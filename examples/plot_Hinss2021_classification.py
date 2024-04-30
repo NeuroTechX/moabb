@@ -177,7 +177,7 @@ plt.show()
 # A few observation that you may make:
 #      - Xdawn is not appropriate for resting state paradigm.
 #        This is kind of specific are the filter was designed for ERP
-#      - Electrode selection on covariance matrices as less variability, and 
+#      - Electrode selection on covariance matrices as less variability, and
 #        in general perform best
-#      - however, it takes also more time than the simple electrode selection on 
+#      - however, it takes also more time than the simple electrode selection on
 #        time epoch
