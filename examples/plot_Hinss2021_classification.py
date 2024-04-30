@@ -6,10 +6,10 @@ Hinss2021 classification example
 This example show how to use the Hinss2021 dataset
 with the resting state paradigm.
 
-For the sake of the example, we will try to answer which 
+For the sake of the example, we will try to answer which
 channel selection strategy is the best for the Hinss2021 dataset:
 Xdawn, electrode selection on time epochs data, or
-electrode selection on covariance matrices. 
+electrode selection on covariance matrices.
 
 """
 
