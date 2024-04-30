@@ -27,6 +27,7 @@ Enhancements
 - Move cVEP common functions to :mod:`moabb.datasets.utils` (:gh:`564` :gh:`557` by `Pierre Guetschel`_)
 - Normalize c-VEP description tables (:gh:`562` :gh:`566` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
 - Update citation in README (:gh:`573` by `Igor Carrara`_)
+- Update pyRiemann dependency (:gh:`577` by `Gregoire Cattan`_)
 
 Bugs
 ~~~~
@@ -39,6 +40,8 @@ Bugs
 - Fix format string receiving incorrect number of args in bids interface (:gh:`563` by `Pierre Guetschel`_)
 - Fix number of sessions in doc of :class:`moabb.datasets.Sosulski2019` (:gh:`565` by `Pierre Guetschel`_)
 - Fix `code` column of :class:`moabb.datasets.CastillosCVEP100` and :class:`moabb.datasets.CastillosCVEP100` (:gh:`567` by `Pierre Guetschel`_)
+- MAINT updating the packages pre-release (:gh:`578` by `Bruno Aristimunha`_)
+
 
 API changes
 ~~~~~~~~~~~
