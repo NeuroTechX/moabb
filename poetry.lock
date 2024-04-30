@@ -3123,4 +3123,4 @@ deeplearning = ["braindecode", "keras", "libclang", "scikeras", "tensorflow", "t
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9, <3.12"
-content-hash = "3b853bab38465b6acc05518f82123846b3081e566b6df774d5a07bcfaebdfdcf"
+content-hash = "97c6e359712c5ed4d344f954b28272079875c8b440229515107ba9fadc5b826a"
