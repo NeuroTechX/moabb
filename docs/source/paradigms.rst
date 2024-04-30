@@ -55,6 +55,16 @@ c-VEP Paradigms
     FilterBankCVEP
 
 
+-----------------------
+Resting state Paradigms
+-----------------------
+
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    RestingStateToP300Adapter
+
 --------------
 Fixed Interval Windows Processings
 --------------
