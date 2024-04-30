@@ -133,7 +133,7 @@ pipelines["ElSel+Cov+TS+LDA"] = make_pipeline(
 evaluation = CrossSessionEvaluation(
     paradigm=paradigm,
     datasets=datasets,
-    overwrite=True,
+    overwrite=False,
 )
 
 results = evaluation.process(pipelines)
