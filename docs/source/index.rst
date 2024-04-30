@@ -4,13 +4,6 @@
 
 .. include:: cite.rst
 
-.. git_commit_detail::
-   :branch:
-   :commit:
-   :sha_length: 10
-   :uncommitted:
-   :untracked:
-
 .. toctree::
    :glob:
    :hidden:
