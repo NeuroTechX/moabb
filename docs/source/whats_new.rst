@@ -438,4 +438,4 @@ API changes
 .. _Jordy Thielen: https://github.com/thijor
 .. _Sebastien Velut: https://github.com/swetbear
 .. _Brian Irvine: https://github.com/brianjohannes
-.. _Yash Chauhan https://github.com/jiggychauhi
+.. _Yash Chauhan: https://github.com/jiggychauhi
