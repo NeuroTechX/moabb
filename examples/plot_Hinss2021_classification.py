@@ -2,10 +2,10 @@
 This example show how to use the Hinss2021 dataset
 with the resting state paradigm.
 
-For the sake of the example, we will try to answer which 
+For the sake of the example, we will try to answer which
 channel selection strategy is the best for the Hinss2021 dataset:
 Xdawn, electrode selection on time epochs data, or
-electrode selection on covariance matrices. 
+electrode selection on covariance matrices.
 
 """
 
@@ -150,9 +150,9 @@ print(results.groupby("pipeline").mean("score")[["score", "time"]])
 # # A few observation that you may make:
 ##      - Xdawn is not appropriate for resting state paradigm.
 ##        This is kind of specific are the filter was designed for ERP
-##      - Electrode selection on covariance matrices as less variability, and 
+##      - Electrode selection on covariance matrices as less variability, and
 ##        in general perform best
-##      - however, it takes also more time than the simple electrode selection on 
+##      - however, it takes also more time than the simple electrode selection on
 ##        time epoch
 
 fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
