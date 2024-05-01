@@ -8,8 +8,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-    <title>moabb.pipelines.deep_learning.KerasEEGNeX &#8212; moabb 1.0.0 documentation</title>
+    <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
+    <title>moabb.pipelines.deep_learning.KerasEEGNeX &#8212; moabb 1.0.0-dev documentation</title>
   
   
   
@@ -30,12 +30,14 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -47,6 +49,8 @@
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
     <script>
@@ -56,6 +60,8 @@
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.pipelines.deep_learning.KerasEEGNeX';</script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="moabb.pipelines.deep_learning.KerasEEGTCNet" href="moabb.pipelines.deep_learning.KerasEEGTCNet.html" />
@@ -103,6 +109,21 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+
+<script>
+document.write(`<div class="bd-header-announcement"></div>`);
+fetch("https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html")
+  .then(res => {return res.text();})
+  .then(data => {
+    div = document.querySelector(".bd-header-announcement");
+    div.classList.add(...["bd-header-announcement", "container-fluid"]);
+    div.innerHTML = `<div class="bd-header-announcement__content">${data}</div>`;
+  })
+  .catch(error => {
+    console.log("[PST]: Failed to load announcement at: https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html");
+  });
+</script>
   
     <nav class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
@@ -146,6 +167,20 @@
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../paper_results.html">
+                        The largest EEG benchmark
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../install/install.html">
                         Install
                       </a>
@@ -165,10 +200,15 @@
                       </a>
                     </li>
                 
-
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../dataset_summary.html">
-                        Datasets
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
                       </a>
                     </li>
                 
@@ -179,29 +219,17 @@
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API
-                      </a>
-                    </li>
-                
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
-                        Gallery
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../whats_new.html">
-                        What's new
+                        Release notes
                       </a>
                     </li>
                 
@@ -286,6 +314,20 @@ document.write(`
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../paper_results.html">
+                        The largest EEG benchmark
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../install/install.html">
                         Install
                       </a>
@@ -305,10 +347,15 @@ document.write(`
                       </a>
                     </li>
                 
-
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../dataset_summary.html">
-                        Datasets
+                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
+                        Gallery
                       </a>
                     </li>
                 
@@ -319,29 +366,17 @@ document.write(`
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API
-                      </a>
-                    </li>
-                
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../auto_examples/index.html">
-                        Gallery
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../whats_new.html">
-                        What's new
+                        Release notes
                       </a>
                     </li>
                 
@@ -453,7 +488,7 @@ https://doi.org/10.48550/arXiv.2207.12369</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.deep_learning.KerasEEGNeX.set_fit_request">
-<span class="sig-name descname"><span class="pre">set_fit_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.deep_learning.KerasEEGNeX" title="moabb.pipelines.deep_learning.KerasEEGNeX"><span class="pre">KerasEEGNeX</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_metadata_requests.py#L1033-L1060"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.deep_learning.KerasEEGNeX.set_fit_request" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">set_fit_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.deep_learning.KerasEEGNeX" title="moabb.pipelines.deep_learning.KerasEEGNeX"><span class="pre">KerasEEGNeX</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_metadata_requests.py#L1239-L1266"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.deep_learning.KerasEEGNeX.set_fit_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method.</p>
 <p>Note that this method is only relevant if
 <code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
@@ -493,7 +528,7 @@ sub-estimator of a meta-estimator, e.g. used inside a
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.deep_learning.KerasEEGNeX.set_partial_fit_request">
-<span class="sig-name descname"><span class="pre">set_partial_fit_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.deep_learning.KerasEEGNeX" title="moabb.pipelines.deep_learning.KerasEEGNeX"><span class="pre">KerasEEGNeX</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_metadata_requests.py#L1033-L1060"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.deep_learning.KerasEEGNeX.set_partial_fit_request" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">set_partial_fit_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.deep_learning.KerasEEGNeX" title="moabb.pipelines.deep_learning.KerasEEGNeX"><span class="pre">KerasEEGNeX</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_metadata_requests.py#L1239-L1266"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.deep_learning.KerasEEGNeX.set_partial_fit_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">partial_fit</span></code> method.</p>
 <p>Note that this method is only relevant if
 <code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
@@ -536,7 +571,7 @@ sub-estimator of a meta-estimator, e.g. used inside a
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.deep_learning.KerasEEGNeX.set_score_request">
-<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.deep_learning.KerasEEGNeX" title="moabb.pipelines.deep_learning.KerasEEGNeX"><span class="pre">KerasEEGNeX</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_metadata_requests.py#L1033-L1060"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.deep_learning.KerasEEGNeX.set_score_request" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.deep_learning.KerasEEGNeX" title="moabb.pipelines.deep_learning.KerasEEGNeX"><span class="pre">KerasEEGNeX</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_metadata_requests.py#L1239-L1266"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.deep_learning.KerasEEGNeX.set_score_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
 <p>Note that this method is only relevant if
 <code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
@@ -658,7 +693,7 @@ sub-estimator of a meta-estimator, e.g. used inside a
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2018-2023 MOABB contributors.
+      © Copyright 2018-2024 MOABB contributors.
       <br/>
     
   </p>

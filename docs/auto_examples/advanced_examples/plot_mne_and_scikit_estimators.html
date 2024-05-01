@@ -8,8 +8,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-    <title>MNE Epochs-based pipelines &#8212; moabb 1.0.0 documentation</title>
+    <link rel="moabb icon" sizes="180x180" href="../../_static/moabb_logo.png" type="image/png">
+    <title>MNE Epochs-based pipelines &#8212; moabb 1.0.0-dev documentation</title>
   
   
   
@@ -30,12 +30,14 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -47,6 +49,8 @@
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
     <script src="../../_static/design-tabs.js"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
     <script>
@@ -56,6 +60,8 @@
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/advanced_examples/plot_mne_and_scikit_estimators';</script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Select Electrodes and Resampling" href="plot_select_electrodes_resample.html" />
@@ -103,6 +109,21 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+
+<script>
+document.write(`<div class="bd-header-announcement"></div>`);
+fetch("https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html")
+  .then(res => {return res.text();})
+  .then(data => {
+    div = document.querySelector(".bd-header-announcement");
+    div.classList.add(...["bd-header-announcement", "container-fluid"]);
+    div.innerHTML = `<div class="bd-header-announcement__content">${data}</div>`;
+  })
+  .catch(error => {
+    console.log("[PST]: Failed to load announcement at: https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html");
+  });
+</script>
   
     <nav class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
@@ -146,6 +167,20 @@
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../paper_results.html">
+                        The largest EEG benchmark
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../install/install.html">
                         Install
                       </a>
@@ -165,10 +200,15 @@
                       </a>
                     </li>
                 
-
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../dataset_summary.html">
-                        Datasets
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Gallery
                       </a>
                     </li>
                 
@@ -179,29 +219,17 @@
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../api.html">
-                        API
-                      </a>
-                    </li>
-                
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../index.html">
-                        Gallery
+                      <a class="nav-link nav-internal" href="../../api.html">
+                        API reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../whats_new.html">
-                        What's new
+                        Release notes
                       </a>
                     </li>
                 
@@ -286,6 +314,20 @@ document.write(`
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../paper_results.html">
+                        The largest EEG benchmark
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../install/install.html">
                         Install
                       </a>
@@ -305,10 +347,15 @@ document.write(`
                       </a>
                     </li>
                 
-
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../dataset_summary.html">
-                        Datasets
+                      <a class="nav-link nav-internal" href="../index.html">
+                        Gallery
                       </a>
                     </li>
                 
@@ -319,29 +366,17 @@ document.write(`
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../api.html">
-                        API
-                      </a>
-                    </li>
-                
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../index.html">
-                        Gallery
+                      <a class="nav-link nav-internal" href="../../api.html">
+                        API reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../whats_new.html">
-                        What's new
+                        Release notes
                       </a>
                     </li>
                 
@@ -762,7 +797,7 @@ ROC-AUC metric.</p>
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:06,  3.14s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:06,  3.16s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -775,38 +810,40 @@ BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:06,  3.14s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.03s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.07s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
 
-  0%|                                      | 32.8k/18.5M [00:00&lt;01:50, 167kB/s]
+  0%|                                     | 8.19k/18.5M [00:00&lt;03:48, 81.2kB/s]
 
-  1%|▎                                      | 150k/18.5M [00:00&lt;00:31, 589kB/s]
+  0%|                                      | 32.8k/18.5M [00:00&lt;01:45, 175kB/s]
 
-  2%|▋                                      | 307k/18.5M [00:00&lt;00:18, 960kB/s]
+  1%|▏                                     | 96.3k/18.5M [00:00&lt;00:48, 378kB/s]
 
-  4%|█▍                                    | 680k/18.5M [00:00&lt;00:09, 1.93MB/s]
+  1%|▍                                      | 209k/18.5M [00:00&lt;00:27, 661kB/s]
 
-  7%|██▌                                  | 1.25M/18.5M [00:00&lt;00:05, 3.19MB/s]
+  2%|▉                                     | 432k/18.5M [00:00&lt;00:14, 1.21MB/s]
 
- 12%|████▍                                | 2.22M/18.5M [00:00&lt;00:03, 5.29MB/s]
+  5%|█▊                                    | 889k/18.5M [00:00&lt;00:07, 2.31MB/s]
 
- 22%|████████▎                            | 4.16M/18.5M [00:00&lt;00:01, 9.71MB/s]
+ 10%|███▌                                 | 1.80M/18.5M [00:00&lt;00:03, 4.46MB/s]
 
- 31%|███████████▌                         | 5.81M/18.5M [00:00&lt;00:01, 11.5MB/s]
+ 20%|███████▏                             | 3.62M/18.5M [00:00&lt;00:01, 8.69MB/s]
 
- 47%|█████████████████▍                   | 8.72M/18.5M [00:01&lt;00:00, 16.8MB/s]
+ 36%|█████████████▎                       | 6.66M/18.5M [00:00&lt;00:00, 15.2MB/s]
 
- 62%|███████████████████████              | 11.6M/18.5M [00:01&lt;00:00, 20.3MB/s]
+ 50%|██████████████████▋                  | 9.34M/18.5M [00:01&lt;00:00, 18.6MB/s]
 
- 77%|████████████████████████████▌        | 14.3M/18.5M [00:01&lt;00:00, 22.4MB/s]
+ 67%|████████████████████████▉            | 12.5M/18.5M [00:01&lt;00:00, 22.3MB/s]
 
- 92%|██████████████████████████████████▏  | 17.1M/18.5M [00:01&lt;00:00, 24.2MB/s]
+ 82%|██████████████████████████████▍      | 15.3M/18.5M [00:01&lt;00:00, 23.7MB/s]
+
+ 97%|████████████████████████████████████ | 18.0M/18.5M [00:01&lt;00:00, 24.7MB/s]
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 64.8GB/s]
+100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 64.3GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
@@ -820,8 +857,8 @@ BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.03s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:12&lt;00:00,  4.49s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:12&lt;00:00,  4.11s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:12&lt;00:00,  4.44s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:12&lt;00:00,  4.08s/it]
 </pre></div>
 </div>
 </section>
@@ -863,7 +900,7 @@ then apply a logistic regression.</p>
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:07,  3.52s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:06,  3.48s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -876,7 +913,7 @@ BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:07,  3.52s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.01s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.03s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -889,8 +926,8 @@ BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.01s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.55s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.45s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.56s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.46s/it]
 </pre></div>
 </div>
 </section>
@@ -927,7 +964,7 @@ on the tangent space and classified with a logistic regression.</p>
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:06&lt;00:13,  6.98s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:07&lt;00:14,  7.07s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -940,7 +977,7 @@ BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:06&lt;00:13,  6.98s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:13&lt;00:06,  6.84s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:13&lt;00:06,  6.95s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -953,8 +990,8 @@ BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:13&lt;00:06,  6.84s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:20&lt;00:00,  6.85s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:20&lt;00:00,  6.86s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:20&lt;00:00,  6.92s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:20&lt;00:00,  6.94s/it]
 </pre></div>
 </div>
 </section>
@@ -981,8 +1018,8 @@ differences between pipelines.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  47.614 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  282 MB</p>
+<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  47.720 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  338 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3bb6d35e266c94de44c44ec75aa9d550/plot_mne_and_scikit_estimators.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_mne_and_scikit_estimators.py</span></code></a></p>
@@ -1075,7 +1112,7 @@ differences between pipelines.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2018-2023 MOABB contributors.
+      © Copyright 2018-2024 MOABB contributors.
       <br/>
     
   </p>

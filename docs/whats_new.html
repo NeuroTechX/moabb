@@ -8,8 +8,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-    <title>What’s new &#8212; moabb 1.0.0 documentation</title>
+    <link rel="moabb icon" sizes="180x180" href="_static/moabb_logo.png" type="image/png">
+    <title>What’s new &#8212; moabb 1.0.0-dev documentation</title>
   
   
   
@@ -30,12 +30,14 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -47,6 +49,8 @@
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
     <script src="_static/design-tabs.js"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
     <script>
@@ -56,6 +60,8 @@
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'whats_new';</script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Architecture and Main Concepts" href="main_concepts.html" />
@@ -102,6 +108,21 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+
+<script>
+document.write(`<div class="bd-header-announcement"></div>`);
+fetch("https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html")
+  .then(res => {return res.text();})
+  .then(data => {
+    div = document.querySelector(".bd-header-announcement");
+    div.classList.add(...["bd-header-announcement", "container-fluid"]);
+    div.innerHTML = `<div class="bd-header-announcement__content">${data}</div>`;
+  })
+  .catch(error => {
+    console.log("[PST]: Failed to load announcement at: https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html");
+  });
+</script>
   
     <nav class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
@@ -145,6 +166,20 @@
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="paper_results.html">
+                        The largest EEG benchmark
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="install/install.html">
                         Install
                       </a>
@@ -164,10 +199,15 @@
                       </a>
                     </li>
                 
-
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="dataset_summary.html">
-                        Datasets
+                      <a class="nav-link nav-internal" href="auto_examples/index.html">
+                        Gallery
                       </a>
                     </li>
                 
@@ -178,29 +218,17 @@
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api.html">
-                        API
-                      </a>
-                    </li>
-                
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_examples/index.html">
-                        Gallery
+                      <a class="nav-link nav-internal" href="api.html">
+                        API reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="#">
-                        What's new
+                        Release notes
                       </a>
                     </li>
                 
@@ -285,6 +313,20 @@ document.write(`
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="paper_results.html">
+                        The largest EEG benchmark
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="install/install.html">
                         Install
                       </a>
@@ -304,10 +346,15 @@ document.write(`
                       </a>
                     </li>
                 
-
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="dataset_summary.html">
-                        Datasets
+                      <a class="nav-link nav-internal" href="auto_examples/index.html">
+                        Gallery
                       </a>
                     </li>
                 
@@ -318,29 +365,17 @@ document.write(`
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api.html">
-                        API
-                      </a>
-                    </li>
-                
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_examples/index.html">
-                        Gallery
+                      <a class="nav-link nav-internal" href="api.html">
+                        API reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="#">
-                        What's new
+                        Release notes
                       </a>
                     </li>
                 
@@ -437,8 +472,11 @@ document.write(`
 <li><p>Adding leave k-Subjects out evaluations (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/470">#470</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Update Braindecode dependency to 0.8 (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/542">#542</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 <li><p>Improve transform function of AugmentedDataset (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/541">#541</a> by <a class="reference external" href="https://github.com/qbarthelemy">Quentin Barthelemy</a>)</p></li>
+<li><p>Adding new paper results website (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/556">#556</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 <li><p>Move cVEP common functions to <code class="xref py py-mod docutils literal notranslate"><span class="pre">moabb.datasets.utils</span></code> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/564">#564</a> <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/557">#557</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 <li><p>Normalize c-VEP description tables (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/562">#562</a> <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/566">#566</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a> and <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Update citation in README (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/573">#573</a> by <a class="reference external" href="https://github.com/carraraig">Igor Carrara</a>)</p></li>
+<li><p>Update pyRiemann dependency (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/577">#577</a> by <a class="reference external" href="https://github.com/gcattan">Gregoire Cattan</a>)</p></li>
 </ul>
 </section>
 <section id="bugs">
@@ -452,6 +490,8 @@ document.write(`
 <li><p>Fix format string receiving incorrect number of args in bids interface (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/563">#563</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 <li><p>Fix number of sessions in doc of <a class="reference internal" href="generated/moabb.datasets.Sosulski2019.html#moabb.datasets.Sosulski2019" title="moabb.datasets.Sosulski2019"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.Sosulski2019</span></code></a> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/565">#565</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
 <li><p>Fix <cite>code</cite> column of <a class="reference internal" href="generated/moabb.datasets.CastillosCVEP100.html#moabb.datasets.CastillosCVEP100" title="moabb.datasets.CastillosCVEP100"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.CastillosCVEP100</span></code></a> and <a class="reference internal" href="generated/moabb.datasets.CastillosCVEP100.html#moabb.datasets.CastillosCVEP100" title="moabb.datasets.CastillosCVEP100"><code class="xref py py-class docutils literal notranslate"><span class="pre">moabb.datasets.CastillosCVEP100</span></code></a> (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/567">#567</a> by <a class="reference external" href="https://github.com/PierreGtch">Pierre Guetschel</a>)</p></li>
+<li><p>MAINT updating the packages pre-release (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/578">#578</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
+<li><p>Fix and updating the parameters for the benchmark function (<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/588">#588</a> by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a>)</p></li>
 </ul>
 </section>
 <section id="api-changes">
@@ -1011,7 +1051,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2018-2023 MOABB contributors.
+      © Copyright 2018-2024 MOABB contributors.
       <br/>
     
   </p>

@@ -8,8 +8,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-    <title>Benchmarking with MOABB with Grid Search &#8212; moabb 1.0.0 documentation</title>
+    <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
+    <title>Benchmarking with MOABB with Grid Search &#8212; moabb 1.0.0-dev documentation</title>
   
   
   
@@ -30,12 +30,14 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
@@ -47,6 +49,8 @@
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
     <script>
@@ -56,6 +60,8 @@
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/plot_benchmark_grid_search';</script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Cross-session motor imagery with deep learning EEGNet v4 model" href="plot_braindecode.html" />
@@ -103,6 +109,21 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+
+<script>
+document.write(`<div class="bd-header-announcement"></div>`);
+fetch("https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html")
+  .then(res => {return res.text();})
+  .then(data => {
+    div = document.querySelector(".bd-header-announcement");
+    div.classList.add(...["bd-header-announcement", "container-fluid"]);
+    div.innerHTML = `<div class="bd-header-announcement__content">${data}</div>`;
+  })
+  .catch(error => {
+    console.log("[PST]: Failed to load announcement at: https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html");
+  });
+</script>
   
     <nav class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
@@ -146,6 +167,20 @@
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../paper_results.html">
+                        The largest EEG benchmark
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../install/install.html">
                         Install
                       </a>
@@ -165,10 +200,15 @@
                       </a>
                     </li>
                 
-
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../dataset_summary.html">
-                        Datasets
+                      <a class="nav-link nav-internal" href="index.html">
+                        Gallery
                       </a>
                     </li>
                 
@@ -179,29 +219,17 @@
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API
-                      </a>
-                    </li>
-                
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="index.html">
-                        Gallery
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../whats_new.html">
-                        What's new
+                        Release notes
                       </a>
                     </li>
                 
@@ -286,6 +314,20 @@ document.write(`
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../paper_results.html">
+                        The largest EEG benchmark
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../dataset_summary.html">
+                        Datasets
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../install/install.html">
                         Install
                       </a>
@@ -305,10 +347,15 @@ document.write(`
                       </a>
                     </li>
                 
-
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../dataset_summary.html">
-                        Datasets
+                      <a class="nav-link nav-internal" href="index.html">
+                        Gallery
                       </a>
                     </li>
                 
@@ -319,29 +366,17 @@ document.write(`
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API
-                      </a>
-                    </li>
-                
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="index.html">
-                        Gallery
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../whats_new.html">
-                        What's new
+                        Release notes
                       </a>
                     </li>
                 
@@ -704,8 +739,20 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
  &#39;left_hand&#39;: 25
  &#39;right_hand&#39;: 25&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
 
-Zhou2016-WithinSession:  25%|##5       | 1/4 [00:25&lt;01:15, 25.27s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou2016-WithinSession:  25%|##5       | 1/4 [00:25&lt;01:15, 25.26s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -749,8 +796,20 @@ Zhou2016-WithinSession:  25%|##5       | 1/4 [00:25&lt;01:15, 25.27s/it]/home/ru
  &#39;left_hand&#39;: 25
  &#39;right_hand&#39;: 25&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
 
-Zhou2016-WithinSession:  50%|#####     | 2/4 [00:47&lt;00:47, 23.53s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou2016-WithinSession:  50%|#####     | 2/4 [00:47&lt;00:47, 23.62s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -790,8 +849,20 @@ Zhou2016-WithinSession:  50%|#####     | 2/4 [00:47&lt;00:47, 23.53s/it]/home/ru
  &#39;left_hand&#39;: 25
  &#39;right_hand&#39;: 25&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
 
-Zhou2016-WithinSession:  75%|#######5  | 3/4 [01:10&lt;00:23, 23.10s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
+Zhou2016-WithinSession:  75%|#######5  | 3/4 [01:10&lt;00:23, 23.27s/it]/home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
 /home/runner/work/moabb/moabb/moabb/datasets/Zhou2016.py:111: RuntimeWarning: Could not define the number of bytes automatically. Defaulting to 2.
   raw = read_raw_cnt(fname, preload=True, eog=[&quot;VEOU&quot;, &quot;VEOL&quot;])
@@ -831,9 +902,21 @@ Zhou2016-WithinSession:  75%|#######5  | 3/4 [01:10&lt;00:23, 23.10s/it]/home/ru
  &#39;left_hand&#39;: 25
  &#39;right_hand&#39;: 25&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/sklearn/preprocessing/_function_transformer.py:394: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
+  return func(X, **(kw_args if kw_args else {}))
 
-Zhou2016-WithinSession: 100%|##########| 4/4 [01:32&lt;00:00, 22.72s/it]
-Zhou2016-WithinSession: 100%|##########| 4/4 [01:32&lt;00:00, 23.08s/it]
+Zhou2016-WithinSession: 100%|##########| 4/4 [01:32&lt;00:00, 22.86s/it]
+Zhou2016-WithinSession: 100%|##########| 4/4 [01:32&lt;00:00, 23.21s/it]
     dataset     evaluation   pipeline  avg score
 0  Zhou2016  WithinSession    EN Grid   0.943531
 1  Zhou2016  WithinSession  CSP + LDA   0.937954
@@ -851,8 +934,8 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
   sea.stripplot(
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  33.829 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  103 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  34.445 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  240 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-grid-search-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/b129d24bc810ae3a961d5bdcb7413828/plot_benchmark_grid_search.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark_grid_search.py</span></code></a></p>
@@ -940,7 +1023,7 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2018-2023 MOABB contributors.
+      © Copyright 2018-2024 MOABB contributors.
       <br/>
     
   </p>
