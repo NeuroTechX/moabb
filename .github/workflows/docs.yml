@@ -59,6 +59,41 @@ jobs:
           name: DocumentationHTML
           path: docs/build/html/
 
+  deploy_neurotechx:
+    if: ${{ github.ref == 'refs/heads/develop' || 1 == 1 }}
+    needs: build_docs
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create local data folder
+        run: |
+          mkdir ~/mne_data
+
+      - name: Cache datasets and docs
+        id: cached-dataset-docs
+        uses: actions/cache@v3
+        with:
+          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
+          path: |
+            ~/mne_data
+            docs/build
+
+      - name: Deploy Neurotechx Subpage
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: NeuroTechX/moabb.github.io
+          destination_dir: docs/
+          publish_branch: master
+          publish_dir: ./docs/build/html
+          cname: moabb.neurotechx.com/
+
   deploy_gh_pages:
     if: ${{ github.ref == 'refs/heads/develop' || 1 == 1 }}
     needs: build_docs
@@ -89,16 +124,6 @@ jobs:
         with:
           ref: gh-pages
           path: moabb-ghpages
-
-      - name: Deploy Neurotechx Subpage
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          external_repository: NeuroTechX/moabb.github.io
-          destination_dir: docs/
-          publish_branch: master
-          publish_dir: ./docs/build/html
-          cname: moabb.neurotechx.com/
 
       - name: Deploy on gh-pages
         run: |
