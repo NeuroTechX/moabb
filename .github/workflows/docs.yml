@@ -127,6 +127,10 @@ jobs:
 
       - name: Checkout gh pages
         uses: actions/checkout@v4
+      - name: Check cache hit
+        if: steps.cache-docs.outputs.cache-hit != 'true'
+        run: exit 1
+
         with:
           ref: gh-pages
           path: moabb-ghpages
