@@ -125,23 +125,14 @@ jobs:
           key: docs-build-${{ github.run_id }}-${{ github.run_attempt }}
           path: docs/build
 
-      - name: Checkout gh pages
-        uses: actions/checkout@v4
       - name: Check cache hit
         if: steps.cache-docs.outputs.cache-hit != 'true'
         run: exit 1
 
+      - name: Deploy gh-pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          ref: gh-pages
-          path: moabb-ghpages
-
-      - name: Deploy on gh-pages
-        run: |
-          git config --global user.email "ci@neurotechx.com"
-          git config --global user.name "Github Actions"
-          cd ~/work/moabb/moabb/moabb-ghpages
-          rm -Rf docs
-          cp -a ~/work/moabb/moabb/docs/build/html ./docs
-          git add -A
-          git commit -m "GH Actions update of GH pages ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)"
-          git push origin gh-pages
+          destination_dir: docs/
+          publish_branch: gh-pages
+          publish_dir: ./docs/build/html
+          cname: neurotechx.github.io/moabb/
