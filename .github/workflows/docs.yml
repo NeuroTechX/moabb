@@ -77,7 +77,7 @@ jobs:
 
       - name: Cache datasets and docs
         id: cached-dataset-docs
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
           key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
           path: |
@@ -112,7 +112,7 @@ jobs:
 
       - name: Cache datasets and docs
         id: cached-dataset-docs
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
           key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
           path: |
