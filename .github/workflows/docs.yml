@@ -2,7 +2,10 @@ name: Docs
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
   cancel-in-progress: true
-
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 on:
   push:
     branches: [master, develop]
