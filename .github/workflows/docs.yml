@@ -99,7 +99,6 @@ jobs:
       - name: Deploy Neurotechx Subpage
         uses: peaceiris/actions-gh-pages@v3
         with:
-          token: ${{ secrets.MOABB_GHIO }}
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           external_repository: NeuroTechX/moabb.github.io
           destination_dir: docs/
