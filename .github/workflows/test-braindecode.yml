@@ -53,7 +53,7 @@ jobs:
         with:
           path: .venv
           key:
-            testvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
+            testvenv-braindecode-${{ matrix.os }}-py${{matrix.python-version}}-${{
             hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
