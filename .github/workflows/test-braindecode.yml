@@ -44,7 +44,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/mne_data
-          key: ${{ runner.os }}-mne
+          key: ${{ runner.os }}-mne_data
 
       - name: Load cached venv
         if: runner.os != 'Windows'
