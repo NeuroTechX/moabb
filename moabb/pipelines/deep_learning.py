@@ -97,13 +97,14 @@ class KerasShallowConvNet(KerasClassifier):
         validation_split=0.2,
         history_plot=False,
         path=None,
+        learning_rate=0.001,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         self.loss = loss
         if optimizer == "Adam":
-            optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+            optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
         self.optimizer = optimizer
         self.epochs = epochs
@@ -182,13 +183,14 @@ class KerasDeepConvNet(KerasClassifier):
         validation_split=0.2,
         history_plot=False,
         path=None,
+        learning_rate=0.0009,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         self.loss = loss
         if optimizer == "Adam":
-            optimizer = tf.keras.optimizers.Adam(learning_rate=0.0009)
+            optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
         self.optimizer = optimizer
         self.epochs = epochs
@@ -290,13 +292,14 @@ class KerasEEGNet_8_2(KerasClassifier):
         validation_split=0.2,
         history_plot=False,
         path=None,
+        learning_rate=0.0009,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         self.loss = loss
         if optimizer == "Adam":
-            optimizer = tf.keras.optimizers.Adam(learning_rate=0.0009)
+            optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -375,13 +378,14 @@ class KerasEEGTCNet(KerasClassifier):
         validation_split=0.2,
         history_plot=False,
         path=None,
+        learning_rate=0.0009,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         self.loss = loss
         if optimizer == "Adam":
-            optimizer = tf.keras.optimizers.Adam(learning_rate=0.0009)
+            optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
         self.optimizer = optimizer
         self.epochs = epochs
@@ -468,13 +472,14 @@ class KerasEEGNeX(KerasClassifier):
         validation_split=0.2,
         history_plot=False,
         path=None,
+        learning_rate=0.0009,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         self.loss = loss
         if optimizer == "Adam":
-            optimizer = tf.keras.optimizers.Adam(learning_rate=0.0009)
+            optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -609,13 +614,14 @@ class KerasEEGITNet(KerasClassifier):
         validation_split=0.2,
         history_plot=False,
         path=None,
+        learning_rate=0.0009,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         self.loss = loss
         if optimizer == "Adam":
-            optimizer = tf.keras.optimizers.Adam(learning_rate=0.0009)
+            optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
