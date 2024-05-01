@@ -47,8 +47,17 @@ jobs:
           key: docs-build-${{ github.run_id }}-${{ github.run_attempt }}
           path: docs/build
 
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key:
+            docsvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
+            hashFiles('**/poetry.lock') }}
+
       - name: Install dependencies
-        if: steps.cache-docs.outputs.cache-hit != 'true'
+        if: (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
         run: poetry install --no-interaction --no-root --with docs --extras deeplearning
 
       - name: Install library
