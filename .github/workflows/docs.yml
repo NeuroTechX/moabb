@@ -40,16 +40,15 @@ jobs:
           path: ~/mne_data
           key: ${{ runner.os }}-mne_data
 
-      - name: Cache datasets and docs
-        id: cached-dataset-docs
+      - name: Cache docs build
+        id: cache-docs
         uses: actions/cache@v3
         with:
-          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
-          path: |
-            docs/build
+          key: docs-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs/build
 
       - name: Install dependencies
-        if: steps.cached-dataset-docs.outputs.cache-hit != 'true'
+        if: steps.cache-docs.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root --with docs --extras deeplearning
 
       - name: Install library
@@ -81,14 +80,16 @@ jobs:
         run: |
           mkdir ~/mne_data
 
-      - name: Cache datasets and docs
-        id: cached-dataset-docs
+      - name: Restore cached docs build
+        id: cache-docs
         uses: actions/cache/restore@v3
         with:
-          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
-          path: |
-            ~/mne_data
-            docs/build
+          key: docs-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs/build
+
+      - name: Check cache hit
+        if: steps.cache-docs.outputs.cache-hit != 'true'
+        run: exit 1
 
       - name: Deploy Neurotechx Subpage
         uses: peaceiris/actions-gh-pages@v3
@@ -116,14 +117,12 @@ jobs:
         run: |
           mkdir ~/mne_data
 
-      - name: Cache datasets and docs
-        id: cached-dataset-docs
+      - name: Restore cached docs build
+        id: cache-docs
         uses: actions/cache/restore@v3
         with:
-          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
-          path: |
-            ~/mne_data
-            docs/build
+          key: docs-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs/build
 
       - name: Checkout gh pages
         uses: actions/checkout@v4
