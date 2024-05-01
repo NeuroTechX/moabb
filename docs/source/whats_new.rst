@@ -28,6 +28,9 @@ Enhancements
 - Normalize c-VEP description tables (:gh:`562` :gh:`566` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
 - Update citation in README (:gh:`573` by `Igor Carrara`_)
 - Update pyRiemann dependency (:gh:`577` by `Gregoire Cattan`_)
+- Expose the `learning` parameter in the deep learning methods (:gh:`579` by `Bruno Aristimunha`_)
+- Updating the braindecode pipelines for the new braindecode version 0.8.1 (:gh:`579` by `Bruno Aristimunha`_)
+
 
 Bugs
 ~~~~

@@ -6,7 +6,6 @@ from skorch.callbacks import EarlyStopping, EpochScoring
 from skorch.dataset import ValidSplit
 
 from moabb.pipelines.features import Resampler_Epoch
-from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader, InputShapeSetterEEG
 
 
 # Set up GPU if it is there
@@ -22,21 +21,14 @@ VERBOSE = 1
 EPOCH = 1000
 PATIENCE = 300
 
-# Create the dataset
-create_dataset = BraindecodeDatasetLoader()
-
-# Set random Model
-model = EEGNetv4(in_chans=1, n_classes=2, input_window_samples=100)
-
 # Define a Skorch classifier
 clf = EEGClassifier(
-    module=model,
-    criterion=torch.nn.CrossEntropyLoss,
+    module=EEGNetv4,
     optimizer=torch.optim.Adam,
     optimizer__lr=LEARNING_RATE,
     batch_size=BATCH_SIZE,
     max_epochs=EPOCH,
-    train_split=ValidSplit(0.2, random_state=SEED),
+    train_split=ValidSplit(0.2, random_state=SEED, stratified=True),
     device=device,
     callbacks=[
         EarlyStopping(monitor="valid_loss", patience=PATIENCE),
@@ -46,9 +38,6 @@ clf = EEGClassifier(
         EpochScoring(
             scoring="accuracy", on_train=False, name="valid_acc", lower_is_better=False
         ),
-        InputShapeSetterEEG(
-            params_list=["in_chans", "input_window_samples", "n_classes"],
-        ),
     ],
     verbose=VERBOSE,  # Not printing the results for each epoch
 )
@@ -57,7 +46,6 @@ clf = EEGClassifier(
 pipes = Pipeline(
     [
         ("resample", Resampler_Epoch(128)),
-        ("braindecode_dataset", create_dataset),
         ("EEGNetv4", clf),
     ]
 )
