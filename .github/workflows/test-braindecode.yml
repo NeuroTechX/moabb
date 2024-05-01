@@ -1,4 +1,7 @@
 name: Test-braindecode
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
+  cancel-in-progress: true
 
 on:
   push:
@@ -29,7 +32,7 @@ jobs:
           path: braindecode
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
