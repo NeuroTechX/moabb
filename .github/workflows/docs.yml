@@ -85,10 +85,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create local data folder
-        run: |
-          mkdir ~/mne_data
-
       - name: Restore cached docs build
         id: cache-docs
         uses: actions/cache/restore@v3
@@ -121,10 +117,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Create local data folder
-        run: |
-          mkdir ~/mne_data
 
       - name: Restore cached docs build
         id: cache-docs
