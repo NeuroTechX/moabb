@@ -39,11 +39,11 @@ def benchmark(  # noqa: C901
     overwrite=False,
     output="./benchmark/",
     n_jobs=-1,
-    n_jobs_evaluation=1,
     plot=False,
     contexts=None,
     include_datasets=None,
     exclude_datasets=None,
+    n_splits=None,
 ):
     """Run benchmarks for selected pipelines and datasets.
 
@@ -85,9 +85,10 @@ def benchmark(  # noqa: C901
         Folder to store the analysis results
     n_jobs: int
         Number of threads to use for running parallel jobs
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
+    n_splits: int or None, default=None
+        This parameter only works for CrossSubjectEvaluation. It defines the
+        number of splits to be done in the cross-validation. If None,
+        the number of splits is equal to the number of subjects in the dataset.
     plot: bool
         Plot results after computing
     contexts: str
@@ -176,9 +177,9 @@ def benchmark(  # noqa: C901
                     random_state=42,
                     hdf5_path=results,
                     n_jobs=n_jobs,
-                    n_jobs_evaluation=n_jobs_evaluation,
                     overwrite=overwrite,
                     return_epochs=True,
+                    n_splits=n_splits,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_epochs, param_grid=param_grid
@@ -196,8 +197,8 @@ def benchmark(  # noqa: C901
                     random_state=42,
                     hdf5_path=results,
                     n_jobs=n_jobs,
-                    n_jobs_evaluation=n_jobs_evaluation,
                     overwrite=overwrite,
+                    n_splits=n_splits,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_array, param_grid=param_grid
