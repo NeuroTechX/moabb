@@ -28,8 +28,8 @@ Enhancements
 - Normalize c-VEP description tables (:gh:`562` :gh:`566` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
 - Update citation in README (:gh:`573` by `Igor Carrara`_)
 - Update pyRiemann dependency (:gh:`577` by `Gregoire Cattan`_)
-- Expose the `learning` parameter in the deep learning methods (:gh:`579` by `Bruno Aristimunha`_)
-- Updating the braindecode pipelines for the new braindecode version 0.8.1 (:gh:`579` by `Bruno Aristimunha`_)
+- Expose the `learning` rate parameter in the keras deep learning methods (:gh:`589` by `Bruno Aristimunha`_)
+- Updating the braindecode pipelines for the new braindecode version 0.8.1 (:gh:`589` by `Bruno Aristimunha`_)
 
 
 Bugs
@@ -44,7 +44,7 @@ Bugs
 - Fix number of sessions in doc of :class:`moabb.datasets.Sosulski2019` (:gh:`565` by `Pierre Guetschel`_)
 - Fix `code` column of :class:`moabb.datasets.CastillosCVEP100` and :class:`moabb.datasets.CastillosCVEP100` (:gh:`567` by `Pierre Guetschel`_)
 - MAINT updating the packages pre-release (:gh:`578` by `Bruno Aristimunha`_)
-
+- Updating the parameters of the SSVEP_TRCA method (:gh:`589` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
