@@ -3,6 +3,8 @@ name: Keras_EEGNet_8_2
 paradigms:
   - LeftRightImagery
   - MotorImagery
+  - P300
+  - SSVEP
 
 citations:
   - https://doi.org/10.1088/1741-2552/aace8c
