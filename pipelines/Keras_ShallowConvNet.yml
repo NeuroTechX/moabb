@@ -3,6 +3,8 @@ name: Keras_ShallowConvNet
 paradigms:
   - LeftRightImagery
   - MotorImagery
+  - P300
+  - SSVEP
 
 citations:
   - https://doi.org/10.1002/hbm.23730

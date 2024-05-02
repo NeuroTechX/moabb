@@ -3,6 +3,8 @@ name: Keras_EEGITNet
 paradigms:
   - LeftRightImagery
   - MotorImagery
+  - P300
+  - SSVEP
 
 citations:
   - https://doi.org/10.1109/ACCESS.2022.3161489
