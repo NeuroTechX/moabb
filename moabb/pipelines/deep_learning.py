@@ -300,6 +300,7 @@ class KerasEEGNet_8_2(KerasClassifier):
         self.loss = loss
         if optimizer == "Adam":
             optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -478,8 +479,10 @@ class KerasEEGNeX(KerasClassifier):
         super().__init__(**kwargs)
 
         self.loss = loss
+
         if optimizer == "Adam":
             optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -622,6 +625,7 @@ class KerasEEGITNet(KerasClassifier):
         self.loss = loss
         if optimizer == "Adam":
             optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size

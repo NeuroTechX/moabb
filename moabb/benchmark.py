@@ -44,6 +44,7 @@ def benchmark(  # noqa: C901
     include_datasets=None,
     exclude_datasets=None,
     n_splits=None,
+    cache_config=None,
 ):
     """Run benchmarks for selected pipelines and datasets.
 
@@ -180,6 +181,7 @@ def benchmark(  # noqa: C901
                     overwrite=overwrite,
                     return_epochs=True,
                     n_splits=n_splits,
+                    cache_config=cache_config,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_epochs, param_grid=param_grid
@@ -199,6 +201,7 @@ def benchmark(  # noqa: C901
                     n_jobs=n_jobs,
                     overwrite=overwrite,
                     n_splits=n_splits,
+                    cache_config=cache_config,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_array, param_grid=param_grid
