@@ -79,6 +79,7 @@ def parse_pipelines_from_directory(dir_path):
     ----------
     dir_path: str
         Path to directory containing pipeline config .yml or .py files
+        or to a single pipeline config file.
 
     Returns
     -------
@@ -88,12 +89,18 @@ def parse_pipelines_from_directory(dir_path):
         'pipeline': sklearn.BaseEstimator
         'paradigms': list of class names that are compatible with said pipeline
     """
-    assert os.path.isdir(
-        os.path.abspath(dir_path)
-    ), "Given pipeline path {} is not valid".format(dir_path)
+    if dir_path.endswith(".yml"):
+        assert os.path.isfile(dir_path), "Given pipeline path {} is not valid".format(
+            dir_path
+        )
+        yaml_files = [dir_path]
+    else:
+        assert os.path.isdir(
+            os.path.abspath(dir_path)
+        ), "Given pipeline path {} is not valid".format(dir_path)
 
-    # get list of config files
-    yaml_files = glob(os.path.join(dir_path, "*.yml"))
+        # get list of config files
+        yaml_files = glob(os.path.join(dir_path, "*.yml"))
 
     pipeline_configs = []
     for yaml_file in yaml_files:

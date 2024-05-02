@@ -3,6 +3,8 @@ name: Keras_EEGNeX
 paradigms:
   - LeftRightImagery
   - MotorImagery
+  - P300
+  - SSVEP
 
 citations:
   - https://doi.org/10.48550/arXiv.2207.12369
