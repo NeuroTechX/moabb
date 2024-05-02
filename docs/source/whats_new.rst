@@ -31,7 +31,7 @@ Enhancements
 - Expose the `learning` rate parameter in the keras deep learning methods (:gh:`589` by `Bruno Aristimunha`_)
 - Updating the braindecode pipelines for the new braindecode version 0.8.1 (:gh:`589` by `Bruno Aristimunha`_)
 - Add SSVEP and ERP paradigms to DL pipelines (:gh:`590` by `Pierre Guetschel`_)
-
+- Allow to pass a single pipeline file to ``benchmark`` (:gh:`591` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~

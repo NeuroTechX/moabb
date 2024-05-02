@@ -69,7 +69,7 @@ def benchmark(  # noqa: C901
     Parameters
     ----------
     pipelines: str
-        Folder containing the pipelines to evaluate
+        Folder containing the pipelines to evaluate or path to a single pipeline file.
     evaluations: list of str
         If to restrict the types of evaluations to be run. By default, all 3 base types are run
         Can be a list of these elements ["WithinSession", "CrossSession", "CrossSubject"]
