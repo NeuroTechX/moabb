@@ -105,8 +105,7 @@ class KerasShallowConvNet(KerasClassifier):
         self.loss = loss
         if optimizer == "Adam":
             optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-        else:
-            optimizer = optimizer(learning_rate=learning_rate)
+
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
