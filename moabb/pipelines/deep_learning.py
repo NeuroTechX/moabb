@@ -192,8 +192,7 @@ class KerasDeepConvNet(KerasClassifier):
         self.loss = loss
         if optimizer == "Adam":
             optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-        else:
-            optimizer = optimizer(learning_rate=learning_rate)
+
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -302,8 +301,7 @@ class KerasEEGNet_8_2(KerasClassifier):
         self.loss = loss
         if optimizer == "Adam":
             optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-        else:
-            optimizer = optimizer(learning_rate=learning_rate)
+
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -390,8 +388,6 @@ class KerasEEGTCNet(KerasClassifier):
         self.loss = loss
         if optimizer == "Adam":
             optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-        else:
-            optimizer = optimizer(learning_rate=learning_rate)
 
         self.optimizer = optimizer
         self.epochs = epochs
@@ -487,8 +483,6 @@ class KerasEEGNeX(KerasClassifier):
 
         if optimizer == "Adam":
             optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-        else:
-            optimizer = optimizer(learning_rate=learning_rate)
 
         self.optimizer = optimizer
         self.epochs = epochs
@@ -632,9 +626,8 @@ class KerasEEGITNet(KerasClassifier):
         self.loss = loss
         if optimizer == "Adam":
             optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-        else:
-            optimizer = optimizer(learning_rate=learning_rate)
 
+        self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
         self.verbose = verbose
