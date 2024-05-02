@@ -2,8 +2,9 @@ name: Docs
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
   cancel-in-progress: true
+
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 on:
@@ -105,6 +106,7 @@ jobs:
       - name: Deploy Neurotechx Subpage
         uses: peaceiris/actions-gh-pages@v4
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           external_repository: NeuroTechX/moabb.github.io
           destination_dir: docs/
@@ -138,6 +140,7 @@ jobs:
       - name: Deploy gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           deploy_key: ${{ secrets.MOABB_DEPLOY_KEY_NEW }}
           destination_dir: docs/
           publish_branch: gh-pages
