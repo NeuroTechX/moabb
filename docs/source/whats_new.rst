@@ -29,6 +29,10 @@ Enhancements
 - Update citation in README (:gh:`573` by `Igor Carrara`_)
 - Update pyRiemann dependency (:gh:`577` by `Gregoire Cattan`_)
 - Add resting stage Hinss2021 dataset (:gh:`580` by `Gregoire Cattan`_ and `Yash Chauhan`_)
+- Expose the `learning` rate parameter in the keras deep learning methods and optimize parameters (:gh:`589` and :gh:`592` by `Bruno Aristimunha`_)
+- Updating the braindecode pipelines for the new braindecode version 0.8.1 (:gh:`589` by `Bruno Aristimunha`_)
+- Add SSVEP and ERP paradigms to DL pipelines (:gh:`590` by `Pierre Guetschel`_)
+- Allow to pass a single pipeline file to ``benchmark`` (:gh:`591` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
@@ -42,6 +46,8 @@ Bugs
 - Fix number of sessions in doc of :class:`moabb.datasets.Sosulski2019` (:gh:`565` by `Pierre Guetschel`_)
 - Fix `code` column of :class:`moabb.datasets.CastillosCVEP100` and :class:`moabb.datasets.CastillosCVEP100` (:gh:`567` by `Pierre Guetschel`_)
 - MAINT updating the packages pre-release (:gh:`578` by `Bruno Aristimunha`_)
+- Updating the parameters of the SSVEP_TRCA method (:gh:`589` by `Bruno Aristimunha`_)
+- Fix and updating the parameters for the benchmark function (:gh:`588` by `Bruno Aristimunha`_)
 
 
 API changes

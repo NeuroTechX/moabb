@@ -29,9 +29,6 @@ class BaseEvaluation(ABC):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -57,7 +54,6 @@ class BaseEvaluation(ABC):
         datasets=None,
         random_state=None,
         n_jobs=1,
-        n_jobs_evaluation=1,
         overwrite=False,
         error_score="raise",
         suffix="",
@@ -72,7 +68,6 @@ class BaseEvaluation(ABC):
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
-        self.n_jobs_evaluation = n_jobs_evaluation
         self.error_score = error_score
         self.hdf5_path = hdf5_path
         self.return_epochs = return_epochs

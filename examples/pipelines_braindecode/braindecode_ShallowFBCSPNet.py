@@ -29,7 +29,7 @@ clf = EEGClassifier(
     optimizer__lr=LEARNING_RATE,
     batch_size=BATCH_SIZE,
     max_epochs=EPOCH,
-    train_split=ValidSplit(0.2, random_state=SEED),
+    train_split=ValidSplit(0.2, random_state=SEED, stratified=True),
     device=device,
     callbacks=[
         EarlyStopping(monitor="valid_loss", patience=PATIENCE),
