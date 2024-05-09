@@ -100,6 +100,7 @@ Resting State Datasets
     :template: class.rst
 
     Cattan2019_PHMD
+    Hinss2021
 
 
 ------------
