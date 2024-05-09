@@ -3,13 +3,16 @@
 Hinss2021 classification example
 ================================
 
-This example show how to use the Hinss2021 dataset
+This example shows how to use the Hinss2021 dataset
 with the resting state paradigm.
 
-For the sake of the example, we will try to answer which
-channel selection strategy is the best for the Hinss2021 dataset:
-Xdawn, electrode selection on time epochs data, or
-electrode selection on covariance matrices.
+In this example, we aim to determine the most effective channel selection strategy
+for the :class:`moabb.datasets.Hinss2021` dataset.
+The pipelines under consideration are:
+
+- `Xdawn`
+- Electrode selection based on time epochs data
+- Electrode selection based on covariance matrices
 
 """
 
@@ -34,8 +37,7 @@ from moabb.evaluations import CrossSessionEvaluation
 from moabb.paradigms import RestingStateToP300Adapter
 
 
-##############################################################################
-# getting rid of the warnings about the future
+# Suppressing future and runtime warnings for cleaner output
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=RuntimeWarning)
 
@@ -45,20 +47,21 @@ set_log_level("info")
 # Create util transformer
 # ----------------------
 #
-# Let's create a simple transformer, that will
+# Let's create a scikit transformer mixin, that will
 # select electrodes based on the covariance information
 
 
 class EpochSelectChannel(TransformerMixin):
-    """Select channels based on covariance information,"""
+    """Select channels based on covariance information."""
 
-    def __init__(self, n_chan, est):
+    def __init__(self, n_chan, cov_est):
+        self._chs_idx = None
         self.n_chan = n_chan
-        self.est = est
+        self.cov_est = cov_est
 
     def fit(self, X, _y=None):
         # Get the covariances of the channels for each epoch.
-        covs = Covariances(estimator=self.est).fit_transform(X)
+        covs = Covariances(estimator=self.cov_est).fit_transform(X)
         # Get the average covariance between the channels
         m = np.mean(covs, axis=0)
         n_feats, _ = m.shape
@@ -76,31 +79,32 @@ class EpochSelectChannel(TransformerMixin):
             indices.extend(np.argwhere(m == v).flatten())
         # We will keep only these channels for the transform step.
         indices = np.unique(indices)
-        self._elec = indices
+        self._chs_idx = indices
         return self
 
     def transform(self, X):
-        return X[:, self._elec, :]
+        return X[:, self._chs_idx, :]
 
 
 ##############################################################################
-# Initialization
-# ----------------
+# Initialization Process
+# ----------------------
 #
-# 1) Create paradigm
-# 2) Load datasets
-# 3) Select a few subjects and events
+# 1) Define the experimental paradigm object (RestingState)
+# 2) Load the datasets
+# 3) Select a subset of subjects and specific events for analysis
 
-
+# Here we define the mne events for the RestingState paradigm.
 events = dict(easy=2, diff=3)
-
+# The paradigm is adapted to the P300 paradigm.
 paradigm = RestingStateToP300Adapter(events=events, tmin=0, tmax=0.5)
-
+# We define a list with the dataset to use
 datasets = [Hinss2021()]
 
-# reduce the number of subjects.
+# To reduce the computation time in the example, we will only use the
+# first two subjects.
 start_subject = 1
-stop_subject = 3
+stop_subject = 2
 title = "Datasets: "
 for dataset in datasets:
     title = title + " " + dataset.code
@@ -110,12 +114,12 @@ for dataset in datasets:
 # Create Pipelines
 # ----------------
 #
-# Pipelines must be a dict of sklearn pipeline transformer.
+# Pipelines must be a dict of scikit-learning pipeline transformer.
 
 pipelines = {}
 
 pipelines["Xdawn+Cov+TS+LDA"] = make_pipeline(
-    Xdawn(nfilter=4), Covariances(estimator="lwf"), TangentSpace(), LDA()  # 8 components
+    Xdawn(nfilter=4), Covariances(estimator="lwf"), TangentSpace(), LDA()
 )
 
 pipelines["Cov+ElSel+TS+LDA"] = make_pipeline(
@@ -125,7 +129,10 @@ pipelines["Cov+ElSel+TS+LDA"] = make_pipeline(
 # Pay attention here that the channel selection took place before computing the covariances:
 # It is done on time epochs.
 pipelines["ElSel+Cov+TS+LDA"] = make_pipeline(
-    EpochSelectChannel(8, "lwf"), Covariances(estimator="lwf"), TangentSpace(), LDA()
+    EpochSelectChannel(n_chan=8, cov_est="lwf"),
+    Covariances(estimator="lwf"),
+    TangentSpace(),
+    LDA(),
 )
 
 ##############################################################################
@@ -134,14 +141,18 @@ pipelines["ElSel+Cov+TS+LDA"] = make_pipeline(
 #
 # Compare the pipeline using a cross session evaluation.
 
-# Here should be cross session
+# Here should be cross-session
 evaluation = CrossSessionEvaluation(
     paradigm=paradigm,
     datasets=datasets,
-    overwrite=True,
+    overwrite=False,
 )
 
 results = evaluation.process(pipelines)
+
+###############################################################################
+# Here, with the ElSel+Cov+TS+LDA pipeline, we reduce the computation time
+# in approximately 8 times to the Cov+ElSel+TS+LDA pipeline.
 
 print("Averaging the session performance:")
 print(results.groupby("pipeline").mean("score")[["score", "time"]])
@@ -150,7 +161,7 @@ print(results.groupby("pipeline").mean("score")[["score", "time"]])
 # Plot Results
 # -------------
 #
-# Here we plot the results to compare two pipelines
+# Here, we plot the results to compare two pipelines
 
 
 fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
@@ -174,10 +185,9 @@ ax.set_ylim(0.3, 1)
 
 plt.show()
 
-# A few observation that you may make:
-#      - Xdawn is not appropriate for resting state paradigm.
-#        This is kind of specific are the filter was designed for ERP
-#      - Electrode selection on covariance matrices as less variability, and
-#        in general perform best
-#      - however, it takes also more time than the simple electrode selection on
-#        time epoch
+###############################################################################
+# Key Observations:
+# -----------------
+# - `Xdawn` is not ideal for the resting state paradigm. This is due to its specific design for Event-Related Potential (ERP).
+# - Electrode selection strategy based on covariance matrices demonstrates less variability and typically yields better performance.
+# - However, this strategy is more time-consuming compared to the simpler electrode selection based on time epoch data.

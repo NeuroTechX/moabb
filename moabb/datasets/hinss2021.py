@@ -10,8 +10,8 @@ from moabb.datasets.base import BaseDataset
 
 
 URL = "https://zenodo.org/record/5055046/files/"
-
-EVENTS = dict(rs=1, easy=2, medium=3, diff=4)
+# private dictionary to map events to integers
+_HINNS_EVENTS = dict(rs=1, easy=2, medium=3, diff=4)
 
 
 class Hinss2021(BaseDataset):
@@ -19,12 +19,11 @@ class Hinss2021(BaseDataset):
 
     .. admonition:: Dataset summary
 
-
-        ==============  =======  =======  ==========  =================  ============  ===============  ===========
-        Name              #Subj    #Chan    #Classes    #Blocks/class     Trials len    Sampling rate    #Sessions
-        =============== =======  =======  ==========  =================  ============  ===============  ===========
-        Hinss2021            15       62           4                 1      2s            250Hz                 2
-        =============== =======  =======  ==========  =================  ============  ===============  ===========
+     =========== ======= ======= ========== =============== ============ =============== ===========
+        Name      #Subj   #Chan   #Classes   #Blocks/class   Trials len   Sampling rate   #Sessions
+     =========== ======= ======= ========== =============== ============ =============== ===========
+      Hinss2021    15      62        4             1             2s           250Hz           2
+     =========== ======= ======= ========== =============== ============ =============== ===========
 
     We describe the experimental procedures for a dataset that is publicly available
     at https://zenodo.org/records/5055046.
@@ -35,13 +34,12 @@ class Hinss2021(BaseDataset):
     The participants engaged in 3 (2 available here) distinct experimental sessions, each of which
     was separated by 1 week.
 
-    At the beginning of each
-    session, the resting state of the participant (measured as
-    1 minute with eyes open) was recorded.
+    At the beginning of each session, the resting state of the participant
+    (measured as 1 minute with eyes open) was recorded.
 
     Subsequently, participants undertook 3 tasks of varying difficulty levels
     (i.e., easy, medium, and difficult). The task assignments
-    were randomized.
+    were randomized. For more details, please check [Hinss2021]_.
 
     Notes
     -----
@@ -51,7 +49,7 @@ class Hinss2021(BaseDataset):
     References
     ----------
 
-    .. [1] M. Hinss, B. Somon, F. Dehais & R. N. Roy (2021)
+    .. [Hinss2021] M. Hinss, B. Somon, F. Dehais & R. N. Roy (2021)
             Open EEG Datasets for Passive Brain-Computer
             Interface Applications: Lacks and Perspectives.
             IEEE Neural Engineering Conference.
@@ -61,7 +59,7 @@ class Hinss2021(BaseDataset):
         super().__init__(
             subjects=list(range(1, 16)),  # 15 participants
             sessions_per_subject=2,  # 2 sessions per subject
-            events=EVENTS,
+            events=_HINNS_EVENTS,
             code="Hinss2021",
             interval=[0, 2],  # Epochs are 2-second long
             paradigm="rstate",
@@ -74,15 +72,15 @@ class Hinss2021(BaseDataset):
         stim = np.zeros((1, n_epochs * n_samples))
         for i in range(n_epochs):
             stim[0, n_samples * i + 1] = (
-                EVENTS["rs"]
+                _HINNS_EVENTS["rs"]
                 if i < n_epochs_rs
                 else (
-                    EVENTS["easy"]
+                    _HINNS_EVENTS["easy"]
                     if i < n_epochs_rs + n_epochs_easy
                     else (
-                        EVENTS["medium"]
+                        _HINNS_EVENTS["medium"]
                         if i < n_epochs_rs + n_epochs_easy + n_epochs_med
-                        else EVENTS["diff"]
+                        else _HINNS_EVENTS["diff"]
                     )
                 )
             )
