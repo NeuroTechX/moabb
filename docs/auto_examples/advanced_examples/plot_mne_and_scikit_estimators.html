@@ -428,6 +428,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../noplot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noplot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noplot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plot_Hinss2021_classification.html">Hinss2021 classification example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
@@ -494,6 +495,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.CastillosCVEP40.html">moabb.datasets.CastillosCVEP40</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.CastillosCVEP100.html">moabb.datasets.CastillosCVEP100</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.Cattan2019_PHMD.html">moabb.datasets.Cattan2019_PHMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.Hinss2021.html">moabb.datasets.Hinss2021</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
@@ -527,6 +529,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.FilterBankSSVEP.html">moabb.paradigms.FilterBankSSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.CVEP.html">moabb.paradigms.CVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.FilterBankCVEP.html">moabb.paradigms.FilterBankCVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.RestingStateToP300Adapter.html">moabb.paradigms.RestingStateToP300Adapter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.FixedIntervalWindowsProcessing.html">moabb.paradigms.FixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.FilterBankFixedIntervalWindowsProcessing.html">moabb.paradigms.FilterBankFixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.motor_imagery.BaseMotorImagery.html">moabb.paradigms.motor_imagery.BaseMotorImagery</a></li>
@@ -797,7 +800,7 @@ ROC-AUC metric.</p>
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:06,  3.16s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:06,  3.19s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -816,34 +819,40 @@ BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.07s/it]/home
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/18.5M [00:00&lt;03:48, 81.2kB/s]
+  0%|                                     | 8.19k/18.5M [00:00&lt;06:17, 49.1kB/s]
 
-  0%|                                      | 32.8k/18.5M [00:00&lt;01:45, 175kB/s]
+  0%|                                      | 32.8k/18.5M [00:00&lt;02:53, 106kB/s]
 
-  1%|▏                                     | 96.3k/18.5M [00:00&lt;00:48, 378kB/s]
+  1%|▏                                     | 96.3k/18.5M [00:00&lt;01:20, 230kB/s]
 
-  1%|▍                                      | 209k/18.5M [00:00&lt;00:27, 661kB/s]
+  1%|▍                                      | 209k/18.5M [00:00&lt;00:45, 404kB/s]
 
-  2%|▉                                     | 432k/18.5M [00:00&lt;00:14, 1.21MB/s]
+  2%|▉                                      | 432k/18.5M [00:00&lt;00:24, 737kB/s]
 
-  5%|█▊                                    | 889k/18.5M [00:00&lt;00:07, 2.31MB/s]
+  5%|█▊                                    | 889k/18.5M [00:01&lt;00:12, 1.41MB/s]
 
- 10%|███▌                                 | 1.80M/18.5M [00:00&lt;00:03, 4.46MB/s]
+ 10%|███▌                                 | 1.80M/18.5M [00:01&lt;00:06, 2.72MB/s]
 
- 20%|███████▏                             | 3.62M/18.5M [00:00&lt;00:01, 8.69MB/s]
+ 17%|██████▏                              | 3.12M/18.5M [00:01&lt;00:03, 4.21MB/s]
 
- 36%|█████████████▎                       | 6.66M/18.5M [00:00&lt;00:00, 15.2MB/s]
+ 26%|█████████▌                           | 4.76M/18.5M [00:01&lt;00:02, 5.94MB/s]
 
- 50%|██████████████████▋                  | 9.34M/18.5M [00:01&lt;00:00, 18.6MB/s]
+ 34%|████████████▌                        | 6.28M/18.5M [00:01&lt;00:01, 7.04MB/s]
 
- 67%|████████████████████████▉            | 12.5M/18.5M [00:01&lt;00:00, 22.3MB/s]
+ 46%|████████████████▉                    | 8.49M/18.5M [00:01&lt;00:01, 8.91MB/s]
 
- 82%|██████████████████████████████▍      | 15.3M/18.5M [00:01&lt;00:00, 23.7MB/s]
+ 58%|█████████████████████▍               | 10.7M/18.5M [00:02&lt;00:00, 10.3MB/s]
 
- 97%|████████████████████████████████████ | 18.0M/18.5M [00:01&lt;00:00, 24.7MB/s]
+ 70%|██████████████████████████           | 13.0M/18.5M [00:02&lt;00:00, 11.3MB/s]
+
+ 81%|█████████████████████████████▉       | 15.0M/18.5M [00:02&lt;00:00, 10.9MB/s]
+
+ 87%|████████████████████████████████     | 16.1M/18.5M [00:02&lt;00:00, 9.80MB/s]
+
+ 96%|███████████████████████████████████▌ | 17.8M/18.5M [00:02&lt;00:00, 10.1MB/s]
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 64.3GB/s]
+100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 60.2GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
@@ -857,8 +866,8 @@ BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.07s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:12&lt;00:00,  4.44s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:12&lt;00:00,  4.08s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:14&lt;00:00,  5.31s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:14&lt;00:00,  4.71s/it]
 </pre></div>
 </div>
 </section>
@@ -900,7 +909,7 @@ then apply a logistic regression.</p>
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:06,  3.48s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:06,  3.41s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -913,7 +922,7 @@ BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:06,  3.48s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.03s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:02,  2.94s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -926,8 +935,8 @@ BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.03s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.56s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.46s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.47s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.38s/it]
 </pre></div>
 </div>
 </section>
@@ -964,7 +973,7 @@ on the tangent space and classified with a logistic regression.</p>
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:07&lt;00:14,  7.07s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:07&lt;00:14,  7.20s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  576 events (all good), 0 – 0.800781 s, baseline off, ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -990,8 +999,8 @@ BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:13&lt;00:06,  6.95s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:20&lt;00:00,  6.87s/it]
 BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:20&lt;00:00,  6.92s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:20&lt;00:00,  6.94s/it]
 </pre></div>
 </div>
 </section>
@@ -1018,8 +1027,8 @@ differences between pipelines.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  47.720 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  338 MB</p>
+<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  49.321 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  304 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3bb6d35e266c94de44c44ec75aa9d550/plot_mne_and_scikit_estimators.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_mne_and_scikit_estimators.py</span></code></a></p>

@@ -428,6 +428,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="noplot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="noplot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="noplot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_Hinss2021_classification.html">Hinss2021 classification example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
@@ -494,6 +495,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosCVEP40.html">moabb.datasets.CastillosCVEP40</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.CastillosCVEP100.html">moabb.datasets.CastillosCVEP100</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Cattan2019_PHMD.html">moabb.datasets.Cattan2019_PHMD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.Hinss2021.html">moabb.datasets.Hinss2021</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
@@ -527,6 +529,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FilterBankSSVEP.html">moabb.paradigms.FilterBankSSVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.CVEP.html">moabb.paradigms.CVEP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FilterBankCVEP.html">moabb.paradigms.FilterBankCVEP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.RestingStateToP300Adapter.html">moabb.paradigms.RestingStateToP300Adapter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FixedIntervalWindowsProcessing.html">moabb.paradigms.FixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.FilterBankFixedIntervalWindowsProcessing.html">moabb.paradigms.FilterBankFixedIntervalWindowsProcessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generated/moabb.paradigms.motor_imagery.BaseMotorImagery.html">moabb.paradigms.motor_imagery.BaseMotorImagery</a></li>
@@ -715,108 +718,266 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/work/moabb/moabb/moabb/datasets/download.py:55: RuntimeWarning: Setting non-standard config type: &quot;MNE_DATASETS_BNCI_PATH&quot;
-  set_config(key, get_config(&quot;MNE_DATA&quot;))
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
 
-  0%|                                      | 32.8k/42.8M [00:00&lt;04:17, 166kB/s]
+  0%|                                     | 8.19k/42.8M [00:00&lt;14:32, 49.1kB/s]
 
-  0%|                                       | 104k/42.8M [00:00&lt;01:47, 397kB/s]
+  0%|                                      | 32.8k/42.8M [00:00&lt;06:42, 106kB/s]
 
-  1%|▏                                      | 231k/42.8M [00:00&lt;00:58, 724kB/s]
+  0%|                                      | 96.3k/42.8M [00:00&lt;03:05, 230kB/s]
 
-  1%|▍                                     | 472k/42.8M [00:00&lt;00:32, 1.31MB/s]
+  0%|▏                                      | 209k/42.8M [00:00&lt;01:45, 404kB/s]
 
-  2%|▊                                     | 940k/42.8M [00:00&lt;00:17, 2.43MB/s]
+  1%|▍                                      | 432k/42.8M [00:00&lt;00:57, 737kB/s]
 
-  4%|█▋                                   | 1.88M/42.8M [00:00&lt;00:08, 4.68MB/s]
+  2%|▊                                     | 889k/42.8M [00:01&lt;00:29, 1.41MB/s]
 
-  9%|███▏                                 | 3.71M/42.8M [00:00&lt;00:04, 8.95MB/s]
+  4%|█▌                                   | 1.80M/42.8M [00:01&lt;00:15, 2.72MB/s]
 
- 16%|█████▊                               | 6.72M/42.8M [00:00&lt;00:02, 15.5MB/s]
+  8%|███▏                                 | 3.62M/42.8M [00:01&lt;00:07, 5.30MB/s]
 
- 22%|████████▏                            | 9.46M/42.8M [00:00&lt;00:01, 19.2MB/s]
+ 16%|█████▊                               | 6.74M/42.8M [00:01&lt;00:03, 9.43MB/s]
 
- 28%|██████████▍                          | 12.0M/42.8M [00:01&lt;00:01, 21.1MB/s]
+ 23%|████████▎                            | 9.68M/42.8M [00:01&lt;00:02, 11.9MB/s]
 
- 35%|████████████▊                        | 14.8M/42.8M [00:01&lt;00:01, 23.2MB/s]
+ 28%|██████████▏                          | 11.8M/42.8M [00:01&lt;00:02, 11.1MB/s]
 
- 41%|███████████████▏                     | 17.6M/42.8M [00:01&lt;00:01, 24.6MB/s]
+ 31%|███████████▌                         | 13.3M/42.8M [00:02&lt;00:02, 11.2MB/s]
 
- 47%|█████████████████▍                   | 20.2M/42.8M [00:01&lt;00:00, 24.9MB/s]
+ 35%|████████████▊                        | 14.8M/42.8M [00:02&lt;00:02, 10.4MB/s]
 
- 54%|████████████████████▏                | 23.3M/42.8M [00:01&lt;00:00, 26.9MB/s]
+ 40%|██████████████▋                      | 16.9M/42.8M [00:02&lt;00:02, 11.1MB/s]
 
- 61%|██████████████████████▍              | 26.0M/42.8M [00:01&lt;00:00, 26.9MB/s]
+ 45%|████████████████▋                    | 19.3M/42.8M [00:02&lt;00:01, 12.1MB/s]
 
- 67%|████████████████████████▉            | 28.8M/42.8M [00:01&lt;00:00, 27.3MB/s]
+ 51%|██████████████████▋                  | 21.7M/42.8M [00:02&lt;00:01, 12.6MB/s]
 
- 74%|███████████████████████████▎         | 31.6M/42.8M [00:01&lt;00:00, 27.5MB/s]
+ 54%|███████████████████▊                 | 22.9M/42.8M [00:02&lt;00:01, 10.9MB/s]
 
- 81%|█████████████████████████████▊       | 34.5M/42.8M [00:01&lt;00:00, 27.9MB/s]
+ 60%|██████████████████████               | 25.6M/42.8M [00:03&lt;00:01, 12.3MB/s]
 
- 87%|████████████████████████████████▎    | 37.4M/42.8M [00:01&lt;00:00, 28.2MB/s]
+ 63%|███████████████████████▏             | 26.8M/42.8M [00:03&lt;00:01, 10.4MB/s]
 
- 94%|██████████████████████████████████▊  | 40.2M/42.8M [00:02&lt;00:00, 28.1MB/s]
+ 68%|█████████████████████████            | 29.0M/42.8M [00:03&lt;00:01, 11.4MB/s]
+
+ 73%|██████████████████████████▉          | 31.2M/42.8M [00:03&lt;00:00, 11.9MB/s]
+
+ 76%|████████████████████████████         | 32.4M/42.8M [00:03&lt;00:01, 10.2MB/s]
+
+ 80%|█████████████████████████████▌       | 34.2M/42.8M [00:03&lt;00:00, 10.4MB/s]
+
+ 84%|██████████████████████████████▉      | 35.8M/42.8M [00:04&lt;00:00, 10.2MB/s]
+
+ 86%|███████████████████████████████▊     | 36.9M/42.8M [00:04&lt;00:00, 8.61MB/s]
+
+ 89%|████████████████████████████████▋    | 37.9M/42.8M [00:04&lt;00:00, 8.20MB/s]
+
+ 90%|█████████████████████████████████▍   | 38.7M/42.8M [00:04&lt;00:00, 7.19MB/s]
+
+ 92%|██████████████████████████████████   | 39.4M/42.8M [00:04&lt;00:00, 6.35MB/s]
+
+ 94%|██████████████████████████████████▊  | 40.2M/42.8M [00:04&lt;00:00, 5.87MB/s]
+
+ 95%|███████████████████████████████████▎ | 40.8M/42.8M [00:05&lt;00:00, 4.98MB/s]
+
+ 97%|███████████████████████████████████▋ | 41.3M/42.8M [00:05&lt;00:00, 4.50MB/s]
+
+ 99%|████████████████████████████████████▌| 42.4M/42.8M [00:05&lt;00:00, 5.02MB/s]
 
   0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 42.8M/42.8M [00:00&lt;00:00, 116GB/s]
+100%|██████████████████████████████████████| 42.8M/42.8M [00:00&lt;00:00, 104GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
 
-  0%|                                      | 24.6k/43.8M [00:00&lt;02:58, 246kB/s]
+  0%|                                     | 8.19k/43.8M [00:00&lt;14:51, 49.1kB/s]
 
-  0%|                                      | 49.2k/43.8M [00:00&lt;02:58, 245kB/s]
+  0%|                                      | 32.8k/43.8M [00:00&lt;06:51, 106kB/s]
 
-  0%|                                      | 96.3k/43.8M [00:00&lt;02:05, 348kB/s]
+  0%|                                      | 96.3k/43.8M [00:00&lt;03:09, 230kB/s]
 
-  0%|▏                                      | 209k/43.8M [00:00&lt;01:06, 651kB/s]
+  0%|▏                                      | 209k/43.8M [00:00&lt;01:47, 404kB/s]
 
-  1%|▍                                     | 432k/43.8M [00:00&lt;00:35, 1.22MB/s]
+  1%|▍                                      | 432k/43.8M [00:00&lt;00:58, 737kB/s]
 
-  2%|▊                                     | 889k/43.8M [00:00&lt;00:18, 2.34MB/s]
+  2%|▊                                     | 889k/43.8M [00:01&lt;00:30, 1.41MB/s]
 
-  4%|█▌                                   | 1.80M/43.8M [00:00&lt;00:09, 4.54MB/s]
+  4%|█▌                                   | 1.80M/43.8M [00:01&lt;00:15, 2.72MB/s]
 
-  8%|███                                  | 3.62M/43.8M [00:00&lt;00:04, 8.86MB/s]
+  8%|███                                  | 3.61M/43.8M [00:01&lt;00:08, 4.80MB/s]
 
- 14%|█████▏                               | 6.18M/43.8M [00:00&lt;00:02, 14.0MB/s]
+ 14%|█████▎                               | 6.27M/43.8M [00:01&lt;00:04, 8.84MB/s]
 
- 20%|███████▏                             | 8.54M/43.8M [00:01&lt;00:02, 16.9MB/s]
+ 17%|██████▏                              | 7.30M/43.8M [00:01&lt;00:04, 7.76MB/s]
 
- 25%|█████████▎                           | 11.0M/43.8M [00:01&lt;00:01, 19.2MB/s]
+ 22%|████████▏                            | 9.69M/43.8M [00:01&lt;00:03, 9.82MB/s]
 
- 31%|███████████▎                         | 13.5M/43.8M [00:01&lt;00:01, 20.6MB/s]
+ 25%|█████████                            | 10.8M/43.8M [00:02&lt;00:04, 7.90MB/s]
 
- 36%|█████████████▍                       | 15.9M/43.8M [00:01&lt;00:01, 21.7MB/s]
+ 29%|██████████▌                          | 12.6M/43.8M [00:02&lt;00:03, 9.65MB/s]
 
- 42%|███████████████▌                     | 18.4M/43.8M [00:01&lt;00:01, 22.7MB/s]
+ 32%|███████████▋                         | 13.8M/43.8M [00:02&lt;00:03, 8.98MB/s]
 
- 48%|█████████████████▌                   | 20.8M/43.8M [00:01&lt;00:01, 23.0MB/s]
+ 34%|████████████▊                        | 15.1M/43.8M [00:02&lt;00:03, 8.54MB/s]
 
- 55%|████████████████████▏                | 23.9M/43.8M [00:01&lt;00:00, 25.4MB/s]
+ 37%|█████████████▌                       | 16.0M/43.8M [00:02&lt;00:03, 7.45MB/s]
 
- 61%|██████████████████████▋              | 26.9M/43.8M [00:01&lt;00:00, 26.5MB/s]
+ 39%|██████████████▌                      | 17.3M/43.8M [00:02&lt;00:03, 7.63MB/s]
 
- 68%|█████████████████████████            | 29.6M/43.8M [00:01&lt;00:00, 26.9MB/s]
+ 41%|███████████████▎                     | 18.1M/43.8M [00:03&lt;00:04, 6.11MB/s]
 
- 74%|███████████████████████████▍         | 32.5M/43.8M [00:01&lt;00:00, 27.3MB/s]
+ 43%|████████████████                     | 19.0M/43.8M [00:03&lt;00:03, 6.62MB/s]
 
- 81%|█████████████████████████████▊       | 35.3M/43.8M [00:02&lt;00:00, 27.6MB/s]
+ 45%|████████████████▋                    | 19.8M/43.8M [00:03&lt;00:04, 5.89MB/s]
 
- 88%|████████████████████████████████▍    | 38.3M/43.8M [00:02&lt;00:00, 28.3MB/s]
+ 47%|█████████████████▏                   | 20.4M/43.8M [00:03&lt;00:04, 5.26MB/s]
 
- 94%|██████████████████████████████████▊  | 41.3M/43.8M [00:02&lt;00:00, 28.5MB/s]
+ 48%|█████████████████▊                   | 21.0M/43.8M [00:03&lt;00:04, 4.79MB/s]
+
+ 49%|██████████████████▏                  | 21.5M/43.8M [00:03&lt;00:05, 3.82MB/s]
+
+ 51%|██████████████████▊                  | 22.3M/43.8M [00:04&lt;00:04, 4.49MB/s]
+
+ 52%|███████████████████▎                 | 22.8M/43.8M [00:04&lt;00:05, 4.02MB/s]
+
+ 53%|███████████████████▋                 | 23.3M/43.8M [00:04&lt;00:05, 3.65MB/s]
+
+ 54%|████████████████████                 | 23.8M/43.8M [00:04&lt;00:05, 3.45MB/s]
+
+ 55%|████████████████████▌                | 24.3M/43.8M [00:04&lt;00:05, 3.33MB/s]
+
+ 57%|████████████████████▉                | 24.8M/43.8M [00:04&lt;00:05, 3.54MB/s]
+
+ 58%|█████████████████████▎               | 25.2M/43.8M [00:04&lt;00:05, 3.51MB/s]
+
+ 58%|█████████████████████▌               | 25.5M/43.8M [00:05&lt;00:05, 3.11MB/s]
+
+ 59%|█████████████████████▊               | 25.9M/43.8M [00:05&lt;00:05, 3.03MB/s]
+
+ 60%|██████████████████████▎              | 26.4M/43.8M [00:05&lt;00:05, 3.08MB/s]
+
+ 62%|██████████████████████▊              | 26.9M/43.8M [00:05&lt;00:05, 3.13MB/s]
+
+ 63%|███████████████████████▏             | 27.5M/43.8M [00:05&lt;00:04, 3.47MB/s]
+
+ 64%|███████████████████████▌             | 27.8M/43.8M [00:05&lt;00:04, 3.43MB/s]
+
+ 64%|███████████████████████▊             | 28.2M/43.8M [00:05&lt;00:05, 3.02MB/s]
+
+ 65%|████████████████████████▏            | 28.6M/43.8M [00:06&lt;00:04, 3.14MB/s]
+
+ 67%|████████████████████████▋            | 29.1M/43.8M [00:06&lt;00:04, 3.51MB/s]
+
+ 67%|████████████████████████▉            | 29.5M/43.8M [00:06&lt;00:04, 3.51MB/s]
+
+ 68%|█████████████████████████▏           | 29.9M/43.8M [00:06&lt;00:04, 3.04MB/s]
+
+ 69%|█████████████████████████▌           | 30.3M/43.8M [00:06&lt;00:04, 3.20MB/s]
+
+ 70%|█████████████████████████▊           | 30.6M/43.8M [00:06&lt;00:04, 2.72MB/s]
+
+ 71%|██████████████████████████▍          | 31.2M/43.8M [00:06&lt;00:03, 3.38MB/s]
+
+ 72%|██████████████████████████▋          | 31.6M/43.8M [00:06&lt;00:03, 3.32MB/s]
+
+ 73%|██████████████████████████▉          | 31.9M/43.8M [00:07&lt;00:04, 2.92MB/s]
+
+ 74%|███████████████████████████▎         | 32.2M/43.8M [00:07&lt;00:04, 2.57MB/s]
+
+ 74%|███████████████████████████▍         | 32.5M/43.8M [00:07&lt;00:04, 2.52MB/s]
+
+ 75%|███████████████████████████▊         | 32.9M/43.8M [00:07&lt;00:04, 2.67MB/s]
+
+ 76%|████████████████████████████         | 33.2M/43.8M [00:07&lt;00:03, 2.66MB/s]
+
+ 76%|████████████████████████████▎        | 33.4M/43.8M [00:07&lt;00:03, 2.60MB/s]
+
+ 77%|████████████████████████████▌        | 33.8M/43.8M [00:07&lt;00:03, 2.63MB/s]
+
+ 78%|████████████████████████████▊        | 34.0M/43.8M [00:07&lt;00:03, 2.60MB/s]
+
+ 78%|████████████████████████████▉        | 34.3M/43.8M [00:08&lt;00:03, 2.54MB/s]
+
+ 79%|█████████████████████████████▎       | 34.7M/43.8M [00:08&lt;00:03, 2.69MB/s]
+
+ 80%|█████████████████████████████▌       | 34.9M/43.8M [00:08&lt;00:03, 2.66MB/s]
+
+ 80%|█████████████████████████████▋       | 35.2M/43.8M [00:08&lt;00:03, 2.59MB/s]
+
+ 81%|██████████████████████████████       | 35.6M/43.8M [00:08&lt;00:03, 2.72MB/s]
+
+ 82%|██████████████████████████████▎      | 35.8M/43.8M [00:08&lt;00:02, 2.70MB/s]
+
+ 82%|██████████████████████████████▌      | 36.1M/43.8M [00:08&lt;00:02, 2.62MB/s]
+
+ 83%|██████████████████████████████▊      | 36.5M/43.8M [00:08&lt;00:02, 2.77MB/s]
+
+ 84%|███████████████████████████████      | 36.8M/43.8M [00:08&lt;00:02, 2.74MB/s]
+
+ 85%|███████████████████████████████▎     | 37.0M/43.8M [00:09&lt;00:02, 2.66MB/s]
+
+ 85%|███████████████████████████████▌     | 37.3M/43.8M [00:09&lt;00:03, 1.96MB/s]
+
+ 86%|███████████████████████████████▉     | 37.8M/43.8M [00:09&lt;00:02, 2.71MB/s]
+
+ 87%|████████████████████████████████▎    | 38.2M/43.8M [00:09&lt;00:02, 2.68MB/s]
+
+ 88%|████████████████████████████████▌    | 38.5M/43.8M [00:09&lt;00:02, 2.65MB/s]
+
+ 89%|████████████████████████████████▊    | 38.7M/43.8M [00:09&lt;00:02, 2.34MB/s]
+
+ 89%|████████████████████████████████▉    | 39.0M/43.8M [00:10&lt;00:02, 2.06MB/s]
+
+ 90%|█████████████████████████████████▏   | 39.2M/43.8M [00:10&lt;00:02, 2.04MB/s]
+
+ 90%|█████████████████████████████████▍   | 39.6M/43.8M [00:10&lt;00:01, 2.26MB/s]
+
+ 91%|█████████████████████████████████▋   | 39.8M/43.8M [00:10&lt;00:01, 2.25MB/s]
+
+ 91%|█████████████████████████████████▊   | 40.0M/43.8M [00:10&lt;00:01, 1.94MB/s]
+
+ 92%|██████████████████████████████████   | 40.3M/43.8M [00:10&lt;00:01, 2.08MB/s]
+
+ 93%|██████████████████████████████████▏  | 40.5M/43.8M [00:10&lt;00:01, 1.77MB/s]
+
+ 93%|██████████████████████████████████▌  | 40.9M/43.8M [00:10&lt;00:01, 2.18MB/s]
+
+ 94%|██████████████████████████████████▊  | 41.1M/43.8M [00:11&lt;00:01, 2.15MB/s]
+
+ 95%|██████████████████████████████████▉  | 41.4M/43.8M [00:11&lt;00:01, 1.88MB/s]
+
+ 95%|███████████████████████████████████▏ | 41.6M/43.8M [00:11&lt;00:01, 1.66MB/s]
+
+ 95%|███████████████████████████████████▎ | 41.7M/43.8M [00:11&lt;00:01, 1.63MB/s]
+
+ 96%|███████████████████████████████████▌ | 42.0M/43.8M [00:11&lt;00:01, 1.76MB/s]
+
+ 96%|███████████████████████████████████▋ | 42.2M/43.8M [00:11&lt;00:00, 1.75MB/s]
+
+ 97%|███████████████████████████████████▊ | 42.4M/43.8M [00:11&lt;00:00, 1.51MB/s]
+
+ 97%|███████████████████████████████████▉ | 42.5M/43.8M [00:12&lt;00:00, 1.32MB/s]
+
+ 98%|████████████████████████████████████▏| 42.9M/43.8M [00:12&lt;00:00, 1.74MB/s]
+
+ 98%|████████████████████████████████████▍| 43.1M/43.8M [00:12&lt;00:00, 1.70MB/s]
+
+ 99%|████████████████████████████████████▌| 43.2M/43.8M [00:12&lt;00:00, 1.65MB/s]
+
+ 99%|████████████████████████████████████▋| 43.4M/43.8M [00:12&lt;00:00, 1.47MB/s]
+
+100%|████████████████████████████████████▊| 43.6M/43.8M [00:12&lt;00:00, 1.29MB/s]
+
+100%|████████████████████████████████████▉| 43.7M/43.8M [00:12&lt;00:00, 1.29MB/s]
 
   0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 43.8M/43.8M [00:00&lt;00:00, 166GB/s]
+100%|██████████████████████████████████████| 43.8M/43.8M [00:00&lt;00:00, 128GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
@@ -865,349 +1026,937 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
-/home/runner/work/moabb/moabb/moabb/paradigms/base.py:355: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
-  X = mne.concatenate_epochs(X)
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
 
-BNCI2014-001-WithinSession:  50%|#####     | 1/2 [04:25&lt;04:25, 265.55s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-001-WithinSession:  50%|#####     | 1/2 [04:38&lt;04:38, 278.15s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/43.1M [00:00&lt;08:51, 81.0kB/s]
+  0%|                                     | 8.19k/43.1M [00:00&lt;14:38, 49.0kB/s]
 
-  0%|                                      | 32.8k/43.1M [00:00&lt;04:06, 175kB/s]
+  0%|                                      | 32.8k/43.1M [00:00&lt;06:44, 106kB/s]
 
-  0%|                                      | 96.3k/43.1M [00:00&lt;01:53, 378kB/s]
+  0%|                                      | 96.3k/43.1M [00:00&lt;03:06, 230kB/s]
 
-  0%|▏                                      | 209k/43.1M [00:00&lt;01:04, 663kB/s]
+  0%|▏                                      | 209k/43.1M [00:00&lt;01:46, 404kB/s]
 
-  1%|▍                                     | 432k/43.1M [00:00&lt;00:35, 1.21MB/s]
+  1%|▍                                      | 432k/43.1M [00:00&lt;00:57, 737kB/s]
 
-  2%|▊                                     | 889k/43.1M [00:00&lt;00:18, 2.31MB/s]
+  2%|▋                                     | 713k/43.1M [00:01&lt;00:40, 1.04MB/s]
 
-  4%|█▌                                   | 1.80M/43.1M [00:00&lt;00:09, 4.46MB/s]
+  3%|█▎                                   | 1.49M/43.1M [00:01&lt;00:18, 2.22MB/s]
 
-  8%|███                                  | 3.62M/43.1M [00:00&lt;00:04, 8.70MB/s]
+  5%|█▋                                   | 2.00M/43.1M [00:01&lt;00:16, 2.48MB/s]
 
- 16%|█████▊                               | 6.74M/43.1M [00:00&lt;00:02, 15.5MB/s]
+  6%|██▏                                  | 2.54M/43.1M [00:01&lt;00:15, 2.70MB/s]
 
- 22%|████████                             | 9.46M/43.1M [00:01&lt;00:01, 18.9MB/s]
+  7%|██▋                                  | 3.09M/43.1M [00:01&lt;00:13, 2.88MB/s]
 
- 28%|██████████▍                          | 12.1M/43.1M [00:01&lt;00:01, 21.0MB/s]
+  8%|██▉                                  | 3.38M/43.1M [00:01&lt;00:15, 2.49MB/s]
 
- 35%|████████████▊                        | 15.0M/43.1M [00:01&lt;00:01, 23.2MB/s]
+  9%|███▍                                 | 3.96M/43.1M [00:02&lt;00:14, 2.75MB/s]
 
- 41%|███████████████▎                     | 17.8M/43.1M [00:01&lt;00:01, 24.5MB/s]
+ 10%|███▊                                 | 4.40M/43.1M [00:02&lt;00:14, 2.76MB/s]
 
- 48%|█████████████████▋                   | 20.6M/43.1M [00:01&lt;00:00, 25.2MB/s]
+ 11%|████                                 | 4.68M/43.1M [00:02&lt;00:15, 2.43MB/s]
 
- 54%|████████████████████                 | 23.4M/43.1M [00:01&lt;00:00, 25.9MB/s]
+ 12%|████▎                                | 4.97M/43.1M [00:02&lt;00:17, 2.22MB/s]
 
- 61%|██████████████████████▌              | 26.3M/43.1M [00:01&lt;00:00, 26.6MB/s]
+ 12%|████▌                                | 5.26M/43.1M [00:02&lt;00:18, 2.07MB/s]
 
- 68%|█████████████████████████            | 29.1M/43.1M [00:01&lt;00:00, 26.9MB/s]
+ 13%|████▊                                | 5.56M/43.1M [00:02&lt;00:18, 1.98MB/s]
 
- 74%|███████████████████████████▌         | 32.1M/43.1M [00:01&lt;00:00, 27.3MB/s]
+ 14%|█████                                | 5.86M/43.1M [00:03&lt;00:19, 1.93MB/s]
 
- 81%|██████████████████████████████       | 35.0M/43.1M [00:01&lt;00:00, 27.7MB/s]
+ 14%|█████▎                               | 6.18M/43.1M [00:03&lt;00:19, 1.90MB/s]
 
- 88%|████████████████████████████████▌    | 37.9M/43.1M [00:02&lt;00:00, 27.7MB/s]
+ 15%|█████▌                               | 6.48M/43.1M [00:03&lt;00:17, 2.13MB/s]
 
- 95%|███████████████████████████████████  | 40.8M/43.1M [00:02&lt;00:00, 28.1MB/s]
+ 16%|█████▊                               | 6.79M/43.1M [00:03&lt;00:16, 2.21MB/s]
+
+ 16%|██████                               | 7.02M/43.1M [00:03&lt;00:16, 2.14MB/s]
+
+ 17%|██████▏                              | 7.24M/43.1M [00:03&lt;00:25, 1.39MB/s]
+
+ 18%|██████▌                              | 7.67M/43.1M [00:04&lt;00:20, 1.71MB/s]
+
+ 18%|██████▊                              | 7.89M/43.1M [00:04&lt;00:19, 1.80MB/s]
+
+ 19%|██████▉                              | 8.11M/43.1M [00:04&lt;00:19, 1.79MB/s]
+
+ 19%|███████▏                             | 8.31M/43.1M [00:04&lt;00:19, 1.75MB/s]
+
+ 20%|███████▎                             | 8.50M/43.1M [00:04&lt;00:22, 1.54MB/s]
+
+ 20%|███████▍                             | 8.66M/43.1M [00:04&lt;00:25, 1.37MB/s]
+
+ 21%|███████▌                             | 8.86M/43.1M [00:04&lt;00:26, 1.31MB/s]
+
+ 21%|███████▊                             | 9.11M/43.1M [00:05&lt;00:24, 1.38MB/s]
+
+ 22%|████████                             | 9.36M/43.1M [00:05&lt;00:23, 1.41MB/s]
+
+ 22%|████████▎                            | 9.62M/43.1M [00:05&lt;00:23, 1.44MB/s]
+
+ 23%|████████▍                            | 9.88M/43.1M [00:05&lt;00:22, 1.48MB/s]
+
+ 24%|████████▋                            | 10.1M/43.1M [00:05&lt;00:22, 1.49MB/s]
+
+ 24%|████████▉                            | 10.4M/43.1M [00:05&lt;00:21, 1.52MB/s]
+
+ 25%|█████████▏                           | 10.7M/43.1M [00:06&lt;00:20, 1.61MB/s]
+
+ 25%|█████████▍                           | 10.9M/43.1M [00:06&lt;00:18, 1.73MB/s]
+
+ 26%|█████████▌                           | 11.1M/43.1M [00:06&lt;00:24, 1.32MB/s]
+
+ 26%|█████████▊                           | 11.4M/43.1M [00:06&lt;00:21, 1.47MB/s]
+
+ 27%|█████████▉                           | 11.6M/43.1M [00:06&lt;00:22, 1.38MB/s]
+
+ 27%|██████████▏                          | 11.8M/43.1M [00:06&lt;00:23, 1.31MB/s]
+
+ 28%|██████████▏                          | 11.9M/43.1M [00:07&lt;00:27, 1.15MB/s]
+
+ 28%|██████████▍                          | 12.1M/43.1M [00:07&lt;00:25, 1.20MB/s]
+
+ 29%|██████████▌                          | 12.3M/43.1M [00:07&lt;00:28, 1.08MB/s]
+
+ 29%|██████████▋                          | 12.4M/43.1M [00:07&lt;00:29, 1.03MB/s]
+
+ 29%|███████████                           | 12.6M/43.1M [00:07&lt;00:30, 989kB/s]
+
+ 30%|███████████▏                          | 12.7M/43.1M [00:07&lt;00:31, 964kB/s]
+
+ 30%|███████████                          | 12.9M/43.1M [00:08&lt;00:28, 1.05MB/s]
+
+ 30%|███████████▏                         | 13.0M/43.1M [00:08&lt;00:29, 1.00MB/s]
+
+ 31%|███████████▎                         | 13.2M/43.1M [00:08&lt;00:27, 1.07MB/s]
+
+ 31%|███████████▍                         | 13.3M/43.1M [00:08&lt;00:28, 1.03MB/s]
+
+ 31%|███████████▊                          | 13.4M/43.1M [00:08&lt;00:32, 904kB/s]
+
+ 31%|███████████▉                          | 13.5M/43.1M [00:08&lt;00:30, 961kB/s]
+
+ 32%|███████████▋                         | 13.7M/43.1M [00:08&lt;00:28, 1.05MB/s]
+
+ 32%|███████████▊                         | 13.8M/43.1M [00:08&lt;00:28, 1.01MB/s]
+
+ 32%|████████████▎                         | 13.9M/43.1M [00:09&lt;00:33, 874kB/s]
+
+ 33%|████████████▎                         | 14.0M/43.1M [00:09&lt;00:30, 950kB/s]
+
+ 33%|████████████▏                        | 14.2M/43.1M [00:09&lt;00:27, 1.07MB/s]
+
+ 33%|████████████▎                        | 14.3M/43.1M [00:09&lt;00:27, 1.03MB/s]
+
+ 33%|████████████▋                         | 14.4M/43.1M [00:09&lt;00:32, 888kB/s]
+
+ 34%|████████████▊                         | 14.5M/43.1M [00:09&lt;00:28, 988kB/s]
+
+ 34%|████████████▌                        | 14.7M/43.1M [00:09&lt;00:26, 1.08MB/s]
+
+ 34%|████████████▋                        | 14.8M/43.1M [00:09&lt;00:27, 1.04MB/s]
+
+ 35%|█████████████▏                        | 14.9M/43.1M [00:10&lt;00:31, 900kB/s]
+
+ 35%|█████████████▎                        | 15.0M/43.1M [00:10&lt;00:28, 985kB/s]
+
+ 35%|█████████████                        | 15.2M/43.1M [00:10&lt;00:25, 1.08MB/s]
+
+ 36%|█████████████▏                       | 15.3M/43.1M [00:10&lt;00:26, 1.04MB/s]
+
+ 36%|█████████████▌                        | 15.4M/43.1M [00:10&lt;00:30, 899kB/s]
+
+ 36%|█████████████▎                       | 15.5M/43.1M [00:10&lt;00:27, 1.00MB/s]
+
+ 36%|█████████████▍                       | 15.7M/43.1M [00:10&lt;00:25, 1.09MB/s]
+
+ 37%|█████████████▌                       | 15.8M/43.1M [00:10&lt;00:25, 1.05MB/s]
+
+ 37%|██████████████                        | 15.9M/43.1M [00:11&lt;00:29, 909kB/s]
+
+ 37%|██████████████▏                       | 16.0M/43.1M [00:11&lt;00:27, 987kB/s]
+
+ 38%|█████████████▉                       | 16.2M/43.1M [00:11&lt;00:24, 1.08MB/s]
+
+ 38%|██████████████                       | 16.3M/43.1M [00:11&lt;00:25, 1.04MB/s]
+
+ 38%|██████████████▍                       | 16.4M/43.1M [00:11&lt;00:29, 900kB/s]
+
+ 38%|██████████████▌                       | 16.5M/43.1M [00:11&lt;00:34, 775kB/s]
+
+ 39%|██████████████▋                       | 16.7M/43.1M [00:11&lt;00:26, 983kB/s]
+
+ 39%|██████████████▊                       | 16.8M/43.1M [00:12&lt;00:37, 697kB/s]
+
+ 39%|██████████████▉                       | 16.9M/43.1M [00:12&lt;00:32, 794kB/s]
+
+ 40%|███████████████                       | 17.0M/43.1M [00:12&lt;00:36, 721kB/s]
+
+ 40%|███████████████                       | 17.1M/43.1M [00:12&lt;00:35, 737kB/s]
+
+ 40%|███████████████▏                      | 17.2M/43.1M [00:12&lt;00:35, 739kB/s]
+
+ 40%|███████████████▏                      | 17.3M/43.1M [00:12&lt;00:36, 702kB/s]
+
+ 40%|███████████████▎                      | 17.3M/43.1M [00:12&lt;00:41, 619kB/s]
+
+ 40%|███████████████▎                      | 17.4M/43.1M [00:13&lt;00:46, 554kB/s]
+
+ 41%|███████████████▍                      | 17.5M/43.1M [00:13&lt;00:42, 608kB/s]
+
+ 41%|███████████████▌                      | 17.6M/43.1M [00:13&lt;00:39, 648kB/s]
+
+ 41%|███████████████▌                      | 17.6M/43.1M [00:13&lt;00:41, 620kB/s]
+
+ 41%|███████████████▋                      | 17.7M/43.1M [00:13&lt;00:46, 545kB/s]
+
+ 41%|███████████████▋                      | 17.8M/43.1M [00:13&lt;00:40, 623kB/s]
+
+ 42%|███████████████▊                      | 17.9M/43.1M [00:13&lt;00:37, 663kB/s]
+
+ 42%|███████████████▊                      | 18.0M/43.1M [00:13&lt;00:39, 631kB/s]
+
+ 42%|███████████████▉                      | 18.0M/43.1M [00:14&lt;00:45, 554kB/s]
+
+ 42%|███████████████▉                      | 18.1M/43.1M [00:14&lt;00:38, 645kB/s]
+
+ 42%|████████████████                      | 18.2M/43.1M [00:14&lt;00:40, 614kB/s]
+
+ 43%|████████████████▏                     | 18.3M/43.1M [00:14&lt;00:36, 674kB/s]
+
+ 43%|████████████████▏                     | 18.4M/43.1M [00:14&lt;00:38, 644kB/s]
+
+ 43%|████████████████▎                     | 18.4M/43.1M [00:14&lt;00:43, 564kB/s]
+
+ 43%|████████████████▎                     | 18.5M/43.1M [00:14&lt;00:43, 565kB/s]
+
+ 43%|████████████████▍                     | 18.6M/43.1M [00:15&lt;00:50, 482kB/s]
+
+ 44%|████████████████▌                     | 18.7M/43.1M [00:15&lt;00:40, 607kB/s]
+
+ 44%|████████████████▌                     | 18.8M/43.1M [00:15&lt;00:38, 625kB/s]
+
+ 44%|████████████████▋                     | 18.9M/43.1M [00:15&lt;00:44, 549kB/s]
+
+ 44%|████████████████▋                     | 19.0M/43.1M [00:15&lt;00:42, 573kB/s]
+
+ 44%|████████████████▊                     | 19.0M/43.1M [00:15&lt;00:44, 544kB/s]
+
+ 44%|████████████████▊                     | 19.1M/43.1M [00:16&lt;00:49, 482kB/s]
+
+ 44%|████████████████▉                     | 19.2M/43.1M [00:16&lt;00:48, 490kB/s]
+
+ 45%|████████████████▉                     | 19.2M/43.1M [00:16&lt;00:41, 573kB/s]
+
+ 45%|█████████████████                     | 19.3M/43.1M [00:16&lt;00:40, 582kB/s]
+
+ 45%|█████████████████                     | 19.4M/43.1M [00:16&lt;00:42, 563kB/s]
+
+ 45%|█████████████████▏                    | 19.4M/43.1M [00:16&lt;00:46, 509kB/s]
+
+ 45%|█████████████████▏                    | 19.5M/43.1M [00:16&lt;00:54, 431kB/s]
+
+ 46%|█████████████████▎                    | 19.6M/43.1M [00:17&lt;00:44, 533kB/s]
+
+ 46%|█████████████████▍                    | 19.7M/43.1M [00:17&lt;00:46, 501kB/s]
+
+ 46%|█████████████████▍                    | 19.8M/43.1M [00:17&lt;00:48, 477kB/s]
+
+ 46%|█████████████████▌                    | 19.8M/43.1M [00:17&lt;00:44, 523kB/s]
+
+ 46%|█████████████████▌                    | 19.9M/43.1M [00:17&lt;00:49, 473kB/s]
+
+ 46%|█████████████████▌                    | 20.0M/43.1M [00:17&lt;00:46, 498kB/s]
+
+ 46%|█████████████████▋                    | 20.0M/43.1M [00:17&lt;00:47, 481kB/s]
+
+ 47%|█████████████████▋                    | 20.1M/43.1M [00:17&lt;00:47, 487kB/s]
+
+ 47%|█████████████████▊                    | 20.1M/43.1M [00:18&lt;00:46, 490kB/s]
+
+ 47%|█████████████████▊                    | 20.2M/43.1M [00:18&lt;00:48, 469kB/s]
+
+ 47%|█████████████████▊                    | 20.2M/43.1M [00:18&lt;00:47, 482kB/s]
+
+ 47%|█████████████████▉                    | 20.3M/43.1M [00:18&lt;00:44, 507kB/s]
+
+ 47%|█████████████████▉                    | 20.3M/43.1M [00:18&lt;00:47, 482kB/s]
+
+ 47%|██████████████████                    | 20.4M/43.1M [00:18&lt;00:51, 436kB/s]
+
+ 48%|██████████████████                    | 20.5M/43.1M [00:18&lt;00:47, 473kB/s]
+
+ 48%|██████████████████▏                   | 20.6M/43.1M [00:18&lt;00:45, 493kB/s]
+
+ 48%|██████████████████▏                   | 20.6M/43.1M [00:19&lt;00:46, 486kB/s]
+
+ 48%|██████████████████▎                   | 20.7M/43.1M [00:19&lt;00:42, 531kB/s]
+
+ 48%|██████████████████▎                   | 20.8M/43.1M [00:19&lt;00:43, 509kB/s]
+
+ 48%|██████████████████▎                   | 20.8M/43.1M [00:19&lt;00:49, 450kB/s]
+
+ 49%|██████████████████▍                   | 20.9M/43.1M [00:19&lt;00:45, 482kB/s]
+
+ 49%|██████████████████▌                   | 21.0M/43.1M [00:19&lt;00:44, 493kB/s]
+
+ 49%|██████████████████▌                   | 21.0M/43.1M [00:19&lt;00:45, 487kB/s]
+
+ 49%|██████████████████▋                   | 21.1M/43.1M [00:20&lt;00:40, 535kB/s]
+
+ 49%|██████████████████▋                   | 21.2M/43.1M [00:20&lt;00:42, 515kB/s]
+
+ 49%|██████████████████▋                   | 21.2M/43.1M [00:20&lt;00:45, 479kB/s]
+
+ 49%|██████████████████▊                   | 21.3M/43.1M [00:20&lt;00:44, 489kB/s]
+
+ 50%|██████████████████▊                   | 21.4M/43.1M [00:20&lt;00:44, 484kB/s]
+
+ 50%|██████████████████▉                   | 21.5M/43.1M [00:20&lt;00:40, 534kB/s]
+
+ 50%|██████████████████▉                   | 21.5M/43.1M [00:20&lt;00:41, 513kB/s]
+
+ 50%|███████████████████                   | 21.6M/43.1M [00:21&lt;00:45, 478kB/s]
+
+ 50%|███████████████████                   | 21.6M/43.1M [00:21&lt;00:43, 488kB/s]
+
+ 50%|███████████████████▏                  | 21.7M/43.1M [00:21&lt;00:39, 538kB/s]
+
+ 51%|███████████████████▏                  | 21.8M/43.1M [00:21&lt;00:41, 518kB/s]
+
+ 51%|███████████████████▎                  | 21.8M/43.1M [00:21&lt;00:42, 498kB/s]
+
+ 51%|███████████████████▎                  | 21.9M/43.1M [00:21&lt;00:42, 504kB/s]
+
+ 51%|███████████████████▍                  | 22.0M/43.1M [00:21&lt;00:38, 549kB/s]
+
+ 51%|███████████████████▍                  | 22.0M/43.1M [00:21&lt;00:39, 528kB/s]
+
+ 51%|███████████████████▌                  | 22.1M/43.1M [00:22&lt;00:42, 491kB/s]
+
+ 52%|███████████████████▌                  | 22.2M/43.1M [00:22&lt;00:38, 547kB/s]
+
+ 52%|███████████████████▋                  | 22.3M/43.1M [00:22&lt;00:36, 564kB/s]
+
+ 52%|███████████████████▋                  | 22.3M/43.1M [00:22&lt;00:38, 540kB/s]
+
+ 52%|███████████████████▊                  | 22.4M/43.1M [00:22&lt;00:39, 525kB/s]
+
+ 52%|███████████████████▊                  | 22.5M/43.1M [00:22&lt;00:38, 542kB/s]
+
+ 52%|███████████████████▉                  | 22.5M/43.1M [00:22&lt;00:34, 596kB/s]
+
+ 52%|███████████████████▉                  | 22.6M/43.1M [00:22&lt;00:35, 569kB/s]
+
+ 53%|████████████████████                  | 22.7M/43.1M [00:23&lt;00:36, 559kB/s]
+
+ 53%|████████████████████                  | 22.8M/43.1M [00:23&lt;00:35, 566kB/s]
+
+ 53%|████████████████████▏                 | 22.8M/43.1M [00:23&lt;00:31, 632kB/s]
+
+ 53%|████████████████████▏                 | 22.9M/43.1M [00:23&lt;00:44, 450kB/s]
+
+ 53%|████████████████████▎                 | 23.0M/43.1M [00:23&lt;00:34, 588kB/s]
+
+ 54%|████████████████████▍                 | 23.1M/43.1M [00:23&lt;00:34, 582kB/s]
+
+ 54%|████████████████████▍                 | 23.2M/43.1M [00:23&lt;00:34, 571kB/s]
+
+ 54%|████████████████████▍                 | 23.2M/43.1M [00:24&lt;00:37, 529kB/s]
+
+ 54%|████████████████████▌                 | 23.3M/43.1M [00:24&lt;00:38, 508kB/s]
+
+ 54%|████████████████████▌                 | 23.4M/43.1M [00:24&lt;00:36, 534kB/s]
+
+ 54%|████████████████████▋                 | 23.4M/43.1M [00:24&lt;00:38, 510kB/s]
+
+ 55%|████████████████████▋                 | 23.5M/43.1M [00:24&lt;00:35, 549kB/s]
+
+ 55%|████████████████████▊                 | 23.6M/43.1M [00:24&lt;00:37, 521kB/s]
+
+ 55%|████████████████████▊                 | 23.6M/43.1M [00:24&lt;00:34, 564kB/s]
+
+ 55%|████████████████████▉                 | 23.7M/43.1M [00:24&lt;00:35, 551kB/s]
+
+ 55%|████████████████████▉                 | 23.8M/43.1M [00:25&lt;00:33, 578kB/s]
+
+ 55%|█████████████████████                 | 23.9M/43.1M [00:25&lt;00:33, 577kB/s]
+
+ 56%|█████████████████████▏                | 23.9M/43.1M [00:25&lt;00:31, 605kB/s]
+
+ 56%|█████████████████████▏                | 24.0M/43.1M [00:25&lt;00:32, 581kB/s]
+
+ 56%|█████████████████████▎                | 24.1M/43.1M [00:25&lt;00:30, 615kB/s]
+
+ 56%|█████████████████████▎                | 24.2M/43.1M [00:25&lt;00:31, 605kB/s]
+
+ 56%|█████████████████████▍                | 24.3M/43.1M [00:25&lt;00:30, 626kB/s]
+
+ 56%|█████████████████████▍                | 24.3M/43.1M [00:25&lt;00:30, 609kB/s]
+
+ 57%|█████████████████████▌                | 24.4M/43.1M [00:26&lt;00:29, 639kB/s]
+
+ 57%|█████████████████████▌                | 24.5M/43.1M [00:26&lt;00:29, 636kB/s]
+
+ 57%|█████████████████████▋                | 24.6M/43.1M [00:26&lt;00:29, 633kB/s]
+
+ 57%|█████████████████████▋                | 24.6M/43.1M [00:26&lt;00:30, 609kB/s]
+
+ 57%|█████████████████████▊                | 24.8M/43.1M [00:26&lt;00:27, 663kB/s]
+
+ 58%|█████████████████████▉                | 24.8M/43.1M [00:26&lt;00:28, 637kB/s]
+
+ 58%|█████████████████████▉                | 24.9M/43.1M [00:26&lt;00:27, 652kB/s]
+
+ 58%|██████████████████████                | 25.0M/43.1M [00:26&lt;00:29, 620kB/s]
+
+ 58%|██████████████████████▏               | 25.1M/43.1M [00:27&lt;00:29, 620kB/s]
+
+ 58%|██████████████████████▏               | 25.2M/43.1M [00:27&lt;00:27, 660kB/s]
+
+ 59%|██████████████████████▎               | 25.3M/43.1M [00:27&lt;00:27, 659kB/s]
+
+ 59%|██████████████████████▎               | 25.3M/43.1M [00:27&lt;00:27, 650kB/s]
+
+ 59%|██████████████████████▍               | 25.4M/43.1M [00:27&lt;00:28, 619kB/s]
+
+ 59%|██████████████████████▌               | 25.5M/43.1M [00:27&lt;00:26, 662kB/s]
+
+ 59%|██████████████████████▌               | 25.6M/43.1M [00:27&lt;00:26, 663kB/s]
+
+ 60%|██████████████████████▋               | 25.7M/43.1M [00:28&lt;00:26, 647kB/s]
+
+ 60%|██████████████████████▋               | 25.7M/43.1M [00:28&lt;00:27, 619kB/s]
+
+ 60%|██████████████████████▊               | 25.8M/43.1M [00:28&lt;00:27, 621kB/s]
+
+ 60%|██████████████████████▉               | 25.9M/43.1M [00:28&lt;00:25, 661kB/s]
+
+ 60%|██████████████████████▉               | 26.0M/43.1M [00:28&lt;00:25, 660kB/s]
+
+ 61%|███████████████████████               | 26.1M/43.1M [00:28&lt;00:26, 646kB/s]
+
+ 61%|███████████████████████               | 26.2M/43.1M [00:28&lt;00:27, 621kB/s]
+
+ 61%|███████████████████████▏              | 26.3M/43.1M [00:28&lt;00:25, 666kB/s]
+
+ 61%|███████████████████████▎              | 26.4M/43.1M [00:29&lt;00:25, 664kB/s]
+
+ 61%|███████████████████████▎              | 26.4M/43.1M [00:29&lt;00:24, 666kB/s]
+
+ 62%|███████████████████████▍              | 26.5M/43.1M [00:29&lt;00:26, 622kB/s]
+
+ 62%|███████████████████████▍              | 26.6M/43.1M [00:29&lt;00:26, 633kB/s]
+
+ 62%|███████████████████████▌              | 26.7M/43.1M [00:29&lt;00:23, 686kB/s]
+
+ 62%|███████████████████████▋              | 26.8M/43.1M [00:29&lt;00:23, 680kB/s]
+
+ 62%|███████████████████████▋              | 26.9M/43.1M [00:29&lt;00:23, 694kB/s]
+
+ 63%|███████████████████████▊              | 27.0M/43.1M [00:29&lt;00:24, 659kB/s]
+
+ 63%|███████████████████████▉              | 27.1M/43.1M [00:30&lt;00:24, 661kB/s]
+
+ 63%|███████████████████████▉              | 27.2M/43.1M [00:30&lt;00:23, 678kB/s]
+
+ 63%|████████████████████████              | 27.3M/43.1M [00:30&lt;00:21, 732kB/s]
+
+ 64%|████████████████████████▏             | 27.4M/43.1M [00:30&lt;00:21, 733kB/s]
+
+ 64%|████████████████████████▎             | 27.5M/43.1M [00:30&lt;00:21, 727kB/s]
+
+ 64%|████████████████████████▎             | 27.6M/43.1M [00:30&lt;00:22, 704kB/s]
+
+ 64%|████████████████████████▍             | 27.7M/43.1M [00:30&lt;00:19, 774kB/s]
+
+ 65%|████████████████████████▌             | 27.8M/43.1M [00:31&lt;00:20, 763kB/s]
+
+ 65%|████████████████████████▌             | 27.9M/43.1M [00:31&lt;00:19, 768kB/s]
+
+ 65%|████████████████████████▋             | 28.0M/43.1M [00:31&lt;00:20, 751kB/s]
+
+ 65%|████████████████████████▊             | 28.1M/43.1M [00:31&lt;00:18, 827kB/s]
+
+ 65%|████████████████████████▉             | 28.2M/43.1M [00:31&lt;00:18, 817kB/s]
+
+ 66%|████████████████████████▉             | 28.3M/43.1M [00:31&lt;00:17, 846kB/s]
+
+ 66%|█████████████████████████             | 28.4M/43.1M [00:31&lt;00:17, 825kB/s]
+
+ 66%|█████████████████████████▏            | 28.6M/43.1M [00:31&lt;00:16, 895kB/s]
+
+ 67%|█████████████████████████▎            | 28.7M/43.1M [00:32&lt;00:15, 906kB/s]
+
+ 67%|█████████████████████████▍            | 28.8M/43.1M [00:32&lt;00:15, 926kB/s]
+
+ 67%|█████████████████████████▍            | 28.9M/43.1M [00:32&lt;00:19, 716kB/s]
+
+ 67%|█████████████████████████▋            | 29.1M/43.1M [00:32&lt;00:15, 924kB/s]
+
+ 68%|█████████████████████████▋            | 29.2M/43.1M [00:32&lt;00:15, 889kB/s]
+
+ 68%|█████████████████████████▊            | 29.3M/43.1M [00:32&lt;00:16, 861kB/s]
+
+ 68%|█████████████████████████▉            | 29.4M/43.1M [00:32&lt;00:16, 844kB/s]
+
+ 68%|█████████████████████████▉            | 29.5M/43.1M [00:33&lt;00:16, 805kB/s]
+
+ 69%|██████████████████████████            | 29.6M/43.1M [00:33&lt;00:16, 799kB/s]
+
+ 69%|██████████████████████████▏           | 29.7M/43.1M [00:33&lt;00:15, 848kB/s]
+
+ 69%|██████████████████████████▎           | 29.8M/43.1M [00:33&lt;00:21, 622kB/s]
+
+ 70%|██████████████████████████▍           | 29.9M/43.1M [00:33&lt;00:16, 804kB/s]
+
+ 70%|██████████████████████████▍           | 30.0M/43.1M [00:33&lt;00:16, 768kB/s]
+
+ 70%|██████████████████████████▌           | 30.1M/43.1M [00:33&lt;00:17, 734kB/s]
+
+ 70%|██████████████████████████▋           | 30.2M/43.1M [00:34&lt;00:17, 719kB/s]
+
+ 70%|██████████████████████████▋           | 30.3M/43.1M [00:34&lt;00:18, 684kB/s]
+
+ 70%|██████████████████████████▊           | 30.4M/43.1M [00:34&lt;00:18, 678kB/s]
+
+ 71%|██████████████████████████▊           | 30.4M/43.1M [00:34&lt;00:19, 658kB/s]
+
+ 71%|██████████████████████████▉           | 30.5M/43.1M [00:34&lt;00:25, 498kB/s]
+
+ 71%|███████████████████████████           | 30.7M/43.1M [00:34&lt;00:18, 681kB/s]
+
+ 71%|███████████████████████████           | 30.7M/43.1M [00:34&lt;00:18, 654kB/s]
+
+ 72%|███████████████████████████▏          | 30.8M/43.1M [00:35&lt;00:19, 640kB/s]
+
+ 72%|███████████████████████████▏          | 30.9M/43.1M [00:35&lt;00:19, 611kB/s]
+
+ 72%|███████████████████████████▎          | 30.9M/43.1M [00:35&lt;00:22, 534kB/s]
+
+ 72%|███████████████████████████▎          | 31.0M/43.1M [00:35&lt;00:23, 523kB/s]
+
+ 72%|███████████████████████████▍          | 31.1M/43.1M [00:35&lt;00:22, 531kB/s]
+
+ 72%|███████████████████████████▍          | 31.2M/43.1M [00:35&lt;00:21, 555kB/s]
+
+ 72%|███████████████████████████▌          | 31.2M/43.1M [00:35&lt;00:22, 527kB/s]
+
+ 73%|███████████████████████████▌          | 31.3M/43.1M [00:36&lt;00:22, 527kB/s]
+
+ 73%|███████████████████████████▋          | 31.4M/43.1M [00:36&lt;00:21, 552kB/s]
+
+ 73%|███████████████████████████▋          | 31.4M/43.1M [00:36&lt;00:19, 594kB/s]
+
+ 73%|███████████████████████████▊          | 31.5M/43.1M [00:36&lt;00:20, 561kB/s]
+
+ 73%|███████████████████████████▊          | 31.6M/43.1M [00:36&lt;00:21, 543kB/s]
+
+ 73%|███████████████████████████▉          | 31.6M/43.1M [00:36&lt;00:20, 564kB/s]
+
+ 74%|████████████████████████████          | 31.7M/43.1M [00:36&lt;00:18, 620kB/s]
+
+ 74%|████████████████████████████          | 31.8M/43.1M [00:36&lt;00:19, 585kB/s]
+
+ 74%|████████████████████████████          | 31.9M/43.1M [00:37&lt;00:20, 540kB/s]
+
+ 74%|████████████████████████████▏         | 31.9M/43.1M [00:37&lt;00:19, 560kB/s]
+
+ 74%|████████████████████████████▎         | 32.0M/43.1M [00:37&lt;00:18, 610kB/s]
+
+ 75%|████████████████████████████▎         | 32.1M/43.1M [00:37&lt;00:18, 579kB/s]
+
+ 75%|████████████████████████████▎         | 32.2M/43.1M [00:37&lt;00:19, 550kB/s]
+
+ 75%|████████████████████████████▍         | 32.2M/43.1M [00:37&lt;00:19, 570kB/s]
+
+ 75%|████████████████████████████▌         | 32.3M/43.1M [00:37&lt;00:17, 622kB/s]
+
+ 75%|████████████████████████████▌         | 32.4M/43.1M [00:37&lt;00:18, 588kB/s]
+
+ 75%|████████████████████████████▋         | 32.4M/43.1M [00:38&lt;00:19, 543kB/s]
+
+ 76%|████████████████████████████▋         | 32.5M/43.1M [00:38&lt;00:18, 562kB/s]
+
+ 76%|████████████████████████████▊         | 32.6M/43.1M [00:38&lt;00:17, 609kB/s]
+
+ 76%|████████████████████████████▊         | 32.7M/43.1M [00:38&lt;00:17, 605kB/s]
+
+ 76%|████████████████████████████▉         | 32.7M/43.1M [00:38&lt;00:18, 574kB/s]
+
+ 76%|████████████████████████████▉         | 32.8M/43.1M [00:38&lt;00:17, 602kB/s]
+
+ 76%|█████████████████████████████         | 32.9M/43.1M [00:38&lt;00:17, 574kB/s]
+
+ 76%|█████████████████████████████         | 32.9M/43.1M [00:38&lt;00:17, 569kB/s]
+
+ 77%|█████████████████████████████         | 33.0M/43.1M [00:38&lt;00:17, 592kB/s]
+
+ 77%|█████████████████████████████▏        | 33.1M/43.1M [00:39&lt;00:17, 583kB/s]
+
+ 77%|█████████████████████████████▏        | 33.1M/43.1M [00:39&lt;00:17, 558kB/s]
+
+ 77%|█████████████████████████████▎        | 33.2M/43.1M [00:39&lt;00:16, 606kB/s]
+
+ 77%|█████████████████████████████▎        | 33.3M/43.1M [00:39&lt;00:17, 573kB/s]
+
+ 77%|█████████████████████████████▍        | 33.3M/43.1M [00:39&lt;00:17, 563kB/s]
+
+ 78%|█████████████████████████████▍        | 33.4M/43.1M [00:39&lt;00:15, 620kB/s]
+
+ 78%|█████████████████████████████▌        | 33.5M/43.1M [00:39&lt;00:15, 612kB/s]
+
+ 78%|█████████████████████████████▌        | 33.5M/43.1M [00:39&lt;00:16, 569kB/s]
+
+ 78%|█████████████████████████████▋        | 33.6M/43.1M [00:39&lt;00:15, 614kB/s]
+
+ 78%|█████████████████████████████▋        | 33.7M/43.1M [00:40&lt;00:15, 608kB/s]
+
+ 78%|█████████████████████████████▊        | 33.7M/43.1M [00:40&lt;00:16, 567kB/s]
+
+ 79%|█████████████████████████████▊        | 33.8M/43.1M [00:40&lt;00:14, 656kB/s]
+
+ 79%|█████████████████████████████▉        | 33.9M/43.1M [00:40&lt;00:14, 621kB/s]
+
+ 79%|█████████████████████████████▉        | 33.9M/43.1M [00:40&lt;00:14, 609kB/s]
+
+ 79%|██████████████████████████████        | 34.0M/43.1M [00:40&lt;00:13, 668kB/s]
+
+ 79%|██████████████████████████████        | 34.1M/43.1M [00:40&lt;00:14, 633kB/s]
+
+ 79%|██████████████████████████████▏       | 34.2M/43.1M [00:40&lt;00:14, 620kB/s]
+
+ 80%|██████████████████████████████▏       | 34.3M/43.1M [00:40&lt;00:12, 693kB/s]
+
+ 80%|██████████████████████████████▎       | 34.3M/43.1M [00:41&lt;00:13, 654kB/s]
+
+ 80%|██████████████████████████████▎       | 34.4M/43.1M [00:41&lt;00:13, 640kB/s]
+
+ 80%|██████████████████████████████▍       | 34.5M/43.1M [00:41&lt;00:11, 716kB/s]
+
+ 80%|██████████████████████████████▍       | 34.6M/43.1M [00:41&lt;00:12, 676kB/s]
+
+ 80%|██████████████████████████████▌       | 34.6M/43.1M [00:41&lt;00:12, 661kB/s]
+
+ 81%|██████████████████████████████▋       | 34.7M/43.1M [00:41&lt;00:10, 764kB/s]
+
+ 81%|██████████████████████████████▋       | 34.8M/43.1M [00:41&lt;00:11, 721kB/s]
+
+ 81%|██████████████████████████████▊       | 34.9M/43.1M [00:41&lt;00:11, 708kB/s]
+
+ 81%|██████████████████████████████▉       | 35.0M/43.1M [00:41&lt;00:09, 814kB/s]
+
+ 81%|██████████████████████████████▉       | 35.1M/43.1M [00:42&lt;00:10, 768kB/s]
+
+ 82%|███████████████████████████████       | 35.2M/43.1M [00:42&lt;00:10, 754kB/s]
+
+ 82%|███████████████████████████████▏      | 35.3M/43.1M [00:42&lt;00:09, 865kB/s]
+
+ 82%|███████████████████████████████▏      | 35.4M/43.1M [00:42&lt;00:09, 817kB/s]
+
+ 82%|███████████████████████████████▎      | 35.5M/43.1M [00:42&lt;00:09, 819kB/s]
+
+ 83%|███████████████████████████████▎      | 35.5M/43.1M [00:42&lt;00:12, 611kB/s]
+
+ 83%|███████████████████████████████▌      | 35.7M/43.1M [00:42&lt;00:08, 849kB/s]
+
+ 83%|███████████████████████████████▌      | 35.8M/43.1M [00:43&lt;00:08, 849kB/s]
+
+ 83%|███████████████████████████████▋      | 35.9M/43.1M [00:43&lt;00:08, 803kB/s]
+
+ 84%|███████████████████████████████▊      | 36.0M/43.1M [00:43&lt;00:09, 755kB/s]
+
+ 84%|███████████████████████████████▊      | 36.1M/43.1M [00:43&lt;00:09, 733kB/s]
+
+ 84%|███████████████████████████████▉      | 36.2M/43.1M [00:43&lt;00:08, 785kB/s]
+
+ 84%|███████████████████████████████▉      | 36.3M/43.1M [00:43&lt;00:09, 748kB/s]
+
+ 84%|████████████████████████████████      | 36.3M/43.1M [00:43&lt;00:08, 757kB/s]
+
+ 85%|████████████████████████████████▏     | 36.4M/43.1M [00:43&lt;00:08, 824kB/s]
+
+ 85%|████████████████████████████████▏     | 36.5M/43.1M [00:43&lt;00:08, 811kB/s]
+
+ 85%|████████████████████████████████▎     | 36.6M/43.1M [00:44&lt;00:08, 785kB/s]
+
+ 85%|████████████████████████████████▍     | 36.7M/43.1M [00:44&lt;00:07, 843kB/s]
+
+ 85%|████████████████████████████████▍     | 36.8M/43.1M [00:44&lt;00:07, 809kB/s]
+
+ 86%|████████████████████████████████▌     | 36.9M/43.1M [00:44&lt;00:07, 824kB/s]
+
+ 86%|████████████████████████████████▋     | 37.0M/43.1M [00:44&lt;00:06, 892kB/s]
+
+ 86%|████████████████████████████████▋     | 37.1M/43.1M [00:44&lt;00:06, 880kB/s]
+
+ 86%|████████████████████████████████▊     | 37.2M/43.1M [00:44&lt;00:06, 866kB/s]
+
+ 87%|████████████████████████████████▉     | 37.3M/43.1M [00:44&lt;00:06, 914kB/s]
+
+ 87%|█████████████████████████████████     | 37.4M/43.1M [00:44&lt;00:06, 897kB/s]
+
+ 87%|█████████████████████████████████     | 37.5M/43.1M [00:45&lt;00:06, 869kB/s]
+
+ 87%|█████████████████████████████████▏    | 37.6M/43.1M [00:45&lt;00:05, 942kB/s]
+
+ 88%|█████████████████████████████████▎    | 37.7M/43.1M [00:45&lt;00:05, 926kB/s]
+
+ 88%|█████████████████████████████████▍    | 37.8M/43.1M [00:45&lt;00:05, 912kB/s]
+
+ 88%|█████████████████████████████████▍    | 38.0M/43.1M [00:45&lt;00:05, 937kB/s]
+
+ 88%|█████████████████████████████████▌    | 38.0M/43.1M [00:45&lt;00:05, 929kB/s]
+
+ 89%|█████████████████████████████████▋    | 38.1M/43.1M [00:45&lt;00:05, 914kB/s]
+
+ 89%|█████████████████████████████████▋    | 38.2M/43.1M [00:45&lt;00:07, 641kB/s]
+
+ 89%|█████████████████████████████████▉    | 38.4M/43.1M [00:46&lt;00:04, 944kB/s]
+
+ 90%|██████████████████████████████████    | 38.6M/43.1M [00:46&lt;00:05, 884kB/s]
+
+ 90%|██████████████████████████████████    | 38.7M/43.1M [00:46&lt;00:05, 861kB/s]
+
+ 90%|██████████████████████████████████▏   | 38.7M/43.1M [00:46&lt;00:05, 817kB/s]
+
+ 90%|██████████████████████████████████▎   | 38.8M/43.1M [00:46&lt;00:05, 772kB/s]
+
+ 90%|██████████████████████████████████▎   | 38.9M/43.1M [00:46&lt;00:05, 763kB/s]
+
+ 91%|██████████████████████████████████▍   | 39.0M/43.1M [00:46&lt;00:06, 594kB/s]
+
+ 91%|██████████████████████████████████▌   | 39.1M/43.1M [00:47&lt;00:05, 748kB/s]
+
+ 91%|██████████████████████████████████▌   | 39.2M/43.1M [00:47&lt;00:05, 727kB/s]
+
+ 91%|██████████████████████████████████▋   | 39.3M/43.1M [00:47&lt;00:05, 691kB/s]
+
+ 91%|██████████████████████████████████▋   | 39.4M/43.1M [00:47&lt;00:05, 635kB/s]
+
+ 92%|██████████████████████████████████▊   | 39.4M/43.1M [00:47&lt;00:05, 628kB/s]
+
+ 92%|██████████████████████████████████▊   | 39.5M/43.1M [00:47&lt;00:07, 465kB/s]
+
+ 92%|██████████████████████████████████▉   | 39.6M/43.1M [00:47&lt;00:05, 590kB/s]
+
+ 92%|███████████████████████████████████   | 39.7M/43.1M [00:48&lt;00:05, 574kB/s]
+
+ 92%|███████████████████████████████████   | 39.8M/43.1M [00:48&lt;00:05, 561kB/s]
+
+ 92%|███████████████████████████████████▏  | 39.8M/43.1M [00:48&lt;00:06, 538kB/s]
+
+ 93%|███████████████████████████████████▏  | 39.9M/43.1M [00:48&lt;00:06, 497kB/s]
+
+ 93%|███████████████████████████████████▏  | 39.9M/43.1M [00:48&lt;00:06, 473kB/s]
+
+ 93%|███████████████████████████████████▎  | 40.0M/43.1M [00:48&lt;00:06, 497kB/s]
+
+ 93%|███████████████████████████████████▎  | 40.1M/43.1M [00:48&lt;00:06, 501kB/s]
+
+ 93%|███████████████████████████████████▍  | 40.1M/43.1M [00:48&lt;00:06, 489kB/s]
+
+ 93%|███████████████████████████████████▍  | 40.2M/43.1M [00:49&lt;00:05, 499kB/s]
+
+ 93%|███████████████████████████████████▍  | 40.2M/43.1M [00:49&lt;00:05, 486kB/s]
+
+ 94%|███████████████████████████████████▌  | 40.3M/43.1M [00:49&lt;00:06, 458kB/s]
+
+ 94%|███████████████████████████████████▌  | 40.4M/43.1M [00:49&lt;00:07, 339kB/s]
+
+ 94%|███████████████████████████████████▋  | 40.5M/43.1M [00:49&lt;00:05, 482kB/s]
+
+ 94%|███████████████████████████████████▊  | 40.6M/43.1M [00:50&lt;00:05, 454kB/s]
+
+ 94%|███████████████████████████████████▊  | 40.6M/43.1M [00:50&lt;00:05, 458kB/s]
+
+ 94%|███████████████████████████████████▉  | 40.7M/43.1M [00:50&lt;00:05, 458kB/s]
+
+ 95%|███████████████████████████████████▉  | 40.7M/43.1M [00:50&lt;00:05, 432kB/s]
+
+ 95%|███████████████████████████████████▉  | 40.8M/43.1M [00:50&lt;00:05, 416kB/s]
+
+ 95%|████████████████████████████████████  | 40.8M/43.1M [00:50&lt;00:04, 452kB/s]
+
+ 95%|████████████████████████████████████  | 40.9M/43.1M [00:50&lt;00:04, 464kB/s]
+
+ 95%|████████████████████████████████████▏ | 41.0M/43.1M [00:50&lt;00:04, 442kB/s]
+
+ 95%|████████████████████████████████████▏ | 41.0M/43.1M [00:50&lt;00:04, 473kB/s]
+
+ 95%|████████████████████████████████████▏ | 41.1M/43.1M [00:51&lt;00:04, 478kB/s]
+
+ 95%|████████████████████████████████████▎ | 41.1M/43.1M [00:51&lt;00:04, 452kB/s]
+
+ 96%|████████████████████████████████████▎ | 41.2M/43.1M [00:51&lt;00:04, 452kB/s]
+
+ 96%|████████████████████████████████████▍ | 41.3M/43.1M [00:51&lt;00:03, 503kB/s]
+
+ 96%|████████████████████████████████████▍ | 41.3M/43.1M [00:51&lt;00:03, 502kB/s]
+
+ 96%|████████████████████████████████████▍ | 41.4M/43.1M [00:51&lt;00:03, 475kB/s]
+
+ 96%|████████████████████████████████████▌ | 41.4M/43.1M [00:51&lt;00:04, 365kB/s]
+
+ 96%|████████████████████████████████████▌ | 41.5M/43.1M [00:52&lt;00:03, 479kB/s]
+
+ 96%|████████████████████████████████████▋ | 41.6M/43.1M [00:52&lt;00:03, 408kB/s]
+
+ 97%|████████████████████████████████████▋ | 41.6M/43.1M [00:52&lt;00:03, 382kB/s]
+
+ 97%|████████████████████████████████████▋ | 41.7M/43.1M [00:52&lt;00:03, 357kB/s]
+
+ 97%|████████████████████████████████████▊ | 41.7M/43.1M [00:52&lt;00:04, 315kB/s]
+
+ 97%|████████████████████████████████████▊ | 41.7M/43.1M [00:52&lt;00:04, 306kB/s]
+
+ 97%|████████████████████████████████████▊ | 41.8M/43.1M [00:53&lt;00:04, 300kB/s]
+
+ 97%|████████████████████████████████████▉ | 41.8M/43.1M [00:53&lt;00:04, 295kB/s]
+
+ 97%|████████████████████████████████████▉ | 41.9M/43.1M [00:53&lt;00:03, 307kB/s]
+
+ 97%|█████████████████████████████████████ | 41.9M/43.1M [00:53&lt;00:03, 299kB/s]
+
+ 98%|█████████████████████████████████████ | 42.0M/43.1M [00:53&lt;00:03, 295kB/s]
+
+ 98%|█████████████████████████████████████ | 42.0M/43.1M [00:53&lt;00:03, 306kB/s]
+
+ 98%|█████████████████████████████████████▏| 42.1M/43.1M [00:54&lt;00:03, 300kB/s]
+
+ 98%|█████████████████████████████████████▏| 42.1M/43.1M [00:54&lt;00:02, 311kB/s]
+
+ 98%|█████████████████████████████████████▏| 42.2M/43.1M [00:54&lt;00:02, 301kB/s]
+
+ 98%|█████████████████████████████████████▎| 42.2M/43.1M [00:54&lt;00:02, 312kB/s]
+
+ 98%|█████████████████████████████████████▎| 42.3M/43.1M [00:54&lt;00:02, 304kB/s]
+
+ 98%|█████████████████████████████████████▎| 42.4M/43.1M [00:54&lt;00:02, 313kB/s]
+
+ 98%|█████████████████████████████████████▍| 42.4M/43.1M [00:55&lt;00:02, 303kB/s]
+
+ 99%|█████████████████████████████████████▍| 42.5M/43.1M [00:55&lt;00:01, 312kB/s]
+
+ 99%|█████████████████████████████████████▌| 42.5M/43.1M [00:55&lt;00:01, 322kB/s]
+
+ 99%|█████████████████████████████████████▌| 42.6M/43.1M [00:55&lt;00:01, 326kB/s]
+
+ 99%|█████████████████████████████████████▌| 42.6M/43.1M [00:55&lt;00:01, 327kB/s]
+
+ 99%|█████████████████████████████████████▋| 42.7M/43.1M [00:55&lt;00:01, 268kB/s]
+
+ 99%|█████████████████████████████████████▋| 42.7M/43.1M [00:56&lt;00:01, 318kB/s]
+
+ 99%|█████████████████████████████████████▋| 42.8M/43.1M [00:56&lt;00:01, 294kB/s]
+
+ 99%|█████████████████████████████████████▊| 42.8M/43.1M [00:56&lt;00:00, 291kB/s]
+
+100%|█████████████████████████████████████▊| 42.9M/43.1M [00:56&lt;00:00, 290kB/s]
+
+100%|█████████████████████████████████████▊| 42.9M/43.1M [00:56&lt;00:00, 288kB/s]
+
+100%|█████████████████████████████████████▉| 43.0M/43.1M [00:56&lt;00:00, 315kB/s]
+
+100%|█████████████████████████████████████▉| 43.0M/43.1M [00:56&lt;00:00, 300kB/s]
+
+100%|█████████████████████████████████████▉| 43.0M/43.1M [00:57&lt;00:00, 287kB/s]
+
+100%|█████████████████████████████████████▉| 43.1M/43.1M [00:57&lt;00:00, 290kB/s]
 
   0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 43.1M/43.1M [00:00&lt;00:00, 164GB/s]
+100%|██████████████████████████████████████| 43.1M/43.1M [00:00&lt;00:00, 177GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
 
-  0%|                                      | 19.5k/44.2M [00:00&lt;03:47, 195kB/s]
+  0%|                                     | 8.19k/44.2M [00:00&lt;15:00, 49.1kB/s]
 
-  0%|                                      | 39.9k/44.2M [00:00&lt;03:40, 201kB/s]
+  0%|                                      | 32.8k/44.2M [00:00&lt;06:55, 106kB/s]
 
-  0%|                                      | 96.3k/44.2M [00:00&lt;02:00, 365kB/s]
+  0%|                                      | 88.1k/44.2M [00:00&lt;03:32, 208kB/s]
 
-  0%|▏                                      | 209k/44.2M [00:00&lt;01:06, 663kB/s]
+  0%|▏                                      | 193k/44.2M [00:00&lt;01:58, 371kB/s]
 
-  1%|▎                                     | 432k/44.2M [00:00&lt;00:35, 1.22MB/s]
+  1%|▎                                      | 409k/44.2M [00:00&lt;01:02, 701kB/s]
 
-  2%|▊                                     | 889k/44.2M [00:00&lt;00:18, 2.35MB/s]
+  2%|▋                                     | 841k/44.2M [00:01&lt;00:32, 1.34MB/s]
 
-  4%|█▌                                   | 1.80M/44.2M [00:00&lt;00:09, 4.54MB/s]
+  4%|█▍                                   | 1.70M/44.2M [00:01&lt;00:16, 2.58MB/s]
 
-  8%|███                                  | 3.62M/44.2M [00:00&lt;00:04, 8.86MB/s]
+  8%|██▊                                  | 3.42M/44.2M [00:01&lt;00:08, 5.02MB/s]
 
- 15%|█████▌                               | 6.72M/44.2M [00:00&lt;00:02, 15.7MB/s]
+ 12%|████▍                                | 5.25M/44.2M [00:01&lt;00:05, 6.65MB/s]
 
- 22%|████████                             | 9.61M/44.2M [00:01&lt;00:01, 19.7MB/s]
+ 17%|██████▏                              | 7.42M/44.2M [00:01&lt;00:04, 8.58MB/s]
 
- 28%|██████████▎                          | 12.3M/44.2M [00:01&lt;00:01, 21.9MB/s]
+ 19%|███████▏                             | 8.60M/44.2M [00:01&lt;00:04, 7.95MB/s]
 
- 34%|████████████▋                        | 15.2M/44.2M [00:01&lt;00:01, 23.9MB/s]
+ 24%|████████▋                            | 10.5M/44.2M [00:02&lt;00:03, 9.03MB/s]
 
- 41%|███████████████                      | 18.1M/44.2M [00:01&lt;00:01, 25.4MB/s]
+ 28%|██████████▍                          | 12.4M/44.2M [00:02&lt;00:03, 9.88MB/s]
 
- 47%|█████████████████▌                   | 20.9M/44.2M [00:01&lt;00:00, 26.3MB/s]
+ 34%|████████████▌                        | 15.0M/44.2M [00:02&lt;00:02, 11.5MB/s]
 
- 54%|███████████████████▉                 | 23.8M/44.2M [00:01&lt;00:00, 27.1MB/s]
+ 39%|██████████████▍                      | 17.3M/44.2M [00:02&lt;00:02, 12.1MB/s]
 
- 60%|██████████████████████▎              | 26.7M/44.2M [00:01&lt;00:00, 27.6MB/s]
+ 42%|███████████████▍                     | 18.5M/44.2M [00:02&lt;00:02, 10.4MB/s]
 
- 67%|████████████████████████▋            | 29.5M/44.2M [00:01&lt;00:00, 27.6MB/s]
+ 47%|█████████████████▎                   | 20.6M/44.2M [00:02&lt;00:02, 11.3MB/s]
 
- 73%|███████████████████████████▏         | 32.5M/44.2M [00:01&lt;00:00, 28.1MB/s]
+ 51%|██████████████████▊                  | 22.5M/44.2M [00:03&lt;00:01, 11.2MB/s]
 
- 80%|█████████████████████████████▌       | 35.4M/44.2M [00:01&lt;00:00, 28.4MB/s]
+ 55%|████████████████████▍                | 24.4M/44.2M [00:03&lt;00:01, 11.2MB/s]
 
- 87%|████████████████████████████████▏    | 38.4M/44.2M [00:02&lt;00:00, 28.6MB/s]
+ 60%|██████████████████████               | 26.3M/44.2M [00:03&lt;00:01, 11.3MB/s]
 
- 94%|██████████████████████████████████▋  | 41.5M/44.2M [00:02&lt;00:00, 29.1MB/s]
+ 64%|███████████████████████▋             | 28.3M/44.2M [00:03&lt;00:01, 11.4MB/s]
+
+ 68%|█████████████████████████▎           | 30.2M/44.2M [00:03&lt;00:01, 11.4MB/s]
+
+ 71%|██████████████████████████▎          | 31.4M/44.2M [00:03&lt;00:01, 9.75MB/s]
+
+ 76%|███████████████████████████▉         | 33.4M/44.2M [00:04&lt;00:01, 10.7MB/s]
+
+ 78%|████████████████████████████▊        | 34.5M/44.2M [00:04&lt;00:01, 9.22MB/s]
+
+ 81%|█████████████████████████████▉       | 35.7M/44.2M [00:04&lt;00:00, 8.67MB/s]
+
+ 83%|██████████████████████████████▊      | 36.8M/44.2M [00:04&lt;00:00, 8.09MB/s]
+
+ 85%|███████████████████████████████▍     | 37.6M/44.2M [00:04&lt;00:00, 7.07MB/s]
+
+ 87%|████████████████████████████████     | 38.3M/44.2M [00:04&lt;00:00, 6.22MB/s]
+
+ 88%|████████████████████████████████▌    | 38.9M/44.2M [00:05&lt;00:00, 5.50MB/s]
+
+ 90%|█████████████████████████████████▏   | 39.6M/44.2M [00:05&lt;00:00, 5.09MB/s]
+
+ 91%|█████████████████████████████████▌   | 40.1M/44.2M [00:05&lt;00:00, 4.40MB/s]
+
+ 92%|██████████████████████████████████▏  | 40.9M/44.2M [00:05&lt;00:00, 4.46MB/s]
+
+ 94%|██████████████████████████████████▋  | 41.4M/44.2M [00:05&lt;00:00, 3.12MB/s]
+
+ 96%|███████████████████████████████████▍ | 42.3M/44.2M [00:06&lt;00:00, 3.67MB/s]
+
+ 97%|███████████████████████████████████▋ | 42.7M/44.2M [00:06&lt;00:00, 3.34MB/s]
+
+ 97%|████████████████████████████████████ | 43.1M/44.2M [00:06&lt;00:00, 3.02MB/s]
+
+ 98%|████████████████████████████████████▎| 43.4M/44.2M [00:06&lt;00:00, 2.81MB/s]
+
+ 99%|████████████████████████████████████▋| 43.8M/44.2M [00:06&lt;00:00, 2.69MB/s]
 
   0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 44.2M/44.2M [00:00&lt;00:00, 148GB/s]
+100%|██████████████████████████████████████| 44.2M/44.2M [00:00&lt;00:00, 142GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
@@ -1256,251 +2005,9 @@ BNCI2014-001-WithinSession:  50%|#####     | 1/2 [04:25&lt;04:25, 265.55s/it]/ho
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
-/home/runner/work/moabb/moabb/moabb/paradigms/base.py:355: RuntimeWarning: Concatenation of Annotations within Epochs is not supported yet. All annotations will be dropped.
-  X = mne.concatenate_epochs(X)
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
-/home/runner/work/moabb/moabb/moabb/pipelines/features.py:160: FutureWarning: The current default of copy=False will change to copy=True in 1.7. Set the value of copy explicitly to avoid this warning
-  return X.get_data()
 
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [08:53&lt;00:00, 267.17s/it]
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [08:53&lt;00:00, 266.93s/it]
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [10:02&lt;00:00, 305.42s/it]
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [10:02&lt;00:00, 301.33s/it]
         dataset     evaluation              pipeline  avg score
 0  BNCI2014-001  WithinSession          Keras_EEGNeX   0.569677
 1  BNCI2014-001  WithinSession  Keras_ShallowConvNet   0.619575
@@ -1566,8 +2073,8 @@ classification</a>.
 IEEE Access, 10, 36672-36685.</p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 8 minutes  55.482 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  901 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 10 minutes  4.263 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  875 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-dl-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/14eea0f23180ed6c51f0ac41b2f0162e/plot_benchmark_DL.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark_DL.py</span></code></a></p>

@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
-    <title>moabb.datasets.Cattan2019_PHMD &#8212; moabb 1.0.0-dev documentation</title>
+    <title>moabb.paradigms.RestingStateToP300Adapter &#8212; moabb 1.0.0-dev documentation</title>
   
   
   
@@ -59,13 +59,13 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.Cattan2019_PHMD';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.paradigms.RestingStateToP300Adapter';</script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.Hinss2021" href="moabb.datasets.Hinss2021.html" />
-    <link rel="prev" title="moabb.datasets.CastillosCVEP100" href="moabb.datasets.CastillosCVEP100.html" />
+    <link rel="next" title="moabb.paradigms.FixedIntervalWindowsProcessing" href="moabb.paradigms.FixedIntervalWindowsProcessing.html" />
+    <link rel="prev" title="moabb.paradigms.FilterBankCVEP" href="moabb.paradigms.FilterBankCVEP.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -445,7 +445,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.Cattan2019_PHMD</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.paradigms.RestingStateToP300Adapter</li>
   </ul>
 </nav>
 </div>
@@ -462,88 +462,76 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-cattan2019-phmd">
-<h1>moabb.datasets.Cattan2019_PHMD<a class="headerlink" href="#moabb-datasets-cattan2019-phmd" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-paradigms-restingstatetop300adapter">
+<h1>moabb.paradigms.RestingStateToP300Adapter<a class="headerlink" href="#moabb-paradigms-restingstatetop300adapter" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.Cattan2019_PHMD">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Cattan2019_PHMD</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/phmd_ml.py#L16-L124"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Cattan2019_PHMD" title="Permalink to this definition">#</a></dt>
-<dd><p>Passive Head Mounted Display with Music Listening dataset.</p>
-<div class="admonition-dataset-summary admonition">
-<p class="admonition-title">Dataset summary</p>
-</div>
-<p>We describe the experimental procedures for a dataset that we have made publicly available
-at <a class="reference external" href="https://doi.org/10.5281/zenodo.2617084">https://doi.org/10.5281/zenodo.2617084</a> in mat (Mathworks, Natick, USA) and csv formats.
-This dataset contains electroencephalographic recordings of 12 subjects listening to music
-with and without a passive head-mounted display, that is, a head-mounted display which does
-not include any electronics at the exception of a smartphone. The electroencephalographic
-headset consisted of 16 electrodes. Data were recorded during a pilot experiment taking
-place in the GIPSA-lab, Grenoble, France, in 2017 (Cattan and al, 2018).
-The ID of this dataset is PHMDML.EEG.2017-GIPSA.</p>
-<p><strong>full description of the experiment</strong>
-<a class="reference external" href="https://hal.archives-ouvertes.fr/hal-02085118">https://hal.archives-ouvertes.fr/hal-02085118</a></p>
-<p><strong>Link to the data</strong>
-<a class="reference external" href="https://doi.org/10.5281/zenodo.2617084">https://doi.org/10.5281/zenodo.2617084</a></p>
-<p><strong>Authors</strong>
-Principal Investigator: Eng. Grégoire Cattan
-Technical Supervisors: Eng. Pedro L. C. Rodrigues
-Scientific Supervisor: Dr. Marco Congedo</p>
-<p><strong>ID of the dataset</strong>
-PHMDML.EEG.2017-GIPSA</p>
-<p class="rubric">Notes</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">Cattan2019_PHMD</span></code> was previously named <code class="docutils literal notranslate"><span class="pre">HeadMountedDisplay</span></code>. <code class="docutils literal notranslate"><span class="pre">HeadMountedDisplay</span></code> will be removed in  version 1.1.</p>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.0.0.</span></p>
-</div>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="rf4e3a2801e75-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<p>G. Cattan, P. L. Coelho Rodrigues, and M. Congedo,
-‘Passive Head-Mounted Display Music-Listening EEG dataset’,
-Gipsa-Lab ; IHMTEK, Research Report 2, Mar. 2019. doi: 10.5281/zenodo.2617084.</p>
-</div>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="moabb.datasets.Cattan2019_PHMD.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/phmd_ml.py#L115-L124"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Cattan2019_PHMD.data_path" title="Permalink to this definition">#</a></dt>
-<dd><p>Get path to local copy of a subject data.</p>
+<dt class="sig sig-object py" id="moabb.paradigms.RestingStateToP300Adapter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.paradigms.</span></span><span class="sig-name descname"><span class="pre">RestingStateToP300Adapter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">35</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/resting_state.py#L17-L90"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.RestingStateToP300Adapter" title="Permalink to this definition">#</a></dt>
+<dd><p>Adapter to the P300 paradigm for resting state experiments.</p>
+<p>It implements a SinglePass processing as for P300, except that:
+- the name of the event is free (it is not enforced to Target/NonTarget as for P300)
+- the default values are different. In particular, the length of the epochs is larger.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of subject to use</p></li>
-<li><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Location of where to look for the data storing location.
-If None, the environment variable or config parameter
-<code class="docutils literal notranslate"><span class="pre">MNE_DATASETS_(dataset)_PATH</span></code> is used. If it doesn’t exist, the
-“~/mne_data” directory is used. If the dataset
-is not found under the given path, the data
-will be automatically downloaded to the specified folder.</p></li>
-<li><p><strong>force_update</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Force update of the dataset even if a local copy exists.</p></li>
-<li><p><strong>update_path</strong> (bool | None <strong>Deprecated</strong>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python
-config to the given path. If None, the user is prompted.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level
-(see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
+<li><p><strong>fmin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> (</em><em>default 1</em><em>)</em>) – cutoff frequency (Hz) for the high pass filter</p></li>
+<li><p><strong>fmax</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> (</em><em>default 35</em><em>)</em>) – cutoff frequency (Hz) for the low pass filter</p></li>
+<li><p><strong>events</strong> (<em>List</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em><em> (</em><em>default None</em><em>)</em>) – event to use for epoching. If None, default to all events defined in
+the dataset.</p></li>
+<li><p><strong>tmin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> (</em><em>default 10s</em><em>)</em>) – Start time (in second) of the epoch, relative to the dataset specific
+task interval e.g. tmin = 1 would mean the epoch will start 1 second
+after the beginning of the task as defined by the dataset.</p></li>
+<li><p><strong>tmax</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><em>None</em><em>, </em><em>(</em><em>default 50s</em><em>)</em>) – End time (in second) of the epoch, relative to the beginning of the
+dataset specific task interval. tmax = 5 would mean the epoch will end
+5 second after the beginning of the task as defined in the dataset. If
+None, use the dataset value.</p></li>
+<li><p><strong>resample</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> | </em><em>None</em><em> (</em><em>default 128</em><em>)</em>) – If not None, resample the eeg data with the sampling rate provided.</p></li>
+<li><p><strong>baseline</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>length 2</em>) – The time interval to consider as “baseline” when applying baseline
+correction. If None, do not apply baseline correction.
+If a tuple (a, b), the interval is between a and b (in seconds),
+including the endpoints.
+Correction is applied by computing the mean of the baseline period
+and subtracting it from the data (see mne.Epochs)</p></li>
+<li><p><strong>channels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em><em> (</em><em>default None</em><em>)</em>) – list of channel to select. If None, use all EEG channels available in
+the dataset.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>path</strong> – Local path to the given data file. This path is contained inside a
-list of length one, for compatibility.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.paradigms.RestingStateToP300Adapter.is_valid">
+<span class="sig-name descname"><span class="pre">is_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/paradigms/resting_state.py#L71-L80"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.paradigms.RestingStateToP300Adapter.is_valid" title="Permalink to this definition">#</a></dt>
+<dd><p>Verify the dataset is compatible with the paradigm.</p>
+<p>This method is called to verify dataset is compatible with the
+paradigm.</p>
+<p>This method should raise an error if the dataset is not compatible
+with the paradigm. This is for example the case if the
+dataset is an ERP dataset for motor imagery paradigm, or if the
+dataset does not contain any of the required events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dataset</strong> (<em>dataset instance</em>) – The dataset to verify.</p>
 </dd>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="moabb.paradigms.RestingStateToP300Adapter.scoring">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scoring</span></span><a class="headerlink" href="#moabb.paradigms.RestingStateToP300Adapter.scoring" title="Permalink to this definition">#</a></dt>
+<dd><p>Property that defines scoring metric (e.g. ROC-AUC or accuracy
+or f-score), given as a sklearn-compatible string or a compatible
+sklearn scorer.</p>
 </dd></dl>
 
-<section id="examples-using-moabb-datasets-cattan2019-phmd">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.Cattan2019_PHMD</span></code><a class="headerlink" href="#examples-using-moabb-datasets-cattan2019-phmd" title="Permalink to this heading">#</a></h2>
+</dd></dl>
+
+<section id="examples-using-moabb-paradigms-restingstatetop300adapter">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">moabb.paradigms.RestingStateToP300Adapter</span></code><a class="headerlink" href="#examples-using-moabb-paradigms-restingstatetop300adapter" title="Permalink to this heading">#</a></h2>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to perform spectral analysis on epochs extracted from a specific ..."><img alt="Spectral analysis of the trials" src="../_images/sphx_glr_noplot_phmd_ml_spectrum_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/noplot_phmd_ml_spectrum.html#sphx-glr-auto-examples-noplot-phmd-ml-spectrum-py"><span class="std std-ref">Spectral analysis of the trials</span></a></p>
   <div class="sphx-glr-thumbnail-title">Spectral analysis of the trials</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use the Hinss2021 dataset with the resting state paradigm."><img alt="Hinss2021 classification example" src="../_images/sphx_glr_plot_Hinss2021_classification_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/plot_Hinss2021_classification.html#sphx-glr-auto-examples-plot-hinss2021-classification-py"><span class="std std-ref">Hinss2021 classification example</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Hinss2021 classification example</div>
 </div></div><div style='clear:both'></div></section>
 </section>
 
@@ -559,20 +547,20 @@ list of length one, for compatibility.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.CastillosCVEP100.html"
+       href="moabb.paradigms.FilterBankCVEP.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.CastillosCVEP100</p>
+        <p class="prev-next-title">moabb.paradigms.FilterBankCVEP</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.Hinss2021.html"
+       href="moabb.paradigms.FixedIntervalWindowsProcessing.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.Hinss2021</p>
+        <p class="prev-next-title">moabb.paradigms.FixedIntervalWindowsProcessing</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -594,11 +582,12 @@ list of length one, for compatibility.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.Cattan2019_PHMD"><code class="docutils literal notranslate"><span class="pre">Cattan2019_PHMD</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.Cattan2019_PHMD.data_path"><code class="docutils literal notranslate"><span class="pre">Cattan2019_PHMD.data_path()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.paradigms.RestingStateToP300Adapter"><code class="docutils literal notranslate"><span class="pre">RestingStateToP300Adapter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.paradigms.RestingStateToP300Adapter.is_valid"><code class="docutils literal notranslate"><span class="pre">RestingStateToP300Adapter.is_valid()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.paradigms.RestingStateToP300Adapter.scoring"><code class="docutils literal notranslate"><span class="pre">RestingStateToP300Adapter.scoring</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-moabb-datasets-cattan2019-phmd">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.datasets.Cattan2019_PHMD</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-moabb-paradigms-restingstatetop300adapter">Examples using <code class="docutils literal notranslate"><span class="pre">moabb.paradigms.RestingStateToP300Adapter</span></code></a></li>
 </ul>
   </nav></div>
 
