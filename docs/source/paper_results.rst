@@ -6,7 +6,7 @@
    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
-   <div style="font-size: 1.5em;">
+   <div style="font-size: 1em;">
 
 .. currentmodule:: moabb.datasets
 
