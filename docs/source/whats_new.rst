@@ -48,6 +48,7 @@ Bugs
 - MAINT updating the packages pre-release (:gh:`578` by `Bruno Aristimunha`_)
 - Updating the parameters of the SSVEP_TRCA method (:gh:`589` by `Bruno Aristimunha`_)
 - Fix and updating the parameters for the benchmark function (:gh:`588` by `Bruno Aristimunha`_)
+- Fix result table display (:gh:`599` by `Sylvain Chevallier`_)
 
 
 API changes
