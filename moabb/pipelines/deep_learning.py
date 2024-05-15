@@ -98,6 +98,7 @@ class KerasShallowConvNet(KerasClassifier):
         history_plot=False,
         path=None,
         learning_rate=0.001,
+        drop_rate=0.5,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -114,6 +115,7 @@ class KerasShallowConvNet(KerasClassifier):
         self.validation_split = validation_split
         self.history_plot = history_plot
         self.path = path
+        self.drop_rate = drop_rate
 
     def _keras_build_fn(self, compile_kwargs: Dict[str, Any]):
         input_main = Input(shape=(self.X_shape_[1], self.X_shape_[2], 1))
@@ -133,7 +135,7 @@ class KerasShallowConvNet(KerasClassifier):
         block1 = Activation(square)(block1)
         block1 = AveragePooling2D(pool_size=(1, 75), strides=(1, 15))(block1)
         block1 = Activation(log)(block1)
-        block1 = Dropout(0.5)(block1)
+        block1 = Dropout(self.drop_rate)(block1)
         flatten = Flatten()(block1)
         dense = Dense(self.n_classes_, kernel_constraint=max_norm(0.5))(flatten)
         softmax = Activation("softmax")(dense)
@@ -184,6 +186,7 @@ class KerasDeepConvNet(KerasClassifier):
         history_plot=False,
         path=None,
         learning_rate=0.0009,
+        drop_rate=0.5,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -200,6 +203,7 @@ class KerasDeepConvNet(KerasClassifier):
         self.validation_split = validation_split
         self.history_plot = history_plot
         self.path = path
+        self.drop_rate = drop_rate
 
     def _keras_build_fn(self, compile_kwargs: Dict[str, Any]):
         input_main = Input(shape=(self.X_shape_[1], self.X_shape_[2], 1))
@@ -217,7 +221,7 @@ class KerasDeepConvNet(KerasClassifier):
         block1 = BatchNormalization(epsilon=1e-05, momentum=0.9)(block1)
         block1 = Activation("elu")(block1)
         block1 = MaxPooling2D(pool_size=(1, 3), strides=(1, 3))(block1)
-        block1 = Dropout(0.5)(block1)
+        block1 = Dropout(self.drop_rate)(block1)
 
         block2 = Conv2D(50, (1, 10), kernel_constraint=max_norm(2.0, axis=(0, 1, 2)))(
             block1
@@ -233,7 +237,7 @@ class KerasDeepConvNet(KerasClassifier):
         block3 = BatchNormalization(epsilon=1e-05, momentum=0.9)(block3)
         block3 = Activation("elu")(block3)
         block3 = MaxPooling2D(pool_size=(1, 3), strides=(1, 3))(block3)
-        block3 = Dropout(0.5)(block3)
+        block3 = Dropout(self.drop_rate)(block3)
 
         block4 = Conv2D(200, (1, 10), kernel_constraint=max_norm(2.0, axis=(0, 1, 2)))(
             block3
@@ -241,7 +245,7 @@ class KerasDeepConvNet(KerasClassifier):
         block4 = BatchNormalization(epsilon=1e-05, momentum=0.9)(block4)
         block4 = Activation("elu")(block4)
         block4 = MaxPooling2D(pool_size=(1, 3), strides=(1, 3))(block4)
-        block4 = Dropout(0.5)(block4)
+        block4 = Dropout(self.drop_rate)(block4)
 
         flatten = Flatten()(block4)
 
@@ -293,6 +297,7 @@ class KerasEEGNet_8_2(KerasClassifier):
         history_plot=False,
         path=None,
         learning_rate=0.0009,
+        drop_rate=0.5,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -309,13 +314,14 @@ class KerasEEGNet_8_2(KerasClassifier):
         self.validation_split = validation_split
         self.history_plot = history_plot
         self.path = path
+        self.drop_rate = drop_rate
 
     def _keras_build_fn(self, compile_kwargs: Dict[str, Any]):
         # Parameter of the Article
         F1 = 8
         kernLength = 64
         D = 2
-        dropout = 0.5
+        dropout = self.drop_rate
 
         # Architecture
         # Input
@@ -380,6 +386,7 @@ class KerasEEGTCNet(KerasClassifier):
         history_plot=False,
         path=None,
         learning_rate=0.0009,
+        drop_rate=0.5,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -396,13 +403,14 @@ class KerasEEGTCNet(KerasClassifier):
         self.validation_split = validation_split
         self.history_plot = history_plot
         self.path = path
+        self.drop_rate = drop_rate
 
     def _keras_build_fn(self, compile_kwargs: Dict[str, Any]):
         # Parameter of the Article
         F1 = 8
         kernLength = 64
         D = 2
-        dropout = 0.5
+        dropout = self.drop_rate
         F2 = F1 * D
 
         # Architecture
@@ -474,6 +482,7 @@ class KerasEEGNeX(KerasClassifier):
         history_plot=False,
         path=None,
         learning_rate=0.0009,
+        drop_rate=0.5,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -491,6 +500,7 @@ class KerasEEGNeX(KerasClassifier):
         self.validation_split = validation_split
         self.history_plot = history_plot
         self.path = path
+        self.drop_rate = drop_rate
 
     def _keras_build_fn(self, compile_kwargs: Dict[str, Any]):
         # Architecture
@@ -535,7 +545,7 @@ class KerasEEGNeX(KerasClassifier):
         model.add(
             AvgPool2D(pool_size=(1, 4), padding="same", data_format="channels_last")
         )
-        model.add(Dropout(0.5))
+        model.add(Dropout(self.drop_rate))
 
         model.add(
             Conv2D(
@@ -563,7 +573,7 @@ class KerasEEGNeX(KerasClassifier):
 
         model.add(LayerNormalization())
         model.add(Activation(activation="elu"))
-        model.add(Dropout(0.5))
+        model.add(Dropout(self.drop_rate))
 
         model.add(Flatten())
         # Classification Block
@@ -618,6 +628,7 @@ class KerasEEGITNet(KerasClassifier):
         history_plot=False,
         path=None,
         learning_rate=0.0009,
+        drop_rate=0.4,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -634,6 +645,7 @@ class KerasEEGITNet(KerasClassifier):
         self.validation_split = validation_split
         self.history_plot = history_plot
         self.path = path
+        self.drop_rate = drop_rate
 
     def _keras_build_fn(self, compile_kwargs: Dict[str, Any]):
         input_main = Input(shape=(self.X_shape_[1], self.X_shape_[2], 1))
@@ -730,7 +742,7 @@ class KerasEEGITNet(KerasClassifier):
         )(block)
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
-        block = Dropout(0.4)(block)
+        block = Dropout(self.drop_rate)(block)
         block_out = Add()([block_in, block])
 
         paddings = tf.constant([[0, 0], [0, 0], [6, 0], [0, 0]])
@@ -740,14 +752,14 @@ class KerasEEGITNet(KerasClassifier):
         )(block)
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
-        block = Dropout(0.4)(block)
+        block = Dropout(self.drop_rate)(block)
         block = tf.pad(block, paddings, "CONSTANT")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 2)
         )(block)
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
-        block = Dropout(0.4)(block)
+        block = Dropout(self.drop_rate)(block)
         block_out = Add()([block_out, block])
 
         paddings = tf.constant([[0, 0], [0, 0], [12, 0], [0, 0]])
@@ -757,14 +769,14 @@ class KerasEEGITNet(KerasClassifier):
         )(block)
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
-        block = Dropout(0.4)(block)
+        block = Dropout(self.drop_rate)(block)
         block = tf.pad(block, paddings, "CONSTANT")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 4)
         )(block)
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
-        block = Dropout(0.4)(block)
+        block = Dropout(self.drop_rate)(block)
         block_out = Add()([block_out, block])
 
         paddings = tf.constant([[0, 0], [0, 0], [24, 0], [0, 0]])
@@ -774,14 +786,14 @@ class KerasEEGITNet(KerasClassifier):
         )(block)
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
-        block = Dropout(0.4)(block)
+        block = Dropout(self.drop_rate)(block)
         block = tf.pad(block, paddings, "CONSTANT")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 8)
         )(block)
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
-        block = Dropout(0.4)(block)
+        block = Dropout(self.drop_rate)(block)
         block_out = Add()([block_out, block])
 
         # ================================
@@ -794,7 +806,7 @@ class KerasEEGITNet(KerasClassifier):
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
         block = AveragePooling2D((4, 1), padding="same")(block)
-        block = Dropout(0.4)(block)
+        block = Dropout(self.drop_rate)(block)
         embedded = Flatten()(block)
 
         dense = Dense(self.n_classes_, kernel_constraint=max_norm(0.5))(embedded)
