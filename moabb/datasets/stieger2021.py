@@ -16,6 +16,77 @@ BASE_URL = "https://ndownloader.figshare.com/files/"
 
 
 class Stieger2021(BaseDataset):
+    """Motor Imagery dataset from Stieger et al. 2021.
+
+    .. admonition:: Dataset summary
+
+
+        ============= ======= ======= ========== ================= ============ =============== ===========
+        Name          #Subj   #Chan   #Classes   #Trials / class   Trials len   Sampling rate   #Sessions
+        ============= ======= ======= ========== ================= ============ =============== ===========
+        Stieger2021   62      64      4          -                 3s           1000Hz          10
+        ============= ======= ======= ========== ================= ============ =============== ===========
+
+    The main goals of our original study were to characterize how individuals
+    learn to control SMR-BCIs and to test whether this learning can be improved
+    through behavioral interventions such as mindfulness training30. Participants
+    were initially assessed for baseline BCI proficiency and then randomly
+    assigned to an 8-week mindfulness intervention (Mindfulness-based stress
+    reduction), or waitlist control condition where participants waited for
+    the same duration as the MBSR class before starting BCI training, but
+    were offered a comparable MBSR course after completing all experimental
+    requirements46. Following the 8-weeks, participants returned to the lab
+    for 6–10 sessions of BCI training.
+
+    All experiments were approved by the institutional review boards of the
+    University of Minnesota and Carnegie Mellon University. Informed consents
+    were obtained from all subjects. In total, 144 participants were enrolled
+    in the study and 76 participants completed all experimental requirements.
+    Seventy-two participants were assigned to each intervention by block
+    randomization, with 42 participants completing all sessions in the
+    experimental group (MBSR before BCI training; MBSR subjects) and 34
+    completing experimentation in the control group. Four subjects were
+    excluded from the analysis due to non-compliance with the task demands and
+    one was excluded due to experimenter error. We were primarily interested
+    in how individuals learn to control BCIs, therefore analysis focused on
+    those that did not demonstrate ceiling performance in the baseline BCI
+    assessment (accuracy above 90% in 1D control). The dataset descriptor
+    presented here describes data collected from 62 participants:
+    33 MBSR participants (Age=42+/−15, (F)emale=26) and 29 controls
+    (Age=36+/−13, F=23). In the United States, women are twice as likely to
+    practice meditation compared to men47,48. Therefore, the gender
+    imbalance in our study may result from a greater likelihood of
+    women to respond to flyers offering a meditation class in exchange
+    for participating in our study.
+
+    For all BCI sessions, participants were seated comfortably in a chair and
+    faced a computer monitor that was placed approximately 65cm in front of them.
+    After the EEG capping procedure (see data acquisition), the BCI tasks began.
+    Before each task, participants received the appropriate instructions. During
+    the BCI tasks, users attempted to steer a virtual cursor from the center of
+    the screen out to one of four targets. Participants initially received the
+    following instructions: “Imagine your left (right) hand opening and closing
+    to move the cursor left (right). Imagine both hands opening and closing to
+    move the cursor up. Finally, to move the cursor down, voluntarily rest; in
+    other words, clear your mind.” In separate blocks of trials, participants
+    directed the cursor toward a target that required left/right (LR) movement
+    only, up/down (UD) only, and combined 2D movement (2D)30. Each experimental
+    block (LR, UD, 2D) consisted of 3 runs, where each run was composed of 25
+    trials. After the first three blocks, participants were given a short break
+    (5–10 minutes) that required rating comics by preference. The break task was
+    chosen to standardize subject experience over the break interval. Following
+    the break, participants competed the same 3 blocks as before. In total,
+    each session consisted of 2 blocks of each task (6 runs total of LR, UD,
+    and 2D control), which culminated in 450 trials performed each day.
+
+    References
+    ----------
+
+    .. [1] Stieger, J. R., Engel, S. A., & He, B. (2021).
+           Continuous sensorimotor rhythm based brain computer interface
+           learning in a large population. Scientific Data, 8(1), 98.
+           https://doi.org/10.1038/s41597-021-00883-1
+    """
 
     def __init__(self, interval=[0, 3], sessions=None):
         super().__init__(
