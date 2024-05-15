@@ -104,12 +104,6 @@ class Stieger2021(BaseDataset):
 
         assert interval[0] >= 0.00  # the interval has to start after the cue onset
 
-    def preprocess(self, raw):
-        # interpolate channels marked as bad
-        if len(raw.info["bads"]) > 0:
-            raw.interpolate_bads()
-        return super().preprocess(raw)
-
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
@@ -224,9 +218,9 @@ class Stieger2021(BaseDataset):
 
             if len(raw.info["bads"]) > 0:
                 log.info(
-                    f'Record {subject}/{session} (subject/session): bad channels that will be interpolated: {raw.info["bads"]}'
+                    f"Record {subject}/{session} (subject/session): "
+                    f'bad channels that need to be interpolated: {raw.info["bads"]}'
                 )
 
-            # subject_data[session] = {"run_0": self._common_prep(raw)}\
-            subject_data[session] = {"run_0": self.preprocess(raw)}
+            subject_data[session] = {"run_0": raw}
         return subject_data
