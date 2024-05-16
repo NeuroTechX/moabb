@@ -1,7 +1,7 @@
-import sys
 import csv
 import json
 import pathlib
+import sys
 
 
 def csv2json(source_file, output_file):
