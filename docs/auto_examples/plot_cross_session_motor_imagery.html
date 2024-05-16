@@ -770,7 +770,7 @@ be overwritten if necessary.</p>
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.44s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
+BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.21s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -819,14 +819,14 @@ BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.44s/it]/home
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.32s/it]
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.34s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.13s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.15s/it]
       score      time  samples  ... n_sessions       dataset  pipeline
-0  0.950424  0.213803    144.0  ...          2  BNCI2014-001     RG+LR
-1  0.963156  0.209719    144.0  ...          2  BNCI2014-001     RG+LR
-2  0.574460  0.212486    144.0  ...          2  BNCI2014-001     RG+LR
-3  0.585648  0.214006    144.0  ...          2  BNCI2014-001     RG+LR
-4  0.931713  0.439472    144.0  ...          2  BNCI2014-001   CSP+LDA
+0  0.950424  0.214249    144.0  ...          2  BNCI2014-001     RG+LR
+1  0.963156  0.211388    144.0  ...          2  BNCI2014-001     RG+LR
+2  0.574460  0.215684    144.0  ...          2  BNCI2014-001     RG+LR
+3  0.585648  0.216470    144.0  ...          2  BNCI2014-001     RG+LR
+4  0.931713  0.383782    144.0  ...          2  BNCI2014-001   CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -839,7 +839,7 @@ performance of each pipeline across session and subjects.
 The second plot is a paired scatter plot. Each point representing the score
 of a single session. An algorithm will outperform another is most of the
 points are in its quadrant.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">axes</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
@@ -868,8 +868,8 @@ points are in its quadrant.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" srcset="../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" alt="plot cross session motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.604 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  303 MB</p>
+<img src="../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" srcset="../_images/sphx_glr_plot_cross_session_motor_imagery_001.png" alt="plot cross session motor imagery" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.264 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  263 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-session-motor-imagery-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/82e3e6cb009bb9a9c444c6cff254cea8/plot_cross_session_motor_imagery.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_session_motor_imagery.py</span></code></a></p>
