@@ -85,7 +85,7 @@ class Rodrigues2017(BaseDataset):
         super().__init__(
             subjects=subject_list,
             sessions_per_subject=1,
-            events=dict(on=1, off=2),
+            events=dict(closed=1, open=2),
             code="Rodrigues2017", 
             interval=[0, 10],
             paradigm="rstate",
@@ -104,7 +104,6 @@ class Rodrigues2017(BaseDataset):
         stim_close = data['SIGNAL'][:, 17]
         stim_open = data['SIGNAL'][:, 18]
         stim = 1 * stim_close + 2 * stim_open
-
         chnames = [
             'Fp1',
             'Fp2',
