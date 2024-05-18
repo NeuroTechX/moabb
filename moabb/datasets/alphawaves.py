@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import mne
+import os
 import numpy as np
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -10,7 +11,7 @@ from scipy.io import loadmat
 ALPHAWAVES_URL = 'https://zenodo.org/record/2348892/files/'
 
 
-class Rodrigues2018(BaseDataset):
+class Rodrigues2017(BaseDataset):
     '''Alphawaves dataset
     
     .. admonition:: Dataset summary
@@ -19,7 +20,7 @@ class Rodrigues2018(BaseDataset):
         ==============  =======  =======  ==========  =================  ============  ===============  ===========
         Name              #Subj    #Chan    #Classes    #Blocks/class     Trials len    Sampling rate    #Sessions
         =============== =======  =======  ==========  =================  ============  ===============  ===========
-        Rodrigues2018        20       16           2                 5    10s            512Hz                   1
+        Rodrigues2017        20       16           2                 5    10s            512Hz                   1
         =============== =======  =======  ==========  =================  ============  ===============  ===========
 
 
@@ -85,7 +86,7 @@ class Rodrigues2018(BaseDataset):
             subjects=subject_list,
             sessions_per_subject=1,
             events=dict(on=1, off=2),
-            code="Rodrigues2018", 
+            code="Rodrigues2017", 
             interval=[0, 10],
             paradigm="rstate",
             doi="https://doi.org/10.5281/zenodo.2348892",
@@ -94,8 +95,10 @@ class Rodrigues2018(BaseDataset):
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
 
-        filepath = self.data_path(subject)[0]
-        data = loadmat(filepath)
+        dirpath = self.data_path(subject)[0]
+        filepath = os.listdir(dirpath)[0]
+
+        data = loadmat(os.path.join(dirpath, filepath))
 
         S = data['SIGNAL'][:, 1:17]
         stim_close = data['SIGNAL'][:, 17]
@@ -128,7 +131,7 @@ class Rodrigues2018(BaseDataset):
                                verbose=False)
         raw = mne.io.RawArray(data=X, info=info, verbose=False)
 
-        return raw
+        return {"0": {"0": raw}}
 
     def data_path(self, subject, path=None, force_update=False,
                   update_path=None, verbose=None):
