@@ -130,9 +130,16 @@ class AlphaWaves(BaseDataset):
     '''
 
     def __init__(self):
-
         subject_list = list(range(1, 6+1)) + list(range(8, 20+1))
-        self.subject_list = subject_list
+        super().__init__(
+            subjects=subject_list,
+            sessions_per_subject=1,
+            events=dict(on=1, off=2),
+            code="Alphawaves", 
+            interval=[0, 10],
+            paradigm="rstate",
+            doi="https://doi.org/10.5281/zenodo.2348892",
+        )
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
