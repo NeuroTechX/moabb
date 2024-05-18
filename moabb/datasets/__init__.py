@@ -11,6 +11,7 @@ from . import compound_dataset
 
 # flake8: noqa
 from .alex_mi import AlexMI
+from .alphawaves import Rodrigues2018
 from .bbci_eeg_fnirs import Shin2017A, Shin2017B
 
 # Depreciated datasets (will be removed in the future):
