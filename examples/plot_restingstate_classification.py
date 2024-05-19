@@ -26,9 +26,7 @@ from sklearn.pipeline import make_pipeline
 
 import moabb.analysis.plotting as moabb_plt
 from moabb import set_log_level
-from moabb.analysis.meta_analysis import (  # noqa: E501
-    compute_dataset_statistics,
-)
+from moabb.analysis.meta_analysis import compute_dataset_statistics  # noqa: E501
 from moabb.datasets import Cattan2019_PHMD, Hinss2021, Rodrigues2017
 from moabb.evaluations import CrossSessionEvaluation
 from moabb.evaluations.evaluations import WithinSessionEvaluation
