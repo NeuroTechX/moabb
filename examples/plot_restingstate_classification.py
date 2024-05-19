@@ -59,7 +59,7 @@ for dataset in datasets:
 # Here we define the mne events for the RestingState paradigm.
 events_cattan = dict(on=1, off=2)
 events_hinss = dict(easy=2, diff=3)
-events_rodrigues = dict(closed=1, off=2)
+events_rodrigues = dict(closed=1, open=2)
 
 # Create a paradigm by dataset as the events and lenght of epochs are different.
 paradigm_cattan = RestingStateToP300Adapter(events=events_cattan, tmin=10, tmax=50)
@@ -105,7 +105,7 @@ evaluation_hinss = CrossSessionEvaluation(
     )
 results_hinss = evaluation_hinss.process(pipelines)
 
-evaluation_rodrigues = CrossSessionEvaluation(
+evaluation_rodrigues = WithinSessionEvaluation(
         paradigm=paradigm_rodrigues,
         datasets=[datasets[2]],
         overwrite=False,
