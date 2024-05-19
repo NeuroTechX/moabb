@@ -64,7 +64,7 @@ events_cattan = dict(on=1, off=2)
 events_hinss = dict(easy=2, diff=3)
 events_rodrigues = dict(closed=1, open=2)
 
-# Create a paradigm by dataset as the events and lenght of epochs are different.
+# Create a paradigm by dataset as the events and length of epochs are different.
 paradigm_cattan = RestingStateToP300Adapter(events=events_cattan, tmin=10, tmax=50)
 paradigm_hinss = RestingStateToP300Adapter(events=events_hinss, tmin=0, tmax=0.5)
 paradigm_rodrigues = RestingStateToP300Adapter(events=events_rodrigues, tmin=0, tmax=10)
