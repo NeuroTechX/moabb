@@ -14,30 +14,25 @@ are plot by pipeline and dataset.
 
 # License: BSD (3-clause)
 
-import warnings
 
-from moabb.evaluations.evaluations import WithinSessionEvaluation
-import numpy as np
-import seaborn as sns
 import pandas as pd
 from matplotlib import pyplot as plt
+from pyriemann.classification import MDM
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import Xdawn
 from pyriemann.tangentspace import TangentSpace
-from pyriemann.classification import MDM
-from sklearn.base import TransformerMixin
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 
+import moabb.analysis.plotting as moabb_plt
 from moabb import set_log_level
-from moabb.datasets import Cattan2019_PHMD, Hinss2021, Rodrigues2017
-from moabb.evaluations import CrossSessionEvaluation
-from moabb.paradigms import RestingStateToP300Adapter
 from moabb.analysis.meta_analysis import (  # noqa: E501
     compute_dataset_statistics,
-    find_significant_differences,
 )
-import moabb.analysis.plotting as moabb_plt
+from moabb.datasets import Cattan2019_PHMD, Hinss2021, Rodrigues2017
+from moabb.evaluations import CrossSessionEvaluation
+from moabb.evaluations.evaluations import WithinSessionEvaluation
+from moabb.paradigms import RestingStateToP300Adapter
 
 
 # Suppressing future and runtime warnings for cleaner output
@@ -89,9 +84,7 @@ pipelines["Xdawn+Cov+TS+LDA"] = make_pipeline(
     Xdawn(nfilter=4), Covariances(estimator="lwf"), TangentSpace(), LDA()
 )
 
-pipelines["Cov+MDM"] = make_pipeline(
-    Covariances(estimator="lwf"), MDM()
-)
+pipelines["Cov+MDM"] = make_pipeline(Covariances(estimator="lwf"), MDM())
 
 ##############################################################################
 # Run evaluation
@@ -101,28 +94,28 @@ pipelines["Cov+MDM"] = make_pipeline(
 # (the evaluation method is different depending on the dataset)
 
 evaluation_cattan = WithinSessionEvaluation(
-        paradigm=paradigm_cattan,
-        datasets=[datasets[0]],
-        n_jobs=-1,
-        overwrite=False,
-    )
+    paradigm=paradigm_cattan,
+    datasets=[datasets[0]],
+    n_jobs=-1,
+    overwrite=False,
+)
 results_cattan = evaluation_cattan.process(pipelines)
 
 evaluation_hinss = CrossSessionEvaluation(
-        paradigm=paradigm_hinss,
-        datasets=[datasets[1]],
-        n_jobs=-1,
-        overwrite=False,
-    )
+    paradigm=paradigm_hinss,
+    datasets=[datasets[1]],
+    n_jobs=-1,
+    overwrite=False,
+)
 results_hinss = evaluation_hinss.process(pipelines)
 
 evaluation_rodrigues = WithinSessionEvaluation(
-        paradigm=paradigm_rodrigues,
-        datasets=[datasets[2]],
-        n_jobs=-1,
-        overwrite=False,
-    )
-results_rodrigues= evaluation_rodrigues.process(pipelines)
+    paradigm=paradigm_rodrigues,
+    datasets=[datasets[2]],
+    n_jobs=-1,
+    overwrite=False,
+)
+results_rodrigues = evaluation_rodrigues.process(pipelines)
 
 # Display results by pipeline and dataset
 results = pd.concat([results_cattan, results_hinss, results_rodrigues], ignore_index=True)
@@ -142,7 +135,5 @@ print(results.groupby(["pipeline", "dataset"]).mean("score")[["score", "time"]])
 stats = compute_dataset_statistics(results)
 stats.fillna(0, inplace=True)
 print(stats)
-moabb_plt.meta_analysis_plot(
-                stats, "Xdawn+Cov+TS+LDA", "Cov+MDM"
-            )
+moabb_plt.meta_analysis_plot(stats, "Xdawn+Cov+TS+LDA", "Cov+MDM")
 plt.show()

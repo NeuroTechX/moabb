@@ -18,7 +18,7 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 
-from moabb.datasets import Cattan2019_PHMD, Rodrigues2017
+from moabb.datasets import Rodrigues2017
 from moabb.paradigms import RestingStateToP300Adapter
 
 
