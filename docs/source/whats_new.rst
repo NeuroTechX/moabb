@@ -34,6 +34,7 @@ Enhancements
 - Add SSVEP and ERP paradigms to DL pipelines (:gh:`590` by `Pierre Guetschel`_)
 - Allow to pass a single pipeline file to ``benchmark`` (:gh:`591` by `Pierre Guetschel`_)
 - Adding new dataset :class:`moabb.datasets.Stieger2021` (:gh:`601` by `Bruno Aristimunha`_)
+- Exposing the `drop_rate` for all the deep learning parameters (:gh:`592` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
