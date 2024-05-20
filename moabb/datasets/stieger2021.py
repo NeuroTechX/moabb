@@ -24,7 +24,7 @@ class Stieger2021(BaseDataset):
         ============= ======= ======= ========== ================= ============ =============== ===========
         Name          #Subj   #Chan   #Classes   #Trials / class   Trials len   Sampling rate   #Sessions
         ============= ======= ======= ========== ================= ============ =============== ===========
-        Stieger2021   62      64      4          -                 3s           1000Hz          10
+        Stieger2021   62      64      4          450               3s           1000Hz          10
         ============= ======= ======= ========== ================= ============ =============== ===========
 
     The main goals of our original study were to characterize how individuals
