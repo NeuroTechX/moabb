@@ -30,7 +30,6 @@ Motor Imagery Datasets
     Shin2017B
     Weibo2014
     Zhou2016
-    Stieger2021
 
 
 ------------
