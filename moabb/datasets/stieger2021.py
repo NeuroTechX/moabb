@@ -9,6 +9,7 @@ from scipy.io import loadmat
 import moabb.datasets.download as dl
 
 from .base import BaseDataset
+from .download import get_dataset_path
 
 
 log = logging.getLogger(__name__)
@@ -108,29 +109,33 @@ class Stieger2021(BaseDataset):
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
-            raise (ValueError("Invalid subject number"))
+            raise ValueError(
+                f"Invalid subject number, must be in the range {self.subject_list}"
+            )
 
-        key_dest = f"MNE-{self.code:s}-data"
-        path = os.path.join(dl.get_dataset_path(self.code, path), key_dest)
+        path = get_dataset_path(self.code, path)
+        basepath = os.path.join(path, f"MNE-{self.code:s}-data")
 
-        filelist = dl.fs_get_file_list(self.figshare_id)
-        reg = dl.fs_get_file_hash(filelist)
-        fsn = dl.fs_get_file_id(filelist)
+        file_list = dl.fs_get_file_list(self.figshare_id)
+        hash_file_list = dl.fs_get_file_hash(file_list)
+        id_file_list = dl.fs_get_file_id(file_list)
 
         spath = []
-        for f in fsn.keys():
-            if ".mat" not in f:
+        for file_name in id_file_list.keys():
+            if ".mat" not in file_name:
                 continue
-            sbj = int(f.split("_")[0][1:])
-            ses = int(f.split("_")[-1].split(".")[0])
-            if sbj == subject and ses in self.sessions:
-                fpath = os.path.join(path, f)
+            # Parse session and subject from the  file name
+            sub = int(file_name.split("_")[0][1:])
+            ses = int(file_name.split("_")[-1].split(".")[0])
+
+            if sub == subject and ses in self.sessions:
+                fpath = os.path.join(basepath, file_name)
                 if not os.path.exists(fpath):
                     pooch.retrieve(
-                        Stieger2021.BASE_URL + fsn[f],
-                        reg[fsn[f]],
-                        f,
-                        path,
+                        url=Stieger2021.BASE_URL + id_file_list[file_name],
+                        known_hash=hash_file_list[id_file_list[file_name]],
+                        fname=file_name,
+                        path=basepath,
                         downloader=pooch.HTTPDownloader(progressbar=True),
                     )
                 spath.append(fpath)
