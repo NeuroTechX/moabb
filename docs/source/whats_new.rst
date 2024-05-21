@@ -34,6 +34,7 @@ Enhancements
 - Add SSVEP and ERP paradigms to DL pipelines (:gh:`590` by `Pierre Guetschel`_)
 - Allow to pass a single pipeline file to ``benchmark`` (:gh:`591` by `Pierre Guetschel`_)
 - Exposing the `drop_rate` for all the deep learning parameters (:gh:`592` by `Bruno Aristimunha`_)
+- Add Alphawes dataset (:gh:`602` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 
 Bugs
 ~~~~
