@@ -1,3 +1,8 @@
+# Authors: Reinmar Kobler <kobler.reinmar@gmail.com>
+#          Bruno Aristimunha <b.aristimunha@gmail.com>
+#
+# License: BSD (3-clause)
+
 import logging
 import os
 
@@ -12,7 +17,7 @@ from .base import BaseDataset
 from .download import get_dataset_path
 
 
-log = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 BASE_URL = "https://ndownloader.figshare.com/files/"
 
 
@@ -132,7 +137,7 @@ class Stieger2021(BaseDataset):
                 fpath = os.path.join(basepath, file_name)
                 if not os.path.exists(fpath):
                     pooch.retrieve(
-                        url=Stieger2021.BASE_URL + id_file_list[file_name],
+                        url=BASE_URL + id_file_list[file_name],
                         known_hash=hash_file_list[id_file_list[file_name]],
                         fname=file_name,
                         path=basepath,
@@ -142,20 +147,20 @@ class Stieger2021(BaseDataset):
         return spath
 
     def _get_single_subject_data(self, subject):
-        fname = self.data_path(subject)
+        file_path = self.data_path(subject)
 
         subject_data = {}
 
-        for fn in fname:
+        for file in file_path:
 
-            session = int(os.path.basename(fn).split("_")[2].split(".")[0])
+            session = int(os.path.basename(file).split("_")[2].split(".")[0])
 
             if self.sessions is not None:
                 if session not in set(self.sessions):
                     continue
 
             container = loadmat(
-                fn,
+                file_name=file,
                 squeeze_me=True,
                 struct_as_record=False,
                 verify_compressed_data_integrity=False,
@@ -172,7 +177,7 @@ class Stieger2021(BaseDataset):
             montage = mne.channels.make_standard_montage("standard_1005")
             channel_mask = np.isin(eeg_ch_names, montage.ch_names)
             ch_names = [ch for ch, found in zip(eeg_ch_names, channel_mask) if found] + [
-                "Stim"
+                "stim"
             ]
             ch_types = ["eeg"] * channel_mask.sum() + ["stim"]
 
@@ -182,13 +187,13 @@ class Stieger2021(BaseDataset):
                 x = container.data[i][channel_mask, :]
                 y = container.TrialData[i].targetnumber
                 stim = np.zeros_like(container.time[i])
-                if (
+                if (  # check if the trial is artifact-free and long enough
                     container.TrialData[i].artifact == 0
                     and (container.TrialData[i].triallength + 2) > self.interval[1]
                 ):
-                    assert (
-                        container.time[i][2 * srate] == 0
-                    )  # this should be the cue time-point
+                    # this should be the cue time-point
+                    if container.time[i][2 * srate] == 0:
+                        raise ValueError("This should be the cue time-point,")
                     stim[2 * srate] = y
                 X_flat.append(x)
                 stim_flat.append(stim[None, :])
@@ -198,11 +203,14 @@ class Stieger2021(BaseDataset):
 
             p_keep = np.flatnonzero(stim_flat).shape[0] / container.data.shape[0]
 
-            message = f"Record {subject}/{session} (subject/session): rejecting {(1 - p_keep) * 100:.0f}% of the trials."
+            message = (
+                f"Record {subject}/{session} (subject/session): "
+                f"rejecting {(1 - p_keep) * 100:.0f}% of the trials."
+            )
             if p_keep < 0.5:
-                log.warning(message)
+                LOGGER.warning(message)
             else:
-                log.info(message)
+                LOGGER.info(message)
 
             eeg_data = np.concatenate([X_flat * 1e-6, stim_flat], axis=0)
 
@@ -222,9 +230,12 @@ class Stieger2021(BaseDataset):
                     raw.info["bads"].append(eeg_ch_names[idx - 1])
 
             if len(raw.info["bads"]) > 0:
-                log.info(
-                    f"Record {subject}/{session} (subject/session): "
-                    f'bad channels that need to be interpolated: {raw.info["bads"]}'
+                LOGGER.info(
+                    "Record {subject}/{session} (subject/session): "
+                    "bad channels that need to be interpolated: {bad_info}",
+                    subject=subject,
+                    session=session,
+                    bad_info=raw.info["bads"],
                 )
 
             subject_data[session] = {"run_0": raw}
