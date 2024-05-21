@@ -465,7 +465,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.Shin2017B.html">moabb.datasets.Shin2017B</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.Weibo2014.html">moabb.datasets.Weibo2014</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.Zhou2016.html">moabb.datasets.Zhou2016</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.Stieger2021.html">moabb.datasets.Stieger2021</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.BI2012.html">moabb.datasets.BI2012</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.BI2013a.html">moabb.datasets.BI2013a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.BI2014a.html">moabb.datasets.BI2014a</a></li>
@@ -497,6 +496,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.CastillosCVEP100.html">moabb.datasets.CastillosCVEP100</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.Cattan2019_PHMD.html">moabb.datasets.Cattan2019_PHMD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.Hinss2021.html">moabb.datasets.Hinss2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.Rodrigues2017.html">moabb.datasets.Rodrigues2017</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.base.BaseDataset.html">moabb.datasets.base.BaseDataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.base.CacheConfig.html">moabb.datasets.base.CacheConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.datasets.fake.FakeDataset.html">moabb.datasets.fake.FakeDataset</a></li>
@@ -778,7 +778,7 @@ be overwritten if necessary.</p>
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession:  25%|##5       | 1/4 [00:06&lt;00:20,  6.71s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
+BNCI2014-001-CrossSession:  25%|##5       | 1/4 [00:06&lt;00:20,  6.85s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -827,106 +827,110 @@ BNCI2014-001-CrossSession:  25%|##5       | 1/4 [00:06&lt;00:20,  6.71s/it]/home
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession:  50%|#####     | 2/4 [00:13&lt;00:12,  6.48s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-001-CrossSession:  50%|#####     | 2/4 [00:13&lt;00:13,  6.64s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/44.1M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/44.1M [00:00&lt;14:14, 51.5kB/s]
+  0%|                                     | 8.19k/44.1M [00:00&lt;10:34, 69.4kB/s]
 
-  0%|                                      | 32.8k/44.1M [00:00&lt;06:34, 112kB/s]
+  0%|                                      | 32.8k/44.1M [00:00&lt;04:52, 150kB/s]
 
-  0%|                                      | 96.3k/44.1M [00:00&lt;03:01, 242kB/s]
+  0%|                                      | 96.3k/44.1M [00:00&lt;02:15, 325kB/s]
 
-  0%|▏                                      | 209k/44.1M [00:00&lt;01:43, 424kB/s]
+  0%|▏                                      | 209k/44.1M [00:00&lt;01:16, 571kB/s]
 
-  1%|▍                                      | 432k/44.1M [00:00&lt;00:56, 774kB/s]
+  1%|▎                                     | 432k/44.1M [00:00&lt;00:41, 1.04MB/s]
 
-  2%|▊                                     | 889k/44.1M [00:00&lt;00:29, 1.48MB/s]
+  2%|▊                                     | 889k/44.1M [00:00&lt;00:21, 1.99MB/s]
 
-  4%|█▌                                   | 1.80M/44.1M [00:01&lt;00:14, 2.86MB/s]
+  4%|█▌                                   | 1.80M/44.1M [00:00&lt;00:11, 3.84MB/s]
 
-  8%|███                                  | 3.62M/44.1M [00:01&lt;00:07, 5.56MB/s]
+  8%|███                                  | 3.62M/44.1M [00:00&lt;00:05, 7.50MB/s]
 
- 15%|█████▌                               | 6.66M/44.1M [00:01&lt;00:03, 9.73MB/s]
+ 15%|█████▌                               | 6.67M/44.1M [00:01&lt;00:02, 13.2MB/s]
 
- 22%|████████                             | 9.60M/44.1M [00:01&lt;00:02, 12.4MB/s]
+ 21%|███████▉                             | 9.43M/44.1M [00:01&lt;00:02, 16.3MB/s]
 
- 28%|██████████▍                          | 12.4M/44.1M [00:01&lt;00:02, 14.0MB/s]
+ 27%|██████████                           | 11.9M/44.1M [00:01&lt;00:01, 17.7MB/s]
 
- 35%|████████████▊                        | 15.3M/44.1M [00:01&lt;00:01, 15.2MB/s]
+ 33%|████████████▎                        | 14.7M/44.1M [00:01&lt;00:01, 19.3MB/s]
 
- 41%|███████████████▎                     | 18.2M/44.1M [00:02&lt;00:01, 16.0MB/s]
+ 40%|██████████████▉                      | 17.8M/44.1M [00:01&lt;00:01, 21.3MB/s]
 
- 48%|█████████████████▉                   | 21.3M/44.1M [00:02&lt;00:01, 17.1MB/s]
+ 47%|█████████████████▏                   | 20.5M/44.1M [00:01&lt;00:01, 21.8MB/s]
 
- 55%|████████████████████▍                | 24.4M/44.1M [00:02&lt;00:01, 17.7MB/s]
+ 53%|███████████████████▌                 | 23.2M/44.1M [00:01&lt;00:00, 22.1MB/s]
 
- 62%|██████████████████████▉              | 27.3M/44.1M [00:02&lt;00:00, 17.9MB/s]
+ 59%|█████████████████████▉               | 26.1M/44.1M [00:01&lt;00:00, 22.7MB/s]
 
- 68%|█████████████████████████▎           | 30.1M/44.1M [00:02&lt;00:00, 17.7MB/s]
+ 66%|████████████████████████▍            | 29.0M/44.1M [00:02&lt;00:00, 23.3MB/s]
 
- 75%|███████████████████████████▊         | 33.2M/44.1M [00:02&lt;00:00, 18.1MB/s]
+ 72%|██████████████████████████▋          | 31.8M/44.1M [00:02&lt;00:00, 23.4MB/s]
 
- 82%|██████████████████████████████▍      | 36.2M/44.1M [00:03&lt;00:00, 18.3MB/s]
+ 79%|█████████████████████████████▏       | 34.7M/44.1M [00:02&lt;00:00, 23.6MB/s]
 
- 89%|████████████████████████████████▉    | 39.2M/44.1M [00:03&lt;00:00, 18.4MB/s]
+ 85%|███████████████████████████████▌     | 37.6M/44.1M [00:02&lt;00:00, 23.6MB/s]
 
- 96%|███████████████████████████████████▍ | 42.1M/44.1M [00:03&lt;00:00, 18.4MB/s]
+ 92%|█████████████████████████████████▉   | 40.3M/44.1M [00:02&lt;00:00, 23.6MB/s]
+
+ 98%|████████████████████████████████████▎| 43.2M/44.1M [00:02&lt;00:00, 23.7MB/s]
 
   0%|                                              | 0.00/44.1M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 44.1M/44.1M [00:00&lt;00:00, 172GB/s]
+100%|██████████████████████████████████████| 44.1M/44.1M [00:00&lt;00:00, 156GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/42.3M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/42.3M [00:00&lt;13:39, 51.6kB/s]
+  0%|                                     | 8.19k/42.3M [00:00&lt;10:08, 69.5kB/s]
 
-  0%|                                      | 32.8k/42.3M [00:00&lt;06:23, 110kB/s]
+  0%|                                      | 32.8k/42.3M [00:00&lt;04:41, 150kB/s]
 
-  0%|                                      | 96.3k/42.3M [00:00&lt;02:56, 240kB/s]
+  0%|                                      | 96.3k/42.3M [00:00&lt;02:09, 325kB/s]
 
-  0%|▏                                      | 209k/42.3M [00:00&lt;01:39, 422kB/s]
+  0%|▏                                      | 209k/42.3M [00:00&lt;01:13, 571kB/s]
 
-  1%|▍                                      | 432k/42.3M [00:00&lt;00:54, 770kB/s]
+  1%|▍                                     | 432k/42.3M [00:00&lt;00:40, 1.04MB/s]
 
-  2%|▊                                     | 889k/42.3M [00:00&lt;00:28, 1.48MB/s]
+  2%|▊                                     | 889k/42.3M [00:00&lt;00:20, 1.99MB/s]
 
-  4%|█▌                                   | 1.80M/42.3M [00:01&lt;00:14, 2.85MB/s]
+  4%|█▌                                   | 1.80M/42.3M [00:00&lt;00:10, 3.84MB/s]
 
-  9%|███▏                                 | 3.62M/42.3M [00:01&lt;00:06, 5.56MB/s]
+  9%|███▏                                 | 3.62M/42.3M [00:00&lt;00:05, 7.50MB/s]
 
- 16%|█████▉                               | 6.73M/42.3M [00:01&lt;00:03, 9.87MB/s]
+ 16%|█████▊                               | 6.65M/42.3M [00:01&lt;00:02, 13.1MB/s]
 
- 22%|████████▎                            | 9.51M/42.3M [00:01&lt;00:02, 12.2MB/s]
+ 22%|████████▏                            | 9.38M/42.3M [00:01&lt;00:02, 16.1MB/s]
 
- 30%|███████████                          | 12.6M/42.3M [00:01&lt;00:02, 14.3MB/s]
+ 28%|██████████▏                          | 11.7M/42.3M [00:01&lt;00:01, 17.2MB/s]
 
- 36%|█████████████▍                       | 15.4M/42.3M [00:01&lt;00:01, 15.2MB/s]
+ 34%|████████████▋                        | 14.6M/42.3M [00:01&lt;00:01, 19.3MB/s]
 
- 43%|███████████████▊                     | 18.1M/42.3M [00:02&lt;00:01, 15.7MB/s]
+ 41%|███████████████▏                     | 17.4M/42.3M [00:01&lt;00:01, 20.5MB/s]
 
- 50%|██████████████████▍                  | 21.2M/42.3M [00:02&lt;00:01, 16.7MB/s]
+ 47%|█████████████████▍                   | 20.0M/42.3M [00:01&lt;00:01, 20.9MB/s]
 
- 57%|████████████████████▉                | 24.0M/42.3M [00:02&lt;00:01, 16.9MB/s]
+ 53%|███████████████████▊                 | 22.6M/42.3M [00:01&lt;00:00, 21.3MB/s]
 
- 63%|███████████████████████▍             | 26.8M/42.3M [00:02&lt;00:00, 17.1MB/s]
+ 60%|██████████████████████▏              | 25.4M/42.3M [00:01&lt;00:00, 22.0MB/s]
 
- 70%|█████████████████████████▉           | 29.6M/42.3M [00:02&lt;00:00, 17.3MB/s]
+ 66%|████████████████████████▌            | 28.1M/42.3M [00:02&lt;00:00, 22.1MB/s]
 
- 77%|████████████████████████████▌        | 32.7M/42.3M [00:02&lt;00:00, 17.8MB/s]
+ 73%|██████████████████████████▉          | 30.8M/42.3M [00:02&lt;00:00, 22.2MB/s]
 
- 84%|██████████████████████████████▉      | 35.4M/42.3M [00:03&lt;00:00, 17.5MB/s]
+ 79%|█████████████████████████████▎       | 33.6M/42.3M [00:02&lt;00:00, 22.6MB/s]
 
- 91%|█████████████████████████████████▋   | 38.5M/42.3M [00:03&lt;00:00, 18.1MB/s]
+ 86%|███████████████████████████████▊     | 36.4M/42.3M [00:02&lt;00:00, 22.9MB/s]
 
- 98%|████████████████████████████████████▎| 41.5M/42.3M [00:03&lt;00:00, 18.3MB/s]
+ 93%|██████████████████████████████████▍  | 39.4M/42.3M [00:02&lt;00:00, 23.7MB/s]
+
+100%|████████████████████████████████████▉| 42.2M/42.3M [00:02&lt;00:00, 23.7MB/s]
 
   0%|                                              | 0.00/42.3M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 42.3M/42.3M [00:00&lt;00:00, 184GB/s]
+100%|██████████████████████████████████████| 42.3M/42.3M [00:00&lt;00:00, 167GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
@@ -976,106 +980,112 @@ BNCI2014-001-CrossSession:  50%|#####     | 2/4 [00:13&lt;00:12,  6.48s/it]/home
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession:  75%|#######5  | 3/4 [00:28&lt;00:10, 10.39s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-001-CrossSession:  75%|#######5  | 3/4 [00:26&lt;00:09,  9.67s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/37.2M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/37.2M [00:00&lt;12:01, 51.5kB/s]
+  0%|                                     | 8.19k/37.2M [00:00&lt;08:54, 69.4kB/s]
 
-  0%|                                      | 32.8k/37.2M [00:00&lt;05:32, 112kB/s]
+  0%|                                      | 32.8k/37.2M [00:00&lt;04:07, 150kB/s]
 
-  0%|                                      | 96.3k/37.2M [00:00&lt;02:33, 242kB/s]
+  0%|                                      | 96.3k/37.2M [00:00&lt;01:53, 325kB/s]
 
-  1%|▏                                      | 209k/37.2M [00:00&lt;01:27, 424kB/s]
+  1%|▏                                      | 209k/37.2M [00:00&lt;01:04, 570kB/s]
 
-  1%|▍                                      | 432k/37.2M [00:00&lt;00:47, 774kB/s]
+  1%|▍                                     | 432k/37.2M [00:00&lt;00:35, 1.04MB/s]
 
-  2%|▉                                     | 889k/37.2M [00:00&lt;00:24, 1.48MB/s]
+  2%|▉                                     | 889k/37.2M [00:00&lt;00:18, 1.99MB/s]
 
-  5%|█▊                                   | 1.80M/37.2M [00:01&lt;00:12, 2.86MB/s]
+  5%|█▊                                   | 1.80M/37.2M [00:00&lt;00:09, 3.57MB/s]
 
- 10%|███▌                                 | 3.62M/37.2M [00:01&lt;00:06, 5.57MB/s]
+ 10%|███▌                                 | 3.62M/37.2M [00:00&lt;00:04, 7.06MB/s]
 
- 17%|██████▏                              | 6.17M/37.2M [00:01&lt;00:03, 8.79MB/s]
+ 15%|█████▌                               | 5.62M/37.2M [00:01&lt;00:03, 9.98MB/s]
 
- 23%|████████▍                            | 8.51M/37.2M [00:01&lt;00:02, 10.6MB/s]
+ 21%|███████▋                             | 7.74M/37.2M [00:01&lt;00:02, 12.3MB/s]
 
- 30%|██████████▉                          | 11.0M/37.2M [00:01&lt;00:02, 12.1MB/s]
+ 27%|█████████▉                           | 9.94M/37.2M [00:01&lt;00:01, 14.2MB/s]
 
- 36%|█████████████▎                       | 13.4M/37.2M [00:01&lt;00:01, 13.0MB/s]
+ 33%|████████████▏                        | 12.3M/37.2M [00:01&lt;00:01, 15.8MB/s]
 
- 43%|███████████████▊                     | 15.9M/37.2M [00:02&lt;00:01, 13.7MB/s]
+ 40%|██████████████▋                      | 14.7M/37.2M [00:01&lt;00:01, 17.1MB/s]
 
- 49%|██████████████████▏                  | 18.3M/37.2M [00:02&lt;00:01, 14.2MB/s]
+ 46%|█████████████████                    | 17.1M/37.2M [00:01&lt;00:01, 18.0MB/s]
 
- 56%|████████████████████▋                | 20.8M/37.2M [00:02&lt;00:01, 14.6MB/s]
+ 52%|███████████████████▍                 | 19.5M/37.2M [00:01&lt;00:00, 18.7MB/s]
 
- 63%|███████████████████████▏             | 23.3M/37.2M [00:02&lt;00:00, 14.9MB/s]
+ 59%|█████████████████████▊               | 21.9M/37.2M [00:01&lt;00:00, 19.2MB/s]
 
- 69%|█████████████████████████▋           | 25.8M/37.2M [00:02&lt;00:00, 15.1MB/s]
+ 65%|████████████████████████▏            | 24.3M/37.2M [00:02&lt;00:00, 19.5MB/s]
 
- 76%|████████████████████████████▏        | 28.3M/37.2M [00:02&lt;00:00, 15.3MB/s]
+ 72%|██████████████████████████▌          | 26.7M/37.2M [00:02&lt;00:00, 19.6MB/s]
 
- 83%|██████████████████████████████▋      | 30.8M/37.2M [00:03&lt;00:00, 15.4MB/s]
+ 78%|█████████████████████████████        | 29.1M/37.2M [00:02&lt;00:00, 19.9MB/s]
 
- 90%|█████████████████████████████████▏   | 33.4M/37.2M [00:03&lt;00:00, 15.5MB/s]
+ 85%|███████████████████████████████▍     | 31.5M/37.2M [00:02&lt;00:00, 19.9MB/s]
 
- 97%|███████████████████████████████████▋ | 35.9M/37.2M [00:03&lt;00:00, 15.5MB/s]
+ 91%|█████████████████████████████████▊   | 33.9M/37.2M [00:02&lt;00:00, 20.1MB/s]
+
+ 98%|████████████████████████████████████▏| 36.3M/37.2M [00:02&lt;00:00, 20.1MB/s]
 
   0%|                                              | 0.00/37.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 37.2M/37.2M [00:00&lt;00:00, 162GB/s]
+100%|██████████████████████████████████████| 37.2M/37.2M [00:00&lt;00:00, 142GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/41.7M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/41.7M [00:00&lt;13:28, 51.6kB/s]
+  0%|                                     | 8.19k/41.7M [00:00&lt;09:58, 69.7kB/s]
 
-  0%|                                      | 32.8k/41.7M [00:00&lt;06:13, 112kB/s]
+  0%|                                      | 32.8k/41.7M [00:00&lt;04:37, 150kB/s]
 
-  0%|                                      | 96.3k/41.7M [00:00&lt;02:52, 242kB/s]
+  0%|                                      | 96.3k/41.7M [00:00&lt;02:07, 326kB/s]
 
-  1%|▏                                      | 209k/41.7M [00:00&lt;01:37, 424kB/s]
+  1%|▏                                      | 209k/41.7M [00:00&lt;01:12, 571kB/s]
 
-  1%|▍                                      | 432k/41.7M [00:00&lt;00:53, 773kB/s]
+  1%|▍                                     | 432k/41.7M [00:00&lt;00:39, 1.04MB/s]
 
-  2%|▊                                     | 889k/41.7M [00:00&lt;00:27, 1.48MB/s]
+  2%|▊                                     | 889k/41.7M [00:00&lt;00:20, 1.99MB/s]
 
-  4%|█▌                                   | 1.80M/41.7M [00:01&lt;00:14, 2.85MB/s]
+  4%|█▌                                   | 1.80M/41.7M [00:00&lt;00:10, 3.85MB/s]
 
-  9%|███▏                                 | 3.62M/41.7M [00:01&lt;00:06, 5.56MB/s]
+  9%|███▏                                 | 3.62M/41.7M [00:00&lt;00:05, 7.50MB/s]
 
- 16%|█████▉                               | 6.70M/41.7M [00:01&lt;00:03, 9.83MB/s]
+ 15%|█████▍                               | 6.16M/41.7M [00:01&lt;00:03, 11.8MB/s]
 
- 23%|████████▌                            | 9.67M/41.7M [00:01&lt;00:02, 12.4MB/s]
+ 20%|███████▌                             | 8.46M/41.7M [00:01&lt;00:02, 14.1MB/s]
 
- 29%|██████████▋                          | 12.1M/41.7M [00:01&lt;00:02, 13.3MB/s]
+ 26%|█████████▋                           | 10.9M/41.7M [00:01&lt;00:01, 16.0MB/s]
 
- 36%|█████████████▎                       | 15.1M/41.7M [00:01&lt;00:01, 14.8MB/s]
+ 32%|███████████▊                         | 13.3M/41.7M [00:01&lt;00:01, 17.4MB/s]
 
- 43%|███████████████▉                     | 18.0M/41.7M [00:02&lt;00:01, 15.9MB/s]
+ 38%|█████████████▉                       | 15.8M/41.7M [00:01&lt;00:01, 18.3MB/s]
 
- 50%|██████████████████▎                  | 20.7M/41.7M [00:02&lt;00:01, 16.1MB/s]
+ 44%|████████████████▏                    | 18.2M/41.7M [00:01&lt;00:01, 19.1MB/s]
 
- 56%|████████████████████▋                | 23.4M/41.7M [00:02&lt;00:01, 16.4MB/s]
+ 50%|██████████████████▎                  | 20.7M/41.7M [00:01&lt;00:01, 19.6MB/s]
 
- 63%|███████████████████████▎             | 26.3M/41.7M [00:02&lt;00:00, 16.8MB/s]
+ 56%|████████████████████▌                | 23.2M/41.7M [00:01&lt;00:00, 19.9MB/s]
 
- 70%|█████████████████████████▊           | 29.1M/41.7M [00:02&lt;00:00, 17.1MB/s]
+ 62%|██████████████████████▊              | 25.8M/41.7M [00:02&lt;00:00, 20.5MB/s]
 
- 76%|████████████████████████████▎        | 31.9M/41.7M [00:02&lt;00:00, 17.1MB/s]
+ 68%|█████████████████████████▏           | 28.4M/41.7M [00:02&lt;00:00, 20.8MB/s]
 
- 83%|██████████████████████████████▋      | 34.6M/41.7M [00:03&lt;00:00, 17.2MB/s]
+ 74%|███████████████████████████▍         | 30.9M/41.7M [00:02&lt;00:00, 21.1MB/s]
 
- 90%|█████████████████████████████████▏   | 37.5M/41.7M [00:03&lt;00:00, 17.3MB/s]
+ 80%|█████████████████████████████▋       | 33.5M/41.7M [00:02&lt;00:00, 21.3MB/s]
 
- 97%|███████████████████████████████████▋ | 40.3M/41.7M [00:03&lt;00:00, 17.4MB/s]
+ 87%|████████████████████████████████     | 36.1M/41.7M [00:02&lt;00:00, 21.5MB/s]
+
+ 93%|██████████████████████████████████▎  | 38.7M/41.7M [00:02&lt;00:00, 21.6MB/s]
+
+ 99%|████████████████████████████████████▋| 41.4M/41.7M [00:02&lt;00:00, 21.7MB/s]
 
   0%|                                              | 0.00/41.7M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 41.7M/41.7M [00:00&lt;00:00, 173GB/s]
+100%|██████████████████████████████████████| 41.7M/41.7M [00:00&lt;00:00, 168GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:273: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
@@ -1125,8 +1135,8 @@ BNCI2014-001-CrossSession:  75%|#######5  | 3/4 [00:28&lt;00:10, 10.39s/it]/home
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession: 100%|##########| 4/4 [00:42&lt;00:00, 12.18s/it]
-BNCI2014-001-CrossSession: 100%|##########| 4/4 [00:42&lt;00:00, 10.75s/it]
+BNCI2014-001-CrossSession: 100%|##########| 4/4 [00:39&lt;00:00, 10.98s/it]
+BNCI2014-001-CrossSession: 100%|##########| 4/4 [00:39&lt;00:00,  9.90s/it]
 </pre></div>
 </div>
 </section>
@@ -1177,8 +1187,8 @@ the x-axis over all datasets</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_statistical_analysis_004.png" srcset="../../_images/sphx_glr_plot_statistical_analysis_004.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  47.319 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  49 MB</p>
+<img src="../../_images/sphx_glr_plot_statistical_analysis_004.png" srcset="../../_images/sphx_glr_plot_statistical_analysis_004.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  44.303 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  13 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-statistical-analysis-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/fc103af82bd37a6a36f57f863e9fd4aa/plot_statistical_analysis.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_statistical_analysis.py</span></code></a></p>
