@@ -20,17 +20,17 @@ class Rodrigues2017(BaseDataset):
     .. admonition:: Dataset summary
 
 
-        ==============  =======  =======  ==========  =================  ============  ===============  ===========
-        Name              #Subj    #Chan    #Classes    #Blocks/class     Trials len    Sampling rate    #Sessions
-        =============== =======  =======  ==========  =================  ============  ===============  ===========
-        Rodrigues2017        20       16           2                 5    10s            512Hz                   1
-        =============== =======  =======  ==========  =================  ============  ===============  ===========
+        =============== ======= ======= ========== =============== ============ =============== ===========
+        Name            #Subj   #Chan   #Classes   #Blocks/class   Trials len   Sampling rate   #Sessions
+        =============== ======= ======= ========== =============== ============ =============== ===========
+        Rodrigues2017   20      16      2          5               10s          512Hz           1
+        =============== ======= ======= ========== =============== ============ =============== ===========
 
 
     Dataset containing EEG recordings of subjects in a simple
     resting-state eyes open/closed experimental protocol. Data were recorded
     during a pilot experiment taking place in the GIPSA-lab, Grenoble,
-    France, in 2017 [1].
+    France, in 2017 [1]_.
 
     **Dataset Description**
 
@@ -63,7 +63,7 @@ class Rodrigues2017(BaseDataset):
     subject was asked to close or open his eyes according to the experimental
     condition.
 
-    We supply an online and open-source example working with Python [2].
+    We supply an online and open-source example working with Python [2]_.
 
     References
     ----------
