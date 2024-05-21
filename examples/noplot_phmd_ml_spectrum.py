@@ -18,7 +18,7 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 
-from moabb.datasets import Rodrigues2017
+from moabb.datasets import Cattan2019_PHMD
 from moabb.paradigms import RestingStateToP300Adapter
 
 
@@ -38,7 +38,7 @@ warnings.filterwarnings("ignore")
 channel = "Cz"
 subject = 1
 
-dataset = Rodrigues2017()
+dataset = Cattan2019_PHMD()
 events = ["on", "off"]
 paradigm = RestingStateToP300Adapter(events=events, channels=[channel])
 
