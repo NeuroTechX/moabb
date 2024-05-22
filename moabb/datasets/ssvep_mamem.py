@@ -108,12 +108,12 @@ class BaseMAMEM(BaseDataset):
             fnamed = fsn[osp.basename(fpath)]
             if fnamed[4] == "x":
                 continue
-            session_name = "session_0"
+            session_name = "0"
             if self.code == "MAMEM3":
                 repetition = len(fnamed) - 10
-                run_name = f"run_{(ord(fnamed[4]) - 97) * 2 + repetition}"
+                run_name = str((ord(fnamed[4]) - 97) * 2 + repetition)
             else:
-                run_name = f"run_{ord(fnamed[4]) - 97}"
+                run_name = str(ord(fnamed[4]) - 97)
 
             if self.code == "MAMEM3":
                 m = loadmat(fpath)

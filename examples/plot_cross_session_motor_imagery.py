@@ -19,6 +19,7 @@ one session out cross-validation. For each session in the dataset, a model
 is trained on every other session and performance are evaluated on the current
 session.
 """
+
 # Authors: Alexandre Barachant <alexandre.barachant@gmail.com>
 #          Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
 #

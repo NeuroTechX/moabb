@@ -15,6 +15,7 @@ for unsupervised algorithms.
 In this example, we will use the Zhou2016 dataset because
 it is relatively small and can be downloaded quickly.
 """
+
 # Authors: Pierre Guetschel <pierre.guetschel@gmail.com>
 #
 # License: BSD (3-clause)
@@ -103,7 +104,7 @@ paradigm = MotorImagery(
 # ``_get_events_pipeline`` method:
 events_pipeline_dataset = paradigm._get_events_pipeline(dataset)
 events_pipeline_fixed = processing._get_events_pipeline(dataset)
-raw = dataset.get_data(subjects=[1])[1]["session_0"]["run_0"]
+raw = dataset.get_data(subjects=[1])[1]["0"]["0"]
 events_dataset = events_pipeline_dataset.transform(raw)
 events_fixed = events_pipeline_fixed.transform(raw)
 events = np.concatenate([events_dataset, events_fixed])

@@ -3,6 +3,7 @@
 Tutorial 4: Creating a dataset class
 ====================================
 """
+
 # Authors: Pedro L. C. Rodrigues, Sylvain Chevallier
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019
@@ -126,8 +127,8 @@ class ExampleDataset(BaseDataset):
         raw = mne.io.RawArray(x, info)
 
         sessions = {}
-        sessions["session_1"] = {}
-        sessions["session_1"]["run_1"] = raw
+        sessions["0"] = {}
+        sessions["0"]["0"] = raw
         return sessions
 
     def data_path(

@@ -1,0 +1,10 @@
+.large-text {
+    font-size: 30px;
+}
+
+.bd-main .bd-content .bd-article-container {
+  max-width: 75em;  /* default is 60em */
+}
+.bd-page-width {
+  max-width: 88em;  /* default is 88rem */
+}

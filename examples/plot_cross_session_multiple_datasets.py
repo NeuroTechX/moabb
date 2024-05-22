@@ -11,6 +11,7 @@ one session out cross-validation. For each session in the dataset, a model
 is trained on every other session and performance are evaluated on the current
 session.
 """
+
 # Authors: Sylvain Chevallier <sylvain.chevallier@uvsq.fr>
 #
 # License: BSD (3-clause)
@@ -98,7 +99,6 @@ evaluation = CrossSessionEvaluation(
 results = evaluation.process(pipeline)
 
 print(results.head())
-results.replace(["session_E", "session_T"], ["session_0", "session_1"], inplace=True)
 
 ##############################################################################
 # Plot Results

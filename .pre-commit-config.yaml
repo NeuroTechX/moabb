@@ -8,12 +8,14 @@ ci:
   autoupdate_branch: "develop"
   autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
   autoupdate_schedule: quarterly
-  skip: []
+  skip: [ ]
   submodules: false
+
+exclude: ".*svg"
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-yaml
       - id: check-json
@@ -29,62 +31,62 @@ repos:
       - id: check-case-conflict
       - id: forbid-new-submodules
       - id: pretty-format-json
-        args: ["--autofix", "--no-sort-keys", "--indent=4"]
+        args: [ "--autofix", "--no-sort-keys", "--indent=4" ]
 
 
   - repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 24.3.0
     hooks:
       - id: black
         language_version: python3.8
-        args: [--line-length=90, --target-version=py38]
+        args: [ --line-length=90, --target-version=py38 ]
 
   -   repo: https://github.com/asottile/blacken-docs
-      rev: 1.15.0
+      rev: 1.16.0
       hooks:
       -   id: blacken-docs
           additional_dependencies: [black==23.3.0]
           exclude: ^.github/
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
 
-  -   repo: https://github.com/PyCQA/flake8
-      rev: 6.1.0
-      hooks:
-      -   id: flake8
-          additional_dependencies: [
-              'flake8-blind-except',
-              'flake8-docstrings',
-              'flake8-bugbear',
-              'flake8-comprehensions',
-              'flake8-docstrings',
-              'flake8-implicit-str-concat',
-              'pydocstyle>=5.0.0',
-          ]
-          exclude: ^docs/ | ^setup\.py$ |
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        additional_dependencies: [
+          'flake8-blind-except',
+          'flake8-docstrings',
+          'flake8-bugbear',
+          'flake8-comprehensions',
+          'flake8-docstrings',
+          'flake8-implicit-str-concat',
+          'pydocstyle>=5.0.0',
+        ]
+        exclude: ^docs/ | ^setup\.py$ |
 
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.281
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.5
     hooks:
       - id: ruff
-        args: [--fix, --exit-non-zero-on-fix, --ignore, E501]
+        args: [ --fix, --exit-non-zero-on-fix, --ignore, E501 ]
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.5
+    rev: v2.2.6
     hooks:
       - id: codespell
         args:
-          - --ignore-words-list=additionals,alle,alot,bund,currenty,datas,farenheit,falsy,fo,haa,hass,iif,incomfort,ines,ist,nam,nd,pres,pullrequests,resset,rime,ser,serie,te,technik,ue,unsecure,withing,zar
+          - --ignore-words-list=additionals,alle,alot,bund,currenty,datas,farenheit,falsy,fo,haa,hass,iif,incomfort,ines,ist,nam,nd,pres,pullrequests,resset,rime,ser,serie,te,technik,ue,unsecure,withing,zar,crate
           - --skip="./.*,*.csv,*.json,*.ambr"
           - --quiet-level=2
-        exclude_types: [csv, json]
+        exclude_types: [ csv, json, svg ]
         exclude: ^tests/|generated/
 
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.32.0
+    rev: v1.35.1
     hooks:
       - id: yamllint
         exclude: >

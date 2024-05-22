@@ -18,8 +18,9 @@ import logging
 import re
 from collections import OrderedDict
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Type
 
 import mne
 import mne_bids
@@ -55,27 +56,21 @@ def subject_bids_to_moabb(subject: str):
     return int(subject)
 
 
-def session_moabb_to_bids(session: str):
-    """Replace the session_* to *."""
-    return session.replace("session_", "")
-
-
-def session_bids_to_moabb(session: str):
-    """Replace the * to session_*."""
-    return "session_" + session
-
-
-# Note: the runs are expected to be indexes in the BIDS standard.
-#       This is not always the case in MOABB.  See:
-# bids-specification.readthedocs.io/en/stable/glossary.html#run-entities
 def run_moabb_to_bids(run: str):
-    """Replace the run_* to *."""
-    return run.replace("run_", "")
+    """Convert the run to run index plus eventually description."""
+    p = r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)"
+    idx, desc = re.fullmatch(p, run).groups()
+    out = {"run": idx}
+    if desc:
+        out["recording"] = desc
+    return out
 
 
-def run_bids_to_moabb(run: str):
-    """Replace the * to run_*."""
-    return "run_" + run
+def run_bids_to_moabb(path: mne_bids.BIDSPath):
+    """Extracts the run index plus eventually description from a path."""
+    if path.recording is None:
+        return path.run
+    return f"{path.run}{path.recording}"
 
 
 @dataclass
@@ -97,6 +92,12 @@ class BIDSInterfaceBase(abc.ABC):
         The processing pipeline used to convert the data.
     verbose : str
         The verbosity level.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.0
+
     """
 
     dataset: "BaseDataset"
@@ -173,7 +174,7 @@ class BIDSInterfaceBase(abc.ABC):
         log.info("Attempting to retrieve cache of %s...", repr(self))
         self.lock_file.mkdir(exist_ok=True)
         if not self.lock_file.fpath.exists():
-            log.info("No cache found at %s.", {str(self.lock_file.directory)})
+            log.info("No cache found at %s.", str(self.lock_file.directory))
             return None
         paths = mne_bids.find_matching_paths(
             root=self.root,
@@ -186,11 +187,11 @@ class BIDSInterfaceBase(abc.ABC):
         )
         sessions_data = {}
         for path in paths:
-            session_moabb = session_bids_to_moabb(path.session)
+            session_moabb = path.session
             session = sessions_data.setdefault(session_moabb, {})
             run = self._load_file(path, preload=preload)
-            session[run_bids_to_moabb(path.run)] = run
-        log.info("Finished reading cache of %s", {repr(self)})
+            session[run_bids_to_moabb(path)] = run
+        log.info("Finished reading cache of %s", repr(self))
         return sessions_data
 
     def save(self, sessions_data):
@@ -206,7 +207,7 @@ class BIDSInterfaceBase(abc.ABC):
 
         The type of the ``run`` object can vary (see the subclases).
         """
-        log.info("Starting caching %s", {repr(self)})
+        log.info("Starting caching %s", repr(self))
         mne_bids.BIDSPath(root=self.root).mkdir(exist_ok=True)
         mne_bids.make_dataset_description(
             path=str(self.root),
@@ -233,18 +234,20 @@ class BIDSInterfaceBase(abc.ABC):
             for run, obj in runs.items():
                 if obj is None:
                     log.warning(
-                        "Skipping caching %s session " + "%s run %s because "
-                        "it is None.",
-                        (repr(self), session, run),
+                        "Skipping caching %s session %s run %s because it is None.",
+                        repr(self),
+                        session,
+                        run,
                     )
                     continue
 
+                run_kwargs = run_moabb_to_bids(run)
                 bids_path = mne_bids.BIDSPath(
                     root=self.root,
                     subject=subject_moabb_to_bids(self.subject),
-                    session=session_moabb_to_bids(session),
+                    session=session,
                     task=self.dataset.paradigm,
-                    run=run_moabb_to_bids(run),
+                    **run_kwargs,
                     description=self.desc,
                     extension=self._extension,
                     datatype=self._datatype,
@@ -322,7 +325,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         if raw.info.get("subject_info", None) is None:
             # specify subject info as required by BIDS
             raw.info["subject_info"] = {
-                "his_id": self.subject,
+                "his_id": subject_moabb_to_bids(self.subject),
             }
         if raw.info.get("device_info", None) is None:
             # specify device info as required by BIDS
@@ -436,3 +439,19 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
             overwrite=False,
             verbose=self.verbose,
         )
+
+
+class StepType(Enum):
+    """Enum corresponding to the type of data returned
+    by a pipeline step."""
+
+    RAW = "raw"
+    EPOCHS = "epochs"
+    ARRAY = "array"
+
+
+_interface_map: Dict[StepType, Type[BIDSInterfaceBase]] = {
+    StepType.RAW: BIDSInterfaceRawEDF,
+    StepType.EPOCHS: BIDSInterfaceEpochs,
+    StepType.ARRAY: BIDSInterfaceNumpyArray,
+}

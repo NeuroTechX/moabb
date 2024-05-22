@@ -183,8 +183,8 @@ class DemonsP300(BaseDataset):
 
             raw = RawArray(np.hstack(run_data), info)
             raw.set_montage(montage)
-            runs_raw[f"run_{i}"] = raw
-        return {"session_0": runs_raw}
+            runs_raw[str(i)] = raw
+        return {"0": runs_raw}
 
     def data_path(
         self, subject: int, path=None, force_update=False, update_path=None, verbose=None

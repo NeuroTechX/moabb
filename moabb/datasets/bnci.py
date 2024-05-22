@@ -20,6 +20,9 @@ def data_path(url, path=None, force_update=False, update_path=None, verbose=None
     return [dl.data_dl(url, "BNCI", path, force_update, verbose)]
 
 
+_map = {"T": "train", "E": "test"}
+
+
 @verbose
 def load_data(
     subject,
@@ -141,7 +144,7 @@ def _load_data_001_2014(
 
     sessions = {}
     filenames = []
-    for r in ["T", "E"]:
+    for session_idx, r in enumerate(["T", "E"]):
         url = "{u}001-2014/A{s:02d}{r}.mat".format(u=base_url, s=subject, r=r)
         filename = data_path(url, path, force_update, update_path)
         filenames += filename
@@ -149,7 +152,9 @@ def _load_data_001_2014(
             continue
         runs, ev = _convert_mi(filename[0], ch_names, ch_types)
         # FIXME: deal with run with no event (1:3) and name them
-        sessions["session_%s" % r] = {"run_%d" % ii: run for ii, run in enumerate(runs)}
+        sessions[f"{session_idx}{_map[r]}"] = {
+            str(ii): run for ii, run in enumerate(runs)
+        }
     if only_filenames:
         return filenames
     return sessions
@@ -179,12 +184,11 @@ def _load_data_002_2014(
             continue
         # FIXME: electrode position and name are not provided directly.
         raws, _ = _convert_mi(filename, None, ["eeg"] * 15)
-        runs.extend(raws)
-
+        runs.extend(zip([r] * len(raws), raws))
     if only_filenames:
         return filenames
-    runs = {"run_%d" % ii: run for ii, run in enumerate(runs)}
-    return {"session_0": runs}
+    runs = {f"{ii}{_map[r]}": run for ii, (r, run) in enumerate(runs)}
+    return {"0": runs}
 
 
 @verbose
@@ -213,11 +217,11 @@ def _load_data_004_2014(
         if only_filenames:
             continue
         raws, _ = _convert_mi(filename, ch_names, ch_types)
-        sessions.extend(raws)
+        sessions.extend(zip([r] * len(raws), raws))
 
     if only_filenames:
         return filenames
-    sessions = {"session_%d" % ii: {"run_0": run} for ii, run in enumerate(sessions)}
+    sessions = {f"{ii}{_map[r]}": {"0": run} for ii, (r, run) in enumerate(sessions)}
     return sessions
 
 
@@ -242,7 +246,7 @@ def _load_data_008_2014(
     run = loadmat(filename, struct_as_record=False, squeeze_me=True)["data"]
     raw, event_id = _convert_run_p300_sl(run, verbose=verbose)
 
-    sessions = {"session_0": {"run_0": raw}}
+    sessions = {"0": {"0": raw}}
 
     return sessions
 
@@ -281,7 +285,7 @@ def _load_data_009_2014(
 
     sessions = {}
     for i, sessi in enumerate(sess):
-        sessions["session_" + str(i)] = {"run_0": sessi}
+        sessions[str(i)] = {"0": sessi}
 
     return sessions
 
@@ -301,9 +305,9 @@ def _load_data_001_2015(
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
 
     if subject in [8, 9, 10, 11]:
-        ses = ["A", "B", "C"]  # 3 sessions for those subjects
+        ses = [(0, "A"), (1, "B"), (2, "C")]  # 3 sessions for those subjects
     else:
-        ses = ["A", "B"]
+        ses = [(0, "A"), (1, "B")]
 
     # fmt: off
     ch_names = [
@@ -315,14 +319,14 @@ def _load_data_001_2015(
 
     sessions = {}
     filenames = []
-    for r in ses:
+    for session_idx, r in ses:
         url = "{u}001-2015/S{s:02d}{r}.mat".format(u=base_url, s=subject, r=r)
         filename = data_path(url, path, force_update, update_path)
         filenames += filename
         if only_filenames:
             continue
         runs, ev = _convert_mi(filename[0], ch_names, ch_types)
-        sessions["session_%s" % r] = {"run_%d" % ii: run for ii, run in enumerate(runs)}
+        sessions[f"{session_idx}{r}"] = {str(ii): run for ii, run in enumerate(runs)}
     if only_filenames:
         return filenames
     return sessions
@@ -359,8 +363,8 @@ def _load_data_003_2015(
     info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq)
 
     sessions = {}
-    sessions["session_0"] = {}
-    for ri, run in enumerate([data.train, data.test]):
+    sessions["0"] = {}
+    for r_name, run in [("0train", data.train), ("1test", data.test)]:
         # flash events on the channel 9
         flashs = run[9:10]
         ix_flash = flashs[0] > 0
@@ -382,7 +386,7 @@ def _load_data_003_2015(
         eeg_data = np.r_[run[1:-2] * 1e-6, targets, flashs]
         raw = RawArray(data=eeg_data, info=info, verbose=verbose)
         raw.set_montage(montage)
-        sessions["session_0"]["run_" + str(ri)] = raw
+        sessions["0"][r_name] = raw
 
     return sessions
 
@@ -417,7 +421,7 @@ def _load_data_004_2015(
     # fmt: on
     ch_types = ["eeg"] * 30
     raws, ev = _convert_mi(filename, ch_names, ch_types)
-    sessions = {"session_%d" % ii: {"run_0": run} for ii, run in enumerate(raws)}
+    sessions = {str(ii): {"0": run} for ii, run in enumerate(raws)}
     return sessions
 
 
@@ -748,7 +752,7 @@ class MNEBNCI(BaseDataset):
         )
 
 
-@depreciated_alias("BNCI2014001", "0.7")
+@depreciated_alias("BNCI2014001", "1.1")
 class BNCI2014_001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset.
 
@@ -812,7 +816,7 @@ class BNCI2014_001(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2014002", "0.7")
+@depreciated_alias("BNCI2014002", "1.1")
 class BNCI2014_002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset.
 
@@ -874,7 +878,7 @@ class BNCI2014_002(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2014004", "0.7")
+@depreciated_alias("BNCI2014004", "1.1")
 class BNCI2014_004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset.
 
@@ -957,7 +961,7 @@ class BNCI2014_004(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2014008", "0.7")
+@depreciated_alias("BNCI2014008", "1.1")
 class BNCI2014_008(MNEBNCI):
     """BNCI 2014-008 P300 dataset.
 
@@ -1028,7 +1032,7 @@ class BNCI2014_008(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2014009", "0.7")
+@depreciated_alias("BNCI2014009", "1.1")
 class BNCI2014_009(MNEBNCI):
     """BNCI 2014-009 P300 dataset.
 
@@ -1090,7 +1094,7 @@ class BNCI2014_009(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2015001", "0.7")
+@depreciated_alias("BNCI2015001", "1.1")
 class BNCI2015_001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset.
 
@@ -1146,7 +1150,7 @@ class BNCI2015_001(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2015003", "0.7")
+@depreciated_alias("BNCI2015003", "1.1")
 class BNCI2015_003(MNEBNCI):
     """BNCI 2015-003 P300 dataset.
 
@@ -1189,7 +1193,7 @@ class BNCI2015_003(MNEBNCI):
         )
 
 
-@depreciated_alias("BNCI2015004", "0.7")
+@depreciated_alias("BNCI2015004", "1.1")
 class BNCI2015_004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset.
 
@@ -1225,7 +1229,7 @@ class BNCI2015_004(MNEBNCI):
     ground were placed at the left and right mastoid, respectively.  The g.tec
     GAMMAsys system with g.LADYbird active electrodes and two g.USBamp
     biosignal
-    amplifiers (Guger Technolgies, Graz, Austria) was used for recording.  EEG
+    amplifiers (Guger Technologies, Graz, Austria) was used for recording.  EEG
     was band pass filtered 0.5-100 Hz (notch filter at 50 Hz) and sampled at a
     rate of 256 Hz.
 

@@ -9,6 +9,7 @@ choose the dataset 2a from BCI Competition IV, a motor imagery task. We will
 use a CSP to enhance the signal-to-noise ratio of the EEG epochs and a LDA to
 classify these signals.
 """
+
 # Authors: Pedro L. C. Rodrigues, Sylvain Chevallier
 #
 # https://github.com/plcrodrigues/Workshop-MOABB-BCI-Graz-2019
@@ -65,8 +66,8 @@ sessions = dataset.get_data(subjects=[1])
 # multiple subjects, MOABB ends up being a more appropriate option.
 
 subject = 1
-session_name = "session_T"
-run_name = "run_1"
+session_name = "0train"
+run_name = "0"
 raw = sessions[subject][session_name][run_name]
 
 ##############################################################################

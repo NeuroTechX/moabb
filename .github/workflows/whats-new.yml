@@ -1,0 +1,13 @@
+name: Check What's News Changes
+on:
+  pull_request:
+    types: [ assigned, opened, synchronize, reopened, labeled, unlabeled ]
+    branches:
+      - '*'
+jobs:
+  check-whats-news:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: tarides/changelog-check-action@v2
+        with:
+          changelog: docs/source/whats_new.rst

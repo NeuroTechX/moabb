@@ -9,12 +9,15 @@ import pandas as pd
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
+from moabb.datasets.base import BaseDataset
+from moabb.datasets.bids_interface import StepType
 from moabb.datasets.preprocessing import (
     EpochsToEvents,
     EventsToLabels,
     ForkPipelines,
     RawToEpochs,
     RawToEvents,
+    SetRawAnnotations,
     get_crop_pipeline,
     get_filter_pipeline,
     get_resample_pipeline,
@@ -80,6 +83,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         self.resample = resample
         self.tmin = tmin
         self.tmax = tmax
+        self.interpolate_missing_channels = False
 
     @property
     @abc.abstractmethod
@@ -126,14 +130,94 @@ class BaseProcessing(metaclass=abc.ABCMeta):
     def used_events(self, dataset):
         pass
 
+    def make_process_pipelines(
+        self, dataset, return_epochs=False, return_raws=False, postprocess_pipeline=None
+    ):
+        """Return the pre-processing pipelines corresponding to this paradigm (one per frequency band).
+        Refer to the arguments of :func:`get_data` for more information."""
+        if return_epochs and return_raws:
+            message = "Select only return_epochs or return_raws, not both"
+            raise ValueError(message)
+
+        self.prepare_process(dataset)
+
+        raw_pipelines = self._get_raw_pipelines()
+        epochs_pipeline = self._get_epochs_pipeline(return_epochs, return_raws, dataset)
+        array_pipeline = self._get_array_pipeline(
+            return_epochs, return_raws, dataset, postprocess_pipeline
+        )
+
+        if array_pipeline is not None:
+            events_pipeline = (
+                self._get_events_pipeline(dataset) if return_raws else EpochsToEvents()
+            )
+        else:
+            events_pipeline = None
+
+        if events_pipeline is None and array_pipeline is not None:
+            log.warning(
+                f"event_id not specified, using all the dataset's "
+                f"events to generate labels: {dataset.event_id}"
+            )
+            events_pipeline = (
+                RawToEvents(dataset.event_id)
+                if epochs_pipeline is None
+                else EpochsToEvents()
+            )
+
+        process_pipelines = []
+        for raw_pipeline in raw_pipelines:
+            steps = []
+            steps.append(
+                (
+                    StepType.RAW,
+                    SetRawAnnotations(
+                        dataset.event_id,
+                        durations=dataset.interval[1] - dataset.interval[0],
+                    ),
+                )
+            )
+            if raw_pipeline is not None:
+                steps.append((StepType.RAW, raw_pipeline))
+            if epochs_pipeline is not None:
+                steps.append((StepType.EPOCHS, epochs_pipeline))
+            if array_pipeline is not None:
+                array_events_pipeline = ForkPipelines(
+                    [
+                        ("X", array_pipeline),
+                        ("events", events_pipeline),
+                    ]
+                )
+                steps.append((StepType.ARRAY, array_events_pipeline))
+            process_pipelines.append(Pipeline(steps))
+        return process_pipelines
+
+    def make_labels_pipeline(self, dataset, return_epochs=False, return_raws=False):
+        """Returns the pipeline that extracts the labels from the
+        output of the postprocess_pipeline.
+        Refer to the arguments of :func:`get_data` for more information."""
+        if return_epochs:
+            labels_pipeline = make_pipeline(
+                EpochsToEvents(),
+                EventsToLabels(event_id=self.used_events(dataset)),
+            )
+        elif return_raws:
+            labels_pipeline = make_pipeline(
+                self._get_events_pipeline(dataset),
+                EventsToLabels(event_id=self.used_events(dataset)),
+            )
+        else:  # return array
+            labels_pipeline = EventsToLabels(event_id=self.used_events(dataset))
+        return labels_pipeline
+
     def get_data(  # noqa: C901
         self,
         dataset,
         subjects=None,
         return_epochs=False,
         return_raws=False,
-        processing_pipeline=None,
         cache_config=None,
+        postprocess_pipeline=None,
     ):
         """
         Return the data for a list of subject.
@@ -159,8 +243,16 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             Mutually exclusive with return_epochs
         cache_config: dict | CacheConfig
             Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+        postprocess_pipeline: Pipeline | None
+            Optional pipeline to apply to the data after the preprocessing.
+            This pipeline will either receive :class:`mne.io.BaseRaw`, :class:`mne.Epochs`
+            or :func:`np.ndarray` as input, depending on the values of ``return_epochs``
+            and ``return_raws``.
+            This pipeline must return an ``np.ndarray``.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
 
-        Eeturns
+        Returns
         -------
         X : Union[np.ndarray, mne.Epochs]
             the data that will be used as features for the model
@@ -176,49 +268,21 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             message = f"Dataset {dataset.code} is not valid for paradigm"
             raise AssertionError(message)
 
-        if return_epochs and return_raws:
-            message = "Select only return_epochs or return_raws, not both"
-            raise ValueError(message)
-
         if subjects is None:
             subjects = dataset.subject_list
 
-        self.prepare_process(dataset)
-        raw_pipelines = self._get_raw_pipelines()
-        epochs_pipeline = self._get_epochs_pipeline(return_epochs, return_raws, dataset)
-        array_pipeline = self._get_array_pipeline(
-            return_epochs, return_raws, dataset, processing_pipeline
+        process_pipelines = self.make_process_pipelines(
+            dataset, return_epochs, return_raws, postprocess_pipeline
         )
-        if return_epochs:
-            labels_pipeline = make_pipeline(
-                EpochsToEvents(),
-                EventsToLabels(event_id=self.used_events(dataset)),
-            )
-        elif return_raws:
-            labels_pipeline = make_pipeline(
-                self._get_events_pipeline(dataset),
-                EventsToLabels(event_id=self.used_events(dataset)),
-            )
-        else:  # return array
-            labels_pipeline = EventsToLabels(event_id=self.used_events(dataset))
-
-        if array_pipeline is not None:
-            events_pipeline = (
-                self._get_events_pipeline(dataset) if return_raws else EpochsToEvents()
-            )
-        else:
-            events_pipeline = None
+        labels_pipeline = self.make_labels_pipeline(dataset, return_epochs, return_raws)
 
         data = [
             dataset.get_data(
                 subjects=subjects,
                 cache_config=cache_config,
-                raw_pipeline=raw_pipeline,
-                epochs_pipeline=epochs_pipeline,
-                array_pipeline=array_pipeline,
-                events_pipeline=events_pipeline,
+                process_pipeline=process_pipeline,
             )
-            for raw_pipeline in raw_pipelines
+            for process_pipeline in process_pipelines
         ]
 
         X = []
@@ -336,6 +400,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                         tmax=bmax,
                         baseline=baseline,
                         channels=self.channels,
+                        interpolate_missing_channels=self.interpolate_missing_channels,
                     ),
                 ),
             )
@@ -361,10 +426,72 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                 )
             )
         if processing_pipeline is not None:
-            steps.append(("processing_pipeline", processing_pipeline))
+            steps.append(("postprocess_pipeline", processing_pipeline))
         if len(steps) == 0:
             return None
         return Pipeline(steps)
+
+    def match_all(
+        self,
+        datasets: List[BaseDataset],
+        shift=-0.5,
+        channel_merge_strategy: str = "intersect",
+        ignore=["stim"],
+    ):
+        """
+        Initialize this paradigm to match all datasets in parameter:
+        - `self.resample` is set to match the minimum frequency in all datasets, minus `shift`.
+          If the frequency is 128 for example, then MNE can return 128 or 129 samples
+          depending on the dataset, even if the length of the epochs is 1s
+          Setting `shift=-0.5` solves this particular issue.
+        - `self.channels` is initialized with the channels which are common to all datasets.
+
+        Parameters
+        ----------
+        datasets: List[BaseDataset]
+            A dataset instance.
+        shift: List[BaseDataset]
+            Shift the sampling frequency by this value
+            E.g.: if sampling=128 and shift=-0.5, then it returns 127.5 Hz
+        channel_merge_strategy: str (default: 'intersect')
+            Accepts two values:
+            - 'intersect': keep only channels common to all datasets
+            - 'union': keep all channels from all datasets, removing duplicate
+        ignore: List[string]
+            A list of channels to ignore
+
+        ..versionadded:: 0.6.0
+        """
+        resample = None
+        channels: set = None
+        for dataset in datasets:
+            first_subject = dataset.subject_list[0]
+            data = dataset.get_data(subjects=[first_subject])[first_subject]
+            first_session = list(data.keys())[0]
+            session = data[first_session]
+            first_run = list(session.keys())[0]
+            X = session[first_run]
+            info = X.info
+            sfreq = info["sfreq"]
+            ch_names = info["ch_names"]
+            # get the minimum sampling frequency between all datasets
+            resample = sfreq if resample is None else min(resample, sfreq)
+            # get the channels common to all datasets
+            if channels is None:
+                channels = set(ch_names)
+            elif channel_merge_strategy == "intersect":
+                channels = channels.intersection(ch_names)
+                self.interpolate_missing_channels = False
+            else:
+                channels = channels.union(ch_names)
+                self.interpolate_missing_channels = True
+        # If resample=128 for example, then MNE can returns 128 or 129 samples
+        # depending on the dataset, even if the length of the epochs is 1s
+        # `shift=-0.5` solves this particular issue.
+        self.resample = resample + shift
+
+        # exclude ignored channels
+        self.channels = list(channels.difference(ignore))
 
     @abc.abstractmethod
     def _get_events_pipeline(self, dataset):

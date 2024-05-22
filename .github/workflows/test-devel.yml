@@ -14,12 +14,12 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        python-version: ["3.8"]
+        python-version: ["3.9", "3.10"]
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -46,11 +46,11 @@ jobs:
         if: |
           (runner.os != 'Windows') &&
           (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
-        run: poetry install --no-interaction --no-root --with deeplearning
+        run: poetry install --no-interaction --no-root --extras deeplearning
 
       - name: Install library (Linux/OSX)
         if: ${{ runner.os != 'Windows' }}
-        run: poetry install --no-interaction --with deeplearning
+        run: poetry install --no-interaction --extras deeplearning
 
       - name: Install library (Windows)
         if: ${{ runner.os == 'Windows' }}

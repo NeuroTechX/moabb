@@ -1,6 +1,7 @@
-"""=========================
-Getting Started
-=========================
+"""
+============================
+Tutorial 0: Getting Started
+============================
 
 This tutorial takes you through a basic working example of how to use this
 codebase, including all the different components, up to the results
@@ -8,6 +9,7 @@ generation. If you'd like to know about the statistics and plotting, see the
 next tutorial.
 
 """
+
 # Authors: Vinay Jayaram <vinayjayaram13@gmail.com>
 #
 # License: BSD (3-clause)

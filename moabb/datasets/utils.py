@@ -2,8 +2,13 @@
 
 import inspect
 
+import numpy as np
+from mne import create_info
+from mne.io import RawArray
+
 import moabb.datasets as db
 from moabb.datasets.base import BaseDataset
+from moabb.utils import aliases_list
 
 
 dataset_list = []
@@ -29,7 +34,7 @@ def dataset_search(  # noqa: C901
     Parameters
     ----------
     paradigm: str | None
-        'imagery', 'p300', 'ssvep', None
+        'imagery', 'p300', 'ssvep', 'cvep', None
 
     multi_session: bool
         if True only returns datasets with more than one session per subject.
@@ -53,6 +58,7 @@ def dataset_search(  # noqa: C901
     """
     if len(dataset_list) == 0:
         _init_dataset_list()
+    deprecated_names, _, _ = zip(*aliases_list)
 
     channels = set(channels)
     out_data = []
@@ -60,9 +66,12 @@ def dataset_search(  # noqa: C901
         n_classes = len(events)
     else:
         n_classes = None
-    assert paradigm in ["imagery", "p300", "ssvep", None]
+    assert paradigm in ["imagery", "p300", "ssvep", "cvep", None]
 
     for type_d in dataset_list:
+        if type_d.__name__ in deprecated_names:
+            continue
+
         d = type_d()
         skip_dataset = False
         if multi_session and d.n_sessions < 2:
@@ -153,9 +162,106 @@ def _download_all(update_path=True, verbose=None):
         ds().download(update_path=True, verbose=verbose, accept=True)
 
 
-def block_rep(block: int, rep: int):
-    return f"block_{block}-repetition_{rep}"
+def block_rep(block: int, rep: int, n_rep: int):
+    idx = block * n_rep + rep
+    return f"{idx}block{block}rep{rep}"
 
 
-def blocks_reps(blocks: list, reps: list):
-    return [block_rep(b, r) for b in blocks for r in reps]
+def blocks_reps(blocks: list, reps: list, n_rep: int):
+    return [block_rep(b, r, n_rep) for b in blocks for r in reps]
+
+
+def add_stim_channel_trial(raw, onsets, labels, offset=200, ch_name="stim_trial"):
+    """
+    Add a stimulus channel with trial onsets and their labels.
+
+    Parameters
+    ----------
+    raw: mne.Raw
+        The raw object to add the stimulus channel to.
+    onsets: List | np.ndarray
+        The onsets of the trials in sample numbers.
+    labels: List | np.ndarray
+        The labels of the trials.
+    offset: int (default: 200)
+        The integer value to start markers with. For instance, if 200, then label 0 will be marker 200, label 1
+        will be marker 201, etc.
+    ch_name: str (default: "stim_trial")
+        The name of the added stimulus channel.
+
+    Returns
+    -------
+    mne.Raw
+        The raw object with the added stimulus channel.
+    """
+    stim_chan = np.zeros((1, len(raw)))
+    for onset, label in zip(onsets, labels):
+        stim_chan[0, onset] = offset + label
+    info = create_info(
+        ch_names=[ch_name],
+        ch_types=["stim"],
+        sfreq=raw.info["sfreq"],
+        verbose=False,
+    )
+    raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
+    return raw
+
+
+def add_stim_channel_epoch(
+    raw,
+    onsets,
+    labels,
+    codes=None,
+    presentation_rate=None,
+    offset=100,
+    ch_name="stim_epoch",
+):
+    """
+    Add a stimulus channel with epoch onsets and their labels, which are the values of the presented code for each
+    of the trials.
+
+    Parameters
+    ----------
+    raw: mne.Raw
+        The raw object to add the stimulus channel to.
+    onsets: List | np.ndarray
+        The onsets of the trials in sample numbers.
+    labels: List | np.ndarray
+        The labels of the trials.
+    codes: np.ndarray (default: None)
+        The codebook containing each presented code of shape (nr_bits, nr_codes), sampled at the presentation rate.
+        If None, the labels information is used directly.
+    presentation_rate: int (default: None):
+        The presentation rate (e.g., frame rate) at which the codes were presented in Hz.
+        If None, the raw object's sampling frequency is used.
+    offset: int (default: 100)
+        The integer value to start markers with. For instance, if 100, then label 0 will be marker 100, label 1
+        will be marker 101, etc.
+    ch_name: str (default: "stim_epoch")
+        The name of the added stimulus channel.
+
+    Returns
+    -------
+    mne.Raw
+        The raw object with the added stimulus channel.
+    """
+    if presentation_rate is None:
+        presentation_rate = raw.info["sfreq"]
+    stim_chan = np.zeros((1, len(raw)))
+    for onset, label in zip(onsets, labels):
+        if codes is None:
+            stim_chan[0, int(onset * presentation_rate)] = offset + label
+        else:
+            idx = np.round(
+                onset + np.arange(codes.shape[0]) / presentation_rate * raw.info["sfreq"]
+            ).astype("int")
+            stim_chan[0, idx] = offset + codes[:, label]
+
+    info = create_info(
+        ch_names=[ch_name],
+        ch_types=["stim"],
+        sfreq=raw.info["sfreq"],
+        verbose=False,
+    )
+    raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
+    return raw

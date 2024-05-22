@@ -13,7 +13,7 @@ from .base import BaseDataset
 
 
 log = logging.getLogger(__name__)
-GIGA_URL = "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100295/mat_data/"
+GIGA_URL = "https://ftp.cngb.org/pub/gigadb/pub/10.5524/100001_101000/100295/mat_data/"
 
 
 class Cho2017(BaseDataset):
@@ -122,7 +122,7 @@ class Cho2017(BaseDataset):
         raw = RawArray(data=eeg_data, info=info, verbose=False)
         raw.set_montage(montage)
 
-        return {"session_0": {"run_0": raw}}
+        return {"0": {"0": raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None

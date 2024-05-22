@@ -21,6 +21,7 @@ a cache for the next time the dataset is used.
 We will use the AlexMI dataset [3]_, one of the smallest in
 people and one that can be downloaded quickly.
 """
+
 # Authors: Pierre Guetschel <pierre.guetschel@gmail.com>
 #
 # License: BSD (3-clause)
@@ -88,7 +89,7 @@ print_tree(mne_data / "MNE-alexeeg-data")
 #
 # After conversion, the data is stored in a BIDS-compliant way:
 print("After conversion:")
-print_tree(temp_dir / "MNE-alexandre motor imagery-bids-cache")
+print_tree(temp_dir / "MNE-BIDS-alexandre-motor-imagery")
 
 ###############################################################################
 # In the BIDS version of our dataset, the raw files are saved in EDF.

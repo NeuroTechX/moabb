@@ -2,6 +2,7 @@ import logging
 from collections import OrderedDict
 from operator import methodcaller
 from typing import Dict, List, Tuple, Union
+from warnings import warn
 
 import mne
 import numpy as np
@@ -19,6 +20,15 @@ def _is_none_pipeline(pipeline):
         and pipeline.steps[0][1] is None
         and len(pipeline) == 1
     )
+
+
+def _unsafe_pick_events(events, include):
+    try:
+        return mne.pick_events(events, include=include)
+    except RuntimeError as e:
+        if str(e) == "No events found":
+            return np.zeros((0, 3), dtype="int32")
+        raise e
 
 
 class ForkPipelines(TransformerMixin, BaseEstimator):
@@ -41,81 +51,89 @@ class FixedTransformer(TransformerMixin, BaseEstimator):
 
 
 class SetRawAnnotations(FixedTransformer):
-    def __init__(self, event_id):
+    """
+    Always sets the annotations, even if the events list is empty
+    """
+
+    def __init__(self, event_id, durations: Union[float, Dict[str, float]]):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         if len(set(event_id.values())) != len(event_id):
             raise ValueError("Duplicate event code")
         self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
+        self.durations = durations
 
     def transform(self, raw, y=None):
         if raw.annotations:
             return raw
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) == 0:
-            raise ValueError("Need either a stim channel or annotations")
+            log.warning(
+                "No stim channel nor annotations found, skipping setting annotations."
+            )
+            return raw
         events = mne.find_events(raw, shortest_event=0, verbose=False)
-        # we don't catch the error if no event found:
-        events = mne.pick_events(events, include=list(self.event_id.values()))
-        annotations = mne.annotations_from_events(
-            events,
-            raw.info["sfreq"],
-            self.event_desc,
-            first_samp=raw.first_samp,
-            verbose=False,
-        )
-        raw.set_annotations(annotations)
+        events = _unsafe_pick_events(events, include=list(self.event_id.values()))
+        if len(events) != 0:
+            annotations = mne.annotations_from_events(
+                events,
+                raw.info["sfreq"],
+                self.event_desc,
+                first_samp=raw.first_samp,
+                verbose=False,
+            )
+            annotations.set_durations(self.durations)
+            raw.set_annotations(annotations)
+        else:
+            log.warning("No events found, skipping setting annotations.")
         return raw
 
 
 class RawToEvents(FixedTransformer):
+    """
+    Always returns an array for shape (n_events, 3), even if no events found
+    """
+
     def __init__(self, event_id):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
 
-    def transform(self, raw, y=None):
+    def _find_events(self, raw):
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) > 0:
+            # returns empty array if none found
             events = mne.find_events(raw, shortest_event=0, verbose=False)
         else:
-            events, _ = mne.events_from_annotations(
-                raw, event_id=self.event_id, verbose=False
-            )
-        try:
-            events = mne.pick_events(events, include=list(self.event_id.values()))
-        except RuntimeError:
-            # skip raw if no event found
-            return
+            try:
+                events, _ = mne.events_from_annotations(
+                    raw, event_id=self.event_id, verbose=False
+                )
+            except ValueError as e:
+                if str(e) == "Could not find any of the events you specified.":
+                    return np.zeros((0, 3), dtype="int32")
+                raise e
         return events
 
-
-class RawToEventsP300(FixedTransformer):
-    def __init__(self, event_id):
-        assert isinstance(event_id, dict)  # not None
-        self.event_id = event_id
-
     def transform(self, raw, y=None):
+        events = self._find_events(raw)
+        return _unsafe_pick_events(events, list(self.event_id.values()))
+
+
+class RawToEventsP300(RawToEvents):
+    def transform(self, raw, y=None):
+        events = self._find_events(raw)
         event_id = self.event_id
-        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
-        if len(stim_channels) > 0:
-            events = mne.find_events(raw, shortest_event=0, verbose=False)
-        else:
-            events, _ = mne.events_from_annotations(raw, event_id=event_id, verbose=False)
-        try:
-            if "Target" in event_id and "NonTarget" in event_id:
-                if (
-                    type(event_id["Target"]) is list
-                    and type(event_id["NonTarget"]) == list
-                ):
-                    event_id_new = dict(Target=1, NonTarget=0)
-                    events = mne.merge_events(events, event_id["Target"], 1)
-                    events = mne.merge_events(events, event_id["NonTarget"], 0)
-                    event_id = event_id_new
-            events = mne.pick_events(events, include=list(event_id.values()))
-        except RuntimeError:
-            # skip raw if no event found
-            return
-        return events
+        if (
+            "Target" in event_id
+            and "NonTarget" in event_id
+            and isinstance(event_id["Target"], list)
+            and isinstance(event_id["NonTarget"], list)
+        ):
+            event_id_new = dict(Target=1, NonTarget=0)
+            events = mne.merge_events(events, event_id["Target"], 1)
+            events = mne.merge_events(events, event_id["NonTarget"], 0)
+            event_id = event_id_new
+        return _unsafe_pick_events(events, list(event_id.values()))
 
 
 class RawToFixedIntervalEvents(FixedTransformer):
@@ -182,6 +200,7 @@ class RawToEpochs(FixedTransformer):
         tmax: float,
         baseline: Tuple[float, float],
         channels: List[str] = None,
+        interpolate_missing_channels: bool = False,
     ):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
@@ -189,11 +208,12 @@ class RawToEpochs(FixedTransformer):
         self.tmax = tmax
         self.baseline = baseline
         self.channels = channels
+        self.interpolate_missing_channels = interpolate_missing_channels
 
     def transform(self, X, y=None):
         raw = X["raw"]
         events = X["events"]
-        if events is None or len(events) == 0:
+        if len(events) == 0:
             raise ValueError("No events found")
         if not isinstance(raw, mne.io.BaseRaw):
             raise ValueError("raw must be a mne.io.BaseRaw")
@@ -201,9 +221,40 @@ class RawToEpochs(FixedTransformer):
         if self.channels is None:
             picks = mne.pick_types(raw.info, eeg=True, stim=False)
         else:
+            available_channels = raw.info["ch_names"]
+            if self.interpolate_missing_channels:
+                missing_channels = list(set(self.channels).difference(available_channels))
+
+                # add missing channels (contains only zeros by default)
+                try:
+                    raw.add_reference_channels(missing_channels)
+                except IndexError:
+                    # Index error can occurs if the channels we add are not part of this epoch montage
+                    # Then log a warning
+                    montage = raw.info["dig"]
+                    warn(
+                        f"Montage disabled as one of these channels, {missing_channels}, is not part of the montage {montage}"
+                    )
+                    # and disable the montage
+                    raw.info.pop("dig")
+                    # run again with montage disabled
+                    raw.add_reference_channels(missing_channels)
+
+                # Trick: mark these channels as bad
+                raw.info["bads"].extend(missing_channels)
+                # ...and use mne bad channel interpolation to generate the value of the missing channels
+                try:
+                    raw.interpolate_bads(origin="auto")
+                except ValueError:
+                    # use default origin if montage info not available
+                    raw.interpolate_bads(origin=(0, 0, 0.04))
+                # update the name of the available channels
+                available_channels = self.channels
+
             picks = mne.pick_channels(
-                raw.info["ch_names"], include=self.channels, ordered=True
+                available_channels, include=self.channels, ordered=True
             )
+            assert len(picks) == len(self.channels)
 
         epochs = mne.Epochs(
             raw,
@@ -219,6 +270,7 @@ class RawToEpochs(FixedTransformer):
             event_repeated="drop",
             on_missing="ignore",
         )
+        warn(f"warnEpochs {epochs}")
         return epochs
 
 
@@ -237,7 +289,7 @@ def get_filter_pipeline(fmin, fmax):
 
 def get_crop_pipeline(tmin, tmax):
     return FunctionTransformer(
-        methodcaller("crop", tmin=tmax, tmax=tmin, verbose=False),
+        methodcaller("crop", tmin=tmin, tmax=tmax, verbose=False),
     )
 
 

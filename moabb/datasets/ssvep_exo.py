@@ -11,7 +11,7 @@ from .base import BaseDataset
 SSVEPEXO_URL = "https://zenodo.org/record/2392979/files/"
 
 
-@depreciated_alias("SSVEPExo", "0.7")
+@depreciated_alias("SSVEPExo", "1.1")
 class Kalunga2016(BaseDataset):
     """SSVEP Exo dataset.
 
@@ -76,8 +76,8 @@ class Kalunga2016(BaseDataset):
         paths = self.data_path(subject, update_path=True, verbose=False)
         for ii, path in enumerate(paths):
             raw = Raw(path, preload=True, verbose="ERROR")
-            out["run_%d" % ii] = raw
-        return {"session_0": out}
+            out[str(ii)] = raw
+        return {"0": out}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
