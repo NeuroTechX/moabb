@@ -14,8 +14,10 @@ from sklearn.model_selection import (
     StratifiedKFold,
     StratifiedShuffleSplit,
     cross_validate,
+    train_test_split,
 )
 from sklearn.model_selection._validation import _fit_and_score, _score
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
@@ -44,12 +46,31 @@ Vector = Union[list, tuple, np.ndarray]
 def objective(trial, X, y, clf, scorer, epochs):
     learning_rate = trial.suggest_float("learning_rate", 1e-4, 1e-2, log=True)
     weight_decay = trial.suggest_float("weight_decay", 1e-10, 1e-3, log=True)
-    drop_rate = trial.suggest_float("drop_rate", 0.0, 1.0)
+    drop_rate = trial.suggest_float("drop_rate", 0.3, 0.9)
 
-    model = create_deep_model(clf, learning_rate, weight_decay, drop_rate, epochs=epochs)
-    model.fit(X, y)
+    pre_model, model = create_deep_model(
+        clf, learning_rate, weight_decay, drop_rate, epochs=epochs
+    )
+    n_epochs = list(range(len(y)))
+    try:
+        idx_X_train, idx_X_val, y_train, y_val = train_test_split(
+            n_epochs, y, test_size=0.2, stratify=True
+        )
+    except Exception as e:
+        print(e)
+        idx_X_train, idx_X_val, y_train, y_val = train_test_split(
+            n_epochs, y, test_size=0.2
+        )
 
-    return scorer(model, X, y)
+    X_train = X[idx_X_train]
+    X_val = X[idx_X_val]
+    pre_model.fit(X=X_train, y=y_train)
+    X_val = pre_model.transform(X_val)
+
+    model = Pipeline([("preprocessing", pre_model), ("deep", model)])
+    model.fit(X, y, deep__validation_data=(X_val, y_val))
+
+    return scorer(model, X_val, y_val)
 
 
 class WithinSessionEvaluation(BaseEvaluation):
@@ -241,6 +262,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                             study = optuna.create_study(
                                 direction="maximize",
+                                study_name=f"{name}_{subject}_{session}_{cv_ind}",
                             )
                             study.optimize(
                                 lambda trial: objective(
@@ -251,16 +273,20 @@ class WithinSessionEvaluation(BaseEvaluation):
                                     scorer=scorer,
                                     epochs=n_epochs,
                                 ),
-                                n_trials=25,
+                                n_trials=100,
                                 timeout=60,  # one hour
                                 show_progress_bar=True,
                                 n_jobs=1,
+                                gc_after_trial=True,
                             )
 
-                            cvclf = create_deep_model(
+                            pre_model, model = create_deep_model(
                                 clf=cvclf,
                                 **study.best_params,
                                 epochs=n_epochs,
+                            )
+                            cvclf = Pipeline(
+                                [("preprocessing", pre_model), ("deep", model)]
                             )
 
                             cvclf.fit(X_[train], y_[train])
