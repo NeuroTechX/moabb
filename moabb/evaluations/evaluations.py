@@ -259,9 +259,7 @@ class WithinSessionEvaluation(BaseEvaluation):
 
                             cvclf = create_deep_model(
                                 clf=cvclf,
-                                learning_rate=study.best_params["learning_rate"],
-                                weight_decay=study.best_params["weight_decay"],
-                                drop_rate=study.best_params["drop_rate"],
+                                **study.best_params,
                                 epochs=n_epochs,
                             )
 
