@@ -4,8 +4,28 @@ from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
+import tensorflow as tf
 from numpy import argmax
 from sklearn.pipeline import Pipeline
+
+from moabb.pipelines.deep_learning import (
+    KerasDeepConvNet,
+    KerasEEGITNet,
+    KerasEEGNet_8_2,
+    KerasEEGNeX,
+    KerasEEGTCNet,
+    KerasShallowConvNet,
+)
+
+
+models_class = {
+    "KerasShallowConvNet": KerasShallowConvNet,
+    "KerasDeepConvNet": KerasDeepConvNet,
+    "KerasEEGNet_8_2": KerasEEGNet_8_2,
+    "KerasEEGITNet": KerasEEGITNet,
+    "KerasEEGTCNet": KerasEEGTCNet,
+    "KerasEEGNeX": KerasEEGNeX,
+}
 
 
 def _check_if_is_keras_model(model):
@@ -212,3 +232,29 @@ def create_save_path(
         return str(path_save)
     else:
         print("No hdf5_path provided, models will not be saved.")
+
+
+def create_deep_model(clf, learning_rate, weight_decay, drop_rate, epochs):
+    keras_clf = clf[-1]
+    steps = list(clf.steps)
+
+    Adam = tf.keras.optimizers.Adam(
+        learning_rate=learning_rate, weight_decay=weight_decay
+    )
+    new_keras_clf = models_class[keras_clf.__class__.__name__](
+        loss="sparse_categorical_crossentropy",
+        optimizer=Adam,
+        drop_rate=drop_rate,
+        epochs=epochs,
+        verbose=0,
+        # rest of the parameters are the same as the original model
+        callbacks=keras_clf.callbacks,
+        random_state=keras_clf.random_state,
+        batch_size=keras_clf.batch_size,
+        validation_split=keras_clf.validation_split,
+        shuffle=keras_clf.shuffle,
+    )
+    steps[-1] = (steps[-1][0], new_keras_clf)
+
+    pipe = Pipeline(steps)
+    return pipe

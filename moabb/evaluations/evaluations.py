@@ -4,6 +4,7 @@ from time import time
 from typing import Optional, Union
 
 import numpy as np
+import optuna
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
@@ -19,7 +20,12 @@ from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
-from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
+from moabb.evaluations.utils import (
+    create_deep_model,
+    create_save_path,
+    save_model_cv,
+    save_model_list,
+)
 
 
 try:
@@ -33,6 +39,17 @@ log = logging.getLogger(__name__)
 
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
 Vector = Union[list, tuple, np.ndarray]
+
+
+def objective(trial, X, y, clf, scorer, epochs):
+    learning_rate = trial.suggest_float("learning_rate", 1e-4, 1e-2, log=True)
+    weight_decay = trial.suggest_float("weight_decay", 1e-10, 1e-3, log=True)
+    drop_rate = trial.suggest_float("drop_rate", 0.0, 1.0)
+
+    model = create_deep_model(clf, learning_rate, weight_decay, drop_rate, epochs=epochs)
+    model.fit(X, y)
+
+    return scorer(model, X, y)
 
 
 class WithinSessionEvaluation(BaseEvaluation):
@@ -220,6 +237,34 @@ class WithinSessionEvaluation(BaseEvaluation):
                         y_ = y[ix] if self.mne_labels else y_cv
                         for cv_ind, (train, test) in enumerate(cv.split(X_, y_)):
                             cvclf = clone(grid_clf)
+                            n_epochs = cvclf[-1].epochs
+
+                            study = optuna.create_study(
+                                direction="maximize",
+                            )
+                            study.optimize(
+                                lambda trial: objective(
+                                    trial,
+                                    X=X_[train],
+                                    y=y_[train],
+                                    clf=cvclf,
+                                    scorer=scorer,
+                                    epochs=n_epochs,
+                                ),
+                                n_trials=25,
+                                timeout=60,  # one hour
+                                show_progress_bar=True,
+                                n_jobs=1,
+                            )
+
+                            cvclf = create_deep_model(
+                                clf=cvclf,
+                                learning_rate=study.best_params["learning_rate"],
+                                weight_decay=study.best_params["weight_decay"],
+                                drop_rate=study.best_params["drop_rate"],
+                                epochs=n_epochs,
+                            )
+
                             cvclf.fit(X_[train], y_[train])
                             acc.append(scorer(cvclf, X_[test], y_[test]))
 
