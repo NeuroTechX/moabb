@@ -246,15 +246,15 @@ def create_deep_model(clf, learning_rate, weight_decay, drop_rate, epochs):
         optimizer=Adam,
         drop_rate=drop_rate,
         epochs=epochs,
-        verbose=0,
+        verbose=True,
         # rest of the parameters are the same as the original model
         callbacks=keras_clf.callbacks,
         random_state=keras_clf.random_state,
         batch_size=keras_clf.batch_size,
-        validation_split=keras_clf.validation_split,
+        validation_split=0.0,
         shuffle=keras_clf.shuffle,
     )
-    steps[-1] = (steps[-1][0], new_keras_clf)
-
-    pipe = Pipeline(steps)
-    return pipe
+    steps[-1] = ("deep", new_keras_clf)
+    pre_pipe = Pipeline(steps[:-1])
+    # pipe = Pipeline(("deep", new_keras_clf))
+    return pre_pipe, new_keras_clf

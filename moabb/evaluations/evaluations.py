@@ -132,10 +132,14 @@ class WithinSessionEvaluation(BaseEvaluation):
         self,
         n_perms: Optional[Union[int, Vector]] = None,
         data_size: Optional[dict] = None,
+        optuna_n_trials: int = 100,
+        optuna_timeout: int = 60,
         **kwargs,
     ):
         self.data_size = data_size
         self.n_perms = n_perms
+        self.optuna_n_trials = optuna_n_trials
+        self.optuna_timeout = optuna_timeout
         self.calculate_learning_curve = self.data_size is not None
         if self.calculate_learning_curve:
             # Check correct n_perms parameter
@@ -273,8 +277,8 @@ class WithinSessionEvaluation(BaseEvaluation):
                                     scorer=scorer,
                                     epochs=n_epochs,
                                 ),
-                                n_trials=100,
-                                timeout=60,  # one hour
+                                n_trials=self.optuna_n_trials,
+                                timeout=self.optuna_timeout,  # one hour
                                 show_progress_bar=True,
                                 n_jobs=1,
                                 gc_after_trial=True,
