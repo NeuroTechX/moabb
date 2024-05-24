@@ -121,6 +121,7 @@ is a resting state experiment.
 
    :class:`Cattan2019_PHMD`,12,16,2,10,60s,512Hz,1
    :class:`Hinss2021`,15,62,4,1,2s,250Hz,1
+   :class:`Rodrigues2017`,20,16,2,5,10s,512Hz,1
 
 Compound Datasets
 ======================
