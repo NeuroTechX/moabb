@@ -132,7 +132,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         self,
         n_perms: Optional[Union[int, Vector]] = None,
         data_size: Optional[dict] = None,
-        optuna_n_trials: int = 1,
+        optuna_n_trials: int = 25,
         optuna_timeout: int = 60,
         **kwargs,
     ):
