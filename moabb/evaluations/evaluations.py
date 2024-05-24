@@ -49,12 +49,12 @@ def objective(trial, X, y, clf, scorer, epochs, random_state):
     drop_rate = trial.suggest_float("drop_rate", 0.3, 0.9)
 
     pre_process_steps, model = create_deep_model(
-        clf, learning_rate, weight_decay, drop_rate, epochs=epochs
+        clf, learning_rate, weight_decay, drop_rate, epochs=epochs, manual_validation=True
     )
     n_epochs = list(range(len(y)))
     try:
         idx_X_train, idx_X_val, y_train, y_val = train_test_split(
-            n_epochs, y, test_size=0.2, stratify=True, random_state=random_state
+            n_epochs, y, test_size=0.2, stratify=y, random_state=random_state
         )
     except Exception as e:
         print(e)
@@ -132,7 +132,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         self,
         n_perms: Optional[Union[int, Vector]] = None,
         data_size: Optional[dict] = None,
-        optuna_n_trials: int = 100,
+        optuna_n_trials: int = 1,
         optuna_timeout: int = 60,
         **kwargs,
     ):
