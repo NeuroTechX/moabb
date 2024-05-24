@@ -43,7 +43,7 @@ log = logging.getLogger(__name__)
 Vector = Union[list, tuple, np.ndarray]
 
 
-def objective(trial, X, y, clf, scorer, epochs):
+def objective(trial, X, y, clf, scorer, epochs, random_state):
     learning_rate = trial.suggest_float("learning_rate", 1e-4, 1e-2, log=True)
     weight_decay = trial.suggest_float("weight_decay", 1e-10, 1e-3, log=True)
     drop_rate = trial.suggest_float("drop_rate", 0.3, 0.9)
@@ -54,12 +54,12 @@ def objective(trial, X, y, clf, scorer, epochs):
     n_epochs = list(range(len(y)))
     try:
         idx_X_train, idx_X_val, y_train, y_val = train_test_split(
-            n_epochs, y, test_size=0.2, stratify=True
+            n_epochs, y, test_size=0.2, stratify=True, random_state=random_state
         )
     except Exception as e:
         print(e)
         idx_X_train, idx_X_val, y_train, y_val = train_test_split(
-            n_epochs, y, test_size=0.2
+            n_epochs, y, test_size=0.2, random_state=random_state
         )
 
     X_train = X[idx_X_train]
@@ -276,6 +276,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                                     clf=cvclf,
                                     scorer=scorer,
                                     epochs=n_epochs,
+                                    random_state=self.random_state,
                                 ),
                                 n_trials=self.optuna_n_trials,
                                 timeout=self.optuna_timeout,  # one hour
