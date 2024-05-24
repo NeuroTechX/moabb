@@ -48,7 +48,7 @@ def objective(trial, X, y, clf, scorer, epochs, random_state):
     weight_decay = trial.suggest_float("weight_decay", 1e-10, 1e-3, log=True)
     drop_rate = trial.suggest_float("drop_rate", 0.3, 0.9)
 
-    pre_model, model = create_deep_model(
+    pre_process_steps, model = create_deep_model(
         clf, learning_rate, weight_decay, drop_rate, epochs=epochs
     )
     n_epochs = list(range(len(y)))
@@ -64,11 +64,11 @@ def objective(trial, X, y, clf, scorer, epochs, random_state):
 
     X_train = X[idx_X_train]
     X_val = X[idx_X_val]
-    pre_model.fit(X=X_train, y=y_train)
-    X_val = pre_model.transform(X_val)
+    pre_process_steps.fit(X=X_train, y=y_train)
+    X_val_pre_processed = pre_process_steps.transform(X_val)
 
-    model = Pipeline([("preprocessing", pre_model), ("deep", model)])
-    model.fit(X, y, deep__validation_data=(X_val, y_val))
+    model = Pipeline([("preprocessing", pre_process_steps), ("deep", model)])
+    model.fit(X, y, deep__validation_data=(X_val_pre_processed, y_val))
 
     return scorer(model, X_val, y_val)
 
@@ -285,13 +285,13 @@ class WithinSessionEvaluation(BaseEvaluation):
                                 gc_after_trial=True,
                             )
 
-                            pre_model, model = create_deep_model(
+                            pre_process_steps, model = create_deep_model(
                                 clf=cvclf,
                                 **study.best_params,
                                 epochs=n_epochs,
                             )
                             cvclf = Pipeline(
-                                [("preprocessing", pre_model), ("deep", model)]
+                                [("preprocessing", pre_process_steps), ("deep", model)]
                             )
 
                             cvclf.fit(X_[train], y_[train])
