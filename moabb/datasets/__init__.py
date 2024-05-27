@@ -11,6 +11,7 @@ from . import compound_dataset
 
 # flake8: noqa
 from .alex_mi import AlexMI
+from .alphawaves import Rodrigues2017
 from .bbci_eeg_fnirs import Shin2017A, Shin2017B
 
 # Depreciated datasets (will be removed in the future):
@@ -73,6 +74,7 @@ from .ssvep_exo import Kalunga2016
 from .ssvep_mamem import MAMEM1, MAMEM2, MAMEM3
 from .ssvep_nakanishi import Nakanishi2015
 from .ssvep_wang import Wang2016
+from .stieger2021 import Stieger2021
 from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021
 from .upper_limb import Ofner2017
