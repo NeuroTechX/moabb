@@ -1299,8 +1299,9 @@ files = [
 [package.dependencies]
 numpy = [
     {version = ">1.20", markers = "python_version < \"3.10\""},
-    {version = ">=1.23.3", markers = "python_version >= \"3.11\""},
+    {version = ">=1.23.3", markers = "python_version >= \"3.11\" and python_version < \"3.12\""},
     {version = ">=1.21.2", markers = "python_version >= \"3.10\" and python_version < \"3.11\""},
+    {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
 ]
 
 [package.extras]
@@ -2806,7 +2807,10 @@ h5py = ">=3.10.0"
 keras = ">=3.0.0"
 libclang = ">=13.0.0"
 ml-dtypes = ">=0.3.1,<0.4.0"
-numpy = {version = ">=1.23.5,<2.0.0", markers = "python_version <= \"3.11\""}
+numpy = [
+    {version = ">=1.23.5,<2.0.0", markers = "python_version <= \"3.11\""},
+    {version = ">=1.26.0,<2.0.0", markers = "python_version >= \"3.12\""},
+]
 opt-einsum = ">=2.3.2"
 packaging = "*"
 protobuf = ">=3.20.3,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
@@ -3150,9 +3154,9 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [extras]
 carbonemission = ["codecarbon"]
-deeplearning = ["braindecode", "keras", "libclang", "scikeras", "tensorflow", "torch"]
+deeplearning = ["braindecode", "docstring_inheritance", "keras", "libclang", "scikeras", "tensorflow", "torch"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.9,<3.12"
-content-hash = "f6e11b88c8629ae5fc7a23e84e664ee255bda5851d4ffe89fa9c04e67bed8dce"
+python-versions = ">=3.9,<3.13"
+content-hash = "f27cf02f7254d13cf7311a52159cfa8ee37a4b4af81e1d2826ff40e23402a99c"
