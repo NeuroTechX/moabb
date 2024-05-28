@@ -12,7 +12,6 @@ from typing import Any, Dict
 import tensorflow as tf
 from keras import backend as K
 from keras.constraints import max_norm
-from keras.ops import pad
 from keras.layers import (
     Activation,
     Add,
@@ -32,6 +31,7 @@ from keras.layers import (
     Permute,
 )
 from keras.models import Model, Sequential
+from keras.ops import pad
 from scikeras.wrappers import KerasClassifier
 
 from moabb.pipelines.utils_deep_model import EEGNet, EEGNet_TC, TCN_block
@@ -88,19 +88,19 @@ class KerasShallowConvNet(KerasClassifier):
     """
 
     def __init__(
-            self,
-            loss,
-            optimizer="Adam",
-            epochs=1000,
-            batch_size=64,
-            verbose=0,
-            random_state=None,
-            validation_split=0.2,
-            history_plot=False,
-            path=None,
-            learning_rate=0.001,
-            drop_rate=0.5,
-            **kwargs,
+        self,
+        loss,
+        optimizer="Adam",
+        epochs=1000,
+        batch_size=64,
+        verbose=0,
+        random_state=None,
+        validation_split=0.2,
+        history_plot=False,
+        path=None,
+        learning_rate=0.001,
+        drop_rate=0.5,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -176,19 +176,19 @@ class KerasDeepConvNet(KerasClassifier):
     """
 
     def __init__(
-            self,
-            loss,
-            optimizer="Adam",
-            epochs=1000,
-            batch_size=64,
-            verbose=0,
-            random_state=None,
-            validation_split=0.2,
-            history_plot=False,
-            path=None,
-            learning_rate=0.0009,
-            drop_rate=0.5,
-            **kwargs,
+        self,
+        loss,
+        optimizer="Adam",
+        epochs=1000,
+        batch_size=64,
+        verbose=0,
+        random_state=None,
+        validation_split=0.2,
+        history_plot=False,
+        path=None,
+        learning_rate=0.0009,
+        drop_rate=0.5,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -287,19 +287,19 @@ class KerasEEGNet_8_2(KerasClassifier):
     """
 
     def __init__(
-            self,
-            loss,
-            optimizer="Adam",
-            epochs=1000,
-            batch_size=64,
-            verbose=0,
-            random_state=None,
-            validation_split=0.2,
-            history_plot=False,
-            path=None,
-            learning_rate=0.0009,
-            drop_rate=0.5,
-            **kwargs,
+        self,
+        loss,
+        optimizer="Adam",
+        epochs=1000,
+        batch_size=64,
+        verbose=0,
+        random_state=None,
+        validation_split=0.2,
+        history_plot=False,
+        path=None,
+        learning_rate=0.0009,
+        drop_rate=0.5,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -376,19 +376,19 @@ class KerasEEGTCNet(KerasClassifier):
     """
 
     def __init__(
-            self,
-            loss,
-            optimizer="Adam",
-            epochs=1000,
-            batch_size=64,
-            verbose=0,
-            random_state=None,
-            validation_split=0.2,
-            history_plot=False,
-            path=None,
-            learning_rate=0.0009,
-            drop_rate=0.5,
-            **kwargs,
+        self,
+        loss,
+        optimizer="Adam",
+        epochs=1000,
+        batch_size=64,
+        verbose=0,
+        random_state=None,
+        validation_split=0.2,
+        history_plot=False,
+        path=None,
+        learning_rate=0.0009,
+        drop_rate=0.5,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -472,19 +472,19 @@ class KerasEEGNeX(KerasClassifier):
     """
 
     def __init__(
-            self,
-            loss,
-            optimizer="Adam",
-            epochs=1000,
-            batch_size=64,
-            verbose=0,
-            random_state=None,
-            validation_split=0.2,
-            history_plot=False,
-            path=None,
-            learning_rate=0.0009,
-            drop_rate=0.5,
-            **kwargs,
+        self,
+        loss,
+        optimizer="Adam",
+        epochs=1000,
+        batch_size=64,
+        verbose=0,
+        random_state=None,
+        validation_split=0.2,
+        history_plot=False,
+        path=None,
+        learning_rate=0.0009,
+        drop_rate=0.5,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -618,19 +618,19 @@ class KerasEEGITNet(KerasClassifier):
     """
 
     def __init__(
-            self,
-            loss,
-            optimizer="Adam",
-            epochs=1000,
-            batch_size=64,
-            verbose=0,
-            random_state=None,
-            validation_split=0.2,
-            history_plot=False,
-            path=None,
-            learning_rate=0.0009,
-            drop_rate=0.4,
-            **kwargs,
+        self,
+        loss,
+        optimizer="Adam",
+        epochs=1000,
+        batch_size=64,
+        verbose=0,
+        random_state=None,
+        validation_split=0.2,
+        history_plot=False,
+        path=None,
+        learning_rate=0.0009,
+        drop_rate=0.4,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
