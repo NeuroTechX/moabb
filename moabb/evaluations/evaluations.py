@@ -4,6 +4,7 @@ from time import time
 from typing import Optional, Union
 
 import numpy as np
+import optuna
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
@@ -132,7 +133,7 @@ class WithinSessionEvaluation(BaseEvaluation):
         n_perms: Optional[Union[int, Vector]] = None,
         data_size: Optional[dict] = None,
         optuna_n_trials: int = 25,
-        optuna_timeout: int = 60,
+        optuna_timeout: int = 60 * 10,
         **kwargs,
     ):
         self.data_size = data_size
@@ -261,37 +262,38 @@ class WithinSessionEvaluation(BaseEvaluation):
                         y_ = y[ix] if self.mne_labels else y_cv
                         for cv_ind, (train, test) in enumerate(cv.split(X_, y_)):
                             cvclf = clone(grid_clf)
-                            # n_epochs = cvclf[-1].epochs
-                            #
-                            # study = optuna.create_study(
-                            #     direction="maximize",
-                            #     study_name=f"{name}_{subject}_{session}_{cv_ind}",
-                            # )
-                            # study.optimize(
-                            #     lambda trial: objective(
-                            #         trial,
-                            #         X=X_[train],
-                            #         y=y_[train],
-                            #         clf=cvclf,
-                            #         scorer=scorer,
-                            #         epochs=n_epochs,
-                            #         random_state=self.random_state,
-                            #     ),
-                            #     n_trials=self.optuna_n_trials,
-                            #     timeout=self.optuna_timeout,  # one hour
-                            #     show_progress_bar=True,
-                            #     n_jobs=1,
-                            #     gc_after_trial=True,
-                            # )
-                            #
-                            # pre_process_steps, model = create_deep_model(
-                            #     clf=cvclf,
-                            #     **study.best_params,
-                            #     epochs=n_epochs,
-                            # )
-                            # cvclf = Pipeline(
-                            #     [("preprocessing", pre_process_steps), ("deep", model)]
-                            # )
+                            n_epochs = cvclf[-1].epochs
+                            if cv_ind == 0:
+                                study = optuna.create_study(
+                                    direction="maximize",
+                                    study_name=f"{name}_{subject}_{session}_{cv_ind}",
+                                )
+                                study.optimize(
+                                    lambda trial: objective(
+                                        trial,
+                                        X=X_[train],
+                                        y=y_[train],
+                                        clf=cvclf,
+                                        scorer=scorer,
+                                        epochs=n_epochs,
+                                        random_state=self.random_state,
+                                    ),
+                                    n_trials=self.optuna_n_trials,
+                                    timeout=self.optuna_timeout,  # one hour
+                                    show_progress_bar=True,
+                                    n_jobs=1,
+                                    gc_after_trial=True,
+                                )
+                                best_params = study.best_params
+
+                            pre_process_steps, model = create_deep_model(
+                                clf=cvclf,
+                                **best_params,
+                                epochs=n_epochs,
+                            )
+                            cvclf = Pipeline(
+                                [("preprocessing", pre_process_steps), ("deep", model)]
+                            )
 
                             cvclf = cvclf.fit(X_[train], y_[train])
                             acc.append(scorer(cvclf, X_[test], y_[test]))
