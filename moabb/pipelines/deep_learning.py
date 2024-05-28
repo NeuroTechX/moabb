@@ -729,7 +729,7 @@ class KerasEEGITNet(KerasClassifier):
 
         # ================================
 
-        paddings = tf.constant([[0, 0], [0, 0], [3, 0], [0, 0]])
+        paddings = [[0, 0], [0, 0], [3, 0], [0, 0]]
         block = pad(block_in, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 1)
@@ -746,7 +746,7 @@ class KerasEEGITNet(KerasClassifier):
         block = Dropout(self.drop_rate)(block)
         block_out = Add()([block_in, block])
 
-        paddings = tf.constant([[0, 0], [0, 0], [6, 0], [0, 0]])
+        paddings = [[0, 0], [0, 0], [6, 0], [0, 0]]
         block = pad(block_out, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 2)
@@ -754,6 +754,7 @@ class KerasEEGITNet(KerasClassifier):
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
         block = Dropout(self.drop_rate)(block)
+        print(block.dtype)
         block = pad(block, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 2)
@@ -763,7 +764,7 @@ class KerasEEGITNet(KerasClassifier):
         block = Dropout(self.drop_rate)(block)
         block_out = Add()([block_out, block])
 
-        paddings = tf.constant([[0, 0], [0, 0], [12, 0], [0, 0]])
+        paddings = [[0, 0], [0, 0], [12, 0], [0, 0]]
         block = pad(block_out, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 4)
@@ -780,7 +781,7 @@ class KerasEEGITNet(KerasClassifier):
         block = Dropout(self.drop_rate)(block)
         block_out = Add()([block_out, block])
 
-        paddings = tf.constant([[0, 0], [0, 0], [24, 0], [0, 0]])
+        paddings = [[0, 0], [0, 0], [24, 0], [0, 0]]
         block = pad(block_out, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 8)
