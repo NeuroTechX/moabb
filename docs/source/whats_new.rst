@@ -18,6 +18,20 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
+Bugs
+~~~~
+
+API changes
+~~~~~~~~~~~
+
+
+Version - 1.0.1  (Stable - PyPi)
+---------------------------------
+
+
+Enhancements
+~~~~~~~~~~~~
+
 - Adding cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
 - Option to interpolate channel in paradigms' `match_all` method (:gh:`480` by `Gregoire Cattan`_)
 - Adding leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
@@ -60,8 +74,8 @@ API changes
 - None
 
 
-Version - 1.0.0  (Stable - PyPi)
----------------------------------
+Version - 1.0.0
+----------------
 
 Enhancements
 ~~~~~~~~~~~~
