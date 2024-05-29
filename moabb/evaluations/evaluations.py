@@ -263,28 +263,28 @@ class WithinSessionEvaluation(BaseEvaluation):
                         for cv_ind, (train, test) in enumerate(cv.split(X_, y_)):
                             cvclf = clone(grid_clf)
                             n_epochs = cvclf[-1].epochs
-                            if cv_ind == 0:
-                                study = optuna.create_study(
-                                    direction="maximize",
-                                    study_name=f"{name}_{subject}_{session}_{cv_ind}",
-                                )
-                                study.optimize(
-                                    lambda trial: objective(
-                                        trial,
-                                        X=X_[train],
-                                        y=y_[train],
-                                        clf=cvclf,
-                                        scorer=scorer,
-                                        epochs=n_epochs,
-                                        random_state=self.random_state,
-                                    ),
-                                    n_trials=self.optuna_n_trials,
-                                    timeout=self.optuna_timeout,  # one hour
-                                    show_progress_bar=True,
-                                    n_jobs=1,
-                                    gc_after_trial=True,
-                                )
-                                best_params = study.best_params
+
+                            study = optuna.create_study(
+                                direction="maximize",
+                                study_name=f"{name}_{subject}_{session}_{cv_ind}",
+                            )
+                            study.optimize(
+                                lambda trial: objective(
+                                    trial,
+                                    X=X_[train],
+                                    y=y_[train],
+                                    clf=cvclf,
+                                    scorer=scorer,
+                                    epochs=n_epochs,
+                                    random_state=self.random_state,
+                                ),
+                                n_trials=self.optuna_n_trials,
+                                timeout=self.optuna_timeout,  # one hour
+                                show_progress_bar=True,
+                                n_jobs=1,
+                                gc_after_trial=True,
+                            )
+                            best_params = study.best_params
 
                             pre_process_steps, model = create_deep_model(
                                 clf=cvclf,
