@@ -65,6 +65,10 @@ class Rodrigues2017(BaseDataset):
 
     We supply an online and open-source example working with Python [2]_.
 
+    Notes
+    -----
+    .. versionadded:: 1.1.0
+
     References
     ----------
 
