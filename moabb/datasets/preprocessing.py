@@ -55,15 +55,17 @@ class SetRawAnnotations(FixedTransformer):
     Always sets the annotations, even if the events list is empty
     """
 
-    def __init__(self, event_id, durations: Union[float, Dict[str, float]]):
+    def __init__(self, event_id, interval: Tuple[float, float]):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         if len(set(event_id.values())) != len(event_id):
             raise ValueError("Duplicate event code")
         self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
-        self.durations = durations
+        self.interval = interval
 
     def transform(self, raw, y=None):
+        duration = self.interval[1] - self.interval[0]
+        offset = int(self.interval[0] * raw.info["sfreq"])
         if raw.annotations:
             return raw
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
@@ -74,6 +76,7 @@ class SetRawAnnotations(FixedTransformer):
             return raw
         events = mne.find_events(raw, shortest_event=0, verbose=False)
         events = _unsafe_pick_events(events, include=list(self.event_id.values()))
+        events[:, 0] += offset
         if len(events) != 0:
             annotations = mne.annotations_from_events(
                 events,
@@ -82,7 +85,7 @@ class SetRawAnnotations(FixedTransformer):
                 first_samp=raw.first_samp,
                 verbose=False,
             )
-            annotations.set_durations(self.durations)
+            annotations.set_durations(duration)
             raw.set_annotations(annotations)
         else:
             log.warning("No events found, skipping setting annotations.")
