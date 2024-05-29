@@ -10,7 +10,6 @@ and scikeras framework."""
 from typing import Any, Dict
 
 import tensorflow as tf
-from keras import backend as K
 from keras.constraints import max_norm
 from keras.layers import (
     Activation,
@@ -31,7 +30,9 @@ from keras.layers import (
     Permute,
 )
 from keras.models import Model, Sequential
+from keras.ops import pad
 from scikeras.wrappers import KerasClassifier
+from tensorflow.keras import backend as K
 
 from moabb.pipelines.utils_deep_model import EEGNet, EEGNet_TC, TCN_block
 
@@ -728,15 +729,15 @@ class KerasEEGITNet(KerasClassifier):
 
         # ================================
 
-        paddings = tf.constant([[0, 0], [0, 0], [3, 0], [0, 0]])
-        block = tf.pad(block_in, paddings, "CONSTANT")
+        paddings = [[0, 0], [0, 0], [3, 0], [0, 0]]
+        block = pad(block_in, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 1)
         )(block)
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
         block = Dropout(0.4)(block)
-        block = tf.pad(block, paddings, "CONSTANT")
+        block = pad(block, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 1)
         )(block)
@@ -745,15 +746,16 @@ class KerasEEGITNet(KerasClassifier):
         block = Dropout(self.drop_rate)(block)
         block_out = Add()([block_in, block])
 
-        paddings = tf.constant([[0, 0], [0, 0], [6, 0], [0, 0]])
-        block = tf.pad(block_out, paddings, "CONSTANT")
+        paddings = [[0, 0], [0, 0], [6, 0], [0, 0]]
+        block = pad(block_out, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 2)
         )(block)
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
         block = Dropout(self.drop_rate)(block)
-        block = tf.pad(block, paddings, "CONSTANT")
+        print(block.dtype)
+        block = pad(block, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 2)
         )(block)
@@ -762,15 +764,15 @@ class KerasEEGITNet(KerasClassifier):
         block = Dropout(self.drop_rate)(block)
         block_out = Add()([block_out, block])
 
-        paddings = tf.constant([[0, 0], [0, 0], [12, 0], [0, 0]])
-        block = tf.pad(block_out, paddings, "CONSTANT")
+        paddings = [[0, 0], [0, 0], [12, 0], [0, 0]]
+        block = pad(block_out, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 4)
         )(block)
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
         block = Dropout(self.drop_rate)(block)
-        block = tf.pad(block, paddings, "CONSTANT")
+        block = pad(block, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 4)
         )(block)
@@ -779,15 +781,15 @@ class KerasEEGITNet(KerasClassifier):
         block = Dropout(self.drop_rate)(block)
         block_out = Add()([block_out, block])
 
-        paddings = tf.constant([[0, 0], [0, 0], [24, 0], [0, 0]])
-        block = tf.pad(block_out, paddings, "CONSTANT")
+        paddings = [[0, 0], [0, 0], [24, 0], [0, 0]]
+        block = pad(block_out, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 8)
         )(block)
         block = BatchNormalization()(block)
         block = Activation("elu")(block)
         block = Dropout(self.drop_rate)(block)
-        block = tf.pad(block, paddings, "CONSTANT")
+        block = pad(block, paddings, "constant")
         block = DepthwiseConv2D(
             (1, 4), padding="valid", depth_multiplier=1, dilation_rate=(1, 8)
         )(block)
