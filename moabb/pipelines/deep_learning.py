@@ -10,7 +10,7 @@ and scikeras framework."""
 from typing import Any, Dict
 
 import tensorflow as tf
-from keras import backend as K
+from tensorflow.keras import backend as K
 from keras.constraints import max_norm
 from keras.layers import (
     Activation,
