@@ -10,7 +10,6 @@ and scikeras framework."""
 from typing import Any, Dict
 
 import tensorflow as tf
-from tensorflow.keras import backend as K
 from keras.constraints import max_norm
 from keras.layers import (
     Activation,
@@ -33,6 +32,7 @@ from keras.layers import (
 from keras.models import Model, Sequential
 from keras.ops import pad
 from scikeras.wrappers import KerasClassifier
+from tensorflow.keras import backend as K
 
 from moabb.pipelines.utils_deep_model import EEGNet, EEGNet_TC, TCN_block
 
