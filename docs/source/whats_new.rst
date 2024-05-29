@@ -27,7 +27,7 @@ API changes
 ~~~~~~~~~~~
 - None
 
-Version - 1.0.1  (Stable - PyPi)
+Version - 1.1.0  (Stable - PyPi)
 ---------------------------------
 
 
