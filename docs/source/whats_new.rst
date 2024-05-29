@@ -17,13 +17,15 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+- None
 
 Bugs
 ~~~~
+- None
 
 API changes
 ~~~~~~~~~~~
-
+- None
 
 Version - 1.0.1  (Stable - PyPi)
 ---------------------------------
