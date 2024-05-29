@@ -1,4 +1,7 @@
 name: Test-braindecode
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
+  cancel-in-progress: true
 
 on:
   push:
@@ -29,7 +32,7 @@ jobs:
           path: braindecode
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -44,7 +47,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/mne_data
-          key: ${{ runner.os }}-mne
+          key: ${{ runner.os }}-mne_data
 
       - name: Load cached venv
         if: runner.os != 'Windows'
@@ -53,7 +56,7 @@ jobs:
         with:
           path: .venv
           key:
-            testvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
+            testvenv-braindecode-${{ matrix.os }}-py${{matrix.python-version}}-${{
             hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies

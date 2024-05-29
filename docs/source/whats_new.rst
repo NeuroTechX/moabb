@@ -5,11 +5,28 @@
 What's new
 ==========
 
+Introduction
+------------
+
+Glossary
+~~~~~~~~
+
 .. NOTE: there are 3 separate sections for changes, based on type:
 - "Enhancements" for new features
 - "Bugs" for bug fixes
 - "API changes" for backward-incompatible changes
 .. _current:
+
+
+Documentation build from:
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. git_commit_detail::
+   :branch:
+   :commit:
+   :sha_length: 8
+   :uncommitted:
+   :untracked:
 
 
 Develop branch
