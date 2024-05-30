@@ -126,7 +126,7 @@ class Stieger2021(BaseDataset):
 
     Notes
     -----
-    .. versionadded:: 1.0.1
+    .. versionadded:: 1.1.0
     """
 
     def __init__(self, interval=[0, 3], sessions=None):

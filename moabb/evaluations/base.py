@@ -53,6 +53,11 @@ class BaseEvaluation(ABC):
         Save model after training, for each fold of cross-validation if needed
     cache_config: bool, default=None
         Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
+       n_splits, save_model, cache_config parameters.
     """
 
     def __init__(

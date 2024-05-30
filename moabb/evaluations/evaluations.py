@@ -467,6 +467,15 @@ class CrossSessionEvaluation(BaseEvaluation):
         use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
+    save_model: bool, default=False
+        Save model after training, for each fold of cross-validation if needed
+    cache_config: bool, default=None
+        Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
+       Add save_model and cache_config parameters.
     """
 
     # flake8: noqa: C901
@@ -631,15 +640,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
         use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
+    save_model: bool, default=False
+        Save model after training, for each fold of cross-validation if needed
+    cache_config: bool, default=None
+        Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
     n_splits: int, default=None
         Number of splits for cross-validation. If None, the number of splits
         is equal to the number of subjects.
 
     Notes
     -----
-
-    .. versionadded:: 1.0.1, added n_splits parameter
-
+    .. versionadded:: 1.1.0
+         Add save_model, cache_config and n_splits parameters
     """
 
     # flake8: noqa: C901
