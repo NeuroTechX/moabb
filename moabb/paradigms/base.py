@@ -163,7 +163,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                 f"events to generate labels: {dataset.event_id}"
             )
             events_pipeline = (
-                RawToEvents(dataset.event_id)
+                RawToEvents(dataset.event_id, interval=dataset.interval)
                 if epochs_pipeline is None
                 else EpochsToEvents()
             )
@@ -544,4 +544,4 @@ class BaseParadigm(BaseProcessing):
 
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
-        return RawToEvents(event_id=event_id)
+        return RawToEvents(event_id=event_id, interval=dataset.interval)
