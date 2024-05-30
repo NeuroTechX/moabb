@@ -41,6 +41,7 @@ Motor Imagery
         :class:`Shin2017B`,29,30,2,30,10s,200Hz,3,1,5220
         :class:`Weibo2014`,10,60,7,80,4s,200Hz,1,1,5600
         :class:`Zhou2016`,4,14,3,160,5s,250Hz,3,2,11496
+        :class:`Stieger2021`,62,64,4,450,3s,1000Hz,7 or 11,1,250000
 
 P300/ERP
 ======================
@@ -101,8 +102,8 @@ DOI: https://doi.org/10.1088/1741-2552/ac38cf
 
    :class:`Thielen2015`,12,1,2048Hz,64,4.2s,36,3,2,27216 NT / 27216 T,Gold codes,120Hz
    :class:`Thielen2021`,30,1,512Hz,8,31.5s,20,5,2,18900 NT / 18900 T,Gold codes,60Hz
-   :class:`CastillosCVEP100`,    12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,Burst-CVEP,60Hz
-   :class:`CastillosCVEP40`,     12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,Burst-CVEP,60Hz
+   :class:`CastillosCVEP100`,    12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,m-sequence,60Hz
+   :class:`CastillosCVEP40`,     12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,m-sequence,60Hz
    :class:`CastillosBurstVEP40`, 12,1,500Hz,32,2.2s,4,15/15/15/15,2,5820 NT / 1200 T,Burst-CVEP,60Hz
    :class:`CastillosBurstVEP100`,12,1,500Hz,32,2.2s,4,15/15/15/15,2,5820 NT / 1200 T,Burst-CVEP,60Hz
 
@@ -119,7 +120,8 @@ is a resting state experiment.
    :class: sortable
 
    :class:`Cattan2019_PHMD`,12,16,2,10,60s,512Hz,1
-
+   :class:`Hinss2021`,15,62,4,1,2s,250Hz,1
+   :class:`Rodrigues2017`,20,16,2,5,10s,512Hz,1
 
 Compound Datasets
 ======================

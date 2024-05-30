@@ -69,9 +69,6 @@ class WithinSessionEvaluation(BaseEvaluation):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -322,7 +319,13 @@ class WithinSessionEvaluation(BaseEvaluation):
         t_start = time()
         try:
             model = clf.fit(X_train, y_train)
-            score = _score(model, X_test, y_test, scorer)
+            score = _score(
+                estimator=model,
+                X_test=X_test,
+                y_test=y_test,
+                scorer=scorer,
+                score_params={},
+            )
         except ValueError as e:
             if self.error_score == "raise":
                 raise e
@@ -447,9 +450,6 @@ class CrossSessionEvaluation(BaseEvaluation):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -549,17 +549,18 @@ class CrossSessionEvaluation(BaseEvaluation):
                             )
                     else:
                         result = _fit_and_score(
-                            clone(grid_clf),
-                            X,
-                            y,
-                            scorer,
-                            train,
-                            test,
+                            estimator=clone(grid_clf),
+                            X=X,
+                            y=y,
+                            scorer=scorer,
+                            train=train,
+                            test=test,
                             verbose=False,
                             parameters=None,
                             fit_params=None,
                             error_score=self.error_score,
                             return_estimator=True,
+                            score_params={},
                         )
                         score = result["test_scores"]
                         model_list = result["estimator"]
@@ -613,9 +614,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -738,7 +736,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 # we eval on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
-                    score = _score(model, X[test[ix]], y[test[ix]], scorer)
+                    score = _score(
+                        estimator=model,
+                        X_test=X[test[ix]],
+                        y_test=y[test[ix]],
+                        scorer=scorer,
+                        score_params={},
+                    )
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {

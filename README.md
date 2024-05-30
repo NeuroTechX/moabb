@@ -177,12 +177,6 @@ modify the run_docker.sh script to save in another path beyond the root of the p
 default, the script will save the results in the project's root in the folder `results`,
 the datasets in the folder `dataset` and the output in the folder `output`.
 
-### Troubleshooting
-
-Currently pip install moabb fails when pip version < 21, e.g. with 20.0.2 due to an `idna`
-package conflict. Newer pip versions resolve this conflict automatically. To fix this you
-can upgrade your pip version using: `pip install -U pip` before installing `moabb`.
-
 ## Supported datasets
 
 The list of supported datasets can be found here :
@@ -311,6 +305,10 @@ and here is the Bibtex version:
 > }
 
 If you want to cite the scientific contributions of MOABB, you could use the following paper:
+
+> Sylvain Chevallier, Igor Carrara, Bruno Aristimunha, Pierre Guetschel, Sara Sedlar, Bruna Junqueira Lopes, Sébastien Velut, Salim Khazem, Thomas Moreau
+> ["The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark"](https://cnrs.hal.science/hal-04537061/)
+> HAL: hal-04537061.
 
 > Vinay Jayaram and Alexandre Barachant.
 > ["MOABB: trustworthy algorithm benchmarking for BCIs."](http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta)

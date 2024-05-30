@@ -173,7 +173,7 @@ class BaseProcessing(metaclass=MoabbMetaClass):
                     StepType.RAW,
                     SetRawAnnotations(
                         dataset.event_id,
-                        durations=dataset.interval[1] - dataset.interval[0],
+                        interval=dataset.interval,
                     ),
                 )
             )

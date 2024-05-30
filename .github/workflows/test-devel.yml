@@ -1,5 +1,10 @@
 name: Test-devel
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
+  cancel-in-progress: true
+
+
 on:
   push:
     branches: [develop]
@@ -14,7 +19,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        python-version: ["3.8"]
+        python-version: ["3.9", "3.10"]
     defaults:
       run:
         shell: bash

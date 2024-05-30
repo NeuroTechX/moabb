@@ -2,7 +2,7 @@
 
 # <p align="center">Mother of all BCI Benchmarks</p>
 
-<p align="center">
+<p align="center" class="large-text">
   <img src="https://raw.githubusercontent.com/bruAristimunha/moabb/new_theme/docs/source/_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
   Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
 </p>
@@ -67,12 +67,6 @@ state of the art by 5% ...”.
 First, you could take a look at our [tutorials](./auto_tutorials/index.html) that cover
 the most important concepts and use cases. Also, we have a gallery of
 [examples](./auto_examples/index.html) available.
-
-### Troubleshooting
-
-Currently pip install moabb fails when pip version < 21, e.g. with 20.0.2 due to an `idna`
-package conflict. Newer pip versions resolve this conflict automatically. To fix this you
-can upgrade your pip version using: `pip install -U pip` before installing `moabb`.
 
 ## Core Team
 
@@ -140,8 +134,8 @@ fetch(endpoint)
       const img = document.createElement('img');
       img.src = contributor.avatar_url;
       img.alt = contributor.login;
-      img.style.width = '150px';
-      img.style.height = '150px';
+      img.style.width = '100px';
+      img.style.height = '100px';
       img.style.objectFit = 'cover';
       img.style.borderRadius = '50%';
       link.appendChild(img);
@@ -181,6 +175,41 @@ professional development of any and all of our contributors. If you're looking t
 code, try out working collaboratively, or translate your skills to the digital domain,
 we're here to help.
 
+## Citing MOABB and related publications
+
+If you use MOABB in your experiments, please cite this library when
+publishing a paper to increase the visibility of open science initiatives:
+
+> Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Quentin, B., Schirrmeister, R. T.,Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant,A., & Chevallier, S.
+> Mother of all BCI Benchmarks (MOABB), 2023. DOI: 10.5281/zenodo.10034223.
+
+and here is the Bibtex version:
+
+> @software{Aristimunha_Mother_of_all_2023,
+> author = {Aristimunha, Bruno and Carrara, Igor and Guetschel, Pierre and Sedlar, Sara and Rodrigues, Pedro and Sosulski, Jan and Narayanan, Divyesh and Bjareholt, Erik and Quentin, Barthelemy and Schirrmeister, Robin Tibor and Kalunga, Emmanuel and Darmet, Ludovic and Gregoire, Cattan and Abdul Hussain, Ali and Gatti, Ramiro and Goncharenko, Vladislav and Thielen, Jordy and Moreau, Thomas and Roy, Yannick and Jayaram, Vinay and Barachant, Alexandre and Chevallier, Sylvain},
+> doi = {10.5281/zenodo.10034223},
+> title = {{Mother of all BCI Benchmarks}},
+> url = {https://github.com/NeuroTechX/moabb},
+> version = {1.0.0},
+> year = {2023}
+> }
+
+If you want to cite the scientific contributions of MOABB, you could use the following paper:
+
+> Sylvain Chevallier, Igor Carrara, Bruno Aristimunha, Pierre Guetschel, Sara Sedlar, Bruna Junqueira Lopes, Sébastien Velut, Salim Khazem, Thomas Moreau
+> ["The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark"](https://cnrs.hal.science/hal-04537061/)
+> HAL: hal-04537061.
+
+> Vinay Jayaram and Alexandre Barachant.
+> ["MOABB: trustworthy algorithm benchmarking for BCIs."](http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta)
+> Journal of neural engineering 15.6 (2018): 066011.
+> [DOI](https://doi.org/10.1088/1741-2552/aadea0)
+
+If you publish a paper using MOABB, please contact us on [gitter][link_gitter] or open an
+issue, and we will add your paper to the
+[dedicated wiki page](https://github.com/NeuroTechX/moabb/wiki/MOABB-bibliography).
+
+
 ## Contact us
 
 If you want to report a problem or suggest an enhancement, we'd love for you to
@@ -193,11 +222,6 @@ happening on a [regular basis](https://github.com/NeuroTechX/moabb/issues/191), 
 the link on the gitter channel. We are also on NeuroTechX Slack channel
 [#moabb][link_neurotechx_signup].
 
-## Thank You!
-
-Thank you so much (Danke schön! Merci beaucoup!) for visiting the project and we do hope
-that you'll join us on this amazing journey to build a comprehensive benchmark of popular
-BCI algorithms applied on an extensive list of freely available EEG datasets.
 
 [link_alex_b]: http://alexandre.barachant.org/
 [link_vinay]: https://www.linkedin.com/in/vinay-jayaram-8635aa25
