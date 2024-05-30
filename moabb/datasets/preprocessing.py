@@ -97,9 +97,10 @@ class RawToEvents(FixedTransformer):
     Always returns an array for shape (n_events, 3), even if no events found
     """
 
-    def __init__(self, event_id):
+    def __init__(self, event_id: dict[str, int], interval: Tuple[float, float]):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
+        self.interval = interval
 
     def _find_events(self, raw):
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
@@ -111,6 +112,8 @@ class RawToEvents(FixedTransformer):
                 events, _ = mne.events_from_annotations(
                     raw, event_id=self.event_id, verbose=False
                 )
+                offset = int(self.interval[0] * raw.info["sfreq"])
+                events[:, 0] -= offset  # return the original events onset
             except ValueError as e:
                 if str(e) == "Could not find any of the events you specified.":
                     return np.zeros((0, 3), dtype="int32")
