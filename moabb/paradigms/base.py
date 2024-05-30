@@ -63,7 +63,10 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         the dataset.
 
     resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided."""
+        If not None, resample the eeg data with the sampling rate provided.
+
+
+    """
 
     def __init__(
         self,

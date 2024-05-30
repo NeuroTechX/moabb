@@ -34,7 +34,7 @@ Version - 1.0.1  (Stable - PyPi)
 Enhancements
 ~~~~~~~~~~~~
 
-- Add cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
+- Add cache option to the evaluation (:gh:`518` by `Bruno Aristimunha`_)
 - Option to interpolate channel in paradigms' `match_all` method (:gh:`480` by `Gregoire Cattan`_)
 - Add leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
 - Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)

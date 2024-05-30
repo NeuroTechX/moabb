@@ -71,7 +71,7 @@ def _check_if_is_keras_steps(model):
 
 
 def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
-    """Save a model fitted to a folder.
+    """Save a model fitted to a given fold from cross-validation.
 
     Parameters
     ----------

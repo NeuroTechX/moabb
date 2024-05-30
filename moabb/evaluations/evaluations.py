@@ -634,6 +634,12 @@ class CrossSubjectEvaluation(BaseEvaluation):
     n_splits: int, default=None
         Number of splits for cross-validation. If None, the number of splits
         is equal to the number of subjects.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.1, added n_splits parameter
+
     """
 
     # flake8: noqa: C901

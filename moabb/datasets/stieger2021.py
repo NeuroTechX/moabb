@@ -123,6 +123,10 @@ class Stieger2021(BaseDataset):
            Continuous sensorimotor rhythm based brain computer interface
            learning in a large population. Scientific Data, 8(1), 98.
            https://doi.org/10.1038/s41597-021-00883-1
+
+    Notes
+    -----
+    .. versionadded:: 1.0.1
     """
 
     def __init__(self, interval=[0, 3], sessions=None):
