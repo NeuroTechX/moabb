@@ -10,7 +10,7 @@ import pytest
 
 import moabb.datasets as db
 import moabb.datasets.compound_dataset as db_compound
-from moabb.datasets import Cattan2019_VR, Shin2017A, Shin2017B
+from moabb.datasets import BNCI2014_001, Cattan2019_VR, Shin2017A, Shin2017B
 from moabb.datasets.base import BaseDataset, is_abbrev, is_camel_kebab_case
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
@@ -487,3 +487,67 @@ class Test_CompoundDataset(unittest.TestCase):
         ]
         assert len(compound_dataset_list) == len(all_datasets)
         assert set(compound_dataset_list) == set(all_datasets)
+
+
+class Test_Data:
+    @pytest.fixture
+    def dataset(self):
+        return BNCI2014_001()
+
+    @pytest.fixture
+    def data(self, dataset):
+        return dataset.get_data(subjects=[1])
+
+    def test_epochs(self, data, dataset):
+        # values computed form moabb 0.5:
+        # using raw = data[1]['session_T']['run_0']
+        raw = data[1]["0train"]["0"]
+        assert len(raw) == 96735
+        events = np.array(
+            [
+                [250, 0, 4],
+                [2253, 0, 3],
+                [4171, 0, 2],
+            ]
+        )
+        np.testing.assert_array_equal(mne.find_events(raw)[:3], events)
+        X = np.array(
+            [
+                0.34179688,
+                0.24414062,
+                -3.22265625,
+                -7.86132812,
+                -6.15234375,
+                -4.83398437,
+                0.9765625,
+                -6.34765625,
+                -10.59570312,
+                -11.96289062,
+                -8.93554688,
+                -7.08007812,
+                0.14648438,
+                -11.23046875,
+                -12.01171875,
+                -10.40039062,
+                -10.30273438,
+                -7.12890625,
+                -8.54492188,
+                -7.51953125,
+                -6.98242188,
+                -3.56445312,
+                10.25390625,
+                20.5078125,
+                5.859375,
+                0.0,
+            ]
+        )
+        np.testing.assert_array_almost_equal(
+            raw.get_data()[:, 0] * dataset.unit_factor, X
+        )
+        onset = np.array(
+            [3.0, 11.012, 18.684]
+        )  # events times offset by dataset.interval[0]
+        np.testing.assert_array_equal(raw.annotations.onset[:3], onset)
+        np.testing.assert_array_equal(raw.annotations.duration, np.ones(48) * 4.0)
+        description = ["tongue", "feet", "right_hand"]
+        assert all([a == b for a, b in zip(raw.annotations.description[:3], description)])
