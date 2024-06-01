@@ -301,7 +301,7 @@ and here is the Bibtex version:
  doi = {10.5281/zenodo.10034223},
  title = {{Mother of all BCI Benchmarks}},
  url = {https://github.com/NeuroTechX/moabb},
- version = {1.0.0},
+ version = {1.1.0},
  year = {2023}
  }
 ```
