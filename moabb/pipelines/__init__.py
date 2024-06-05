@@ -24,7 +24,7 @@ try:
     from .utils_deep_model import EEGNet, TCN_block
 except ModuleNotFoundError as err:
     warn(
-        "Tensorflow is not installed. "
+        "Tensorflow is not installed. test"
         "You won't be able to use these MOABB pipelines if you attempt to do "
         "so.",
         category=ModuleNotFoundError,
