@@ -69,7 +69,7 @@ Bugs
 - Updating the parameters of the SSVEP_TRCA method (:gh:`589` by `Bruno Aristimunha`_)
 - Fix and updating the parameters for the benchmark function (:gh:`588` by `Bruno Aristimunha`_)
 - Fix :class:`moabb.datasets.preprocessing.SetRawAnnotations` setting incorrect annotations when the dataset's interval does not start at 0 (:gh:`607` by `Pierre Guetschel`_)
-
+- Fix the import issue when using the deep learning models (:gh:`609` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
