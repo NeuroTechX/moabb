@@ -17,13 +17,29 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+- None
 
-- Adding cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
+Bugs
+~~~~
+- None
+
+API changes
+~~~~~~~~~~~
+- None
+
+Version - 1.1.0  (Stable - PyPi)
+---------------------------------
+
+
+Enhancements
+~~~~~~~~~~~~
+
+- Add cache option to the evaluation (:gh:`518` by `Bruno Aristimunha`_)
 - Option to interpolate channel in paradigms' `match_all` method (:gh:`480` by `Gregoire Cattan`_)
-- Adding leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
+- Add leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
 - Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
 - Improve transform function of AugmentedDataset (:gh:`541` by `Quentin Barthelemy`_)
-- Adding new paper results website (:gh:`556` by `Bruno Aristimunha`_)
+- Add new paper results website (:gh:`556` by `Bruno Aristimunha`_)
 - Move cVEP common functions to :mod:`moabb.datasets.utils` (:gh:`564` :gh:`557` by `Pierre Guetschel`_)
 - Normalize c-VEP description tables (:gh:`562` :gh:`566` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
 - Update citation in README (:gh:`573` by `Igor Carrara`_)
@@ -33,9 +49,9 @@ Enhancements
 - Updating the braindecode pipelines for the new braindecode version 0.8.1 (:gh:`589` by `Bruno Aristimunha`_)
 - Add SSVEP and ERP paradigms to DL pipelines (:gh:`590` by `Pierre Guetschel`_)
 - Allow to pass a single pipeline file to ``benchmark`` (:gh:`591` by `Pierre Guetschel`_)
-- Adding new dataset :class:`moabb.datasets.Stieger2021` (:gh:`604` by `Reinmar Kobler`_ and `Bruno Aristimunha`_)
+- Add new dataset :class:`moabb.datasets.Stieger2021` (:gh:`604` by `Reinmar Kobler`_ and `Bruno Aristimunha`_)
 - Exposing the `drop_rate` for all the deep learning parameters (:gh:`592` by `Bruno Aristimunha`_)
-- Add Alphawes dataset (:gh:`602` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
+- Add new dataset :class:`moabb.datasets.Rodrigues2017` dataset (:gh:`602` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 
 Bugs
 ~~~~
@@ -61,8 +77,8 @@ API changes
 - None
 
 
-Version - 1.0.0  (Stable - PyPi)
----------------------------------
+Version - 1.0.0
+----------------
 
 Enhancements
 ~~~~~~~~~~~~

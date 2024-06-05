@@ -79,7 +79,7 @@ class Rodrigues2017(BaseDataset):
     Notes
     -----
 
-    .. versionadded:: 1.0.1
+    .. versionadded:: 1.1.0
 
     """
 
