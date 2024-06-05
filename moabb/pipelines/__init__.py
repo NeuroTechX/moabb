@@ -12,35 +12,80 @@ from .features import FM, AugmentedDataset, ExtendedSSVEPSignal, LogVariance
 from .utils import FilterBank, create_pipeline_from_config
 
 
-try:
-    from .deep_learning import (
-        KerasDeepConvNet,
-        KerasEEGITNet,
-        KerasEEGNet_8_2,
-        KerasEEGNeX,
-        KerasEEGTCNet,
-        KerasShallowConvNet,
-    )
-    from .utils_deep_model import EEGNet, TCN_block
-except ModuleNotFoundError as err:
-    warn(
-        "Tensorflow is not installed. "
-        "You won't be able to use these MOABB pipelines if you attempt to do "
-        "so.",
-        category=ModuleNotFoundError,
-        module="moabb.pipelines",
-    )
+def __getattr__(name):
+    # ideas from https://stackoverflow.com/a/57110249/1469195
+    import importlib
+    from warnings import warn
+
+    if name in [
+        "KerasDeepConvNet",
+        "KerasEEGITNet",
+        "KerasEEGNet_8_2",
+        "KerasEEGNeX",
+        "KerasEEGTCNet",
+        "KerasShallowConvNet",
+    ]:
+        warn(
+            f"{name} is incorrectly import, please use from "
+            f"moabb.pipeline.deep_learning import {name} or"
+            f"instead of moabb.pipeline import {name}",
+            category=DeprecationWarning,
+        )
+        if check_if_tensorflow_install():
+            dl_module = importlib.import_module(".deep_learning", __package__)
+            dl_class = dl_module.__dict__[name]
+            return dl_class
+
+    if name in [
+        "InputShapeSetterEEG",
+        "BraindecodeDatasetLoader",
+        "get_shape_from_baseconcat",
+    ]:
+        print("AAAAAAA")
+        warn(
+            f"{name} is incorrectly import, please use from "
+            f"moabb.pipeline.utils_pytorch import {name} or"
+            f"instead of moabb.pipeline import {name}",
+            category=DeprecationWarning,
+        )
+        if check_if_braindecode_install():
+            sub_module = importlib.import_module(".utils_pytorch", __package__)
+            class_obj = sub_module.__dict__[name]
+            return class_obj
+
+    raise AttributeError("No possible import named " + name)
 
 
-try:
-    from .utils_pytorch import (
-        BraindecodeDatasetLoader,
-        InputShapeSetterEEG,
-        get_shape_from_baseconcat,
-    )
-except ModuleNotFoundError as err:
-    print(
-        "To use the get_shape_from_baseconcar, InputShapeSetterEEG, BraindecodeDatasetLoader"
-        "you need to install `braindecode`."
-        "`pip install braindecode` or Please refer to `https://braindecode.org`."
-    )
+def check_if_tensorflow_install():
+    try:
+        import keras
+        import scikeras
+        import tensorflow
+
+        return True
+    except ModuleNotFoundError as err:
+        warn(
+            f"{err}\n. You have issues importing tensorflow or keras.\n"
+            "You won't be able to use these deep learning pipelines if you "
+            "attempt to do so. Please run `pip install moabb[deeplearning]`, if you"
+            "want to use these pipelines.",
+            category=ModuleNotFoundError,
+            module="moabb.pipelines",
+        )
+        return False
+
+
+def check_if_braindecode_install():
+    try:
+        import braindecode
+
+        return True
+    except ModuleNotFoundError as err:
+        warn(
+            "Braindecode is not installed. "
+            "You won't be able to use these braindecode function if you "
+            "attempt to do. Please install `braindecode`",
+            category=ModuleNotFoundError,
+            module="moabb.pipelines",
+        )
+        return False
