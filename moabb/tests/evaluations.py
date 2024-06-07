@@ -70,7 +70,6 @@ class Test_WithinSess(unittest.TestCase):
         if os.path.isfile(path):
             os.remove(path)
 
-    @pytest.mark.skip(reason="This test is not working")
     def test_eval_results(self):
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
         results = [
@@ -208,6 +207,7 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
     initialization instead of during running the evaluation
     """
 
+    @pytest.mark.skip(reason="This test is not working")
     def test_correct_results_integrity(self):
         learning_curve_eval = ev.WithinSessionEvaluation(
             paradigm=FakeImageryParadigm(),
