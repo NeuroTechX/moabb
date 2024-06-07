@@ -11,6 +11,8 @@ try:
     from braindecode.datasets.xy import create_from_X_y
 
     from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader
+
+    no_braindecode = False
 except ImportError:
     no_braindecode = None
 
