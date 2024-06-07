@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 import pytest
 from braindecode.datasets import BaseConcatDataset, create_from_X_y
+from braindecode.datasets.base import EEGWindowsDataset
 from mne import EpochsArray, create_info
 from sklearn.preprocessing import LabelEncoder
 
@@ -73,7 +74,11 @@ class TestTransformer:
         y_train = np.array([0])
         transformer = BraindecodeDatasetLoader()
         dataset = transformer.fit(epochs, y_train).transform(epochs, y_train)
-        assert dataset.datasets[0].windows.info["sfreq"] == sfreq
+
+        if isinstance(dataset.datasets[0], EEGWindowsDataset):
+            assert dataset.datasets[0].raw.info["sfreq"] == sfreq
+        else:
+            assert dataset.datasets[0].windows.info["sfreq"] == sfreq
 
     def test_kw_args_initialization(self):
         """Test initializing the transformer with kw_args."""
