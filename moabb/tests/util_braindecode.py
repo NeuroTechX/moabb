@@ -30,7 +30,7 @@ def data():
 
 
 class TestTransformer:
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_transform_input_and_output_shape(self, data):
         X, y, _, info = data
         transformer = BraindecodeDatasetLoader()
@@ -41,19 +41,19 @@ class TestTransformer:
             and braindecode_dataset[0][0].shape[1] == X.get_data().shape[2]
         )
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_sklearn_is_fitted(self, data):
         transformer = BraindecodeDatasetLoader()
         assert transformer.__sklearn_is_fitted__()
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_transformer_fit(self, data):
         """Test whether transformer can fit to some training data."""
         X_train, y_train, _, _ = data
         transformer = BraindecodeDatasetLoader()
         assert transformer.fit(X_train, y_train) == transformer
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_transformer_transform_returns_dataset(self, data):
         """Test whether the output of the transform method is a
         BaseConcatDataset."""
@@ -62,7 +62,7 @@ class TestTransformer:
         dataset = transformer.fit(X_train, y_train).transform(X_train, y_train)
         assert isinstance(dataset, BaseConcatDataset)
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_transformer_transform_contents(self, data):
         """Test whether the contents and metadata of a transformed dataset are
         correct."""
@@ -76,7 +76,7 @@ class TestTransformer:
         assert np.allclose(sample_epoch[0], X_train.get_data()[0])
         assert sample_epoch[1] == y_train[0]
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_sfreq_passed_through(self, data):
         """Test if the sfreq parameter makes it through the transformer."""
         sfreq = 128.0
@@ -93,21 +93,21 @@ class TestTransformer:
         else:
             assert dataset.datasets[0].windows.info["sfreq"] == sfreq
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_kw_args_initialization(self):
         """Test initializing the transformer with kw_args."""
         kw_args = {"sampling_rate": 128}
         transformer = BraindecodeDatasetLoader(kw_args=kw_args)
         assert transformer.kw_args == kw_args
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_is_fitted_method(self):
         """Test __sklearn_is_fitted__ returns True."""
         transformer = BraindecodeDatasetLoader()
         is_fitter = transformer.__sklearn_is_fitted__()
         assert is_fitter
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_assert_raises_value_error(self, data):
         """Test that an invalid argument gives a ValueError."""
         X_train, y_train, _, _ = data
@@ -116,7 +116,7 @@ class TestTransformer:
         with pytest.raises(TypeError):
             transformer.fit(X_train, y=y_train, **{invalid_param_name: None})
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_type_create_from_X_y_vs_transfomer(self, data):
         """Test the type from create_from_X_y() and the transformer."""
         X_train, y_train, _, _ = data
@@ -134,14 +134,14 @@ class TestTransformer:
         assert isinstance(dataset_trans, BaseConcatDataset)
         assert type(dataset_trans) == type(dataset)
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_wrong_input(self):
         """Test that an invalid input raises a ValueError."""
         transformer = BraindecodeDatasetLoader()
         with pytest.raises(ValueError):
             transformer.fit_transform(np.random.normal(size=(2, 1, 10)), y=np.array([0]))
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_transformer_transform_with_custom_y(self, data):
         """Test whether the provided y is used during transform."""
         X_train, y_train, _, _ = data
@@ -162,7 +162,7 @@ class TestTransformer:
         assert np.array_equal(dataset_test[0][1], y_test[0])
         assert np.array_equal(dataset_test[1][1], y_test[1])
 
-    @pytest.mark.skipif(BaseConcatDataset is None, reason="Braindecode is not installed")
+    @pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
     def test_transformer_transform_with_default_y(self, data):
         """Test whether self.y is used when y is not provided during
         transform."""
