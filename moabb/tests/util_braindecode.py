@@ -7,8 +7,8 @@ from sklearn.preprocessing import LabelEncoder
 
 
 try:
-    from braindecode.datasets import BaseConcatDataset, create_from_X_y
-    from braindecode.datasets.base import WindowsDataset
+    from braindecode.datasets.base import BaseConcatDataset, WindowsDataset
+    from braindecode.datasets.xy import create_from_X_y
 
     from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader
 except ImportError:
