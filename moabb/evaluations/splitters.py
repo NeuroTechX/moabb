@@ -41,11 +41,9 @@ class IndividualWithinSubjectSplitter(BaseCrossValidator):
         for session in np.unique(sessions):
             X_, y_, meta_ = X[sessions == session], y[sessions == session], metadata[sessions == session]
 
-            for ix_train, idx_test in cv.split(X_, y_):
-                X_train, y_train = X_[ix_train], y_[ix_train]
-                X_test, y_test = X_[ix_train], y_[ix_train]
+            for ix_train, ix_test in cv.split(X_, y_):
 
-                yield X_train, X_test, y_train, y_test
+                yield ix_train, ix_test
 
 
 class CrossSessionSplitter(BaseCrossValidator):
@@ -83,11 +81,9 @@ class IndividualCrossSessionSplitter(BaseCrossValidator):
 
         sessions = metadata.session.values
 
-        for ix_train, idx_test in cv.split(X, y, groups=sessions):
-            X_train, y_train = X[ix_train], y[ix_train]
-            X_test, y_test = X[ix_train], y[ix_train]
+        for ix_train, ix_test in cv.split(X, y, groups=sessions):
 
-            yield X_train, X_test, y_train, y_test
+            yield ix_train, ix_test
 
 
 class CrossSubjectSplitter(BaseCrossValidator):
@@ -108,8 +104,6 @@ class CrossSubjectSplitter(BaseCrossValidator):
         else:
             cv = GroupKFold(n_splits=self.n_groups)
 
-        for ix_train, idx_test in cv.split(metadata, groups=groups):
-            X_train, y_train = X[ix_train], y[ix_train]
-            X_test, y_test = X[ix_train], y[ix_train]
+        for ix_train, ix_test in cv.split(metadata, groups=groups):
 
-            yield X_train, X_test, y_train, y_test
+            yield ix_train, ix_test
