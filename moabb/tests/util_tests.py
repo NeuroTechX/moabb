@@ -114,6 +114,18 @@ class TestDepreciatedAlias(unittest.TestCase):
 
         self.assertIn(("DummyB", "DummyA", "0.1"), aliases_list)
 
+        # assertNoLogs was added in Python 3.10
+        # https://bugs.python.org/issue39385
+        if hasattr(self, "assertNoLogs"):
+            with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
+                a = DummyA(2, b=2)
+            self.assertEqual(
+                a.__doc__,
+                "DummyA class\n\n    Notes\n    -----\n\n"
+                "    .. note:: ``DummyA`` was previously named ``DummyB``. "
+                "``DummyB`` will be removed in  version 0.1.\n",
+            )
+
         with self.assertLogs(logger="moabb.utils", level="WARN") as cm:
             b = DummyB(2, b=2)  # noqa: F821
 
@@ -132,18 +144,6 @@ class TestDepreciatedAlias(unittest.TestCase):
         self.assertEqual(b.__class__.__name__, "DummyB")
         self.assertIsInstance(b, DummyB)  # noqa: F821
         self.assertIsInstance(b, DummyA)
-
-        # assertNoLogs was added in Python 3.10
-        # https://bugs.python.org/issue39385
-        if hasattr(self, "assertNoLogs"):
-            with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
-                a = DummyA(2, b=2)
-            self.assertEqual(
-                a.__doc__,
-                "DummyA class\n\n    Notes\n    -----\n\n"
-                "    .. note:: ``DummyA`` was previously named ``DummyB``. "
-                "``DummyB`` will be removed in  version 0.1.\n",
-            )
 
     def test_class_alias_notes(self):
         @depreciated_alias("DummyB", expire_version="0.1")
@@ -183,6 +183,10 @@ class TestDepreciatedAlias(unittest.TestCase):
 
         self.assertIn(("dummy_b", "dummy_a", "0.1"), aliases_list)
 
+        if hasattr(self, "assertNoLogs"):
+            with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
+                self.assertEqual(dummy_a(2, b=2), 4)
+
         self.assertEqual(
             dummy_a.__doc__,
             # "Dummy function\n\nNotes\n-----\n"
@@ -192,9 +196,6 @@ class TestDepreciatedAlias(unittest.TestCase):
             "    .. note:: ``dummy_a`` was previously named ``dummy_b``. "
             "``dummy_b`` will be removed in  version 0.1.\n",
         )
-        if hasattr(self, "assertNoLogs"):
-            with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
-                self.assertEqual(dummy_a(2, b=2), 4)
 
         with self.assertLogs(logger="moabb.utils", level="WARN") as cm:
             self.assertEqual(dummy_b(2, b=2), 4)  # noqa: F821
