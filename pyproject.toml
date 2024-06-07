@@ -87,3 +87,12 @@ src_paths = ["moabb"]
 profile = "black"
 line_length = 90
 lines_after_imports = 2
+
+# pyproject.toml
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q"
+python_files = [
+    "test_*.py",
+    "*.py",
+]

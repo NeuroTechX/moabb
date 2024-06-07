@@ -2,7 +2,7 @@
 # from moabb.tests.util_tests import *
 import unittest
 
-from moabb.tests.test_analysis import *
+from moabb.tests.analysis import *
 from moabb.tests.test_benchmark import *
 from moabb.tests.test_classification import *
 from moabb.tests.test_datasets import *
