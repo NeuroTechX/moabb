@@ -62,9 +62,7 @@ def _warning_msg(name, submodule):
 
 def _check_if_tensorflow_installed():
     try:
-        import keras
         import scikeras
-        import tensorflow
 
         return True
     except ModuleNotFoundError:
