@@ -468,3 +468,4 @@ API changes
 .. _Brian Irvine: https://github.com/brianjohannes
 .. _Bruna Lopes: https://github.com/brunaafl
 .. _Yash Chauhan: https://github.com/jiggychauhi
+.. _Taha Habib: https://github.com/tahatt13
