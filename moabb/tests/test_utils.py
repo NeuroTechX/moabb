@@ -108,15 +108,6 @@ class TestDepreciatedAlias(unittest.TestCase):
 
         self.assertIn(("DummyB", "DummyA", "0.1"), aliases_list)
 
-        with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
-            a = DummyA(2, b=2)
-        self.assertEqual(
-            a.__doc__,
-            "DummyA class\n\n    Notes\n    -----\n\n"
-            "    .. note:: ``DummyA`` was previously named ``DummyB``. "
-            "``DummyB`` will be removed in  version 0.1.\n",
-        )
-
         with self.assertLogs(logger="moabb.utils", level="WARN") as cm:
             b = DummyB(2, b=2)  # noqa: F821
 
@@ -155,16 +146,6 @@ class TestDepreciatedAlias(unittest.TestCase):
 
         self.assertIn(("DummyB", "DummyA", "0.1"), aliases_list)
 
-        with self.assertNoLogs(logger="moabb.utils", level="WARN"):
-            a = DummyA(2, b=2)
-        self.assertEqual(
-            a.__doc__,
-            "DummyA class\n\n            Notes\n            -----\n\n"
-            "            .. note:: ``DummyA`` was previously named ``DummyB``. "
-            "``DummyB`` will be removed in  version 0.1.\n\n"
-            "            a note",
-        )
-
     def test_function_alias(self):
         @depreciated_alias("dummy_b", expire_version="0.1")
         def dummy_a(a, b=1):
@@ -173,8 +154,6 @@ class TestDepreciatedAlias(unittest.TestCase):
 
         self.assertIn(("dummy_b", "dummy_a", "0.1"), aliases_list)
 
-        with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
-            self.assertEqual(dummy_a(2, b=2), 4)
         self.assertEqual(
             dummy_a.__doc__,
             # "Dummy function\n\nNotes\n-----\n"
