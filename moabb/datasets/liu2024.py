@@ -9,10 +9,11 @@ from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 
 _LIU2024_URL = "XXXX"
 
+
 class Liu2024(BaseDataset):
     """
 
-    Dataset [1]_ from the study 
+    Dataset [1]_ from the study
 
     .. admonition:: Dataset summary
 
@@ -29,7 +30,7 @@ class Liu2024(BaseDataset):
     References
     ----------
 
-    .. [1] 
+    .. [1]
 
     Notes
     -----
