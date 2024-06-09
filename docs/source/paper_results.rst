@@ -68,24 +68,21 @@ Motor Imagery - Left vs Right Hand
         </tr>
         </thead>
     </table>
-    <script type="text/javascript">
+   <script type="text/javascript">
         $(document).ready(function() {
            $('#mileftvsright').DataTable( {
-              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_mi_left_vs_right_hand.json',
+              "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_mi_left_vs_right_hand.json',
               "order": [[ 1, "desc" ]],
               "bJQueryUI": true,
               "scrollX": true,
               "paging": false,
               "info": false,
               "searching": false,
-                layout: {
-                        topStart: {
-                            buttons: ['copyHtml5']
-                        }
            } );
         } );
    </script>
    <hr>
+
 
 
 
@@ -119,7 +116,7 @@ Motor Imagery - Right Hand vs Feet
    <script type="text/javascript">
         $(document).ready(function() {
            $('#mirightvsfeet').DataTable( {
-              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_mi_right_hand_vs_feet.json',
+              "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_mi_right_hand_vs_feet.json',
               "order": [[ 1, "desc" ]],
               "bJQueryUI": true,
               "scrollX": true,
@@ -162,7 +159,7 @@ Motor Imagery - All classes
     <script type="text/javascript">
         $(document).ready(function() {
            $('#mi-all').DataTable( {
-              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_mi_all_classes.json',
+              "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_mi_all_classes.json',
               "order": [[ 1, "desc" ]],
               "bJQueryUI": true,
               "scrollX": true,
@@ -205,7 +202,7 @@ We use all the classes available in the dataset.
    <script type="text/javascript">
         $(document).ready(function() {
            $('#ssvep').DataTable( {
-              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_ssvep_all_classes.json',
+              "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_ssvep_all_classes.json',
               "order": [[ 1, "desc" ]],
               "bJQueryUI": true,
               "scrollX": true,
@@ -253,7 +250,7 @@ We use all the classes available in the dataset.
    <script type="text/javascript">
         $(document).ready(function() {
            $('#p300').DataTable( {
-              "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_erp_p300_all_classes.json',
+              "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_erp_p300_all_classes.json',
               "order": [[ 1, "desc" ]],
               "bJQueryUI": true,
               "scrollX": true,
