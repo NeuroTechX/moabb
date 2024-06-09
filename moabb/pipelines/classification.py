@@ -23,17 +23,14 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
     Parameters
     ----------
-    interval : list of length 2
-        List of form [tmin, tmax]. With tmin and tmax as defined in the SSVEP
-        paradigm :meth:`moabb.paradigms.SSVEP`
-
-    freqs : dict with n_classes keys
-        Frequencies corresponding to the SSVEP stimulation frequencies.
-        They are used to identify SSVEP classes presents in the data.
-
-    n_harmonics: int
+    n_harmonics: int, default=3
         Number of stimulation frequency's harmonics to be used in the generation
         of the CCA reference signal.
+
+    Attributes
+    ----------
+    classes_: list of int
+        List of unique classes present in the training data.
 
 
     References
@@ -44,22 +41,20 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
            canonical correlation analysis method. Journal of neural
            engineering, 6(4), 046002.
            https://doi.org/10.1088/1741-2560/6/4/046002
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
+       Use MNE Epochs object as input data instead of numpy array.
     """
 
     def __init__(self, n_harmonics=3):
         self.Yf = dict()
         self.cca = CCA(n_components=1)
-        # self.interval = interval
-        # self.slen = interval[1] - interval[0]
-        # self.freqs = freqs
         self.n_harmonics = n_harmonics
         self.classes_ = []
         self.one_hot_ = {}
         self.le_ = self.slen_ = self.freqs_ = None
-        # self.one_hot = {}
-        # for i, k in enumerate(freqs.keys()):
-        #     self.classes_.append(i)
-        #     self.one_hot[k] = i
 
     def fit(self, X, y, sample_weight=None):
         """Compute reference sinusoid signal.
@@ -149,8 +144,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
 
 class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
-    """Classifier based on the Task-Related Component Analysis method [1]_ for
-    SSVEP.
+    """Task-Related Component Analysis method [1]_ for SSVEP.
 
     Parameters
     ----------
@@ -394,6 +388,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         # Get shape of X and labels
         n_trials, n_channels, n_samples = X.shape
+        # self.sfreq_ = X.info["sfreq"]
 
         self.sfreq = int(n_samples / self.slen)
         self.sfreq = self.sfreq / self.downsample
