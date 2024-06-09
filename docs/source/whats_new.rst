@@ -52,6 +52,8 @@ Enhancements
 - Add new dataset :class:`moabb.datasets.Stieger2021` (:gh:`604` by `Reinmar Kobler`_ and `Bruno Aristimunha`_)
 - Exposing the `drop_rate` for all the deep learning parameters (:gh:`592` by `Bruno Aristimunha`_)
 - Add new dataset :class:`moabb.datasets.Rodrigues2017` dataset (:gh:`602` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
+- Change unittest to pytest (:gh:`618` by `Bruno Aristimunha`_)
+- Remove tensorflow import warning (:gh:`622` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
