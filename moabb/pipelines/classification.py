@@ -1,11 +1,13 @@
 import numpy as np
 import scipy.linalg as linalg
 from joblib import Parallel, delayed
+from mne import BaseEpochs
 from pyriemann.estimation import Covariances
 from pyriemann.utils.covariance import covariances
 from pyriemann.utils.mean import mean_covariance
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.cross_decomposition import CCA
+from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.validation import check_is_fitted
 
 from .utils import filterbank
@@ -44,57 +46,102 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
            https://doi.org/10.1088/1741-2560/6/4/046002
     """
 
-    def __init__(self, interval, freqs, n_harmonics=3):
+    def __init__(self, n_harmonics=3):
         self.Yf = dict()
         self.cca = CCA(n_components=1)
-        self.interval = interval
-        self.slen = interval[1] - interval[0]
-        self.freqs = freqs
+        # self.interval = interval
+        # self.slen = interval[1] - interval[0]
+        # self.freqs = freqs
         self.n_harmonics = n_harmonics
         self.classes_ = []
-        self.one_hot = {}
-        for i, k in enumerate(freqs.keys()):
-            self.classes_.append(i)
-            self.one_hot[k] = i
+        self.one_hot_ = {}
+        self.le_ = self.slen_ = self.freqs_ = None
+        # self.one_hot = {}
+        # for i, k in enumerate(freqs.keys()):
+        #     self.classes_.append(i)
+        #     self.one_hot[k] = i
 
     def fit(self, X, y, sample_weight=None):
         """Compute reference sinusoid signal.
 
         These sinusoid are generated for each frequency in the dataset
-        """
-        n_times = X.shape[2]
 
-        for f in self.freqs:
+        Parameters
+        ----------
+        X : MNE Epochs
+            The training data as MNE Epochs object.
+        y : unused, only for compatibility with scikit-learn
+
+        Returns
+        -------
+        self: SSVEP_CCA object
+            Instance of classifier.
+        """
+        if not isinstance(X, BaseEpochs):
+            raise ValueError("X should be an MNE Epochs object.")
+
+        self.slen_ = X.times[-1] - X.times[0]
+        n_times = len(X.times)
+        self.freqs_ = list(X.event_id.keys())
+        self.le_ = LabelEncoder().fit(self.freqs_)
+        # self.le_.fit(self.freqs_)
+        self.classes_ = self.le_.transform(self.freqs_)
+        for i, k in zip(self.freqs_, self.le_.transform(self.freqs_)):
+            self.one_hot_[i] = k
+
+        for f in self.freqs_:
             if f.replace(".", "", 1).isnumeric():
                 freq = float(f)
                 yf = []
                 for h in range(1, self.n_harmonics + 1):
                     yf.append(
-                        np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times))
+                        np.sin(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
                     )
                     yf.append(
-                        np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen, n_times))
+                        np.cos(2 * np.pi * freq * h * np.linspace(0, self.slen_, n_times))
                     )
                 self.Yf[f] = np.array(yf)
         return self
 
     def predict(self, X):
-        """Predict is made by taking the maximum correlation coefficient."""
+        """Predict is made by taking the maximum correlation coefficient.
+
+        Parameters
+        ----------
+        X : MNE Epochs
+            The data to predict as MNE Epochs object.
+
+        Returns
+        -------
+        y : list of int
+            Predicted labels.
+        """
         y = []
         for x in X:
             corr_f = {}
-            for f in self.freqs:
+            for f in self.freqs_:
                 if f.replace(".", "", 1).isnumeric():
                     S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
                     corr_f[f] = np.corrcoef(S_x.T, S_y.T)[0, 1]
-            y.append(self.one_hot[max(corr_f, key=corr_f.get)])
+            y.append(self.one_hot_[max(corr_f, key=corr_f.get)])
         return y
 
     def predict_proba(self, X):
-        """Probability could be computed from the correlation coefficient."""
-        P = np.zeros(shape=(len(X), len(self.freqs)))
+        """Probability could be computed from the correlation coefficient.
+
+        Parameters
+        ----------
+        X : MNE Epochs
+            The data to predict as MNE Epochs object.
+
+        Returns
+        -------
+        proba : ndarray of shape (n_trials, n_classes)
+            probability of each class for each trial.
+        """
+        P = np.zeros(shape=(len(X), len(self.freqs_)))
         for i, x in enumerate(X):
-            for j, f in enumerate(self.freqs):
+            for j, f in enumerate(self.freqs_):
                 if f.replace(".", "", 1).isnumeric():
                     S_x, S_y = self.cca.fit_transform(x.T, self.Yf[f].T)
                     P[i, j] = np.corrcoef(S_x.T, S_y.T)[0, 1]
