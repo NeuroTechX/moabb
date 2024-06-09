@@ -31,6 +31,15 @@ except ImportError:
 log = logging.getLogger(__name__)
 
 
+def _ppl_needs_epochs(pn):
+    """Check if the pipeline needs MNE epochs as input."""
+    ppl_with_epochs = ["braindecode", "Keras", "SSVEP CCA"]
+    if any(s in pn for s in ppl_with_epochs):
+        return True
+    else:
+        return False
+
+
 def benchmark(  # noqa: C901
     pipelines="./pipelines/",
     evaluations=None,
@@ -165,7 +174,7 @@ def benchmark(  # noqa: C901
 
             ppl_with_epochs, ppl_with_array = {}, {}
             for pn, pv in prdgms[paradigm].items():
-                if "braindecode" in pn or "Keras" in pn:
+                if _ppl_needs_epochs(pn):
                     ppl_with_epochs[pn] = pv
                 else:
                     ppl_with_array[pn] = pv
