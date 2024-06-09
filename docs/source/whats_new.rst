@@ -70,6 +70,7 @@ Bugs
 - Fix mne_bids version incompatibility with mne (:gh:`586` by `Bruna Lopes`_)
 - Updating the parameters of the SSVEP_TRCA method (:gh:`589` by `Bruno Aristimunha`_)
 - Fix and updating the parameters for the benchmark function (:gh:`588` by `Bruno Aristimunha`_)
+- Fix result table display (:gh:`599` by `Sylvain Chevallier`_)
 - Fix :class:`moabb.datasets.preprocessing.SetRawAnnotations` setting incorrect annotations when the dataset's interval does not start at 0 (:gh:`607` by `Pierre Guetschel`_)
 - Fix download link for GigaDB Cho2017 and Lee2019 datasets (:gh:`621` by `Anton Andreev`_)
 
