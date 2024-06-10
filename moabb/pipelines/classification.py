@@ -79,7 +79,6 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         n_times = len(X.times)
         self.freqs_ = list(X.event_id.keys())
         self.le_ = LabelEncoder().fit(self.freqs_)
-        # self.le_.fit(self.freqs_)
         self.classes_ = self.le_.transform(self.freqs_)
         for i, k in zip(self.freqs_, self.le_.transform(self.freqs_)):
             self.one_hot_[i] = k
@@ -224,23 +223,24 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
     def __init__(
         self,
-        interval,
-        freqs,
-        downsample=1,
         is_ensemble=True,
         method="original",
         estimator="scm",
     ):
-        self.freqs = freqs
-        self.peaks = np.array([float(f) for f in freqs.keys()])
-        self.n_fbands = len(self.peaks)
-        self.downsample = downsample
-        self.interval = interval
-        self.slen = interval[1] - interval[0]
+        # self.freqs = freqs
+        # self.peaks = np.array([float(f) for f in freqs.keys()])
+        # self.n_fbands = len(self.peaks)
+        # self.downsample = downsample
+        # self.interval = interval
+        # self.slen = interval[1] - interval[0]
         self.is_ensemble = is_ensemble
-        self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
+        # self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
         self.estimator = estimator
         self.method = method
+        self.fb_coefs, self.one_hot_ = [], {}
+        self.sfreq_, self.freqs_, self.peaks_, self.n_fbands = None, None, None, None
+        self.le_, self.classes_, self.n_classes = None, None, None
+        self.templates_, self.weights_ = None, None
 
     def _Q_S_estim(self, data):
         # Check if X is a single trial (test data) or not
@@ -383,34 +383,43 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         self: CCA object
             Instance of classifier.
         """
-        # Downsample data
-        X = X[:, :, :: self.downsample]
+        if not isinstance(X, BaseEpochs):
+            raise ValueError("X should be an MNE Epochs object.")
 
-        # Get shape of X and labels
-        n_trials, n_channels, n_samples = X.shape
-        # self.sfreq_ = X.info["sfreq"]
-
-        self.sfreq = int(n_samples / self.slen)
-        self.sfreq = self.sfreq / self.downsample
-
-        self.classes_ = np.unique(y)
+        # n_trials = len(X)
+        n_channels, n_samples = X.info["nchan"], len(X.times)
+        self.sfreq_ = X.info["sfreq"]
+        self.freqs_ = list(X.event_id.keys())
+        self.peaks_ = np.array([float(f) for f in self.freqs_])
+        self.n_fbands = len(self.peaks_)
+        self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
+        self.le_ = LabelEncoder().fit(self.freqs_)
+        self.classes_ = self.le_.transform(self.freqs_)
         self.n_classes = len(self.classes_)
+        for i, k in zip(self.freqs_, self.classes_):
+            self.one_hot_[i] = k
 
         # Initialize the final arrays
         self.templates_ = np.zeros((self.n_classes, self.n_fbands, n_channels, n_samples))
         self.weights_ = np.zeros((self.n_fbands, self.n_classes, n_channels))
 
-        for class_idx in self.classes_:
-            X_cal = X[y == class_idx]  # Select data with a specific label
+        # for class_idx in self.classes_:
+        for freq, k in self.one_hot_.items():
+            # X_cal = X[y == class_idx]  # Select data with a specific label
+            X_cal = X[freq]  # Select data with a specific label
             # Filterbank approach
             for band_n in range(self.n_fbands):
                 # Filter the data and compute TRCA
-                X_filter = filterbank(X_cal, self.sfreq, band_n, self.peaks)
+                X_filter = filterbank(
+                    X_cal.get_data(copy=False), self.sfreq_, band_n, self.peaks_
+                )
                 w_best, _ = self._compute_trca(X_filter)
 
                 # Get template by averaging trials and take the best filter for this band
-                self.templates_[class_idx, band_n, :, :] = np.mean(X_filter, axis=0)
-                self.weights_[band_n, class_idx, :] = w_best
+                # self.templates_[class_idx, band_n, :, :] = np.mean(X_filter, axis=0)
+                # self.weights_[band_n, class_idx, :] = w_best
+                self.templates_[k, band_n, :, :] = np.mean(X_filter, axis=0)
+                self.weights_[band_n, k, :] = w_best
 
         return self
 
@@ -440,34 +449,38 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         # Check is fit had been called
         check_is_fitted(self)
 
-        # Check if X is a single trial or not
-        if X.ndim == 2:
-            X = X[np.newaxis, ...]
-
-        # Downsample data
-        X = X[:, :, :: self.downsample]
+        # # Check if X is a single trial or not
+        # if X.ndim == 2:
+        #     X = X[np.newaxis, ...]
+        #
+        # # Downsample data
+        # X = X[:, :, :: self.downsample]
 
         # Get test data shape
-        n_trials, _, _ = X.shape
+        # n_trials = len(X)
+        # n_trials, _, _ = X.shape
 
         # Initialize pred array
         y_pred = []
 
-        for trial_n in range(n_trials):
+        # for trial_n in range(n_trials):
+        for X_test in X:
             # Pick trial
-            X_test = X[trial_n, :, :]
+            # X_test = X[trial_n, :, :]
 
             # Initialize correlations array
             corr_array = np.zeros((self.n_fbands, self.n_classes))
 
             # Filter the data in the corresponding band
             for band_n in range(self.n_fbands):
-                X_filter = filterbank(X_test, self.sfreq, band_n, self.peaks)
+                X_filter = filterbank(X_test, self.sfreq_, band_n, self.peaks_)
 
                 # Compute correlation with all the templates and bands
-                for class_idx in range(self.n_classes):
+                # for class_idx in range(self.n_classes):
+                for freq, k in self.one_hot_.items():
                     # Get the corresponding template
-                    template = np.squeeze(self.templates_[class_idx, band_n, :, :])
+                    # template = np.squeeze(self.templates_[class_idx, band_n, :, :])
+                    template = np.squeeze(self.templates_[k, band_n, :, :])
 
                     if self.is_ensemble:
                         w = np.squeeze(
@@ -475,7 +488,8 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                         ).T  # (n_classes, n_channel)
                     else:
                         w = np.squeeze(
-                            self.weights_[band_n, class_idx, :]
+                            # self.weights_[band_n, class_idx, :]
+                            self.weights_[band_n, k, :]
                         ).T  # (n_channel,)
 
                     # Compute 2D correlation of spatially filtered testdata with ref
@@ -483,14 +497,14 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                         np.dot(X_filter.T, w).flatten(),
                         np.dot(template.T, w).flatten(),
                     )
-                    corr_array[band_n, class_idx] = r[0, 1]
+                    corr_array[band_n, k] = r[0, 1]
 
             # Fusion for the filterbank analysis
             rho = np.dot(self.fb_coefs, corr_array)
 
-            # Select the maximal value and append to preddictions
+            # Select the maximal value and append to predictions
             tau = np.argmax(rho)
-            y_pred.append(tau)
+            y_pred.append(self.one_hot_[self.freqs_[tau]])
 
         return y_pred
 
@@ -521,49 +535,52 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         check_is_fitted(self)
 
         # Check if X is a single trial or not
-        if X.ndim == 2:
-            X = X[np.newaxis, ...]
-
-        # Downsample data
-        X = X[:, :, :: self.downsample]
+        # if X.ndim == 2:
+        #     X = X[np.newaxis, ...]
+        #
+        # # Downsample data
+        # X = X[:, :, :: self.downsample]
 
         # Get test data shape
-        n_trials, _, _ = X.shape
+        # n_trials, _, _ = X.shape
+        n_trials = len(X)
 
         # Initialize pred array
-        y_pred = np.zeros((n_trials, len(self.peaks)))
+        y_pred = np.zeros((n_trials, self.n_classes))
 
-        for trial_n in range(n_trials):
+        # for trial_n in range(n_trials):
+        for trial_n, X_test in enumerate(X):
             # Pick trial
-            X_test = X[trial_n, :, :]
+            # X_test = X[trial_n, :, :]
 
             # Initialize correlations array
             corr_array = np.zeros((self.n_fbands, self.n_classes))
 
             # Filter the data in the corresponding band
             for band_n in range(self.n_fbands):
-                X_filter = filterbank(X_test, self.sfreq, band_n, self.peaks)
+                X_filter = filterbank(X_test, self.sfreq_, band_n, self.peaks_)
 
                 # Compute correlation with all the templates and bands
-                for class_idx in range(self.n_classes):
+                # for class_idx in range(self.n_classes):
+                for freq, k in self.one_hot_.items():
                     # Get the corresponding template
-                    template = np.squeeze(self.templates_[class_idx, band_n, :, :])
+                    # template = np.squeeze(self.templates_[class_idx, band_n, :, :])
+                    template = np.squeeze(self.templates_[k, band_n, :, :])
 
                     if self.is_ensemble:
                         w = np.squeeze(
                             self.weights_[band_n, :, :]
                         ).T  # (n_class, n_channel)
                     else:
-                        w = np.squeeze(
-                            self.weights_[band_n, class_idx, :]
-                        ).T  # (n_channel,)
+                        w = np.squeeze(self.weights_[band_n, k, :]).T  # (n_channel,)
 
                     # Compute 2D correlation of spatially filtered testdata with ref
                     r = np.corrcoef(
                         np.dot(X_filter.T, w).flatten(),
                         np.dot(template.T, w).flatten(),
                     )
-                    corr_array[band_n, class_idx] = r[0, 1]
+                    # corr_array[band_n, class_idx] = r[0, 1]
+                    corr_array[band_n, k] = r[0, 1]
 
             normalized_coefs = self.fb_coefs / (np.sum(self.fb_coefs))
             # Fusion for the filterbank analysis
