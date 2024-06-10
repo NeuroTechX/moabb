@@ -1,8 +1,8 @@
-import mne
-import numpy as np
-import os
 import zipfile as z
 from pathlib import Path
+
+import mne
+import numpy as np
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
@@ -10,12 +10,15 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 
 
-_LIU2024_URL = "https://figshare.com/articles/dataset/EEG_datasets_of_stroke_patients/21679035/5"
+_LIU2024_URL = (
+    "https://figshare.com/articles/dataset/EEG_datasets_of_stroke_patients/21679035/5"
+)
+
 
 class Liu2024(BaseDataset):
     """
 
-    Dataset [1]_ from the study on burst-VEP [2]_. 
+    Dataset [1]_ from the study on burst-VEP [2]_.
 
     .. admonition:: Dataset summary
 
@@ -38,7 +41,7 @@ class Liu2024(BaseDataset):
     .. [2] Liu, H., Wei, P., Wang, H. et al. An EEG motor imagery dataset for brain computer interface in acute stroke
            patients. Sci Data 11, 131 (2024).
            DOI: https://doi.org/10.1038/s41597-023-02787-8
-           
+
     Notes
     -----
 
@@ -67,8 +70,8 @@ class Liu2024(BaseDataset):
         subject_paths = []
 
         url = "https://figshare.com/ndownloader/files/38516654"
-        path_zip = dl.data_dl(url, self.code) 
-        #sub = f"sub-{subject:02d}"
+        path_zip = dl.data_dl(url, self.code)
+        # sub = f"sub-{subject:02d}"
         path_zip = Path(path_zip)
         path_folder = path_zip.parent
 
@@ -77,12 +80,13 @@ class Liu2024(BaseDataset):
             zip_ref.extractall(path_folder)
         sub = f"sub-{subject:02d}"
 
-        subject_path = path_folder / "edffile" / sub / "eeg" / f"{sub}_task-motor-imagery_eeg.edf"
+        subject_path = (
+            path_folder / "edffile" / sub / "eeg" / f"{sub}_task-motor-imagery_eeg.edf"
+        )
         subject_paths.append(str(subject_path))
 
         return subject_paths
 
-  
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject."""
         file_path_list = self.data_path(subject)
@@ -144,6 +148,3 @@ class Liu2024(BaseDataset):
             sessions["0"][run_name] = raw
 
         return sessions
-
-
-    
