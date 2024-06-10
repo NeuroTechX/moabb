@@ -12,4 +12,3 @@ pipeline:
       n_fbands: 5
       is_ensemble: True
       method: "riemann"
-      freqs: {"13":2, "17":3, "21":4}
