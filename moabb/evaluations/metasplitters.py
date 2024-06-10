@@ -1,12 +1,9 @@
 import numpy as np
-from sklearn.model_selection import (
-    BaseCrossValidator,
-    StratifiedShuffleSplit,
-)
+from sklearn.model_selection import BaseCrossValidator
 
 
 class OfflineSplit(BaseCrossValidator):
-    """ Offline split for evaluation test data.
+    """Offline split for evaluation test data.
 
     Assumes that, per session, all test trials are available for inference. It can be used when
     no filtering or data alignment is needed.
@@ -32,17 +29,21 @@ class OfflineSplit(BaseCrossValidator):
         subjects = metadata.subject.unique()
 
         for subject in subjects:
-            X_, y_, meta_ = X[subjects == subject], y[subjects == subject], metadata[subjects == subject]
+            X_, y_, meta_ = (
+                X[subjects == subject],
+                y[subjects == subject],
+                metadata[subjects == subject],
+            )
             sessions = meta_.session.unique()
 
             for session in sessions:
-                ix_test = meta_[meta_['session'] == session].index
+                ix_test = meta_[meta_["session"] == session].index
 
                 yield ix_test
 
 
 class TimeSeriesSplit(BaseCrossValidator):
-    """ Pseudo-online split for evaluation test data.
+    """Pseudo-online split for evaluation test data.
 
     It takes into account the time sequence for obtaining the test data, and uses first run,
     or first #calib_size trial as calibration data, and the rest as evaluation data.
@@ -60,7 +61,7 @@ class TimeSeriesSplit(BaseCrossValidator):
 
     """
 
-    def __init__(self, calib_size:int):
+    def __init__(self, calib_size: int):
         self.calib_size = calib_size
 
     def get_n_splits(self, metadata):
@@ -80,19 +81,27 @@ class TimeSeriesSplit(BaseCrossValidator):
             for subject in subjects:
                 for session in sessions:
                     # Index of specific session of this subject
-                    session_indices = metadata[(metadata['subject'] == subject) &
-                                               (metadata['session'] == session)].index
+                    session_indices = metadata[
+                        (metadata["subject"] == subject)
+                        & (metadata["session"] == session)
+                    ].index
 
                     for run in runs:
-                        test_ix = session_indices[metadata.loc[session_indices]['run'] != run]
-                        calib_ix = session_indices[metadata.loc[session_indices]['run'] == run]
+                        test_ix = session_indices[
+                            metadata.loc[session_indices]["run"] != run
+                        ]
+                        calib_ix = session_indices[
+                            metadata.loc[session_indices]["run"] == run
+                        ]
                         yield test_ix, calib_ix
                         break  # Take the fist run as calibration
         else:
             for subject in subjects:
                 for session in sessions:
-                    session_indices = metadata[(metadata['subject'] == subject) &
-                                               (metadata['session'] == session)].index
+                    session_indices = metadata[
+                        (metadata["subject"] == subject)
+                        & (metadata["session"] == session)
+                    ].index
                     calib_size = self.calib_size
 
                     calib_ix = session_indices[:calib_size]
@@ -102,7 +111,7 @@ class TimeSeriesSplit(BaseCrossValidator):
 
 
 class SamplerSplit(BaseCrossValidator):
-    """ Return subsets of the training data with different number of samples.
+    """Return subsets of the training data with different number of samples.
 
     Util for estimating the performance of a model when using different number of
     training samples and plotting the learning curve. You must define the data
@@ -130,7 +139,9 @@ class SamplerSplit(BaseCrossValidator):
         self.sampler = IndividualSamplerSplit(self.data_size)
 
     def get_n_splits(self, y, metadata):
-        return self.data_eval.get_n_splits(metadata) * len(self.sampler.get_data_size_subsets(y))
+        return self.data_eval.get_n_splits(metadata) * len(
+            self.sampler.get_data_size_subsets(y)
+        )
 
     def split(self, X, y, metadata, **kwargs):
         cv = self.data_eval
@@ -142,7 +153,7 @@ class SamplerSplit(BaseCrossValidator):
 
 
 class IndividualSamplerSplit(BaseCrossValidator):
-    """ Return subsets of the training data with different number of samples.
+    """Return subsets of the training data with different number of samples.
 
     Util for estimating the performance of a model when using different number of
     training samples and plotting the learning curve. It must be used after already splitting

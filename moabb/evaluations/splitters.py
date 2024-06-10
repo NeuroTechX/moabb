@@ -8,7 +8,7 @@ from sklearn.model_selection import (
 
 
 class WithinSubjectSplitter(BaseCrossValidator):
-    """ Data splitter for within session evaluation.
+    """Data splitter for within session evaluation.
 
     Within-session evaluation uses k-fold cross_validation to determine train
     and test sets on separate session for each subject. This splitter assumes that
@@ -46,7 +46,7 @@ class WithinSubjectSplitter(BaseCrossValidator):
 
 
 class IndividualWithinSubjectSplitter(BaseCrossValidator):
-    """ Data splitter for within session evaluation.
+    """Data splitter for within session evaluation.
 
     Within-session evaluation uses k-fold cross_validation to determine train
     and test sets on separate session for each subject. This splitter does not assume
@@ -62,6 +62,7 @@ class IndividualWithinSubjectSplitter(BaseCrossValidator):
         Number of folds. Must be at least 2.
 
     """
+
     def __init__(self, n_folds: int):
         self.n_folds = n_folds
 
@@ -87,7 +88,7 @@ class IndividualWithinSubjectSplitter(BaseCrossValidator):
 
 
 class CrossSessionSplitter(BaseCrossValidator):
-    """ Data splitter for cross session evaluation.
+    """Data splitter for cross session evaluation.
 
     Cross-session evaluation uses a Leave-One-Group-Out cross-validation to
     evaluate performance across sessions, but for a single subject. This splitter
@@ -124,7 +125,7 @@ class CrossSessionSplitter(BaseCrossValidator):
 
 
 class IndividualCrossSessionSplitter(BaseCrossValidator):
-    """ Data splitter for cross session evaluation.
+    """Data splitter for cross session evaluation.
 
     Cross-session evaluation uses a Leave-One-Group-Out cross-validation to
     evaluate performance across sessions, but for a single subject. This splitter does
@@ -141,6 +142,7 @@ class IndividualCrossSessionSplitter(BaseCrossValidator):
         Default:None
 
     """
+
     def __init__(self, n_folds=None):
         self.n_folds = n_folds
 
@@ -160,7 +162,7 @@ class IndividualCrossSessionSplitter(BaseCrossValidator):
 
 
 class CrossSubjectSplitter(BaseCrossValidator):
-    """ Data splitter for cross session evaluation.
+    """Data splitter for cross session evaluation.
 
     Cross-session evaluation uses a Leave-One-Group-Out cross-validation to
     evaluate performance across sessions, but for a single subject. This splitter
@@ -174,6 +176,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
 
     """
+
     def __init__(self, n_groups):
         self.n_groups = n_groups
 
