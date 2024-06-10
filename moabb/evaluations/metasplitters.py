@@ -69,7 +69,6 @@ class TimeSeriesSplit(BaseCrossValidator):
                     yield test_ix, calib_ix  # Take first #calib_size samples as calibration
 
 
-
 class SamplerSplit(BaseCrossValidator):
 
     def __init__(self, test_size, n_perms, data_size=None):
