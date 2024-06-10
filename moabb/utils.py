@@ -1,4 +1,5 @@
 """Util functions for moabb."""
+
 import inspect
 import logging
 import os
@@ -50,9 +51,9 @@ def _set_tensorflow_seed(seed: int) -> None:
         import tensorflow as tf
 
         tf.random.set_seed(seed)  # tf cpu fix seed
-        os.environ[
-            "TF_DETERMINISTIC_OPS"
-        ] = "1"  # tf gpu fix seed, please `pip install tensorflow-determinism` first
+        os.environ["TF_DETERMINISTIC_OPS"] = (
+            "1"  # tf gpu fix seed, please `pip install tensorflow-determinism` first
+        )
         tf.keras.utils.set_random_seed(seed)
 
     except ImportError:

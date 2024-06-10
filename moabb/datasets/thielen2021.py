@@ -1,15 +1,14 @@
 import h5py
 import mne
 import numpy as np
-from mne import create_info
-from mne.io import RawArray
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 
 
-Thielen2021_URL = "https://public.data.donders.ru.nl/dcc/DSC_2018.00122_448_v3"
+Thielen2021_URL = "https://public.data.ru.nl/dcc/DSC_2018.00122_448_v3"
 
 # The default electrode locations in the raw file are wrong. We used the ExG channels on the Biosemi with a custom 8
 # channel set, according to an optimization as published in the following article:
@@ -77,11 +76,11 @@ class Thielen2021(BaseDataset):
 
     .. admonition:: Dataset summary
 
-        =============  =======  =======  ==================  ===============  ===============  ===========
-        Name             #Subj    #Chan     #Trials / class  Trials length    Sampling rate      #Sessions
-        =============  =======  =======  ==================  ===============  ===============  ===========
-        Thielen2021         30        8  18900 NT / 18900 T  0.3s             512Hz                      1
-        =============  =======  =======  ==================  ===============  ===============  ===========
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== ================== ========== =================
+        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class    Codes      Presentation rate
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== ================== ========== =================
+        Thielen2021          30        1          512Hz      8        31.5s          20               5              2         94500 NT / 94500 T Gold codes  60Hz
+        ==================== ======= ========= ============= ===== ============= ============== =============== ============== ================== ========== =================
 
     **Dataset description**
 
@@ -140,93 +139,6 @@ class Thielen2021(BaseDataset):
             doi="10.34973/9txv-z787",
         )
 
-    def _add_stim_channel_trial(
-        self, raw, onsets, labels, offset=200, ch_name="stim_trial"
-    ):
-        """
-        Add a stimulus channel with trial onsets and their labels.
-
-        Parameters
-        ----------
-        raw: mne.Raw
-            The raw object to add the stimulus channel to.
-        onsets: List | np.ndarray
-            The onsets of the trials in sample numbers.
-        labels: List | np.ndarray
-            The labels of the trials.
-        offset: int (default: 200)
-            The integer value to start markers with. For instance, if 200, then label 0 will be marker 200, label 1
-            will be be marker 201, etc.
-        ch_name: str (default: "stim_trial")
-            The name of the added stimulus channel.
-        Returns
-        -------
-        mne.Raw
-            The raw object with the added stimulus channel.
-        """
-        stim_chan = np.zeros((1, len(raw)))
-        for onset, label in zip(onsets, labels):
-            stim_chan[0, onset] = offset + label
-        info = create_info(
-            ch_names=["stim_trial"],
-            ch_types=["stim"],
-            sfreq=raw.info["sfreq"],
-            verbose=False,
-        )
-        raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
-        return raw
-
-    def _add_stim_channel_epoch(
-        self,
-        raw,
-        onsets,
-        labels,
-        codes,
-        presentation_rate=60,
-        offset=100,
-        ch_name="stim_epoch",
-    ):
-        """
-        Add a stimulus channel with epoch onsets and their labels, which are the values of the presented code for each
-        of the trials.
-
-        Parameters
-        ----------
-        raw: mne.Raw
-            The raw object to add the stimulus channel to.
-        onsets: List | np.ndarray
-            The onsets of the trials in sample numbers.
-        labels: List | np.ndarray
-            The labels of the trials.
-        codes: np.ndarray
-            The codebook containing each presented code of shape (nr_bits, nr_codes), sampled at the presentation rate.
-        presentation_rate: int (default: 60):
-            The presentation rate (e.g., frame rate) at which the codes were presented in Hz.
-        offset: int (default: 100)
-            The integer value to start markers with. For instance, if 100, then label 0 will be marker 100, label 1
-            will be be marker 101, etc.
-        ch_name: str (default: "stim_epoch")
-            The name of the added stimulus channel.
-        Returns
-        -------
-        mne.Raw
-            The raw object with the added stimulus channel.
-        """
-        stim_chan = np.zeros((1, len(raw)))
-        for onset, label in zip(onsets, labels):
-            idx = np.round(
-                onset + np.arange(codes.shape[0]) / presentation_rate * raw.info["sfreq"]
-            ).astype("int")
-            stim_chan[0, idx] = offset + codes[:, label]
-        info = create_info(
-            ch_names=[ch_name],
-            ch_types=["stim"],
-            sfreq=raw.info["sfreq"],
-            verbose=False,
-        )
-        raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
-        return raw
-
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject."""
         file_path_list = self.data_path(subject)
@@ -277,13 +189,11 @@ class Thielen2021(BaseDataset):
 
             # Create stim channel with trial information (i.e., symbols)
             # Specifically: 200 = symbol-0, 201 = symbol-1, 202 = symbol-2, etc.
-            raw = self._add_stim_channel_trial(
-                raw, trial_onsets, trial_labels, offset=200
-            )
+            raw = add_stim_channel_trial(raw, trial_onsets, trial_labels, offset=200)
 
             # Create stim channel with epoch information (i.e., 1 / 0, or on / off)
             # Specifically: 100 = "0", 101 = "1"
-            raw = self._add_stim_channel_epoch(
+            raw = add_stim_channel_epoch(
                 raw, trial_onsets, trial_labels, codes, PRESENTATION_RATE, offset=100
             )
 

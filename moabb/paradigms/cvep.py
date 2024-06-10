@@ -213,6 +213,12 @@ class CVEP(BaseCVEP):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.0
+
     """
 
     def __init__(self, fmin=1.0, fmax=45.0, **kwargs):
@@ -264,6 +270,12 @@ class FilterBankCVEP(BaseCVEP):
         the dataset.
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+
+    Notes
+    -----
+
+    .. versionadded:: 1.0.0
+
     """
 
     def __init__(self, filters=((1.0, 45.0), (12.0, 45.0), (30.0, 45.0)), **kwargs):

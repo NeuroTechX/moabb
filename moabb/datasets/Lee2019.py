@@ -1,4 +1,5 @@
 """BMI/OpenBMI dataset."""
+
 from functools import partialmethod
 
 import numpy as np
@@ -11,7 +12,7 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
 
-Lee2019_URL = "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100542/"
+Lee2019_URL = "https://s3.ap-northeast-1.wasabisys.com/gigadb-datasets/live/pub/10.5524/100001_101000/100542/"
 
 
 class Lee2019(BaseDataset):
@@ -385,7 +386,7 @@ class Lee2019_SSVEP(Lee2019):
         =============  =======  =======  ==========  =================  ===============  ===============  ===========
         Name             #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
         =============  =======  =======  ==========  =================  ===============  ===============  ===========
-        Lee2019_SSVEP       54       16           4                 25  1s               1000Hz                     1
+        Lee2019_SSVEP       54       62           4                 50  4s               1000Hz                     2
         =============  =======  =======  ==========  =================  ===============  ===============  ===========
 
     Dataset from Lee et al 2019 [1]_.

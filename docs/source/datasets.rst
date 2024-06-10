@@ -30,6 +30,7 @@ Motor Imagery Datasets
     Shin2017B
     Weibo2014
     Zhou2016
+    Stieger2021
 
 
 ------------
@@ -75,6 +76,7 @@ SSVEP Datasets
     Lee2019_SSVEP
 
 
+
 --------------
 c-VEP Datasets
 --------------
@@ -83,8 +85,12 @@ c-VEP Datasets
     :toctree: generated/
     :template: class.rst
 
+    Thielen2015
     Thielen2021
-
+    CastillosBurstVEP40
+    CastillosBurstVEP100
+    CastillosCVEP40
+    CastillosCVEP100
 
 ----------------------
 Resting State Datasets
@@ -95,6 +101,8 @@ Resting State Datasets
     :template: class.rst
 
     Cattan2019_PHMD
+    Hinss2021
+    Rodrigues2017
 
 
 ------------

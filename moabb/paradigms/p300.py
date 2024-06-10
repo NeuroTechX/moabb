@@ -88,7 +88,7 @@ class BaseP300(BaseParadigm):
 
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
-        return RawToEventsP300(event_id=event_id)
+        return RawToEventsP300(event_id=event_id, interval=dataset.interval)
 
     @property
     def datasets(self):

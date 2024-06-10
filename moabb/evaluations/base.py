@@ -1,6 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 
+import pandas as pd
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import GridSearchCV
 
@@ -28,9 +29,6 @@ class BaseEvaluation(ABC):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -48,6 +46,18 @@ class BaseEvaluation(ABC):
         use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
+    n_splits: int, default=None
+        Number of splits for cross-validation. If None, the number of splits
+        is equal to the number of subjects.
+    save_model: bool, default=False
+        Save model after training, for each fold of cross-validation if needed
+    cache_config: bool, default=None
+        Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
+       n_splits, save_model, cache_config parameters.
     """
 
     def __init__(
@@ -56,7 +66,6 @@ class BaseEvaluation(ABC):
         datasets=None,
         random_state=None,
         n_jobs=1,
-        n_jobs_evaluation=1,
         overwrite=False,
         error_score="raise",
         suffix="",
@@ -65,17 +74,20 @@ class BaseEvaluation(ABC):
         return_epochs=False,
         return_raws=False,
         mne_labels=False,
+        n_splits=None,
         save_model=False,
+        cache_config=None,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
-        self.n_jobs_evaluation = n_jobs_evaluation
         self.error_score = error_score
         self.hdf5_path = hdf5_path
         self.return_epochs = return_epochs
         self.return_raws = return_raws
         self.mne_labels = mne_labels
+        self.n_splits = n_splits
         self.save_model = save_model
+        self.cache_config = cache_config
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
@@ -168,6 +180,8 @@ class BaseEvaluation(ABC):
         for _, pipeline in pipelines.items():
             if not (isinstance(pipeline, BaseEstimator)):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
+
+        res_per_db = []
         for dataset in self.datasets:
             log.info("Processing dataset: {}".format(dataset.code))
             process_pipeline = self.paradigm.make_process_pipelines(
@@ -187,10 +201,13 @@ class BaseEvaluation(ABC):
             )
             for res in results:
                 self.push_result(res, pipelines, process_pipeline)
+            res_per_db.append(
+                self.results.to_dataframe(
+                    pipelines=pipelines, process_pipeline=process_pipeline
+                )
+            )
 
-        return self.results.to_dataframe(
-            pipelines=pipelines, process_pipeline=process_pipeline
-        )
+        return pd.concat(res_per_db, ignore_index=True)
 
     def push_result(self, res, pipelines, process_pipeline):
         message = "{} | ".format(res["pipeline"])

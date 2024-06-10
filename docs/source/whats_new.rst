@@ -17,13 +17,63 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
-
 - None
 
 Bugs
 ~~~~
-
 - None
+
+API changes
+~~~~~~~~~~~
+- None
+
+Version - 1.1.0  (Stable - PyPi)
+---------------------------------
+
+
+Enhancements
+~~~~~~~~~~~~
+
+- Add cache option to the evaluation (:gh:`518` by `Bruno Aristimunha`_)
+- Option to interpolate channel in paradigms' `match_all` method (:gh:`480` by `Gregoire Cattan`_)
+- Add leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
+- Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
+- Improve transform function of AugmentedDataset (:gh:`541` by `Quentin Barthelemy`_)
+- Add new paper results website (:gh:`556` by `Bruno Aristimunha`_)
+- Move cVEP common functions to :mod:`moabb.datasets.utils` (:gh:`564` :gh:`557` by `Pierre Guetschel`_)
+- Normalize c-VEP description tables (:gh:`562` :gh:`566` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
+- Update citation in README (:gh:`573` by `Igor Carrara`_)
+- Update pyRiemann dependency (:gh:`577` by `Gregoire Cattan`_)
+- Add resting stage Hinss2021 dataset (:gh:`580` by `Gregoire Cattan`_ and `Yash Chauhan`_)
+- Expose the `learning` rate parameter in the keras deep learning methods and optimize parameters (:gh:`589` and :gh:`592` by `Bruno Aristimunha`_)
+- Updating the braindecode pipelines for the new braindecode version 0.8.1 (:gh:`589` by `Bruno Aristimunha`_)
+- Add SSVEP and ERP paradigms to DL pipelines (:gh:`590` by `Pierre Guetschel`_)
+- Allow to pass a single pipeline file to ``benchmark`` (:gh:`591` by `Pierre Guetschel`_)
+- Add new dataset :class:`moabb.datasets.Stieger2021` (:gh:`604` by `Reinmar Kobler`_ and `Bruno Aristimunha`_)
+- Exposing the `drop_rate` for all the deep learning parameters (:gh:`592` by `Bruno Aristimunha`_)
+- Add new dataset :class:`moabb.datasets.Rodrigues2017` dataset (:gh:`602` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
+- Change unittest to pytest (:gh:`618` by `Bruno Aristimunha`_)
+- Remove tensorflow import warning (:gh:`622` by `Bruno Aristimunha`_)
+
+Bugs
+~~~~
+
+- Fix TRCA implementation for different stimulation freqs and for signal filtering (:gh:522 by `Sylvain Chevallier`_)
+- Fix saving to BIDS runs with a description string in their name (:gh:`530` by `Pierre Guetschel`_)
+- Fix import of keras BatchNormalization for TF 2.13 and higher (:gh:`544` by `Brian Irvine`_)
+- Fix the doc summary tables of :class:`moabb.datasets.Lee2019_SSVEP` (:gh:`548` :gh:`547` :gh:`546` by `Pierre Guetschel`_)
+- Fix the doc summary for Castillos2023 dataset (:gh:`561` by `Bruno Aristimunha`_)
+- Fix format string receiving incorrect number of args in bids interface (:gh:`563` by `Pierre Guetschel`_)
+- Fix number of sessions in doc of :class:`moabb.datasets.Sosulski2019` (:gh:`565` by `Pierre Guetschel`_)
+- Fix `code` column of :class:`moabb.datasets.CastillosCVEP100` and :class:`moabb.datasets.CastillosCVEP100` (:gh:`567` by `Pierre Guetschel`_)
+- MAINT updating the packages pre-release (:gh:`578` by `Bruno Aristimunha`_)
+- Fix mne_bids version incompatibility with mne (:gh:`586` by `Bruna Lopes`_)
+- Updating the parameters of the SSVEP_TRCA method (:gh:`589` by `Bruno Aristimunha`_)
+- Fix and updating the parameters for the benchmark function (:gh:`588` by `Bruno Aristimunha`_)
+- Fix result table display (:gh:`599` by `Sylvain Chevallier`_)
+- Fix :class:`moabb.datasets.preprocessing.SetRawAnnotations` setting incorrect annotations when the dataset's interval does not start at 0 (:gh:`607` by `Pierre Guetschel`_)
+- Fix download link for GigaDB Cho2017 and Lee2019 datasets (:gh:`621` by `Anton Andreev`_)
+
 
 API changes
 ~~~~~~~~~~~
@@ -31,8 +81,8 @@ API changes
 - None
 
 
-Version - 1.0.0  (Stable - PyPi)
----------------------------------
+Version - 1.0.0
+----------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -71,6 +121,8 @@ Enhancements
 - Add match_all method in paradigm to support CompoundDataset evaluation with MNE epochs (:gh:`473` by `Gregoire Cattan`_)
 - Automate setting of event_id in compound dataset and add `data_origin` information to the data (:gh:`475` by `Gregoire Cattan`_)
 - Add possibility of not saving the model (:gh:`489` by `Igor Carrara`_)
+- Add CVEP and BurstVEP dataset from Castillos from Toulouse lab (:gh:`531` by `Sebastien Velut`_)
+- Add c-VEP dataset from Thielen et al. 2015 (:gh:`557` by `Jordy Thielen`_)
 
 Bugs
 ~~~~
@@ -100,6 +152,8 @@ Bugs
 - Fix case when events specified via ``raw.annotations`` but no events (:gh:`491` by `Pierre Guetschel`_)
 - Fix bug in downloading Shin2017A dataset (:gh:`493` by `Igor Carrara`_)
 - Fix the cropped option in the dataset preprocessing (:gh:`502` by `Bruno Aristimunha`_)
+- Fix bug in :func:`moabb.datasets.utils.dataset_search` with missing cvep paradigm (:gh:`557` by `Jordy Thielen`_)
+- Fix mistakes in :func:`moabb.datasets.thielen2021` considering wrong docs and hardcoded trial stim channel (:gh:`557` by `Jordy Thielen`_)
 
 API changes
 ~~~~~~~~~~~
@@ -389,10 +443,12 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
+.. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001
 .. _Sara Sedlar: https://github.com/Sara04
 .. _Emmanuel Kalunga: https://github.com/emmanuelkalunga
 .. _Gregoire Cattan: https://github.com/gcattan
+.. _Anton Andreev: https://github.com/toncho11
 .. _Igor Carrara: https://github.com/carraraig
 .. _Bruno Aristimunha: https://github.com/bruAristimunha
 .. _Alexandre Barachant: https://github.com/alexandrebarachant
@@ -413,3 +469,7 @@ API changes
 .. _Ludovic Darmet: https://github.com/ludovicdmt
 .. _Thomas Moreau: https://github.com/tommoral
 .. _Jordy Thielen: https://github.com/thijor
+.. _Sebastien Velut: https://github.com/swetbear
+.. _Brian Irvine: https://github.com/brianjohannes
+.. _Bruna Lopes: https://github.com/brunaafl
+.. _Yash Chauhan: https://github.com/jiggychauhi

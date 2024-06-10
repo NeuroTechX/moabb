@@ -7,6 +7,7 @@ architectures) on all available datasets.
 For this example, we will use only 2 datasets to keep the computation time low, but this benchmark is designed
 to easily scale to many datasets.
 """
+
 # Authors: Igor Carrara <igor.carrara@inria.fr>
 #          Bruno Aristimunha <b.aristimunha@gmail.com>
 #          Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>

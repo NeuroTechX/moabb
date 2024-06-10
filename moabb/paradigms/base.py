@@ -35,21 +35,17 @@ class BaseProcessing(metaclass=abc.ABCMeta):
 
     Parameters
     ----------
-
     filters: list of list (defaults [[7, 35]])
         bank of bandpass filter to apply.
-
     tmin: float (default 0.0)
         Start time (in second) of the epoch, relative to the dataset specific
         task interval e.g. tmin = 1 would mean the epoch will start 1 second
         after the beginning of the task as defined by the dataset.
-
     tmax: float | None, (default None)
         End time (in second) of the epoch, relative to the beginning of the
         dataset specific task interval. tmax = 5 would mean the epoch will end
         5 second after the beginning of the task as defined in the dataset. If
         None, use the dataset value.
-
     baseline: None | tuple of length 2
             The time interval to consider as “baseline” when applying baseline
             correction. If None, do not apply baseline correction.
@@ -57,13 +53,12 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             including the endpoints.
             Correction is applied by computing the mean of the baseline period
             and subtracting it from the data (see mne.Epochs)
-
     channels: list of str | None (default None)
         list of channel to select. If None, use all EEG channels available in
         the dataset.
-
     resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided."""
+        If not None, resample the eeg data with the sampling rate provided.
+    """
 
     def __init__(
         self,
@@ -83,6 +78,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         self.resample = resample
         self.tmin = tmin
         self.tmax = tmax
+        self.interpolate_missing_channels = False
 
     @property
     @abc.abstractmethod
@@ -159,7 +155,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                 f"events to generate labels: {dataset.event_id}"
             )
             events_pipeline = (
-                RawToEvents(dataset.event_id)
+                RawToEvents(dataset.event_id, interval=dataset.interval)
                 if epochs_pipeline is None
                 else EpochsToEvents()
             )
@@ -172,7 +168,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                     StepType.RAW,
                     SetRawAnnotations(
                         dataset.event_id,
-                        durations=dataset.interval[1] - dataset.interval[0],
+                        interval=dataset.interval,
                     ),
                 )
             )
@@ -399,6 +395,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                         tmax=bmax,
                         baseline=baseline,
                         channels=self.channels,
+                        interpolate_missing_channels=self.interpolate_missing_channels,
                     ),
                 ),
             )
@@ -429,7 +426,13 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             return None
         return Pipeline(steps)
 
-    def match_all(self, datasets: List[BaseDataset], shift=-0.5):
+    def match_all(
+        self,
+        datasets: List[BaseDataset],
+        shift=-0.5,
+        channel_merge_strategy: str = "intersect",
+        ignore=["stim"],
+    ):
         """
         Initialize this paradigm to match all datasets in parameter:
         - `self.resample` is set to match the minimum frequency in all datasets, minus `shift`.
@@ -442,29 +445,48 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         ----------
         datasets: List[BaseDataset]
             A dataset instance.
+        shift: List[BaseDataset]
+            Shift the sampling frequency by this value
+            E.g.: if sampling=128 and shift=-0.5, then it returns 127.5 Hz
+        channel_merge_strategy: str (default: 'intersect')
+            Accepts two values:
+            - 'intersect': keep only channels common to all datasets
+            - 'union': keep all channels from all datasets, removing duplicate
+        ignore: List[string]
+            A list of channels to ignore
+
+        ..versionadded:: 0.6.0
         """
         resample = None
-        channels = None
+        channels: set = None
         for dataset in datasets:
-            X, _, _ = self.get_data(
-                dataset, subjects=[dataset.subject_list[0]], return_epochs=True
-            )
+            first_subject = dataset.subject_list[0]
+            data = dataset.get_data(subjects=[first_subject])[first_subject]
+            first_session = list(data.keys())[0]
+            session = data[first_session]
+            first_run = list(session.keys())[0]
+            X = session[first_run]
             info = X.info
             sfreq = info["sfreq"]
             ch_names = info["ch_names"]
             # get the minimum sampling frequency between all datasets
             resample = sfreq if resample is None else min(resample, sfreq)
             # get the channels common to all datasets
-            channels = (
-                set(ch_names)
-                if channels is None
-                else set(channels).intersection(ch_names)
-            )
+            if channels is None:
+                channels = set(ch_names)
+            elif channel_merge_strategy == "intersect":
+                channels = channels.intersection(ch_names)
+                self.interpolate_missing_channels = False
+            else:
+                channels = channels.union(ch_names)
+                self.interpolate_missing_channels = True
         # If resample=128 for example, then MNE can returns 128 or 129 samples
         # depending on the dataset, even if the length of the epochs is 1s
         # `shift=-0.5` solves this particular issue.
         self.resample = resample + shift
-        self.channels = list(channels)
+
+        # exclude ignored channels
+        self.channels = list(channels.difference(ignore))
 
     @abc.abstractmethod
     def _get_events_pipeline(self, dataset):
@@ -514,4 +536,4 @@ class BaseParadigm(BaseProcessing):
 
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
-        return RawToEvents(event_id=event_id)
+        return RawToEvents(event_id=event_id, interval=dataset.interval)

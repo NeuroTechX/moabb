@@ -5,10 +5,12 @@ import unittest
 from math import ceil
 
 import numpy as np
+import pandas as pd
 import pytest
 from mne import BaseEpochs
 from mne.io import BaseRaw
 
+from moabb.datasets import BNCI2014_001
 from moabb.datasets.fake import FakeDataset
 from moabb.paradigms import (
     CVEP,
@@ -26,6 +28,7 @@ from moabb.paradigms import (
     FilterBankSSVEP,
     FixedIntervalWindowsProcessing,
     LeftRightImagery,
+    MotorImagery,
     RestingStateToP300Adapter,
 )
 
@@ -352,7 +355,7 @@ class Test_P300(unittest.TestCase):
         dataset1 = FakeDataset(
             paradigm="p300",
             event_list=["Target", "NonTarget"],
-            channels=("C3", "Cz", "Fz"),
+            channels=["C3", "Cz", "Fz"],
             sfreq=64,
         )
         dataset2 = FakeDataset(
@@ -368,11 +371,30 @@ class Test_P300(unittest.TestCase):
             sfreq=512,
         )
         shift = -0.5
-        paradigm.match_all([dataset1, dataset2, dataset3], shift=shift)
+
+        paradigm.match_all(
+            [dataset1, dataset2, dataset3], shift=shift, channel_merge_strategy="union"
+        )
         # match_all should returns the smallest frequency minus 0.5.
         # See comment inside the match_all method
         self.assertEqual(paradigm.resample, 64 + shift)
+        self.assertEqual(paradigm.channels.sort(), ["C3", "Cz", "Fz", "C4"].sort())
+        self.assertEqual(paradigm.interpolate_missing_channels, True)
+        X, _, _ = paradigm.get_data(dataset1, subjects=[1])
+        n_channels, _ = X[0].shape
+        self.assertEqual(n_channels, 4)
+
+        paradigm.match_all(
+            [dataset1, dataset2, dataset3],
+            shift=shift,
+            channel_merge_strategy="intersect",
+        )
+        self.assertEqual(paradigm.resample, 64 + shift)
         self.assertEqual(paradigm.channels.sort(), ["C3", "Cz"].sort())
+        self.assertEqual(paradigm.interpolate_missing_channels, False)
+        X, _, _ = paradigm.get_data(dataset1, subjects=[1])
+        n_channels, _ = X[0].shape
+        self.assertEqual(n_channels, 2)
 
     def test_BaseP300_paradigm(self):
         paradigm = SimpleP300()
@@ -1139,3 +1161,73 @@ class TestParadigm:
         )
         X, y, metadata = paradigm.get_data(dataset, subjects=[1])
         assert len(X) == len(y) == len(metadata) == 10 * 2
+
+
+class Test_Data:
+    @pytest.fixture
+    def dataset(self):
+        return BNCI2014_001()
+
+    @pytest.fixture
+    def paradigm(self):
+        return MotorImagery(tmin=0.1, tmax=3)
+
+    @pytest.fixture
+    def epochs_labels_metadata(self, dataset, paradigm):
+        return paradigm.get_data(dataset, subjects=[1], return_epochs=True)
+
+    @pytest.fixture
+    def X_labels_metadata(self, dataset, paradigm):
+        return paradigm.get_data(dataset, subjects=[1])
+
+    def test_compare_X_epochs(self, epochs_labels_metadata, X_labels_metadata, dataset):
+        epo, labelsEpo, metadataEpo = epochs_labels_metadata
+        X, labelsX, metadataX = X_labels_metadata
+        assert len(labelsEpo) == len(labelsX)
+        assert all(le == lx for le, lx in zip(labelsEpo, labelsX))
+        pd.testing.assert_frame_equal(metadataX, metadataEpo)
+        np.testing.assert_array_almost_equal(X, epo.get_data() * dataset.unit_factor)
+
+    def test_epochs(self, epochs_labels_metadata, dataset):
+        epo, labelsEpo, metadataEpo = epochs_labels_metadata
+        # values computed form moabb 0.5:
+        assert len(epo) == 576
+        events = np.array(
+            [
+                [250, 0, 4],
+                [2253, 0, 3],
+                [4171, 0, 2],
+            ]
+        )
+        np.testing.assert_array_equal(epo.events[:3], events)
+        assert epo.tmin == 2.1
+        assert epo.tmax == 5.0
+        X = np.array(
+            [
+                7.49779224,
+                3.07656416,
+                5.59544847,
+                6.19830887,
+                8.04925351,
+                6.97703295,
+                3.48397992,
+                3.61332516,
+                5.17954447,
+                4.32935335,
+                6.10852621,
+                4.81854389,
+                5.04162646,
+                3.48391445,
+                3.50507861,
+                1.35462057,
+                2.47525825,
+                2.67810322,
+                1.38214336,
+                0.25897466,
+                0.24160032,
+                -1.96250978,
+            ]
+        )
+        np.testing.assert_array_almost_equal(
+            epo.get_data()[0, :, 0] * dataset.unit_factor, X
+        )

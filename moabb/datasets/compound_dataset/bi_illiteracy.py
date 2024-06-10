@@ -15,7 +15,6 @@ class _base_bi_il(CompoundDataset):
             subjects_list=subjects_list,
             code=code,
             interval=[0, 1.0],
-            paradigm="p300",
         )
 
 
@@ -137,8 +136,8 @@ class Cattan2019_VR_Il(_base_bi_il):
         subjects_list = [
             (dataset, 4, None, None),
             (dataset, 10, None, None),
-            (dataset, 13, "VR", None),
-            (dataset, 15, "VR", None),
+            (dataset, 13, "0VR", None),
+            (dataset, 15, "0VR", None),
         ]
         _base_bi_il.__init__(self, subjects_list=subjects_list, dataset=dataset)
 

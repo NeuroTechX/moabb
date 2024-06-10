@@ -1,4 +1,5 @@
 """Meta-analysis functions for MOABB."""
+
 import itertools
 import logging
 

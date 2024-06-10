@@ -3,6 +3,8 @@ name: Keras_EEGNeX
 paradigms:
   - LeftRightImagery
   - MotorImagery
+  - P300
+  - SSVEP
 
 citations:
   - https://doi.org/10.48550/arXiv.2207.12369
@@ -25,7 +27,7 @@ pipeline:
       loss: "sparse_categorical_crossentropy"
       optimizer:
         - name: Adam
-          from: tensorflow.keras.optimizers.legacy
+          from: tensorflow.keras.optimizers
           parameters:
             learning_rate: 0.001
       epochs: 300
