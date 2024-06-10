@@ -1,5 +1,8 @@
 import mne
 import numpy as np
+import os
+import zipfile as z
+from pathlib import Path
 from scipy.io import loadmat
 
 from moabb.datasets import download as dl
@@ -7,12 +10,12 @@ from moabb.datasets.base import BaseDataset
 from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 
 
-_LIU2024_URL = "XXXX"
+_LIU2024_URL = "https://figshare.com/articles/dataset/EEG_datasets_of_stroke_patients/21679035/5"
 
 class Liu2024(BaseDataset):
     """
 
-    Dataset [1]_ from the study 
+    Dataset [1]_ from the study on burst-VEP [2]_. 
 
     .. admonition:: Dataset summary
 
@@ -29,8 +32,13 @@ class Liu2024(BaseDataset):
     References
     ----------
 
-    .. [1] 
+    .. [1] Liu, Haijie; Lv, Xiaodong (2022). EEG datasets of stroke patients. figshare. Dataset.
+           DOI: https://doi.org/10.6084/m9.figshare.21679035.v5
 
+    .. [2] Liu, H., Wei, P., Wang, H. et al. An EEG motor imagery dataset for brain computer interface in acute stroke
+           patients. Sci Data 11, 131 (2024).
+           DOI: https://doi.org/10.1038/s41597-023-02787-8
+           
     Notes
     -----
 
@@ -40,15 +48,41 @@ class Liu2024(BaseDataset):
 
     def __init__(self):
         super().__init__(
-            subjects=list(range(1, 12 + 1)),
+            subjects=list(range(1, 9 + 1)),
             sessions_per_subject=1,
-            events={"1.0": 101, "0.0": 100},
-            code="Thielen2015",
-            interval=(0, 0.3),
+            events={"right_hand": 1, "left_hand": 2},
+            code="Liu2024",
+            interval=(0, 4),
             paradigm="imagery",
-            doi="10.34973/1ecz-1232",
+            doi="10.6084/m9.figshare.21679035.v5",
         )
 
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        """Return the data paths of a single subject."""
+        if subject not in self.subject_list:
+            raise (ValueError("Invalid subject number"))
+
+        subject_paths = []
+
+        url = "https://figshare.com/ndownloader/files/38516654"
+        path_zip = dl.data_dl(url, self.code) 
+        #sub = f"sub-{subject:02d}"
+        path_zip = Path(path_zip)
+        path_folder = path_zip.parent
+
+        if not (path_folder / "edffile").is_dir():
+            zip_ref = z.ZipFile(path_zip, "r")
+            zip_ref.extractall(path_folder)
+        sub = f"sub-{subject:02d}"
+
+        subject_path = path_folder / "edffile" / sub / "eeg" / f"{sub}_task-motor-imagery_eeg.edf"
+        subject_paths.append(str(subject_path))
+
+        return subject_paths
+
+  
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject."""
         file_path_list = self.data_path(subject)
@@ -111,28 +145,5 @@ class Liu2024(BaseDataset):
 
         return sessions
 
-    def data_path(
-        self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
-        """Return the data paths of a single subject."""
-        if subject not in self.subject_list:
-            raise (ValueError("Invalid subject number"))
 
-        sub = f"sub-{subject:02d}"
-        subject_paths = []
-        for i_b in range(NR_RUNS):
-            blk = f"test_sync_{1 + i_b:d}"
-
-            # EEG
-            url = f"{Thielen2015_URL:s}/sourcedata/{sub}/{blk}/{sub}_{blk}.gdf"
-            subject_paths.append(dl.data_dl(url, self.code, path, force_update, verbose))
-
-            # Labels at trial level (i.e., symbols)
-            url = f"{Thielen2015_URL:s}/sourcedata/{sub}/{blk}/{sub}_{blk}.mat"
-            subject_paths.append(dl.data_dl(url, self.code, path, force_update, verbose))
-
-        # Channel locations
-        url = f"{Thielen2015_URL:s}/resources/biosemi64.loc"
-        subject_paths.append(dl.data_dl(url, self.code, path, force_update, verbose))
-
-        return subject_paths
+    
