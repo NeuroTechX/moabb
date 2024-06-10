@@ -1,10 +1,8 @@
 from copy import deepcopy
 from time import time
-
-import numpy as np
-
 from typing import Optional, Union
 
+import numpy as np
 from mne import BaseEpochs
 from sklearn.metrics import get_scorer
 from sklearn.model_selection import StratifiedKFold
@@ -15,6 +13,7 @@ from tqdm import tqdm
 from moabb.evaluations import create_save_path, save_model_cv
 from moabb.evaluations.base import BaseEvaluation
 from moabb.evaluations.splitters import CrossSubjectSplitter
+
 
 try:
     from codecarbon import EmissionsTracker
@@ -93,19 +92,20 @@ class GroupEvaluation(BaseEvaluation):
     """
 
     VALID_POLICIES = ["per_class", "ratio"]
-    SPLITTERS = {'CrossSubject': CrossSubjectSplitter,
-                 }
+    SPLITTERS = {
+        "CrossSubject": CrossSubjectSplitter,
+    }
     META_SPLITTERS = {}
 
     def __init__(
-            self,
-            split_method,
-            meta_split_method,
-            n_folds=None,
-            n_perms: Optional[Union[int, Vector]] = None,
-            data_size: Optional[dict] = None,
-            calib_size: Optional[int] = None,
-            **kwargs,
+        self,
+        split_method,
+        meta_split_method,
+        n_folds=None,
+        n_perms: Optional[Union[int, Vector]] = None,
+        data_size: Optional[dict] = None,
+        calib_size: Optional[int] = None,
+        **kwargs,
     ):
         self.data_size = data_size
         self.n_perms = n_perms
@@ -116,18 +116,22 @@ class GroupEvaluation(BaseEvaluation):
 
         # Check if splitters are valid
         if self.split_method not in self.SPLITTERS:
-            raise ValueError(f"{self.split_method} does not correspond to a valid data splitter."
-                             f"Please use one of {self.SPLITTERS.keys()}")
+            raise ValueError(
+                f"{self.split_method} does not correspond to a valid data splitter."
+                f"Please use one of {self.SPLITTERS.keys()}"
+            )
 
         if self.meta_split not in self.META_SPLITTERS:
-            raise ValueError(f"{self.meta_split} does not correspond to a valid evaluation split."
-                             f"Please use one of {self.META_SPLITTERS.keys()}")
+            raise ValueError(
+                f"{self.meta_split} does not correspond to a valid evaluation split."
+                f"Please use one of {self.META_SPLITTERS.keys()}"
+            )
 
         # Initialize splitter
         self.data_splitter = self.SPLITTERS[self.split_method](self.n_folds)
 
         # If SamplerSplit
-        if self.meta_split_method == 'sampler':
+        if self.meta_split_method == "sampler":
 
             # Check if data_size is defined
             if self.data_size is None:
@@ -181,7 +185,9 @@ class GroupEvaluation(BaseEvaluation):
 
             super().__init__(**kwargs)
 
-    def evaluate(self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None):
+    def evaluate(
+        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
+    ):
 
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
@@ -223,7 +229,9 @@ class GroupEvaluation(BaseEvaluation):
         scorer = get_scorer(self.paradigm.scoring)
 
         # Define inner cv
-        inner_cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=self.random_state)
+        inner_cv = StratifiedKFold(
+            n_splits=3, shuffle=True, random_state=self.random_state
+        )
 
         if _carbonfootprint:
             # Initialise CodeCarbon
@@ -286,7 +294,9 @@ class GroupEvaluation(BaseEvaluation):
 
                 meta_splitter = self.meta_split_method
                 for test_split in meta_splitter.split(X_test, y_test, meta_test):
-                    score = _score(model, X_test[test_split], y_test[test_split], self.scorer)
+                    score = _score(
+                        model, X_test[test_split], y_test[test_split], self.scorer
+                    )
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -304,14 +314,13 @@ class GroupEvaluation(BaseEvaluation):
                         res["carbon_emission"] = (1000 * emissions,)
                     yield res
 
-
     def is_valid(self, dataset):
 
-        if self.split_method == 'within_subject':
+        if self.split_method == "within_subject":
             return True
-        elif self.split_method == 'cross_session':
+        elif self.split_method == "cross_session":
             return dataset.n_sessions > 1
-        elif self.split_method == 'cross_subject':
+        elif self.split_method == "cross_subject":
             return len(dataset.subject_list) > 1
 
 
@@ -382,20 +391,21 @@ class LazyEvaluation(BaseEvaluation):
     """
 
     VALID_POLICIES = ["per_class", "ratio"]
-    SPLITTERS = {'CrossSubject': CrossSubjectSplitter,
-                 }
+    SPLITTERS = {
+        "CrossSubject": CrossSubjectSplitter,
+    }
     META_SPLITTERS = {}
 
     def __init__(
-            self,
-            split_method,
-            eval_split_method,
-            n_folds=None,
-            meta_split_method=None,
-            n_perms: Optional[Union[int, Vector]] = None,
-            data_size: Optional[dict] = None,
-            calib_size: Optional[int] = None,
-            **kwargs,
+        self,
+        split_method,
+        eval_split_method,
+        n_folds=None,
+        meta_split_method=None,
+        n_perms: Optional[Union[int, Vector]] = None,
+        data_size: Optional[dict] = None,
+        calib_size: Optional[int] = None,
+        **kwargs,
     ):
         self.data_size = data_size
         self.n_perms = n_perms
@@ -406,19 +416,23 @@ class LazyEvaluation(BaseEvaluation):
 
         # Check if splitters are valid
         if self.split_method not in self.SPLITTERS:
-            raise ValueError(f"{self.split_method} does not correspond to a valid data splitter."
-                             f"Please use one of {self.SPLITTERS.keys()}")
+            raise ValueError(
+                f"{self.split_method} does not correspond to a valid data splitter."
+                f"Please use one of {self.SPLITTERS.keys()}"
+            )
 
         if self.meta_split_method not in self.META_SPLITTERS:
-            raise ValueError(f"{self.meta_split_method} does not correspond to a valid evaluation split."
-                             f"Please use one of {self.META_SPLITTERS.keys()}")
+            raise ValueError(
+                f"{self.meta_split_method} does not correspond to a valid evaluation split."
+                f"Please use one of {self.META_SPLITTERS.keys()}"
+            )
 
         # Initialize splitter
         self.data_splitter = self.SPLITTERS[self.split_method](self.n_folds)
         self.meta_splitter = self.META_SPLITTERS[self.split_method](self.n_folds)
 
         # If SamplerSplit
-        if self.meta_split_method == 'sampler':
+        if self.meta_split_method == "sampler":
 
             # Check if data_size is defined
             if self.data_size is None:
@@ -471,7 +485,9 @@ class LazyEvaluation(BaseEvaluation):
 
             super().__init__(**kwargs)
 
-    def evaluate(self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None):
+    def evaluate(
+        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
+    ):
 
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
@@ -496,25 +512,52 @@ class LazyEvaluation(BaseEvaluation):
         self.scorer = get_scorer(self.paradigm.scoring)
 
         # Define inner cv
-        self.inner_cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=self.random_state)
+        self.inner_cv = StratifiedKFold(
+            n_splits=3, shuffle=True, random_state=self.random_state
+        )
 
         subjects_list = dataset.subject_list
         # Avoid downloading everything at once if possible
-        if self.split_method == 'CrossSubject':
+        if self.split_method == "CrossSubject":
             subjects = subjects_list
-            self._evaluate(dataset, pipelines, param_grid, process_pipeline,
-                           subjects=subjects, tracker=None, postprocess_pipeline=None)
+            self._evaluate(
+                dataset,
+                pipelines,
+                param_grid,
+                process_pipeline,
+                subjects=subjects,
+                tracker=None,
+                postprocess_pipeline=None,
+            )
         else:
 
-            for subject in tqdm(subjects_list, desc=f"{dataset.code}-{self.split_method}"):
+            for subject in tqdm(
+                subjects_list, desc=f"{dataset.code}-{self.split_method}"
+            ):
                 subjects = [subject]
                 run_pipes = self.results.not_yet_computed(
                     pipelines, dataset, subject, process_pipeline
                 )
-                self._evaluate(dataset, pipelines, param_grid, process_pipeline,
-                               subjects=subjects, tracker=None, postprocess_pipeline=None)
+                self._evaluate(
+                    dataset,
+                    pipelines,
+                    param_grid,
+                    process_pipeline,
+                    subjects=subjects,
+                    tracker=None,
+                    postprocess_pipeline=None,
+                )
 
-    def _evaluate(self, dataset, pipelines, param_grid, process_pipeline, subjects, tracker=None, postprocess_pipeline=None):
+    def _evaluate(
+        self,
+        dataset,
+        pipelines,
+        param_grid,
+        process_pipeline,
+        subjects,
+        tracker=None,
+        postprocess_pipeline=None,
+    ):
 
         # Get data spliter type
         splitter = self.data_splitter
@@ -538,14 +581,14 @@ class LazyEvaluation(BaseEvaluation):
         n_subjects = len(groups)
 
         for cv_ind, (train, test) in enumerate(
-                tqdm(
-                    splitter.split(X, y, metadata),
-                    total=self.split_method.get_n_splits(metadata),
-                    desc=f"{dataset.code}-{self.split_method}",
-                )
+            tqdm(
+                splitter.split(X, y, metadata),
+                total=self.split_method.get_n_splits(metadata),
+                desc=f"{dataset.code}-{self.split_method}",
+            )
         ):
 
-            if self.split_method == 'CrossSubject':
+            if self.split_method == "CrossSubject":
                 subject = groups[test[0]]
             else:
                 subject = subjects[0]
@@ -599,7 +642,9 @@ class LazyEvaluation(BaseEvaluation):
 
                 meta_splitter = self.meta_split_method
                 for test_split in meta_splitter.split(X_test, y_test, meta_test):
-                    score = _score(model, X_test[test_split], y_test[test_split], self.scorer)
+                    score = _score(
+                        model, X_test[test_split], y_test[test_split], self.scorer
+                    )
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
@@ -619,10 +664,9 @@ class LazyEvaluation(BaseEvaluation):
 
     def is_valid(self, dataset):
 
-        if self.split_method == 'within_subject':
+        if self.split_method == "within_subject":
             return True
-        elif self.split_method == 'cross_session':
+        elif self.split_method == "cross_session":
             return dataset.n_sessions > 1
-        elif self.split_method == 'cross_subject':
+        elif self.split_method == "cross_subject":
             return len(dataset.subject_list) > 1
-

@@ -1,5 +1,10 @@
 import numpy as np
-from sklearn.model_selection import BaseCrossValidator, GroupKFold, LeaveOneGroupOut, StratifiedKFold
+from sklearn.model_selection import (
+    BaseCrossValidator,
+    GroupKFold,
+    LeaveOneGroupOut,
+    StratifiedKFold,
+)
 
 
 class WithinSubjectSplitter(BaseCrossValidator):
@@ -8,7 +13,7 @@ class WithinSubjectSplitter(BaseCrossValidator):
         self.n_folds = n_folds
 
     def get_n_splits(self, metadata):
-        sessions_subjects = len(metadata.groupby(['subject', 'session']).first())
+        sessions_subjects = len(metadata.groupby(["subject", "session"]).first())
         return self.n_folds * sessions_subjects
 
     def split(self, X, y, metadata, **kwargs):
@@ -19,7 +24,11 @@ class WithinSubjectSplitter(BaseCrossValidator):
 
         for subject in np.unique(subjects):
 
-            X_, y_, meta_ = X[subjects == subject], y[subjects == subject], metadata[subjects == subject]
+            X_, y_, meta_ = (
+                X[subjects == subject],
+                y[subjects == subject],
+                metadata[subjects == subject],
+            )
 
             yield split.split(X_, y_, meta_)
 
@@ -39,7 +48,11 @@ class IndividualWithinSubjectSplitter(BaseCrossValidator):
         cv = StratifiedKFold(self.n_folds, **kwargs)
 
         for session in np.unique(sessions):
-            X_, y_, meta_ = X[sessions == session], y[sessions == session], metadata[sessions == session]
+            X_, y_, meta_ = (
+                X[sessions == session],
+                y[sessions == session],
+                metadata[sessions == session],
+            )
 
             for ix_train, ix_test in cv.split(X_, y_):
 
@@ -52,7 +65,7 @@ class CrossSessionSplitter(BaseCrossValidator):
         self.n_folds = n_folds
 
     def get_n_splits(self, metadata):
-        sessions_subjects = len(metadata.groupby(['subject', 'session']).first())
+        sessions_subjects = len(metadata.groupby(["subject", "session"]).first())
         return sessions_subjects
 
     def split(self, X, y, metadata, **kwargs):
@@ -61,7 +74,11 @@ class CrossSessionSplitter(BaseCrossValidator):
         split = IndividualCrossSessionSplitter(self.n_folds)
 
         for subject in np.unique(subjects):
-            X_, y_, meta_ = X[subjects == subject], y[subjects == subject], metadata[subjects == subject]
+            X_, y_, meta_ = (
+                X[subjects == subject],
+                y[subjects == subject],
+                metadata[subjects == subject],
+            )
 
             yield split.split(X_, y_, meta_)
 
