@@ -280,20 +280,20 @@ class GroupEvaluation(BaseEvaluation):
                         model=model, save_path=model_save_path, cv_index=str(cv_ind)
                     )
 
+                # Remove and use the meta splitters
+                # Now, for evaluation, we will need to use the new metasplitters Offline or TimeSeries
+                X_test, y_test, meta_test = X[test], y[test], metadata[test]
 
-                # Now, evaluation: iterate over meta splitters
-
-                """# we eval on each session
-                for session in np.unique(sessions[test]):
-                    ix = sessions[test] == session
-                    score = _score(model, X[test[ix]], y[test[ix]], scorer)
+                meta_splitter = self.meta_split_method
+                for test_split in meta_splitter.split(X_test, y_test, meta_test):
+                    score = _score(model, X_test[test_split], y_test[test_split], self.scorer)
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {
                         "time": duration,
                         "dataset": dataset,
                         "subject": subject,
-                        "session": session,
+                        "session": meta_test[test_split].session_name,
                         "score": score,
                         "n_samples": len(train),
                         "n_channels": nchan,
@@ -302,7 +302,7 @@ class GroupEvaluation(BaseEvaluation):
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-                    yield res"""
+                    yield res
 
 
     def is_valid(self, dataset):
@@ -389,8 +389,9 @@ class LazyEvaluation(BaseEvaluation):
     def __init__(
             self,
             split_method,
-            meta_split_method,
+            eval_split_method,
             n_folds=None,
+            meta_split_method=None,
             n_perms: Optional[Union[int, Vector]] = None,
             data_size: Optional[dict] = None,
             calib_size: Optional[int] = None,
