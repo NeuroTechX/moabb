@@ -44,8 +44,8 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
 
     Notes
     -----
-    .. versionadded:: 1.1.0
-       Use MNE Epochs object as input data instead of numpy array.
+    .. versionchanged:: 1.1.0
+       Use MNE Epochs object as input data instead of numpy array, fix label encoding.
     """
 
     def __init__(self, n_harmonics=3):
@@ -147,17 +147,9 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
     Parameters
     ----------
-    sfreq : float
-        Sampling frequency of the data to be analyzed.
-
-    freqs : dict with n_classes keys
-        Frequencies corresponding to the SSVEP components. These are
-        necessary to design the filterbank bands.
-
-    downsample: int, default=1
-        Factor by which downsample the data. A downsample value of N will result
-        on a sampling frequency of (sfreq // N) by taking one sample every N of
-        the original data. In the original TRCA paper [1]_ data are at 250Hz.
+    n_fbands: int, default=5
+        Number of sub-bands to divide the SSVEP frequencies, with filterbank
+        approach.
 
     is_ensemble: bool, default=False
         If True, predict on new data using the Ensemble-TRCA method described
@@ -182,8 +174,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         is used. So method='original' and regul='scm' is similar to original
         implementation.
 
-
-
     Attributes
     ----------
     fb_coefs : list of len (n_fbands)
@@ -204,8 +194,11 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         Weight coefficients for the different electrodes which are used
         as spatial filters for the data.
 
+    freqs_: list of str
+        List of unique frequencies present in the training data.
+
     Reference
-    ----------
+    ---------
 
     .. [1] M. Nakanishi, Y. Wang, X. Chen, Y. -T. Wang, X. Gao, and T.-P. Jung,
           "Enhancing detection of SSVEPs for a high-speed brain speller using
@@ -219,6 +212,9 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
     Notes
     -----
     .. versionadded:: 0.4.4
+
+    .. versionchanged:: 1.1.1
+       TRCA implementation works with MNE Epochs object, fix labels encoding issue.
     """
 
     def __init__(
@@ -228,19 +224,11 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         method="original",
         estimator="scm",
     ):
-        # self.freqs = freqs
-        # self.peaks = np.array([float(f) for f in freqs.keys()])
-        # self.n_fbands = len(self.peaks)
-        # self.downsample = downsample
-        # self.interval = interval
-        # self.slen = interval[1] - interval[0]
         self.is_ensemble = is_ensemble
         self.estimator = estimator
         self.method = method
         self.n_fbands = n_fbands
-        # self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
         self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
-        # self.fb_coefs = []
         self.one_hot_, self.one_inv_ = {}, {}
         self.sfreq_, self.freqs_, self.peaks_ = None, None, None
         self.le_, self.classes_, self.n_classes = None, None, None
@@ -374,7 +362,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         Parameters
         ----------
-        X : ndarray of shape (n_trials, n_channels, n_samples)
+        X : MNE Epochs
             Training data. Trials are grouped by class, divided in n_fbands bands by
             the filterbank approach and then used to calculate weight vectors and
             templates for each class and band.
@@ -390,12 +378,10 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         if not isinstance(X, BaseEpochs):
             raise ValueError("X should be an MNE Epochs object.")
 
-        # n_trials = len(X)
         n_channels, n_samples = X.info["nchan"], len(X.times)
         self.sfreq_ = X.info["sfreq"]
         self.freqs_ = list(X.event_id.keys())
         self.peaks_ = np.array([float(f) for f in self.freqs_])
-        # self.n_fbands = len(self.peaks_)
         self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
         self.le_ = LabelEncoder().fit(self.freqs_)
         self.classes_ = self.le_.transform(self.freqs_)
@@ -410,8 +396,8 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         # for class_idx in self.classes_:
         for freq, k in self.one_hot_.items():
-            # X_cal = X[y == class_idx]  # Select data with a specific label
             X_cal = X[freq]  # Select data with a specific label
+
             # Filterbank approach
             for band_n in range(self.n_fbands):
                 # Filter the data and compute TRCA
@@ -421,8 +407,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 w_best, _ = self._compute_trca(X_filter)
 
                 # Get template by averaging trials and take the best filter for this band
-                # self.templates_[class_idx, band_n, :, :] = np.mean(X_filter, axis=0)
-                # self.weights_[band_n, class_idx, :] = w_best
                 self.templates_[k, band_n, :, :] = np.mean(X_filter, axis=0)
                 self.weights_[band_n, k, :] = w_best
 
@@ -437,8 +421,8 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         Parameters
         ----------
-        X : ndarray of shape (n_trials, n_channels, n_samples)
-            Testing data. This will be divided in self.n_fbands using the filter- bank approach,
+        X : MNE Epochs
+            Testing data. This will be divided in self.n_fbands using the filterbank approach,
             then it will be transformed by the different spatial filters and compared to the
             previously fit templates according to the selected method for analysis (ensemble or
             not). Finally, correlation scores for all sub-bands of each class will be combined,
@@ -454,25 +438,10 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         # Check is fit had been called
         check_is_fitted(self)
 
-        # # Check if X is a single trial or not
-        # if X.ndim == 2:
-        #     X = X[np.newaxis, ...]
-        #
-        # # Downsample data
-        # X = X[:, :, :: self.downsample]
-
-        # Get test data shape
-        # n_trials = len(X)
-        # n_trials, _, _ = X.shape
-
         # Initialize pred array
         y_pred = []
 
-        # for trial_n in range(n_trials):
         for X_test in X:
-            # Pick trial
-            # X_test = X[trial_n, :, :]
-
             # Initialize correlations array
             corr_array = np.zeros((self.n_fbands, self.n_classes))
 
@@ -481,10 +450,8 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 X_filter = filterbank(X_test, self.sfreq_, band_n, self.peaks_)
 
                 # Compute correlation with all the templates and bands
-                # for class_idx in range(self.n_classes):
                 for freq, k in self.one_hot_.items():
                     # Get the corresponding template
-                    # template = np.squeeze(self.templates_[class_idx, band_n, :, :])
                     template = np.squeeze(self.templates_[k, band_n, :, :])
 
                     if self.is_ensemble:
@@ -538,26 +505,12 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
         # Check is fit had been called
         check_is_fitted(self)
-
-        # Check if X is a single trial or not
-        # if X.ndim == 2:
-        #     X = X[np.newaxis, ...]
-        #
-        # # Downsample data
-        # X = X[:, :, :: self.downsample]
-
-        # Get test data shape
-        # n_trials, _, _ = X.shape
         n_trials = len(X)
 
         # Initialize pred array
         y_pred = np.zeros((n_trials, self.n_classes))
 
-        # for trial_n in range(n_trials):
         for trial_n, X_test in enumerate(X):
-            # Pick trial
-            # X_test = X[trial_n, :, :]
-
             # Initialize correlations array
             corr_array = np.zeros((self.n_fbands, self.n_classes))
 
@@ -566,10 +519,8 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                 X_filter = filterbank(X_test, self.sfreq_, band_n, self.peaks_)
 
                 # Compute correlation with all the templates and bands
-                # for class_idx in range(self.n_classes):
                 for freq, k in self.one_hot_.items():
                     # Get the corresponding template
-                    # template = np.squeeze(self.templates_[class_idx, band_n, :, :])
                     template = np.squeeze(self.templates_[k, band_n, :, :])
 
                     if self.is_ensemble:
@@ -584,7 +535,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                         np.dot(X_filter.T, w).flatten(),
                         np.dot(template.T, w).flatten(),
                     )
-                    # corr_array[band_n, class_idx] = r[0, 1]
                     corr_array[band_n, k] = r[0, 1]
 
             normalized_coefs = self.fb_coefs / (np.sum(self.fb_coefs))
