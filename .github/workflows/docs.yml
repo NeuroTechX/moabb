@@ -1,5 +1,9 @@
 name: Docs
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [master, develop]
@@ -60,7 +64,7 @@ jobs:
           path: docs/build/html/
 
   deploy_docs:
-    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'}}
+    if: ${{ github.ref == 'refs/heads/master' }}
     needs: build_docs
     runs-on: ${{ matrix.os }}
     strategy:
@@ -70,6 +74,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Create local data folder
         run: |
           mkdir ~/mne_data

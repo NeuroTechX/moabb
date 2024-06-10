@@ -41,6 +41,7 @@ Motor Imagery
         :class:`Shin2017B`,29,30,2,30,10s,200Hz,3,1,5220
         :class:`Weibo2014`,10,60,7,80,4s,200Hz,1,1,5600
         :class:`Zhou2016`,4,14,3,160,5s,250Hz,3,2,11496
+        :class:`Stieger2021`,62,64,4,450,3s,1000Hz,7 or 11,1,250000
 
 P300/ERP
 ======================
@@ -119,7 +120,8 @@ is a resting state experiment.
    :class: sortable
 
    :class:`Cattan2019_PHMD`,12,16,2,10,60s,512Hz,1
-
+   :class:`Hinss2021`,15,62,4,1,2s,250Hz,1
+   :class:`Rodrigues2017`,20,16,2,5,10s,512Hz,1
 
 Compound Datasets
 ======================
