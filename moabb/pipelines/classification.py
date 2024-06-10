@@ -223,6 +223,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
     def __init__(
         self,
+        n_fbands=5,
         is_ensemble=True,
         method="original",
         estimator="scm",
@@ -234,11 +235,14 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         # self.interval = interval
         # self.slen = interval[1] - interval[0]
         self.is_ensemble = is_ensemble
-        # self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
         self.estimator = estimator
         self.method = method
-        self.fb_coefs, self.one_hot_ = [], {}
-        self.sfreq_, self.freqs_, self.peaks_, self.n_fbands = None, None, None, None
+        self.n_fbands = n_fbands
+        # self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
+        self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
+        # self.fb_coefs = []
+        self.one_hot_, self.one_inv_ = {}, {}
+        self.sfreq_, self.freqs_, self.peaks_ = None, None, None
         self.le_, self.classes_, self.n_classes = None, None, None
         self.templates_, self.weights_ = None, None
 
@@ -391,13 +395,14 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
         self.sfreq_ = X.info["sfreq"]
         self.freqs_ = list(X.event_id.keys())
         self.peaks_ = np.array([float(f) for f in self.freqs_])
-        self.n_fbands = len(self.peaks_)
+        # self.n_fbands = len(self.peaks_)
         self.fb_coefs = [(x + 1) ** (-1.25) + 0.25 for x in range(self.n_fbands)]
         self.le_ = LabelEncoder().fit(self.freqs_)
         self.classes_ = self.le_.transform(self.freqs_)
         self.n_classes = len(self.classes_)
         for i, k in zip(self.freqs_, self.classes_):
             self.one_hot_[i] = k
+            self.one_inv_[k] = i
 
         # Initialize the final arrays
         self.templates_ = np.zeros((self.n_classes, self.n_fbands, n_channels, n_samples))
@@ -500,11 +505,11 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
                     corr_array[band_n, k] = r[0, 1]
 
             # Fusion for the filterbank analysis
-            rho = np.dot(self.fb_coefs, corr_array)
+            self.rho = np.dot(self.fb_coefs, corr_array)
 
             # Select the maximal value and append to predictions
-            tau = np.argmax(rho)
-            y_pred.append(self.one_hot_[self.freqs_[tau]])
+            self.tau = np.argmax(self.rho)
+            y_pred.append(self.one_hot_[self.one_inv_[self.tau]])
 
         return y_pred
 

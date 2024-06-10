@@ -316,27 +316,37 @@ def filterbank(X, sfreq, idx_fb, peaks):
     sfreq = sfreq / 2
 
     peaks = np.sort(peaks)
+    min_freq = np.min(peaks)
     max_freq = np.max(peaks)
 
     if max_freq < 40:
-        top = 40
+        top = 100
     else:
-        top = 60
+        top = 115
     # Check for Nyquist
     if top >= sfreq:
         top = sfreq - 10
 
     # Lowcut frequencies for the pass band (depends on the frequencies of SSVEP)
     # No more than 3dB loss in the passband
-    passband = [peaks[i] - 1 for i in range(len(peaks))]
+    diff = max_freq - min_freq
+    passband = [min_freq - 2 + x * diff for x in range(7)]
+    # passband = [peaks[i] - 1 for i in range(len(peaks))]
 
     # At least 40db attenuation in the stopband
-    stopband = [peaks[i] - 2 for i in range(len(peaks))]
+    if min_freq - 4 > 0:
+        stopband = [
+            min_freq - 4 + x * (diff - 2) if x < 3 else min_freq - 4 + x * diff
+            for x in range(7)
+        ]
+    else:
+        stopband = [2 + x * (diff - 2) if x < 3 else 2 + x * diff for x in range(7)]
+    # stopband = [peaks[i] - 2 for i in range(len(peaks))]
 
     Wp = [passband[idx_fb] / sfreq, top / sfreq]
-    Ws = [stopband[idx_fb] / sfreq, (top + 20) / sfreq]
+    Ws = [stopband[idx_fb] / sfreq, (top + 7) / sfreq]
 
-    N, Wn = scp.cheb1ord(Wp, Ws, 3, 15)  # Chebyshev type I filter order selection.
+    N, Wn = scp.cheb1ord(Wp, Ws, 3, 40)  # Chebyshev type I filter order selection.
 
     B, A = scp.cheby1(N, 0.5, Wn, btype="bandpass")  # Chebyshev type I filter design
 
