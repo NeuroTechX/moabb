@@ -9,5 +9,7 @@ pipeline:
   - name: SSVEP_TRCA
     from: moabb.pipelines.classification
     parameters:
-      interval: [2, 4]
+      n_fbands: 5
+      is_ensemble: True
+      method: "riemann"
       freqs: {"13":2, "17":3, "21":4}
