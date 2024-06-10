@@ -1,10 +1,6 @@
 import numpy as np
-from sklearn.model_selection import (
-    BaseCrossValidator,
-    LeaveOneGroupOut,
-    StratifiedKFold,
-    StratifiedShuffleSplit,
-)
+from sklearn.model_selection import BaseCrossValidator, GroupKFold, LeaveOneGroupOut, StratifiedKFold, \
+    StratifiedShuffleSplit, KFold
 
 
 class OfflineSplit(BaseCrossValidator):
@@ -22,11 +18,7 @@ class OfflineSplit(BaseCrossValidator):
         subjects = metadata.subject
 
         for subject in subjects.unique():
-            X_, y_, meta_ = (
-                X[subjects == subject],
-                y[subjects == subject],
-                metadata[subjects == subject],
-            )
+            X_, y_, meta_ = X[subjects == subject], y[subjects == subject], metadata[subjects == subject]
             sessions = meta_.session.values
 
             for session in sessions:
@@ -37,58 +29,45 @@ class OfflineSplit(BaseCrossValidator):
 
 class TimeSeriesSplit(BaseCrossValidator):
 
-    def __init__(self, n_folds):
-        self.n_folds = n_folds
+    def __init__(self, calib_size):
+        self.calib_size = calib_size
 
     def get_n_splits(self, metadata):
+        sessions = metadata.session.unique()
+        subjects = metadata.subject.unique()
 
-        runs = metadata.run.unique()
-
-        if len(runs) > 1:
-            splits = len(runs)
-        else:
-            splits = self.n_folds
-
+        splits = len(sessions) * len(subjects)
         return splits
 
     def split(self, X, y, metadata, **kwargs):
 
         runs = metadata.run.unique()
+        sessions = metadata.session.unique()
+        subjects = metadata.subject.unique()
 
-        # If runs.unique != 1
         if len(runs) > 1:
-            cv = LeaveOneGroupOut()
+            for subject in subjects:
+                for session in sessions:
+                    # Index of specific session of this subejct
+                    session_indices = metadata[(metadata.subject == subject) & (metadata.session == session)].index
+
+                    for run in runs:
+                        test_ix = session_indices[metadata.loc[session_indices].run != run]
+                        calib_ix = session_indices[metadata.loc[session_indices].run == run]
+                        yield test_ix, calib_ix
+                        break  # Take the fist run as calibration
         else:
-            cv = StratifiedKFold(n_splits=self.n_folds, shuffle=False)
-        # Else, do a k-fold?
+            for subject in subjects:
+                for session in sessions:
+                    session_indices = metadata[(metadata.subject == subject) & (metadata.session == session)].index
+                    calib_size = self.calib_size
 
-        subjects = metadata.subject
+                    indices = session_indices.to_numpy()
+                    calib_ix = indices[:calib_size]
+                    test_ix = indices[calib_size:]
 
-        for subject in subjects.unique():
-            X_, y_, meta_ = (
-                X[subjects == subject],
-                y[subjects == subject],
-                metadata[subjects == subject],
-            )
-            sessions = meta_.session.values
+                    yield test_ix, calib_ix  # Take first #calib_size samples as calibration
 
-            for session in sessions.unique():
-
-                X_s, y_s, meta_s = (
-                    X[sessions == session],
-                    y[subjects == session],
-                    metadata[subjects == session],
-                )
-                runs = meta_s.run.values
-
-                if len(runs) > 1:
-                    param = (X_s, y_s, runs)
-                else:
-                    param = (X_s, y_s)
-
-                for ix_test, ix_calib in cv.split(*param):
-                    yield ix_test, ix_calib
-                    break
 
 
 class SamplerSplit(BaseCrossValidator):
@@ -98,9 +77,7 @@ class SamplerSplit(BaseCrossValidator):
         self.test_size = test_size
         self.n_perms = n_perms
 
-        self.split = IndividualSamplerSplit(
-            self.test_size, self.n_perms, data_size=self.data_size
-        )
+        self.split = IndividualSamplerSplit(self.test_size, self.n_perms, data_size=self.data_size)
 
     def get_n_splits(self, y=None):
         return self.n_perms[0] * len(self.split.get_data_size_subsets(y))
@@ -110,11 +87,7 @@ class SamplerSplit(BaseCrossValidator):
         split = self.split
 
         for subject in np.unique(subjects):
-            X_, y_, meta_ = (
-                X[subjects == subject],
-                y[subjects == subject],
-                metadata[subjects == subject],
-            )
+            X_, y_, meta_ = X[subjects == subject], y[subjects == subject], metadata[subjects == subject]
 
             yield split.split(X_, y_, meta_)
 
@@ -169,14 +142,12 @@ class IndividualSamplerSplit(BaseCrossValidator):
 
         sessions = metadata.session.unique()
 
-        cv = StratifiedShuffleSplit(n_splits=self.n_perms[0], test_size=self.test_size)
+        cv = StratifiedShuffleSplit(
+            n_splits=self.n_perms[0], test_size=self.test_size
+        )
 
         for session in np.unique(sessions):
-            X_, y_, meta_ = (
-                X[sessions == session],
-                y[sessions == session],
-                metadata[sessions == session],
-            )
+            X_, y_, meta_ = X[sessions == session], y[sessions == session], metadata[sessions == session]
 
             for ix_train, ix_test in cv.split(X_, y_):
 
