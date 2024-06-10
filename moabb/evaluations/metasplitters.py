@@ -6,8 +6,20 @@ from sklearn.model_selection import (
 
 
 class OfflineSplit(BaseCrossValidator):
+    """ Offline split for evaluation test data.
 
-    def __init__(self, n_folds):
+    Assumes that, per session, all test trials are available for inference. It can be used when
+    no filtering or data alignment is needed.
+
+    Parameters
+    ----------
+    n_folds: int
+    Not used in this case, just so it can be initialized in the same way as
+    TimeSeriesSplit.
+
+    """
+
+    def __init__(self, n_folds: int):
         self.n_folds = n_folds
 
     def get_n_splits(self, metadata):
@@ -15,27 +27,40 @@ class OfflineSplit(BaseCrossValidator):
         sessions = len(metadata.session.unique())
         return subjects * sessions
 
-    def split(self, X, y, metadata, **kwargs):
+    def split(self, X, y, metadata):
 
-        subjects = metadata.subject
+        subjects = metadata.subject.unique()
 
-        for subject in subjects.unique():
-            X_, y_, meta_ = (
-                X[subjects == subject],
-                y[subjects == subject],
-                metadata[subjects == subject],
-            )
-            sessions = meta_.session.values
+        for subject in subjects:
+            X_, y_, meta_ = X[subjects == subject], y[subjects == subject], metadata[subjects == subject]
+            sessions = meta_.session.unique()
 
             for session in sessions:
-                ix_test = np.nonzero(sessions == session)[0]
+                ix_test = meta_[meta_['session'] == session].index
 
                 yield ix_test
 
 
 class TimeSeriesSplit(BaseCrossValidator):
+    """ Pseudo-online split for evaluation test data.
 
-    def __init__(self, calib_size):
+    It takes into account the time sequence for obtaining the test data, and uses first run,
+    or first #calib_size trial as calibration data, and the rest as evaluation data.
+    Calibration data is important in the context where data alignment or filtering is used on
+    training data.
+
+    OBS: Be careful! Since this inference split is based on time disposition of obtained data,
+    if your data is not organized by time, but by other parameter, such as class, you may want to
+    be extra careful when using this split.
+
+    Parameters
+    ----------
+    calib_size: int
+    Size of calibration set, used if there is just one run.
+
+    """
+
+    def __init__(self, calib_size:int):
         self.calib_size = calib_size
 
     def get_n_splits(self, metadata):
@@ -45,7 +70,7 @@ class TimeSeriesSplit(BaseCrossValidator):
         splits = len(sessions) * len(subjects)
         return splits
 
-    def split(self, X, y, metadata, **kwargs):
+    def split(self, X, y, metadata):
 
         runs = metadata.run.unique()
         sessions = metadata.session.unique()
@@ -54,72 +79,95 @@ class TimeSeriesSplit(BaseCrossValidator):
         if len(runs) > 1:
             for subject in subjects:
                 for session in sessions:
-                    # Index of specific session of this subejct
-                    session_indices = metadata[
-                        (metadata.subject == subject) & (metadata.session == session)
-                    ].index
+                    # Index of specific session of this subject
+                    session_indices = metadata[(metadata['subject'] == subject) &
+                                               (metadata['session'] == session)].index
 
                     for run in runs:
-                        test_ix = session_indices[
-                            metadata.loc[session_indices].run != run
-                        ]
-                        calib_ix = session_indices[
-                            metadata.loc[session_indices].run == run
-                        ]
+                        test_ix = session_indices[metadata.loc[session_indices]['run'] != run]
+                        calib_ix = session_indices[metadata.loc[session_indices]['run'] == run]
                         yield test_ix, calib_ix
                         break  # Take the fist run as calibration
         else:
             for subject in subjects:
                 for session in sessions:
-                    session_indices = metadata[
-                        (metadata.subject == subject) & (metadata.session == session)
-                    ].index
+                    session_indices = metadata[(metadata['subject'] == subject) &
+                                               (metadata['session'] == session)].index
                     calib_size = self.calib_size
 
-                    indices = session_indices.to_numpy()
-                    calib_ix = indices[:calib_size]
-                    test_ix = indices[calib_size:]
+                    calib_ix = session_indices[:calib_size]
+                    test_ix = session_indices[calib_size:]
 
                     yield test_ix, calib_ix  # Take first #calib_size samples as calibration
 
 
 class SamplerSplit(BaseCrossValidator):
+    """ Return subsets of the training data with different number of samples.
 
-    def __init__(self, test_size, n_perms, data_size=None):
+    Util for estimating the performance of a model when using different number of
+    training samples and plotting the learning curve. You must define the data
+    evaluation type (WithinSubject, CrossSession, CrossSubject) so the training set
+    can be sampled.
+
+    Parameters
+    ----------
+    data_eval: BaseCrossValidator object
+        Evaluation splitter already initialized. It can be WithinSubject, CrossSession,
+        or CrossSubject Splitters.
+    data_size : dict
+        Contains the policy to pick the datasizes to
+        evaluate, as well as the actual values. The dict has the
+        key 'policy' with either 'ratio' or 'per_class', and the key
+        'value' with the actual values as a numpy array. This array should be
+        sorted, such that values in data_size are strictly monotonically increasing.
+
+    """
+
+    def __init__(self, data_eval, data_size):
+        self.data_eval = data_eval
         self.data_size = data_size
-        self.test_size = test_size
-        self.n_perms = n_perms
 
-        self.split = IndividualSamplerSplit(
-            self.test_size, self.n_perms, data_size=self.data_size
-        )
+        self.sampler = IndividualSamplerSplit(self.data_size)
 
-    def get_n_splits(self, y=None):
-        return self.n_perms[0] * len(self.split.get_data_size_subsets(y))
+    def get_n_splits(self, y, metadata):
+        return self.data_eval.get_n_splits(metadata) * len(self.sampler.get_data_size_subsets(y))
 
     def split(self, X, y, metadata, **kwargs):
-        subjects = metadata.subject.values
-        split = self.split
+        cv = self.data_eval
+        sampler = self.sampler
 
-        for subject in np.unique(subjects):
-            X_, y_, meta_ = (
-                X[subjects == subject],
-                y[subjects == subject],
-                metadata[subjects == subject],
-            )
-
-            yield split.split(X_, y_, meta_)
+        for ix_train, _ in cv.split(X, y, metadata, **kwargs):
+            X_train, y_train, meta_train = X[ix_train], y[ix_train], metadata[ix_train]
+            yield sampler.split(X_train, y_train, meta_train)
 
 
 class IndividualSamplerSplit(BaseCrossValidator):
+    """ Return subsets of the training data with different number of samples.
 
-    def __init__(self, test_size, n_perms, data_size=None):
+    Util for estimating the performance of a model when using different number of
+    training samples and plotting the learning curve. It must be used after already splitting
+    data using one of the other evaluation data splitters (WithinSubject, CrossSession, CrossSubject)
+    since it corresponds to a subsampling of the training data.
+
+    This 'Individual' Sampler Split assumes that data and metadata being passed is training, and was
+    already split by WithinSubject, CrossSession, or CrossSubject splitters.
+
+    Parameters
+    ----------
+    data_size : dict
+        Contains the policy to pick the datasizes to
+        evaluate, as well as the actual values. The dict has the
+        key 'policy' with either 'ratio' or 'per_class', and the key
+        'value' with the actual values as a numpy array. This array should be
+        sorted, such that values in data_size are strictly monotonically increasing.
+
+    """
+
+    def __init__(self, data_size):
         self.data_size = data_size
-        self.test_size = test_size
-        self.n_perms = n_perms
 
     def get_n_splits(self, y=None):
-        return self.n_perms[0] * len(self.get_data_size_subsets(y))
+        return len(self.get_data_size_subsets(y))
 
     def get_data_size_subsets(self, y):
         if self.data_size is None:
@@ -157,23 +205,9 @@ class IndividualSamplerSplit(BaseCrossValidator):
             raise ValueError(f"Unknown policy {self.data_size['policy']}")
         return indices
 
-    def split(self, X, y, metadata, **kwargs):
+    def split(self, X, y, metadata):
 
-        sessions = metadata.session.unique()
-
-        cv = StratifiedShuffleSplit(n_splits=self.n_perms[0], test_size=self.test_size)
-
-        for session in np.unique(sessions):
-            X_, y_, meta_ = (
-                X[sessions == session],
-                y[sessions == session],
-                metadata[sessions == session],
-            )
-
-            for ix_train, ix_test in cv.split(X_, y_):
-
-                y_split = y_[ix_train]
-                data_size_steps = self.get_data_size_subsets(y_split)
-                for subset_indices in data_size_steps:
-                    ix_train = ix_train[subset_indices]
-                    yield ix_train, ix_test
+        data_size_steps = self.get_data_size_subsets(y)
+        for subset_indices in data_size_steps:
+            ix_train = subset_indices
+            yield ix_train
