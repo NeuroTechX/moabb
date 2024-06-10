@@ -4,6 +4,7 @@ from time import time
 from typing import Optional, Union
 
 import numpy as np
+import optuna
 from mne.epochs import BaseEpochs
 from sklearn.base import clone
 from sklearn.metrics import get_scorer
@@ -13,13 +14,20 @@ from sklearn.model_selection import (
     StratifiedKFold,
     StratifiedShuffleSplit,
     cross_validate,
+    train_test_split,
 )
 from sklearn.model_selection._validation import _fit_and_score, _score
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
 from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
-from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
+from moabb.evaluations.utils import (
+    create_deep_model,
+    create_save_path,
+    save_model_cv,
+    save_model_list,
+)
 
 
 try:
@@ -33,6 +41,36 @@ log = logging.getLogger(__name__)
 
 # Numpy ArrayLike is only available starting from Numpy 1.20 and Python 3.8
 Vector = Union[list, tuple, np.ndarray]
+
+
+def objective(trial, X, y, clf, scorer, epochs, random_state):
+    learning_rate = trial.suggest_float("learning_rate", 1e-4, 1e-2, log=True)
+    weight_decay = trial.suggest_float("weight_decay", 1e-10, 1e-3, log=True)
+    drop_rate = trial.suggest_float("drop_rate", 0.3, 0.9)
+
+    pre_process_steps, model = create_deep_model(
+        clf, learning_rate, weight_decay, drop_rate, epochs=epochs, manual_validation=True
+    )
+    n_epochs = list(range(len(y)))
+    try:
+        idx_X_train, idx_X_val, y_train, y_val = train_test_split(
+            n_epochs, y, test_size=0.2, stratify=y, random_state=random_state
+        )
+    except Exception as e:
+        print(e)
+        idx_X_train, idx_X_val, y_train, y_val = train_test_split(
+            n_epochs, y, test_size=0.2, random_state=random_state
+        )
+
+    X_train = X[idx_X_train]
+    X_val = X[idx_X_val]
+    pre_process_steps.fit(X=X_train, y=y_train)
+    X_val_pre_processed = pre_process_steps.transform(X_val)
+
+    model = Pipeline([("preprocessing", pre_process_steps), ("deep", model)])
+    model.fit(X, y, deep__validation_data=(X_val_pre_processed, y_val))
+
+    return scorer(model, X_val, y_val)
 
 
 class WithinSessionEvaluation(BaseEvaluation):
@@ -94,10 +132,14 @@ class WithinSessionEvaluation(BaseEvaluation):
         self,
         n_perms: Optional[Union[int, Vector]] = None,
         data_size: Optional[dict] = None,
+        optuna_n_trials: int = 25,
+        optuna_timeout: int = 60 * 10,
         **kwargs,
     ):
         self.data_size = data_size
         self.n_perms = n_perms
+        self.optuna_n_trials = optuna_n_trials
+        self.optuna_timeout = optuna_timeout
         self.calculate_learning_curve = self.data_size is not None
         if self.calculate_learning_curve:
             # Check correct n_perms parameter
@@ -220,8 +262,48 @@ class WithinSessionEvaluation(BaseEvaluation):
                         y_ = y[ix] if self.mne_labels else y_cv
                         for cv_ind, (train, test) in enumerate(cv.split(X_, y_)):
                             cvclf = clone(grid_clf)
-                            cvclf.fit(X_[train], y_[train])
+                            n_epochs = cvclf[-1].epochs
+
+                            study = optuna.create_study(
+                                direction="maximize",
+                                study_name=f"{name}_{subject}_{session}_{cv_ind}",
+                            )
+                            study.optimize(
+                                lambda trial: objective(
+                                    trial,
+                                    X=X_[train],
+                                    y=y_[train],
+                                    clf=cvclf,
+                                    scorer=scorer,
+                                    epochs=n_epochs,
+                                    random_state=self.random_state,
+                                ),
+                                n_trials=self.optuna_n_trials,
+                                timeout=self.optuna_timeout,  # one hour
+                                show_progress_bar=True,
+                                n_jobs=1,
+                                gc_after_trial=True,
+                            )
+                            best_params = study.best_params
+
+                            pre_process_steps, model = create_deep_model(
+                                clf=cvclf,
+                                **best_params,
+                                epochs=n_epochs,
+                            )
+                            cvclf = Pipeline(
+                                [("preprocessing", pre_process_steps), ("deep", model)]
+                            )
+
+                            cvclf = cvclf.fit(X_[train], y_[train])
                             acc.append(scorer(cvclf, X_[test], y_[test]))
+                            if hasattr(cvclf, "_final_estimator"):
+                                save_history_name = (
+                                    f"{name}_{cv_ind}_fold_{session}_session"
+                                )
+                                history = cvclf._final_estimator.history_
+
+                                np.savez(f"{save_history_name}.npz", history)
 
                             if self.hdf5_path is not None and self.save_model:
                                 save_model_cv(
