@@ -404,7 +404,6 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
 
             # Filterbank approach
             for band_n in range(self.n_fbands):
-                print(self.sfreq_, band_n, self.peaks_)
                 # Filter the data and compute TRCA
                 X_filter = filterbank(
                     X_cal.get_data(copy=False), self.sfreq_, band_n, self.peaks_
