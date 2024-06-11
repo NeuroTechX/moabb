@@ -2,14 +2,10 @@ import zipfile as z
 from pathlib import Path
 
 import mne
-import numpy as np
-import pandas as pd
-from scipy.io import loadmat
+from mne.channels import read_custom_montage
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
-from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
-from mne.channels import read_custom_montage
 
 
 _LIU2024_URL = (
@@ -56,26 +52,25 @@ class Liu2024(BaseDataset):
         super().__init__(
             subjects=list(range(1, 50 + 1)),
             sessions_per_subject=1,
-            events={ "left_hand": 0, "right_hand": 1},
+            events={"left_hand": 0, "right_hand": 1},
             code="Liu2024",
             interval=(0, 4),
             paradigm="imagery",
             doi="10.6084/m9.figshare.21679035.v5",
         )
-    
+
     def data_infos(self):
         """Returns the data paths of the channels, electrodes and events informations"""
-        
+
         url_electrodes = "https://figshare.com/ndownloader/files/38516078"
         url_channels = "https://figshare.com/ndownloader/files/38516069"
         url_events = "https://figshare.com/ndownloader/files/38516084"
-        
-        path_channels = dl.data_dl(url_channels, self.code + "channels" )  
-        path_electrodes = dl.data_dl(url_electrodes, self.code + "electrodes" )
-        path_events = dl.data_dl(url_events, self.code + "events" )
+
+        path_channels = dl.data_dl(url_channels, self.code + "channels")
+        path_electrodes = dl.data_dl(url_electrodes, self.code + "electrodes")
+        path_events = dl.data_dl(url_events, self.code + "events")
 
         return path_channels, path_electrodes, path_events
-
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
@@ -110,20 +105,20 @@ class Liu2024(BaseDataset):
 
         # Read the subject's data
         raw = mne.io.read_raw_edf(file_path_list[0], preload=False)
-        
+
         # Selecting the EEG channels and the STIM channel
-        selected_channels = raw.info['ch_names'][:-3] + ['']
+        selected_channels = raw.info["ch_names"][:-3] + [""]
         selected_channels.remove("CPz")
 
         raw = raw.pick(selected_channels)
 
-        # Updating the types of the channels 
-        channel_types = channel_types[:-2] + ['stim']
+        # Updating the types of the channels
+        channel_types = channel_types[:-2] + ["stim"]
         channel_dict = dict(zip(selected_channels, channel_types))
         raw.info.set_channel_types(channel_dict)
 
         montage = read_custom_montage(path_electrodes)
-        raw.set_montage(montage, on_missing='ignore')
+        raw.set_montage(montage, on_missing="ignore")
 
         # There is only one session
         sessions = {"0": {}}
