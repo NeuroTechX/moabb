@@ -33,7 +33,30 @@ class Liu2024(BaseDataset):
 
 
     **Dataset description**
+    This dataset includes data from 50 acute stroke patients (the time after stroke ranges from 1 day to 30 days) 
+    admitted to the stroke unit of Xuanwu Hospital of Capital Medical University. The patients included 39 males (78%)
+    and 11 females (22%), aged between 31 and 77 years, with an average age of 56.70 years (SD = 10.57) 
+    Before the start of the experiment, the subject sat in a chair in a position as comfortable as possible with an
+    EEG cap placed on their head; subjects were positioned approximately 80 cm away from a computer screen in front of them. 
+    The computer played audio instructions to the patient about the procedure. Each experiment lasted approximately 20 minutes,
+    including preparation time and approximately 10 minutes of signal recording. Before the start of the MI experiment, 
+    the patients opened their eyes and closed their eyes for 1 minute each. The MI experiment was divided into 40 trials, and
+    each trial took 8 seconds, which consisted of three stages (instruction, MI and break). In the instruction stage, patients 
+    were prompted to imagine grasping a spherical object with the left- or right-hand. In the MI stage, participants imagined 
+    performing this action, a video of gripping motion is played on the computer, which leads the patient imagine grabbing the 
+    ball. This video stays playing for 4 s. Patients only imagine one hand movement.In the break stage, participants were allowed
+    to relax and rest. The MI experiments alternated between the left- and right-hand, and the patients moved onto the next stage 
+    of the experiment according to the instructions.
 
+    The EEG data were collected through a wireless multichannel EEG acquisition system (ZhenTec NT1, Xi’an ZhenTec Intelligence 
+    Technology Co., Ltd., China). The system includes an EEG cap, an EEG acquisition amplifier, a data receiver and host computer
+    software. The EEG cap had electrodes placed according to the international 10-10 system, including 29 EEG recording electrodes 
+    and 2 electrooculography (EOG) electrodes. The reference electrode located at CPz position and the grounding electrode located 
+    at FPz position. All the EEG electrodes and grounding electrode are Ag/AgCl semi-dry EEG electrodes based on highly absorbable 
+    porous sponges that are dampened with 3% NaCl solution. The EOG electrodes are composed by Ag/AgCl electrodes and conductive
+    adhesive hydrogel. The common-mode rejection ratio was 120 dB, the input impedance was 1 GΩ, the input noise was less than 
+    0.4 μVrms, and the resolution was 24 bits. The acquisition impedance was less than or equal to 20 kΩ. The sampling frequency 
+    was 500 Hz.
 
     References
     ----------
