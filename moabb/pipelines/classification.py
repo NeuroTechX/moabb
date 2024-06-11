@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import scipy.linalg as linalg
 from joblib import Parallel, delayed
@@ -11,6 +13,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.validation import check_is_fitted
 
 from .utils import filterbank
+
+
+log = logging.getLogger(__name__)
 
 
 class SSVEP_CCA(BaseEstimator, ClassifierMixin):
@@ -390,9 +395,7 @@ class SSVEP_TRCA(BaseEstimator, ClassifierMixin):
             self.one_hot_[i] = k
             self.one_inv_[k] = i
         if self.n_fbands > len(self.peaks_):
-            raise ValueError(
-                "Number of filterbank bands should be less or equal to the number of peaks."
-            )
+            log.warning("Try with lower n_fbands if there is an error.")
 
         # Initialize the final arrays
         self.templates_ = np.zeros((self.n_classes, self.n_fbands, n_channels, n_samples))
