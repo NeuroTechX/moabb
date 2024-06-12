@@ -3,8 +3,8 @@ import zipfile as z
 from pathlib import Path
 
 import mne
-import pandas as pd
 import numpy as np
+import pandas as pd
 from mne.channels import read_custom_montage
 
 from moabb.datasets import download as dl
@@ -92,9 +92,9 @@ class Liu2024(BaseDataset):
     def data_infos(self):
         """Returns the data paths of the electrodes and events informations"""
 
-        path_channels = dl.data_dl(url_channels, self.code )
-        path_electrodes = dl.data_dl(url_electrodes, self.code )
-        path_events = dl.data_dl(url_events, self.code )
+        path_channels = dl.data_dl(url_channels, self.code)
+        path_electrodes = dl.data_dl(url_electrodes, self.code)
+        path_events = dl.data_dl(url_events, self.code)
 
         return path_channels, path_electrodes, path_events
 
@@ -126,21 +126,21 @@ class Liu2024(BaseDataset):
 
         return subject_paths
 
-    def encoding(self, events_df : pd.DataFrame):
-        """Encoding the columns 'value' and 'trial_type' in the events file into a single event type 
+    def encoding(self, events_df: pd.DataFrame):
+        """Encoding the columns 'value' and 'trial_type' in the events file into a single event type
         'trial_type' can be 1 ( left hand ) or 2 ( right hand), but for convenience we use 0 and 1
         'value' can be 1 ( instruction ), 2 ( MI ) or 3 ( break )
-        For example if trial_type = 1 and value = 2, the event type will be 12 
+        For example if trial_type = 1 and value = 2, the event type will be 12
         if trial_type = 0 and value = 2, the event type will be 2
         """
-        # docstring for parameters 
-        event_type = events_df['value'].values + (events_df['trial_type'].values -1) * 10
+        # docstring for parameters
+        event_type = events_df["value"].values + (events_df["trial_type"].values - 1) * 10
 
         return event_type
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject."""
-        #docstrings 
+        # docstrings
 
         file_path_list = self.data_path(subject)
         path_channels, path_electrodes, path_events = self.data_infos()
@@ -148,46 +148,50 @@ class Liu2024(BaseDataset):
         # Read the subject's raw data
         raw = mne.io.read_raw_edf(file_path_list[0], preload=False)
 
-        # Selecting the EEG channels and the STIM channel excluding the CPz 
+        # Selecting the EEG channels and the STIM channel excluding the CPz
         # reference channel and the EOG channels
         selected_channels = raw.info["ch_names"][:-3] + [""]
         selected_channels.remove("CPz")
         raw = raw.pick(selected_channels)
 
         # Updating the types of the channels after extracting them from the channels file
-        channels_info = pd.read_csv(path_channels, sep='\t')
-        channel_types = [type.lower() for type in channels_info['type'].tolist()[:-2]] + ["stim"]
+        channels_info = pd.read_csv(path_channels, sep="\t")
+        channel_types = [type.lower() for type in channels_info["type"].tolist()[:-2]] + [
+            "stim"
+        ]
         channel_dict = dict(zip(selected_channels, channel_types))
         raw.info.set_channel_types(channel_dict)
 
         # Renaming the .tsv file to make sure it's recognized as .tsv
-        #cdt for the rename
-        os.rename(path_electrodes, path_electrodes +".tsv")
+        # cdt for the rename
+        os.rename(path_electrodes, path_electrodes + ".tsv")
         path_electrodes = path_electrodes + ".tsv"
 
         # Read and set the montage
         montage = read_custom_montage(path_electrodes)
         raw.set_montage(montage, on_missing="ignore")
 
-        events_df = pd.read_csv(path_events, sep='\t')
+        events_df = pd.read_csv(path_events, sep="\t")
 
         # Convert onset from milliseconds to seconds
-        onset_seconds = events_df['onset'].values / 1000
+        onset_seconds = events_df["onset"].values / 1000
 
         # Encode the events
         event_type = self.encoding(events_df)
 
         # Convert onset from seconds to samples for the events array
-        sfreq = raw.info['sfreq']
+        sfreq = raw.info["sfreq"]
         onset_samples = (onset_seconds * sfreq).astype(int)
 
         # Create the events array
-        events = np.column_stack((onset_samples, np.zeros_like(onset_samples), event_type))
+        events = np.column_stack(
+            (onset_samples, np.zeros_like(onset_samples), event_type)
+        )
 
         # Creating and setting annoations from the events
-        annotations = mne.annotations_from_events(events, 
-                                                  sfreq =  raw.info['sfreq'],
-                                                    event_desc = event_type) 
+        annotations = mne.annotations_from_events(
+            events, sfreq=raw.info["sfreq"], event_desc=event_type
+        )
         raw.set_annotations(annotations)
 
         # There is only one session
