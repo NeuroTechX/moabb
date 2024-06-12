@@ -35,11 +35,11 @@ class WithinSubjectSplitter(BaseCrossValidator):
         split = IndividualWithinSubjectSplitter(self.n_folds)
 
         for subject in np.unique(subjects):
-
+            mask = subjects == subject
             X_, y_, meta_ = (
-                X[subjects == subject],
-                y[subjects == subject],
-                metadata[subjects == subject],
+                X[mask],
+                y[mask],
+                metadata[mask],
             )
 
             yield split.split(X_, y_, meta_, **kwargs)
@@ -71,19 +71,20 @@ class IndividualWithinSubjectSplitter(BaseCrossValidator):
 
     def split(self, X, y, metadata, **kwargs):
 
-        sessions = metadata.subject.values
+        assert len(np.unique(metadata.subject)) == 1
 
+        sessions = metadata.subject.values
         cv = StratifiedKFold(n_splits=self.n_folds, shuffle=True, **kwargs)
 
         for session in np.unique(sessions):
+            mask = sessions == session
             X_, y_, meta_ = (
-                X[sessions == session],
-                y[sessions == session],
-                metadata[sessions == session],
+                X[mask],
+                y[mask],
+                metadata[mask],
             )
 
             for ix_train, ix_test in cv.split(X_, y_):
-
                 yield ix_train, ix_test
 
 
@@ -115,10 +116,11 @@ class CrossSessionSplitter(BaseCrossValidator):
         split = IndividualCrossSessionSplitter()
 
         for subject in np.unique(subjects):
+            mask = subjects == subject
             X_, y_, meta_ = (
-                X[subjects == subject],
-                y[subjects == subject],
-                metadata[subjects == subject],
+                X[mask],
+                y[mask],
+                metadata[mask],
             )
 
             yield split.split(X_, y_, meta_)
@@ -152,12 +154,12 @@ class IndividualCrossSessionSplitter(BaseCrossValidator):
 
     def split(self, X, y, metadata):
 
-        cv = LeaveOneGroupOut()
+        assert len(np.unique(metadata.subject)) == 1
 
+        cv = LeaveOneGroupOut()
         sessions = metadata.session.values
 
         for ix_train, ix_test in cv.split(X, y, groups=sessions):
-
             yield ix_train, ix_test
 
 

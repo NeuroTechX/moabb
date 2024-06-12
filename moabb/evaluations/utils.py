@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
+import numpy as np
 from numpy import argmax
 from sklearn.pipeline import Pipeline
 
@@ -154,13 +156,13 @@ def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path
 
 
 def create_save_path(
-    hdf5_path,
-    code: str,
-    subject: int | str,
-    session: str,
-    name: str,
-    grid=False,
-    eval_type="WithinSession",
+        hdf5_path,
+        code: str,
+        subject: int | str,
+        session: str,
+        name: str,
+        grid=False,
+        eval_type="WithinSession",
 ):
     """Create a save path based on evaluation parameters.
 
@@ -192,23 +194,34 @@ def create_save_path(
 
         if grid:
             path_save = (
-                Path(hdf5_path)
-                / f"GridSearch_{eval_type}"
-                / code
-                / f"{str(subject)}"
-                / str(session)
-                / str(name)
+                    Path(hdf5_path)
+                    / f"GridSearch_{eval_type}"
+                    / code
+                    / f"{str(subject)}"
+                    / str(session)
+                    / str(name)
             )
         else:
             path_save = (
-                Path(hdf5_path)
-                / f"Models_{eval_type}"
-                / code
-                / f"{str(subject)}"
-                / str(session)
-                / str(name)
+                    Path(hdf5_path)
+                    / f"Models_{eval_type}"
+                    / code
+                    / f"{str(subject)}"
+                    / str(session)
+                    / str(name)
             )
 
         return str(path_save)
     else:
         print("No hdf5_path provided, models will not be saved.")
+
+
+def sort_group(groups):
+    runs_sort = []
+    pattern = r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)"
+    for i, group in enumerate(groups):
+        index, description = re.fullmatch(pattern, group).groups()
+        index = int(index)
+        runs_sort.append(index)
+    sorted_ix = np.argsort(runs_sort)
+    return groups[sorted_ix]
