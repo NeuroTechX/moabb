@@ -12,7 +12,7 @@ from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
 
-Lee2019_URL = "ftp://parrot.genomics.cn/gigadb/pub/10.5524/100001_101000/100542/"
+Lee2019_URL = "https://s3.ap-northeast-1.wasabisys.com/gigadb-datasets/live/pub/10.5524/100001_101000/100542/"
 
 
 class Lee2019(BaseDataset):
