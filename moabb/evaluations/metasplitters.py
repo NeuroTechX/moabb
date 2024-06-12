@@ -14,9 +14,7 @@ on different training sizes and plot learning curves.
 """
 
 import numpy as np
-from sklearn.model_selection import (
-    BaseCrossValidator,
-)
+from sklearn.model_selection import BaseCrossValidator
 
 from moabb.evaluations.utils import sort_group
 
@@ -39,7 +37,7 @@ class OfflineSplit(BaseCrossValidator):
         self.n_folds = n_folds
 
     def get_n_splits(self, metadata):
-        return metadata.groupby(['subject', 'session']).ngroups
+        return metadata.groupby(["subject", "session"]).ngroups
 
     def split(self, X, y, metadata):
 
@@ -51,13 +49,13 @@ class OfflineSplit(BaseCrossValidator):
             sessions = meta_.session.unique()
 
             for session in sessions:
-                ix_test = meta_[meta_['session'] == session].index
+                ix_test = meta_[meta_["session"] == session].index
 
                 yield ix_test
 
 
 class TimeSeriesSplit(BaseCrossValidator):
-    """ Pseudo-online split for evaluation test data.
+    """Pseudo-online split for evaluation test data.
 
     It takes into account the time sequence for obtaining the test data, and uses first run,
     or first #calib_size trial as calibration data, and the rest as evaluation data.
@@ -79,18 +77,18 @@ class TimeSeriesSplit(BaseCrossValidator):
         self.calib_size = calib_size
 
     def get_n_splits(self, metadata):
-        return metadata.groupby(['subject', 'session'])
+        return metadata.groupby(["subject", "session"])
 
     def split(self, X, y, metadata):
 
-        for _, group in metadata.groupby(['subject', 'session']):
+        for _, group in metadata.groupby(["subject", "session"]):
             runs = group.run.unique()
             if len(runs) > 1:
                 # To guarantee that the runs are on the right order
                 runs = sort_group(runs)
                 for run in runs:
-                    test_ix = group[group['run'] != run].index
-                    calib_ix = group[group['run'] == run].index
+                    test_ix = group[group["run"] != run].index
+                    calib_ix = group[group["run"] == run].index
                     yield test_ix, calib_ix
                     break  # Take the fist run as calibration
             else:
@@ -102,7 +100,7 @@ class TimeSeriesSplit(BaseCrossValidator):
 
 
 class SamplerSplit(BaseCrossValidator):
-    """ Return subsets of the training data with different number of samples.
+    """Return subsets of the training data with different number of samples.
 
     Util for estimating the performance of a model when using different number of
     training samples and plotting the learning curve. You must define the data
@@ -130,7 +128,9 @@ class SamplerSplit(BaseCrossValidator):
         self.sampler = IndividualSamplerSplit(self.data_size)
 
     def get_n_splits(self, y, metadata):
-        return self.data_eval.get_n_splits(metadata) * len(self.sampler.get_data_size_subsets(y))
+        return self.data_eval.get_n_splits(metadata) * len(
+            self.sampler.get_data_size_subsets(y)
+        )
 
     def split(self, X, y, metadata, **kwargs):
         cv = self.data_eval
@@ -142,7 +142,7 @@ class SamplerSplit(BaseCrossValidator):
 
 
 class IndividualSamplerSplit(BaseCrossValidator):
-    """ Return subsets of the training data with different number of samples.
+    """Return subsets of the training data with different number of samples.
 
     Util for estimating the performance of a model when using different number of
     training samples and plotting the learning curve. It must be used after already splitting

@@ -156,13 +156,13 @@ def save_model_list(model_list: list | Pipeline, score_list: Sequence, save_path
 
 
 def create_save_path(
-        hdf5_path,
-        code: str,
-        subject: int | str,
-        session: str,
-        name: str,
-        grid=False,
-        eval_type="WithinSession",
+    hdf5_path,
+    code: str,
+    subject: int | str,
+    session: str,
+    name: str,
+    grid=False,
+    eval_type="WithinSession",
 ):
     """Create a save path based on evaluation parameters.
 
@@ -194,21 +194,21 @@ def create_save_path(
 
         if grid:
             path_save = (
-                    Path(hdf5_path)
-                    / f"GridSearch_{eval_type}"
-                    / code
-                    / f"{str(subject)}"
-                    / str(session)
-                    / str(name)
+                Path(hdf5_path)
+                / f"GridSearch_{eval_type}"
+                / code
+                / f"{str(subject)}"
+                / str(session)
+                / str(name)
             )
         else:
             path_save = (
-                    Path(hdf5_path)
-                    / f"Models_{eval_type}"
-                    / code
-                    / f"{str(subject)}"
-                    / str(session)
-                    / str(name)
+                Path(hdf5_path)
+                / f"Models_{eval_type}"
+                / code
+                / f"{str(subject)}"
+                / str(session)
+                / str(name)
             )
 
         return str(path_save)
