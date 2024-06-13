@@ -21,7 +21,7 @@ Enhancements
 
 Bugs
 ~~~~
-- None
+- Correct :class:`moabb.pipelines.classification.SSVEP_CCA` and :class:`moabb.pipelines.classification.SSVEP_TRCA` behavior (:gh:`XXX`by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
