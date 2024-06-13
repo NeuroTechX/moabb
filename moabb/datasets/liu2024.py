@@ -158,7 +158,8 @@ class Liu2024(BaseDataset):
 
         return subject_paths
 
-    def encoding(self, events_df: pd.DataFrame):
+    @staticmethod
+    def encoding(events_df: pd.DataFrame):
         """Encode the columns 'value' and 'trial_type' in the events file into a single event type.
 
         Parameters
