@@ -11,4 +11,4 @@ pipeline:
     parameters:
       n_fbands: 5
       is_ensemble: True
-      method: "riemann"
+      method: "original"
