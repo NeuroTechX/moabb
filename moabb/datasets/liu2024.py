@@ -1,4 +1,5 @@
 import os
+import shutil
 import zipfile as z
 from pathlib import Path
 
@@ -84,30 +85,12 @@ class Liu2024(BaseDataset):
         super().__init__(
             subjects=list(range(1, 50 + 1)),
             sessions_per_subject=1,
-            events={"left_hand": 0, "right_hand": 1},
+            events={"left_hand": 2, "right_hand": 4, "break": 3, "instr": 1},
             code="Liu2024",
-            interval=(0, 4),
+            interval=(2, 6),
             paradigm="imagery",
             doi="10.1038/s41597-023-02787-8",
         )
-
-    def data_infos(self):
-        """Returns the data paths of the electrodes and events information
-
-        This function downloads the necessary data files for channels, electrodes,
-        and events from their respective URLs and returns their local file paths.
-
-        Returns
-        -------
-        tuple
-            A tuple containing the local file paths to the channels, electrodes, and events information files.
-        """
-
-        path_channels = dl.data_dl(url_channels, self.code)
-        path_electrodes = dl.data_dl(url_electrodes, self.code)
-        path_events = dl.data_dl(url_events, self.code)
-
-        return path_channels, path_electrodes, path_events
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
@@ -176,15 +159,39 @@ class Liu2024(BaseDataset):
 
         Notes
         -----
-        'trial_type' can take values  { 1 : Left hand, 2 : Right hand }, but for convenience we use 0 and 1.
-        'value' can take values { 1 : instructions, 2 : MI, 3 : break}.
-        For example, if trial_type = 1 and value = 2, the event type will be 12.
-        If trial_type = 0 and value = 2, the event type will be 2.
+        # The 'trial_type' variable can take the following values:
+        # - 1 : Left hand
+        # - 2 : Right hand
+        # However, for convenience, we map these values to 0 and 1 respectively.
+
+        # The 'value' variable can take the following values:
+        # - 1 : instructions
+        # - 2 : MI
+        # - 3 : break
+
         """
+        # Define the mapping dictionary
+        encoding_mapping = {
+            (1, 1): 1,  # Right hand, instructions
+            (1, 2): 2,  # Right hand, MI
+            (1, 3): 3,  # Right hand, break
+            (2, 1): 1,  # Left hand, instructions
+            (2, 2): 4,  # Left hand, MI
+            (2, 3): 3,  # Left hand, break
+        }
 
-        event_type = events_df["value"].values + (events_df["trial_type"].values - 1) * 10
+        mapping = {
+            1: "instr",
+            3: "break",
+            2: "left_hand",
+            4: "right_hand",
+        }
+        # Apply the mapping to the DataFrame
+        event_category = events_df.apply(
+            lambda row: encoding_mapping[(row["trial_type"], row["value"])], axis=1
+        )
 
-        return event_type
+        return event_category, mapping
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
@@ -200,11 +207,17 @@ class Liu2024(BaseDataset):
             A dictionary containing the raw data for the subject.
         """
 
-        file_path_list = self.data_path(subject)
+        file_path_list = self.data_path(subject)[0]
         path_channels, path_electrodes, path_events = self.data_infos()
 
         # Read the subject's raw data
-        raw = mne.io.read_raw_edf(file_path_list[0], preload=True)
+        raw = mne.io.read_raw_edf(file_path_list, preload=False)
+        # Read channels information
+        channels_info = pd.read_csv(path_channels, sep="\t")
+        # Normalize and Read the montage
+        path_electrodes = self._normalize_extension(path_electrodes)
+        # Read and set the montage
+        montage = read_custom_montage(path_electrodes)
 
         # Selecting the EEG channels and the STIM channel excluding the CPz
         # reference channel and the EOG channels
@@ -212,56 +225,72 @@ class Liu2024(BaseDataset):
         selected_channels.remove("CPz")
         raw = raw.pick(selected_channels)
 
-        # Updating the types of the channels after extracting them from the channels file
-        channels_info = pd.read_csv(path_channels, sep="\t")
-        channel_types = [type.lower() for type in channels_info["type"].tolist()[:-2]] + [
-            "stim"
-        ]
+        # Updating the types of the channels after extracting them from the
+        # channels file
+        channel_types = channels_info["type"].str.lower().tolist()[:-2] + ["stim"]
         channel_dict = dict(zip(selected_channels, channel_types))
         raw.info.set_channel_types(channel_dict)
 
-        # Renaming the .tsv file to make sure it's recognized as .tsv
-        # Check if the file already has the ".tsv" extension
-        if not path_electrodes.endswith(".tsv"):
-            # Create the new path
-            new_path_electrodes = path_electrodes + ".tsv"
-            # Check if the target filename already exists
-            if not os.path.exists(new_path_electrodes):
-                # Perform the rename operation only if the target file doesn't exist
-                os.rename(path_electrodes, new_path_electrodes)
-                path_electrodes = new_path_electrodes
-            else:
-                # If the file already exists, simply keep the original path
-                path_electrodes = new_path_electrodes
-
-        # Read and set the montage
-        montage = read_custom_montage(path_electrodes)
-        raw.set_montage(montage, on_missing="ignore")
-
         events_df = pd.read_csv(path_events, sep="\t")
 
-        # Convert onset from milliseconds to seconds
-        onset_seconds = events_df["onset"].values / 1000
-
         # Encode the events
-        event_type = self.encoding(events_df)
+        event_category, mapping = self.encoding(events_df)
 
-        # Convert onset from seconds to samples for the events array
-        sfreq = raw.info["sfreq"]
-        onset_samples = (onset_seconds * sfreq).astype(int)
-
-        # Create the events array
+        _, idx_trigger = np.nonzero(raw.copy().pick("").get_data())
+        # Create the events array based on the stimulus channel
         events = np.column_stack(
-            (onset_samples, np.zeros_like(onset_samples), event_type)
+            (idx_trigger, np.repeat(1000, len(idx_trigger)), event_category)
         )
 
         # Creating and setting annotations from the events
         annotations = mne.annotations_from_events(
-            events, sfreq=raw.info["sfreq"], event_desc=event_type
+            events, sfreq=raw.info["sfreq"], event_desc=mapping
         )
-        raw.set_annotations(annotations)
 
+        raw = raw.set_annotations(annotations)
+        # Removing the stimulus channels
+        raw = raw.pick_types(eeg=True, eog=True)
+        # Setting the montage
+        raw = raw.set_montage(montage, on_missing="ignore")
+        # Loading dataset
+        raw = raw.load_data()
         # There is only one session
         sessions = {"0": {"0": raw}}
 
         return sessions
+
+    def data_infos(self):
+        """Returns the data paths of the electrodes and events information
+
+        This function downloads the necessary data files for channels, electrodes,
+        and events from their respective URLs and returns their local file paths.
+
+        Returns
+        -------
+        tuple
+            A tuple containing the local file paths to the channels, electrodes,
+            and events information files.
+        """
+
+        path_channels = dl.data_dl(url_channels, self.code)
+
+        path_electrodes = dl.data_dl(url_electrodes, self.code)
+
+        path_events = dl.data_dl(url_events, self.code)
+
+        return path_channels, path_electrodes, path_events
+
+    @staticmethod
+    def _normalize_extension(file_name):
+        # Renaming the .tsv file to make sure it's recognized as .tsv
+        # Check if the file already has the ".tsv" extension
+
+        file_electrodes_tsv = file_name + ".tsv"
+
+        if not os.path.exists(file_electrodes_tsv):
+            # Perform the rename operation only if the target file
+            # doesn't exist
+            shutil.copy(file_name, file_electrodes_tsv)
+            file_name = file_electrodes_tsv
+
+        return file_name
