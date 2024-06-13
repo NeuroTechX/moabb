@@ -259,7 +259,6 @@ class Liu2024(BaseDataset):
         raw.set_annotations(annotations)
 
         # There is only one session
-        sessions = {"0": {}}
-        sessions["0"] = raw
-
+        sessions = {"0": {"run_1": raw}}
+        
         return sessions
