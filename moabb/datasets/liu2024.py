@@ -61,6 +61,8 @@ class Liu2024(BaseDataset):
     0.4 μVrms, and the resolution was 24 bits. The acquisition impedance was less than or equal to 20 kΩ. The sampling frequency
     was 500 Hz.
 
+    In the dataset, we've removed the 2 EOG channels and we kept the 29 EEG channels and the STIM channel.
+
     References
     ----------
 
@@ -202,7 +204,7 @@ class Liu2024(BaseDataset):
         path_channels, path_electrodes, path_events = self.data_infos()
 
         # Read the subject's raw data
-        raw = mne.io.read_raw_edf(file_path_list[0], preload=False)
+        raw = mne.io.read_raw_edf(file_path_list[0], preload=True)
 
         # Selecting the EEG channels and the STIM channel excluding the CPz
         # reference channel and the EOG channels
@@ -260,6 +262,6 @@ class Liu2024(BaseDataset):
         raw.set_annotations(annotations)
 
         # There is only one session
-        sessions = {"0": {"run_1": raw}}
+        sessions = {"0": {"0": raw}}
 
         return sessions
