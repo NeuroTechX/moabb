@@ -123,7 +123,7 @@ class Liu2024(BaseDataset):
                     will be automatically downloaded to the specified folder.
                 force_update : bool
                     Force update of the dataset even if a local copy exists.
-                update_path : bool | None Deprecated
+                update_path : bool | None
                     If True, set the MNE_DATASETS_(dataset)_PATH in mne-python config to the given path.
                     If None, the user is prompted.
                 verbose : bool, str, int, or None
