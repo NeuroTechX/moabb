@@ -59,7 +59,7 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         self.n_harmonics = n_harmonics
         self.classes_ = []
         self.one_hot_ = {}
-        self.le_ = self.slen_ = self.freqs_ = None
+        self.le_, self.slen_, self.freqs_ = None, None, []
 
     def fit(self, X, y, sample_weight=None):
         """Compute reference sinusoid signal.
@@ -70,7 +70,10 @@ class SSVEP_CCA(BaseEstimator, ClassifierMixin):
         ----------
         X : MNE Epochs
             The training data as MNE Epochs object.
-        y : unused, only for compatibility with scikit-learn
+        y : Unused,
+            Only for compatibility with scikit-learn
+        sample_weight : Unused,
+            Only for compatibility with scikit-learn
 
         Returns
         -------
@@ -616,7 +619,7 @@ class SSVEP_MsetCCA(BaseEstimator, ClassifierMixin):
         self.n_jobs = n_jobs
         self.n_filters = n_filters
         self.cca = CCA(n_components=1)
-        self.freqs_, self.le_, self.classes_ = None, None, None
+        self.freqs_, self.le_, self.classes_ = [], None, None
         self.one_hot_, self.Ym = {}, {}
 
     def fit(self, X, y, sample_weight=None):
