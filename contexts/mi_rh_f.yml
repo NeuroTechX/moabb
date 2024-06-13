@@ -1,0 +1,5 @@
+MotorImagery:
+  n_classes: 2
+  events:
+    - right_hand
+    - feet
