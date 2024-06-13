@@ -14,7 +14,7 @@ from moabb.datasets.base import BaseDataset
 # Link to the raw data
 LIU2024_URL = "https://figshare.com/ndownloader/files/38516654"
 
-# Links to the channels, electrodes and events informations files
+# Links to the channels, electrodes and events information files
 url_channels = "https://figshare.com/ndownloader/files/38516069"
 url_electrodes = "https://figshare.com/ndownloader/files/38516078"
 url_events = "https://figshare.com/ndownloader/files/38516084"
@@ -90,7 +90,7 @@ class Liu2024(BaseDataset):
         )
 
     def data_infos(self):
-        """Returns the data paths of the electrodes and events informations
+        """Returns the data paths of the electrodes and events information
 
         This function downloads the necessary data files for channels, electrodes,
         and events from their respective URLs and returns their local file paths.
@@ -111,28 +111,28 @@ class Liu2024(BaseDataset):
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         """Return the data paths of a single subject, in our case only one path is returned.
-        .
-                Parameters
-                ----------
-                subject : int
-                    The subject number to fetch data for.
-                path : None | str
-                    Location of where to look for the data storing location. If None, the environment
-                    variable or config parameter MNE_DATASETS_(dataset)_PATH is used. If it doesn’t exist,
-                    the “~/mne_data” directory is used. If the dataset is not found under the given path, the data
-                    will be automatically downloaded to the specified folder.
-                force_update : bool
-                    Force update of the dataset even if a local copy exists.
-                update_path : bool | None
-                    If True, set the MNE_DATASETS_(dataset)_PATH in mne-python config to the given path.
-                    If None, the user is prompted.
-                verbose : bool, str, int, or None
-                    If not None, override default verbose level (see mne.verbose()).
 
-                Returns
-                -------
-                list
-                    A list containing the path to the subject's data file. The list contains only one path.
+        Parameters
+        ----------
+        subject : int
+            The subject number to fetch data for.
+        path : None | str
+            Location of where to look for the data storing location. If None, the environment
+            variable or config parameter MNE_DATASETS_(dataset)_PATH is used. If it doesn’t exist,
+            the “~/mne_data” directory is used. If the dataset is not found under the given path, the data
+            will be automatically downloaded to the specified folder.
+        force_update : bool
+            Force update of the dataset even if a local copy exists.
+        update_path : bool | None
+            If True, set the MNE_DATASETS_(dataset)_PATH in mne-python config to the given path.
+            If None, the user is prompted.
+        verbose : bool, str, int, or None
+            If not None, override default verbose level (see mne.verbose()).
+
+        Returns
+        -------
+        list
+            A list containing the path to the subject's data file. The list contains only one path.
         """
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
@@ -252,7 +252,7 @@ class Liu2024(BaseDataset):
             (onset_samples, np.zeros_like(onset_samples), event_type)
         )
 
-        # Creating and setting annoations from the events
+        # Creating and setting annotations from the events
         annotations = mne.annotations_from_events(
             events, sfreq=raw.info["sfreq"], event_desc=event_type
         )
