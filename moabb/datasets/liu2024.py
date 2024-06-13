@@ -91,7 +91,7 @@ class Liu2024(BaseDataset):
 
     def data_infos(self):
         """Returns the data paths of the electrodes and events informations
-        
+
         This function downloads the necessary data files for channels, electrodes,
         and events from their respective URLs and returns their local file paths.
 
@@ -111,28 +111,28 @@ class Liu2024(BaseDataset):
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         """Return the data paths of a single subject, in our case only one path is returned.
-.
-        Parameters
-        ----------
-        subject : int
-            The subject number to fetch data for.
-        path : None | str
-            Location of where to look for the data storing location. If None, the environment 
-            variable or config parameter MNE_DATASETS_(dataset)_PATH is used. If it doesn’t exist,
-            the “~/mne_data” directory is used. If the dataset is not found under the given path, the data
-            will be automatically downloaded to the specified folder.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
-        update_path : bool | None Deprecated
-            If True, set the MNE_DATASETS_(dataset)_PATH in mne-python config to the given path. 
-            If None, the user is prompted.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level (see mne.verbose()).
-        
-        Returns
-        -------
-        list
-            A list containing the path to the subject's data file. The list contains only one path.
+        .
+                Parameters
+                ----------
+                subject : int
+                    The subject number to fetch data for.
+                path : None | str
+                    Location of where to look for the data storing location. If None, the environment
+                    variable or config parameter MNE_DATASETS_(dataset)_PATH is used. If it doesn’t exist,
+                    the “~/mne_data” directory is used. If the dataset is not found under the given path, the data
+                    will be automatically downloaded to the specified folder.
+                force_update : bool
+                    Force update of the dataset even if a local copy exists.
+                update_path : bool | None Deprecated
+                    If True, set the MNE_DATASETS_(dataset)_PATH in mne-python config to the given path.
+                    If None, the user is prompted.
+                verbose : bool, str, int, or None
+                    If not None, override default verbose level (see mne.verbose()).
+
+                Returns
+                -------
+                list
+                    A list containing the path to the subject's data file. The list contains only one path.
         """
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
@@ -160,17 +160,17 @@ class Liu2024(BaseDataset):
 
     def encoding(self, events_df: pd.DataFrame):
         """Encode the columns 'value' and 'trial_type' in the events file into a single event type.
-        
+
         Parameters
         ----------
         events_df : pd.DataFrame
             DataFrame containing the events information.
-        
+
         Returns
         -------
         np.ndarray
             Array of encoded event types.
-        
+
         Notes
         -----
         'trial_type' can take values  { 1 : Left hand, 2 : Right hand }, but for convenience we use 0 and 1.
@@ -185,12 +185,12 @@ class Liu2024(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
-                
+
         Parameters
         ----------
         subject : int
             The subject number to fetch data for.
-        
+
         Returns
         -------
         dict
