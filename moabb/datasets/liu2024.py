@@ -260,5 +260,5 @@ class Liu2024(BaseDataset):
 
         # There is only one session
         sessions = {"0": {"run_1": raw}}
-        
+
         return sessions
