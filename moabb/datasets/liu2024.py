@@ -220,9 +220,16 @@ class Liu2024(BaseDataset):
         # Renaming the .tsv file to make sure it's recognized as .tsv
         # Check if the file already has the ".tsv" extension
         if not path_electrodes.endswith(".tsv"):
-            # Rename the file
-            os.rename(path_electrodes, path_electrodes + ".tsv")
-            path_electrodes = path_electrodes + ".tsv"
+            # Create the new path
+            new_path_electrodes = path_electrodes + ".tsv"
+            # Check if the target filename already exists
+            if not os.path.exists(new_path_electrodes):
+                # Perform the rename operation only if the target file doesn't exist
+                os.rename(path_electrodes, new_path_electrodes)
+                path_electrodes = new_path_electrodes
+            else:
+                # If the file already exists, simply keep the original path
+                path_electrodes = new_path_electrodes
 
         # Read and set the montage
         montage = read_custom_montage(path_electrodes)
