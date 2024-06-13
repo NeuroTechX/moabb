@@ -31,7 +31,7 @@ class Liu2024(BaseDataset):
         ============  =======  =======  ==========  =================  ============  ===============  ===========
         Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
         ============  =======  =======  ==========  =================  ============  ===============  ===========
-        Liu2024            50       29           2                40   4s            500Hz                      1
+        Liu2024        50       29         2                40              4s           500Hz           1
         ============  =======  =======  ==========  =================  ============  ===============  ===========
 
 
@@ -90,7 +90,16 @@ class Liu2024(BaseDataset):
         )
 
     def data_infos(self):
-        """Returns the data paths of the electrodes and events informations"""
+        """Returns the data paths of the electrodes and events informations
+        
+        This function downloads the necessary data files for channels, electrodes,
+        and events from their respective URLs and returns their local file paths.
+
+        Returns
+        -------
+        tuple
+            A tuple containing the local file paths to the channels, electrodes, and events information files.
+        """
 
         path_channels = dl.data_dl(url_channels, self.code)
         path_electrodes = dl.data_dl(url_electrodes, self.code)
@@ -101,7 +110,30 @@ class Liu2024(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the data paths of a single subject."""
+        """Return the data paths of a single subject, in our case only one path is returned.
+.
+        Parameters
+        ----------
+        subject : int
+            The subject number to fetch data for.
+        path : None | str
+            Location of where to look for the data storing location. If None, the environment 
+            variable or config parameter MNE_DATASETS_(dataset)_PATH is used. If it doesn’t exist,
+            the “~/mne_data” directory is used. If the dataset is not found under the given path, the data
+            will be automatically downloaded to the specified folder.
+        force_update : bool
+            Force update of the dataset even if a local copy exists.
+        update_path : bool | None Deprecated
+            If True, set the MNE_DATASETS_(dataset)_PATH in mne-python config to the given path. 
+            If None, the user is prompted.
+        verbose : bool, str, int, or None
+            If not None, override default verbose level (see mne.verbose()).
+        
+        Returns
+        -------
+        list
+            A list containing the path to the subject's data file. The list contains only one path.
+        """
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
 
@@ -127,20 +159,43 @@ class Liu2024(BaseDataset):
         return subject_paths
 
     def encoding(self, events_df: pd.DataFrame):
-        """Encoding the columns 'value' and 'trial_type' in the events file into a single event type
-        'trial_type' can be 1 ( left hand ) or 2 ( right hand), but for convenience we use 0 and 1
-        'value' can be 1 ( instruction ), 2 ( MI ) or 3 ( break )
-        For example if trial_type = 1 and value = 2, the event type will be 12
-        if trial_type = 0 and value = 2, the event type will be 2
+        """Encode the columns 'value' and 'trial_type' in the events file into a single event type.
+        
+        Parameters
+        ----------
+        events_df : pd.DataFrame
+            DataFrame containing the events information.
+        
+        Returns
+        -------
+        np.ndarray
+            Array of encoded event types.
+        
+        Notes
+        -----
+        'trial_type' can take values  { 1 : Left hand, 2 : Right hand }, but for convenience we use 0 and 1.
+        'value' can take values { 1 : instructions, 2 : MI, 3 : break}.
+        For example, if trial_type = 1 and value = 2, the event type will be 12.
+        If trial_type = 0 and value = 2, the event type will be 2.
         """
-        # docstring for parameters
+
         event_type = events_df["value"].values + (events_df["trial_type"].values - 1) * 10
 
         return event_type
 
     def _get_single_subject_data(self, subject):
-        """Return the data of a single subject."""
-        # docstrings
+        """Return the data of a single subject.
+                
+        Parameters
+        ----------
+        subject : int
+            The subject number to fetch data for.
+        
+        Returns
+        -------
+        dict
+            A dictionary containing the raw data for the subject.
+        """
 
         file_path_list = self.data_path(subject)
         path_channels, path_electrodes, path_events = self.data_infos()
@@ -163,9 +218,11 @@ class Liu2024(BaseDataset):
         raw.info.set_channel_types(channel_dict)
 
         # Renaming the .tsv file to make sure it's recognized as .tsv
-        # cdt for the rename
-        os.rename(path_electrodes, path_electrodes + ".tsv")
-        path_electrodes = path_electrodes + ".tsv"
+        # Check if the file already has the ".tsv" extension
+        if not path_electrodes.endswith(".tsv"):
+            # Rename the file
+            os.rename(path_electrodes, path_electrodes + ".tsv")
+            path_electrodes = path_electrodes + ".tsv"
 
         # Read and set the montage
         montage = read_custom_montage(path_electrodes)
