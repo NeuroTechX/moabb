@@ -1,8 +1,11 @@
+"""Liu2024 Motor imagery dataset."""
+
 import os
 import shutil
 import warnings
 import zipfile as z
 from pathlib import Path
+from typing import Any, Dict, Tuple
 
 import mne
 import numpy as np
@@ -17,9 +20,8 @@ from moabb.datasets.base import BaseDataset
 LIU2024_URL = "https://figshare.com/ndownloader/files/38516654"
 
 # Links to the channels, electrodes and events information files
-url_channels = "https://figshare.com/ndownloader/files/38516069"
-url_electrodes = "https://figshare.com/ndownloader/files/38516078"
-url_events = "https://figshare.com/ndownloader/files/38516084"
+LIU2024_ELECTRODES = "https://figshare.com/ndownloader/files/38516078"
+LIU2024_EVENTS = "https://figshare.com/ndownloader/files/38516084"
 
 
 class Liu2024(BaseDataset):
@@ -68,12 +70,12 @@ class Liu2024(BaseDataset):
     References
     ----------
 
-    .. [1] Liu, Haijie; Lv, Xiaodong (2022). EEG datasets of stroke patients. figshare. Dataset.
-           DOI: https://doi.org/10.6084/m9.figshare.21679035.v5
+    .. [1] Liu, Haijie; Lv, Xiaodong (2022). EEG datasets of stroke patients.
+        figshare. Dataset. DOI: https://doi.org/10.6084/m9.figshare.21679035.v5
 
-    .. [2] Liu, Haijie, Wei, P., Wang, H. et al. An EEG motor imagery dataset for brain computer interface in acute stroke
-           patients. Sci Data 11, 131 (2024).
-           DOI: https://doi.org/10.1038/s41597-023-02787-8
+    .. [2] Liu, Haijie, Wei, P., Wang, H. et al. An EEG motor imagery dataset
+       for brain computer interface in acute stroke patients. Sci Data 11, 131
+       (2024). DOI: https://doi.org/10.1038/s41597-023-02787-8
 
     Notes
     -----
@@ -96,21 +98,23 @@ class Liu2024(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-        """Return the data paths of a single subject, in our case only one path is returned.
+        """Return the data paths of a single subject.
 
         Parameters
         ----------
         subject : int
             The subject number to fetch data for.
         path : None | str
-            Location of where to look for the data storing location. If None, the environment
-            variable or config parameter MNE_DATASETS_(dataset)_PATH is used. If it doesn’t exist,
-            the “~/mne_data” directory is used. If the dataset is not found under the given path, the data
+            Location of where to look for the data storing location. If None,
+            the environment variable or config parameter MNE_(dataset) is used.
+            If it doesn’t exist, the “~/mne_data” directory is used. If the
+            dataset is not found under the given path, the data
             will be automatically downloaded to the specified folder.
         force_update : bool
             Force update of the dataset even if a local copy exists.
         update_path : bool | None
-            If True, set the MNE_DATASETS_(dataset)_PATH in mne-python config to the given path.
+            If True, set the MNE_DATASETS_(dataset)_PATH in mne-python config
+            to the given path.
             If None, the user is prompted.
         verbose : bool, str, int, or None
             If not None, override default verbose level (see mne.verbose()).
@@ -118,7 +122,7 @@ class Liu2024(BaseDataset):
         Returns
         -------
         list
-            A list containing the path to the subject's data file. The list contains only one path.
+            A list containing the path to the subject's data file.
         """
         if subject not in self.subject_list:
             raise ValueError("Invalid subject number")
@@ -145,8 +149,8 @@ class Liu2024(BaseDataset):
         return subject_paths
 
     @staticmethod
-    def encoding(events_df: pd.DataFrame):
-        """Encode the columns 'value' and 'trial_type' in the events file into a single event type.
+    def encoding(events_df: pd.DataFrame) -> Tuple[np.array, Dict[int, str]]:
+        """Encode the columns 'value' and 'trial_type' into a single event type.
 
         Parameters
         ----------
@@ -209,7 +213,7 @@ class Liu2024(BaseDataset):
         """
 
         file_path_list = self.data_path(subject)[0]
-        path_channels, path_electrodes, path_events = self.data_infos()
+        path_electrodes, path_events = self.data_infos()
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -225,14 +229,9 @@ class Liu2024(BaseDataset):
         events_df = pd.read_csv(path_events, sep="\t")
 
         # Encode the events
-        event_category, mapping = self.encoding(events_df)
+        event_category, mapping = self.encoding(events_df=events_df)
 
-        _, idx_trigger = np.nonzero(raw.copy().pick("").get_data())
-        n_label_stim = len(event_category)
-        # Create the events array based on the stimulus channel
-        events = np.column_stack(
-            (idx_trigger[:n_label_stim], np.zeros_like(event_category), event_category)
-        )
+        events = self.create_event_array(raw=raw, event_category=event_category)
 
         # Creating and setting annotations from the events
         annotations = mne.annotations_from_events(
@@ -266,16 +265,14 @@ class Liu2024(BaseDataset):
             and events information files.
         """
 
-        path_channels = dl.data_dl(url_channels, self.code)
+        path_electrodes = dl.data_dl(LIU2024_ELECTRODES, self.code)
 
-        path_electrodes = dl.data_dl(url_electrodes, self.code)
+        path_events = dl.data_dl(LIU2024_EVENTS, self.code)
 
-        path_events = dl.data_dl(url_events, self.code)
-
-        return path_channels, path_electrodes, path_events
+        return path_electrodes, path_events
 
     @staticmethod
-    def _normalize_extension(file_name):
+    def _normalize_extension(file_name: str) -> str:
         # Renaming the .tsv file to make sure it's recognized as .tsv
         # Check if the file already has the ".tsv" extension
 
@@ -287,3 +284,28 @@ class Liu2024(BaseDataset):
             shutil.copy(file_name, file_electrodes_tsv)
 
         return file_electrodes_tsv
+
+    @staticmethod
+    def create_event_array(raw: Any, event_category: np.ndarray) -> np.ndarray:
+        """
+        This method creates an event array based on the stimulus channel.
+
+        Parameters
+        ----------
+        raw : mne.io.Raw
+            The raw data.
+        event_category : np.ndarray
+            The event categories.
+
+        Returns
+        -------
+        events : np.ndarray
+            The created events array.
+        """
+        _, idx_trigger = np.nonzero(raw.copy().pick("").get_data())
+        n_label_stim = len(event_category)
+        # Create the events array based on the stimulus channel
+        events = np.column_stack(
+            (idx_trigger[:n_label_stim], np.zeros_like(event_category), event_category)
+        )
+        return events
