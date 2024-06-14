@@ -1,5 +1,6 @@
 import os
 import shutil
+import warnings
 import zipfile as z
 from pathlib import Path
 
@@ -172,19 +173,19 @@ class Liu2024(BaseDataset):
         """
         # Define the mapping dictionary
         encoding_mapping = {
-            (1, 1): 1,  # Right hand, instructions
-            (1, 2): 2,  # Right hand, MI
+            (2, 2): 0,  # Left hand, MI
+            (1, 2): 1,  # Right hand, MI
+            (1, 1): 2,  # Right hand, instructions
             (1, 3): 3,  # Right hand, break
-            (2, 1): 1,  # Left hand, instructions
-            (2, 2): 4,  # Left hand, MI
+            (2, 1): 2,  # Left hand, instructions
             (2, 3): 3,  # Left hand, break
         }
 
         mapping = {
-            1: "instr",
+            0: "left_hand",
+            1: "right_hand",
+            2: "instr",
             3: "break",
-            2: "left_hand",
-            4: "right_hand",
         }
         # Apply the mapping to the DataFrame
         event_category = events_df.apply(
@@ -210,26 +211,16 @@ class Liu2024(BaseDataset):
         file_path_list = self.data_path(subject)[0]
         path_channels, path_electrodes, path_events = self.data_infos()
 
-        # Read the subject's raw data
-        raw = mne.io.read_raw_edf(file_path_list, preload=False)
-        # Read channels information
-        channels_info = pd.read_csv(path_channels, sep="\t")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            # Read the subject's raw data
+            raw = mne.io.read_raw_edf(
+                file_path_list, verbose=False, infer_types=True, stim_channel=""
+            )
         # Normalize and Read the montage
         path_electrodes = self._normalize_extension(path_electrodes)
         # Read and set the montage
         montage = read_custom_montage(path_electrodes)
-
-        # Selecting the EEG channels and the STIM channel excluding the CPz
-        # reference channel and the EOG channels
-        selected_channels = raw.info["ch_names"][:-3] + [""]
-        selected_channels.remove("CPz")
-        raw = raw.pick(selected_channels)
-
-        # Updating the types of the channels after extracting them from the
-        # channels file
-        channel_types = channels_info["type"].str.lower().tolist()[:-2] + ["stim"]
-        channel_dict = dict(zip(selected_channels, channel_types))
-        raw.info.set_channel_types(channel_dict)
 
         events_df = pd.read_csv(path_events, sep="\t")
 
@@ -237,9 +228,10 @@ class Liu2024(BaseDataset):
         event_category, mapping = self.encoding(events_df)
 
         _, idx_trigger = np.nonzero(raw.copy().pick("").get_data())
+        n_label_stim = len(event_category)
         # Create the events array based on the stimulus channel
         events = np.column_stack(
-            (idx_trigger, np.repeat(1000, len(idx_trigger)), event_category)
+            (idx_trigger[:n_label_stim], np.zeros_like(event_category), event_category)
         )
 
         # Creating and setting annotations from the events
@@ -248,12 +240,14 @@ class Liu2024(BaseDataset):
         )
 
         raw = raw.set_annotations(annotations)
-        # Removing the stimulus channels
-        raw = raw.pick_types(eeg=True, eog=True)
-        # Setting the montage
-        raw = raw.set_montage(montage, on_missing="ignore")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            # Removing the stimulus channels
+            raw = raw.pick(["eeg", "eog"])
+            # Setting the montage
+            raw = raw.set_montage(montage, on_missing="ignore", verbose=False)
         # Loading dataset
-        raw = raw.load_data()
+        raw = raw.load_data(verbose=False)
         # There is only one session
         sessions = {"0": {"0": raw}}
 
@@ -291,6 +285,5 @@ class Liu2024(BaseDataset):
             # Perform the rename operation only if the target file
             # doesn't exist
             shutil.copy(file_name, file_electrodes_tsv)
-            file_name = file_electrodes_tsv
 
-        return file_name
+        return file_electrodes_tsv
