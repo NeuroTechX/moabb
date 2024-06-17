@@ -1,60 +1,53 @@
-from functools import partialmethod
-
 import os
 import warnings
+from functools import partialmethod
+
 import mne
 import numpy as np
-from mne import create_info
-from mne.channels import make_standard_montage
-from mne.io import RawArray
+from mne_bids import BIDSPath, read_raw_bids
 from mne_bids.read import _drop, _from_tsv
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
-from mne_bids import BIDSPath, read_raw_bids
-
-from bids import BIDSLayout
 
 ERPCore_URL = ""
 
 N170_URL = "https://files.osf.io/v1/resources/pfde9/providers/osfstorage/60060f8ae80d370812a5b15d/?zip="
 MMN_URL = "https://files.osf.io/v1/resources/5q4xs/providers/osfstorage/6007896286541a091d14b102/?zip="
 
+
 class ERPCore2021(BaseDataset):
     """Base dataset class for Lee2019."""
-    
+
     TASK_URLS = {
         "N170": N170_URL,
         "MMN": MMN_URL,
     }
 
-    def __init__(
-        self,
-        task
-    ):
+    def __init__(self, task):
 
         if task == "N170":
             interval = (-0.2, 0.8)
             events = dict(object=1, texture=2)
         elif task == "MMN":
             interval = (-0.2, 0.8)
-            events = dict(standard_tone =1, deviant_tone=2)
+            events = dict(standard_tone=1, deviant_tone=2)
         elif task == "N2pc":
             interval = (-0.2, 0.8)
-            events = dict( top = 1, bottom= 2)
+            events = dict(top=1, bottom=2)
         elif task == "N400":
             interval = (-0.2, 0.8)
-            events = dict( related = 1, unrelated= 2)
+            events = dict(related=1, unrelated=2)
         elif task == "P3":
             interval = (-0.2, 0.8)
-            events = dict( match = 1, no_match= 2)
+            events = dict(match=1, no_match=2)
         elif task == "ERN":
             interval = (-0.8, 0.2)
-            events = dict( right = 1, left= 2)
+            events = dict(right=1, left=2)
         elif task == "LRP":
             interval = (-0.6, 0.4)
-            events = dict( right = 1, left= 2)     
+            events = dict(right=1, left=2)
         else:
             raise ValueError('unknown task "{}"'.format(task))
         self.task = task
@@ -65,7 +58,7 @@ class ERPCore2021(BaseDataset):
             events=events,
             code="ERPCore-" + task,
             interval=interval,
-            paradigm= "p300",
+            paradigm="p300",
             doi=" ",
         )
         self.task = task
@@ -97,40 +90,38 @@ class ERPCore2021(BaseDataset):
             if self.task != "MMN":
                 raw.annotations.onset = raw.annotations.onset + 0.026
 
-
         raw = read_annotations_core(file_path, raw)
         # There is only one session
         sessions = {"0": {"0": raw}}
 
         return sessions
 
-    # returns bids path is it okay ? 
+    # returns bids path is it okay ?
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
-        
+
         url = self.TASK_URLS.get(self.task)
         bids_root = dl.data_dl(url, self.code, path, force_update, verbose)
 
         bids_path = BIDSPath(
             subject=str(subject),
             task=self.task,
-            suffix='eeg',
-            session='1',
-            datatype='eeg',
+            suffix="eeg",
+            session="1",
+            datatype="eeg",
             root=bids_root,
-        ) 
-         
-        #layout = BIDSLayout(bids_root)
-        #sub = f"{subject:03d}"
-        #subject_paths = [eeg_file.path for eeg_file in layout.get(subject=f"{subject:03d}", extension='set')]
+        )
+
+        # layout = BIDSLayout(bids_root)
+        # sub = f"{subject:03d}"
+        # subject_paths = [eeg_file.path for eeg_file in layout.get(subject=f"{subject:03d}", extension='set')]
 
         subject_paths = [bids_path]
 
         return subject_paths
-
 
 
 def read_annotations_core(bids_path, raw):
@@ -139,6 +130,7 @@ def read_annotations_core(bids_path, raw):
         bids_path.update(suffix="events", extension=".tsv").basename,
     )
     return _handle_events_reading_core(tsv, raw)
+
 
 def _handle_events_reading_core(events_fname, raw):
     """Read associated events.tsv and populate raw.
@@ -194,47 +186,38 @@ def _handle_events_reading_core(events_fname, raw):
 
     return raw
 
-    
 
 class ERPCore2021_N170(ERPCore2021):
-    """
-
-    """
+    """ """
 
     __init__ = partialmethod(ERPCore2021.__init__, "N170")
 
 
 class ERPCore2021_MMN(ERPCore2021):
-    """
-    """
+    """ """
 
     __init__ = partialmethod(ERPCore2021.__init__, "MMN")
 
 
 class ERPCore2021_N2pc(ERPCore2021):
-    """
-
-    """
+    """ """
 
     __init__ = partialmethod(ERPCore2021.__init__, "N2pc")
 
-class ERPCore2021_P3(ERPCore2021):
-    """
 
-    """
+class ERPCore2021_P3(ERPCore2021):
+    """ """
 
     __init__ = partialmethod(ERPCore2021.__init__, "P3")
 
-class ERPCore2021_ERN(ERPCore2021):
-    """
 
-    """
+class ERPCore2021_ERN(ERPCore2021):
+    """ """
 
     __init__ = partialmethod(ERPCore2021.__init__, "ERN")
 
-class ERPCore2021_LRP(ERPCore2021):
-    """
 
-    """
+class ERPCore2021_LRP(ERPCore2021):
+    """ """
 
     __init__ = partialmethod(ERPCore2021.__init__, "LRP")
