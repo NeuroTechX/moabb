@@ -1,16 +1,16 @@
 import os
-from pathlib import Path
-import warnings
-from functools import partialmethod
-import urllib.request
-import zipfile
 import shutil
+import urllib.request
+import warnings
+import zipfile
+from functools import partialmethod
+from pathlib import Path
 
 import mne
 import numpy as np
+import pandas as pd
 from mne_bids import BIDSPath, read_raw_bids
 from mne_bids.read import _drop, _from_tsv
-import pandas as pd
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
@@ -147,7 +147,7 @@ class ERPCore2021(BaseDataset):
         subject_paths = [bids_path]
 
         return subject_paths
-    
+
     @staticmethod
     def download_and_extract(url, sign, path=None, force_update=False, verbose=None):
         """Download and extract a zip file dataset from the given url.
@@ -178,7 +178,7 @@ class ERPCore2021(BaseDataset):
             path = Path(os.getenv(f'MNE_DATASETS_{sign.upper()}_PATH', Path.home() / 'mne_data'))
         else:
             path = Path(path)
-            
+
         # Construct the destination paths
         key_dest = f"MNE-{sign.lower()}-data"
         destination = path / key_dest / Path(url).name
@@ -203,7 +203,7 @@ class ERPCore2021(BaseDataset):
     def encoding_to_events(self):
 
         # Cars: 0, Faces: 1
-        custom_mapping = dict(("stimulus:" + str(i), 1) for i in range(0, 41))     # 0 -> 40 ? bcz we start from 0 
+        custom_mapping = dict(("stimulus:" + str(i), 1) for i in range(0, 41))     # 0 -> 40 ? bcz we start from 0
         custom_mapping.update(dict(("stimulus:" + str(i), 0) for i in range(41, 81)))
         custom_mapping.update({"response:201": 201, "response:202": 202})
 
@@ -213,7 +213,7 @@ class ERPCore2021(BaseDataset):
         custom_mapping.update({"response:201": 201, "response:202": 202})
 
 
-        
+
 
 def read_annotations_core(bids_path, raw):
     events_path = os.path.join(
@@ -227,7 +227,7 @@ def _handle_events_reading_core(events_path, raw):
     Handle onset, duration, and description of each event.
     """
     events_dict = _from_tsv(events_path)
-    
+
     # Get the descriptions of the events
     descriptions = np.asarray(
         [
@@ -248,9 +248,9 @@ def _handle_events_reading_core(events_path, raw):
         annotations = mne.annotations_from_events(
             events, sfreq=raw.info["sfreq"], event_desc=mapping
         )
-    
 
-    # 
+
+    #
     ons = [on for on in events_dict["onset"]]
     dus = [du for du in events_dict["duration"]]
     onsets = np.asarray(ons, dtype=float)
