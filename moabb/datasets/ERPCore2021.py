@@ -5,6 +5,8 @@ import warnings
 import zipfile
 from functools import partialmethod
 from pathlib import Path
+from typing import Any, Dict, Tuple
+from abc import abstractmethod
 
 import mne
 import numpy as np
@@ -24,6 +26,8 @@ N_400_URL = "https://files.osf.io/v1/resources/29xpq/providers/osfstorage/600785
 ERN_URL = "https://files.osf.io/v1/resources/q6gwp/providers/osfstorage/600df65e75226b017d517f6d/?zip="
 LRP_URL = "https://files.osf.io/v1/resources/28e6c/providers/osfstorage/600dffbf327cbe019d7b6a0c/?zip="
 
+
+
 class ERPCore2021(BaseDataset):
     """Base dataset class for Lee2019."""
 
@@ -41,14 +45,15 @@ class ERPCore2021(BaseDataset):
 
         if task == "N170":
             interval = (-0.2, 0.8)
-            #object=0, texture=1
-            events = dict(("stimulus:" + str(i), 1) for i in range(1, 81))
-            events.update(dict(("stimulus:" + str(i), 0) for i in range(101, 181)))
-            events.update({"response:201": 201, "response:202": 202})
+            events = {"Stimulus - car - normal": 0, 
+                      "Stimulus - car - scrambled": 1, 
+                      "Stimulus - face - normal": 2, 
+                      "Stimulus - face - scrambled": 3, 
+                      "Response - correct": 4, 
+                      "Response - error": 5}
         elif task == "MMN":
             interval = (-0.2, 0.8)
-            # deviant: 1, standard: 0
-            events = {"stimulus:70": 1, "stimulus:80": 0}
+            events = {"Stimulus - deviant:70": 1, "Stimulus - standard:80": 0}
         elif task == "N2pc":
             interval = (-0.2, 0.8)
             events = dict(top=1, bottom=2)
@@ -86,7 +91,6 @@ class ERPCore2021(BaseDataset):
             paradigm="p300",
             doi=" ",
         )
-        self.task = task
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
@@ -103,19 +107,19 @@ class ERPCore2021(BaseDataset):
         """
 
         file_path = self.data_path(subject)[0]
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            # Read the subject's raw data
-            raw = read_raw_bids(bids_path=file_path, verbose=False)
-            raw = raw.set_montage("standard_1020", match_case=False)
+        # with warnings.catch_warnings():
+        #    warnings.simplefilter("ignore")
+        # Read the subject's raw data
+        raw = read_raw_bids(bids_path=file_path, verbose=False)
+        raw = raw.set_montage("standard_1020", match_case=False)
 
-            # Shift the stimulus event codes forward in time
-            # to account for the LCD monitor delay
-            # (26 ms on our monitor, as measured with a photosensor).
-            if self.task != "MMN":
-                raw.annotations.onset = raw.annotations.onset + 0.026
+        # Shift the stimulus event codes forward in time
+        # to account for the LCD monitor delay
+        # (26 ms on our monitor, as measured with a photosensor).
+        if self.task != "MMN":
+            raw.annotations.onset = raw.annotations.onset + 0.026
 
-        raw = read_annotations_core(file_path, raw)
+        raw = self.read_annotations(file_path, raw)
         # There is only one session
         sessions = {"0": {"0": raw}}
 
@@ -129,20 +133,15 @@ class ERPCore2021(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         url = self.TASK_URLS.get(self.task)
-        bids_root = download_and_extract(url, self.code)
+        bids_root = self.download_and_extract(self.URL, self.task.lower()) #self.code
 
         bids_path = BIDSPath(
-            subject=str(subject),
+            subject=f'{subject:03d}',
             task=self.task,
             suffix="eeg",
-            session="1",
             datatype="eeg",
             root=bids_root,
         )
-
-        # layout = BIDSLayout(bids_root)
-        # sub = f"{subject:03d}"
-        # subject_paths = [eeg_file.path for eeg_file in layout.get(subject=f"{subject:03d}", extension='set')]
 
         subject_paths = [bids_path]
 
@@ -181,9 +180,13 @@ class ERPCore2021(BaseDataset):
 
         # Construct the destination paths
         key_dest = f"MNE-{sign.lower()}-data"
-        destination = path / key_dest / Path(url).name
+        destination = path / key_dest / f"{sign}-raw-data-BIDS"
         local_zip_path = str(destination)
         extract_path = path / key_dest / 'extracted'
+
+        # Check if the zip file and extracted directory already exist
+        if destination.is_file() and extract_path.exists() and not force_update:
+            return str(extract_path)
 
         # Download the file using urllib
         if not destination.is_file() or force_update:
@@ -200,132 +203,69 @@ class ERPCore2021(BaseDataset):
 
         return str(extract_path)
 
-    def encoding_to_events(self):
 
-        # Cars: 0, Faces: 1
-        custom_mapping = dict(("stimulus:" + str(i), 1) for i in range(0, 41))     # 0 -> 40 ? bcz we start from 0
-        custom_mapping.update(dict(("stimulus:" + str(i), 0) for i in range(41, 81)))
-        custom_mapping.update({"response:201": 201, "response:202": 202})
+    def read_annotations(self, bids_path, raw):
+        events_path = os.path.join(
+            bids_path.directory,
+            bids_path.update(suffix="events", extension=".tsv").basename,
+        )
+        return self._handle_events_reading(events_path, raw)
 
-        #object=0, texture=1
-        custom_mapping = dict(("stimulus:" + str(i), 1) for i in range(1, 81))
-        custom_mapping.update(dict(("stimulus:" + str(i), 0) for i in range(101, 181)))
-        custom_mapping.update({"response:201": 201, "response:202": 202})
-
-
-
-
-def read_annotations_core(bids_path, raw):
-    events_path = os.path.join(
-        bids_path.directory,
-        bids_path.update(suffix="events", extension=".tsv").basename,
-    )
-    return _handle_events_reading_core(events_path, raw)
-
-def _handle_events_reading_core(events_path, raw):
-    """Read associated events.tsv and populate raw.
-    Handle onset, duration, and description of each event.
-    """
-    events_dict = _from_tsv(events_path)
-
-    # Get the descriptions of the events
-    descriptions = np.asarray(
-        [
-            a + ":" + b
-            for a, b in zip(events_dict["trial_type"], events_dict["value"])
-        ],
-        dtype=str,
-    )
+    def _handle_events_reading(self, events_path, raw):
+        """Read associated events.tsv and populate raw.
+        Handle onset, duration, and description of each event.
+        """
 
         events_df = pd.read_csv(events_path, sep="\t")
 
         # Encode the events
         event_category, mapping = self.encoding(events_df=events_df)
 
-        events = self.create_event_array(raw=raw, event_category=event_category)
+        # Create the event array using the sample column and the encoded event categories
+        events = np.column_stack((events_df['sample'].values, np.zeros(len(event_category)), event_category))
 
         # Creating and setting annotations from the events
         annotations = mne.annotations_from_events(
             events, sfreq=raw.info["sfreq"], event_desc=mapping
         )
+        raw.set_annotations(annotations)
 
+        return raw
 
-    #
-    ons = [on for on in events_dict["onset"]]
-    dus = [du for du in events_dict["duration"]]
-    onsets = np.asarray(ons, dtype=float)
-    durations = np.asarray(dus, dtype=float)
-
-    # Add Events to raw as annotations
-    annot_from_events = mne.Annotations(
-        onset=onsets, duration=durations, description=descriptions, orig_time=None
-    )
-    raw.set_annotations(annot_from_events)
-
-    return raw
-
-
-def _handle_events_reading_core(events_fname, raw):
-    """Read associated events.tsv and populate raw.
-    Handle onset, duration, and description of each event.
-    """
-    events_dict = _from_tsv(events_fname)
-
-    if ("value" in events_dict) and ("trial_type" in events_dict):
-        events_dict = _drop(events_dict, "n/a", "trial_type")
-        events_dict = _drop(events_dict, "n/a", "value")
-
-        descriptions = np.asarray(
-            [
-                a + ":" + b
-                for a, b in zip(events_dict["trial_type"], events_dict["value"])
-            ],
-            dtype=str,
-        )
-
-        # Get the descriptions of the events
-    elif "trial_type" in events_dict:
-
-        # Drop events unrelated to a trial type
-        events_dict = _drop(events_dict, "n/a", "trial_type")
-        descriptions = np.asarray(events_dict["trial_type"], dtype=str)
-
-    # If we don't have a proper description of the events, perhaps we have
-    # at least an event value?
-    elif "value" in events_dict:
-        # Drop events unrelated to value
-        events_dict = _drop(events_dict, "n/a", "value")
-        descriptions = np.asarray(events_dict["value"], dtype=str)
-    # Worst case, we go with 'n/a' for all events
-    else:
-        descriptions = "n/a"
-
-    # Deal with "n/a" strings before converting to float
-    ons = [np.nan if on == "n/a" else on for on in events_dict["onset"]]
-    dus = [0 if du == "n/a" else du for du in events_dict["duration"]]
-    onsets = np.asarray(ons, dtype=float)
-    durations = np.asarray(dus, dtype=float)
-    # Keep only events where onset is known
-    good_events_idx = ~np.isnan(onsets)
-    onsets = onsets[good_events_idx]
-    durations = durations[good_events_idx]
-    descriptions = descriptions[good_events_idx]
-    del good_events_idx
-    # Add Events to raw as annotations
-    annot_from_events = mne.Annotations(
-        onset=onsets, duration=durations, description=descriptions, orig_time=None
-    )
-    raw.set_annotations(annot_from_events)
-
-    return raw
-
+    @abstractmethod
+    def encoding(self, events_df):
+        pass
 
 
 class ERPCore2021_N170(ERPCore2021):
     """ """
 
     __init__ = partialmethod(ERPCore2021.__init__, "N170")
+    
+    @staticmethod
+    def encode_event(row):
+        value = row['value']
+        if 1 <= value <= 80:
+            return f"00{value:02d}"
+        elif 101 <= value <= 180:
+            return f"01{value-100:02d}"
+        elif value == 201:
+            return "11"
+        elif value == 202:
+            return "10"
+        else:
+            return "Unknown"
 
+    def encoding(self, events_df):
+        # Apply the encoding function to each row
+        encoded_column = events_df.apply(self.encode_event, axis=1)
+        
+        # Create the mapping dictionary
+        mapping = {f"00{val:02d}": f"Stimulus - {desc}" for val, desc in zip(range(1, 81), ['faces']*40 + ['cars']*40)}
+        mapping.update({f"01{val:02d}": f"Stimulus - scrambled {desc}" for val, desc in zip(range(1, 81), ['faces']*40 + ['cars']*40)})
+        mapping.update({"11": "Response - correct", "10": "Response - error"})
+        
+        return encoded_column.values, mapping
 
 class ERPCore2021_MMN(ERPCore2021):
     """ """
