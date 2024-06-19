@@ -130,7 +130,7 @@ class ERPCore2021(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         url = self.TASK_URLS.get(self.task)
-        bids_root = self.download_and_extract(self.URL, self.task.lower())  # self.code
+        bids_root = self.download_and_extract(url, self.task.lower())  # self.code
 
         bids_path = BIDSPath(
             subject=f"{subject:03d}",
@@ -233,6 +233,10 @@ class ERPCore2021(BaseDataset):
         raw.set_annotations(annotations)
 
         return raw
+    
+    @abstractmethod
+    def encode_event(row):
+        pass
 
     @abstractmethod
     def encoding(self, events_df):
@@ -283,6 +287,31 @@ class ERPCore2021_MMN(ERPCore2021):
 
     __init__ = partialmethod(ERPCore2021.__init__, "MMN")
 
+    @staticmethod
+    def encode_event(row):
+        value = row['value']
+        #Standard stimulus
+        if value in {80, 180}:
+            return "01"
+        #Deviant stimulus
+        elif value == 70:
+            return "02"
+        else:
+            return "Unknown"
+
+    def encoding(self, events_df):
+        # Remove first and last rows, which correspond to trial_type STATUS
+        events_df.drop([0, len(events_df)-1], inplace=True)
+        # Apply the encoding function to each row
+        encoded_column = events_df.apply(self.encode_event, axis=1)
+
+        # Create the mapping dictionary
+        mapping = {
+            "01": "Stimulus - standard",
+            "02": "Stimulus - deviant",
+        }
+        
+        return encoded_column.values, mapping
 
 class ERPCore2021_N2pc(ERPCore2021):
     """ """
