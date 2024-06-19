@@ -1,20 +1,16 @@
 import os
 import shutil
 import urllib.request
-import warnings
 import zipfile
+from abc import abstractmethod
 from functools import partialmethod
 from pathlib import Path
-from typing import Any, Dict, Tuple
-from abc import abstractmethod
 
 import mne
 import numpy as np
 import pandas as pd
 from mne_bids import BIDSPath, read_raw_bids
-from mne_bids.read import _drop, _from_tsv
 
-from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
 
@@ -25,7 +21,6 @@ P3_URL = "https://files.osf.io/v1/resources/etdkz/providers/osfstorage/60077b04b
 N_400_URL = "https://files.osf.io/v1/resources/29xpq/providers/osfstorage/6007857286541a092614c5d3/?zip="
 ERN_URL = "https://files.osf.io/v1/resources/q6gwp/providers/osfstorage/600df65e75226b017d517f6d/?zip="
 LRP_URL = "https://files.osf.io/v1/resources/28e6c/providers/osfstorage/600dffbf327cbe019d7b6a0c/?zip="
-
 
 
 class ERPCore2021(BaseDataset):
@@ -45,12 +40,14 @@ class ERPCore2021(BaseDataset):
 
         if task == "N170":
             interval = (-0.2, 0.8)
-            events = {"Stimulus - car - normal": 0, 
-                      "Stimulus - car - scrambled": 1, 
-                      "Stimulus - face - normal": 2, 
-                      "Stimulus - face - scrambled": 3, 
-                      "Response - correct": 4, 
-                      "Response - error": 5}
+            events = {
+                "Stimulus - car - normal": 0,
+                "Stimulus - car - scrambled": 1,
+                "Stimulus - face - normal": 2,
+                "Stimulus - face - scrambled": 3,
+                "Response - correct": 4,
+                "Response - error": 5,
+            }
         elif task == "MMN":
             interval = (-0.2, 0.8)
             events = {"Stimulus - deviant:70": 1, "Stimulus - standard:80": 0}
@@ -69,15 +66,15 @@ class ERPCore2021(BaseDataset):
         elif task == "LRP":
             interval = (-0.6, 0.4)
             events = {
-                    "response:111": 0,
-                    "response:112": 0,
-                    "response:121": 0,
-                    "response:122": 0,
-                    "response:211": 1,
-                    "response:212": 1,
-                    "response:221": 1,
-                    "response:222": 1,
-                    }
+                "response:111": 0,
+                "response:112": 0,
+                "response:121": 0,
+                "response:122": 0,
+                "response:211": 1,
+                "response:212": 1,
+                "response:221": 1,
+                "response:222": 1,
+            }
         else:
             raise ValueError('unknown task "{}"'.format(task))
         self.task = task
@@ -133,10 +130,10 @@ class ERPCore2021(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         url = self.TASK_URLS.get(self.task)
-        bids_root = self.download_and_extract(self.URL, self.task.lower()) #self.code
+        bids_root = self.download_and_extract(self.URL, self.task.lower())  # self.code
 
         bids_path = BIDSPath(
-            subject=f'{subject:03d}',
+            subject=f"{subject:03d}",
             task=self.task,
             suffix="eeg",
             datatype="eeg",
@@ -174,7 +171,9 @@ class ERPCore2021(BaseDataset):
         """
         # Set the default path if none is provided
         if path is None:
-            path = Path(os.getenv(f'MNE_DATASETS_{sign.upper()}_PATH', Path.home() / 'mne_data'))
+            path = Path(
+                os.getenv(f"MNE_DATASETS_{sign.upper()}_PATH", Path.home() / "mne_data")
+            )
         else:
             path = Path(path)
 
@@ -182,7 +181,7 @@ class ERPCore2021(BaseDataset):
         key_dest = f"MNE-{sign.lower()}-data"
         destination = path / key_dest / f"{sign}-raw-data-BIDS"
         local_zip_path = str(destination)
-        extract_path = path / key_dest / 'extracted'
+        extract_path = path / key_dest / "extracted"
 
         # Check if the zip file and extracted directory already exist
         if destination.is_file() and extract_path.exists() and not force_update:
@@ -194,15 +193,16 @@ class ERPCore2021(BaseDataset):
                 destination.unlink()
             destination.parent.mkdir(parents=True, exist_ok=True)
 
-            with urllib.request.urlopen(url) as response, open(local_zip_path, 'wb') as out_file:
+            with urllib.request.urlopen(url) as response, open(
+                local_zip_path, "wb"
+            ) as out_file:
                 shutil.copyfileobj(response, out_file)
 
         # Extract the contents of the zip file
-        with zipfile.ZipFile(local_zip_path, 'r') as zip_ref:
+        with zipfile.ZipFile(local_zip_path, "r") as zip_ref:
             zip_ref.extractall(extract_path)
 
         return str(extract_path)
-
 
     def read_annotations(self, bids_path, raw):
         events_path = os.path.join(
@@ -222,7 +222,9 @@ class ERPCore2021(BaseDataset):
         event_category, mapping = self.encoding(events_df=events_df)
 
         # Create the event array using the sample column and the encoded event categories
-        events = np.column_stack((events_df['sample'].values, np.zeros(len(event_category)), event_category))
+        events = np.column_stack(
+            (events_df["sample"].values, np.zeros(len(event_category)), event_category)
+        )
 
         # Creating and setting annotations from the events
         annotations = mne.annotations_from_events(
@@ -241,10 +243,10 @@ class ERPCore2021_N170(ERPCore2021):
     """ """
 
     __init__ = partialmethod(ERPCore2021.__init__, "N170")
-    
+
     @staticmethod
     def encode_event(row):
-        value = row['value']
+        value = row["value"]
         if 1 <= value <= 80:
             return f"00{value:02d}"
         elif 101 <= value <= 180:
@@ -259,13 +261,22 @@ class ERPCore2021_N170(ERPCore2021):
     def encoding(self, events_df):
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
-        
+
         # Create the mapping dictionary
-        mapping = {f"00{val:02d}": f"Stimulus - {desc}" for val, desc in zip(range(1, 81), ['faces']*40 + ['cars']*40)}
-        mapping.update({f"01{val:02d}": f"Stimulus - scrambled {desc}" for val, desc in zip(range(1, 81), ['faces']*40 + ['cars']*40)})
+        mapping = {
+            f"00{val:02d}": f"Stimulus - {desc}"
+            for val, desc in zip(range(1, 81), ["faces"] * 40 + ["cars"] * 40)
+        }
+        mapping.update(
+            {
+                f"01{val:02d}": f"Stimulus - scrambled {desc}"
+                for val, desc in zip(range(1, 81), ["faces"] * 40 + ["cars"] * 40)
+            }
+        )
         mapping.update({"11": "Response - correct", "10": "Response - error"})
-        
+
         return encoded_column.values, mapping
+
 
 class ERPCore2021_MMN(ERPCore2021):
     """ """
@@ -283,6 +294,7 @@ class ERPCore2021_P3(ERPCore2021):
     """ """
 
     __init__ = partialmethod(ERPCore2021.__init__, "P3")
+
 
 class ERPCore2021_N400(ERPCore2021):
     """ """
