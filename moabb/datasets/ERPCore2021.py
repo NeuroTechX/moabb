@@ -233,7 +233,7 @@ class ERPCore2021(BaseDataset):
         raw.set_annotations(annotations)
 
         return raw
-    
+
     @abstractmethod
     def encode_event(row):
         pass
@@ -289,11 +289,11 @@ class ERPCore2021_MMN(ERPCore2021):
 
     @staticmethod
     def encode_event(row):
-        value = row['value']
-        #Standard stimulus
+        value = row["value"]
+        # Standard stimulus
         if value in {80, 180}:
             return "01"
-        #Deviant stimulus
+        # Deviant stimulus
         elif value == 70:
             return "02"
         else:
@@ -301,7 +301,7 @@ class ERPCore2021_MMN(ERPCore2021):
 
     def encoding(self, events_df):
         # Remove first and last rows, which correspond to trial_type STATUS
-        events_df.drop([0, len(events_df)-1], inplace=True)
+        events_df.drop([0, len(events_df) - 1], inplace=True)
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
@@ -310,8 +310,9 @@ class ERPCore2021_MMN(ERPCore2021):
             "01": "Stimulus - standard",
             "02": "Stimulus - deviant",
         }
-        
+
         return encoded_column.values, mapping
+
 
 class ERPCore2021_N2pc(ERPCore2021):
     """ """
