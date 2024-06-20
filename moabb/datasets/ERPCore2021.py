@@ -329,7 +329,7 @@ class ERPCore2021_N2pc(ERPCore2021):
             return "302"
         else:
             return value
-        
+
     def encoding(self, events_df):
 
         # Apply the encoding function to each row
@@ -337,17 +337,16 @@ class ERPCore2021_N2pc(ERPCore2021):
 
         # Create the mapping dictionary
         mapping = {
-        "111": "Stimulus - target blue, target left, gap at top",
-        "112": "Stimulus - target blue, target left, gap at bottom",
-        "121": "Stimulus - target blue, target right, gap at top",
-        "122": "Stimulus - target blue, target right, gap at bottom",
-        "211": "Stimulus - target pink, target left, gap at top",
-        "212": "Stimulus - target pink, target left, gap at bottom",
-        "221": "Stimulus - target pink, target right, gap at top",
-        "222": "Stimulus - target pink, target right, gap at bottom",
-
-        "201": "Response - correct",
-        "202": "Response - error"
+            "111": "Stimulus - target blue, target left, gap at top",
+            "112": "Stimulus - target blue, target left, gap at bottom",
+            "121": "Stimulus - target blue, target right, gap at top",
+            "122": "Stimulus - target blue, target right, gap at bottom",
+            "211": "Stimulus - target pink, target left, gap at top",
+            "212": "Stimulus - target pink, target left, gap at bottom",
+            "221": "Stimulus - target pink, target right, gap at top",
+            "222": "Stimulus - target pink, target right, gap at bottom",
+            "201": "Response - correct",
+            "202": "Response - error",
         }
 
         return encoded_column.values, mapping
