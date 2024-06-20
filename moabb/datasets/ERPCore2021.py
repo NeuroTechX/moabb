@@ -48,18 +48,43 @@ class ERPCore2021(BaseDataset):
                 "Response - correct": 4,
                 "Response - error": 5,
             }
+            original_mapping = {
+            "1-40": "Stimulus - faces",
+            "41-80": "Stimulus - cars",
+            "101-140": "Stimulus - scrambled faces",
+            "141-180": "Stimulus - scrambled cars", 
+            "201": "Response - correct",
+            "202": "Response - error"
+            } 
         elif task == "MMN":
             interval = (-0.2, 0.8)
-            events = {"Stimulus - deviant:70": 1, "Stimulus - standard:80": 0}
+            events = {"Stimulus - deviant:70": 0, "Stimulus - standard:80": 1}
+            original_mapping = {
+            "80": "Stimulus - standard",
+            "70": "Stimulus - deviant",
+            "180": "Stimulus - first stream of standards"
+            }
         elif task == "N2pc":
             interval = (-0.2, 0.8)
-            events = dict(top=1, bottom=2)
+            events = {"Target left": 0, "Target right": 1}
+            original_mapping = {
+            "111": "Stimulus - target blue, target left, gap at top",
+            "112": "Stimulus - target blue, target left, gap at bottom",
+            "121": "Stimulus - target blue, target right, gap at top",
+            "122": "Stimulus - target blue, target right, gap at bottom",
+            "211": "Stimulus - target pink, target left, gap at top",
+            "212": "Stimulus - target pink, target left, gap at bottom",
+            "221": "Stimulus - target pink, target right, gap at top",
+            "222": "Stimulus - target pink, target right, gap at bottom",
+            "201": "Response - correct",
+            "202": "Response - error",
+        }   
         elif task == "N400":
             interval = (-0.2, 0.8)
-            events = dict(related=1, unrelated=2)
+            events = dict(related=0, unrelated=1)
         elif task == "P3":
             interval = (-0.2, 0.8)
-            events = dict(match=1, no_match=2)
+            events = dict(match=0, no_match=1)
         elif task == "ERN":
             interval = (-0.8, 0.2)
             events = dict(right=1, left=2)
@@ -78,7 +103,7 @@ class ERPCore2021(BaseDataset):
         else:
             raise ValueError('unknown task "{}"'.format(task))
         self.task = task
-
+        self.meta_info = original_mapping
         super().__init__(
             subjects=list(range(1, 40 + 1)),
             sessions_per_subject=1,
@@ -88,6 +113,14 @@ class ERPCore2021(BaseDataset):
             paradigm="p300",
             doi=" ",
         )
+
+
+    def get_meta_data(self, subject):
+        
+        events_path = self.events_path(subject)
+        original_events = pd.read_csv(events_path, sep="\t")
+
+        return self.meta_info, original_events
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
@@ -116,7 +149,9 @@ class ERPCore2021(BaseDataset):
         if self.task != "MMN":
             raw.annotations.onset = raw.annotations.onset + 0.026
 
-        raw = self.read_annotations(file_path, raw)
+        events_path = self.events_path(subject)
+        raw = self.handle_events_reading(events_path, raw)
+        #raw = self.read_annotations(file_path, raw)
         # There is only one session
         sessions = {"0": {"0": raw}}
 
@@ -205,16 +240,23 @@ class ERPCore2021(BaseDataset):
 
         return str(extract_path)
 
-    def read_annotations(self, bids_path, raw):
+    #def read_annotations(self, bids_path, raw):
+    #    events_path = os.path.join(
+    #        bids_path.directory,
+    #        bids_path.update(suffix="events", extension=".tsv").basename,
+    #    )
+    #    return self._handle_events_reading(events_path, raw)
+    
+    def events_path(self, subject):
+        bids_path = self.data_path(subject)[0]
         events_path = os.path.join(
             bids_path.directory,
             bids_path.update(suffix="events", extension=".tsv").basename,
         )
-        return self._handle_events_reading(events_path, raw)
-
-    def _handle_events_reading(self, events_path, raw):
+        return events_path
+    
+    def handle_events_reading(self, events_path, raw):
         """Read associated events.tsv and populate raw.
-        Handle onset, duration, and description of each event.
         """
 
         events_df = pd.read_csv(events_path, sep="\t")
@@ -282,7 +324,6 @@ class ERPCore2021_N170(ERPCore2021):
 
         return encoded_column.values, mapping
 
-
 class ERPCore2021_MMN(ERPCore2021):
     """ """
 
@@ -297,8 +338,8 @@ class ERPCore2021_MMN(ERPCore2021):
         # Deviant stimulus
         elif value == 70:
             return "02"
-        else:
-            return "Unknown"
+        #else:
+        #    return "Unknown"
 
     def encoding(self, events_df):
         # Remove first and last rows, which correspond to trial_type STATUS
@@ -323,12 +364,7 @@ class ERPCore2021_N2pc(ERPCore2021):
     @staticmethod
     def encode_event(row):
         value = row["value"]
-        if value == 201:
-            return "301"
-        elif value == 202:
-            return "302"
-        else:
-            return value
+        return value
 
     def encoding(self, events_df):
 
@@ -348,7 +384,7 @@ class ERPCore2021_N2pc(ERPCore2021):
             "201": "Response - correct",
             "202": "Response - error",
         }
-
+        
         return encoded_column.values, mapping
 
 
@@ -357,11 +393,87 @@ class ERPCore2021_P3(ERPCore2021):
 
     __init__ = partialmethod(ERPCore2021.__init__, "P3")
 
+    @staticmethod
+    def encode_event(row):
+        value = row["value"]
+
+        return value
+        
+    def encoding(self, events_df):
+
+        # Apply the encoding function to each row
+        encoded_column = events_df.apply(self.encode_event, axis=1)
+
+        # Create the mapping dictionary
+        mapping = {
+        "11": "Stimulus - block target A, trial stimulus A",
+        "21": "Stimulus - block target B, trial stimulus A",
+        "31": "Stimulus - block target C, trial stimulus A",
+        "41": "Stimulus - block target D, trial stimulus A",
+        "51": "Stimulus - block target E, trial stimulus A",
+        
+        "12": "Stimulus - block target A, trial stimulus B",
+        "22": "Stimulus - block target B, trial stimulus B",
+        "32": "Stimulus - block target C, trial stimulus B",
+        "42": "Stimulus - block target D, trial stimulus B",
+        "52": "Stimulus - block target E, trial stimulus B",
+        
+        "13": "Stimulus - block target A, trial stimulus C",
+        "23": "Stimulus - block target B, trial stimulus C",
+        "33": "Stimulus - block target C, trial stimulus C",
+        "43": "Stimulus - block target D, trial stimulus C",
+        "53": "Stimulus - block target E, trial stimulus C",
+        
+        "14": "Stimulus - block target A, trial stimulus D",
+        "24": "Stimulus - block target B, trial stimulus D",
+        "34": "Stimulus - block target C, trial stimulus D",
+        "44": "Stimulus - block target D, trial stimulus D",
+        "54": "Stimulus - block target E, trial stimulus D",
+        
+        "15": "Stimulus - block target A, trial stimulus E",
+        "25": "Stimulus - block target B, trial stimulus E",
+        "35": "Stimulus - block target C, trial stimulus E",
+        "45": "Stimulus - block target D, trial stimulus E",
+        "55": "Stimulus - block target E, trial stimulus E",
+        
+        "201": "Response - correct",
+        "202": "Response - error"
+        }
+
+        return encoded_column.values, mapping
 
 class ERPCore2021_N400(ERPCore2021):
     """ """
 
     __init__ = partialmethod(ERPCore2021.__init__, "N400")
+
+    @staticmethod
+    def encode_event(row):
+        value = row["value"]
+        
+        return value
+        
+    def encoding(self, events_df):
+
+        # Apply the encoding function to each row
+        encoded_column = events_df.apply(self.encode_event, axis=1)
+
+        # Create the mapping dictionary
+        mapping = {
+	   "111": "Stimulus - prime word, related word pair, list 1",
+	   "112": "Stimulus - prime word, related word pair, list 2",
+	   "121": "Stimulus - prime word, unrelated word pair, list 1",
+	   "122": "Stimulus - prime word, unrelated word pair, list 2",
+	   "211": "Stimulus - target word, related word pair, list 1",
+	   "212": "Stimulus - target word, related word pair, list 2",
+	   "221": "Stimulus - target word, unrelated word pair, list 1",
+	   "222": "Stimulus - target word, unrelated word pair, list 2",
+
+	   "201": "Response - correct",
+	   "202": "Response - error"
+    }
+
+        return encoded_column.values, mapping
 
 
 class ERPCore2021_ERN(ERPCore2021):
