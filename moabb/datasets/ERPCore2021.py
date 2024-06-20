@@ -193,11 +193,12 @@ class ERPCore2021(BaseDataset):
                 destination.unlink()
             destination.parent.mkdir(parents=True, exist_ok=True)
 
+            print(f"Downloading {url} to {local_zip_path}")
             with urllib.request.urlopen(url) as response, open(
                 local_zip_path, "wb"
             ) as out_file:
                 shutil.copyfileobj(response, out_file)
-
+        print(f"Extracting {local_zip_path} to {extract_path}")
         # Extract the contents of the zip file
         with zipfile.ZipFile(local_zip_path, "r") as zip_ref:
             zip_ref.extractall(extract_path)
@@ -318,6 +319,38 @@ class ERPCore2021_N2pc(ERPCore2021):
     """ """
 
     __init__ = partialmethod(ERPCore2021.__init__, "N2pc")
+
+    @staticmethod
+    def encode_event(row):
+        value = row["value"]
+        if value == 201:
+            return "301"
+        elif value == 202:
+            return "302"
+        else:
+            return value
+        
+    def encoding(self, events_df):
+
+        # Apply the encoding function to each row
+        encoded_column = events_df.apply(self.encode_event, axis=1)
+
+        # Create the mapping dictionary
+        mapping = {
+        "111": "Stimulus - target blue, target left, gap at top",
+        "112": "Stimulus - target blue, target left, gap at bottom",
+        "121": "Stimulus - target blue, target right, gap at top",
+        "122": "Stimulus - target blue, target right, gap at bottom",
+        "211": "Stimulus - target pink, target left, gap at top",
+        "212": "Stimulus - target pink, target left, gap at bottom",
+        "221": "Stimulus - target pink, target right, gap at top",
+        "222": "Stimulus - target pink, target right, gap at bottom",
+
+        "201": "Response - correct",
+        "202": "Response - error"
+        }
+
+        return encoded_column.values, mapping
 
 
 class ERPCore2021_P3(ERPCore2021):
