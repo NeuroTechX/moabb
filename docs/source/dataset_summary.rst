@@ -65,7 +65,10 @@ P300/ERP
    :class:`Sosulski2019`, 13, 31, 7500 NT / 1500 T, 1.2s, 1000Hz, 1
    :class:`EPFLP300`, 8, 32, 2753 NT / 551 T, 1s, 2048Hz, 4
    :class:`Lee2019_ERP`, 54, 62, 6900 NT / 1380 T, 1s, 1000Hz, 2
-   :class:`ERPCore202_N170`, 8, 32, 2753 NT / 551 T, 1s, 2048Hz, 4
+   :class:`ERPCore2021_N170`, 40, 30, 80 NT / 80 T, 0.3s, 1024Hz, 1
+   :class:`ERPCore2021_MMN`, 40, 30, 800 NT / 200 T, 0.1s, 1024Hz, 1
+   :class:`ERPCore2021_N2pc`, 40, 30, 2753 NT / 551 T, 0.5s, 1024Hz, 1
+
 
 
 SSVEP
