@@ -14,6 +14,7 @@ from mne_bids import BIDSPath, read_raw_bids
 
 from moabb.datasets.base import BaseDataset
 
+
 # Links to the raw BIDS format data for each dataset
 N170_URL = "https://files.osf.io/v1/resources/pfde9/providers/osfstorage/60060f8ae80d370812a5b15d/?zip="
 MMN_URL = "https://files.osf.io/v1/resources/5q4xs/providers/osfstorage/6007896286541a091d14b102/?zip="
@@ -67,7 +68,12 @@ class ERPCore2021(BaseDataset):
             }
         elif task == "N2pc":
             interval = (-0.2, 0.8)
-            events = {"Target left": 0, "Target right": 1, "response_correct":2, "response_error":3}
+            events = {
+                "Target left": 0,
+                "Target right": 1,
+                "response_correct": 2,
+                "response_error": 3,
+            }
             original_mapping = {
                 "111": "Stimulus - target blue, target left, gap at top",
                 "112": "Stimulus - target blue, target left, gap at bottom",
@@ -110,7 +116,7 @@ class ERPCore2021(BaseDataset):
                 "45": "Stimulus - block target D, trial stimulus E",
                 "55": "Stimulus - block target E, trial stimulus E",
                 "201": "Response - correct",
-                "202": "Response - error"
+                "202": "Response - error",
             }
         elif task == "N400":
             interval = (-0.2, 0.8)
@@ -125,11 +131,13 @@ class ERPCore2021(BaseDataset):
                 "221": "Stimulus - target word, unrelated word pair, list 1",
                 "222": "Stimulus - target word, unrelated word pair, list 2",
                 "201": "Response - correct",
-                "202": "Response - error"
+                "202": "Response - error",
             }
         elif task == "ERN":
             interval = (-0.8, 0.2)
-            events = dict(right=1, left=2) # right-response /correct : 1, right-response /error : 2, left-response /correct : 3, left-response /error : 4
+            events = dict(
+                right=1, left=2
+            )  # right-response /correct : 1, right-response /error : 2, left-response /correct : 3, left-response /error : 4
             original_mapping = {
                 "11": "Stimulus - compatible flankers, target left",
                 "12": "Stimulus - compatible flankers, target right",
@@ -142,7 +150,7 @@ class ERPCore2021(BaseDataset):
                 "211": "Response - right, compatible flankers, target left",
                 "212": "Response - right, compatible flankers, target right",
                 "221": "Response - right, incompatible flankers, target left",
-                "222": "Response - right, incompatible flankers, target right"
+                "222": "Response - right, incompatible flankers, target right",
             }
         elif task == "LRP":
             interval = (-0.6, 0.4)
@@ -159,8 +167,8 @@ class ERPCore2021(BaseDataset):
                 "211": "Response - right, compatible flankers, target left",
                 "212": "Response - right, compatible flankers, target right",
                 "221": "Response - right, incompatible flankers, target left",
-                "222": "Response - right, incompatible flankers, target right"
-            }                                                                                  
+                "222": "Response - right, incompatible flankers, target right",
+            }
         else:
             raise ValueError('unknown task "{}"'.format(task))
         self.task = task
@@ -214,7 +222,7 @@ class ERPCore2021(BaseDataset):
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-        
+
         # Read the subject's raw data and set the montage
         raw = read_raw_bids(bids_path=file_path, verbose=False)
         raw = raw.set_montage("standard_1020", match_case=False)
@@ -371,7 +379,7 @@ class ERPCore2021(BaseDataset):
 
     def handle_events_reading(self, events_path, raw):
         """Read associated events.tsv and populate raw with annotations.
-        
+
         Parameters
         ----------
         events_path : str
@@ -535,7 +543,7 @@ class ERPCore2021_N2pc(ERPCore2021):
         elif value in {121, 122, 221, 222}:
             return "2"
         return value
-    
+
     def encoding(self, events_df):
 
         # Drop rows corresponding to the responses
@@ -564,7 +572,28 @@ class ERPCore2021_P3(ERPCore2021):
         value = row["value"]
         if value in {11, 22, 33, 44, 55}:
             return "1"
-        elif value in {21, 31, 41, 51, 12, 32, 42, 52, 13, 23, 43, 53, 14, 24, 34, 54, 15, 25, 35, 45}:
+        elif value in {
+            21,
+            31,
+            41,
+            51,
+            12,
+            32,
+            42,
+            52,
+            13,
+            23,
+            43,
+            53,
+            14,
+            24,
+            34,
+            54,
+            15,
+            25,
+            35,
+            45,
+        }:
             return "2"
         return value
 
@@ -577,7 +606,7 @@ class ERPCore2021_P3(ERPCore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
-        
+
         mapping = {
             "1": "Target",
             "2": "NonTarget",
@@ -605,7 +634,10 @@ class ERPCore2021_N400(ERPCore2021):
     def encoding(self, events_df):
 
         # Drop rows corresponding to the responses
-        events_df.drop(events_df[events_df["value"].isin([111, 112, 121, 122, 201, 202])].index, inplace=True)
+        events_df.drop(
+            events_df[events_df["value"].isin([111, 112, 121, 122, 201, 202])].index,
+            inplace=True,
+        )
 
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
@@ -638,7 +670,12 @@ class ERPCore2021_ERN(ERPCore2021):
     def encoding(self, events_df):
 
         # Keep rows corresponding to the responses
-        events_df.drop(events_df[~events_df["value"].isin([111, 112, 121, 122, 211, 212, 221, 222])].index, inplace=True)
+        events_df.drop(
+            events_df[
+                ~events_df["value"].isin([111, 112, 121, 122, 211, 212, 221, 222])
+            ].index,
+            inplace=True,
+        )
 
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
@@ -650,6 +687,7 @@ class ERPCore2021_ERN(ERPCore2021):
         }
 
         return encoded_column.values, mapping
+
 
 class ERPCore2021_LRP(ERPCore2021):
     """ """
@@ -670,8 +708,12 @@ class ERPCore2021_LRP(ERPCore2021):
     def encoding(self, events_df):
 
         # Keep rows corresponding to the responses
-        events_df.drop(events_df[~events_df["value"].isin([111, 112, 121, 122, 211, 212, 221, 222])].index, inplace=True)
-
+        events_df.drop(
+            events_df[
+                ~events_df["value"].isin([111, 112, 121, 122, 211, 212, 221, 222])
+            ].index,
+            inplace=True,
+        )
 
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
