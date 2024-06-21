@@ -189,7 +189,7 @@ class Erpcore2021(BaseDataset):
             A list containing the BIDSPath object for the subject's data file.
         """
         if subject not in self.subject_list:
-            raise (ValueError("Invalid subject number"))
+            raise ValueError("Invalid subject number")
 
         # Download and extract the dataset
         dataset_path = self.download_and_extract(
@@ -361,14 +361,14 @@ class Erpcore2021_N170(Erpcore2021):
         value = row["value"]
         if 1 <= value <= 80:
             return f"00{value:02d}"
-        elif 101 <= value <= 180:
+        if 101 <= value <= 180:
             return f"01{value - 100:02d}"
-        elif value == 201:
+        if value == 201:
             return "11"
-        elif value == 202:
+        if value == 202:
             return "10"
-        else:
-            return "Unknown"
+
+        return "Unknown"
 
     def encoding(self, events_df):
         # Apply the encoding function to each row
@@ -402,7 +402,7 @@ class Erpcore2021_MMN(Erpcore2021):
         if value in {80, 180}:
             return "01"
         # Deviant stimulus
-        elif value == 70:
+        if value == 70:
             return "02"
         return value
 
@@ -463,7 +463,7 @@ class Erpcore2021_P3(Erpcore2021):
         value = row["value"]
         if value in {11, 22, 33, 44, 55}:
             return "1"
-        elif value in {
+        if value in {
             21,
             31,
             41,
@@ -518,7 +518,7 @@ class Erpcore2021_N400(Erpcore2021):
         if value in {211, 212}:
             return "1"
         # Unrelated word pair
-        elif value in {221, 222}:
+        if value in {221, 222}:
             return "2"
         return value
 
@@ -553,8 +553,9 @@ class Erpcore2021_ERN(Erpcore2021):
         if value in {111, 121, 212, 222}:
             return "1"
         # incorrect
-        elif value in {112, 122, 211, 221}:
+        if value in {112, 122, 211, 221}:
             return "2"
+
         return value
 
     def encoding(self, events_df):
