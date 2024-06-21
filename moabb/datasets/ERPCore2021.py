@@ -1,45 +1,46 @@
 import os
-import shutil
-import urllib.request
 import warnings
-import zipfile
 from abc import abstractmethod
 from functools import partialmethod
-from pathlib import Path
 
 import mne
 import numpy as np
 import pandas as pd
+import pooch
+from mne.datasets import fetch_dataset
 from mne_bids import BIDSPath, read_raw_bids
 
 from moabb.datasets.base import BaseDataset
 
 
-# Links to the raw BIDS format data for each dataset
-N170_URL = "https://files.osf.io/v1/resources/pfde9/providers/osfstorage/60060f8ae80d370812a5b15d/?zip="
-MMN_URL = "https://files.osf.io/v1/resources/5q4xs/providers/osfstorage/6007896286541a091d14b102/?zip="
-N2pc_URL = "https://files.osf.io/v1/resources/yefrq/providers/osfstorage/60077f09ba010908a4892b3a/?zip="
-P3_URL = "https://files.osf.io/v1/resources/etdkz/providers/osfstorage/60077b04ba010908a78927e9/?zip="
-N_400_URL = "https://files.osf.io/v1/resources/29xpq/providers/osfstorage/6007857286541a092614c5d3/?zip="
-ERN_URL = "https://files.osf.io/v1/resources/q6gwp/providers/osfstorage/600df65e75226b017d517f6d/?zip="
-LRP_URL = "https://files.osf.io/v1/resources/28e6c/providers/osfstorage/600dffbf327cbe019d7b6a0c/?zip="
+OSF_IDS = {
+    "ERN": ["q6gwp", "600df65e75226b017d517f6d"],
+    "LRP": ["28e6c", "600dffbf327cbe019d7b6a0c"],
+    "MMN": ["5q4xs", "6007896286541a091d14b102"],
+    "N170": ["pfde9", "60060f8ae80d370812a5b15d"],
+    "N2pc": ["yefrq", "60077f09ba010908a4892b3a"],
+    "N400": ["29xpq", "6007857286541a092614c5d3"],
+    "P3": ["etdkz", "60077b04ba010908a78927e9"],
+}
+
+dataset_params = {
+    task: dict(
+        archive_name=f"ERPCORE2021_{task}.zip",
+        url=f"https://files.osf.io/v1/resources/{osf_id[0]}/providers/osfstorage/{osf_id[1]}/?zip=",
+        folder_name=f"MNE-erpcore{task.lower()}2021-data",
+        dataset_name=f"MNE-erpcore{task.lower()}2021",
+        hash=None,
+        config_key=f"MNE_ERPCORE_{task.upper()}_PATH",  # I need to check this
+    )
+    for task, osf_id in OSF_IDS.items()
+}
 
 
 class Erpcore2021(BaseDataset):
-    """Base dataset class for Erpcore2021."""
-
-    TASK_URLS = {
-        "N170": N170_URL,
-        "MMN": MMN_URL,
-        "N2pc": N2pc_URL,
-        "P3": P3_URL,
-        "N400": N_400_URL,
-        "ERN": ERN_URL,
-        "LRP": LRP_URL,
-    }
+    """Abstract base dataset class for Erpcore2021."""
 
     def __init__(self, task):
-
+        self.original_mapping = None
         if task == "N170":
             interval = (-0.2, 0.8)
             events = {
@@ -50,22 +51,9 @@ class Erpcore2021(BaseDataset):
                 "Response - correct": 4,
                 "Response - error": 5,
             }
-            original_mapping = {
-                "1-40": "Stimulus - faces",
-                "41-80": "Stimulus - cars",
-                "101-140": "Stimulus - scrambled faces",
-                "141-180": "Stimulus - scrambled cars",
-                "201": "Response - correct",
-                "202": "Response - error",
-            }
         elif task == "MMN":
             interval = (-0.2, 0.8)
             events = {"Stimulus - deviant:70": 0, "Stimulus - standard:80": 1}
-            original_mapping = {
-                "80": "Stimulus - standard",
-                "70": "Stimulus - deviant",
-                "180": "Stimulus - first stream of standards",
-            }
         elif task == "N2pc":
             interval = (-0.2, 0.8)
             events = {
@@ -74,110 +62,28 @@ class Erpcore2021(BaseDataset):
                 "response_correct": 2,
                 "response_error": 3,
             }
-            original_mapping = {
-                "111": "Stimulus - target blue, target left, gap at top",
-                "112": "Stimulus - target blue, target left, gap at bottom",
-                "121": "Stimulus - target blue, target right, gap at top",
-                "122": "Stimulus - target blue, target right, gap at bottom",
-                "211": "Stimulus - target pink, target left, gap at top",
-                "212": "Stimulus - target pink, target left, gap at bottom",
-                "221": "Stimulus - target pink, target right, gap at top",
-                "222": "Stimulus - target pink, target right, gap at bottom",
-                "201": "Response - correct",
-                "202": "Response - error",
-            }
         elif task == "P3":
             interval = (-0.2, 0.8)
             events = dict(match=0, no_match=1, response_correct=2, response_error=3)
-            original_mapping = {
-                "11": "Stimulus - block target A, trial stimulus A",
-                "21": "Stimulus - block target B, trial stimulus A",
-                "31": "Stimulus - block target C, trial stimulus A",
-                "41": "Stimulus - block target D, trial stimulus A",
-                "51": "Stimulus - block target E, trial stimulus A",
-                "12": "Stimulus - block target A, trial stimulus B",
-                "22": "Stimulus - block target B, trial stimulus B",
-                "32": "Stimulus - block target C, trial stimulus B",
-                "42": "Stimulus - block target D, trial stimulus B",
-                "52": "Stimulus - block target E, trial stimulus B",
-                "13": "Stimulus - block target A, trial stimulus C",
-                "23": "Stimulus - block target B, trial stimulus C",
-                "33": "Stimulus - block target C, trial stimulus C",
-                "43": "Stimulus - block target D, trial stimulus C",
-                "53": "Stimulus - block target E, trial stimulus C",
-                "14": "Stimulus - block target A, trial stimulus D",
-                "24": "Stimulus - block target B, trial stimulus D",
-                "34": "Stimulus - block target C, trial stimulus D",
-                "44": "Stimulus - block target D, trial stimulus D",
-                "54": "Stimulus - block target E, trial stimulus D",
-                "15": "Stimulus - block target A, trial stimulus E",
-                "25": "Stimulus - block target B, trial stimulus E",
-                "35": "Stimulus - block target C, trial stimulus E",
-                "45": "Stimulus - block target D, trial stimulus E",
-                "55": "Stimulus - block target E, trial stimulus E",
-                "201": "Response - correct",
-                "202": "Response - error",
-            }
+
         elif task == "N400":
             interval = (-0.2, 0.8)
             events = dict(related=0, unrelated=1, response_correct=2, response_error=3)
-            original_mapping = {
-                "111": "Stimulus - prime word, related word pair, list 1",
-                "112": "Stimulus - prime word, related word pair, list 2",
-                "121": "Stimulus - prime word, unrelated word pair, list 1",
-                "122": "Stimulus - prime word, unrelated word pair, list 2",
-                "211": "Stimulus - target word, related word pair, list 1",
-                "212": "Stimulus - target word, related word pair, list 2",
-                "221": "Stimulus - target word, unrelated word pair, list 1",
-                "222": "Stimulus - target word, unrelated word pair, list 2",
-                "201": "Response - correct",
-                "202": "Response - error",
-            }
+
         elif task == "ERN":
             interval = (-0.8, 0.2)
-            events = dict(
-                right=1, left=2
-            )  # right-response /correct : 1, right-response /error : 2, left-response /correct : 3, left-response /error : 4
-            original_mapping = {
-                "11": "Stimulus - compatible flankers, target left",
-                "12": "Stimulus - compatible flankers, target right",
-                "21": "Stimulus - incompatible flankers, target left",
-                "22": "Stimulus - incompatible flankers, target right",
-                "111": "Response - left, compatible flankers, target left",
-                "112": "Response - left, compatible flankers, target right",
-                "121": "Response - left, incompatible flankers, target left",
-                "122": "Response - left, incompatible flankers, target right",
-                "211": "Response - right, compatible flankers, target left",
-                "212": "Response - right, compatible flankers, target right",
-                "221": "Response - right, incompatible flankers, target left",
-                "222": "Response - right, incompatible flankers, target right",
-            }
+            events = dict(right=1, left=2)
         elif task == "LRP":
             interval = (-0.6, 0.4)
             events = dict(right=1, left=2)
-            original_mapping = {
-                "11": "Stimulus - compatible flankers, target left",
-                "12": "Stimulus - compatible flankers, target right",
-                "21": "Stimulus - incompatible flankers, target left",
-                "22": "Stimulus - incompatible flankers, target right",
-                "111": "Response - left, compatible flankers, target left",
-                "112": "Response - left, compatible flankers, target right",
-                "121": "Response - left, incompatible flankers, target left",
-                "122": "Response - left, incompatible flankers, target right",
-                "211": "Response - right, compatible flankers, target left",
-                "212": "Response - right, compatible flankers, target right",
-                "221": "Response - right, incompatible flankers, target left",
-                "222": "Response - right, incompatible flankers, target right",
-            }
         else:
             raise ValueError('unknown task "{}"'.format(task))
         self.task = task
-        self.meta_info = original_mapping
         super().__init__(
             subjects=list(range(1, 40 + 1)),
             sessions_per_subject=1,
             events=events,
-            code="ERPCore-" + task,
+            code=f"Erpcore{task}",
             interval=interval,
             paradigm="p300",
             doi="10.1016/j.neuroimage.2020.117465",
@@ -294,7 +200,7 @@ class Erpcore2021(BaseDataset):
         return subject_paths
 
     @staticmethod
-    def download_and_extract(url, sign, path=None, force_update=False, verbose=None):
+    def download_and_extract(task, path=None, force_update=False):
         """Download and extract a zip file dataset from the given url.
 
         Parameters
@@ -319,40 +225,14 @@ class Erpcore2021(BaseDataset):
             Local path to the extracted data directory.
         """
         # Set the default path if none is provided
-        if path is None:
-            path = Path(
-                os.getenv(f"MNE_DATASETS_{sign.upper()}_PATH", Path.home() / "mne_data")
-            )
-        else:
-            path = Path(path)
 
-        # Construct the destination paths
-        key_dest = f"MNE-{sign.lower()}-data"
-        destination = path / key_dest / f"{sign}-raw-data-BIDS"
-        local_zip_path = str(destination)
-        extract_path = path / key_dest / "extracted"
-
-        # Check if the zip file and extracted directory already exist
-        if destination.is_file() and extract_path.exists() and not force_update:
-            return str(extract_path)
-
-        # Download the file using urllib if it doesn't already exist or force_update is True
-        if not destination.is_file() or force_update:
-            if destination.is_file():
-                destination.unlink()
-            destination.parent.mkdir(parents=True, exist_ok=True)
-
-            print(f"Downloading {url} to {local_zip_path}")
-            with urllib.request.urlopen(url) as response, open(
-                local_zip_path, "wb"
-            ) as out_file:
-                shutil.copyfileobj(response, out_file)
-        print(f"Extracting {local_zip_path} to {extract_path}")
-        # Extract the contents of the zip file
-        with zipfile.ZipFile(local_zip_path, "r") as zip_ref:
-            zip_ref.extractall(extract_path)
-
-        return str(extract_path)
+        path = fetch_dataset(
+            dataset_params[task],
+            path=path,
+            force_update=force_update,
+            processor=pooch.Unzip(extract_dir=dataset_params[task]["folder_name"]),
+        )
+        return path
 
     def events_path(self, subject):
         """
