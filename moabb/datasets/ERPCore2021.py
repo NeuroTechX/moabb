@@ -25,8 +25,8 @@ ERN_URL = "https://files.osf.io/v1/resources/q6gwp/providers/osfstorage/600df65e
 LRP_URL = "https://files.osf.io/v1/resources/28e6c/providers/osfstorage/600dffbf327cbe019d7b6a0c/?zip="
 
 
-class ERPCore2021(BaseDataset):
-    """Base dataset class for ERPCore2021."""
+class Erpcore2021(BaseDataset):
+    """Base dataset class for Erpcore2021."""
 
     TASK_URLS = {
         "N170": N170_URL,
@@ -223,9 +223,9 @@ class ERPCore2021(BaseDataset):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
 
-        # Read the subject's raw data and set the montage
-        raw = read_raw_bids(bids_path=file_path, verbose=False)
-        raw = raw.set_montage("standard_1020", match_case=False)
+            # Read the subject's raw data and set the montage
+            raw = read_raw_bids(bids_path=file_path, verbose=False)
+            raw = raw.set_montage("standard_1020", match_case=False)
 
         # Shift the stimulus event codes forward in time
         # to account for the LCD monitor delay
@@ -446,10 +446,10 @@ class ERPCore2021(BaseDataset):
         pass
 
 
-class ERPCore2021_N170(ERPCore2021):
+class Erpcore2021_N170(Erpcore2021):
     """ """
 
-    __init__ = partialmethod(ERPCore2021.__init__, "N170")
+    __init__ = partialmethod(Erpcore2021.__init__, "N170")
 
     @staticmethod
     def encode_event(row):
@@ -499,10 +499,10 @@ class ERPCore2021_N170(ERPCore2021):
         return encoded_column.values, mapping
 
 
-class ERPCore2021_MMN(ERPCore2021):
+class Erpcore2021_MMN(Erpcore2021):
     """ """
 
-    __init__ = partialmethod(ERPCore2021.__init__, "MMN")
+    __init__ = partialmethod(Erpcore2021.__init__, "MMN")
 
     @staticmethod
     def encode_event(row):
@@ -530,10 +530,10 @@ class ERPCore2021_MMN(ERPCore2021):
         return encoded_column.values, mapping
 
 
-class ERPCore2021_N2pc(ERPCore2021):
+class Erpcore2021_N2pc(Erpcore2021):
     """ """
 
-    __init__ = partialmethod(ERPCore2021.__init__, "N2pc")
+    __init__ = partialmethod(Erpcore2021.__init__, "N2pc")
 
     @staticmethod
     def encode_event(row):
@@ -561,10 +561,10 @@ class ERPCore2021_N2pc(ERPCore2021):
         return encoded_column.values, mapping
 
 
-class ERPCore2021_P3(ERPCore2021):
+class Erpcore2021_P3(Erpcore2021):
     """ """
 
-    __init__ = partialmethod(ERPCore2021.__init__, "P3")
+    __init__ = partialmethod(Erpcore2021.__init__, "P3")
 
     @staticmethod
     # keeping only the stimulus without the response
@@ -615,10 +615,10 @@ class ERPCore2021_P3(ERPCore2021):
         return encoded_column.values, mapping
 
 
-class ERPCore2021_N400(ERPCore2021):
+class Erpcore2021_N400(Erpcore2021):
     """ """
 
-    __init__ = partialmethod(ERPCore2021.__init__, "N400")
+    __init__ = partialmethod(Erpcore2021.__init__, "N400")
 
     @staticmethod
     def encode_event(row):
@@ -651,10 +651,10 @@ class ERPCore2021_N400(ERPCore2021):
         return encoded_column.values, mapping
 
 
-class ERPCore2021_ERN(ERPCore2021):
+class Erpcore2021_ERN(Erpcore2021):
     """ """
 
-    __init__ = partialmethod(ERPCore2021.__init__, "ERN")
+    __init__ = partialmethod(Erpcore2021.__init__, "ERN")
 
     @staticmethod
     def encode_event(row):
@@ -689,10 +689,10 @@ class ERPCore2021_ERN(ERPCore2021):
         return encoded_column.values, mapping
 
 
-class ERPCore2021_LRP(ERPCore2021):
+class Erpcore2021_LRP(Erpcore2021):
     """ """
 
-    __init__ = partialmethod(ERPCore2021.__init__, "LRP")
+    __init__ = partialmethod(Erpcore2021.__init__, "LRP")
 
     @staticmethod
     def encode_event(row):
