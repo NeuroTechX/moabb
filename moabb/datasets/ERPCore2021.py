@@ -151,7 +151,6 @@ class Erpcore2021(BaseDataset):
 
         return sessions
 
-    # returns bids path is it okay ?
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
@@ -185,10 +184,10 @@ class Erpcore2021(BaseDataset):
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
-        # Get the URL for the task data
-        url = self.TASK_URLS.get(self.task)
         # Download and extract the dataset
-        bids_root = self.download_and_extract(url, self.task.lower())  # self.code
+        dataset_path = self.download_and_extract(
+            path=path, force_update=force_update, update_path=update_path
+        )
 
         # Create a BIDSPath object for the subject
         bids_path = BIDSPath(
@@ -196,45 +195,41 @@ class Erpcore2021(BaseDataset):
             task=self.task,
             suffix="eeg",
             datatype="eeg",
-            root=bids_root,
+            root=dataset_path,
         )
 
         subject_paths = [bids_path]
 
         return subject_paths
 
-    @staticmethod
-    def download_and_extract(task, path=None, force_update=False):
-        """Download and extract a zip file dataset from the given url.
+    def download_and_extract(self, path=None, force_update=False, update_path=None):
+        """
+        Download and extract the dataset.
 
         Parameters
         ----------
-        url : str
-            Path to the remote location of data.
-        sign : str
-            Signifier of dataset.
-        path : None | str
-            Location of where to look for the data storing location.
-            If None, the environment variable or config parameter
-            ``MNE_DATASETS_(signifier)_PATH`` is used. If it doesn't exist, the
-            "~/mne_data" directory is used.
+        task : str
+            The task for which to download the dataset.
+        path : str | None
+            The path to the directory where the dataset should be downloaded.
+            If None, the default directory is used.
         force_update : bool
             Force update of the dataset even if a local copy exists.
-        verbose : bool, str, int, or None
-            If not None, override default verbose level (see :func:`mne.verbose`).
+        update_path: bool | None
+            If True, set the MNE_DATASETS_(dataset)_PATH in mne-python config
+            to the given path.
 
         Returns
         -------
-        str
-            Local path to the extracted data directory.
+        path : str
+            The dataset path.
         """
-        # Set the default path if none is provided
-
         path = fetch_dataset(
-            dataset_params[task],
+            dataset_params[self.task],
             path=path,
             force_update=force_update,
-            processor=pooch.Unzip(extract_dir=dataset_params[task]["folder_name"]),
+            update_path=update_path,
+            processor=pooch.Unzip(extract_dir=dataset_params[self.task]["folder_name"]),
         )
         return path
 
@@ -282,7 +277,8 @@ class Erpcore2021(BaseDataset):
         # Encode the events
         event_category, mapping = self.encoding(events_df=events_df)
 
-        # Create the event array using the sample column and the encoded event categories
+        # Create the event array using the sample column and the encoded
+        # event categories
         events = np.column_stack(
             (events_df["sample"].values, np.zeros(len(event_category)), event_category)
         )
@@ -298,7 +294,7 @@ class Erpcore2021(BaseDataset):
     @abstractmethod
     def encode_event(row):
         """
-        Encode a single event values based on the task specific criteria.
+        Encode a single event values based on the task-specific criteria.
 
         Parameters
         ----------
@@ -313,13 +309,13 @@ class Erpcore2021(BaseDataset):
         pass
 
     @abstractmethod
-    def encoding(self, events_df):
+    def encoding(self, events_df: pd.DataFrame):
         """
-        Encode the columns value in the events DataFrame.
+        Encode the column value in the events DataFrame.
 
         Parameters
         ----------
-        events_df : pd.DataFrame
+        events_df : DataFrame
             DataFrame containing the events information.
 
         Returns
@@ -355,7 +351,7 @@ class Erpcore2021_N170(Erpcore2021):
         if 1 <= value <= 80:
             return f"00{value:02d}"
         elif 101 <= value <= 180:
-            return f"01{value-100:02d}"
+            return f"01{value - 100:02d}"
         elif value == 201:
             return "11"
         elif value == 202:
