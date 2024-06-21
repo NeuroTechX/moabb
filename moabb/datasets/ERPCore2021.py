@@ -13,6 +13,7 @@ from mne_bids import BIDSPath, read_raw_bids
 from moabb.datasets.base import BaseDataset
 
 
+# Ids for the buckets on OSF and the folder OSF hash.
 OSF_IDS = {
     "ERN": ["q6gwp", "600df65e75226b017d517f6d"],
     "LRP": ["28e6c", "600dffbf327cbe019d7b6a0c"],
@@ -23,16 +24,18 @@ OSF_IDS = {
     "P3": ["etdkz", "60077b04ba010908a78927e9"],
 }
 
+osf_base_url = "https://files.osf.io/v1/resources/"
+
 dataset_params = {
     task: dict(
         archive_name=f"ERPCORE2021_{task}.zip",
-        url=f"https://files.osf.io/v1/resources/{osf_id[0]}/providers/osfstorage/{osf_id[1]}/?zip=",
+        url=osf_base_url + f"{osf[0]}/providers/osfstorage/{osf[1]}/?zip=",
         folder_name=f"MNE-erpcore{task.lower()}2021-data",
         dataset_name=f"MNE-erpcore{task.lower()}2021",
         hash=None,
         config_key=f"MNE_ERPCORE_{task.upper()}_PATH",  # I need to check this
     )
-    for task, osf_id in OSF_IDS.items()
+    for task, osf in OSF_IDS.items()
 }
 
 
@@ -40,7 +43,6 @@ class Erpcore2021(BaseDataset):
     """Abstract base dataset class for Erpcore2021."""
 
     def __init__(self, task):
-        self.original_mapping = None
         if task == "N170":
             interval = (-0.2, 0.8)
             events = {
@@ -79,6 +81,8 @@ class Erpcore2021(BaseDataset):
         else:
             raise ValueError('unknown task "{}"'.format(task))
         self.task = task
+        self.meta_info = None
+
         super().__init__(
             subjects=list(range(1, 40 + 1)),
             sessions_per_subject=1,
@@ -98,17 +102,17 @@ class Erpcore2021(BaseDataset):
         subject : int
             The subject number for which to retrieve data.
 
-        Returns
-        -------
-        tuple
-            A tuple containing the original events mapping and the original events DataFrame.
+        Returns ------- tuple A tuple containing the original events mapping
+        and the original events DataFrame.
         """
         # Get the path to the events file for the subject
         events_path = self.events_path(subject)
         # Read the events data
         original_events = pd.read_csv(events_path, sep="\t")
-
-        return self.meta_info, original_events
+        if self.meta_info is not None:
+            return self.meta_info, original_events
+        else:
+            return original_events
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
