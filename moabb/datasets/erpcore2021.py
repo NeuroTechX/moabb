@@ -1,7 +1,12 @@
+"""
+Erpcore2021 dataset
+"""
+
 import os
 import warnings
 from abc import abstractmethod
 from functools import partialmethod
+from pathlib import Path
 
 import mne
 import numpy as np
@@ -12,6 +17,8 @@ from mne_bids import BIDSPath, read_raw_bids
 
 from moabb.datasets.base import BaseDataset
 
+
+OSF_BASE_URL = "https://files.osf.io/v1/resources/"
 
 # Ids for the buckets on OSF and the folder OSF hash.
 OSF_IDS = {
@@ -24,12 +31,11 @@ OSF_IDS = {
     "P3": ["etdkz", "60077b04ba010908a78927e9"],
 }
 
-osf_base_url = "https://files.osf.io/v1/resources/"
 
-dataset_params = {
+DATASET_PARAMS = {
     task: dict(
         archive_name=f"ERPCORE2021_{task}.zip",
-        url=osf_base_url + f"{osf[0]}/providers/osfstorage/{osf[1]}/?zip=",
+        url=OSF_BASE_URL + f"{osf[0]}/providers/osfstorage/{osf[1]}/?zip=",
         folder_name=f"MNE-erpcore{task.lower()}2021-data",
         dataset_name=f"MNE-erpcore{task.lower()}2021",
         hash=None,
@@ -79,7 +85,8 @@ class Erpcore2021(BaseDataset):
             interval = (-0.6, 0.4)
             events = dict(right=1, left=2)
         else:
-            raise ValueError('unknown task "{}"'.format(task))
+            raise ValueError(f"Unknown task {task}")
+
         self.task = task
         self.meta_info = None
 
@@ -87,7 +94,7 @@ class Erpcore2021(BaseDataset):
             subjects=list(range(1, 40 + 1)),
             sessions_per_subject=1,
             events=events,
-            code=f"Erpcore{task}",
+            code=f"Erpcore2021-{task}",
             interval=interval,
             paradigm="p300",
             doi="10.1016/j.neuroimage.2020.117465",
@@ -111,8 +118,8 @@ class Erpcore2021(BaseDataset):
         original_events = pd.read_csv(events_path, sep="\t")
         if self.meta_info is not None:
             return self.meta_info, original_events
-        else:
-            return original_events
+
+        return original_events
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
@@ -224,14 +231,19 @@ class Erpcore2021(BaseDataset):
         path : str
             The dataset path.
         """
-        path = fetch_dataset(
-            dataset_params[self.task],
+        if path is not None:
+            path = Path(path) / DATASET_PARAMS[self.task]["folder_name"]
+        else:
+            path = DATASET_PARAMS[self.task]["folder_name"]
+
+        download_path = fetch_dataset(
+            DATASET_PARAMS[self.task],
             path=path,
             force_update=force_update,
             update_path=update_path,
-            processor=pooch.Unzip(extract_dir=dataset_params[self.task]["folder_name"]),
+            processor=pooch.Unzip(extract_dir=path),
         )
-        return path
+        return download_path
 
     def events_path(self, subject):
         """
@@ -291,8 +303,9 @@ class Erpcore2021(BaseDataset):
 
         return raw
 
+    @staticmethod
     @abstractmethod
-    def encode_event(row):
+    def encode_event(row: str):
         """
         Encode a single event values based on the task-specific criteria.
 
@@ -306,7 +319,6 @@ class Erpcore2021(BaseDataset):
         str
             Encoded event value.
         """
-        pass
 
     @abstractmethod
     def encoding(self, events_df: pd.DataFrame):
@@ -323,7 +335,6 @@ class Erpcore2021(BaseDataset):
         tuple
             A tuple containing the encoded event values and the mapping dictionary.
         """
-        pass
 
 
 class Erpcore2021_N170(Erpcore2021):
@@ -536,8 +547,7 @@ class Erpcore2021_ERN(Erpcore2021):
 
     __init__ = partialmethod(Erpcore2021.__init__, "ERN")
 
-    @staticmethod
-    def encode_event(row):
+    def encode_event(self, row):
         value = row["value"]
         # correct
         if value in {111, 121, 212, 222}:
@@ -581,7 +591,7 @@ class Erpcore2021_LRP(Erpcore2021):
         if value in {111, 112, 121, 122}:
             return "1"
         # right
-        elif value in {211, 212, 221, 222}:
+        if value in {211, 212, 221, 222}:
             return "2"
         return value
 
