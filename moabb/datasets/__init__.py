@@ -56,7 +56,7 @@ from .castillos2023 import (
     CastillosCVEP100,
 )
 from .epfl import EPFLP300
-from .ERPCore2021 import (
+from .erpcore2021 import (
     Erpcore2021_ERN,
     Erpcore2021_LRP,
     Erpcore2021_MMN,
