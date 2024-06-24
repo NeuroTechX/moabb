@@ -106,7 +106,7 @@ class Erpcore2021(BaseDataset):
         """
         file_path = self.data_path(1)[0]
         json_file = pd.read_json(file_path)
-        self.meta_info = json_file['value']['Levels']
+        self.meta_info = json_file["value"]["Levels"]
 
     def get_meta_data(self, subject):
         """
