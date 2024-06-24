@@ -100,6 +100,14 @@ class Erpcore2021(BaseDataset):
             doi="10.1016/j.neuroimage.2020.117465",
         )
 
+    def load_meta_info(self):
+        """
+        Load original value mapping from a JSON file.
+        """
+        file_path = self.data_path(1)[0]
+        json_file = pd.read_json(file_path)
+        self.meta_info = json_file['value']['Levels']
+
     def get_meta_data(self, subject):
         """
         Retrieve original events mapping and original event data for a given subject.
@@ -136,6 +144,9 @@ class Erpcore2021(BaseDataset):
         """
         # Get the file path for the subject's data
         file_path = self.data_path(subject)[0]
+
+        # Load the meta_data
+        self.load_meta_info()
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
