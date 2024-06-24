@@ -2,6 +2,7 @@
 Erpcore2021 dataset
 """
 
+import json
 import os
 import warnings
 from abc import abstractmethod
@@ -46,7 +47,37 @@ DATASET_PARAMS = {
 
 
 class Erpcore2021(BaseDataset):
-    """Abstract base dataset class for Erpcore2021."""
+    """Abstract base dataset class for Erpcore2021.
+
+    Datasets [1]_ from the study [2]_.
+
+    **Dataset Description**
+
+    The ERP CORE dataset includes data from 40 neurotypical young adults (25 female, 15 male; Mean years of age = 21.5, SD = 2.87, Range 18–30; 38 right handed) from the University of California. Each participant had native English competence and normal color perception, normal or corrected-to-normal vision, and no history of neurological injury or disease (as indicated by self-report).
+    They participated in six 10-minutes optimized experiments designed to measure seven widely used ERP components: N170, Mismatch Negativity (MMN), N2pc, N400, P3, Lateralized Readiness Potential (LRP), and Error-Related Negativity (ERN). These experiments were conducted to standardize ERP paradigms and protocols across studies.
+
+    The subjects, aged between 18 and 35 years, were seated comfortably in a sound-attenuated room. EEG data were collected using a 64-channel EEG system, with electrodes placed according to the international 10-20 system. Each ERP component was recorded in separate sessions, with a consistent setup across subjects to ensure data quality and comparability.
+
+    **Experimental procedures**:
+    - **N170**: Subjects viewed faces and objects to elicit the N170 component. In this task, an image of a face, car, scrambled face, or scrambled car was presented on each trial in the center of the screen, and participants responded whether the stimulus was an “object” (face or car) or a “texture” (scrambled face or scrambled car).
+    - **MMN**: Subjects were exposed to a sequence of auditory stimuli to evoke the mismatch negativity response, indicating automatic detection of deviant sounds.  Standard tones (presented at 80 dB, with p = .8) and deviant tones (presented at 70 dB, with p = .2) were presented over speakers while participants watched a silent video and ignored the tones.
+    - **N2pc**: Participants were given a target color of pink or blue at the beginning of a trial block, and responded on each trial whether the gap in the target color square was on the top or bottom.
+    - **N400**: On each trial, a red prime word was followed by a green target word. Participants responded whether the target word was semantically related or unrelated to the prime word.
+    - **P3**: The letters A, B, C, D, and E were presented in random order (p = .2 for each letter). One letter was designated the target for a given block of trials, and the other 4 letters were non-targets. Thus, the probability of the target category was .2, but the same physical stimulus served as a target in some blocks and a nontarget in others. Participants responded whether the letter presented on each trial was the target or a non-target for that block.
+    - **LRP & ERN**: A central arrowhead pointing to the left or right was flanked on both sides by arrowheads that pointed in the same direction (congruent trials) or the opposite direction (incongruent trials). Participants indicated the direction of the central arrowhead on each trial with a left- or right-hand buttonpress.
+
+
+    The continuous EEG was recorded using a Biosemi ActiveTwo recording system with active electrodes (Biosemi B.V., Amsterdam, the Netherlands). Recording from 30 scalp electrodes, mounted in an elastic cap and placed according to the International 10/20 System (FP1, F3, F7, FC3, C3, C5, P3, P7, P9, PO7, PO3, O1, Oz, Pz, CPz, FP2, Fz, F4, F8, FC4, FCz, Cz, C4, C6, P4, P8, P10, PO8, PO4, O2; see Supplementary Fig. S1). The common mode sense (CMS) electrode was located at PO1, and the driven right leg (DRL) electrode was located at PO2. The horizontal electrooculogram (HEOG) was recorded from electrodes placed lateral to the external canthus of each eye. The vertical electrooculogram (VEOG) was recorded from an electrode placed below the right eye. Signals were incidentally also recorded from 37 other sites, but these sites were not monitored during the recording and are not included in the ERP CORE data set. All signals were low-pass filtered using a fifth order sinc filter with a half-power cutoff at 204.8 Hz and then digitized at 1024 Hz with 24 bits of resolution. The signals were recorded in single-ended mode (i.e., measuring the voltage between the active and ground electrodes without the use of a reference), and referencing was performed offline
+
+    References
+    ----------
+    .. [1] Emily S. Kappenman, Jaclyn L. Farrens, Wendy Zhang, Andrew X. Stewart, Steven J. Luck. (2020). ERP CORE: An open resource
+       for human event-related potential research. NeuroImage. DOI: https://doi.org/10.1016/j.neuroimage.2020.117465
+
+    .. [2] Emily S. Kappenman, Jaclyn L. Farrens, Wendy Zhang, Andrew X. Stewart, Steven J. Luck.
+        ERP CORE: An open resource for human event-related potential research. DOI: https://doi.org/10.1016/j.neuroimage.2020.117465
+
+    """
 
     def __init__(self, task):
         if task == "N170":
@@ -125,8 +156,13 @@ class Erpcore2021(BaseDataset):
         # Read the events data
         original_events = pd.read_csv(events_path, sep="\t")
         file_path = self.data_path(1)[0]
-        json_file = pd.read_json(file_path)
-        self.meta_info = json_file["value"]["Levels"]
+
+        with open(file_path, encoding="utf-8") as file:
+            data = json.load(file)
+
+        # Extract the value mapping
+        self.meta_info = data["value"]["Levels"]
+
         # if self.meta_info is not None:
         #    return self.meta_info, original_events
 
@@ -350,7 +386,25 @@ class Erpcore2021(BaseDataset):
 
 
 class Erpcore2021_N170(Erpcore2021):
-    """ """
+    """
+
+    Dataset [1]_ from the study on XX [2]_.
+
+    .. admonition:: Dataset summary
+
+
+        ================  =======  =======  =================  ===============  ===============  ===========
+        Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
+        ================  =======  =======  =================  ===============  ===============  ===========
+        Erpcore2021_N170       40       30                40               1s           1024Hz            1
+        ================  =======  =======  =================  ===============  ===============  ===========
+
+
+
+    References
+    ----------
+    .. [1]
+    """
 
     __init__ = partialmethod(Erpcore2021.__init__, "N170")
 
