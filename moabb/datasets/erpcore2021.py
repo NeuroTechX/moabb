@@ -100,13 +100,13 @@ class Erpcore2021(BaseDataset):
             doi="10.1016/j.neuroimage.2020.117465",
         )
 
-    def load_meta_info(self):
-        """
-        Load original value mapping from a JSON file.
-        """
-        file_path = self.data_path(1)[0]
-        json_file = pd.read_json(file_path)
-        self.meta_info = json_file["value"]["Levels"]
+    # def load_meta_info(self):
+    #    """
+    #    Load original value mapping from a JSON file.
+    #    """
+    #    file_path = self.data_path(1)[0]
+    #    json_file = pd.read_json(file_path)
+    #    self.meta_info = json_file["value"]["Levels"]
 
     def get_meta_data(self, subject):
         """
@@ -124,10 +124,13 @@ class Erpcore2021(BaseDataset):
         events_path = self.events_path(subject)
         # Read the events data
         original_events = pd.read_csv(events_path, sep="\t")
-        if self.meta_info is not None:
-            return self.meta_info, original_events
+        file_path = self.data_path(1)[0]
+        json_file = pd.read_json(file_path)
+        self.meta_info = json_file["value"]["Levels"]
+        # if self.meta_info is not None:
+        #    return self.meta_info, original_events
 
-        return original_events
+        return self.meta_info, original_events
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
@@ -146,7 +149,7 @@ class Erpcore2021(BaseDataset):
         file_path = self.data_path(subject)[0]
 
         # Load the meta_data
-        self.load_meta_info()
+        # self.load_meta_info()
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -226,8 +229,6 @@ class Erpcore2021(BaseDataset):
 
         Parameters
         ----------
-        task : str
-            The task for which to download the dataset.
         path : str | None
             The path to the directory where the dataset should be downloaded.
             If None, the default directory is used.
@@ -245,7 +246,7 @@ class Erpcore2021(BaseDataset):
         if path is not None:
             path = Path(path) / DATASET_PARAMS[self.task]["folder_name"]
         else:
-            path = DATASET_PARAMS[self.task]["folder_name"]
+            path = Path.home() / "mne_data" / DATASET_PARAMS[self.task]["folder_name"]
 
         download_path = fetch_dataset(
             DATASET_PARAMS[self.task],
@@ -355,41 +356,33 @@ class Erpcore2021_N170(Erpcore2021):
 
     @staticmethod
     def encode_event(row):
-        """
-        Encode a single event values based on the task specific criteria.
-
-        Parameters
-        ----------
-        row : pd.Series
-            A row of the events DataFrame.
-
-        Returns
-        -------
-        str
-            Encoded event value.
-        """
-
         value = row["value"]
+        # Stimulus - faces and cars
         if 1 <= value <= 80:
             return f"00{value:02d}"
+        # Stimulus - scrambled faces and cars
         if 101 <= value <= 180:
             return f"01{value - 100:02d}"
+        # Response - correct
         if value == 201:
             return "11"
+        # Response - error
         if value == 202:
             return "10"
 
-        return "Unknown"
+        return value
 
     def encoding(self, events_df):
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
+        # Stimulus - faces : 1 - 40 and Stimulus - cars : 41 - 80
         mapping = {
             f"00{val:02d}": f"Stimulus - {desc}"
             for val, desc in zip(range(1, 81), ["faces"] * 40 + ["cars"] * 40)
         }
+        # Stimulus - scrambled faces : 101 - 140 and Stimulus - scrambled cars : 141 - 180
         mapping.update(
             {
                 f"01{val:02d}": f"Stimulus - scrambled {desc}"
