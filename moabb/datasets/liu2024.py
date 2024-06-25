@@ -88,7 +88,7 @@ class Liu2024(BaseDataset):
         super().__init__(
             subjects=list(range(1, 50 + 1)),
             sessions_per_subject=1,
-            events={"left_hand": 2, "right_hand": 4, "break": 3, "instr": 1},
+            events={"left_hand": 1, "right_hand": 2, "instr": 3, "break": 4},
             code="Liu2024",
             interval=(2, 6),
             paradigm="imagery",
