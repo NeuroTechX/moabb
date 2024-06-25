@@ -1,5 +1,9 @@
 """
 Erpcore2021 dataset
+
+# Author: Taha Habib <tahahb123@gmail.com>
+
+# License: BSD (3-clause)
 """
 
 import os
@@ -20,7 +24,8 @@ from moabb.datasets.base import BaseDataset
 
 OSF_BASE_URL = "https://files.osf.io/v1/resources/"
 
-# Ids for the buckets on OSF and the folder OSF hash.
+# Ids for the buckets on OSF and the folder OSF hash
+# To download data from osf for each task
 OSF_IDS = {
     "ERN": ["q6gwp", "600df65e75226b017d517f6d"],
     "LRP": ["28e6c", "600dffbf327cbe019d7b6a0c"],
@@ -197,6 +202,7 @@ class Erpcore2021(BaseDataset):
         # Read the events data
         original_events = pd.read_csv(events_path, sep="\t")
 
+        # Read the JSON file containing the original value mapping
         json_file_data = pd.read_json(OSF_BASE_URL + OSF_JSON[self.task])
 
         # Extract the value mapping
@@ -315,12 +321,14 @@ class Erpcore2021(BaseDataset):
         if path is not None:
             path = Path(path) / DATASET_PARAMS[self.task]["folder_name"]
         else:
+            # Default path is in the user's home directory under 'mne_data'
             path = Path.home() / "mne_data" / DATASET_PARAMS[self.task]["folder_name"]
 
-        # Check if the dataset already exists
+        # Check if the dataset already exists and force_update is False
         if not force_update and path.exists():
             return path
 
+        # Download and extract the dataset
         _ = fetch_dataset(
             DATASET_PARAMS[self.task],
             path=path,
@@ -433,6 +441,13 @@ class Erpcore2021_N170(Erpcore2021):
         Erpcore2021_N170       40       30                80               1s           1024Hz            1
         ================  =======  =======  =================  ===============  ===============  ===========
 
+    Description of the task:
+
+    Subjects viewed faces and objects to elicit the N170 component. In this task,
+    an image of a face, car, scrambled face, or scrambled car was presented on each trial in
+    the center of the screen, and participants responded whether the stimulus was an “object”
+    (face or car) or a “texture” (scrambled face or scrambled car).
+
     """
 
     __init__ = partialmethod(Erpcore2021.__init__, "N170")
@@ -485,7 +500,12 @@ class Erpcore2021_MMN(Erpcore2021):
     Erpcore2021_MMN       40       30   800 Deviant/200 Standard              1s           1024Hz            1
     ================  =======  =======  =========================  ===============  ===============  ===========
 
+    Description of the task:
 
+    Subjects were exposed to a sequence of auditory stimuli to evoke the mismatch
+    negativity response, indicating automatic detection of deviant sounds.  Standard tones
+    (presented at 80 dB, with p = .8) and deviant tones (presented at 70 dB, with p = .2)
+    were presented over speakers while participants watched a silent video and ignored the tones.
     """
 
     __init__ = partialmethod(Erpcore2021.__init__, "MMN")
@@ -524,6 +544,11 @@ class Erpcore2021_N2pc(Erpcore2021):
     Erpcore2021_N2pc       40       30               160               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
+    Description of the task:
+
+    Participants were given a target color of pink or blue at the beginning of a
+    trial block, and responded on each trial whether the gap in the target color square was
+    on the top or bottom.
     """
 
     __init__ = partialmethod(Erpcore2021.__init__, "N2pc")
@@ -562,6 +587,14 @@ class Erpcore2021_P3(Erpcore2021):
     Erpcore2021_P3       40       30      160 NT / 40 T                1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
+    Description of the task:
+
+    The letters A, B, C, D, and E were presented in random order (p = .2 for each
+    letter). One letter was designated the target for a given block of trials, and the other
+    4 letters were non-targets. Thus, the probability of the target category was .2, but the
+    same physical stimulus served as a target in some blocks and a nontarget in others.
+    Participants responded whether the letter presented on each trial was the target or a
+    non-target for that block.
     """
 
     __init__ = partialmethod(Erpcore2021.__init__, "P3")
@@ -623,6 +656,11 @@ class Erpcore2021_N400(Erpcore2021):
     Erpcore2021_N400       40       30                60               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
+    Description of the task:
+
+    On each trial, a red prime word was followed by a green target word.
+    Participants responded whether the target word was semantically related or unrelated
+    to the prime word.
     """
 
     __init__ = partialmethod(Erpcore2021.__init__, "N400")
@@ -663,9 +701,15 @@ class Erpcore2021_ERN(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_ERN       40       30            402 All               1s           1024Hz            1
+    Erpcore2021_ERN       40       30            400 All               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
+    Description of the task:
+
+    A central arrowhead pointing to the left or right was flanked on both
+    sides by arrowheads that pointed in the same direction (congruent trials) or the opposite
+    direction (incongruent trials). Participants indicated the direction of the central
+    arrowhead on each trial with a left- or right-hand buttonpress.
     """
 
     __init__ = partialmethod(Erpcore2021.__init__, "ERN")
@@ -683,7 +727,9 @@ class Erpcore2021_ERN(Erpcore2021):
         return value
 
     def encoding(self, events_df):
-
+        # Remove first and second rows, which correspond to 'Response'
+        # before the the beginning of the trials
+        events_df.drop(events_df.index[:2], inplace=True)
         # Keep rows corresponding to the responses
         events_df.drop(
             events_df[
@@ -709,9 +755,15 @@ class Erpcore2021_LRP(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_LRP       40       30            402 All               1s           1024Hz            1
+    Erpcore2021_LRP       40       30            400 All               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
+    Description of the task:
+
+    A central arrowhead pointing to the left or right was flanked on both
+    sides by arrowheads that pointed in the same direction (congruent trials) or the opposite
+    direction (incongruent trials). Participants indicated the direction of the central
+    arrowhead on each trial with a left- or right-hand buttonpress.
     """
 
     __init__ = partialmethod(Erpcore2021.__init__, "LRP")
@@ -729,6 +781,9 @@ class Erpcore2021_LRP(Erpcore2021):
 
     def encoding(self, events_df):
 
+        # Remove first and second rows, which correspond to
+        # 'Response' before the the beginning of the trials
+        events_df.drop(events_df.index[:2], inplace=True)
         # Keep rows corresponding to the responses
         events_df.drop(
             events_df[
