@@ -17,7 +17,7 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
-- None
+- Add ERP CORE datasets :class:`moabb.datasets.ErpCore2021` dataset (:gh:`627` by `Taha Habib`_)
 
 Bugs
 ~~~~
