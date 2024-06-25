@@ -2,7 +2,6 @@
 Erpcore2021 dataset
 """
 
-import json
 import os
 import warnings
 from abc import abstractmethod
@@ -30,6 +29,17 @@ OSF_IDS = {
     "N2pc": ["yefrq", "60077f09ba010908a4892b3a"],
     "N400": ["29xpq", "6007857286541a092614c5d3"],
     "P3": ["etdkz", "60077b04ba010908a78927e9"],
+}
+
+# URLs for JSON files containing the original value mapping
+OSF_JSON = {
+    "N170": "pfde9/providers/osfstorage/60077b01ba010908a78927da?",
+    "MMN": "5q4xs/providers/osfstorage/60078d9e86541a092c15ebbe?",
+    "N2pc": "yefrq/providers/osfstorage/6007856fba010908a2892c48?",
+    "P3": "etdkz/providers/osfstorage/60077f07e80d3708e6a57d56?",
+    "N400": "29xpq/providers/osfstorage/60078961e80d3708e3a57da1?",
+    "LRP": "28e6c/providers/osfstorage/600e039db6416f01c5b03286?",
+    "ERN": "q6gwp/providers/osfstorage/600dfa3eb6416f01b7b0467f?",
 }
 
 
@@ -157,7 +167,6 @@ class Erpcore2021(BaseDataset):
             raise ValueError(f"Unknown task {task}")
 
         self.task = task
-        # self.meta_info = None
 
         super().__init__(
             subjects=list(range(1, 40 + 1)),
@@ -169,14 +178,6 @@ class Erpcore2021(BaseDataset):
             doi="10.1016/j.neuroimage.2020.117465",
         )
 
-    # def load_meta_info(self):
-    #    """
-    #    Load original value mapping from a JSON file.
-    #    """
-    #    file_path = self.data_path(1)[0]
-    #    json_file = pd.read_json(file_path)
-    #    self.meta_info = json_file["value"]["Levels"]
-
     def get_meta_data(self, subject):
         """
         Retrieve original events mapping and original event data for a given subject.
@@ -186,7 +187,9 @@ class Erpcore2021(BaseDataset):
         subject : int
             The subject number for which to retrieve data.
 
-        Returns ------- tuple A tuple containing the original events mapping
+        Returns
+        -------
+        tuple A tuple containing the original events mapping
         and the original events DataFrame.
         """
         # Get the path to the events file for the subject
@@ -194,18 +197,12 @@ class Erpcore2021(BaseDataset):
         # Read the events data
         original_events = pd.read_csv(events_path, sep="\t")
 
-        file_path = self.data_path(1)[0]
-
-        with open(file_path, encoding="utf-8") as file:
-            data = json.load(file)
+        json_file_data = pd.read_json(OSF_BASE_URL + OSF_JSON[self.task])
 
         # Extract the value mapping
-        meta_info = data["value"]["Levels"]
+        original_mapping = json_file_data["value"]["Levels"]
 
-        # if self.meta_info is not None:
-        #    return self.meta_info, original_events
-
-        return meta_info, original_events
+        return original_mapping, original_events
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
@@ -222,9 +219,6 @@ class Erpcore2021(BaseDataset):
         """
         # Get the file path for the subject's data
         file_path = self.data_path(subject)[0]
-
-        # Load the meta_data
-        # self.load_meta_info()
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -325,10 +319,9 @@ class Erpcore2021(BaseDataset):
 
         # Check if the dataset already exists
         if not force_update and path.exists():
-            print(f"Dataset already exists at {path}. Skipping download.")
             return path
 
-        fetch_dataset(
+        _ = fetch_dataset(
             DATASET_PARAMS[self.task],
             path=path,
             force_update=force_update,
@@ -670,7 +663,7 @@ class Erpcore2021_ERN(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_ERN       40       30            Depends               1s           1024Hz            1
+    Erpcore2021_ERN       40       30            402 All               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
     """
@@ -716,7 +709,7 @@ class Erpcore2021_LRP(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_LRP       40       30            Depends               1s           1024Hz            1
+    Erpcore2021_LRP       40       30            402 All               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
     """
