@@ -145,7 +145,7 @@ class Erpcore2021(BaseDataset):
 
         elif task == "N400":
             interval = (-0.2, 0.8)
-            events = dict(related=0, unrelated=1, response_correct=2, response_error=3)
+            events = dict(related=1, unrelated=2, response_correct=3, response_error=4)
 
         elif task == "ERN":
             interval = (-0.8, 0.2)
@@ -193,6 +193,7 @@ class Erpcore2021(BaseDataset):
         events_path = self.events_path(subject)
         # Read the events data
         original_events = pd.read_csv(events_path, sep="\t")
+
         file_path = self.data_path(1)[0]
 
         with open(file_path, encoding="utf-8") as file:
@@ -327,14 +328,14 @@ class Erpcore2021(BaseDataset):
             print(f"Dataset already exists at {path}. Skipping download.")
             return path
 
-        download_path = fetch_dataset(
+        fetch_dataset(
             DATASET_PARAMS[self.task],
             path=path,
             force_update=force_update,
             update_path=update_path,
             processor=pooch.Unzip(extract_dir=path),
         )
-        return download_path
+        return path
 
     def events_path(self, subject):
         """
@@ -527,7 +528,7 @@ class Erpcore2021_N2pc(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_N2pc       40       30                                 1s           1024Hz            1
+    Erpcore2021_N2pc       40       30               160               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
     """
@@ -554,7 +555,7 @@ class Erpcore2021_N2pc(Erpcore2021):
         # Create the mapping dictionary
         mapping = {
             "1": "Stimulus - target left",
-            "2": "Stimulus - target left",
+            "2": "Stimulus - target right",
         }
 
         return encoded_column.values, mapping
@@ -565,7 +566,7 @@ class Erpcore2021_P3(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_P3       40       30                                 1s           1024Hz            1
+    Erpcore2021_P3       40       30      160 NT / 40 T                1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
     """
@@ -626,7 +627,7 @@ class Erpcore2021_N400(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_N400       40       30                                 1s           1024Hz            1
+    Erpcore2021_N400       40       30                60               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
     """
@@ -669,14 +670,15 @@ class Erpcore2021_ERN(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_ERN       40       30                                 1s           1024Hz            1
+    Erpcore2021_ERN       40       30            Depends               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
     """
 
     __init__ = partialmethod(Erpcore2021.__init__, "ERN")
 
-    def encode_event(self, row):
+    @staticmethod
+    def encode_event(row):
         value = row["value"]
         # correct
         if value in {111, 121, 212, 222}:
@@ -714,7 +716,7 @@ class Erpcore2021_LRP(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_LRP       40       30                                 1s           1024Hz            1
+    Erpcore2021_LRP       40       30            Depends               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
     """
