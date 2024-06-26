@@ -19,7 +19,7 @@ from moabb.datasets.base import BaseDataset
 # Link to the raw data
 LIU2024_URL = "https://figshare.com/ndownloader/files/38516654"
 
-# Links to the channels, electrodes and events information files
+# Links to the electrodes and events information files
 LIU2024_ELECTRODES = "https://figshare.com/ndownloader/files/38516078"
 LIU2024_EVENTS = "https://figshare.com/ndownloader/files/38516084"
 
@@ -32,11 +32,11 @@ class Liu2024(BaseDataset):
     .. admonition:: Dataset summary
 
 
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        Liu2024        50       29         2                40              4s           500Hz           1
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
+        ========= ======== ======= ========== ================= ============ =============== ===========
+        Name      #Subj    #Chan   #Classes   #Trials / class   Trials len   Sampling rate   #Sessions
+        ========= ======== ======= ========== ================= ============ =============== ===========
+        Liu2024   50       29      2          40                4s           500Hz           1
+        ========= ======== ======= ========== ================= ============ =============== ===========
 
 
     **Dataset description**
@@ -164,25 +164,24 @@ class Liu2024(BaseDataset):
 
         Notes
         -----
-        # The 'trial_type' variable can take the following values:
-        # - 1 : Left hand
-        # - 2 : Right hand
-        # However, for convenience, we map these values to 0 and 1 respectively.
+        The 'trial_type' variable can take the following values:
+         - 1 : Left hand
+         - 2 : Right hand
 
-        # The 'value' variable can take the following values:
-        # - 1 : instructions
-        # - 2 : MI
-        # - 3 : break
+        The 'value' variable can take the following values:
+         - 1 : instructions
+         - 2 : MI
+         - 3 : break
 
         """
         # Define the mapping dictionary
         encoding_mapping = {
-            (2, 2): 0,  # Left hand, MI
-            (1, 2): 1,  # Right hand, MI
-            (1, 1): 2,  # Right hand, instructions
-            (1, 3): 3,  # Right hand, break
-            (2, 1): 2,  # Left hand, instructions
-            (2, 3): 3,  # Left hand, break
+            (2, 2): 1,  # Left hand, MI
+            (1, 2): 2,  # Right hand, MI
+            (1, 1): 3,  # Right hand, instructions
+            (1, 3): 4,  # Right hand, break
+            (2, 1): 3,  # Left hand, instructions
+            (2, 3): 4,  # Left hand, break
         }
 
         mapping = {
@@ -255,7 +254,7 @@ class Liu2024(BaseDataset):
     def data_infos(self):
         """Returns the data paths of the electrodes and events information
 
-        This function downloads the necessary data files for channels, electrodes,
+        This function downloads the necessary data files for electrodes
         and events from their respective URLs and returns their local file paths.
 
         Returns
