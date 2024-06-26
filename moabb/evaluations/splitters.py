@@ -7,7 +7,7 @@ from sklearn.model_selection import (
 )
 
 
-class WithinSubjectSplitter(BaseCrossValidator):
+class WithinSessionSplitter(BaseCrossValidator):
     """Data splitter for within session evaluation.
 
     Within-session evaluation uses k-fold cross_validation to determine train
@@ -18,6 +18,37 @@ class WithinSubjectSplitter(BaseCrossValidator):
     ----------
     n_folds : int
         Number of folds. Must be at least 2.
+
+    Examples
+    -----------
+
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> from moabb.evaluations.splitters import WithinSessionSplitter
+    >>> X = np.array([[1, 2], [3, 4], [5, 6], [1,4], [7, 4], [5, 8], [0,3], [2,4]])
+    >>> y = np.array([1, 2, 1, 2, 1, 2, 1, 2])
+    >>> subjects = np.array([1, 1, 1, 1, 1, 1, 1, 1])
+    >>> sessions = np.array(['T', 'T', 'E', 'E', 'T', 'T', 'E', 'E'])
+    >>> metadata = pd.DataFrame(data={'subject': subjects, 'session': sessions})
+    >>> csess = WithinSessionSplitter(2)
+    >>> csess.get_n_splits(metadata)
+    >>> for i, (train_index, test_index) in enumerate(csess.split(X, y, metadata)):
+    ...    print(f"Fold {i}:")
+    ...    print(f"  Train: index={train_index}, group={subjects[train_index]}, session={sessions[train_index]}")
+    ...    print(f"  Test:  index={test_index}, group={subjects[test_index]}, sessions={sessions[test_index]}")
+    Fold 0:
+      Train: index=[2 7], group=[1 1], session=['E' 'E']
+      Test:  index=[3 6], group=[1 1], sessions=['E' 'E']
+    Fold 1:
+      Train: index=[3 6], group=[1 1], session=['E' 'E']
+      Test:  index=[2 7], group=[1 1], sessions=['E' 'E']
+    Fold 2:
+      Train: index=[4 5], group=[1 1], session=['T' 'T']
+      Test:  index=[0 1], group=[1 1], sessions=['T' 'T']
+    Fold 3:
+      Train: index=[0 1], group=[1 1], session=['T' 'T']
+      Test:  index=[4 5], group=[1 1], sessions=['T' 'T']
+
 
     """
 
@@ -31,8 +62,7 @@ class WithinSubjectSplitter(BaseCrossValidator):
     def split(self, X, y, metadata, **kwargs):
 
         subjects = metadata.subject.values
-
-        split = IndividualWithinSubjectSplitter(self.n_folds)
+        cv = StratifiedKFold(n_splits=self.n_folds, shuffle=True, **kwargs)
 
         for subject in np.unique(subjects):
             mask = subjects == subject
@@ -42,10 +72,23 @@ class WithinSubjectSplitter(BaseCrossValidator):
                 metadata[mask],
             )
 
-            yield split.split(X_, y_, meta_, **kwargs)
+            sessions = meta_.session.values
 
+            for session in np.unique(sessions):
+                mask_s = sessions == session
+                X_s, y_s, meta_s = (
+                    X_[mask_s],
+                    y_[mask_s],
+                    meta_[mask_s],
+                )
 
-class IndividualWithinSubjectSplitter(BaseCrossValidator):
+                for ix_train, ix_test in cv.split(X_s, y_s):
+
+                    ix_train_global = np.where(mask)[0][np.where(mask_s)[0][ix_train]]
+                    ix_test_global = np.where(mask)[0][np.where(mask_s)[0][ix_test]]
+                    yield ix_train_global, ix_test_global
+
+class IndividualWithinSessionSplitter(BaseCrossValidator):
     """Data splitter for within session evaluation.
 
     Within-session evaluation uses k-fold cross_validation to determine train
@@ -101,6 +144,36 @@ class CrossSessionSplitter(BaseCrossValidator):
         Not used. For compatibility with other cross-validation splitters.
         Default:None
 
+    Examples
+    ----------
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> from moabb.evaluations.splitters import CrossSessionSplitter
+    >>> X = np.array([[1, 2], [3, 4], [5, 6], [7, 8], [8, 9], [5, 4], [2, 5], [1, 7]])
+    >>> y = np.array([1, 2, 1, 2, 1, 2, 1, 2])
+    >>> subjects = np.array([1, 1, 1, 1, 2, 2, 2, 2])
+    >>> sessions = np.array(['T', 'T', 'E', 'E', 'T', 'T', 'E', 'E'])
+    >>> metadata = pd.DataFrame(data={'subject': subjects, 'session': sessions})
+    >>> csess = CrossSessionSplitter()
+    >>> csess.get_n_splits(metadata)
+    4
+    >>> for i, (train_index, test_index) in enumerate(csess.split(X, y, metadata)):
+    ...     print(f"Fold {i}:")
+    ...     print(f"  Train: index={train_index}, group={subjects[train_index]}, session={sessions[train_index]}")
+    ...     print(f"  Test:  index={test_index}, group={subjects[test_index]}, sessions={sessions[test_index]}")
+    Fold 0:
+      Train: index=[0 1], group=[1 1], session=['T' 'T']
+      Test:  index=[2 3], group=[1 1], sessions=['E' 'E']
+    Fold 1:
+      Train: index=[2 3], group=[1 1], session=['E' 'E']
+      Test:  index=[0 1], group=[1 1], sessions=['T' 'T']
+    Fold 2:
+      Train: index=[4 5], group=[2 2], session=['T' 'T']
+      Test:  index=[6 7], group=[2 2], sessions=['E' 'E']
+    Fold 3:
+      Train: index=[6 7], group=[2 2], session=['E' 'E']
+      Test:  index=[4 5], group=[2 2], sessions=['T' 'T']
+
     """
 
     def __init__(self, n_folds=None):
@@ -123,7 +196,10 @@ class CrossSessionSplitter(BaseCrossValidator):
                 metadata[mask],
             )
 
-            yield split.split(X_, y_, meta_)
+            for ix_train, ix_test in split.split(X_, y_, meta_):
+                ix_train = np.where(mask)[0][ix_train]
+                ix_test = np.where(mask)[0][ix_test]
+                yield ix_train, ix_test
 
 
 class IndividualCrossSessionSplitter(BaseCrossValidator):
@@ -153,7 +229,6 @@ class IndividualCrossSessionSplitter(BaseCrossValidator):
         return np.unique(sessions)
 
     def split(self, X, y, metadata):
-
         assert len(np.unique(metadata.subject)) == 1
 
         cv = LeaveOneGroupOut()
@@ -176,14 +251,43 @@ class CrossSubjectSplitter(BaseCrossValidator):
         If None, Leave-One-Subject-Out is performed.
         If int, Leave-k-Subjects-Out is performed.
 
+        Examples
+    --------
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> from moabb.evaluations.splitters import CrossSubjectSplitter
+    >>> X = np.array([[1, 2], [3, 4], [5, 6], [7, 8],[8,9],[5,4],[2,5],[1,7]])
+    >>> y = np.array([1, 2, 1, 2, 1, 2, 1, 2])
+    >>> subjects = np.array([1, 1, 2, 2, 3, 3, 4, 4])
+    >>> metadata = pd.DataFrame(data={'subject': subjects})
+    >>> csubj = CrossSubjectSplitter()
+    >>> csubj.get_n_splits(metadata)
+    4
+    >>> for i, (train_index, test_index) in enumerate(csubj.split(X, y, metadata)):
+    ...     print(f"Fold {i}:")
+    ...     print(f"  Train: index={train_index}, group={subjects[train_index]}")
+    ...     print(f"  Test:  index={test_index}, group={subjects[test_index]}")
+    Fold 0:
+      Train: index=[2 3 4 5 6 7], group=[2 2 3 3 4 4]
+      Test:  index=[0 1], group=[1 1]
+    Fold 1:
+      Train: index=[0 1 4 5 6 7], group=[1 1 3 3 4 4]
+      Test:  index=[2 3], group=[2 2]
+    Fold 2:
+      Train: index=[0 1 2 3 6 7], group=[1 1 2 2 4 4]
+      Test:  index=[4 5], group=[3 3]
+    Fold 3:
+      Train: index=[0 1 2 3 4 5], group=[1 1 2 2 3 3]
+      Test:  index=[6 7], group=[4 4]
+
 
     """
 
-    def __init__(self, n_groups):
+    def __init__(self, n_groups=None):
         self.n_groups = n_groups
 
-    def get_n_splits(self, dataset=None):
-        return self.n_groups
+    def get_n_splits(self, X, y, metadata):
+        return len(metadata.subject.unique())
 
     def split(self, X, y, metadata):
 
@@ -196,5 +300,4 @@ class CrossSubjectSplitter(BaseCrossValidator):
             cv = GroupKFold(n_splits=self.n_groups)
 
         for ix_train, ix_test in cv.split(metadata, groups=groups):
-
             yield ix_train, ix_test
