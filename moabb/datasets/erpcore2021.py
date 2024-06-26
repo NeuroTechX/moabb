@@ -136,38 +136,38 @@ class Erpcore2021(BaseDataset):
         if task == "N170":
             interval = (-0.2, 0.8)
             events = {
-                "Stimulus - car - normal": 1,
-                "Stimulus - car - scrambled": 2,
-                "Stimulus - face - normal": 3,
-                "Stimulus - face - scrambled": 4,
-                "Response - correct": 5,
-                "Response - error": 6,
+                "Target": 1,
+                "NonTarget": 2,
             }
         elif task == "MMN":
             interval = (-0.2, 0.8)
-            events = {"Stimulus - deviant:70": 1, "Stimulus - standard:80": 2}
+            # Stimulus - deviant:70 : 1, Stimulus - standard:80: 2
+            events = {"Target": 1, "NonTarget": 2}
         elif task == "N2pc":
             interval = (-0.2, 0.8)
+            # Target left: 0, Target right: 1,
             events = {
-                "Target left": 0,
-                "Target right": 1,
-                "response_correct": 2,
-                "response_error": 3,
+                "Target": 1,
+                "NonTarget": 2,
             }
         elif task == "P3":
             interval = (-0.2, 0.8)
-            events = dict(match=1, no_match=2, response_correct=3, response_error=4)
+            # match=1, no_match=2
+            events = {"Target": 1, "NonTarget": 2}
 
         elif task == "N400":
             interval = (-0.2, 0.8)
-            events = dict(related=1, unrelated=2, response_correct=3, response_error=4)
+            # related=1, unrelated=2
+            events = {"Target": 1, "NonTarget": 2}
 
         elif task == "ERN":
             interval = (-0.8, 0.2)
-            events = dict(right=1, left=2)
+            # right = 1, left = 2
+            events = {"Target": 1, "NonTarget": 2}
         elif task == "LRP":
             interval = (-0.6, 0.4)
-            events = dict(right=1, left=2)
+            # right = 1, left = 2
+            events = {"Target": 1, "NonTarget": 2}
         else:
             raise ValueError(f"Unknown task {task}")
 
@@ -455,22 +455,16 @@ class Erpcore2021_N170(Erpcore2021):
     @staticmethod
     def encode_event(row):
         value = row["value"]
-        # Stimulus - faces and cars  :  Stimulus - faces : 1 - 40 and Stimulus - cars : 41 - 80
-        if 1 <= value <= 80:
-            return f"00{value:02d}"
-        # Stimulus - scrambled faces and cars : Stimulus - scrambled faces : 101 - 140 and Stimulus - scrambled cars : 141 - 180
-        if 101 <= value <= 180:
-            return f"01{value - 100:02d}"
-        # Response - correct
-        if value == 201:
-            return "11"
-        # Response - error
-        if value == 202:
-            return "10"
-
-        return value
+        # Stimulus - faces
+        if 1 <= value <= 40:
+            return "1"
+        else:
+            return "2"
 
     def encoding(self, events_df):
+        # Drop rows corresponding to the responses
+        events_df.drop(events_df[events_df["value"].isin([201, 202])].index, inplace=True)
+
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
@@ -487,8 +481,6 @@ class Erpcore2021_N170(Erpcore2021):
                 for val, desc in zip(range(1, 81), ["faces"] * 40 + ["cars"] * 40)
             }
         )
-        mapping.update({"11": "Response - correct", "10": "Response - error"})
-
         return encoded_column.values, mapping
 
 
