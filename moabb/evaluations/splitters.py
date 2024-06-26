@@ -88,6 +88,7 @@ class WithinSessionSplitter(BaseCrossValidator):
                     ix_test_global = np.where(mask)[0][np.where(mask_s)[0][ix_test]]
                     yield ix_train_global, ix_test_global
 
+
 class IndividualWithinSessionSplitter(BaseCrossValidator):
     """Data splitter for within session evaluation.
 
