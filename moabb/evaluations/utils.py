@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
+import numpy as np
 from numpy import argmax
 from sklearn.pipeline import Pipeline
 
@@ -212,3 +214,14 @@ def create_save_path(
         return str(path_save)
     else:
         print("No hdf5_path provided, models will not be saved.")
+
+
+def sort_group(groups):
+    runs_sort = []
+    pattern = r"([0-9]+)(|[a-zA-Z]+[a-zA-Z0-9]*)"
+    for i, group in enumerate(groups):
+        index, description = re.fullmatch(pattern, group).groups()
+        index = int(index)
+        runs_sort.append(index)
+    sorted_ix = np.argsort(runs_sort)
+    return groups[sorted_ix]
