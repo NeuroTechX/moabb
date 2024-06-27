@@ -439,7 +439,7 @@ class Erpcore2021_N170(Erpcore2021):
         ================  =======  =======  =================  ===============  ===============  ===========
         Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
         ================  =======  =======  =================  ===============  ===============  ===========
-        Erpcore2021_N170       40       30                80               1s           1024Hz            1
+        Erpcore2021_N170       40       30     240 NT / 80 T               1s           1024Hz            1
         ================  =======  =======  =================  ===============  ===============  ===========
 
     Description of the task:
@@ -484,7 +484,7 @@ class Erpcore2021_MMN(Erpcore2021):
     ================  =======  =======  =========================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class            Trials length    Sampling rate     #Sessions
     ================  =======  =======  =========================  ===============  ===============  ===========
-    Erpcore2021_MMN       40       30   800 Deviant/200 Standard              1s           1024Hz            1
+    Erpcore2021_MMN       40       30   800 NT / 200 T              1s           1024Hz            1
     ================  =======  =======  =========================  ===============  ===============  ===========
 
     Description of the task:
@@ -502,15 +502,15 @@ class Erpcore2021_MMN(Erpcore2021):
         value = row["value"]
         # Standard stimulus and first stream of standards"
         if value in {80, 180}:
-            return "01"
+            return "1"
         # Deviant stimulus
         if value == 70:
-            return "02"
+            return "2"
         return value
 
     def encoding(self, events_df):
-        # Remove first and last rows, which correspond to trial_type STATUS
-        events_df.drop([0, len(events_df) - 1], inplace=True)
+        # Remove rows which correspond to trial_type = STATUS
+        events_df.drop(events_df[events_df["trial_type"] == "STATUS"].index, inplace=True)
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
@@ -531,7 +531,7 @@ class Erpcore2021_N2pc(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_N2pc       40       30               160               1s           1024Hz            1
+    Erpcore2021_N2pc       40       30    160 NT / 160 T               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
     Description of the task:
@@ -650,7 +650,7 @@ class Erpcore2021_N400(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_N400       40       30                60               1s           1024Hz            1
+    Erpcore2021_N400       40       30      60 NT / 60 T               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
     Description of the task:
@@ -701,7 +701,7 @@ class Erpcore2021_ERN(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_ERN       40       30            400 All               1s           1024Hz            1
+    Erpcore2021_ERN       40       30          ~ 400 All               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
     Description of the task:
@@ -727,9 +727,25 @@ class Erpcore2021_ERN(Erpcore2021):
         return value
 
     def encoding(self, events_df):
-        # Remove first and second rows, which correspond to 'Response'
-        # before the the beginning of the trials
-        events_df.drop(events_df.index[:2], inplace=True)
+        # Check the first two rows if both are 'Response'
+        if (
+            events_df.iloc[0]["trial_type"] == "response"
+            and events_df.iloc[1]["trial_type"] == "response"
+        ):
+            events_df.drop(events_df.index[:2], inplace=True)
+            events_df.reset_index(drop=True, inplace=True)
+
+        # Check and drop the first row if it starts with 'Response'
+        if events_df.iloc[0]["trial_type"] == "response":
+            events_df.drop(events_df.index[0], inplace=True)
+            events_df.reset_index(drop=True, inplace=True)
+
+        # Check and drop the last row if the last two rows are 'Response'
+        if (
+            events_df.iloc[-1]["trial_type"] == "response"
+            and events_df.iloc[-2]["trial_type"] == "response"
+        ):
+            events_df.drop(events_df.index[-1], inplace=True)
         # Keep rows corresponding to the responses
         events_df.drop(
             events_df[
@@ -757,7 +773,7 @@ class Erpcore2021_LRP(Erpcore2021):
     ================  =======  =======  =================  ===============  ===============  ===========
     Name                #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
     ================  =======  =======  =================  ===============  ===============  ===========
-    Erpcore2021_LRP       40       30            400 All               1s           1024Hz            1
+    Erpcore2021_LRP       40       30          ~ 400 All               1s           1024Hz            1
     ================  =======  =======  =================  ===============  ===============  ===========
 
     Description of the task:
@@ -783,9 +799,25 @@ class Erpcore2021_LRP(Erpcore2021):
 
     def encoding(self, events_df):
 
-        # Remove first and second rows, which correspond to
-        # 'Response' before the the beginning of the trials
-        events_df.drop(events_df.index[:2], inplace=True)
+        # Check the first two rows if both are 'Response'
+        if (
+            events_df.iloc[0]["trial_type"] == "response"
+            and events_df.iloc[1]["trial_type"] == "response"
+        ):
+            events_df.drop(events_df.index[:2], inplace=True)
+            events_df.reset_index(drop=True, inplace=True)
+
+        # Check and drop the first row if it starts with 'Response'
+        if events_df.iloc[0]["trial_type"] == "response":
+            events_df.drop(events_df.index[0], inplace=True)
+            events_df.reset_index(drop=True, inplace=True)
+
+        # Check and drop the last row if the last two rows are 'Response'
+        if (
+            events_df.iloc[-1]["trial_type"] == "response"
+            and events_df.iloc[-2]["trial_type"] == "response"
+        ):
+            events_df.drop(events_df.index[-1], inplace=True)
         # Keep rows corresponding to the responses
         events_df.drop(
             events_df[
