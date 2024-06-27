@@ -17,7 +17,7 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
-- None
+- - Add possibility to use RandomizedGridSearch (:gh:`630` by `Igor Carrara`_)
 
 Bugs
 ~~~~

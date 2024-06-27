@@ -56,7 +56,8 @@ class BaseEvaluation(ABC):
     cache_config: bool, default=None
         Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
     optuna:bool, default=False
-        If optuna is enable it will change the GridSearch to a RandomizedGridSearch with 15 minutes of cut off time
+        If optuna is enable it will change the GridSearch to a RandomizedGridSearch with 15 minutes of cut off time.
+        This option is compatible with list of entries of type None, bool, int, float and string
 
     Notes
     -----
@@ -281,10 +282,8 @@ class BaseEvaluation(ABC):
         optuna_params = {}
         for key, value in param_grid.items():
             if isinstance(value, list):
-                # import pdb
-                # pdb.set_trace()
-                optuna_params[key] = optuna.distributions.IntDistribution(
-                    min(value), max(value), step=1
+                optuna_params[key] = optuna.distributions.CategoricalDistribution(
+                    value
                 )
             else:
                 optuna_params[key] = value
