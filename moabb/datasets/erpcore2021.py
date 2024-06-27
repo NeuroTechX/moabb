@@ -231,6 +231,7 @@ class Erpcore2021(BaseDataset):
 
             # Read the subject's raw data and set the montage
             raw = read_raw_bids(bids_path=file_path, verbose=False)
+            raw.load_data()  # Preload the data because read_raw_bids does not load it
             raw = raw.set_montage("standard_1020", match_case=False)
 
         # Shift the stimulus event codes forward in time
@@ -458,6 +459,7 @@ class Erpcore2021_N170(Erpcore2021):
         # Stimulus - faces
         if 1 <= value <= 40:
             return "1"
+        # Other Stimulus
         return "2"
 
     def encoding(self, events_df):
@@ -468,9 +470,11 @@ class Erpcore2021_N170(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
+        # 1: Stimulus - normal face ,
+        # 2: Other Stimulus,
         mapping = {
-            "1": "Stimulus - normal face ",
-            "2": "Other Stimulus",
+            "1": "Target",
+            "2": "NonTarget",
         }
         return encoded_column.values, mapping
 
@@ -496,7 +500,7 @@ class Erpcore2021_MMN(Erpcore2021):
     @staticmethod
     def encode_event(row):
         value = row["value"]
-        # Standard stimulus
+        # Standard stimulus and first stream of standards"
         if value in {80, 180}:
             return "01"
         # Deviant stimulus
@@ -511,9 +515,12 @@ class Erpcore2021_MMN(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
+        # 01: Stimulus - standard,
+        # 02: Stimulus - deviant,
+
         mapping = {
-            "01": "Stimulus - standard",
-            "02": "Stimulus - deviant",
+            "1": "Target",
+            "2": "NonTarget",
         }
 
         return encoded_column.values, mapping
@@ -539,8 +546,10 @@ class Erpcore2021_N2pc(Erpcore2021):
     @staticmethod
     def encode_event(row):
         value = row["value"]
+        # 1: Stimulus - target left,
         if value in {111, 112, 211, 212}:
             return "1"
+        # 2: Stimulus - target right,
         elif value in {121, 122, 221, 222}:
             return "2"
         return value
@@ -554,9 +563,12 @@ class Erpcore2021_N2pc(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
+        # 1: Stimulus - target left,
+        # 2: Stimulus - target right,
+
         mapping = {
-            "1": "Stimulus - target left",
-            "2": "Stimulus - target right",
+            "1": "Target",
+            "2": "NonTarget",
         }
 
         return encoded_column.values, mapping
@@ -586,8 +598,10 @@ class Erpcore2021_P3(Erpcore2021):
     # keeping only the stimulus without the response
     def encode_event(row):
         value = row["value"]
+        # Match
         if value in {11, 22, 33, 44, 55}:
             return "1"
+        # No match
         if value in {
             21,
             31,
@@ -671,9 +685,12 @@ class Erpcore2021_N400(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
+        # 1: Stimulus - related word pair,
+        # 2: Stimulus - unrelated word pair
+
         mapping = {
-            "1": "Stimulus - related word pair",
-            "2": "Stimulus - unrelated word pair",
+            "1": "Target",
+            "2": "NonTarget",
         }
 
         return encoded_column.values, mapping
@@ -700,10 +717,10 @@ class Erpcore2021_ERN(Erpcore2021):
     @staticmethod
     def encode_event(row):
         value = row["value"]
-        # correct
+        # Correct response
         if value in {111, 121, 212, 222}:
             return "1"
-        # incorrect
+        # Incorrect response
         if value in {112, 122, 211, 221}:
             return "2"
 
@@ -725,9 +742,11 @@ class Erpcore2021_ERN(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
+        # 1: Correct response
+        # 2: Incorrect response,
         mapping = {
-            "1": "Correct response",
-            "2": "Incorrect response",
+            "1": "Target",
+            "2": "NonTarget",
         }
 
         return encoded_column.values, mapping
@@ -754,10 +773,10 @@ class Erpcore2021_LRP(Erpcore2021):
     @staticmethod
     def encode_event(row):
         value = row["value"]
-        # left
+        # Response - left
         if value in {111, 112, 121, 122}:
             return "1"
-        # right
+        # Response - right
         if value in {211, 212, 221, 222}:
             return "2"
         return value
@@ -779,9 +798,11 @@ class Erpcore2021_LRP(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
+        # 1: Response - left
+        # 2: Response - right
         mapping = {
-            "1": "Response - left",
-            "2": "Response - right",
+            "1": "Target",
+            "2": "NonTarget",
         }
 
         return encoded_column.values, mapping
