@@ -282,9 +282,7 @@ class BaseEvaluation(ABC):
         optuna_params = {}
         for key, value in param_grid.items():
             if isinstance(value, list):
-                optuna_params[key] = optuna.distributions.CategoricalDistribution(
-                    value
-                )
+                optuna_params[key] = optuna.distributions.CategoricalDistribution(value)
             else:
                 optuna_params[key] = value
         return optuna_params
