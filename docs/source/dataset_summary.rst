@@ -65,13 +65,13 @@ P300/ERP
    :class:`Sosulski2019`, 13, 31, 7500 NT / 1500 T, 1.2s, 1000Hz, 1
    :class:`EPFLP300`, 8, 32, 2753 NT / 551 T, 1s, 2048Hz, 4
    :class:`Lee2019_ERP`, 54, 62, 6900 NT / 1380 T, 1s, 1000Hz, 2
-   :class:`ERPCore2021_N170`, 40, 30, 80 , 1s, 1024Hz, 1
-   :class:`ERPCore2021_MMN`, 40, 30, 800 Deviant / 200 Standard, 1s, 1024Hz, 1
-   :class:`ERPCore2021_N2pc`, 40, 30, 160, 1s, 1024Hz, 1
-   :class:`ERPCore2021_P3`, 40, 30, 160 NT / 40 T, 1s, 1024Hz, 1
-   :class:`ERPCore2021_N400`, 40, 30, 60, 1s, 1024Hz, 1
-   :class:`ERPCore2021_ERN`, 40, 30, Depends, 1s, 1024Hz, 1
-   :class:`ERPCore2021_LRP`, 40, 30, Depends, 1s, 1024Hz, 1
+   :class:`Erpcore2021_N170`, 40, 30, 240 NT / 80 T , 1s, 1024Hz, 1
+   :class:`Erpcore2021_MMN`, 40, 30, 800 NT / 200 T, 1s, 1024Hz, 1
+   :class:`Erpcore2021_N2pc`, 40, 30, 160 NT / 160 T, 1s, 1024Hz, 1
+   :class:`Erpcore2021_P3`, 40, 30, 160 NT / 40 T, 1s, 1024Hz, 1
+   :class:`Erpcore2021_N400`, 40, 30, 60 NT / 60 T, 1s, 1024Hz, 1
+   :class:`Erpcore2021_ERN`, 40, 30, ~400 All, 1s, 1024Hz, 1
+   :class:`Erpcore2021_LRP`, 40, 30, ~400 All, 1s, 1024Hz, 1
 
 
 
