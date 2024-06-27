@@ -2,10 +2,12 @@ import logging
 from abc import ABC, abstractmethod
 
 import pandas as pd
+import optuna
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import GridSearchCV
 
 from moabb.analysis import Results
+from optuna.integration import OptunaSearchCV
 from moabb.datasets.base import BaseDataset
 from moabb.paradigms.base import BaseParadigm
 
@@ -53,6 +55,8 @@ class BaseEvaluation(ABC):
         Save model after training, for each fold of cross-validation if needed
     cache_config: bool, default=None
         Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+    optuna:bool, default=False
+        If optuna is enable it will change the GridSearch to a RandomizedGridSearch with 15 minutes of cut off time
 
     Notes
     -----
@@ -77,6 +81,7 @@ class BaseEvaluation(ABC):
         n_splits=None,
         save_model=False,
         cache_config=None,
+        optuna=False,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -88,6 +93,7 @@ class BaseEvaluation(ABC):
         self.n_splits = n_splits
         self.save_model = save_model
         self.cache_config = cache_config
+        self.optuna = optuna
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
@@ -260,19 +266,57 @@ class BaseEvaluation(ABC):
             The dataset to verify.
         """
 
+    def _convert_sklearn_params_to_optuna(self, param_grid):
+        """
+        Function to convert the parameter in Optuna format. This function will create a integer distribution of values
+        between the max and minimum value of the parameter.
+        Parameters
+        ----------
+        param_grid
+
+        Returns
+        -------
+
+        """
+        optuna_params = {}
+        for key, value in param_grid.items():
+            if isinstance(value, list):
+                # import pdb
+                # pdb.set_trace()
+                optuna_params[key] = optuna.distributions.IntDistribution(
+                    min(value), max(value), step=1
+                )
+            else:
+                optuna_params[key] = value
+        return optuna_params
+
     def _grid_search(self, param_grid, name, grid_clf, inner_cv):
         if param_grid is not None:
             if name in param_grid:
-                search = GridSearchCV(
-                    grid_clf,
-                    param_grid[name],
-                    refit=True,
-                    cv=inner_cv,
-                    n_jobs=self.n_jobs,
-                    scoring=self.paradigm.scoring,
-                    return_train_score=True,
-                )
-                return search
+                if not self.optuna:
+                    search = GridSearchCV(
+                        grid_clf,
+                        param_grid[name],
+                        refit=True,
+                        cv=inner_cv,
+                        n_jobs=self.n_jobs,
+                        scoring=self.paradigm.scoring,
+                        return_train_score=True,
+                    )
+                    return search
+                else:
+                    optuna_params = self._convert_sklearn_params_to_optuna(param_grid[name])
+                    search = OptunaSearchCV(
+                        grid_clf,
+                        optuna_params,
+                        refit=True,
+                        cv=inner_cv,
+                        n_jobs=self.n_jobs,
+                        scoring=self.paradigm.scoring,
+                        timeout=60 * 15,
+                        return_train_score=True,
+                    )
+                    return search
 
             else:
                 return grid_clf
