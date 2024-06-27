@@ -458,8 +458,7 @@ class Erpcore2021_N170(Erpcore2021):
         # Stimulus - faces
         if 1 <= value <= 40:
             return "1"
-        else:
-            return "2"
+        return "2"
 
     def encoding(self, events_df):
         # Drop rows corresponding to the responses
@@ -469,18 +468,10 @@ class Erpcore2021_N170(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
-        # Stimulus - faces : 1 - 40 and Stimulus - cars : 41 - 80
         mapping = {
-            f"00{val:02d}": f"Stimulus - {desc}"
-            for val, desc in zip(range(1, 81), ["faces"] * 40 + ["cars"] * 40)
+            "1": "Stimulus - normal face ",
+            "2": "Other Stimulus",
         }
-        # Stimulus - scrambled faces : 101 - 140 and Stimulus - scrambled cars : 141 - 180
-        mapping.update(
-            {
-                f"01{val:02d}": f"Stimulus - scrambled {desc}"
-                for val, desc in zip(range(1, 81), ["faces"] * 40 + ["cars"] * 40)
-            }
-        )
         return encoded_column.values, mapping
 
 
