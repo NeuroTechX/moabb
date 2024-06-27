@@ -33,6 +33,7 @@ edflib-python = "^1.0.6"
 edfio = "^0.4.2"
 pytest = "^7.4.0"
 mne-bids = "^0.14"
+optuna = "^3.6.1"
 
 # Optional dependencies for carbon emission
 codecarbon = { version = "^2.1.4", optional = true }
