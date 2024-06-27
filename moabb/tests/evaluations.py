@@ -150,7 +150,7 @@ class Test_WithinSess(unittest.TestCase):
                 pipelines,
                 param_grid=param_grid,
                 process_pipeline=process_pipeline,
-                optuna=True
+                optuna=True,
             )
         ]
 
