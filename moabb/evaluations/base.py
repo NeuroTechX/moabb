@@ -1,13 +1,13 @@
 import logging
 from abc import ABC, abstractmethod
 
-import pandas as pd
 import optuna
+import pandas as pd
+from optuna.integration import OptunaSearchCV
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import GridSearchCV
 
 from moabb.analysis import Results
-from optuna.integration import OptunaSearchCV
 from moabb.datasets.base import BaseDataset
 from moabb.paradigms.base import BaseParadigm
 
@@ -304,7 +304,9 @@ class BaseEvaluation(ABC):
                     )
                     return search
                 else:
-                    optuna_params = self._convert_sklearn_params_to_optuna(param_grid[name])
+                    optuna_params = self._convert_sklearn_params_to_optuna(
+                        param_grid[name]
+                    )
                     search = OptunaSearchCV(
                         grid_clf,
                         optuna_params,
