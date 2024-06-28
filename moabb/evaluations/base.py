@@ -1,7 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
 
-import optuna
 import pandas as pd
 from optuna.integration import OptunaSearchCV
 from sklearn.base import BaseEstimator
@@ -9,6 +8,7 @@ from sklearn.model_selection import GridSearchCV
 
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
+from moabb.evaluations.utils import _convert_sklearn_params_to_optuna
 from moabb.paradigms.base import BaseParadigm
 
 
@@ -269,35 +269,13 @@ class BaseEvaluation(ABC):
             The dataset to verify.
         """
 
-    def _convert_sklearn_params_to_optuna(self, param_grid):
-        """
-        Function to convert the parameter in Optuna format. This function will create a integer distribution of values
-        between the max and minimum value of the parameter.
-        Parameters
-        ----------
-        param_grid
-
-        Returns
-        -------
-
-        """
-        optuna_params = {}
-        for key, value in param_grid.items():
-            if isinstance(value, list):
-                optuna_params[key] = optuna.distributions.CategoricalDistribution(value)
-            else:
-                optuna_params[key] = value
-        return optuna_params
-
     def _grid_search(self, param_grid, name, grid_clf, inner_cv):
         extra_params = {}
         if param_grid is not None:
             if name in param_grid:
                 if self.optuna:
                     search = search_methods["optuna"]
-                    param_grid[name] = self._convert_sklearn_params_to_optuna(
-                        param_grid[name]
-                    )
+                    param_grid[name] = _convert_sklearn_params_to_optuna(param_grid[name])
                     extra_params["timeout"] = 60 * 15  # 15 minutes
                 else:
                     search = search_methods["grid"]
