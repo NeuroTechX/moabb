@@ -143,6 +143,9 @@ class Test_WithinSess(unittest.TestCase):
         # Test grid search
         param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+
+        self.eval.optuna = True
+
         results = [
             r
             for r in self.eval.evaluate(
@@ -150,9 +153,10 @@ class Test_WithinSess(unittest.TestCase):
                 pipelines,
                 param_grid=param_grid,
                 process_pipeline=process_pipeline,
-                optuna=True
             )
         ]
+
+        self.eval.optuna = False
 
         # We should get 4 results, 2 sessions 2 subjects
         self.assertEqual(len(results), 4)
