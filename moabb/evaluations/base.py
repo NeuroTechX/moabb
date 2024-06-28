@@ -14,6 +14,8 @@ from moabb.paradigms.base import BaseParadigm
 
 log = logging.getLogger(__name__)
 
+search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
+
 
 class BaseEvaluation(ABC):
     """Base class that defines necessary operations for an evaluation.
@@ -288,35 +290,29 @@ class BaseEvaluation(ABC):
         return optuna_params
 
     def _grid_search(self, param_grid, name, grid_clf, inner_cv):
+        extra_params = {}
         if param_grid is not None:
             if name in param_grid:
-                if not self.optuna:
-                    search = GridSearchCV(
-                        grid_clf,
-                        param_grid[name],
-                        refit=True,
-                        cv=inner_cv,
-                        n_jobs=self.n_jobs,
-                        scoring=self.paradigm.scoring,
-                        return_train_score=True,
-                    )
-                    return search
-                else:
-                    optuna_params = self._convert_sklearn_params_to_optuna(
+                if self.optuna:
+                    search = search_methods["optuna"]
+                    param_grid[name] = self._convert_sklearn_params_to_optuna(
                         param_grid[name]
                     )
-                    search = OptunaSearchCV(
-                        grid_clf,
-                        optuna_params,
-                        refit=True,
-                        cv=inner_cv,
-                        n_jobs=self.n_jobs,
-                        scoring=self.paradigm.scoring,
-                        timeout=60 * 15,
-                        return_train_score=True,
-                    )
-                    return search
+                    extra_params["timeout"] = 60 * 15  # 15 minutes
+                else:
+                    search = search_methods["grid"]
 
+                search = search(
+                    grid_clf,
+                    param_grid[name],
+                    refit=True,
+                    cv=inner_cv,
+                    n_jobs=self.n_jobs,
+                    scoring=self.paradigm.scoring,
+                    return_train_score=True,
+                    **extra_params,
+                )
+                return search
             else:
                 return grid_clf
 
