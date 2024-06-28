@@ -56,6 +56,15 @@ from .castillos2023 import (
     CastillosCVEP100,
 )
 from .epfl import EPFLP300
+from .erpcore2021 import (
+    Erpcore2021_ERN,
+    Erpcore2021_LRP,
+    Erpcore2021_MMN,
+    Erpcore2021_N2pc,
+    Erpcore2021_N170,
+    Erpcore2021_N400,
+    Erpcore2021_P3,
+)
 from .fake import FakeDataset, FakeVirtualRealityDataset
 from .gigadb import Cho2017
 from .hinss2021 import Hinss2021
