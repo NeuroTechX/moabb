@@ -4,6 +4,7 @@ from pathlib import Path
 from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
+import optuna
 from numpy import argmax
 from sklearn.pipeline import Pipeline
 
@@ -212,3 +213,24 @@ def create_save_path(
         return str(path_save)
     else:
         print("No hdf5_path provided, models will not be saved.")
+
+
+def _convert_sklearn_params_to_optuna(param_grid):
+    """
+    Function to convert the parameter in Optuna format. This function will create a integer distribution of values
+    between the max and minimum value of the parameter.
+    Parameters
+    ----------
+    param_grid
+
+    Returns
+    -------
+
+    """
+    optuna_params = {}
+    for key, value in param_grid.items():
+        if isinstance(value, list):
+            optuna_params[key] = optuna.distributions.CategoricalDistribution(value)
+        else:
+            optuna_params[key] = value
+    return optuna_params

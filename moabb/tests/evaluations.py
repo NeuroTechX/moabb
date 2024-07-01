@@ -58,6 +58,7 @@ class Test_WithinSess(unittest.TestCase):
             datasets=[dataset],
             hdf5_path="res_test",
             save_model=True,
+            optuna=False,
         )
 
     def test_mne_labels(self):
@@ -132,6 +133,30 @@ class Test_WithinSess(unittest.TestCase):
                 process_pipeline=process_pipeline,
             )
         ]
+
+        # We should get 4 results, 2 sessions 2 subjects
+        self.assertEqual(len(results), 4)
+        # We should have 9 columns in the results data frame
+        self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
+
+    def test_eval_grid_search_optuna(self):
+        # Test grid search
+        param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+
+        self.eval.optuna = True
+
+        results = [
+            r
+            for r in self.eval.evaluate(
+                dataset,
+                pipelines,
+                param_grid=param_grid,
+                process_pipeline=process_pipeline,
+            )
+        ]
+
+        self.eval.optuna = False
 
         # We should get 4 results, 2 sessions 2 subjects
         self.assertEqual(len(results), 4)
