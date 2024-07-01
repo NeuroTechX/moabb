@@ -17,7 +17,7 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
-- - Add possibility to use RandomizedGridSearch (:gh:`630` by `Igor Carrara`_)
+- Add possibility to use OptunaGridSearch (:gh:`630` by `Igor Carrara`_)
 
 Bugs
 ~~~~
