@@ -193,6 +193,10 @@ def add_stim_channel_trial(raw, onsets, labels, offset=200, ch_name="stim_trial"
     -------
     mne.Raw
         The raw object with the added stimulus channel.
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
     """
     stim_chan = np.zeros((1, len(raw)))
     for onset, label in zip(onsets, labels):
@@ -244,6 +248,10 @@ def add_stim_channel_epoch(
     -------
     mne.Raw
         The raw object with the added stimulus channel.
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
     """
     if presentation_rate is None:
         presentation_rate = raw.info["sfreq"]

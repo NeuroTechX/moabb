@@ -2,12 +2,22 @@ import unittest
 
 import numpy as np
 import pytest
-from braindecode.datasets import BaseConcatDataset, create_from_X_y
 from mne import EpochsArray, create_info
 from sklearn.preprocessing import LabelEncoder
 
+
+try:
+    from braindecode.datasets.base import BaseConcatDataset, WindowsDataset
+    from braindecode.datasets.xy import create_from_X_y
+
+    from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader
+
+    no_braindecode = False
+except ImportError:
+    no_braindecode = None
+
+
 from moabb.datasets.fake import FakeDataset
-from moabb.pipelines.utils_pytorch import BraindecodeDatasetLoader
 from moabb.tests import SimpleMotorImagery
 
 
@@ -21,6 +31,7 @@ def data():
     return X, y, labels, metadata
 
 
+@pytest.mark.skipif(no_braindecode is None, reason="Braindecode is not installed")
 class TestTransformer:
     def test_transform_input_and_output_shape(self, data):
         X, y, _, info = data
@@ -73,7 +84,11 @@ class TestTransformer:
         y_train = np.array([0])
         transformer = BraindecodeDatasetLoader()
         dataset = transformer.fit(epochs, y_train).transform(epochs, y_train)
-        assert dataset.datasets[0].windows.info["sfreq"] == sfreq
+
+        if not isinstance(dataset.datasets[0], WindowsDataset):
+            assert dataset.datasets[0].raw.info["sfreq"] == sfreq
+        else:
+            assert dataset.datasets[0].windows.info["sfreq"] == sfreq
 
     def test_kw_args_initialization(self):
         """Test initializing the transformer with kw_args."""
