@@ -1,4 +1,9 @@
 name: Check What's News Changes
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     types: [ assigned, opened, synchronize, reopened, labeled, unlabeled ]

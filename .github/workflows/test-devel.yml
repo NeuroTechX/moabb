@@ -1,5 +1,10 @@
 name: Test-devel
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
+  cancel-in-progress: true
+
+
 on:
   push:
     branches: [develop]
@@ -59,7 +64,7 @@ jobs:
       - name: Run tests
         run: |
           source $VENV
-          poetry run coverage run -m unittest moabb.tests
+          poetry run coverage run -m pytest moabb/tests
           poetry run coverage xml
 
       - name: Run pipelines

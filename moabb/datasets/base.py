@@ -266,7 +266,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     StepType.RAW,
                     SetRawAnnotations(
                         self.event_id,
-                        durations=self.interval[1] - self.interval[0],
+                        interval=self.interval,
                     ),
                 ),
             ]

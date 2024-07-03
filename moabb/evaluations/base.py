@@ -46,6 +46,18 @@ class BaseEvaluation(ABC):
         use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
+    n_splits: int, default=None
+        Number of splits for cross-validation. If None, the number of splits
+        is equal to the number of subjects.
+    save_model: bool, default=False
+        Save model after training, for each fold of cross-validation if needed
+    cache_config: bool, default=None
+        Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
+       n_splits, save_model, cache_config parameters.
     """
 
     def __init__(

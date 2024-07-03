@@ -30,6 +30,9 @@ authors:
 - family-names: "Schirrmeister"
   given-names: "Robin Tibor"
   orcid: "https://orcid.org/0000-0002-5518-7445"
+- family-names: "Kobler"
+  given-names: "Reinmar"
+  orcid: "https://orcid.org/0000-0003-4007-279X"
 - family-names: "Kalunga"
   given-names: "Emmanuel"
   orcid: "https://orcid.org/0000-0001-7522-5253"
@@ -67,7 +70,7 @@ authors:
   given-names: "Sylvain"
   orcid: "https://orcid.org/0000-0003-3027-8241"
 title: "Mother of all BCI Benchmarks"
-version: 1.0.0
+version: 1.1.0
 doi: 10.5281/zenodo.10034223
-date-released: 2023-10-12
+date-released: 2024-05-30
 url: "https://github.com/NeuroTechX/moabb"
