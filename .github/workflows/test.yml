@@ -1,15 +1,13 @@
 name: Test
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
   cancel-in-progress: true
 
-
 on:
   push:
-    branches: [master]
+    branches: [ master ]
   pull_request:
-    branches: [master]
+    branches: [ master ]
 
 jobs:
   test:
@@ -18,16 +16,29 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-        python-version: ["3.9"]
+        os: [ ubuntu-latest, windows-latest, macOS-latest ]
+        python-version: [ "3.9", "3.10" ]
     defaults:
       run:
         shell: bash
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create local data folder
+        if: runner.os != 'Windows'
+        run: |
+          mkdir ~/mne_data
+
+      - name: Create/Restore MNE Data Cache
+        if: runner.os != 'Windows'
+        id: cache-mne_data
+        uses: actions/cache@v3
+        with:
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne_data
+
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -44,7 +55,7 @@ jobs:
         with:
           path: .venv
           key:
-            venv-${{ matrix.os }}-py${{matrix.python-version}}-${{
+            testvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
             hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies

@@ -21,7 +21,7 @@ Enhancements
 
 Bugs
 ~~~~
-- None
+- Fix caching in the workflows (:gh:`632` by `Pierre Guetschel`_)
 
 API changes
 ~~~~~~~~~~~
