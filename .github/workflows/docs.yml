@@ -82,7 +82,7 @@ jobs:
           path: docs/build/html/
 
   deploy_neurotechx:
-    if: ${{ github.ref == 'refs/heads/develop' || 1 == 1 }}
+    if: ${{ github.ref == 'refs/heads/develop' }}
     needs: build_docs
     runs-on: ${{ matrix.os }}
     strategy:
@@ -116,7 +116,7 @@ jobs:
           cname: moabb.neurotechx.com/
 
   deploy_gh_pages:
-    if: ${{ github.ref == 'refs/heads/develop' || 1 == 1 }}
+    if: ${{ github.ref == 'refs/heads/develop' }}
     needs: build_docs
     runs-on: ${{ matrix.os }}
     strategy:
