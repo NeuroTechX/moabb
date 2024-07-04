@@ -174,6 +174,7 @@ if __name__ == "__main__":
     )
 
 # Commands used to upload the results of the benchmark paper:
+# (generate a new API token, this one is expired)
 # python scripts/paperswithcode/upload_results.py 5a4bd76b2b66908f0b8f28fb45dd41b918d3440b AUC-ROC ../moabb_paper_plots/DATA/results_rf_Optuna.csv  -s="right hand vs. feet" -d paperswithcode_datasets_and_tasks2.pickle -o test_out.pickle -p "https://arxiv.org/abs/2404.15319v1" -e=2024-04-03
 # python scripts/paperswithcode/upload_results.py 5a4bd76b2b66908f0b8f28fb45dd41b918d3440b AUC-ROC ../moabb_paper_plots/DATA/results_lhrh_Optuna.csv  -s="left hand vs. right hand" -d paperswithcode_datasets_and_tasks2.pickle -o test_out.pickle -p "https://arxiv.org/abs/2404.15319v1" -e=2024-04-03
 # python scripts/paperswithcode/upload_results.py 5a4bd76b2b66908f0b8f28fb45dd41b918d3440b Accuracy ../moabb_paper_plots/DATA/results_All_Optuna.csv  -s="all classes" -d paperswithcode_datasets_and_tasks2.pickle -o test_out.pickle -p "https://arxiv.org/abs/2404.15319v1" -e=2024-04-03
