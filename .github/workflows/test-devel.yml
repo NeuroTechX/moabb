@@ -1,15 +1,13 @@
 name: Test-devel
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
   cancel-in-progress: true
 
-
 on:
   push:
-    branches: [develop]
+    branches: [ develop ]
   pull_request:
-    branches: [develop]
+    branches: [ develop ]
 
 jobs:
   test:
@@ -18,8 +16,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-        python-version: ["3.9", "3.10"]
+        os: [ ubuntu-latest, windows-latest, macOS-latest ]
+        python-version: [ "3.9", "3.10" ]
     defaults:
       run:
         shell: bash
@@ -27,7 +25,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -64,7 +62,7 @@ jobs:
       - name: Run tests
         run: |
           source $VENV
-          poetry run coverage run -m pytest moabb/tests
+          poetry run coverage run -m unittest moabb.tests
           poetry run coverage xml
 
       - name: Run pipelines

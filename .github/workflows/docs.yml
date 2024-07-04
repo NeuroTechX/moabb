@@ -1,14 +1,18 @@
 name: Docs
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
   cancel-in-progress: true
 
+
 on:
   push:
-    branches: [master, develop]
+    branches: [ master, develop ]
   pull_request:
-    branches: [master, develop]
+    branches: [ master, develop ]
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   build_docs:
@@ -16,8 +20,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.9"]
+        os: [ ubuntu-latest ]
+        python-version: [ "3.9" ]
 
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +31,7 @@ jobs:
           mkdir ~/mne_data
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -37,17 +41,31 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
-      - name: Cache datasets and docs
-        id: cached-dataset-docs
+      - name: Create/Restore MNE Data Cache
+        id: cache-mne_data
         uses: actions/cache@v3
         with:
-          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
-          path: |
-            ~/mne_data
-            docs/build
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne_data
+
+      - name: Cache docs build
+        id: cache-docs
+        uses: actions/cache@v3
+        with:
+          key: docs-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs/build
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key:
+            docsvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
+            hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
-        if: steps.cached-dataset-docs.outputs.cache-hit != 'true'
+        if: (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
         run: poetry install --no-interaction --no-root --with docs --extras deeplearning
 
       - name: Install library
@@ -63,72 +81,33 @@ jobs:
           name: DocumentationHTML
           path: docs/build/html/
 
-  deploy_docs:
-    if: ${{ github.ref == 'refs/heads/master' }}
+  deploy_neurotechx:
+    if: ${{ github.ref == 'refs/heads/develop' || 1 == 1 }}
     needs: build_docs
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ ubuntu-latest ]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create local data folder
-        run: |
-          mkdir ~/mne_data
-
-      - name: Cache datasets and docs
-        id: cached-dataset-docs
-        uses: actions/cache@v3
+      - name: Restore cached docs build
+        id: cache-docs
+        uses: actions/cache/restore@v3
         with:
-          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
-          path: |
-            ~/mne_data
-            docs/build
+          key: docs-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs/build
 
-      - name: Checkout moabb.github.io
-        uses: actions/checkout@v4
-        with:
-          repository: "NeuroTechX/moabb.github.io"
-          path: moabb-ghio
-          token: ${{ secrets.MOABB_GHIO }}
-
-  deploy_gh_pages:
-    if: ${{ github.ref == 'refs/heads/develop' }}
-    needs: build_docs
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Create local data folder
-        run: |
-          mkdir ~/mne_data
-
-      - name: Cache datasets and docs
-        id: cached-dataset-docs
-        uses: actions/cache@v3
-        with:
-          key: doc-${{ github.head_ref }}-${{ hashFiles('moabb/datasets/**') }}
-          path: |
-            ~/mne_data
-            docs/build
-
-      - name: Checkout gh pages
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: moabb-ghpages
+      - name: Check cache hit
+        if: steps.cache-docs.outputs.cache-hit != 'true'
+        run: exit 1
 
       - name: Deploy Neurotechx Subpage
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           external_repository: NeuroTechX/moabb.github.io
           destination_dir: docs/
@@ -136,13 +115,35 @@ jobs:
           publish_dir: ./docs/build/html
           cname: moabb.neurotechx.com/
 
-      - name: Deploy on gh-pages
-        run: |
-          git config --global user.email "ci@neurotechx.com"
-          git config --global user.name "Github Actions"
-          cd ~/work/moabb/moabb/moabb-ghpages
-          rm -Rf docs
-          cp -a ~/work/moabb/moabb/docs/build/html ./docs
-          git add -A
-          git commit -m "GH Actions update of GH pages ($GITHUB_RUN_ID - $GITHUB_RUN_NUMBER)"
-          git push origin gh-pages
+  deploy_gh_pages:
+    if: ${{ github.ref == 'refs/heads/develop' || 1 == 1 }}
+    needs: build_docs
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore cached docs build
+        id: cache-docs
+        uses: actions/cache/restore@v3
+        with:
+          key: docs-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs/build
+
+      - name: Check cache hit
+        if: steps.cache-docs.outputs.cache-hit != 'true'
+        run: exit 1
+
+      - name: Deploy gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          deploy_key: ${{ secrets.MOABB_DEPLOY_KEY_NEW }}
+          destination_dir: docs/
+          publish_branch: gh-pages
+          publish_dir: ./docs/build/html
+          cname: neurotechx.github.io/moabb/
