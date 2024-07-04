@@ -25,7 +25,7 @@ pipeline:
       loss: "sparse_categorical_crossentropy"
       optimizer:
         - name: Adam
-          from: tensorflow.keras.optimizers.legacy
+          from: tensorflow.keras.optimizers
           parameters:
             learning_rate: 0.001
       epochs: 2

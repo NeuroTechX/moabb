@@ -35,21 +35,17 @@ class BaseProcessing(metaclass=abc.ABCMeta):
 
     Parameters
     ----------
-
     filters: list of list (defaults [[7, 35]])
         bank of bandpass filter to apply.
-
     tmin: float (default 0.0)
         Start time (in second) of the epoch, relative to the dataset specific
         task interval e.g. tmin = 1 would mean the epoch will start 1 second
         after the beginning of the task as defined by the dataset.
-
     tmax: float | None, (default None)
         End time (in second) of the epoch, relative to the beginning of the
         dataset specific task interval. tmax = 5 would mean the epoch will end
         5 second after the beginning of the task as defined in the dataset. If
         None, use the dataset value.
-
     baseline: None | tuple of length 2
             The time interval to consider as “baseline” when applying baseline
             correction. If None, do not apply baseline correction.
@@ -57,13 +53,12 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             including the endpoints.
             Correction is applied by computing the mean of the baseline period
             and subtracting it from the data (see mne.Epochs)
-
     channels: list of str | None (default None)
         list of channel to select. If None, use all EEG channels available in
         the dataset.
-
     resample: float | None (default None)
-        If not None, resample the eeg data with the sampling rate provided."""
+        If not None, resample the eeg data with the sampling rate provided.
+    """
 
     def __init__(
         self,
@@ -160,7 +155,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                 f"events to generate labels: {dataset.event_id}"
             )
             events_pipeline = (
-                RawToEvents(dataset.event_id)
+                RawToEvents(dataset.event_id, interval=dataset.interval)
                 if epochs_pipeline is None
                 else EpochsToEvents()
             )
@@ -173,7 +168,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                     StepType.RAW,
                     SetRawAnnotations(
                         dataset.event_id,
-                        durations=dataset.interval[1] - dataset.interval[0],
+                        interval=dataset.interval,
                     ),
                 )
             )
@@ -541,4 +536,4 @@ class BaseParadigm(BaseProcessing):
 
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
-        return RawToEvents(event_id=event_id)
+        return RawToEvents(event_id=event_id, interval=dataset.interval)

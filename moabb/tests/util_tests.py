@@ -2,6 +2,7 @@ import os.path as osp
 import unittest
 from unittest.mock import MagicMock, patch
 
+import pytest
 from mne import get_config
 
 from moabb.datasets import utils
@@ -24,7 +25,11 @@ class TestDownload(unittest.TestCase):
         set_download_dir(original_path)
 
 
+@pytest.mark.skip(
+    reason="This test is only when you have already " "download the datasets."
+)
 class Test_Utils(unittest.TestCase):
+
     def test_channel_intersection_fun(self):
         print(utils.find_intersecting_channels([d() for d in utils.dataset_list])[0])
 
@@ -109,14 +114,17 @@ class TestDepreciatedAlias(unittest.TestCase):
 
         self.assertIn(("DummyB", "DummyA", "0.1"), aliases_list)
 
-        with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
-            a = DummyA(2, b=2)
-        self.assertEqual(
-            a.__doc__,
-            "DummyA class\n\n    Notes\n    -----\n\n"
-            "    .. note:: ``DummyA`` was previously named ``DummyB``. "
-            "``DummyB`` will be removed in  version 0.1.\n",
-        )
+        # assertNoLogs was added in Python 3.10
+        # https://bugs.python.org/issue39385
+        if hasattr(self, "assertNoLogs"):
+            with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
+                a = DummyA(2, b=2)
+            self.assertEqual(
+                a.__doc__,
+                "DummyA class\n\n    Notes\n    -----\n\n"
+                "    .. note:: ``DummyA`` was previously named ``DummyB``. "
+                "``DummyB`` will be removed in  version 0.1.\n",
+            )
 
         with self.assertLogs(logger="moabb.utils", level="WARN") as cm:
             b = DummyB(2, b=2)  # noqa: F821
@@ -156,15 +164,16 @@ class TestDepreciatedAlias(unittest.TestCase):
 
         self.assertIn(("DummyB", "DummyA", "0.1"), aliases_list)
 
-        with self.assertNoLogs(logger="moabb.utils", level="WARN"):
-            a = DummyA(2, b=2)
-        self.assertEqual(
-            a.__doc__,
-            "DummyA class\n\n            Notes\n            -----\n\n"
-            "            .. note:: ``DummyA`` was previously named ``DummyB``. "
-            "``DummyB`` will be removed in  version 0.1.\n\n"
-            "            a note",
-        )
+        if hasattr(self, "assertNoLogs"):
+            with self.assertNoLogs(logger="moabb.utils", level="WARN"):
+                a = DummyA(2, b=2)
+            self.assertEqual(
+                a.__doc__,
+                "DummyA class\n\n            Notes\n            -----\n\n"
+                "            .. note:: ``DummyA`` was previously named ``DummyB``. "
+                "``DummyB`` will be removed in  version 0.1.\n\n"
+                "            a note",
+            )
 
     def test_function_alias(self):
         @depreciated_alias("dummy_b", expire_version="0.1")
@@ -174,8 +183,10 @@ class TestDepreciatedAlias(unittest.TestCase):
 
         self.assertIn(("dummy_b", "dummy_a", "0.1"), aliases_list)
 
-        with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
-            self.assertEqual(dummy_a(2, b=2), 4)
+        if hasattr(self, "assertNoLogs"):
+            with self.assertNoLogs(logger="moabb.utils", level="WARN") as cm:
+                self.assertEqual(dummy_a(2, b=2), 4)
+
         self.assertEqual(
             dummy_a.__doc__,
             # "Dummy function\n\nNotes\n-----\n"

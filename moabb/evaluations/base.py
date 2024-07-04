@@ -29,9 +29,6 @@ class BaseEvaluation(ABC):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -49,6 +46,18 @@ class BaseEvaluation(ABC):
         use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
+    n_splits: int, default=None
+        Number of splits for cross-validation. If None, the number of splits
+        is equal to the number of subjects.
+    save_model: bool, default=False
+        Save model after training, for each fold of cross-validation if needed
+    cache_config: bool, default=None
+        Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
+       n_splits, save_model, cache_config parameters.
     """
 
     def __init__(
@@ -57,7 +66,6 @@ class BaseEvaluation(ABC):
         datasets=None,
         random_state=None,
         n_jobs=1,
-        n_jobs_evaluation=1,
         overwrite=False,
         error_score="raise",
         suffix="",
@@ -72,7 +80,6 @@ class BaseEvaluation(ABC):
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
-        self.n_jobs_evaluation = n_jobs_evaluation
         self.error_score = error_score
         self.hdf5_path = hdf5_path
         self.return_epochs = return_epochs
