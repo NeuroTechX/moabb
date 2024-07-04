@@ -31,6 +31,19 @@ jobs:
           repository: braindecode/braindecode
           path: braindecode
 
+      - name: Create local data folder
+        if: runner.os != 'Windows'
+        run: |
+          mkdir ~/mne_data
+
+      - name: Create/Restore MNE Data Cache
+        if: runner.os != 'Windows'
+        id: cache-mne_data
+        uses: actions/cache@v3
+        with:
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne_data
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
