@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="_static/moabb_logo.png" type="image/png">
-    <title>The largest EEG-based Benchmark for Open Science &#8212; moabb 1.0.0-dev documentation</title>
+    <title>The largest EEG-based Benchmark for Open Science &#8212; moabb 1.1.0-dev documentation</title>
   
   
   
@@ -456,7 +456,7 @@ document.write(`
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
-<div style="font-size: 1.5em;"><section id="the-largest-eeg-based-benchmark-for-open-science">
+<div style="font-size: 1em;"><section id="the-largest-eeg-based-benchmark-for-open-science">
 <h1>The largest EEG-based Benchmark for Open Science<a class="headerlink" href="#the-largest-eeg-based-benchmark-for-open-science" title="Permalink to this heading">#</a></h1>
 <p>We report the results of the benchmark study performed in:
 <a class="reference external" href="https://universite-paris-saclay.hal.science/hal-04537061v1/file/MOABB-arXiv.pdf">The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark</a></p>
@@ -497,20 +497,16 @@ Each imagery task is associated with a different class, and each task has its di
       </tr>
       </thead>
   </table>
-  <script type="text/javascript">
+ <script type="text/javascript">
       $(document).ready(function() {
          $('#mileftvsright').DataTable( {
-            "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_mi_left_vs_right_hand.json',
+            "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_mi_left_vs_right_hand.json',
             "order": [[ 1, "desc" ]],
             "bJQueryUI": true,
             "scrollX": true,
             "paging": false,
             "info": false,
             "searching": false,
-              layout: {
-                      topStart: {
-                          buttons: ['copyHtml5']
-                      }
          } );
       } );
  </script>
@@ -538,7 +534,7 @@ Each imagery task is associated with a different class, and each task has its di
 <script type="text/javascript">
      $(document).ready(function() {
         $('#mirightvsfeet').DataTable( {
-           "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_mi_right_hand_vs_feet.json',
+           "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_mi_right_hand_vs_feet.json',
            "order": [[ 1, "desc" ]],
            "bJQueryUI": true,
            "scrollX": true,
@@ -566,7 +562,7 @@ Each imagery task is associated with a different class, and each task has its di
  <script type="text/javascript">
      $(document).ready(function() {
         $('#mi-all').DataTable( {
-           "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_mi_all_classes.json',
+           "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_mi_all_classes.json',
            "order": [[ 1, "desc" ]],
            "bJQueryUI": true,
            "scrollX": true,
@@ -602,7 +598,7 @@ We use all the classes available in the dataset.</p>
 <script type="text/javascript">
      $(document).ready(function() {
         $('#ssvep').DataTable( {
-           "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_ssvep_all_classes.json',
+           "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_ssvep_all_classes.json',
            "order": [[ 1, "desc" ]],
            "bJQueryUI": true,
            "scrollX": true,
@@ -643,7 +639,7 @@ We use all the classes available in the dataset.</p>
 <script type="text/javascript">
      $(document).ready(function() {
         $('#p300').DataTable( {
-           "ajax": 'https://raw.githubusercontent.com/bruAristimunha/moabb/table_results/results/within_session_erp_p300_all_classes.json',
+           "ajax": 'https://raw.githubusercontent.com/NeuroTechX/moabb/develop/results/within_session_erp_p300_all_classes.json',
            "order": [[ 1, "desc" ]],
            "bJQueryUI": true,
            "scrollX": true,
