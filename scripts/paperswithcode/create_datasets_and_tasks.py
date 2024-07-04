@@ -62,7 +62,9 @@ class Task:
     @classmethod
     def make(cls, name, description, area, parent_task):
         # to snake case
-        task_id = name.lower().replace(" ", "-").replace("(", "").replace(")", "")
+        task_id = (
+            name.lower().replace(" ", "-").replace("(", "").replace(")", "").split(".")[0]
+        )
         return cls(task_id, name, description, area, parent_task)
 
 
