@@ -27,23 +27,31 @@ _metrics = {
 }
 
 
-def make_table(results_csv, metric):
-    df = pd.read_csv(results_csv)
-    df = (
-        df.groupby(
-            ["dataset", "paradigm", "evaluation", "pipeline"],
-        )[["score", "time", "carbon_emission"]]
-        .mean()
-        .reset_index()
-    )
-    df.score = df.score * 100
-    columns = dict(**_metrics, score=metric)
-    df.rename(columns=columns, inplace=True)
-    df.paradigm = df.paradigm.replace(
-        {"FilterBankMotorImagery": "MotorImagery", "LeftRightImagery": "MotorImagery"}
-    )
-    print(df.head())
-    return df
+def make_table(results_csv_list: list[str], metric: str):
+    df_list = []
+    for results_csv in results_csv_list:
+        df = pd.read_csv(results_csv)
+        columns = ["score"]
+        if "time" in df.columns:
+            columns.append("time")
+        if "carbon_emission" in df.columns:
+            columns.append("carbon_emission")
+        df = (
+            df.groupby(
+                ["dataset", "paradigm", "evaluation", "pipeline"],
+            )[columns]
+            .mean()
+            .reset_index()
+        )
+        df.score = df.score * 100
+        columns = dict(**_metrics, score=metric)
+        df.rename(columns=columns, inplace=True)
+        df.paradigm = df.paradigm.replace(
+            {"FilterBankMotorImagery": "MotorImagery", "LeftRightImagery": "MotorImagery"}
+        )
+        print(df.head())
+        df_list.append(df)
+    return pd.concat(df_list)
 
 
 def upload_subtable(client, df, dataset, task, paper, evaluated_on):
@@ -109,12 +117,15 @@ def upload_table(client, df, datasets, tasks, paper, evaluated_on, subsubtask):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("token", type=str, help="PapersWithCode API token")
-    parser.add_argument("results_csv", type=str, help="CSV file with results to upload")
     parser.add_argument(
         "metric",
         type=str,
         help="Metric used in the results CSV (see PapersWithCode metrics)",
     )
+    parser.add_argument(
+        "results_csv", type=str, help="CSV file with results to upload", nargs="+"
+    )
+
     parser.add_argument(
         "-s",
         "--subsubtask",
