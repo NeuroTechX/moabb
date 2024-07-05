@@ -503,13 +503,12 @@ class Erpcore2021_MMN(Erpcore2021):
     @staticmethod
     def encode_event(row):
         value = row["value"]
-        # Standard stimulus and first stream of standards"
-        if value in {80, 180}:
-            return "1"
-        # Deviant stimulus
-        if value == 70:
-            return "2"
-        return value
+        if value == 80:
+            return "Stimulus - standard"
+        elif value == 180:
+            return "Stimulus - first stream of standards"
+        elif value == 70:
+            return "Stimulus - deviant"
 
     def encoding(self, events_df):
         # Remove rows which correspond to trial_type = STATUS
@@ -518,12 +517,10 @@ class Erpcore2021_MMN(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
-        # 01: Stimulus - standard,
-        # 02: Stimulus - deviant,
-
         mapping = {
-            "1": "Target",
-            "2": "NonTarget",
+            "Stimulus - standard": "Target",
+            "Stimulus - first stream of standards": "Target",
+            "Stimulus - deviant": "NonTarget",
         }
 
         return encoded_column.values, mapping
