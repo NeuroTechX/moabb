@@ -457,9 +457,13 @@ class Erpcore2021_N170(Erpcore2021):
         value = row["value"]
         # Stimulus - faces
         if 1 <= value <= 40:
-            return "1"
-        # Other Stimulus
-        return "2"
+            return "Stimulus - faces"
+        elif 41 <= value <= 80:
+            return "Stimulus - cars"
+        elif 101 <= value <= 140:
+            return "Stimulus - scrambled faces"
+        elif 141 <= value <= 180:
+            return "Stimulus - scrambled cars"
 
     def encoding(self, events_df):
         # Drop rows corresponding to the responses
@@ -469,11 +473,11 @@ class Erpcore2021_N170(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
-        # 1: Stimulus - normal face ,
-        # 2: Other Stimulus,
         mapping = {
-            "1": "Target",
-            "2": "NonTarget",
+            "Stimulus - faces": "Target",
+            "Stimulus - cars": "NonTarget",
+            "Stimulus - scrambled faces": "NonTarget",
+            "Stimulus - scrambled cars": "NonTarget",
         }
         return encoded_column.values, mapping
 
