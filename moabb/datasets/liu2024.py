@@ -65,8 +65,6 @@ class Liu2024(BaseDataset):
     0.4 μVrms, and the resolution was 24 bits. The acquisition impedance was less than or equal to 20 kΩ. The sampling frequency
     was 500 Hz.
 
-    In the dataset, we've removed the 2 EOG channels and we kept the 29 EEG channels and the STIM channel.
-
     References
     ----------
 
@@ -185,10 +183,10 @@ class Liu2024(BaseDataset):
         }
 
         mapping = {
-            0: "left_hand",
-            1: "right_hand",
-            2: "instr",
-            3: "break",
+            1: "left_hand",
+            2: "right_hand",
+            3: "instr",
+            4: "break",
         }
         # Apply the mapping to the DataFrame
         event_category = events_df.apply(
@@ -220,6 +218,19 @@ class Liu2024(BaseDataset):
             raw = mne.io.read_raw_edf(
                 file_path_list, verbose=False, infer_types=True, stim_channel=""
             )
+
+        # Dropping reference channels with constant values
+        raw = raw.drop_channels(["CPz"])
+
+        # Renaming channels accurately
+        raw.rename_channels({"HEOR": "VEOR", "": "STI"})
+
+        # Create a dictionary with the channel names and their new types
+        mapping = {"STI": "stim", "VEOR": "eog", "HEOL": "eog"}
+
+        # Set the new channel types
+        raw.set_channel_types(mapping)
+
         # Normalize and Read the montage
         path_electrodes = self._normalize_extension(path_electrodes)
         # Read and set the montage
@@ -243,7 +254,7 @@ class Liu2024(BaseDataset):
             # Removing the stimulus channels
             raw = raw.pick(["eeg", "eog"])
             # Setting the montage
-            raw = raw.set_montage(montage, on_missing="ignore", verbose=False)
+            raw = raw.set_montage(montage, verbose=False)
         # Loading dataset
         raw = raw.load_data(verbose=False)
         # There is only one session
@@ -301,7 +312,7 @@ class Liu2024(BaseDataset):
         events : np.ndarray
             The created events array.
         """
-        _, idx_trigger = np.nonzero(raw.copy().pick("").get_data())
+        _, idx_trigger = np.nonzero(raw.copy().pick("STI").get_data())
         n_label_stim = len(event_category)
         # Create the events array based on the stimulus channel
         events = np.column_stack(
