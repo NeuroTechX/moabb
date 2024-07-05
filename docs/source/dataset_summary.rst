@@ -22,7 +22,7 @@ Motor Imagery
 ======================
 
 .. csv-table::
-   :file: moabb/datasets/summary_imagery.csv
+   :file: /summary_imagery.csv
    :header-rows: 1
    :class: sortable
 
