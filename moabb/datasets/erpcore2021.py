@@ -546,13 +546,23 @@ class Erpcore2021_N2pc(Erpcore2021):
     @staticmethod
     def encode_event(row):
         value = row["value"]
-        # 1: Stimulus - target left,
-        if value in {111, 112, 211, 212}:
-            return "1"
-        # 2: Stimulus - target right,
-        elif value in {121, 122, 221, 222}:
-            return "2"
-        return value
+
+        if value == 111:
+            return "Stimulus - target blue, target left, gap at top"
+        elif value == 112:
+            return "Stimulus - target blue, target left, gap at bottom"
+        elif value == 211:
+            return "Stimulus - target pink, target left, gap at top"
+        elif value == 212:
+            return "Stimulus - target pink, target left, gap at bottom"
+        elif value == 121:
+            return "Stimulus - target blue, target right, gap at top"
+        elif value == 122:
+            return "Stimulus - target blue, target right, gap at bottom"
+        elif value == 221:
+            return "Stimulus - target pink, target right, gap at top"
+        elif value == 222:
+            return "Stimulus - target pink, target right, gap at bottom"
 
     def encoding(self, events_df):
 
@@ -563,12 +573,18 @@ class Erpcore2021_N2pc(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
-        # 1: Stimulus - target left,
-        # 2: Stimulus - target right,
+        # Target : Stimulus with target at left,
+        # NonTarget : Stimulus with target at right
 
         mapping = {
-            "1": "Target",
-            "2": "NonTarget",
+            "Stimulus - target blue, target left, gap at top": "Target",
+            "Stimulus - target blue, target left, gap at bottom": "Target",
+            "Stimulus - target pink, target left, gap at top": "Target",
+            "Stimulus - target pink, target left, gap at bottom": "Target",
+            "Stimulus - target blue, target right, gap at top": "NonTarget",
+            "Stimulus - target blue, target right, gap at bottom": "NonTarget",
+            "Stimulus - target pink, target right, gap at top": "NonTarget",
+            "Stimulus - target pink, target right, gap at bottom": "NonTarget",
         }
 
         return encoded_column.values, mapping
