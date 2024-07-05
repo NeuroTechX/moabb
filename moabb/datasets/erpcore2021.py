@@ -726,14 +726,17 @@ class Erpcore2021_N400(Erpcore2021):
 
     @staticmethod
     def encode_event(row):
+        # We removed the stimulus corresponding to the prime word
+        # and only kept the stimulus corresponding to the target word
         value = row["value"]
-        # Related word pair
-        if value in {211, 212}:
-            return "1"
-        # Unrelated word pair
-        if value in {221, 222}:
-            return "2"
-        return value
+        if value == 211:
+            return "Stimulus - target word, related word pair, list 1"
+        elif value == 212:
+            return "Stimulus - target word, related word pair, list 2"
+        elif value == 221:
+            return "Stimulus - target word, unrelated word pair, list 1"
+        elif value == 222:
+            return "Stimulus - target word, unrelated word pair, list 2"
 
     def encoding(self, events_df):
 
@@ -747,12 +750,13 @@ class Erpcore2021_N400(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
-        # 1: Stimulus - related word pair,
-        # 2: Stimulus - unrelated word pair
-
+        # Target : Stimulus - related word pair,
+        # NonTarget : Stimulus - unrelated word pair
         mapping = {
-            "1": "Target",
-            "2": "NonTarget",
+            "Stimulus - target word, related word pair, list 1": "Target",
+            "Stimulus - target word, related word pair, list 2": "Target",
+            "Stimulus - target word, unrelated word pair, list 1": "NonTarget",
+            "Stimulus - target word, unrelated word pair, list 2": "NonTarget",
         }
 
         return encoded_column.values, mapping
