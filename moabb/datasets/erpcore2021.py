@@ -782,15 +782,24 @@ class Erpcore2021_ERN(Erpcore2021):
 
     @staticmethod
     def encode_event(row):
+        # We only kept the stimulus corresponding to the response
         value = row["value"]
-        # Correct response
-        if value in {111, 121, 212, 222}:
-            return "1"
-        # Incorrect response
-        if value in {112, 122, 211, 221}:
-            return "2"
-
-        return value
+        if value == 111:
+            return "Response - left, compatible flankers, target left"
+        elif value == 121:
+            return "Response - left, incompatible flankers, target left"
+        elif value == 212:
+            return "Response - right, compatible flankers, target right"
+        elif value == 222:
+            return "Response - right, incompatible flankers, target right"
+        elif value == 112:
+            return "Response - left, compatible flankers, target right"
+        elif value == 122:
+            return "Response - left, incompatible flankers, target right"
+        elif value == 211:
+            return "Response - right, compatible flankers, target left"
+        elif value == 221:
+            return "Response - right, incompatible flankers, target left"
 
     def encoding(self, events_df):
         # Check the first two rows if both are 'Response'
@@ -824,11 +833,17 @@ class Erpcore2021_ERN(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
-        # 1: Correct response
-        # 2: Incorrect response,
+        # Target: Correct response
+        # NonTarget: Incorrect response,
         mapping = {
-            "1": "Target",
-            "2": "NonTarget",
+            "Response - left, compatible flankers, target left": "Target",
+            "Response - left, incompatible flankers, target left": "Target",
+            "Response - right, compatible flankers, target right": "Target",
+            "Response - right, incompatible flankers, target right": "Target",
+            "Response - left, compatible flankers, target right": "NonTarget",
+            "Response - left, incompatible flankers, target right": "NonTarget",
+            "Response - right, compatible flankers, target left": "NonTarget",
+            "Response - right, incompatible flankers, target left": "NonTarget",
         }
 
         return encoded_column.values, mapping
@@ -854,14 +869,24 @@ class Erpcore2021_LRP(Erpcore2021):
 
     @staticmethod
     def encode_event(row):
+        # We only kept the stimulus corresponding to the response
         value = row["value"]
-        # Response - left
-        if value in {111, 112, 121, 122}:
-            return "1"
-        # Response - right
-        if value in {211, 212, 221, 222}:
-            return "2"
-        return value
+        if value == 111:
+            return "Response - left, compatible flankers, target left"
+        elif value == 121:
+            return "Response - left, incompatible flankers, target left"
+        elif value == 212:
+            return "Response - right, compatible flankers, target right"
+        elif value == 222:
+            return "Response - right, incompatible flankers, target right"
+        elif value == 112:
+            return "Response - left, compatible flankers, target right"
+        elif value == 122:
+            return "Response - left, incompatible flankers, target right"
+        elif value == 211:
+            return "Response - right, compatible flankers, target left"
+        elif value == 221:
+            return "Response - right, incompatible flankers, target left"
 
     def encoding(self, events_df):
 
@@ -896,11 +921,19 @@ class Erpcore2021_LRP(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
-        # 1: Response - left
-        # 2: Response - right
+        # Target: Response - left
+        # NonTarget: Response - right
         mapping = {
             "1": "Target",
             "2": "NonTarget",
+            "Response - left, compatible flankers, target left": "Target",
+            "Response - left, incompatible flankers, target left": "Target",
+            "Response - left, compatible flankers, target right": "Target",
+            "Response - left, incompatible flankers, target right": "Target",
+            "Response - right, compatible flankers, target right": "NonTarget",
+            "Response - right, incompatible flankers, target right": "NonTarget",
+            "Response - right, compatible flankers, target left": "NonTarget",
+            "Response - right, incompatible flankers, target left": "NonTarget",
         }
 
         return encoded_column.values, mapping
