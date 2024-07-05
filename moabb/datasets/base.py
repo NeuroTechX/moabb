@@ -1,5 +1,7 @@
 """Base class for a dataset."""
 
+from __future__ import annotations
+
 import abc
 import logging
 import re
