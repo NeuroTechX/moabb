@@ -13,9 +13,11 @@ def prepare_table(df: pd.DataFrame):
 
 
 def main(source_dir: str, target_dir: str):
+    target_dir = Path(target_dir)
+    target_dir.mkdir(parents=True, exist_ok=True)
     files = glob.glob(str(Path(source_dir) / "*.csv"))
     for f in files:
-        target_file = Path(target_dir) / Path(f).name
+        target_file = target_dir / Path(f).name
         print(f"Processing {f} -> {target_file}")
         df = pd.read_csv(f, index_col=False, header=0)
         prepare_table(df)
