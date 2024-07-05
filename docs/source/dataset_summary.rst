@@ -22,26 +22,10 @@ Motor Imagery
 ======================
 
 .. csv-table::
-   :header: Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, Total_trials
+   :file: moabb/datasets/summary_imagery.csv
+   :header-rows: 1
    :class: sortable
 
-        :class:`AlexMI`,8,16,3,20,3s,512Hz,1,1,480
-        :class:`BNCI2014_001`,9,22,4,144,4s,250Hz,2,6,62208
-        :class:`BNCI2014_002`,14,15,2,80,5s,512Hz,1,8,17920
-        :class:`BNCI2014_004`,9,3,2,360,4.5s,250Hz,5,1,32400
-        :class:`BNCI2015_001`,12,13,2,200,5s,512Hz,3,1,14400
-        :class:`BNCI2015_004`,9,30,5,80,7s,256Hz,2,1,7200
-        :class:`Cho2017`,52,64,2,100,3s,512Hz,1,1,9800
-        :class:`Lee2019_MI`,54,62,2,100,4s,1000Hz,2,1,11000
-        :class:`GrosseWentrup2009`,10,128,2,150,7s,500Hz,1,1,3000
-        :class:`Schirrmeister2017`,14,128,4,120,4s,500Hz,1,2,13440
-        :class:`Ofner2017`,15,61,7,60,3s,512Hz,1,10,63000
-        :class:`PhysionetMI`,109,64,4,23,3s,160Hz,1,1,69760
-        :class:`Shin2017A`,29,30,2,30,10s,200Hz,3,1,5220
-        :class:`Shin2017B`,29,30,2,30,10s,200Hz,3,1,5220
-        :class:`Weibo2014`,10,60,7,80,4s,200Hz,1,1,5600
-        :class:`Zhou2016`,4,14,3,160,5s,250Hz,3,2,11496
-        :class:`Stieger2021`,62,64,4,450,3s,1000Hz,7 or 11,1,250000
 
 P300/ERP
 ======================
