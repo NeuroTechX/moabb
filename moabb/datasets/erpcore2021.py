@@ -611,37 +611,59 @@ class Erpcore2021_P3(Erpcore2021):
     __init__ = partialmethod(Erpcore2021.__init__, "P3")
 
     @staticmethod
-    # keeping only the stimulus without the response
+    # Keeping only the stimulus without the response
     def encode_event(row):
         value = row["value"]
-        # Match
-        if value in {11, 22, 33, 44, 55}:
-            return "1"
-        # No match
-        if value in {
-            21,
-            31,
-            41,
-            51,
-            12,
-            32,
-            42,
-            52,
-            13,
-            23,
-            43,
-            53,
-            14,
-            24,
-            34,
-            54,
-            15,
-            25,
-            35,
-            45,
-        }:
-            return "2"
-        return value
+        if value == 11:
+            return "Stimulus - block target A, trial stimulus A"
+        elif value == 22:
+            return "Stimulus - block target B, trial stimulus B"
+        elif value == 33:
+            return "Stimulus - block target C, trial stimulus C"
+        elif value == 44:
+            return "Stimulus - block target D, trial stimulus D"
+        elif value == 55:
+            return "Stimulus - block target E, trial stimulus E"
+        elif value == 21:
+            return "Stimulus - block target B, trial stimulus A"
+        elif value == 31:
+            return "Stimulus - block target C, trial stimulus A"
+        elif value == 41:
+            return "Stimulus - block target D, trial stimulus A"
+        elif value == 51:
+            return "Stimulus - block target E, trial stimulus A"
+        elif value == 12:
+            return "Stimulus - block target A, trial stimulus B"
+        elif value == 32:
+            return "Stimulus - block target C, trial stimulus B"
+        elif value == 42:
+            return "Stimulus - block target D, trial stimulus B"
+        elif value == 52:
+            return "Stimulus - block target E, trial stimulus B"
+        elif value == 13:
+            return "Stimulus - block target A, trial stimulus C"
+        elif value == 23:
+            return "Stimulus - block target B, trial stimulus C"
+        elif value == 43:
+            return "Stimulus - block target D, trial stimulus C"
+        elif value == 53:
+            return "Stimulus - block target E, trial stimulus C"
+        elif value == 14:
+            return "Stimulus - block target A, trial stimulus D"
+        elif value == 24:
+            return "Stimulus - block target B, trial stimulus D"
+        elif value == 34:
+            return "Stimulus - block target C, trial stimulus D"
+        elif value == 54:
+            return "Stimulus - block target E, trial stimulus D"
+        elif value == 15:
+            return "Stimulus - block target A, trial stimulus E"
+        elif value == 25:
+            return "Stimulus - block target B, trial stimulus E"
+        elif value == 35:
+            return "Stimulus - block target C, trial stimulus E"
+        elif value == 45:
+            return "Stimulus - block target D, trial stimulus E"
 
     def encoding(self, events_df):
 
@@ -652,10 +674,34 @@ class Erpcore2021_P3(Erpcore2021):
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
         # Create the mapping dictionary
-
+        # Target : Stimulus matching the target letter,
+        # NonTarget : Stimulus not matching the target letter
         mapping = {
-            "1": "Target",
-            "2": "NonTarget",
+            "Stimulus - block target A, trial stimulus A": "Target",
+            "Stimulus - block target B, trial stimulus B": "Target",
+            "Stimulus - block target C, trial stimulus C": "Target",
+            "Stimulus - block target D, trial stimulus D": "Target",
+            "Stimulus - block target E, trial stimulus E": "Target",
+            "Stimulus - block target B, trial stimulus A": "NonTarget",
+            "Stimulus - block target C, trial stimulus A": "NonTarget",
+            "Stimulus - block target D, trial stimulus A": "NonTarget",
+            "Stimulus - block target E, trial stimulus A": "NonTarget",
+            "Stimulus - block target A, trial stimulus B": "NonTarget",
+            "Stimulus - block target C, trial stimulus B": "NonTarget",
+            "Stimulus - block target D, trial stimulus B": "NonTarget",
+            "Stimulus - block target E, trial stimulus B": "NonTarget",
+            "Stimulus - block target A, trial stimulus C": "NonTarget",
+            "Stimulus - block target B, trial stimulus C": "NonTarget",
+            "Stimulus - block target D, trial stimulus C": "NonTarget",
+            "Stimulus - block target E, trial stimulus C": "NonTarget",
+            "Stimulus - block target A, trial stimulus D": "NonTarget",
+            "Stimulus - block target B, trial stimulus D": "NonTarget",
+            "Stimulus - block target C, trial stimulus D": "NonTarget",
+            "Stimulus - block target E, trial stimulus D": "NonTarget",
+            "Stimulus - block target A, trial stimulus E": "NonTarget",
+            "Stimulus - block target B, trial stimulus E": "NonTarget",
+            "Stimulus - block target C, trial stimulus E": "NonTarget",
+            "Stimulus - block target D, trial stimulus E": "NonTarget",
         }
 
         return encoded_column.values, mapping
