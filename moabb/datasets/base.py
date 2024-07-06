@@ -34,12 +34,14 @@ _summary_table_imagery = get_summary_table("imagery")
 _summary_table_p300 = get_summary_table("p300")
 _summary_table_ssvep = get_summary_table("ssvep")
 _summary_table_cvep = get_summary_table("cvep")
+_summary_table_rstate = get_summary_table("rstate")
 _summary_table = pd.concat(
     [
         _summary_table_imagery,
         _summary_table_p300,
         _summary_table_ssvep,
         _summary_table_cvep,
+        _summary_table_rstate,
     ],
 )
 
