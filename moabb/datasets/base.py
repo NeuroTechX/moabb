@@ -216,7 +216,17 @@ def format_row(row: pd.Series):
     tab_sep = "="
     row = row[~row.isna()]
     col_names = [str(col) for col in row.index]
-    values = [str(val) for val in row.values]
+
+    def to_int(x):
+        try:
+            i = int(x)
+            if i == x:
+                return i
+            return x
+        except ValueError:
+            return x
+
+    values = [str(to_int(val)) for val in row.values]
     widths = [max(len(col), len(val)) for col, val in zip(col_names, values)]
     row_sep = " ".join([tab_sep * width for width in widths])
     cols_row = " ".join([col.rjust(width) for col, width in zip(col_names, widths)])
