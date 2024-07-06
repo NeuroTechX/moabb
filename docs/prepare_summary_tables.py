@@ -6,9 +6,11 @@ import pandas as pd
 
 
 def prepare_table(df: pd.DataFrame):
-    df["PapersWithCode leaderboard"] = df["Dataset"].apply(
-        lambda x: f"https://paperswithcode.com/dataset/{x.lower().replace('_', '-')}-moabb-1"
-    )  # not all datasets have a leaderboard...
+    no_pwc = df["PapersWithCode leaderboard"].isna()
+    df.loc[no_pwc, "PapersWithCode leaderboard"] = "No"
+    df.loc[~no_pwc, "PapersWithCode leaderboard"] = df.loc[
+        ~no_pwc, "PapersWithCode leaderboard"
+    ].apply(lambda x: f"`Yes <{x}>`_")
     df["Dataset"] = df["Dataset"].apply(lambda x: f":class:`{x}`")
 
 

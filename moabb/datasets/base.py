@@ -25,8 +25,13 @@ def get_summary_table(paradigm: str, dir_name: str | None = None):
     if dir_name is None:
         dir_name = Path(__file__).parent
     path = Path(dir_name) / f"summary_{paradigm}.csv"
-    df = pd.read_csv(path, header=0, index_col="Dataset", skipinitialspace=True)
-    # df.set_index("Dataset", inplace=True)
+    df = pd.read_csv(
+        path,
+        header=0,
+        index_col="Dataset",
+        skipinitialspace=True,
+        dtype={"PapersWithCode leaderboard": str},
+    )
     return df
 
 
