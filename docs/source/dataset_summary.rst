@@ -22,7 +22,7 @@ Motor Imagery
 ======================
 
 .. csv-table::
-   :file: /summary_imagery.csv
+   :file: ../build/summary_imagery.csv
    :header-rows: 1
    :class: sortable
 
@@ -31,41 +31,19 @@ P300/ERP
 ======================
 
 .. csv-table::
-   :header: Dataset, #Subj, #Chan, #Trials / class, Trials length, Sampling rate, #Sessions
+   :file: ../build/summary_p300.csv
+   :header-rows: 1
    :class: sortable
-
-   :class:`BNCI2014_008`, 8, 8, 3500 NT / 700 T, 1s, 256Hz, 1
-   :class:`BNCI2014_009`, 10, 16, 1440 NT / 288 T, 0.8s, 256Hz, 3
-   :class:`BNCI2015_003`, 10, 8, 1500 NT / 300 T, 0.8s, 256Hz, 1
-   :class:`BI2012`, 25, 16, 640 NT / 128 T, 1s, 128Hz, 2
-   :class:`BI2013a`, 24, 16, 3200 NT / 640 T, 1s, 512Hz, 8 for subjects 1-7 else 1
-   :class:`BI2014a`, 64, 16, 990 NT / 198 T, 1s, 512Hz, up to 3
-   :class:`BI2014b`, 38, 32, 200 NT / 40 T, 1s, 512Hz, 3
-   :class:`BI2015a`, 43, 32, 4131 NT / 825 T, 1s, 512Hz, 3
-   :class:`BI2015b`, 44, 32, 2160 NT / 480 T, 1s, 512Hz, 1
-   :class:`Cattan2019_VR`, 21, 16, 600 NT / 120 T, 1s, 512Hz, 2
-   :class:`Huebner2017`, 13, 31, 364 NT / 112 T, 0.9s, 1000Hz, 3
-   :class:`Huebner2018`, 12, 31, 364 NT / 112 T, 0.9s, 1000Hz, 3
-   :class:`Sosulski2019`, 13, 31, 7500 NT / 1500 T, 1.2s, 1000Hz, 1
-   :class:`EPFLP300`, 8, 32, 2753 NT / 551 T, 1s, 2048Hz, 4
-   :class:`Lee2019_ERP`, 54, 62, 6900 NT / 1380 T, 1s, 1000Hz, 2
 
 
 SSVEP
 ======================
 
-
 .. csv-table::
-   :header: Dataset, #Subj, #Chan, #Classes, #Trials / class, Trials length, Sampling rate, #Sessions
+   :file: ../build/summary_ssvep.csv
+   :header-rows: 1
    :class: sortable
 
-   :class:`Lee2019_SSVEP`,54,62,4,50,4s,1000Hz,2
-   :class:`Kalunga2016`,12,8,4,16,2s,256Hz,1
-   :class:`MAMEM1`,10,256,5,12-15,3s,250Hz,1
-   :class:`MAMEM2`,10,256,5,20-30,3s,250Hz,1
-   :class:`MAMEM3`,10,14,4,20-30,3s,128Hz,1
-   :class:`Nakanishi2015`,9,8,12,15,4.15s,256Hz,1
-   :class:`Wang2016`,34,62,40,6,5s,250Hz,1
 
 c-VEP
 ======================
@@ -81,16 +59,9 @@ potentials (c-VEP): A literature review. Journal of Neural Engineering, 18(6), 0
 DOI: https://doi.org/10.1088/1741-2552/ac38cf
 
 .. csv-table::
-   :header: Dataset, #Subj, #Sessions, Sampling rate, #Chan, Trials length, #Trial classes, #Trials / class, #Epochs classes, #Epochs / class, Codes, Presentation rate
+   :file: ../build/summary_cvep.csv
+   :header-rows: 1
    :class: sortable
-
-   :class:`Thielen2015`,12,1,2048Hz,64,4.2s,36,3,2,27216 NT / 27216 T,Gold codes,120Hz
-   :class:`Thielen2021`,30,1,512Hz,8,31.5s,20,5,2,18900 NT / 18900 T,Gold codes,60Hz
-   :class:`CastillosCVEP100`,    12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,m-sequence,60Hz
-   :class:`CastillosCVEP40`,     12,1,500Hz,32,2.2s,4,15/15/15/15,2,3525 NT / 3495 T,m-sequence,60Hz
-   :class:`CastillosBurstVEP40`, 12,1,500Hz,32,2.2s,4,15/15/15/15,2,5820 NT / 1200 T,Burst-CVEP,60Hz
-   :class:`CastillosBurstVEP100`,12,1,500Hz,32,2.2s,4,15/15/15/15,2,5820 NT / 1200 T,Burst-CVEP,60Hz
-
 
 Resting States
 ======================
@@ -100,12 +71,9 @@ For example, recoding the EEG of a subject while s/he is having the eye closed o
 is a resting state experiment.
 
 .. csv-table::
-   :header: Dataset, #Subj, #Chan, #Classes, #Blocks / class, Trials length, Sampling rate, #Sessions
-   :class: sortable
-
-   :class:`Cattan2019_PHMD`,12,16,2,10,60s,512Hz,1
-   :class:`Hinss2021`,15,62,4,1,2s,250Hz,1
-   :class:`Rodrigues2017`,20,16,2,5,10s,512Hz,1
+    :file: ../build/summary_rstate.csv
+    :header-rows: 1
+    :class: sortable
 
 Compound Datasets
 ======================
