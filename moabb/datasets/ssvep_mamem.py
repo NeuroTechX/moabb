@@ -170,15 +170,6 @@ class BaseMAMEM(BaseDataset):
 class MAMEM1(BaseMAMEM):
     """SSVEP MAMEM 1 dataset.
 
-    .. admonition:: Dataset summary
-
-
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        Name      #Subj    #Chan    #Classes  #Trials / class    Trials length    Sampling rate      #Sessions
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        MAMEM1       10      256           5  12-15              3s               250Hz                      1
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-
     Dataset from [1]_.
 
     EEG signals with 256 channels captured from 11 subjects executing a
@@ -290,15 +281,6 @@ class MAMEM1(BaseMAMEM):
 class MAMEM2(BaseMAMEM):
     """SSVEP MAMEM 2 dataset.
 
-    .. admonition:: Dataset summary
-
-
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        Name      #Subj    #Chan    #Classes  #Trials / class    Trials length    Sampling rate      #Sessions
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        MAMEM2       10      256           5  20-30              3s               250Hz                      1
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-
     Dataset from [1]_.
 
     EEG signals with 256 channels captured from 11 subjects executing a
@@ -382,15 +364,6 @@ class MAMEM2(BaseMAMEM):
 
 class MAMEM3(BaseMAMEM):
     """SSVEP MAMEM 3 dataset.
-
-    .. admonition:: Dataset summary
-
-
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        Name      #Subj    #Chan    #Classes  #Trials / class    Trials length    Sampling rate      #Sessions
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        MAMEM3       10       14           4  20-30              3s               128Hz                      1
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 
