@@ -85,6 +85,8 @@ class Liu2024(BaseDataset):
     """
 
     def __init__(self, break_events=False, instr_events=False):
+        self.break_events = break_events
+        self.instr_events = instr_events
         events = {"left_hand": 1, "right_hand": 2}
         if break_events:
             events["instr"] = 3
@@ -153,8 +155,7 @@ class Liu2024(BaseDataset):
 
         return subject_paths
 
-    @staticmethod
-    def encoding(events_df: pd.DataFrame) -> Tuple[np.array, Dict[int, str]]:
+    def encoding(self, events_df: pd.DataFrame) -> Tuple[np.array, Dict[int, str]]:
         """Encode the columns 'value' and 'trial_type' into a single event type.
 
         Parameters
@@ -183,18 +184,39 @@ class Liu2024(BaseDataset):
         encoding_mapping = {
             (2, 2): 1,  # Left hand, MI
             (1, 2): 2,  # Right hand, MI
-            (1, 1): 3,  # Right hand, instructions
-            (1, 3): 4,  # Right hand, break
-            (2, 1): 3,  # Left hand, instructions
-            (2, 3): 4,  # Left hand, break
         }
 
         mapping = {
             1: "left_hand",
             2: "right_hand",
-            3: "instr",
-            4: "break",
         }
+
+        if self.instr_events:
+            encoding_mapping.update(
+                {
+                    (1, 1): 3,  # Right hand, instructions
+                    (2, 1): 3,  # Left hand, instructions
+                }
+            )
+            mapping[3] = "instr"
+
+        if self.break_events:
+            encoding_mapping.update(
+                {
+                    (1, 3): 4,  # Right hand, break
+                    (2, 3): 4,  # Left hand, break
+                }
+            )
+            mapping[4] = "break"
+
+        # Filter out rows that won't be encoded
+        valid_tuples = encoding_mapping.keys()
+        events_df = events_df[
+            events_df.apply(
+                lambda row: (row["trial_type"], row["value"]) in valid_tuples, axis=1
+            )
+        ]
+
         # Apply the mapping to the DataFrame
         event_category = events_df.apply(
             lambda row: encoding_mapping[(row["trial_type"], row["value"])], axis=1
