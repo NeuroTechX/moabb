@@ -17,7 +17,7 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
-- None
+- Centralize dataset summary tables in CSV files (:gh:`635` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~

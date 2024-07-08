@@ -293,14 +293,6 @@ class CastillosBurstVEP100(BaseCastillos2023):
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
-    .. admonition:: Dataset summary
-
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        CastillosBurstVEP100  12        1          500Hz      32        2.2s            4        15/15/15/15       2            5820NT/1200T   Burst-CVEP      60Hz
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-
     **Dataset description**
 
     Participants were comfortably seated and instructed to read and sign the informed consent. EEG data were recorded
@@ -354,14 +346,6 @@ class CastillosBurstVEP40(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
-
-    .. admonition:: Dataset summary
-
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        CastillosBurstVEP40   12        1          500Hz      32        2.2s            4        15/15/15/15       2            5820NT/1200T   Burst-CVEP            60Hz
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
 
     **Dataset description**
 
@@ -417,15 +401,6 @@ class CastillosCVEP100(BaseCastillos2023):
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
-    .. admonition:: Dataset summary
-
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        CastillosCVEP100      12        1          500Hz      32        2.2s            4        15/15/15/15       2            3525NT/3495T   m-sequence    60Hz
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-
-
     **Dataset description**
 
     Participants were comfortably seated and instructed to read and sign the informed consent. EEG data were recorded
@@ -479,13 +454,6 @@ class CastillosCVEP40(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
-
-    .. admonition:: Dataset summary
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        CastillosCVEP40       12        1          500Hz      32        2.2s            4        15/15/15/15       2            3525NT/3495T   m-sequence          60Hz
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
 
     **Dataset description**
 
