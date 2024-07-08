@@ -15,10 +15,10 @@ Sosulski2019, 13, 31, 7500 NT / 1500 T, 1.2s, 1000Hz, 1,https://paperswithcode.c
 EPFLP300, 8, 32, 2753 NT / 551 T, 1s, 2048Hz, 4,https://paperswithcode.com/dataset/epflp300-moabb
 Lee2019_ERP, 54, 62, 6900 NT / 1380 T, 1s, 1000Hz, 2,https://paperswithcode.com/dataset/lee2019-erp-moabb-1
 DemonsP300, 60, 8, 935 NT / 50 T, 1s, 500Hz, 1,
-Erpcore2021_N170, 40, 30, 240 NT / 80 T , 1s, 1024Hz, 1,
-Erpcore2021_MMN, 40, 30, 800 NT / 200 T, 1s, 1024Hz, 1,
-Erpcore2021_N2pc, 40, 30, 160 NT / 160 T, 1s, 1024Hz, 1,
-Erpcore2021_P3, 40, 30, 160 NT / 40 T, 1s, 1024Hz, 1,
-Erpcore2021_N400, 40, 30, 60 NT / 60 T, 1s, 1024Hz, 1,
-Erpcore2021_ERN, 40, 30, ~400 All, 1s, 1024Hz, 1,
-Erpcore2021_LRP, 40, 30, ~400 All, 1s, 1024Hz, 1,
+ErpCore2021_N170, 40, 30, 240 NT / 80 T , 1s, 1024Hz, 1,
+ErpCore2021_MMN, 40, 30, 800 NT / 200 T, 1s, 1024Hz, 1,
+ErpCore2021_N2Pc, 40, 30, 160 NT / 160 T, 1s, 1024Hz, 1,
+ErpCore2021_P3, 40, 30, 160 NT / 40 T, 1s, 1024Hz, 1,
+ErpCore2021_N400, 40, 30, 60 NT / 60 T, 1s, 1024Hz, 1,
+ErpCore2021_ERN, 40, 30, ~400 All, 1s, 1024Hz, 1,
+ErpCore2021_LRP, 40, 30, ~400 All, 1s, 1024Hz, 1,

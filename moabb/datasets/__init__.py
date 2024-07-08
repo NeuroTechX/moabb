@@ -57,13 +57,13 @@ from .castillos2023 import (
 )
 from .epfl import EPFLP300
 from .erpcore2021 import (
-    Erpcore2021_ERN,
-    Erpcore2021_LRP,
-    Erpcore2021_MMN,
-    Erpcore2021_N2pc,
-    Erpcore2021_N170,
-    Erpcore2021_N400,
-    Erpcore2021_P3,
+    ErpCore2021_ERN,
+    ErpCore2021_LRP,
+    ErpCore2021_MMN,
+    ErpCore2021_N2Pc,
+    ErpCore2021_N170,
+    ErpCore2021_N400,
+    ErpCore2021_P3,
 )
 from .fake import FakeDataset, FakeVirtualRealityDataset
 from .gigadb import Cho2017

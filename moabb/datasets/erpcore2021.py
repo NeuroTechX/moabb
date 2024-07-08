@@ -1,5 +1,5 @@
 """
-Erpcore2021 dataset
+ErpCore2021 dataset
 
 # Author: Taha Habib <tahahb123@gmail.com>
 
@@ -103,7 +103,7 @@ _docstring_tail = """
 """
 
 
-class Erpcore2021(BaseDataset):
+class ErpCore2021(BaseDataset):
     __doc__ = f"""Abstract base dataset class the ERP CORE dataset by Kappenman et al. 2020.
     {_docstring_head}
     **Experimental procedures**:
@@ -165,7 +165,7 @@ class Erpcore2021(BaseDataset):
             subjects=list(range(1, 40 + 1)),
             sessions_per_subject=1,
             events=events,
-            code=f"Erpcore2021-{task}",
+            code=f"ErpCore2021-{task}",
             interval=interval,
             paradigm="p300",
             doi="10.1016/j.neuroimage.2020.117465",
@@ -419,7 +419,7 @@ class Erpcore2021(BaseDataset):
         """
 
 
-class Erpcore2021_N170(Erpcore2021):
+class ErpCore2021_N170(ErpCore2021):
     __doc__ = f"""N170 events of the ERP CORE dataset by Kappenman et al. 2020.
     {_docstring_head}
     **Experimental procedure**:
@@ -430,7 +430,7 @@ class Erpcore2021_N170(Erpcore2021):
     {_docstring_tail}
     """
 
-    __init__ = partialmethod(Erpcore2021.__init__, "N170")
+    __init__ = partialmethod(ErpCore2021.__init__, "N170")
 
     @staticmethod
     def encode_event(row):
@@ -462,7 +462,7 @@ class Erpcore2021_N170(Erpcore2021):
         return encoded_column.values, mapping
 
 
-class Erpcore2021_MMN(Erpcore2021):
+class ErpCore2021_MMN(ErpCore2021):
     __doc__ = f"""MMN events of the ERP CORE dataset by Kappenman et al. 2020.
     {_docstring_head}
     **Experimental procedure**:
@@ -473,7 +473,7 @@ class Erpcore2021_MMN(Erpcore2021):
     {_docstring_tail}
     """
 
-    __init__ = partialmethod(Erpcore2021.__init__, "MMN")
+    __init__ = partialmethod(ErpCore2021.__init__, "MMN")
 
     @staticmethod
     def encode_event(row):
@@ -501,7 +501,7 @@ class Erpcore2021_MMN(Erpcore2021):
         return encoded_column.values, mapping
 
 
-class Erpcore2021_N2pc(Erpcore2021):
+class ErpCore2021_N2Pc(ErpCore2021):
     __doc__ = f"""N2pc events of the ERP CORE dataset by Kappenman et al. 2020.
     {_docstring_head}
     **Experimental procedure**:
@@ -511,7 +511,7 @@ class Erpcore2021_N2pc(Erpcore2021):
     {_docstring_tail}
     """
 
-    __init__ = partialmethod(Erpcore2021.__init__, "N2pc")
+    __init__ = partialmethod(ErpCore2021.__init__, "N2pc")
 
     @staticmethod
     def encode_event(row):
@@ -560,7 +560,7 @@ class Erpcore2021_N2pc(Erpcore2021):
         return encoded_column.values, mapping
 
 
-class Erpcore2021_P3(Erpcore2021):
+class ErpCore2021_P3(ErpCore2021):
     __doc__ = f"""P3 events of the ERP CORE dataset by Kappenman et al. 2020.
     {_docstring_head}
     **Experimental procedure**:
@@ -573,7 +573,7 @@ class Erpcore2021_P3(Erpcore2021):
     {_docstring_tail}
     """
 
-    __init__ = partialmethod(Erpcore2021.__init__, "P3")
+    __init__ = partialmethod(ErpCore2021.__init__, "P3")
 
     @staticmethod
     # Keeping only the stimulus without the response
@@ -672,7 +672,7 @@ class Erpcore2021_P3(Erpcore2021):
         return encoded_column.values, mapping
 
 
-class Erpcore2021_N400(Erpcore2021):
+class ErpCore2021_N400(ErpCore2021):
     __doc__ = f"""N400 events of the ERP CORE dataset by Kappenman et al. 2020.
     {_docstring_head}
     **Experimental procedure**:
@@ -682,7 +682,7 @@ class Erpcore2021_N400(Erpcore2021):
     {_docstring_tail}
     """
 
-    __init__ = partialmethod(Erpcore2021.__init__, "N400")
+    __init__ = partialmethod(ErpCore2021.__init__, "N400")
 
     @staticmethod
     def encode_event(row):
@@ -722,7 +722,7 @@ class Erpcore2021_N400(Erpcore2021):
         return encoded_column.values, mapping
 
 
-class Erpcore2021_ERN(Erpcore2021):
+class ErpCore2021_ERN(ErpCore2021):
     __doc__ = f"""ERN events of the ERP CORE dataset by Kappenman et al. 2020.
     {_docstring_head}
     **Experimental procedure**:
@@ -733,7 +733,7 @@ class Erpcore2021_ERN(Erpcore2021):
     {_docstring_tail}
     """
 
-    __init__ = partialmethod(Erpcore2021.__init__, "ERN")
+    __init__ = partialmethod(ErpCore2021.__init__, "ERN")
 
     @staticmethod
     def encode_event(row):
@@ -804,7 +804,7 @@ class Erpcore2021_ERN(Erpcore2021):
         return encoded_column.values, mapping
 
 
-class Erpcore2021_LRP(Erpcore2021):
+class ErpCore2021_LRP(ErpCore2021):
     __doc__ = f"""LRP events of the ERP CORE dataset by Kappenman et al. 2020.
     {_docstring_head}
     **Experimental procedure**:
@@ -815,7 +815,7 @@ class Erpcore2021_LRP(Erpcore2021):
     {_docstring_tail}
     """
 
-    __init__ = partialmethod(Erpcore2021.__init__, "LRP")
+    __init__ = partialmethod(ErpCore2021.__init__, "LRP")
 
     @staticmethod
     def encode_event(row):
