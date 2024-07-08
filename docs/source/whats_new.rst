@@ -18,6 +18,7 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 - Centralize dataset summary tables in CSV files (:gh:`635` by `Pierre Guetschel`_)
+- Add new dataset :class:`moabb.datasets.Liu2024` dataset (:gh:`619` by `Taha Habib`_)
 
 Bugs
 ~~~~
@@ -473,3 +474,4 @@ API changes
 .. _Brian Irvine: https://github.com/brianjohannes
 .. _Bruna Lopes: https://github.com/brunaafl
 .. _Yash Chauhan: https://github.com/jiggychauhi
+.. _Taha Habib: https://github.com/tahatt13
