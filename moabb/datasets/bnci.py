@@ -756,15 +756,6 @@ class MNEBNCI(BaseDataset):
 class BNCI2014_001(MNEBNCI):
     """BNCI 2014-001 Motor Imagery dataset.
 
-    .. admonition:: Dataset summary
-
-
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2014_001       9       22           4                144  4s            250Hz                      2
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-
     Dataset IIa from BCI Competition 4 [1]_.
 
     **Dataset Description**
@@ -820,15 +811,6 @@ class BNCI2014_001(MNEBNCI):
 class BNCI2014_002(MNEBNCI):
     """BNCI 2014-002 Motor Imagery dataset.
 
-    .. admonition:: Dataset summary
-
-
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2014_002       14       15           2                 80  5s            512Hz                      1
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-
     Motor Imagery Dataset from [1]_.
 
     **Dataset description**
@@ -881,15 +863,6 @@ class BNCI2014_002(MNEBNCI):
 @depreciated_alias("BNCI2014004", "1.1")
 class BNCI2014_004(MNEBNCI):
     """BNCI 2014-004 Motor Imagery dataset.
-
-    .. admonition:: Dataset summary
-
-
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2014_004       9        3           2                360  4.5s          250Hz                      5
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset B from BCI Competition 2008.
 
@@ -965,15 +938,6 @@ class BNCI2014_004(MNEBNCI):
 class BNCI2014_008(MNEBNCI):
     """BNCI 2014-008 P300 dataset.
 
-    .. admonition:: Dataset summary
-
-
-        ============  =======  =======  =================  ===============  ===============  ===========
-        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ============  =======  =======  =================  ===============  ===============  ===========
-        BNCI2014_008        8        8  3500 NT / 700 T    1s               256Hz                      1
-        ============  =======  =======  =================  ===============  ===============  ===========
-
     Dataset from [1]_.
 
     **Dataset description**
@@ -1036,15 +1000,6 @@ class BNCI2014_008(MNEBNCI):
 class BNCI2014_009(MNEBNCI):
     """BNCI 2014-009 P300 dataset.
 
-    .. admonition:: Dataset summary
-
-
-        ============  =======  =======  =================  ===============  ===============  ===========
-        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ============  =======  =======  =================  ===============  ===============  ===========
-        BNCI2014_009       10       16  1440 NT / 288 T    0.8s             256Hz                      3
-        ============  =======  =======  =================  ===============  ===============  ===========
-
     Dataset from [1]_.
 
     **Dataset description**
@@ -1098,15 +1053,6 @@ class BNCI2014_009(MNEBNCI):
 class BNCI2015_001(MNEBNCI):
     """BNCI 2015-001 Motor Imagery dataset.
 
-    .. admonition:: Dataset summary
-
-
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2015_001       12       13           2                200  5s            512Hz                      2
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-
     Dataset from [1]_.
 
     **Dataset description**
@@ -1154,14 +1100,6 @@ class BNCI2015_001(MNEBNCI):
 class BNCI2015_003(MNEBNCI):
     """BNCI 2015-003 P300 dataset.
 
-    .. admonition:: Dataset summary
-
-
-        ============  =======  =======  =================  ===============  ===============  ===========
-        Name           #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ============  =======  =======  =================  ===============  ===============  ===========
-        BNCI2015_003       10        8  1500 NT / 300 T    0.8s             256Hz                      1
-        ============  =======  =======  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -1196,15 +1134,6 @@ class BNCI2015_003(MNEBNCI):
 @depreciated_alias("BNCI2015004", "1.1")
 class BNCI2015_004(MNEBNCI):
     """BNCI 2015-004 Motor Imagery dataset.
-
-    .. admonition:: Dataset summary
-
-
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        Name           #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
-        BNCI2015_004       9       30           5                 80  7s            256Hz                      2
-        ============  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from [1]_.
 

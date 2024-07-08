@@ -24,15 +24,6 @@ BASE_URL = "https://ndownloader.figshare.com/files/"
 class Stieger2021(BaseDataset):
     """Motor Imagery dataset from Stieger et al. 2021.
 
-    .. admonition:: Dataset summary
-
-
-        ============= ======= ======= ========== ================= ============ =============== ===========
-        Name          #Subj   #Chan   #Classes   #Trials / class   Trials len   Sampling rate   #Sessions
-        ============= ======= ======= ========== ================= ============ =============== ===========
-        Stieger2021   62      64      4          450               3s           1000Hz          10
-        ============= ======= ======= ========== ================= ============ =============== ===========
-
     The main goals of our original study were to characterize how individuals
     learn to control SMR-BCIs and to test whether this learning can be improved
     through behavioral interventions such as mindfulness training. Participants
