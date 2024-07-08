@@ -212,9 +212,13 @@ def check_run_names(data):
 
 
 def format_row(row: pd.Series):
+    pwc_key = "PapersWithCode leaderboard"
     tab_prefix = " " * 8
     tab_sep = "="
     row = row[~row.isna()]
+    pwc_link = row.get(pwc_key, None)
+    if pwc_link is not None:
+        row = row.drop(pwc_key)
     col_names = [str(col) for col in row.index]
 
     def to_int(x):
@@ -231,7 +235,7 @@ def format_row(row: pd.Series):
     row_sep = " ".join([tab_sep * width for width in widths])
     cols_row = " ".join([col.rjust(width) for col, width in zip(col_names, widths)])
     values_row = " ".join([val.rjust(width) for val, width in zip(values, widths)])
-    return (
+    out = (
         "    .. admonition:: Dataset summary\n\n"
         f"{tab_prefix}{row_sep}\n"
         f"{tab_prefix}{cols_row}\n"
@@ -239,6 +243,9 @@ def format_row(row: pd.Series):
         f"{tab_prefix}{values_row}\n"
         f"{tab_prefix}{row_sep}"
     )
+    if pwc_link is not None:
+        out = f"    **{pwc_key}:** {pwc_link}\n\n" + out
+    return out
 
 
 class MetaclassDataset(abc.ABCMeta):
