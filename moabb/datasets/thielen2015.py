@@ -24,15 +24,6 @@ class Thielen2015(BaseDataset):
 
     Dataset [1]_ from the study on reconvolution for c-VEP [2]_.
 
-    .. admonition:: Dataset summary
-
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== ================== ========== =================
-        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class    Codes      Presentation rate
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== ================== ========== =================
-        Thielen2015          12        1         2048Hz      64        4.2s          36               3              2         27216 NT / 27216 T Gold codes     120Hz
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== ================== ========== =================
-
-
     **Dataset description**
 
     EEG recordings were obtained with a sampling rate of 2048 Hz, using a setup comprising 64 Ag/AgCl electrodes, and
