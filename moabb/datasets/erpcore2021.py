@@ -501,7 +501,7 @@ class ErpCore2021_MMN(ErpCore2021):
         return encoded_column.values, mapping
 
 
-class ErpCore2021_N2Pc(ErpCore2021):
+class ErpCore2021_N2pc(ErpCore2021):
     __doc__ = f"""N2pc events of the ERP CORE dataset by Kappenman et al. 2020.
     {_docstring_head}
     **Experimental procedure**:
