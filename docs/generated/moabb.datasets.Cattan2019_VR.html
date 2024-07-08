@@ -466,8 +466,32 @@ document.write(`
 <h1>moabb.datasets.Cattan2019_VR<a class="headerlink" href="#moabb-datasets-cattan2019-vr" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Cattan2019_VR">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Cattan2019_VR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">virtual_reality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">screen_display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L829-L952"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Cattan2019_VR" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Cattan2019_VR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">virtual_reality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">screen_display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L785-L901"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Cattan2019_VR" title="Permalink to this definition">#</a></dt>
 <dd><p>Dataset of an EEG-based BCI experiment in Virtual Reality using P300.</p>
+<p><strong>PapersWithCode leaderboard:</strong> <a class="reference external" href="https://paperswithcode.com/dataset/cattan2019-vr-moabb-1">https://paperswithcode.com/dataset/cattan2019-vr-moabb-1</a></p>
+<div class="admonition-dataset-summary admonition">
+<p class="admonition-title">Dataset summary</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>#Subj</p></th>
+<th class="head"><p>#Chan</p></th>
+<th class="head"><p>#Trials / class</p></th>
+<th class="head"><p>Trials length</p></th>
+<th class="head"><p>Sampling rate</p></th>
+<th class="head"><p>#Sessions</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>21</p></td>
+<td><p>16</p></td>
+<td><p>600 NT / 120 T</p></td>
+<td><p>1s</p></td>
+<td><p>512Hz</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>We describe the experimental procedures for a dataset that we have made publicly
 available at <a class="reference external" href="https://doi.org/10.5281/zenodo.2605204">https://doi.org/10.5281/zenodo.2605204</a> in mat (Mathworks, Natick, USA)
 and csv formats <a class="reference internal" href="#r4b90cbefe65c-1" id="id1">[1]</a>. This dataset contains electroencephalographic recordings on 21
@@ -514,7 +538,7 @@ on a Personal Computer. Research Report, GIPSA-lab; IHMTEK.
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Cattan2019_VR.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L901-L904"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Cattan2019_VR.data_path" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L850-L853"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Cattan2019_VR.data_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -545,7 +569,7 @@ list of length one, for compatibility.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Cattan2019_VR.get_block_repetition">
-<span class="sig-name descname"><span class="pre">get_block_repetition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetition_list</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L906-L952"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Cattan2019_VR.get_block_repetition" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_block_repetition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paradigm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repetition_list</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/braininvaders.py#L855-L901"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Cattan2019_VR.get_block_repetition" title="Permalink to this definition">#</a></dt>
 <dd><p>Select data for all provided subjects, blocks and repetitions. Each
 subject has 12 blocks of 5 repetitions.</p>
 <p>The returned data is a dictionary with the following structure:</p>

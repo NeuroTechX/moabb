@@ -466,36 +466,33 @@ document.write(`
 <h1>moabb.datasets.Thielen2015<a class="headerlink" href="#moabb-datasets-thielen2015" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Thielen2015">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Thielen2015</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/thielen2015.py#L22-L185"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Thielen2015" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Thielen2015</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/thielen2015.py#L22-L176"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Thielen2015" title="Permalink to this definition">#</a></dt>
 <dd><p>c-VEP dataset from Thielen et al. (2015)</p>
-<p>Dataset <a class="reference internal" href="#r88057a8367d2-1" id="id1">[1]</a> from the study on reconvolution for c-VEP <a class="reference internal" href="#r88057a8367d2-2" id="id2">[2]</a>.</p>
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>#Subj</p></th>
-<th class="head"><p>#Sessions</p></th>
-<th class="head"><p>Sampling rate</p></th>
+<tr class="row-odd"><th class="head"><p>#Subj</p></th>
 <th class="head"><p>#Chan</p></th>
-<th class="head"><p>Trials length</p></th>
-<th class="head"><p>#Trial classes</p></th>
 <th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>#Epoch classes</p></th>
+<th class="head"><p>Trials length</p></th>
+<th class="head"><p>Sampling rate</p></th>
+<th class="head"><p>#Sessions</p></th>
+<th class="head"><p>#Trial classes</p></th>
+<th class="head"><p>#Epochs classes</p></th>
 <th class="head"><p>#Epochs / class</p></th>
 <th class="head"><p>Codes</p></th>
 <th class="head"><p>Presentation rate</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Thielen2015</p></td>
-<td><p>12</p></td>
-<td><p>1</p></td>
-<td><p>2048Hz</p></td>
+<tr class="row-even"><td><p>12</p></td>
 <td><p>64</p></td>
-<td><p>4.2s</p></td>
-<td><p>36</p></td>
 <td><p>3</p></td>
+<td><p>4.2s</p></td>
+<td><p>2048Hz</p></td>
+<td><p>1</p></td>
+<td><p>36</p></td>
 <td><p>2</p></td>
 <td><p>27216 NT / 27216 T</p></td>
 <td><p>Gold codes</p></td>
@@ -504,6 +501,7 @@ document.write(`
 </tbody>
 </table>
 </div>
+<p>Dataset <a class="reference internal" href="#r88057a8367d2-1" id="id1">[1]</a> from the study on reconvolution for c-VEP <a class="reference internal" href="#r88057a8367d2-2" id="id2">[2]</a>.</p>
 <p><strong>Dataset description</strong></p>
 <p>EEG recordings were obtained with a sampling rate of 2048 Hz, using a setup comprising 64 Ag/AgCl electrodes, and
 amplified by a Biosemi ActiveTwo EEG amplifier. Electrode placement followed the international 10-10 system.</p>
@@ -553,7 +551,7 @@ DOI: <a class="reference external" href="https://doi.org/10.1371/journal.pone.01
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Thielen2015.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/thielen2015.py#L161-L185"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Thielen2015.data_path" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/thielen2015.py#L152-L176"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Thielen2015.data_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the data paths of a single subject.</p>
 </dd></dl>
 

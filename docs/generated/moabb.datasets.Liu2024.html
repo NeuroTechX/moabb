@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
-    <title>moabb.datasets.Huebner2018 &#8212; moabb 1.1.0-dev documentation</title>
+    <title>moabb.datasets.Liu2024 &#8212; moabb 1.1.0-dev documentation</title>
   
   
   
@@ -59,13 +59,13 @@
                 gtag('js', new Date());
                 gtag('config', 'G-5WJBKDMSTE');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.Huebner2018';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/moabb.datasets.Liu2024';</script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="moabb.datasets.Lee2019_ERP" href="moabb.datasets.Lee2019_ERP.html" />
-    <link rel="prev" title="moabb.datasets.Huebner2017" href="moabb.datasets.Huebner2017.html" />
+    <link rel="next" title="moabb.datasets.BI2012" href="moabb.datasets.BI2012.html" />
+    <link rel="prev" title="moabb.datasets.Stieger2021" href="moabb.datasets.Stieger2021.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -445,7 +445,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.Huebner2018</li>
+    <li class="breadcrumb-item active" aria-current="page">moabb.datasets.Liu2024</li>
   </ul>
 </nav>
 </div>
@@ -462,70 +462,182 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="moabb-datasets-huebner2018">
-<h1>moabb.datasets.Huebner2018<a class="headerlink" href="#moabb-datasets-huebner2018" title="Permalink to this heading">#</a></h1>
+  <section id="moabb-datasets-liu2024">
+<h1>moabb.datasets.Liu2024<a class="headerlink" href="#moabb-datasets-liu2024" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="moabb.datasets.Huebner2018">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Huebner2018</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_slice_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_blocks_as_sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/huebner_llp.py#L174-L221"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Huebner2018" title="Permalink to this definition">#</a></dt>
-<dd><p>Mixture of LLP and EM for a visual matrix speller (ERP) dataset from
-Hübner et al 2018 <a class="reference internal" href="#r8f30fc0d0ace-1" id="id1">[1]</a>.</p>
-<p><strong>PapersWithCode leaderboard:</strong> <a class="reference external" href="https://paperswithcode.com/dataset/huebner2018-moabb">https://paperswithcode.com/dataset/huebner2018-moabb</a></p>
-<div class="admonition-dataset-summary admonition">
+<dt class="sig sig-object py" id="moabb.datasets.Liu2024">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Liu2024</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">break_events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instr_events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/liu2024.py#L27-L340"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2024" title="Permalink to this definition">#</a></dt>
+<dd><div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>#Subj</p></th>
 <th class="head"><p>#Chan</p></th>
-<th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trials length</p></th>
-<th class="head"><p>Sampling rate</p></th>
-<th class="head"><p>#Sessions</p></th>
+<th class="head"><p>#Classes</p></th>
+<th class="head"><p>#Trials</p></th>
+<th class="head"><p>Trial length</p></th>
+<th class="head"><p>Freq</p></th>
+<th class="head"><p>#Session</p></th>
+<th class="head"><p>#Runs</p></th>
+<th class="head"><p>Total_trials</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>12</p></td>
-<td><p>31</p></td>
-<td><p>364 NT / 112 T</p></td>
-<td><p>0.9s</p></td>
-<td><p>1000Hz</p></td>
-<td><p>3</p></td>
+<tr class="row-even"><td><p>50</p></td>
+<td><p>29</p></td>
+<td><p>2</p></td>
+<td><p>20</p></td>
+<td><p>4s</p></td>
+<td><p>500Hz</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>2000</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p><strong>Dataset description</strong></p>
-<p>Within a single session, a subject was asked to spell the beginning of a sentence in each of three blocks.The text
-consists of the 35 symbols “Franzy jagt im Taxi quer durch das ”. Each block, one of the three decoding
-algorithms (EM, LLP, MIX) was used in order to guess the attended symbol. The order of the blocks was
-pseudo-randomized over subjects, such that each possible order of the three decoding algorithms was used twice.
-This randomization should reduce systematic biases by order effects or temporal effects, e.g., due to fatigue or
-task-learning.</p>
-<p>A trial describes the process of spelling one character. Each of the 35 trials per block contained 68 highlighting
-events. The stimulus onset asynchrony (SOA) was 250 ms and the stimulus duration was 100 ms leading to an
-interstimulus interval (ISI) of 150 ms.</p>
+<p>Dataset <a class="reference internal" href="#r5c8c28f00274-1" id="id1">[1]</a> from the study on motor imagery <a class="reference internal" href="#r5c8c28f00274-2" id="id2">[2]</a>.</p>
+<p><strong>Dataset description</strong>
+This dataset includes data from 50 acute stroke patients (the time after stroke ranges from 1 day to 30 days)
+admitted to the stroke unit of Xuanwu Hospital of Capital Medical University. The patients included 39 males (78%)
+and 11 females (22%), aged between 31 and 77 years, with an average age of 56.70 years (SD = 10.57)
+Before the start of the experiment, the subject sat in a chair in a position as comfortable as possible with an
+EEG cap placed on their head; subjects were positioned approximately 80 cm away from a computer screen in front of them.
+The computer played audio instructions to the patient about the procedure. Each experiment lasted approximately 20 minutes,
+including preparation time and approximately 10 minutes of signal recording. Before the start of the MI experiment,
+the patients opened their eyes and closed their eyes for 1 minute each. The MI experiment was divided into 40 trials, and
+each trial took 8 seconds, which consisted of three stages (instruction, MI and break). In the instruction stage, patients
+were prompted to imagine grasping a spherical object with the left- or right-hand. In the MI stage, participants imagined
+performing this action, a video of gripping motion is played on the computer, which leads the patient imagine grabbing the
+ball. This video stays playing for 4 s. Patients only imagine one hand movement.In the break stage, participants were allowed
+to relax and rest. The MI experiments alternated between the left- and right-hand, and the patients moved onto the next stage
+of the experiment according to the instructions.</p>
+<p>The EEG data were collected through a wireless multichannel EEG acquisition system (ZhenTec NT1, Xi’an ZhenTec Intelligence
+Technology Co., Ltd., China). The system includes an EEG cap, an EEG acquisition amplifier, a data receiver and host computer
+software. The EEG cap had electrodes placed according to the international 10-10 system, including 29 EEG recording electrodes
+and 2 electrooculography (EOG) electrodes. The reference electrode located at CPz position and the grounding electrode located
+at FPz position. All the EEG electrodes and grounding electrode are Ag/AgCl semi-dry EEG electrodes based on highly absorbable
+porous sponges that are dampened with 3% NaCl solution. The EOG electrodes are composed by Ag/AgCl electrodes and conductive
+adhesive hydrogel. The common-mode rejection ratio was 120 dB, the input impedance was 1 GΩ, the input noise was less than
+0.4 μVrms, and the resolution was 24 bits. The acquisition impedance was less than or equal to 20 kΩ. The sampling frequency
+was 500 Hz.</p>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r5c8c28f00274-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Liu, Haijie; Lv, Xiaodong (2022). EEG datasets of stroke patients.
+figshare. Dataset. DOI: <a class="reference external" href="https://doi.org/10.6084/m9.figshare.21679035.v5">https://doi.org/10.6084/m9.figshare.21679035.v5</a></p>
+</div>
+<div class="citation" id="r5c8c28f00274-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Liu, Haijie, Wei, P., Wang, H. et al. An EEG motor imagery dataset
+for brain computer interface in acute stroke patients. Sci Data 11, 131
+(2024). DOI: <a class="reference external" href="https://doi.org/10.1038/s41597-023-02787-8">https://doi.org/10.1038/s41597-023-02787-8</a></p>
+</div>
+</div>
+<p class="rubric">Notes</p>
+<p>To add the break and instruction events, set the <cite>break_events</cite> and
+<cite>instr_events</cite> parameters to True while instantiating the class.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.1.1.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.Liu2024.create_event_array">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_event_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/liu2024.py#L317-L340"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2024.create_event_array" title="Permalink to this definition">#</a></dt>
+<dd><p>This method creates an event array based on the stimulus channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>interval</strong> (<em>array_like</em>) – range/interval in milliseconds in which the brain response/activity relative to an event/stimulus onset lies in.
-Default is set to [-.2, .7].</p></li>
-<li><p><strong>raw_slice_offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>None</em>) – defines the crop offset in milliseconds before the first and after the last event (target or non-targeet) onset.
-Default None which crops with an offset 2,000 ms.</p></li>
+<li><p><strong>raw</strong> (<a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.7)"><em>mne.io.Raw</em></a>) – The raw data.</p></li>
+<li><p><strong>event_category</strong> (<em>np.ndarray</em>) – The event categories.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>events</strong> – The created events array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.Liu2024.data_infos">
+<span class="sig-name descname"><span class="pre">data_infos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/liu2024.py#L284-L301"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2024.data_infos" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the data paths of the electrodes and events information</p>
+<p>This function downloads the necessary data files for electrodes
+and events from their respective URLs and returns their local file paths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple containing the local file paths to the channels, electrodes,
+and events information files.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.Liu2024.data_path">
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/liu2024.py#L95-L146"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2024.data_path" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the data paths of a single subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The subject number to fetch data for.</p></li>
+<li><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Location of where to look for the data storing location. If None,
+the environment variable or config parameter MNE_(dataset) is used.
+If it doesn’t exist, the “~/mne_data” directory is used. If the
+dataset is not found under the given path, the data
+will be automatically downloaded to the specified folder.</p></li>
+<li><p><strong>force_update</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Force update of the dataset even if a local copy exists.</p></li>
+<li><p><strong>update_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> | </em><em>None</em>) – If True, set the MNE_DATASETS_(dataset)_PATH in mne-python config
+to the given path.
+If None, the user is prompted.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level (see mne.verbose()).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the path to the subject’s data file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="moabb.datasets.Liu2024.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/liu2024.py#L148-L215"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2024.encoding" title="Permalink to this definition">#</a></dt>
+<dd><p>Encode the columns ‘value’ and ‘trial_type’ into a single event type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>events_df</strong> (<em>pd.DataFrame</em>) – DataFrame containing the events information.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of encoded event types.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>The ‘trial_type’ variable can take the following values:</dt><dd><ul class="simple">
+<li><p>1 : Left hand</p></li>
+<li><p>2 : Right hand</p></li>
+</ul>
+</dd>
+<dt>The ‘value’ variable can take the following values:</dt><dd><ul class="simple">
+<li><p>1 : instructions</p></li>
+<li><p>2 : MI</p></li>
+<li><p>3 : break</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="r8f30fc0d0ace-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Huebner, D., Verhoeven, T., Mueller, K. R., Kindermans, P. J., &amp; Tangermann, M. (2018).
-Unsupervised learning for brain-computer interfaces based on event-related potentials: Review and online comparison [research frontier].
-IEEE Computational Intelligence Magazine, 13(2), 66-77.
-<a class="reference external" href="https://doi.org/10.1109/MCI.2018.2807039">https://doi.org/10.1109/MCI.2018.2807039</a></p>
-</div>
-</div>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 0.4.5.</span></p>
-</div>
+</dd></dl>
+
 </dd></dl>
 
 <div style='clear:both'></div></section>
@@ -542,20 +654,20 @@ IEEE Computational Intelligence Magazine, 13(2), 66-77.
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="moabb.datasets.Huebner2017.html"
+       href="moabb.datasets.Stieger2021.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">moabb.datasets.Huebner2017</p>
+        <p class="prev-next-title">moabb.datasets.Stieger2021</p>
       </div>
     </a>
     <a class="right-next"
-       href="moabb.datasets.Lee2019_ERP.html"
+       href="moabb.datasets.BI2012.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">moabb.datasets.Lee2019_ERP</p>
+        <p class="prev-next-title">moabb.datasets.BI2012</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -577,7 +689,13 @@ IEEE Computational Intelligence Magazine, 13(2), 66-77.
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.Huebner2018"><code class="docutils literal notranslate"><span class="pre">Huebner2018</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.Liu2024"><code class="docutils literal notranslate"><span class="pre">Liu2024</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.Liu2024.create_event_array"><code class="docutils literal notranslate"><span class="pre">Liu2024.create_event_array()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.Liu2024.data_infos"><code class="docutils literal notranslate"><span class="pre">Liu2024.data_infos()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.Liu2024.data_path"><code class="docutils literal notranslate"><span class="pre">Liu2024.data_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#moabb.datasets.Liu2024.encoding"><code class="docutils literal notranslate"><span class="pre">Liu2024.encoding()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

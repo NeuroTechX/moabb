@@ -466,31 +466,34 @@ document.write(`
 <h1>moabb.datasets.Schirrmeister2017<a class="headerlink" href="#moabb-datasets-schirrmeister2017" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="moabb.datasets.Schirrmeister2017">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Schirrmeister2017</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/schirrmeister2017.py#L17-L106"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schirrmeister2017" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">moabb.datasets.</span></span><span class="sig-name descname"><span class="pre">Schirrmeister2017</span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/schirrmeister2017.py#L17-L97"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schirrmeister2017" title="Permalink to this definition">#</a></dt>
 <dd><p>High-gamma dataset described in Schirrmeister et al. 2017.</p>
+<p><strong>PapersWithCode leaderboard:</strong> <a class="reference external" href="https://paperswithcode.com/dataset/schirrmeister2017-moabb">https://paperswithcode.com/dataset/schirrmeister2017-moabb</a></p>
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <table class="table">
 <thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>#Subj</p></th>
+<tr class="row-odd"><th class="head"><p>#Subj</p></th>
 <th class="head"><p>#Chan</p></th>
 <th class="head"><p>#Classes</p></th>
-<th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trials len</p></th>
-<th class="head"><p>Sampling rate</p></th>
-<th class="head"><p>#Sessions</p></th>
+<th class="head"><p>#Trials</p></th>
+<th class="head"><p>Trial length</p></th>
+<th class="head"><p>Freq</p></th>
+<th class="head"><p>#Session</p></th>
+<th class="head"><p>#Runs</p></th>
+<th class="head"><p>Total_trials</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Schirrmeister2017</p></td>
-<td><p>14</p></td>
+<tr class="row-even"><td><p>14</p></td>
 <td><p>128</p></td>
 <td><p>4</p></td>
 <td><p>120</p></td>
 <td><p>4s</p></td>
 <td><p>500Hz</p></td>
 <td><p>1</p></td>
+<td><p>2</p></td>
+<td><p>13440</p></td>
 </tr>
 </tbody>
 </table>
@@ -532,7 +535,7 @@ neural networks for EEG decoding and visualization.” Human brain mapping 38.11
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.datasets.Schirrmeister2017.data_path">
-<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/schirrmeister2017.py#L77-L89"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schirrmeister2017.data_path" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/schirrmeister2017.py#L68-L80"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Schirrmeister2017.data_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
