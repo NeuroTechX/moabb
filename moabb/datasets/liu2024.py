@@ -29,16 +29,6 @@ class Liu2024(BaseDataset):
 
     Dataset [1]_ from the study on motor imagery [2]_.
 
-    .. admonition:: Dataset summary
-
-
-        ========= ======== ======= ========== ================= ============ =============== ===========
-        Name      #Subj    #Chan   #Classes   #Trials / class   Trials len   Sampling rate   #Sessions
-        ========= ======== ======= ========== ================= ============ =============== ===========
-        Liu2024   50       29      2          20                4s           500Hz           1
-        ========= ======== ======= ========== ================= ============ =============== ===========
-
-
     **Dataset description**
     This dataset includes data from 50 acute stroke patients (the time after stroke ranges from 1 day to 30 days)
     admitted to the stroke unit of Xuanwu Hospital of Capital Medical University. The patients included 39 males (78%)
