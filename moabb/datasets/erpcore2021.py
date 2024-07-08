@@ -924,8 +924,6 @@ class Erpcore2021_LRP(Erpcore2021):
         # Target: Response - left
         # NonTarget: Response - right
         mapping = {
-            "1": "Target",
-            "2": "NonTarget",
             "Response - left, compatible flankers, target left": "Target",
             "Response - left, incompatible flankers, target left": "Target",
             "Response - left, compatible flankers, target right": "Target",
