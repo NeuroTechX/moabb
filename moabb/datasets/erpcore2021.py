@@ -55,7 +55,7 @@ DATASET_PARAMS = {
         folder_name=f"MNE-erpcore{task.lower()}2021-data",
         dataset_name=f"MNE-erpcore{task.lower()}2021",
         hash=None,
-        config_key=f"MNE_ERPCORE_{task.upper()}_PATH",  # I need to check this
+        config_key=f"MNE_ERPCORE_{task.upper()}_PATH",
     )
     for task, osf in OSF_IDS.items()
 }
@@ -135,38 +135,24 @@ class Erpcore2021(BaseDataset):
     def __init__(self, task):
         if task == "N170":
             interval = (-0.2, 0.8)
-            events = {
-                "Target": 1,
-                "NonTarget": 2,
-            }
+            events = {"Target": 1, "NonTarget": 2}
         elif task == "MMN":
             interval = (-0.2, 0.8)
-            # Stimulus - deviant:70 : 1, Stimulus - standard:80: 2
             events = {"Target": 1, "NonTarget": 2}
         elif task == "N2pc":
             interval = (-0.2, 0.8)
-            # Target left: 0, Target right: 1,
-            events = {
-                "Target": 1,
-                "NonTarget": 2,
-            }
+            events = {"Target": 1, "NonTarget": 2}
         elif task == "P3":
             interval = (-0.2, 0.8)
-            # match=1, no_match=2
             events = {"Target": 1, "NonTarget": 2}
-
         elif task == "N400":
             interval = (-0.2, 0.8)
-            # related=1, unrelated=2
             events = {"Target": 1, "NonTarget": 2}
-
         elif task == "ERN":
             interval = (-0.8, 0.2)
-            # right = 1, left = 2
             events = {"Target": 1, "NonTarget": 2}
         elif task == "LRP":
             interval = (-0.6, 0.4)
-            # right = 1, left = 2
             events = {"Target": 1, "NonTarget": 2}
         else:
             raise ValueError(f"Unknown task {task}")
