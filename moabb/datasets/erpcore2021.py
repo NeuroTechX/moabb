@@ -61,7 +61,7 @@ DATASET_PARAMS = {
 
 _docstring_head = """
 
-    Datasets [1]_ from the study [2]_.
+    Datasets [1]_ from the article [2]_.
 
     **Dataset Description**
 
@@ -99,7 +99,7 @@ _docstring_tail = """
 
     .. [2] Emily S. Kappenman, Jaclyn L. Farrens, Wendy Zhang, Andrew X. Stewart, Steven J. Luck.
         ERP CORE: An open resource for human event-related potential research.
-        DOI: https://doi.org/10.1016/j.neuroimage.2020.117465
+        DOI: https://doi.org/10.18115/D5JW4R
 """
 
 
