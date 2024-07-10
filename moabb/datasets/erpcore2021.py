@@ -64,7 +64,7 @@ DATASET_PARAMS = {
 class Erpcore2021(BaseDataset):
     """Abstract base dataset class for Erpcore2021.
 
-    Datasets [1]_ from the study [2]_.
+    Datasets [1]_ from the article [2]_.
 
     **Dataset Description**
 
@@ -124,7 +124,7 @@ class Erpcore2021(BaseDataset):
     ----------
     .. [1] Emily S. Kappenman, Jaclyn L. Farrens, Wendy Zhang, Andrew X. Stewart, Steven J. Luck.
         (2020). ERP CORE: An open resource for human event-related potential research. NeuroImage.
-        DOI: https://doi.org/10.1016/j.neuroimage.2020.117465
+        DOI: https://doi.org/10.18115/D5JW4R
 
     .. [2] Emily S. Kappenman, Jaclyn L. Farrens, Wendy Zhang, Andrew X. Stewart, Steven J. Luck.
         ERP CORE: An open resource for human event-related potential research.
