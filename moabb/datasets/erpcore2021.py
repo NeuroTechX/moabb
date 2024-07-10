@@ -95,11 +95,11 @@ _docstring_tail = """
     ----------
     .. [1] Emily S. Kappenman, Jaclyn L. Farrens, Wendy Zhang, Andrew X. Stewart, Steven J. Luck.
         (2020). ERP CORE: An open resource for human event-related potential research. NeuroImage.
-        DOI: https://doi.org/10.1016/j.neuroimage.2020.117465
+        DOI: https://doi.org/10.18115/D5JW4R
 
     .. [2] Emily S. Kappenman, Jaclyn L. Farrens, Wendy Zhang, Andrew X. Stewart, Steven J. Luck.
         ERP CORE: An open resource for human event-related potential research.
-        DOI: https://doi.org/10.18115/D5JW4R
+        DOI: https://doi.org/10.1016/j.neuroimage.2020.117465
 """
 
 
