@@ -117,8 +117,8 @@ class BaseEvaluation(ABC):
         self.time_out = time_out
 
         if self.optuna and not optuna_available:
-            raise ImportError("Optuna is not available. Please install it " "first.")
-        if self.time_out and not self.optuna:
+            raise ImportError("Optuna is not available. Please install it first.")
+        if (self.time_out != 60 * 15) and not self.optuna:
             warn(
                 "time_out parameter is only used when optuna is enabled. "
                 "Ignoring time_out parameter."
