@@ -11,7 +11,12 @@ import pytest
 import moabb.datasets as db
 import moabb.datasets.compound_dataset as db_compound
 from moabb.datasets import BNCI2014_001, Cattan2019_VR, Shin2017A, Shin2017B
-from moabb.datasets.base import BaseDataset, is_abbrev, is_camel_kebab_case
+from moabb.datasets.base import (
+    BaseDataset,
+    _summary_table,
+    is_abbrev,
+    is_camel_kebab_case,
+)
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
@@ -250,6 +255,28 @@ class Test_Datasets(unittest.TestCase):
                 obj = ds(**kwargs)
             self.assertIsNotNone(obj)
             self.assertIn(ds.__name__, depreciated_names)
+
+    def test_dataset_docstring_table(self):
+        # The dataset summary table will be automatically added to the docstring of
+        # all the datasets listed in the moabb/datasets/summary_*.csv files.
+        depreciated_names, _, _ = zip(*aliases_list)
+        for ds in dataset_list:
+            if "Fake" in ds.__name__:
+                continue
+            if ds.__name__ in depreciated_names:
+                continue
+            self.assertIn(".. admonition:: Dataset summary", ds.__doc__)
+
+    def test_completeness_summary_table(self):
+        # The dataset summary table will be automatically added to the docstring of
+        # all the datasets listed in the moabb/datasets/summary_*.csv files.
+        depreciated_names, _, _ = zip(*aliases_list)
+        for ds in dataset_list:
+            if "Fake" in ds.__name__:
+                continue
+            if ds.__name__ in depreciated_names:
+                continue
+            self.assertIn(ds.__name__, _summary_table.index)
 
     def test_dataset_list(self):
         if aliases_list:
