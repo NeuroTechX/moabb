@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
     <title>moabb.pipelines.classification.SSVEP_TRCA &#8212; moabb 1.1.0-dev documentation</title>
   
@@ -470,7 +470,7 @@ document.write(`
 <dd><p>Classifier based on the Task-Related Component Analysis method <a href="#id6"><span class="problematic" id="id1">[1]_</span></a> for
 SSVEP.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sfreq</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Sampling frequency of the data to be analyzed.</p></li>
 <li><p><strong>freqs</strong> (<em>dict with n_classes keys</em>) – Frequencies corresponding to the SSVEP components. These are
@@ -503,7 +503,7 @@ implementation.</p></li>
 <span class="sig-name descname"><span class="pre">fb_coefs</span></span><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_TRCA.fb_coefs" title="Permalink to this definition">#</a></dt>
 <dd><p>Alpha coefficients for the fusion of the filterbank sub-bands.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a> of len (n_fbands)</p>
 </dd>
 </dl>
@@ -514,7 +514,7 @@ implementation.</p></li>
 <span class="sig-name descname"><span class="pre">classes_</span></span><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_TRCA.classes_" title="Permalink to this definition">#</a></dt>
 <dd><p>Array with the class labels extracted at fit time.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>ndarray of shape (n_classes,)</p>
 </dd>
 </dl>
@@ -525,7 +525,7 @@ implementation.</p></li>
 <span class="sig-name descname"><span class="pre">n_classes</span></span><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_TRCA.n_classes" title="Permalink to this definition">#</a></dt>
 <dd><p>Number of unique labels/classes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
 </dd>
 </dl>
@@ -538,7 +538,7 @@ implementation.</p></li>
 class. Each class templates is divided in n_fbands sub-bands extracted
 from the filterbank approach.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>ndarray of shape (n_classes, n_bands, n_channels, n_samples)</p>
 </dd>
 </dl>
@@ -550,7 +550,7 @@ from the filterbank approach.</p>
 <dd><p>Weight coefficients for the different electrodes which are used
 as spatial filters for the data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>ndarray of shape (n_fbands, n_classes, n_channels)</p>
 </dd>
 </dl>
@@ -583,7 +583,7 @@ IEEE Trans. Biomed. Eng, 65(1):104-112, 2018.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">(https</span></span></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>//github.com/mnakanishi/TRCA-SSVEP).</p>
 </dd>
 </dl>
@@ -599,7 +599,7 @@ IEEE Trans. Biomed. Eng, 65(1):104-112, 2018.</p>
 <dd><p>Extract spatial filters and templates from the given calibration
 data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>X</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_trials</em><em>, </em><em>n_channels</em><em>, </em><em>n_samples</em><em>)</em>) – Training data. Trials are grouped by class, divided in n_fbands bands by
 the filterbank approach and then used to calculate weight vectors and
@@ -607,10 +607,10 @@ templates for each class and band.</p></li>
 <li><p><strong>y</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_trials</em><em>,</em><em>)</em>) – Label vector in respect to X.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>self</strong> – Instance of classifier.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>CCA object</p>
 </dd>
 </dl>
@@ -624,7 +624,7 @@ templates for each class and band.</p></li>
 with weights previously extracted and compared to the templates to assess
 similarity with each of them and select a class based on the maximal value.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>X</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_trials</em><em>, </em><em>n_channels</em><em>, </em><em>n_samples</em><em>)</em>) – Testing data. This will be divided in self.n_fbands using the filter- bank approach,
 then it will be transformed by the different spatial filters and compared to the
 previously fit templates according to the selected method for analysis (ensemble or
@@ -632,10 +632,10 @@ not). Finally, correlation scores for all sub-bands of each class will be combin
 resulting on a single correlation score per class, from which the maximal one is
 identified as the predicted class of the data.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>y_pred</strong> – Prediction vector in respect to X.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>ndarray of shape (n_trials,)</p>
 </dd>
 </dl>
@@ -649,7 +649,7 @@ identified as the predicted class of the data.</p>
 with weights previously extracted and compared to the templates to assess
 similarity with each of them and select a class based on the maximal value.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>X</strong> (<em>ndarray</em><em> of </em><em>shape</em><em> (</em><em>n_trials</em><em>, </em><em>n_channels</em><em>, </em><em>n_samples</em><em>)</em>) – Testing data. This will be divided in self.n_fbands using the filter-bank approach,
 then it will be transformed by the different spatial filters and compared to the
 previously fit templates according to the selected method for analysis (ensemble or
@@ -657,10 +657,10 @@ not). Finally, correlation scores for all sub-bands of each class will be combin
 resulting on a single correlation score per class, from which the maximal one is
 identified as the predicted class of the data.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>y_pred</strong> – Prediction vector in respect to X.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>ndarray of shape (n_trials,)</p>
 </dd>
 </dl>
@@ -668,7 +668,7 @@ identified as the predicted class of the data.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="moabb.pipelines.classification.SSVEP_TRCA.set_score_request">
-<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.classification.SSVEP_TRCA" title="moabb.pipelines.classification.SSVEP_TRCA"><span class="pre">SSVEP_TRCA</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_metadata_requests.py#L1239-L1266"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_TRCA.set_score_request" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#moabb.pipelines.classification.SSVEP_TRCA" title="moabb.pipelines.classification.SSVEP_TRCA"><span class="pre">SSVEP_TRCA</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/../.venv/lib/python3.9/site-packages/sklearn/utils/_metadata_requests.py#L1249-L1293"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.pipelines.classification.SSVEP_TRCA.set_score_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
 <p>Note that this method is only relevant if
 <code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.set_config.html#sklearn.set_config" title="(in scikit-learn v1.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code></a>).
@@ -694,13 +694,13 @@ sub-estimator of a meta-estimator, e.g. used inside a
 <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="(in scikit-learn v1.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>. Otherwise it has no effect.</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>sample_weight</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>self</strong> – The updated object.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)">object</a></p>
 </dd>
 </dl>

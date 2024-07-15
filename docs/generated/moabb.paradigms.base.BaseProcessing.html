@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
     <title>moabb.paradigms.base.BaseProcessing &#8212; moabb 1.1.0-dev documentation</title>
   
@@ -470,7 +470,7 @@ document.write(`
 <dd><p>Base Processing.</p>
 <p>Please use one of the child classes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> (</em><em>defaults</em><em> [</em><em>[</em><em>7</em><em>, </em><em>35</em><em>]</em><em>]</em><em>)</em>) – bank of bandpass filter to apply.</p></li>
 <li><p><strong>tmin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em> (</em><em>default 0.0</em><em>)</em>) – Start time (in second) of the epoch, relative to the dataset specific
@@ -510,7 +510,7 @@ will contain at least the following columns</p>
 <li><p>run : the run indice</p></li>
 </ul>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset</strong> – A dataset instance.</p></li>
 <li><p><strong>subjects</strong> (<em>List</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – List of subject number</p></li>
@@ -528,7 +528,7 @@ This pipeline must be “fixed” because it will not be trained,
 i.e. no call to <code class="docutils literal notranslate"><span class="pre">fit</span></code> will be made.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>X</strong> (<em>Union[np.ndarray, mne.Epochs]</em>) – the data that will be used as features for the model
 Note: if return_epochs=True,  this is mne.Epochs
@@ -552,7 +552,7 @@ with the paradigm. This is for example the case if the
 dataset is an ERP dataset for motor imagery paradigm, or if the
 dataset does not contain any of the required events.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>dataset</strong> (<em>dataset instance</em>) – The dataset to verify.</p>
 </dd>
 </dl>
@@ -587,7 +587,7 @@ Setting <cite>shift=-0.5</cite> solves this particular issue.</p>
 <li><p><cite>self.channels</cite> is initialized with the channels which are common to all datasets.</p></li>
 </ul>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>datasets</strong> (<em>List</em><em>[</em><a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><em>BaseDataset</em></a><em>]</em>) – A dataset instance.</p></li>
 <li><p><strong>shift</strong> (<em>List</em><em>[</em><a class="reference internal" href="moabb.datasets.base.BaseDataset.html#moabb.datasets.base.BaseDataset" title="moabb.datasets.base.BaseDataset"><em>BaseDataset</em></a><em>]</em>) – Shift the sampling frequency by this value
@@ -610,7 +610,7 @@ E.g.: if sampling=128 and shift=-0.5, then it returns 127.5 Hz</p></li>
 the preprocessing (process_raw). Does nothing by default and could be
 overloaded if needed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>dataset</strong> (<em>dataset instance</em>) – The dataset corresponding to the raw file. mainly use to access
 dataset specific information.</p>
 </dd>

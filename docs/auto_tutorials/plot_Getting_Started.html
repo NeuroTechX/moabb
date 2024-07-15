@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
     <title>Tutorial 0: Getting Started &#8212; moabb 1.1.0-dev documentation</title>
   
@@ -709,14 +709,14 @@ is the name of the pipeline and the value is the Pipeline object</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a><span class="p">()</span><span class="o">.</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datasets</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7f51eb7309d0&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7f51eb730a30&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f51e73e3df0&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f51eb730190&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f51e73e3fa0&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7f51e73e3f70&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f51e73e3e50&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f51e73e3ee0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f51e73e3f40&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7f51e73e3cd0&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f51e73e3d00&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7f51e73e3d30&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7fa6c0d6b3a0&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7fa6c0d6b280&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fa6c0b27ac0&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7fa6c0d6b370&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fa783140820&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7fa7831406a0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fa7831408e0&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fa783140ac0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fa6c0b278e0&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7fa783140520&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fa783140850&gt;, &lt;moabb.datasets.Zhou2016.Zhou2016 object at 0x7fa783140d30&gt;]
 </pre></div>
 </div>
 <p>Or you can run a search through the available datasets:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/moabb.datasets.utils.dataset_search.html#moabb.datasets.utils.dataset_search" title="moabb.datasets.utils.dataset_search" class="sphx-glr-backref-module-moabb-datasets-utils sphx-glr-backref-type-py-function"><span class="n">utils</span><span class="o">.</span><span class="n">dataset_search</span></a><span class="p">(</span><a href="../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">paradigm</span></a><span class="o">=</span><span class="s2">&quot;imagery&quot;</span><span class="p">,</span> <span class="n">min_subjects</span><span class="o">=</span><span class="mi">6</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.alex_mi.AlexMI object at 0x7f51e884f160&gt;, &lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7f51e87e6ac0&gt;, &lt;moabb.datasets.bnci.BNCI2014_002 object at 0x7f51e87e6eb0&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7f51f3ece2b0&gt;, &lt;moabb.datasets.bnci.BNCI2015_001 object at 0x7f51f3ece640&gt;, &lt;moabb.datasets.bnci.BNCI2015_004 object at 0x7f51f3ece0a0&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7f51f3ece370&gt;, &lt;moabb.datasets.fake.FakeDataset object at 0x7f51ea805520&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7f5216119ee0&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7f51e73e3cd0&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7f51e73e3fd0&gt;, &lt;moabb.datasets.upper_limb.Ofner2017 object at 0x7f52a7c60fd0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7f51e73e3e50&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7f51e73e3f40&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7f51e73e3fa0&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7f51e73e3d60&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7f51eb63caf0&gt;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;moabb.datasets.alex_mi.AlexMI object at 0x7fa6bfab9b50&gt;, &lt;moabb.datasets.bnci.BNCI2014_001 object at 0x7fa6c1c0c940&gt;, &lt;moabb.datasets.bnci.BNCI2014_002 object at 0x7fa6c1c0cbe0&gt;, &lt;moabb.datasets.bnci.BNCI2014_004 object at 0x7fa6cb2e59a0&gt;, &lt;moabb.datasets.bnci.BNCI2015_001 object at 0x7fa6cb2e5610&gt;, &lt;moabb.datasets.bnci.BNCI2015_004 object at 0x7fa6c850f310&gt;, &lt;moabb.datasets.gigadb.Cho2017 object at 0x7fa74750ddc0&gt;, &lt;moabb.datasets.fake.FakeDataset object at 0x7fa6c850f130&gt;, &lt;moabb.datasets.mpi_mi.GrosseWentrup2009 object at 0x7fa6c0748040&gt;, &lt;moabb.datasets.Lee2019.Lee2019_MI object at 0x7fa6c0748b20&gt;, &lt;moabb.datasets.liu2024.Liu2024 object at 0x7fa6c0b278e0&gt;, &lt;moabb.datasets.upper_limb.Ofner2017 object at 0x7fa6c850fdc0&gt;, &lt;moabb.datasets.physionet_mi.PhysionetMI object at 0x7fa6c0b27ac0&gt;, &lt;moabb.datasets.schirrmeister2017.Schirrmeister2017 object at 0x7fa6c0d6b3a0&gt;, &lt;moabb.datasets.bbci_eeg_fnirs.Shin2017A object at 0x7fa6c0d6b280&gt;, &lt;moabb.datasets.stieger2021.Stieger2021 object at 0x7fa6c0d6be20&gt;, &lt;moabb.datasets.Weibo2014.Weibo2014 object at 0x7fa6bfe20f40&gt;]
 </pre></div>
 </div>
 <p>Or you can simply make your own list (which we do here due to computational
@@ -800,7 +800,7 @@ subjects. This also is the correct place to specify multiple threads.</p>
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.63s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
+BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.45s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -849,8 +849,8 @@ BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.63s/it]/home
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.55s/it]
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.57s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.40s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:06&lt;00:00,  3.40s/it]
 </pre></div>
 </div>
 <p>Results are returned as a pandas DataFrame, and from here you can do as you
@@ -859,17 +859,17 @@ want with them</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>      score      time  samples  ... n_sessions       dataset  pipeline
-0  0.797068  0.147179    144.0  ...          2  BNCI2014-001    AM+SVM
-1  0.773920  0.151615    144.0  ...          2  BNCI2014-001    AM+SVM
-2  0.550733  0.250601    144.0  ...          2  BNCI2014-001    AM+SVM
-3  0.471451  0.171446    144.0  ...          2  BNCI2014-001    AM+SVM
-4  0.786458  0.030129    144.0  ...          2  BNCI2014-001    AM+LDA
+0  0.797068  0.148350    144.0  ...          2  BNCI2014-001    AM+SVM
+1  0.773920  0.146649    144.0  ...          2  BNCI2014-001    AM+SVM
+2  0.550733  0.249188    144.0  ...          2  BNCI2014-001    AM+SVM
+3  0.471451  0.167303    144.0  ...          2  BNCI2014-001    AM+SVM
+4  0.786458  0.033206    144.0  ...          2  BNCI2014-001    AM+LDA
 
 [5 rows x 9 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  18.804 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  309 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  17.786 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  258 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-tutorials-plot-getting-started-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/55cdcc1a57595324be0a4f77a5294187/plot_Getting_Started.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_Getting_Started.py</span></code></a></p>

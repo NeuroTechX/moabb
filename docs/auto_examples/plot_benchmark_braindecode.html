@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
     <title>Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures &#8212; moabb 1.1.0-dev documentation</title>
   
@@ -783,68 +783,68 @@ handled correctly by the benchmark function.</p>
   return F.conv2d(input, weight, bias, self.stride,
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156        0.8477       0.4828        0.7382  0.7113
-      2       0.5625        0.8044       0.4828        0.7368  0.6261
-      3       0.4219        1.0091       0.4828        0.7357  0.6294
-      4       0.5312        0.7490       0.4828        0.7346  0.5965
-      5       0.4531        0.9734       0.4828        0.7336  0.6356
-      6       0.5469        0.9047       0.4828        0.7327  0.6148
-      7       0.4844        0.8989       0.4828        0.7318  0.6535
-      8       0.4531        0.8386       0.4828        0.7311  0.6691
-      9       0.5469        0.9284       0.4828        0.7304  0.5941
-     10       0.3438        1.0944       0.4828        0.7299  0.6291
+      1       0.5156        0.8477       0.4828        0.7382  0.6523
+      2       0.5625        0.8044       0.4828        0.7368  0.5983
+      3       0.4219        1.0091       0.4828        0.7357  0.5809
+      4       0.5312        0.7490       0.4828        0.7346  0.6244
+      5       0.4531        0.9734       0.4828        0.7336  0.5725
+      6       0.5469        0.9047       0.4828        0.7327  0.6080
+      7       0.4844        0.8989       0.4828        0.7318  0.6100
+      8       0.4531        0.8386       0.4828        0.7311  0.5718
+      9       0.5469        0.9284       0.4828        0.7304  0.6054
+     10       0.3438        1.0944       0.4828        0.7299  0.5799
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4688        0.9824       0.4483        0.6991  0.6296
-      2       0.4844        0.9977       0.4483        0.6994  0.6768
-      3       0.5781        0.9201       0.4483        0.6998  0.6391
+      1       0.4688        0.9824       0.4483        0.6991  0.5639
+      2       0.4844        0.9977       0.4483        0.6994  0.5611
+      3       0.5781        0.9201       0.4483        0.6998  0.5947
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4219        0.7495       0.4483        0.6968  0.1150
-      2       0.5312        0.6894       0.4483        0.6967  0.1023
-      3       0.5156        0.7126       0.4483        0.6967  0.1459
-      4       0.5781        0.6636       0.4483        0.6966  0.1005
-      5       0.5156        0.7395       0.4138        0.6965  0.1009
-      6       0.6094        0.6793       0.4138        0.6964  0.1000
-      7       0.5625        0.6582       0.4138        0.6964  0.1000
-      8       0.4531        0.7173       0.4138        0.6963  0.1015
-      9       0.5469        0.6634       0.4138        0.6963  0.1015
-     10       0.4844        0.6873       0.4138        0.6962  0.1008
+      1       0.4219        0.7495       0.4483        0.6968  0.0984
+      2       0.5312        0.6894       0.4483        0.6967  0.0969
+      3       0.5156        0.7126       0.4483        0.6967  0.1331
+      4       0.5781        0.6636       0.4483        0.6966  0.0937
+      5       0.5156        0.7395       0.4138        0.6965  0.0935
+      6       0.6094        0.6793       0.4138        0.6964  0.0940
+      7       0.5625        0.6582       0.4138        0.6964  0.0934
+      8       0.4531        0.7173       0.4138        0.6963  0.0938
+      9       0.5469        0.6634       0.4138        0.6963  0.0939
+     10       0.4844        0.6873       0.4138        0.6962  0.0939
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5312        0.6941       0.4138        0.6965  0.1287
-      2       0.4688        0.7636       0.4138        0.6964  0.1276
-      3       0.5469        0.6772       0.4138        0.6963  0.1527
-      4       0.4531        0.7417       0.4138        0.6962  0.1015
-      5       0.5469        0.7152       0.4138        0.6961  0.0996
-      6       0.5000        0.7147       0.4138        0.6961  0.1002
-      7       0.4844        0.8342       0.4138        0.6960  0.1012
-      8       0.4531        0.7649       0.4138        0.6959  0.0991
-      9       0.4844        0.7452       0.4138        0.6959  0.0997
-     10       0.4531        0.7577       0.4138        0.6958  0.1002
+      1       0.5312        0.6941       0.4138        0.6965  0.0948
+      2       0.4688        0.7636       0.4138        0.6964  0.0947
+      3       0.5469        0.6772       0.4138        0.6963  0.0933
+      4       0.4531        0.7417       0.4138        0.6962  0.0944
+      5       0.5469        0.7152       0.4138        0.6961  0.1362
+      6       0.5000        0.7147       0.4138        0.6961  0.0940
+      7       0.4844        0.8342       0.4138        0.6960  0.0934
+      8       0.4531        0.7649       0.4138        0.6959  0.0935
+      9       0.4844        0.7452       0.4138        0.6959  0.0937
+     10       0.4531        0.7577       0.4138        0.6958  0.0934
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5312        0.9365       0.5172        0.9054  0.2906
-      2       0.4062        1.0489       0.5172        0.8806  0.2837
-      3       0.4688        0.9295       0.5172        0.8597  0.3136
-      4       0.5781        0.8183       0.4828        0.8431  0.2827
-      5       0.5469        0.8524       0.4828        0.8292  0.2837
+      1       0.5312        0.9365       0.5172        0.9054  0.2832
+      2       0.4062        1.0489       0.5172        0.8806  0.2784
+      3       0.4688        0.9295       0.5172        0.8597  0.2772
+      4       0.5781        0.8183       0.4828        0.8431  0.3078
+      5       0.5469        0.8524       0.4828        0.8292  0.2759
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5781        0.8064       0.4483        1.2688  0.3162
-      2       0.5000        0.9554       0.4483        1.2154  0.2842
-      3       0.6406        0.7309       0.4828        1.1657  0.2831
-      4       0.4844        0.8683       0.5172        1.1233  0.2826
-      5       0.5312        0.7806       0.4828        1.0805  0.3256
+      1       0.5781        0.8064       0.4483        1.2688  0.2770
+      2       0.5000        0.9554       0.4483        1.2154  0.3161
+      3       0.6406        0.7309       0.4828        1.1657  0.2755
+      4       0.4844        0.8683       0.5172        1.1233  0.2755
+      5       0.5312        0.7806       0.4828        1.0805  0.2758
 
-BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:21&lt;00:21, 21.80s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
+BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:20&lt;00:20, 20.36s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs |  24 events (all good), 2 – 6 s, baseline off, ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -896,150 +896,148 @@ BNCI2014-001-CrossSession:  50%|#####     | 1/2 [00:21&lt;00:21, 21.80s/it]/home
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.9195       0.4483        0.7255  0.6025
-      2       0.4375        0.9147       0.4483        0.7243  0.6312
-      3       0.4219        0.9634       0.4483        0.7239  0.6202
-      4       0.5000        0.9599       0.4138        0.7234  0.6185
-      5       0.4219        1.0723       0.4138        0.7230  0.5853
-      6       0.5625        0.8137       0.4138        0.7226  0.6505
-      7       0.5781        0.7471       0.4138        0.7223  0.6472
-      8       0.4688        0.9652       0.4138        0.7222  0.6164
-      9       0.5000        0.8240       0.3793        0.7220  0.6254
-     10       0.4844        0.9048       0.3793        0.7216  0.6248
+      1       0.4844        0.9195       0.4483        0.7255  0.5654
+      2       0.4375        0.9147       0.4483        0.7243  0.5579
+      3       0.4219        0.9634       0.4483        0.7239  0.5867
+      4       0.5000        0.9599       0.4138        0.7234  0.5534
+      5       0.4219        1.0723       0.4138        0.7230  0.5569
+      6       0.5625        0.8137       0.4138        0.7226  0.5572
+      7       0.5781        0.7471       0.4138        0.7223  0.5882
+      8       0.4688        0.9652       0.4138        0.7222  0.5598
+      9       0.5000        0.8240       0.3793        0.7220  0.5672
+     10       0.4844        0.9048       0.3793        0.7216  0.5587
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156        1.1110       0.5172        0.7365  0.6646
-      2       0.5938        0.7025       0.5172        0.7357  0.6312
-      3       0.5156        0.8091       0.5172        0.7348  0.5905
-      4       0.5000        0.9855       0.5172        0.7335  0.5974
-      5       0.4531        1.0093       0.5172        0.7322  0.6126
-      6       0.5312        0.7796       0.5172        0.7310  0.6201
-      7       0.4844        0.8971       0.4828        0.7297  0.5846
-      8       0.5312        0.8220       0.4828        0.7286  0.6599
-      9       0.5312        0.8857       0.4828        0.7278  0.5887
-     10       0.5625        0.7635       0.4828        0.7271  0.6354
+      1       0.5156        1.1110       0.5172        0.7365  0.5858
+      2       0.5938        0.7025       0.5172        0.7357  0.5932
+      3       0.5156        0.8091       0.5172        0.7348  0.5541
+      4       0.5000        0.9855       0.5172        0.7335  0.5863
+      5       0.4531        1.0093       0.5172        0.7322  0.5661
+      6       0.5312        0.7796       0.5172        0.7310  0.5957
+      7       0.4844        0.8971       0.4828        0.7297  0.5542
+      8       0.5312        0.8220       0.4828        0.7286  0.5766
+      9       0.5312        0.8857       0.4828        0.7278  0.5605
+     10       0.5625        0.7635       0.4828        0.7271  0.5764
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.7198       0.5172        0.6980  0.1015
-      2       0.4219        0.7033       0.5172        0.6978  0.1008
-      3       0.5625        0.6886       0.5172        0.6976  0.1019
-      4       0.5312        0.6983       0.5172        0.6973  0.1024
-      5       0.5312        0.6960       0.5172        0.6972  0.1039
-      6       0.5156        0.7034       0.5172        0.6970  0.1263
-      7       0.4531        0.7343       0.5172        0.6969  0.1582
-      8       0.5000        0.7526       0.5172        0.6968  0.1282
-      9       0.5312        0.7316       0.5172        0.6967  0.1306
-     10       0.6250        0.6465       0.5172        0.6966  0.1105
+      1       0.4844        0.7198       0.5172        0.6980  0.0950
+      2       0.4219        0.7033       0.5172        0.6978  0.0934
+      3       0.5625        0.6886       0.5172        0.6976  0.0946
+      4       0.5312        0.6983       0.5172        0.6973  0.0942
+      5       0.5312        0.6960       0.5172        0.6972  0.0937
+      6       0.5156        0.7034       0.5172        0.6970  0.0931
+      7       0.4531        0.7343       0.5172        0.6969  0.0933
+      8       0.5000        0.7526       0.5172        0.6968  0.0936
+      9       0.5312        0.7316       0.5172        0.6967  0.1066
+     10       0.6250        0.6465       0.5172        0.6966  0.1250
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5000        0.7248       0.5172        0.6882  0.1009
-      2       0.5000        0.7346       0.5172        0.6883  0.1009
-      3       0.5781        0.6583       0.5172        0.6884  0.1012
+      1       0.5000        0.7248       0.5172        0.6882  0.1356
+      2       0.5000        0.7346       0.5172        0.6883  0.0942
+      3       0.5781        0.6583       0.5172        0.6884  0.0940
 Stopping since valid_loss has not improved in the last 3 epochs.
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5000        1.3047       0.3793        1.0583  0.2864
-      2       0.4531        1.2975       0.4138        0.9476  0.2845
-      3       0.3906        1.2836       0.3793        0.9215  0.3239
-      4       0.5938        0.9604       0.3448        0.9315  0.2820
-      5       0.4062        0.9762       0.3448        0.9569  0.2826
+      1       0.5000        1.3047       0.3793        1.0583  0.3129
+      2       0.4531        1.2975       0.4138        0.9476  0.2755
+      3       0.3906        1.2836       0.3793        0.9215  0.2756
+      4       0.5938        0.9604       0.3448        0.9315  0.2760
+      5       0.4062        0.9762       0.3448        0.9569  0.3134
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5625        1.2046       0.3793        0.9804  0.2837
-      2       0.4844        1.1278       0.4828        0.8956  0.2833
-      3       0.5156        1.1303       0.5517        0.8477  0.2847
-      4       0.5625        1.0876       0.5862        0.8291  0.3143
-      5       0.5469        1.0276       0.5517        0.8258  0.2816
+      1       0.5625        1.2046       0.3793        0.9804  0.2770
+      2       0.4844        1.1278       0.4828        0.8956  0.2818
+      3       0.5156        1.1303       0.5517        0.8477  0.2912
+      4       0.5625        1.0876       0.5862        0.8291  0.2762
+      5       0.5469        1.0276       0.5517        0.8258  0.2759
 
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:46&lt;00:00, 23.41s/it]
-BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:46&lt;00:00, 23.17s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:43&lt;00:00, 21.74s/it]
+BNCI2014-001-CrossSession: 100%|##########| 2/2 [00:43&lt;00:00, 21.54s/it]
 
-BNCI2014-004-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-004-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1063: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/34.2M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/34.2M [00:00&lt;08:14, 69.1kB/s]
+  0%|                                     | 8.19k/34.2M [00:00&lt;11:29, 49.6kB/s]
 
-  0%|                                      | 32.8k/34.2M [00:00&lt;03:47, 150kB/s]
+  0%|                                      | 32.8k/34.2M [00:00&lt;05:19, 107kB/s]
 
-  0%|                                      | 88.1k/34.2M [00:00&lt;01:56, 294kB/s]
+  0%|                                      | 96.3k/34.2M [00:00&lt;02:27, 231kB/s]
 
-  1%|▏                                      | 193k/34.2M [00:00&lt;01:04, 524kB/s]
+  1%|▏                                      | 209k/34.2M [00:00&lt;01:23, 405kB/s]
 
-  1%|▍                                      | 409k/34.2M [00:00&lt;00:34, 990kB/s]
+  1%|▍                                      | 432k/34.2M [00:00&lt;00:45, 738kB/s]
 
-  2%|▉                                     | 841k/34.2M [00:00&lt;00:17, 1.89MB/s]
+  3%|▉                                     | 889k/34.2M [00:01&lt;00:23, 1.41MB/s]
 
-  5%|█▊                                   | 1.71M/34.2M [00:00&lt;00:08, 3.66MB/s]
+  5%|█▉                                   | 1.80M/34.2M [00:01&lt;00:11, 2.72MB/s]
 
- 10%|███▋                                 | 3.44M/34.2M [00:00&lt;00:04, 7.12MB/s]
+ 11%|███▉                                 | 3.62M/34.2M [00:01&lt;00:05, 5.31MB/s]
 
- 19%|██████▉                              | 6.39M/34.2M [00:01&lt;00:02, 12.7MB/s]
+ 20%|███████▎                             | 6.74M/34.2M [00:01&lt;00:02, 9.46MB/s]
 
- 27%|█████████▉                           | 9.14M/34.2M [00:01&lt;00:01, 15.9MB/s]
+ 28%|██████████▍                          | 9.59M/34.2M [00:01&lt;00:02, 11.8MB/s]
 
- 34%|████████████▍                        | 11.5M/34.2M [00:01&lt;00:01, 17.1MB/s]
+ 35%|█████████████                        | 12.1M/34.2M [00:01&lt;00:01, 12.8MB/s]
 
- 42%|███████████████▌                     | 14.3M/34.2M [00:01&lt;00:01, 19.1MB/s]
+ 44%|████████████████▎                    | 15.0M/34.2M [00:02&lt;00:01, 14.2MB/s]
 
- 50%|██████████████████▌                  | 17.2M/34.2M [00:01&lt;00:00, 20.5MB/s]
+ 52%|███████████████████▍                 | 17.9M/34.2M [00:02&lt;00:01, 15.1MB/s]
 
- 58%|█████████████████████▍               | 19.8M/34.2M [00:01&lt;00:00, 21.0MB/s]
+ 60%|██████████████████████▎              | 20.7M/34.2M [00:02&lt;00:00, 15.4MB/s]
 
- 66%|████████████████████████▌            | 22.7M/34.2M [00:01&lt;00:00, 21.9MB/s]
+ 69%|█████████████████████████▍           | 23.5M/34.2M [00:02&lt;00:00, 15.9MB/s]
 
- 75%|███████████████████████████▉         | 25.8M/34.2M [00:01&lt;00:00, 23.0MB/s]
+ 77%|████████████████████████████▌        | 26.5M/34.2M [00:02&lt;00:00, 16.4MB/s]
 
- 85%|███████████████████████████████▎     | 28.9M/34.2M [00:02&lt;00:00, 24.0MB/s]
+ 86%|███████████████████████████████▋     | 29.3M/34.2M [00:02&lt;00:00, 16.5MB/s]
 
- 93%|██████████████████████████████████▍  | 31.8M/34.2M [00:02&lt;00:00, 23.9MB/s]
+ 94%|██████████████████████████████████▋  | 32.1M/34.2M [00:03&lt;00:00, 16.5MB/s]
 
   0%|                                              | 0.00/34.2M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 34.2M/34.2M [00:00&lt;00:00, 86.5GB/s]
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+100%|██████████████████████████████████████| 34.2M/34.2M [00:00&lt;00:00, 132GB/s]
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1063: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/18.6M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/18.6M [00:00&lt;04:26, 69.8kB/s]
+  0%|                                     | 8.19k/18.6M [00:00&lt;06:24, 48.3kB/s]
 
-  0%|                                      | 32.8k/18.6M [00:00&lt;02:02, 151kB/s]
+  0%|                                      | 32.8k/18.6M [00:00&lt;02:55, 106kB/s]
 
-  0%|▏                                     | 88.1k/18.6M [00:00&lt;01:02, 295kB/s]
+  1%|▏                                     | 96.3k/18.6M [00:00&lt;01:20, 230kB/s]
 
-  1%|▍                                      | 193k/18.6M [00:00&lt;00:34, 526kB/s]
+  1%|▍                                      | 209k/18.6M [00:00&lt;00:45, 403kB/s]
 
-  2%|▊                                      | 400k/18.6M [00:00&lt;00:18, 968kB/s]
+  2%|▉                                      | 432k/18.6M [00:00&lt;00:24, 737kB/s]
 
-  4%|█▋                                    | 816k/18.6M [00:00&lt;00:09, 1.82MB/s]
+  5%|█▊                                    | 889k/18.6M [00:01&lt;00:12, 1.41MB/s]
 
-  9%|███▎                                 | 1.66M/18.6M [00:00&lt;00:04, 3.55MB/s]
+ 10%|███▌                                 | 1.80M/18.6M [00:01&lt;00:06, 2.72MB/s]
 
- 18%|██████▋                              | 3.34M/18.6M [00:00&lt;00:02, 6.95MB/s]
+ 19%|███████▏                             | 3.62M/18.6M [00:01&lt;00:02, 5.31MB/s]
 
- 23%|████████▋                            | 4.37M/18.6M [00:01&lt;00:01, 7.30MB/s]
+ 36%|█████████████▏                       | 6.65M/18.6M [00:01&lt;00:01, 9.27MB/s]
 
- 38%|█████████████▉                       | 7.03M/18.6M [00:01&lt;00:00, 11.9MB/s]
+ 52%|███████████████████                  | 9.58M/18.6M [00:01&lt;00:00, 11.8MB/s]
 
- 52%|███████████████████▎                 | 9.72M/18.6M [00:01&lt;00:00, 15.1MB/s]
+ 66%|████████████████████████▌            | 12.4M/18.6M [00:01&lt;00:00, 13.2MB/s]
 
- 67%|████████████████████████▋            | 12.4M/18.6M [00:01&lt;00:00, 17.4MB/s]
+ 83%|██████████████████████████████▌      | 15.4M/18.6M [00:02&lt;00:00, 14.7MB/s]
 
- 83%|██████████████████████████████▊      | 15.5M/18.6M [00:01&lt;00:00, 19.9MB/s]
-
- 99%|████████████████████████████████████▊| 18.5M/18.6M [00:01&lt;00:00, 21.5MB/s]
+ 98%|████████████████████████████████████▏| 18.2M/18.6M [00:02&lt;00:00, 15.3MB/s]
 
   0%|                                              | 0.00/18.6M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.6M/18.6M [00:00&lt;00:00, 63.5GB/s]
+100%|█████████████████████████████████████| 18.6M/18.6M [00:00&lt;00:00, 75.6GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs |  120 events (all good), 3 – 7.5 s, baseline off, ~3.1 MB, data loaded,
  &#39;left_hand&#39;: 60
  &#39;right_hand&#39;: 60&gt;
@@ -1064,216 +1062,216 @@ BNCI2014-004-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5290        0.9172       0.5000        0.7072  1.1286
-      2       0.5246        0.8929       0.5000        0.7080  1.1876
-      3       0.4799        0.9750       0.5000        0.7079  1.1155
+      1       0.5290        0.9172       0.5000        0.7072  1.0777
+      2       0.5246        0.8929       0.5000        0.7080  1.0499
+      3       0.4799        0.9750       0.5000        0.7079  1.0734
 Stopping since valid_loss has not improved in the last 3 epochs.
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5424        0.9146       0.4917        0.6923  1.1326
-      2       0.5022        0.8958       0.4833        0.6924  1.1345
-      3       0.5022        0.9406       0.4917        0.6927  1.1136
+      1       0.5424        0.9146       0.4917        0.6923  1.0587
+      2       0.5022        0.8958       0.4833        0.6924  1.0556
+      3       0.5022        0.9406       0.4917        0.6927  1.0657
 Stopping since valid_loss has not improved in the last 3 epochs.
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5045        0.9869       0.4375        0.6993  1.1245
-      2       0.5112        0.9220       0.4464        0.6990  1.1436
-      3       0.4799        0.9408       0.4821        0.7000  1.1064
-      4       0.5134        0.9267       0.5000        0.7019  1.1336
+      1       0.5045        0.9869       0.4375        0.6993  1.0667
+      2       0.5112        0.9220       0.4464        0.6990  1.0576
+      3       0.4799        0.9408       0.4821        0.7000  1.0532
+      4       0.5134        0.9267       0.5000        0.7019  1.0532
 Stopping since valid_loss has not improved in the last 3 epochs.
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4866        0.9958       0.5179        0.7039  1.1046
-      2       0.5022        1.0405       0.4911        0.6990  1.1137
-      3       0.4866        0.9510       0.4821        0.6949  1.1063
-      4       0.4844        0.9293       0.4732        0.6913  1.1171
-      5       0.4732        1.0693       0.5357        0.6883  1.1089
-      6       0.5268        0.8971       0.5357        0.6856  1.1506
-      7       0.5223        0.9488       0.5536        0.6831  1.0966
-      8       0.5112        0.9603       0.5357        0.6805  1.1526
-      9       0.5089        0.9212       0.5446        0.6775  1.1351
-     10       0.5357        0.8922       0.5268        0.6743  1.1322
+      1       0.4866        0.9958       0.5179        0.7039  1.0725
+      2       0.5022        1.0405       0.4911        0.6990  1.0487
+      3       0.4866        0.9510       0.4821        0.6949  1.0495
+      4       0.4844        0.9293       0.4732        0.6913  1.0513
+      5       0.4732        1.0693       0.5357        0.6883  1.0622
+      6       0.5268        0.8971       0.5357        0.6856  1.0446
+      7       0.5223        0.9488       0.5536        0.6831  1.0529
+      8       0.5112        0.9603       0.5357        0.6805  1.0549
+      9       0.5089        0.9212       0.5446        0.6775  1.0605
+     10       0.5357        0.8922       0.5268        0.6743  1.0653
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4844        0.9932       0.4464        0.6991  1.1313
-      2       0.5045        0.9628       0.4196        0.6985  1.1160
-      3       0.5179        0.9383       0.4821        0.6981  1.1217
-      4       0.4777        0.9433       0.4821        0.6980  1.1458
-      5       0.5268        0.8591       0.4821        0.6981  1.1021
-      6       0.4598        0.9498       0.5179        0.6985  1.1416
+      1       0.4844        0.9932       0.4464        0.6991  1.0427
+      2       0.5045        0.9628       0.4196        0.6985  1.0633
+      3       0.5179        0.9383       0.4821        0.6981  1.0556
+      4       0.4777        0.9433       0.4821        0.6980  1.0479
+      5       0.5268        0.8591       0.4821        0.6981  1.0635
+      6       0.4598        0.9498       0.5179        0.6985  1.0637
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5022        0.7275       0.4333        0.6945  0.2063
-      2       0.5290        0.7053       0.4500        0.6946  0.2300
-      3       0.5402        0.7095       0.4333        0.6947  0.2053
+      1       0.5022        0.7275       0.4333        0.6945  0.1872
+      2       0.5290        0.7053       0.4500        0.6946  0.1822
+      3       0.5402        0.7095       0.4333        0.6947  0.1820
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5000        0.7196       0.5000        0.6935  0.2760
-      2       0.4978        0.7102       0.5000        0.6934  0.2926
-      3       0.4397        0.7473       0.5000        0.6934  0.2502
-      4       0.5045        0.7114       0.4917        0.6933  0.2514
-      5       0.5112        0.7112       0.4833        0.6932  0.2521
-      6       0.4955        0.7202       0.4833        0.6931  0.2793
-      7       0.5045        0.7083       0.4833        0.6930  0.2460
-      8       0.5045        0.7195       0.4917        0.6929  0.2519
-      9       0.5089        0.7134       0.5000        0.6927  0.2466
-     10       0.5357        0.7020       0.5000        0.6925  0.2794
+      1       0.5000        0.7196       0.5000        0.6935  0.1849
+      2       0.4978        0.7102       0.5000        0.6934  0.1820
+      3       0.4397        0.7473       0.5000        0.6934  0.1819
+      4       0.5045        0.7114       0.4917        0.6933  0.1814
+      5       0.5112        0.7112       0.4833        0.6932  0.1827
+      6       0.4955        0.7202       0.4833        0.6931  0.2198
+      7       0.5045        0.7083       0.4833        0.6930  0.1817
+      8       0.5045        0.7195       0.4917        0.6929  0.1813
+      9       0.5089        0.7134       0.5000        0.6927  0.1808
+     10       0.5357        0.7020       0.5000        0.6925  0.1811
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4888        0.7621       0.4286        0.6955  0.1975
-      2       0.5067        0.7567       0.4196        0.6956  0.1946
-      3       0.4955        0.7685       0.4375        0.6957  0.2210
+      1       0.4888        0.7621       0.4286        0.6955  0.1823
+      2       0.5067        0.7567       0.4196        0.6956  0.1818
+      3       0.4955        0.7685       0.4375        0.6957  0.1814
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5379        0.7151       0.5179        0.6930  0.2537
-      2       0.4754        0.7252       0.5089        0.6930  0.2791
-      3       0.4799        0.7199       0.5268        0.6930  0.2497
-      4       0.5112        0.7203       0.5357        0.6929  0.2491
-      5       0.5647        0.7019       0.5089        0.6929  0.2519
-      6       0.5156        0.7156       0.5089        0.6929  0.2589
-      7       0.4799        0.7395       0.5089        0.6928  0.2675
-      8       0.5022        0.7204       0.5089        0.6928  0.2515
-      9       0.5201        0.7158       0.5089        0.6927  0.2459
-     10       0.5357        0.7012       0.5089        0.6927  0.2507
+      1       0.5379        0.7151       0.5179        0.6930  0.1819
+      2       0.4754        0.7252       0.5089        0.6930  0.1830
+      3       0.4799        0.7199       0.5268        0.6930  0.1807
+      4       0.5112        0.7203       0.5357        0.6929  0.1814
+      5       0.5647        0.7019       0.5089        0.6929  0.2194
+      6       0.5156        0.7156       0.5089        0.6929  0.1811
+      7       0.4799        0.7395       0.5089        0.6928  0.1805
+      8       0.5022        0.7204       0.5089        0.6928  0.2193
+      9       0.5201        0.7158       0.5089        0.6927  0.1802
+     10       0.5357        0.7012       0.5089        0.6927  0.1798
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4688        0.7460       0.4643        0.6940  0.1960
-      2       0.5290        0.7225       0.4554        0.6940  0.1954
-      3       0.4509        0.7407       0.4286        0.6940  0.1960
+      1       0.4688        0.7460       0.4643        0.6940  0.1975
+      2       0.5290        0.7225       0.4554        0.6940  0.1835
+      3       0.4509        0.7407       0.4286        0.6940  0.1835
 Stopping since valid_loss has not improved in the last 3 epochs.
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5156        0.9332       0.5333        0.8512  0.7716
-      2       0.5022        0.8968       0.5417        0.7364  0.8002
-      3       0.5201        0.8577       0.5667        0.7175  0.8088
-      4       0.5625        0.7626       0.6167        0.7068  0.8105
-      5       0.6138        0.7565       0.6167        0.7009  0.7795
+      1       0.5156        0.9332       0.5333        0.8512  0.7600
+      2       0.5022        0.8968       0.5417        0.7364  0.7911
+      3       0.5201        0.8577       0.5667        0.7175  0.7885
+      4       0.5625        0.7626       0.6167        0.7068  0.7831
+      5       0.6138        0.7565       0.6167        0.7009  0.7589
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5379        0.8704       0.4333        0.8685  0.8075
-      2       0.5603        0.8217       0.4583        0.8360  0.8181
-      3       0.5424        0.8576       0.5250        0.7770  0.8036
-      4       0.5536        0.8148       0.5833        0.7446  0.7760
-      5       0.6027        0.7520       0.5917        0.7210  0.8242
+      1       0.5379        0.8704       0.4333        0.8685  0.7861
+      2       0.5603        0.8217       0.4583        0.8360  0.7850
+      3       0.5424        0.8576       0.5250        0.7770  0.7604
+      4       0.5536        0.8148       0.5833        0.7446  0.7883
+      5       0.6027        0.7520       0.5917        0.7210  0.7863
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4955        1.0156       0.3750        0.9061  0.8071
-      2       0.5335        0.8939       0.4018        0.8651  0.8044
-      3       0.5223        0.9085       0.4286        0.8277  0.7705
-      4       0.5670        0.8143       0.4554        0.7993  0.8040
-      5       0.5647        0.7749       0.4911        0.7783  0.7948
+      1       0.4955        1.0156       0.3750        0.9061  0.7776
+      2       0.5335        0.8939       0.4018        0.8651  0.7465
+      3       0.5223        0.9085       0.4286        0.8277  0.7734
+      4       0.5670        0.8143       0.4554        0.7993  0.7810
+      5       0.5647        0.7749       0.4911        0.7783  0.7636
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5402        0.8903       0.4554        1.0196  0.7983
-      2       0.5379        0.8518       0.4554        0.9509  0.7789
-      3       0.5558        0.8154       0.4911        0.8437  0.8027
-      4       0.5848        0.7792       0.4821        0.7802  0.8012
-      5       0.6138        0.7416       0.5089        0.7437  0.7654
+      1       0.5402        0.8903       0.4554        1.0196  0.7453
+      2       0.5379        0.8518       0.4554        0.9509  0.7827
+      3       0.5558        0.8154       0.4911        0.8437  0.7765
+      4       0.5848        0.7792       0.4821        0.7802  0.7446
+      5       0.6138        0.7416       0.5089        0.7437  0.7863
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4665        0.9766       0.4643        0.7778  0.7709
-      2       0.4933        0.9466       0.5625        0.7833  0.8067
-      3       0.5536        0.8523       0.5625        0.7532  0.8097
-      4       0.5848        0.7857       0.5893        0.6829  0.7761
-      5       0.5692        0.7952       0.6339        0.6511  0.8071
+      1       0.4665        0.9766       0.4643        0.7778  0.7819
+      2       0.4933        0.9466       0.5625        0.7833  0.7834
+      3       0.5536        0.8523       0.5625        0.7532  0.7463
+      4       0.5848        0.7857       0.5893        0.6829  0.7826
+      5       0.5692        0.7952       0.6339        0.6511  0.7876
 
-BNCI2014-004-CrossSession:  50%|#####     | 1/2 [01:13&lt;01:13, 73.87s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-004-CrossSession:  50%|#####     | 1/2 [01:11&lt;01:11, 71.03s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1063: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/33.1M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/33.1M [00:00&lt;07:53, 69.7kB/s]
+  0%|                                     | 8.19k/33.1M [00:00&lt;11:11, 49.2kB/s]
 
-  0%|                                      | 32.8k/33.1M [00:00&lt;03:39, 151kB/s]
+  0%|                                      | 32.8k/33.1M [00:00&lt;05:10, 106kB/s]
 
-  0%|                                      | 96.3k/33.1M [00:00&lt;01:41, 326kB/s]
+  0%|                                      | 96.3k/33.1M [00:00&lt;02:22, 231kB/s]
 
-  1%|▏                                      | 209k/33.1M [00:00&lt;00:57, 571kB/s]
+  1%|▏                                      | 209k/33.1M [00:00&lt;01:21, 404kB/s]
 
-  1%|▍                                     | 432k/33.1M [00:00&lt;00:31, 1.04MB/s]
+  1%|▌                                      | 432k/33.1M [00:00&lt;00:44, 738kB/s]
 
-  3%|█                                     | 889k/33.1M [00:00&lt;00:16, 1.99MB/s]
+  3%|█                                     | 889k/33.1M [00:01&lt;00:22, 1.41MB/s]
 
-  5%|██                                   | 1.80M/33.1M [00:00&lt;00:08, 3.84MB/s]
+  5%|██                                   | 1.80M/33.1M [00:01&lt;00:11, 2.72MB/s]
 
- 11%|████                                 | 3.62M/33.1M [00:00&lt;00:03, 7.50MB/s]
+ 11%|████                                 | 3.62M/33.1M [00:01&lt;00:05, 5.31MB/s]
 
- 20%|███████▍                             | 6.65M/33.1M [00:01&lt;00:02, 13.1MB/s]
+ 20%|███████▌                             | 6.74M/33.1M [00:01&lt;00:02, 9.44MB/s]
 
- 28%|██████████▍                          | 9.34M/33.1M [00:01&lt;00:01, 16.0MB/s]
+ 29%|██████████▋                          | 9.55M/33.1M [00:01&lt;00:02, 11.7MB/s]
 
- 36%|█████████████▏                       | 11.8M/33.1M [00:01&lt;00:01, 17.4MB/s]
+ 36%|█████████████▍                       | 12.0M/33.1M [00:01&lt;00:01, 12.7MB/s]
 
- 44%|████████████████▎                    | 14.6M/33.1M [00:01&lt;00:00, 19.3MB/s]
+ 45%|████████████████▋                    | 14.9M/33.1M [00:02&lt;00:01, 13.9MB/s]
 
- 52%|███████████████████▎                 | 17.3M/33.1M [00:01&lt;00:00, 20.3MB/s]
+ 54%|███████████████████▊                 | 17.7M/33.1M [00:02&lt;00:01, 14.9MB/s]
 
- 60%|██████████████████████▏              | 19.8M/33.1M [00:01&lt;00:00, 20.6MB/s]
+ 62%|██████████████████████▊              | 20.4M/33.1M [00:02&lt;00:00, 15.2MB/s]
 
- 68%|█████████████████████████▎           | 22.6M/33.1M [00:01&lt;00:00, 21.4MB/s]
+ 70%|█████████████████████████▉           | 23.2M/33.1M [00:02&lt;00:00, 15.7MB/s]
 
- 77%|████████████████████████████▍        | 25.4M/33.1M [00:01&lt;00:00, 22.0MB/s]
+ 79%|█████████████████████████████        | 26.0M/33.1M [00:02&lt;00:00, 15.9MB/s]
 
- 85%|███████████████████████████████▍     | 28.1M/33.1M [00:02&lt;00:00, 22.3MB/s]
+ 88%|████████████████████████████████▍    | 29.0M/33.1M [00:02&lt;00:00, 16.4MB/s]
 
- 94%|██████████████████████████████████▉  | 31.2M/33.1M [00:02&lt;00:00, 23.3MB/s]
+ 96%|███████████████████████████████████▌ | 31.8M/33.1M [00:03&lt;00:00, 16.5MB/s]
 
   0%|                                              | 0.00/33.1M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 33.1M/33.1M [00:00&lt;00:00, 92.4GB/s]
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1061: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+100%|██████████████████████████████████████| 33.1M/33.1M [00:00&lt;00:00, 139GB/s]
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1063: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/16.5M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/16.5M [00:00&lt;03:55, 70.1kB/s]
+  0%|                                     | 8.19k/16.5M [00:00&lt;05:40, 48.5kB/s]
 
-  0%|                                      | 32.8k/16.5M [00:00&lt;01:49, 151kB/s]
+  0%|                                      | 32.8k/16.5M [00:00&lt;02:35, 106kB/s]
 
-  1%|▏                                     | 96.3k/16.5M [00:00&lt;00:50, 327kB/s]
+  1%|▏                                     | 96.3k/16.5M [00:00&lt;01:11, 230kB/s]
 
-  1%|▍                                      | 209k/16.5M [00:00&lt;00:28, 573kB/s]
+  1%|▍                                      | 209k/16.5M [00:00&lt;00:40, 404kB/s]
 
-  3%|▉                                     | 432k/16.5M [00:00&lt;00:15, 1.05MB/s]
+  3%|█                                      | 432k/16.5M [00:00&lt;00:21, 737kB/s]
 
-  5%|██                                    | 889k/16.5M [00:00&lt;00:07, 2.00MB/s]
+  5%|██                                    | 889k/16.5M [00:01&lt;00:11, 1.41MB/s]
 
- 11%|████                                 | 1.80M/16.5M [00:00&lt;00:03, 3.86MB/s]
+ 11%|████                                 | 1.80M/16.5M [00:01&lt;00:05, 2.72MB/s]
 
- 22%|████████                             | 3.62M/16.5M [00:00&lt;00:01, 7.52MB/s]
+ 22%|████████                             | 3.62M/16.5M [00:01&lt;00:02, 5.30MB/s]
 
- 41%|███████████████                      | 6.74M/16.5M [00:01&lt;00:00, 13.4MB/s]
+ 40%|██████████████▌                      | 6.54M/16.5M [00:01&lt;00:01, 9.06MB/s]
 
- 58%|█████████████████████▌               | 9.62M/16.5M [00:01&lt;00:00, 16.8MB/s]
+ 57%|████████████████████▉                | 9.35M/16.5M [00:01&lt;00:00, 11.4MB/s]
 
- 74%|███████████████████████████▍         | 12.2M/16.5M [00:01&lt;00:00, 18.4MB/s]
+ 72%|██████████████████████████▌          | 11.9M/16.5M [00:01&lt;00:00, 12.6MB/s]
 
- 91%|█████████████████████████████████▌   | 15.0M/16.5M [00:01&lt;00:00, 19.8MB/s]
+ 89%|████████████████████████████████▊    | 14.7M/16.5M [00:02&lt;00:00, 13.8MB/s]
 
   0%|                                              | 0.00/16.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 16.5M/16.5M [00:00&lt;00:00, 42.7GB/s]
+100%|█████████████████████████████████████| 16.5M/16.5M [00:00&lt;00:00, 67.6GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs |  120 events (all good), 3 – 7.5 s, baseline off, ~3.1 MB, data loaded,
  &#39;left_hand&#39;: 60
  &#39;right_hand&#39;: 60&gt;
@@ -1298,142 +1296,142 @@ BNCI2014-004-CrossSession:  50%|#####     | 1/2 [01:13&lt;01:13, 73.87s/it]/home
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5112        0.8715       0.5000        0.6979  1.2014
-      2       0.5156        0.9149       0.5000        0.7005  1.2015
-      3       0.5000        0.9447       0.5000        0.7034  1.1905
+      1       0.5112        0.8715       0.5000        0.6979  1.0590
+      2       0.5156        0.9149       0.5000        0.7005  1.0724
+      3       0.5000        0.9447       0.5000        0.7034  1.0568
 Stopping since valid_loss has not improved in the last 3 epochs.
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5446        0.8896       0.4464        0.6991  1.1927
-      2       0.4754        0.9506       0.4464        0.6995  1.1914
-      3       0.4955        0.9637       0.4732        0.7000  1.1982
+      1       0.5446        0.8896       0.4464        0.6991  1.0458
+      2       0.4754        0.9506       0.4464        0.6995  1.0575
+      3       0.4955        0.9637       0.4732        0.7000  1.0422
 Stopping since valid_loss has not improved in the last 3 epochs.
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5026        0.9819       0.5000        0.6969  1.0596
-      2       0.4844        0.9401       0.5000        0.6975  1.0342
-      3       0.5365        0.8738       0.5000        0.6982  1.0256
+      1       0.5026        0.9819       0.5000        0.6969  0.9292
+      2       0.4844        0.9401       0.5000        0.6975  0.9143
+      3       0.5365        0.8738       0.5000        0.6982  0.9148
 Stopping since valid_loss has not improved in the last 3 epochs.
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5335        0.9162       0.5000        0.7058  1.1920
-      2       0.4955        0.9377       0.5000        0.7117  1.1984
-      3       0.5312        0.9385       0.5000        0.7180  1.1878
+      1       0.5335        0.9162       0.5000        0.7058  1.0579
+      2       0.4955        0.9377       0.5000        0.7117  1.0612
+      3       0.5312        0.9385       0.5000        0.7180  1.0752
 Stopping since valid_loss has not improved in the last 3 epochs.
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5000        0.9683       0.5577        0.6894  1.0420
-      2       0.5052        0.9939       0.5577        0.6891  1.0295
-      3       0.4974        1.0218       0.5000        0.6898  1.0370
-      4       0.5339        0.8790       0.5096        0.6914  1.0370
+      1       0.5000        0.9683       0.5577        0.6894  0.9167
+      2       0.5052        0.9939       0.5577        0.6891  0.9163
+      3       0.4974        1.0218       0.5000        0.6898  0.9216
+      4       0.5339        0.8790       0.5096        0.6914  0.9279
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5312        0.7308       0.5089        0.6931  0.2227
-      2       0.4799        0.7352       0.5089        0.6932  0.1935
-      3       0.5022        0.7280       0.5000        0.6932  0.1934
+      1       0.5312        0.7308       0.5089        0.6931  0.1830
+      2       0.4799        0.7352       0.5089        0.6932  0.1829
+      3       0.5022        0.7280       0.5000        0.6932  0.1823
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5022        0.7262       0.4821        0.6936  0.1980
-      2       0.4888        0.7331       0.4911        0.6936  0.1950
-      3       0.4531        0.7369       0.4554        0.6936  0.1950
+      1       0.5022        0.7262       0.4821        0.6936  0.1899
+      2       0.4888        0.7331       0.4911        0.6936  0.1870
+      3       0.4531        0.7369       0.4554        0.6936  0.1848
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5260        0.7066       0.5385        0.6927  0.2113
-      2       0.5208        0.7214       0.5096        0.6927  0.2093
-      3       0.4635        0.7179       0.5000        0.6927  0.2090
+      1       0.5260        0.7066       0.5385        0.6927  0.1619
+      2       0.5208        0.7214       0.5096        0.6927  0.1606
+      3       0.4635        0.7179       0.5000        0.6927  0.1589
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5134        0.7533       0.4643        0.6933  0.1961
-      2       0.4844        0.7919       0.4821        0.6933  0.1942
-      3       0.5089        0.7763       0.4732        0.6933  0.1953
+      1       0.5134        0.7533       0.4643        0.6933  0.1842
+      2       0.4844        0.7919       0.4821        0.6933  0.1839
+      3       0.5089        0.7763       0.4732        0.6933  0.1847
 Stopping since valid_loss has not improved in the last 3 epochs.
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5417        0.7232       0.5673        0.6920  0.1722
-      2       0.4922        0.7293       0.5577        0.6919  0.1686
-      3       0.5339        0.7103       0.5769        0.6918  0.1680
-      4       0.5286        0.7110       0.5865        0.6917  0.1949
-      5       0.5130        0.7146       0.5865        0.6915  0.1838
-      6       0.5208        0.6949       0.5481        0.6914  0.1697
-      7       0.5651        0.7037       0.5769        0.6913  0.1703
-      8       0.5208        0.7066       0.5385        0.6911  0.1690
-      9       0.5208        0.6978       0.5385        0.6909  0.1738
-     10       0.5469        0.6853       0.5865        0.6908  0.1729
+      1       0.5417        0.7232       0.5673        0.6920  0.1618
+      2       0.4922        0.7293       0.5577        0.6919  0.1676
+      3       0.5339        0.7103       0.5769        0.6918  0.1606
+      4       0.5286        0.7110       0.5865        0.6917  0.1596
+      5       0.5130        0.7146       0.5865        0.6915  0.1970
+      6       0.5208        0.6949       0.5481        0.6914  0.1586
+      7       0.5651        0.7037       0.5769        0.6913  0.1589
+      8       0.5208        0.7066       0.5385        0.6911  0.1579
+      9       0.5208        0.6978       0.5385        0.6909  0.1582
+     10       0.5469        0.6853       0.5865        0.6908  0.1971
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.4643        0.9060       0.5000        2.1196  0.7665
-      2       0.4866        0.8786       0.5000        1.8536  0.8049
-      3       0.5134        0.8577       0.5000        1.4541  0.7983
-      4       0.5223        0.8135       0.5179        1.0317  0.7852
-      5       0.5022        0.8566       0.5357        0.8284  0.7756
+      1       0.4643        0.9060       0.5000        2.1196  0.7520
+      2       0.4866        0.8786       0.5000        1.8536  0.7870
+      3       0.5134        0.8577       0.5000        1.4541  0.7790
+      4       0.5223        0.8135       0.5179        1.0317  0.7512
+      5       0.5022        0.8566       0.5357        0.8284  0.7890
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5089        0.8737       0.5893        0.7372  0.8082
-      2       0.5491        0.8009       0.5446        0.8475  0.8094
-      3       0.5335        0.8211       0.5357        0.7726  0.7951
-      4       0.5290        0.7717       0.5714        0.7224  0.7852
-      5       0.5759        0.7499       0.5625        0.7087  0.8057
+      1       0.5089        0.8737       0.5893        0.7372  0.7892
+      2       0.5491        0.8009       0.5446        0.8475  0.7908
+      3       0.5335        0.8211       0.5357        0.7726  0.7527
+      4       0.5290        0.7717       0.5714        0.7224  0.7870
+      5       0.5759        0.7499       0.5625        0.7087  0.7938
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5469        0.8564       0.5000        1.5035  0.7053
-      2       0.5234        0.8368       0.5000        1.1360  0.6639
-      3       0.5469        0.8123       0.5000        0.9390  0.6948
-      4       0.5443        0.8534       0.5288        0.8169  0.6855
-      5       0.5833        0.7773       0.5769        0.7268  0.6697
+      1       0.5469        0.8564       0.5000        1.5035  0.6427
+      2       0.5234        0.8368       0.5000        1.1360  0.6831
+      3       0.5469        0.8123       0.5000        0.9390  0.6777
+      4       0.5443        0.8534       0.5288        0.8169  0.6424
+      5       0.5833        0.7773       0.5769        0.7268  0.6723
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5692        0.8046       0.5000        0.9984  0.8125
-      2       0.5402        0.8662       0.5804        0.7311  0.8201
-      3       0.5692        0.7841       0.4554        0.7435  0.7754
-      4       0.5603        0.7784       0.4821        0.7128  0.8075
-      5       0.5737        0.7515       0.5268        0.6991  0.8070
+      1       0.5692        0.8046       0.5000        0.9984  0.7850
+      2       0.5402        0.8662       0.5804        0.7311  0.7442
+      3       0.5692        0.7841       0.4554        0.7435  0.7833
+      4       0.5603        0.7784       0.4821        0.7128  0.7829
+      5       0.5737        0.7515       0.5268        0.6991  0.7545
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/braindecode/models/base.py:180: UserWarning: LogSoftmax final layer will be removed! Please adjust your loss function accordingly (e.g. CrossEntropyLoss)!
   warnings.warn(&quot;LogSoftmax final layer will be removed! &quot; +
   epoch    train_acc    train_loss    valid_acc    valid_loss     dur
 -------  -----------  ------------  -----------  ------------  ------
-      1       0.5417        0.8749       0.5192        1.2893  0.6999
-      2       0.5182        0.8300       0.5192        1.2205  0.6618
-      3       0.5599        0.7872       0.5288        1.0374  0.6899
-      4       0.6016        0.7492       0.5192        0.8805  0.6719
-      5       0.5651        0.7286       0.5096        0.7939  0.6997
+      1       0.5417        0.8749       0.5192        1.2893  0.6432
+      2       0.5182        0.8300       0.5192        1.2205  0.6711
+      3       0.5599        0.7872       0.5288        1.0374  0.6414
+      4       0.6016        0.7492       0.5192        0.8805  0.6716
+      5       0.5651        0.7286       0.5096        0.7939  0.6791
 
-BNCI2014-004-CrossSession: 100%|##########| 2/2 [02:12&lt;00:00, 65.11s/it]
-BNCI2014-004-CrossSession: 100%|##########| 2/2 [02:12&lt;00:00, 66.43s/it]
+BNCI2014-004-CrossSession: 100%|##########| 2/2 [02:08&lt;00:00, 62.97s/it]
+BNCI2014-004-CrossSession: 100%|##########| 2/2 [02:08&lt;00:00, 64.18s/it]
         dataset    evaluation                       pipeline  avg score
-0  BNCI2014-001  CrossSession  braindecode_EEGNetv4_resample   0.528935
+0  BNCI2014-001  CrossSession       braindecode_EEGInception   0.530044
 1  BNCI2014-001  CrossSession    braindecode_ShallowFBCSPNet   0.512346
-2  BNCI2014-001  CrossSession       braindecode_EEGInception   0.530044
-3  BNCI2014-004  CrossSession  braindecode_EEGNetv4_resample   0.528896
+2  BNCI2014-001  CrossSession  braindecode_EEGNetv4_resample   0.528935
+3  BNCI2014-004  CrossSession       braindecode_EEGInception   0.556938
 4  BNCI2014-004  CrossSession    braindecode_ShallowFBCSPNet   0.540205
-5  BNCI2014-004  CrossSession       braindecode_EEGInception   0.556938
+5  BNCI2014-004  CrossSession  braindecode_EEGNetv4_resample   0.528896
 </pre></div>
 </div>
 <p>The deep learning architectures implemented in MOABB using Braindecode are:</p>
 <ul class="simple">
-<li><p>Shallow Convolutional Network <a class="footnote-reference brackets" href="#id5" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
-<li><p>Deep Convolutional Network <a class="footnote-reference brackets" href="#id5" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
-<li><p>EEGNetv4 <a class="footnote-reference brackets" href="#id6" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p></li>
-<li><p>EEGInception <a class="footnote-reference brackets" href="#id7" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p></li>
+<li><p>Shallow Convolutional Network <a class="footnote-reference brackets" href="#id5" id="id1">1</a></p></li>
+<li><p>Deep Convolutional Network <a class="footnote-reference brackets" href="#id5" id="id2">1</a></p></li>
+<li><p>EEGNetv4 <a class="footnote-reference brackets" href="#id6" id="id3">2</a></p></li>
+<li><p>EEGInception <a class="footnote-reference brackets" href="#id7" id="id4">3</a></p></li>
 </ul>
 <p>Benchmark prints a summary of the results. Detailed results are saved in a
 pandas dataframe, and can be used to generate figures. The analysis &amp; figures
@@ -1449,33 +1447,29 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id5" role="note">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
-<p>Schirrmeister, R. T., Springenberg, J. T., Fiederer, L. D. J.,
+<dl class="footnote brackets">
+<dt class="label" id="id5"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id2">2</a>)</span></dt>
+<dd><p>Schirrmeister, R. T., Springenberg, J. T., Fiederer, L. D. J.,
 Glasstetter, M., Eggensperger, K., Tangermann, M., … &amp; Ball, T. (2017).
 <a class="reference external" href="https://doi.org/10.1002/hbm.23730">Deep learning with convolutional neural networks for EEG decoding and
 visualization</a>.
 Human brain mapping, 38(11), 5391-5420.</p>
-</aside>
-<aside class="footnote brackets" id="id6" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
-<p>Lawhern, V. J., Solon, A. J., Waytowich, N. R., Gordon, S. M.,
+</dd>
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
+<dd><p>Lawhern, V. J., Solon, A. J., Waytowich, N. R., Gordon, S. M.,
 Hung, C. P., &amp; Lance, B. J. (2018). <a class="reference external" href="https://doi.org/10.1088/1741-2552/aace8c">EEGNet: a compact convolutional neural
 network for EEG-based brain-computer interfaces.</a>
 Journal of neural engineering, 15(5), 056013.</p>
-</aside>
-<aside class="footnote brackets" id="id7" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">3</a><span class="fn-bracket">]</span></span>
-<p>Santamaria-Vazquez, E., Martinez-Cagigal, V., Vaquerizo-Villar,
+</dd>
+<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id4">3</a></span></dt>
+<dd><p>Santamaria-Vazquez, E., Martinez-Cagigal, V., Vaquerizo-Villar,
 F., &amp; Hornero, R. (2020). <a class="reference external" href="https://doi.org/10.1109/TNSRE.2020.3048106">EEG-inception: A novel deep convolutional neural network
 for assistive ERP-based brain-computer interfaces.</a>
 IEEE Transactions on Neural Systems and Rehabilitation Engineering</p>
-</aside>
-</aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 3 minutes  3.417 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  750 MB</p>
+</dd>
+</dl>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  55.229 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  647 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-braindecode-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/284aff1e2748c45a1efdc5d7071c4a77/plot_benchmark_braindecode.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark_braindecode.py</span></code></a></p>

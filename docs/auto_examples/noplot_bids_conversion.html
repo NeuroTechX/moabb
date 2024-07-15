@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
     <title>Convert a MOABB dataset to BIDS &#8212; moabb 1.1.0-dev documentation</title>
   
@@ -653,13 +653,13 @@ is standard for storing neuroimaging data.
 It follows fixed principles to facilitate the
 sharing of neuroimaging data between researchers.</p>
 <p>The MOABB library allows to convert any MOABB dataset to
-BIDS <a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and <a class="footnote-reference brackets" href="#id5" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+BIDS <a class="footnote-reference brackets" href="#id4" id="id1">1</a> and <a class="footnote-reference brackets" href="#id5" id="id2">2</a>.</p>
 <p>In this example, we will convert the AlexMI dataset to BIDS using the
 option <code class="docutils literal notranslate"><span class="pre">cache_config=dict(path=temp_dir,</span> <span class="pre">save_raw=True)</span></code> of the <code class="docutils literal notranslate"><span class="pre">get_data</span></code>
 method from the dataset object.</p>
 <p>This will automatically save the raw data in the BIDS format and allow to use
 a cache for the next time the dataset is used.</p>
-<p>We will use the AlexMI dataset <a class="footnote-reference brackets" href="#id6" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, one of the smallest in
+<p>We will use the AlexMI dataset <a class="footnote-reference brackets" href="#id6" id="id3">3</a>, one of the smallest in
 people and one that can be downloaded quickly.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Pierre Guetschel &lt;pierre.guetschel@gmail.com&gt;</span>
 <span class="c1">#</span>
@@ -751,29 +751,26 @@ please refer to the tutorial <a class="reference internal" href="plot_disk_cache
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id4" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Pernet, C.R., Appelhoff, S., Gorgolewski, K.J. et al. EEG-BIDS,
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Pernet, C.R., Appelhoff, S., Gorgolewski, K.J. et al. EEG-BIDS,
 An extension to the brain imaging data structure for
 electroencephalography. Sci Data 6, 103 (2019).
 <a class="reference external" href="https://doi.org/10.1038/s41597-019-0104-8">https://doi.org/10.1038/s41597-019-0104-8</a></p>
-</aside>
-<aside class="footnote brackets" id="id5" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
-<p>Appelhoff et al., (2019). MNE-BIDS: Organizing electrophysiological
+</dd>
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>Appelhoff et al., (2019). MNE-BIDS: Organizing electrophysiological
 data into the BIDS format and facilitating their analysis.
 Journal of Open Source Software, 4(44), 1896,
 <a class="reference external" href="https://doi.org/10.21105/joss.01896">https://doi.org/10.21105/joss.01896</a></p>
-</aside>
-<aside class="footnote brackets" id="id6" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
-<p>Barachant, A., 2012. Commande robuste d’un effecteur par une
+</dd>
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
+<dd><p>Barachant, A., 2012. Commande robuste d’un effecteur par une
 interface cerveau machine EEG asynchrone (Doctoral dissertation,
 Université de Grenoble).
 <a class="reference external" href="https://tel.archives-ouvertes.fr/tel-01196752">https://tel.archives-ouvertes.fr/tel-01196752</a></p>
-</aside>
-</aside>
+</dd>
+</dl>
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  0 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-noplot-bids-conversion-py">

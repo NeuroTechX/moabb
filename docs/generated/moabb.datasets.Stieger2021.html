@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
     <title>moabb.datasets.Stieger2021 &#8212; moabb 1.1.0-dev documentation</title>
   
@@ -471,6 +471,17 @@ document.write(`
 <div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <table class="table">
+<colgroup>
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 12%" />
+<col style="width: 10%" />
+<col style="width: 18%" />
+<col style="width: 9%" />
+<col style="width: 12%" />
+<col style="width: 7%" />
+<col style="width: 18%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>#Subj</p></th>
 <th class="head"><p>#Chan</p></th>
@@ -577,15 +588,14 @@ trials, but the average of left and right trials should be zero). Finally,
 the normalized control signals were used to update the position of
 the cursor every 40 ms.</p>
 <p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="r9d4dafd3db21-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<p>Stieger, J. R., Engel, S. A., &amp; He, B. (2021).
+<dl class="citation">
+<dt class="label" id="r9d4dafd3db21-1"><span class="brackets">1</span></dt>
+<dd><p>Stieger, J. R., Engel, S. A., &amp; He, B. (2021).
 Continuous sensorimotor rhythm based brain computer interface
 learning in a large population. Scientific Data, 8(1), 98.
 <a class="reference external" href="https://doi.org/10.1038/s41597-021-00883-1">https://doi.org/10.1038/s41597-021-00883-1</a></p>
-</div>
-</div>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.1.0.</span></p>
@@ -595,7 +605,7 @@ learning in a large population. Scientific Data, 8(1), 98.
 <span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/stieger2021.py#L146-L182"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Stieger2021.data_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Get path to local copy of a subject data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of subject to use</p></li>
 <li><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Location of where to look for the data storing location.
@@ -611,11 +621,11 @@ config to the given path. If None, the user is prompted.</p></li>
 (see <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>path</strong> – Local path to the given data file. This path is contained inside a
 list of length one, for compatibility.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
 </dd>
 </dl>

@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
     <title>moabb.datasets.Liu2024 &#8212; moabb 1.1.0-dev documentation</title>
   
@@ -470,6 +470,17 @@ document.write(`
 <dd><div class="admonition-dataset-summary admonition">
 <p class="admonition-title">Dataset summary</p>
 <table class="table">
+<colgroup>
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 12%" />
+<col style="width: 10%" />
+<col style="width: 18%" />
+<col style="width: 7%" />
+<col style="width: 12%" />
+<col style="width: 7%" />
+<col style="width: 18%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>#Subj</p></th>
 <th class="head"><p>#Chan</p></th>
@@ -522,19 +533,17 @@ adhesive hydrogel. The common-mode rejection ratio was 120 dB, the input impedan
 0.4 μVrms, and the resolution was 24 bits. The acquisition impedance was less than or equal to 20 kΩ. The sampling frequency
 was 500 Hz.</p>
 <p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="r5c8c28f00274-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Liu, Haijie; Lv, Xiaodong (2022). EEG datasets of stroke patients.
+<dl class="citation">
+<dt class="label" id="r5c8c28f00274-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Liu, Haijie; Lv, Xiaodong (2022). EEG datasets of stroke patients.
 figshare. Dataset. DOI: <a class="reference external" href="https://doi.org/10.6084/m9.figshare.21679035.v5">https://doi.org/10.6084/m9.figshare.21679035.v5</a></p>
-</div>
-<div class="citation" id="r5c8c28f00274-2" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
-<p>Liu, Haijie, Wei, P., Wang, H. et al. An EEG motor imagery dataset
+</dd>
+<dt class="label" id="r5c8c28f00274-2"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>Liu, Haijie, Wei, P., Wang, H. et al. An EEG motor imagery dataset
 for brain computer interface in acute stroke patients. Sci Data 11, 131
 (2024). DOI: <a class="reference external" href="https://doi.org/10.1038/s41597-023-02787-8">https://doi.org/10.1038/s41597-023-02787-8</a></p>
-</div>
-</div>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>To add the break and instruction events, set the <cite>break_events</cite> and
 <cite>instr_events</cite> parameters to True while instantiating the class.</p>
@@ -546,16 +555,16 @@ for brain computer interface in acute stroke patients. Sci Data 11, 131
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_event_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><span class="pre">ndarray</span></a></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/liu2024.py#L317-L340"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2024.create_event_array" title="Permalink to this definition">#</a></dt>
 <dd><p>This method creates an event array based on the stimulus channel.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>raw</strong> (<a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.7)"><em>mne.io.Raw</em></a>) – The raw data.</p></li>
 <li><p><strong>event_category</strong> (<em>np.ndarray</em>) – The event categories.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>events</strong> – The created events array.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
@@ -568,11 +577,11 @@ for brain computer interface in acute stroke patients. Sci Data 11, 131
 <p>This function downloads the necessary data files for electrodes
 and events from their respective URLs and returns their local file paths.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A tuple containing the local file paths to the channels, electrodes,
 and events information files.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)">tuple</a></p>
 </dd>
 </dl>
@@ -583,7 +592,7 @@ and events information files.</p>
 <span class="sig-name descname"><span class="pre">data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/liu2024.py#L95-L146"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2024.data_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the data paths of a single subject.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>subject</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – The subject number to fetch data for.</p></li>
 <li><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Location of where to look for the data storing location. If None,
@@ -598,10 +607,10 @@ If None, the user is prompted.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, or </em><em>None</em>) – If not None, override default verbose level (see mne.verbose()).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list containing the path to the subject’s data file.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a></p>
 </dd>
 </dl>
@@ -612,13 +621,13 @@ If None, the user is prompted.</p></li>
 <span class="sig-name descname"><span class="pre">encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.12)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/datasets/liu2024.py#L148-L215"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.datasets.Liu2024.encoding" title="Permalink to this definition">#</a></dt>
 <dd><p>Encode the columns ‘value’ and ‘trial_type’ into a single event type.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>events_df</strong> (<em>pd.DataFrame</em>) – DataFrame containing the events information.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Array of encoded event types.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>

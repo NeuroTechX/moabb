@@ -7,7 +7,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
     <title>moabb.benchmark &#8212; moabb 1.1.0-dev documentation</title>
   
@@ -466,7 +466,7 @@ document.write(`
 <h1>moabb.benchmark<a class="headerlink" href="#moabb-benchmark" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="moabb.benchmark">
-<span class="sig-prename descclassname"><span class="pre">moabb.</span></span><span class="sig-name descname"><span class="pre">benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipelines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./pipelines/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paradigms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./results/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./benchmark/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contexts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_datasets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_datasets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/benchmark.py#L34-L222"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.benchmark" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">moabb.</span></span><span class="sig-name descname"><span class="pre">benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipelines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./pipelines/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paradigms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./results/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./benchmark/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contexts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_datasets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_datasets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optuna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/benchmark.py#L34-L230"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.benchmark" title="Permalink to this definition">#</a></dt>
 <dd><p>Run benchmarks for selected pipelines and datasets.</p>
 <p>Load from saved pipeline configurations to determine associated paradigms. It is
 possible to include or exclude specific datasets and to choose the type of
@@ -484,7 +484,7 @@ using for example the following code:
 &gt; # Get the dataset code
 &gt; print([d.code for d in p.datasets])</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pipelines</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Folder containing the pipelines to evaluate or path to a single pipeline file.</p></li>
 <li><p><strong>evaluations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – If to restrict the types of evaluations to be run. By default, all 3 base types are run
@@ -507,18 +507,22 @@ paradigms described in the pipelines.</p></li>
 By default, all suitable datasets are included. If both include_datasets
 and exclude_datasets are specified, raise an error.</p></li>
 <li><p><strong>exclude_datasets</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>Dataset object</em>) – Datasets to exclude from the benchmark run</p></li>
+<li><p><strong>optuna</strong> (<em>Enable Optuna for the hyperparameter search</em>) – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>eval_results</strong> – Results of benchmark for all considered paradigms</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>DataFrame</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <div class="versionadded">
-<p><span class="versionmodified added">New in version 0.5.0.</span></p>
+<p><span class="versionmodified added">New in version 1.1.1: </span>Includes the possibility to use Optuna for hyperparameter search.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.5.0: </span>Create the function to run the benchmark</p>
 </div>
 </dd></dl>
 
