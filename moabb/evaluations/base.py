@@ -60,6 +60,8 @@ class BaseEvaluation(ABC):
     optuna:bool, default=False
         If optuna is enable it will change the GridSearch to a RandomizedGridSearch with 15 minutes of cut off time.
         This option is compatible with list of entries of type None, bool, int, float and string
+    time_out: default=60*15
+        Cut off tme for the grid search expressed in seconds, the default value is 15 minutes.
 
     Notes
     -----
@@ -85,6 +87,7 @@ class BaseEvaluation(ABC):
         save_model=False,
         cache_config=None,
         optuna=False,
+        time_out = 60 * 15
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -97,6 +100,7 @@ class BaseEvaluation(ABC):
         self.save_model = save_model
         self.cache_config = cache_config
         self.optuna = optuna
+        self.time_out = time_out
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
@@ -276,7 +280,7 @@ class BaseEvaluation(ABC):
                 if self.optuna:
                     search = search_methods["optuna"]
                     param_grid[name] = _convert_sklearn_params_to_optuna(param_grid[name])
-                    extra_params["timeout"] = 60 * 15  # 15 minutes
+                    extra_params["timeout"] = self.time_out
                 else:
                     search = search_methods["grid"]
 

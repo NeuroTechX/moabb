@@ -229,8 +229,11 @@ def _convert_sklearn_params_to_optuna(param_grid):
     """
     optuna_params = {}
     for key, value in param_grid.items():
-        if isinstance(value, list):
-            optuna_params[key] = optuna.distributions.CategoricalDistribution(value)
-        else:
-            optuna_params[key] = value
+        try:
+            if isinstance(value, list):
+                optuna_params[key] = optuna.distributions.CategoricalDistribution(value)
+            else:
+                optuna_params[key] = value
+        except Exception as e:
+            raise ValueError(f"Conversion failed for parameter {key}: {e}")
     return optuna_params
