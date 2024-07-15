@@ -70,7 +70,7 @@ jobs:
 
       - name: Install library (Windows)
         if: ${{ runner.os == 'Windows' }}
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction --extras optuna
 
       - name: Run tests
         run: |
