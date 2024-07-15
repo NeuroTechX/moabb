@@ -33,8 +33,7 @@ edflib-python = "^1.0.6"
 edfio = "^0.4.2"
 pytest = "^7.4.0"
 mne-bids = "^0.14"
-optuna = "^3.6.1"
-optuna-integration = "^3.6.0"
+
 
 # Optional dependencies for carbon emission
 codecarbon = { version = "^2.1.4", optional = true }
@@ -47,12 +46,13 @@ braindecode = {version = "^0.8", optional = true}
 torch = { version = "^1.13.1", optional = true }
 libclang = { version = "^15.0", optional = true }
 docstring_inheritance = { version = "^2.2.0", optional = true}
-
+optuna = { version = "^3.6.1", optional = true }
+optuna-integration = { version = "^3.6.0", optional = true }
 
 [tool.poetry.extras]
 carbonemission = ["codecarbon"]
 deeplearning = ["tensorflow", "keras", "scikeras", "braindecode", "docstring_inheritance", "torch", "libclang"]
-
+optuna = ["optuna", "optuna-integration"]
 
 [tool.poetry.group.docs]
 optional = true
