@@ -1,0 +1,19 @@
+Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, Total_trials, PapersWithCode leaderboard
+AlexMI,8,16,3,20,3s,512Hz,1,1,480,https://paperswithcode.com/dataset/alexandremotorimagery-moabb
+BNCI2014_001,9,22,4,144,4s,250Hz,2,6,62208,https://paperswithcode.com/dataset/bnci2014-001-moabb-1
+BNCI2014_002,14,15,2,80,5s,512Hz,1,8,17920,https://paperswithcode.com/dataset/bnci2014-002-moabb-1
+BNCI2014_004,9,3,2,360,4.5s,250Hz,5,1,32400,https://paperswithcode.com/dataset/bnci2014-004-moabb-1
+BNCI2015_001,12,13,2,200,5s,512Hz,3,1,14400,https://paperswithcode.com/dataset/bnci2015-001-moabb-1
+BNCI2015_004,9,30,5,80,7s,256Hz,2,1,7200,https://paperswithcode.com/dataset/bnci2015-004-moabb-1
+Cho2017,52,64,2,100,3s,512Hz,1,1,9800,https://paperswithcode.com/dataset/cho2017-moabb
+Lee2019_MI,54,62,2,100,4s,1000Hz,2,1,11000,https://paperswithcode.com/dataset/lee2019-mi-moabb-1
+GrosseWentrup2009,10,128,2,150,7s,500Hz,1,1,3000,https://paperswithcode.com/dataset/grossewentrup2009-moabb
+Schirrmeister2017,14,128,4,120,4s,500Hz,1,2,13440,https://paperswithcode.com/dataset/schirrmeister2017-moabb
+Ofner2017,15,61,7,60,3s,512Hz,1,10,63000,
+PhysionetMI,109,64,4,23,3s,160Hz,1,1,69760,https://paperswithcode.com/dataset/physionetmotorimagery-moabb
+Shin2017A,29,30,2,30,10s,200Hz,3,1,5220,https://paperswithcode.com/dataset/shin2017a-moabb
+Shin2017B,29,30,2,30,10s,200Hz,3,1,5220,
+Weibo2014,10,60,7,80,4s,200Hz,1,1,5600,https://paperswithcode.com/dataset/weibo2014-moabb
+Zhou2016,4,14,3,160,5s,250Hz,3,2,11496,https://paperswithcode.com/dataset/zhou2016-moabb
+Stieger2021,62,64,4,450,3s,1000Hz,7 or 11,1,250000,
+Liu2024,50,29,2,20,4s,500Hz,1,1,2000,

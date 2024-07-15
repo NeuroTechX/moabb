@@ -31,7 +31,7 @@ Motor Imagery Datasets
     Weibo2014
     Zhou2016
     Stieger2021
-
+    Liu2024
 
 ------------
 ERP Datasets
