@@ -72,7 +72,7 @@ class TestBenchmark(unittest.TestCase):
             overwrite=True,
         )
 
-    def teste_optuna(self):
+    def test_optuna(self):
         res = benchmark(
             pipelines=str(self.pp_dir),
             evaluations=["WithinSession"],
