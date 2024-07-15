@@ -66,10 +66,10 @@ jobs:
 
       - name: Install dependencies
         if: (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
-        run: poetry install --no-interaction --no-root --with docs --extras deeplearning
+        run: poetry install --no-interaction --no-root --with docs --extras deeplearning --extras optuna
 
       - name: Install library
-        run: poetry install --no-interaction --with docs --extras deeplearning
+        run: poetry install --no-interaction --with docs --extras deeplearning --extras optuna
 
       - name: Build docs
         run: |

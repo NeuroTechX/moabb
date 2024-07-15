@@ -45,6 +45,7 @@ def benchmark(  # noqa: C901
     exclude_datasets=None,
     n_splits=None,
     cache_config=None,
+    optuna=False,
 ):
     """Run benchmarks for selected pipelines and datasets.
 
@@ -102,6 +103,7 @@ def benchmark(  # noqa: C901
         and exclude_datasets are specified, raise an error.
     exclude_datasets: list of str or Dataset object
         Datasets to exclude from the benchmark run
+    optuna: Enable Optuna for the hyperparameter search
 
     Returns
     -------
@@ -110,7 +112,11 @@ def benchmark(  # noqa: C901
 
     Notes
     -----
+    .. versionadded:: 1.1.1
+        Includes the possibility to use Optuna for hyperparameter search.
+
     .. versionadded:: 0.5.0
+        Create the function to run the benchmark
     """
     # set logs
     if evaluations is None:
@@ -182,6 +188,7 @@ def benchmark(  # noqa: C901
                     return_epochs=True,
                     n_splits=n_splits,
                     cache_config=cache_config,
+                    optuna=optuna,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_epochs, param_grid=param_grid
@@ -202,6 +209,7 @@ def benchmark(  # noqa: C901
                     overwrite=overwrite,
                     n_splits=n_splits,
                     cache_config=cache_config,
+                    optuna=optuna,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_array, param_grid=param_grid
