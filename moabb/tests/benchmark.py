@@ -2,7 +2,6 @@ import shutil
 import unittest
 from pathlib import Path
 
-import moabb.evaluations
 from moabb import benchmark
 from moabb.datasets.fake import FakeDataset
 
@@ -79,7 +78,7 @@ class TestBenchmark(unittest.TestCase):
             evaluations=["WithinSession"],
             paradigms=["FakeImageryParadigm"],
             overwrite=True,
-            optuna=True
+            optuna=True,
         )
         self.assertEqual(len(res), 40)
 

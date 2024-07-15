@@ -87,7 +87,7 @@ class BaseEvaluation(ABC):
         save_model=False,
         cache_config=None,
         optuna=False,
-        time_out = 60 * 15
+        time_out=60 * 15,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
