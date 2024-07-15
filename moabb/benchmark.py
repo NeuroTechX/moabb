@@ -112,12 +112,11 @@ def benchmark(  # noqa: C901
 
     Notes
     -----
-    .. versionadded:: 0.5.0
-
-    Notes
-    -----
     .. versionadded:: 1.1.1
-        Includes the possibility to use Optuna for hyperparameter search
+        Includes the possibility to use Optuna for hyperparameter search.
+
+    .. versionadded:: 0.5.0
+        Create the function to run the benchmark
     """
     # set logs
     if evaluations is None:
