@@ -17,14 +17,6 @@ _HINNS_EVENTS = dict(rs=1, easy=2, medium=3, diff=4)
 class Hinss2021(BaseDataset):
     """Neuroergonomic 2021 dataset.
 
-    .. admonition:: Dataset summary
-
-     =========== ======= ======= ========== =============== ============ =============== ===========
-        Name      #Subj   #Chan   #Classes   #Blocks/class   Trials len   Sampling rate   #Sessions
-     =========== ======= ======= ========== =============== ============ =============== ===========
-      Hinss2021    15      62        4             1             2s           250Hz           2
-     =========== ======= ======= ========== =============== ============ =============== ===========
-
     We describe the experimental procedures for a dataset that is publicly available
     at https://zenodo.org/records/5055046.
     This dataset contains electroencephalographic recordings of 15 subjects (6 female, with an

@@ -17,15 +17,6 @@ HEADMOUNTED_URL = "https://zenodo.org/record/2617085/files/"
 class Cattan2019_PHMD(BaseDataset):
     """Passive Head Mounted Display with Music Listening dataset.
 
-    .. admonition:: Dataset summary
-
-
-        ==============  =======  =======  ==========  =================  ============  ===============  ===========
-        Name              #Subj    #Chan    #Classes    #Blocks/class     Trials len    Sampling rate    #Sessions
-        =============== =======  =======  ==========  =================  ============  ===============  ===========
-        Cattan2019_PHMD      12       16           2                 10   60s            512Hz                   1
-        =============== =======  =======  ==========  =================  ============  ===============  ===========
-
     We describe the experimental procedures for a dataset that we have made publicly available
     at https://doi.org/10.5281/zenodo.2617084 in mat (Mathworks, Natick, USA) and csv formats.
     This dataset contains electroencephalographic recordings of 12 subjects listening to music

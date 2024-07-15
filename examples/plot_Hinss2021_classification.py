@@ -43,6 +43,7 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 
 set_log_level("info")
 
+
 ##############################################################################
 # Create util transformer
 # ----------------------
@@ -103,12 +104,11 @@ datasets = [Hinss2021()]
 
 # To reduce the computation time in the example, we will only use the
 # first two subjects.
-start_subject = 1
-stop_subject = 2
+n__subjects = 2
 title = "Datasets: "
 for dataset in datasets:
     title = title + " " + dataset.code
-    dataset.subject_list = dataset.subject_list[start_subject:stop_subject]
+    dataset.subject_list = dataset.subject_list[:n__subjects]
 
 ##############################################################################
 # Create Pipelines
