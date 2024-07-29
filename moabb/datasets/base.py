@@ -357,7 +357,8 @@ class BaseDataset(metaclass=MetaclassDataset):
                 (
                     StepType.RAW,
                     SetRawAnnotations(
-                        self.event_id, interval=self.interval, overlap=self.overlap
+                        self.event_id,
+                        interval=self.interval,
                     ),
                 ),
             ]
