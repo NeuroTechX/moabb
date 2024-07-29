@@ -5,8 +5,8 @@ from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
 from numpy import argmax
-from sklearn.pipeline import Pipeline
 from sklearn.metrics import matthews_corrcoef
+from sklearn.pipeline import Pipeline
 
 
 try:
@@ -36,6 +36,7 @@ def _check_if_is_keras_model(model):
         return is_keras_model
     except ImportError:
         return False
+
 
 def _normalized_mcc(y_true, y_pred):
     mcc = matthews_corrcoef(y_true, y_pred)

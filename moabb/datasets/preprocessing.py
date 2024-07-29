@@ -44,7 +44,7 @@ def _events_pseudoonline(events, tmin, tmax, sfreq, overlap):
         return the new events, ove every starting point of the sliding windows and with univocal label
     """
     # Compute duration of the windows in seconds
-    duration_s = tmax-tmin
+    duration_s = tmax - tmin
     # Convert the duration in time point.
     duration = duration_s * sfreq
     # The starting point of the new windows in time point
@@ -132,7 +132,13 @@ class SetRawAnnotations(FixedTransformer):
             events[:, 0] += offset
         else:
             events_ = mne.find_events(raw, shortest_event=0, verbose=False)
-            events = _events_pseudoonline(events_, tmin=self.tmin, tmax=self.tmax, sfreq=raw.info["sfreq"], overlap=self.overlap)
+            events = _events_pseudoonline(
+                events_,
+                tmin=self.tmin,
+                tmax=self.tmax,
+                sfreq=raw.info["sfreq"],
+                overlap=self.overlap,
+            )
             duration = self.tmax - self.tmin
 
         if len(events) != 0:
@@ -157,7 +163,9 @@ class RawToEvents(FixedTransformer):
     Always returns an array for shape (n_events, 3), even if no events found
     """
 
-    def __init__(self, event_id: dict[str, int], interval: Tuple[float, float], tmin, tmax, overlap):
+    def __init__(
+        self, event_id: dict[str, int], interval: Tuple[float, float], tmin, tmax, overlap
+    ):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         self.interval = interval
@@ -173,8 +181,13 @@ class RawToEvents(FixedTransformer):
                 events = mne.find_events(raw, shortest_event=0, verbose=False)
             else:
                 events_ = mne.find_events(raw, shortest_event=0, verbose=False)
-                events = _events_pseudoonline(events_, tmin=self.tmin, tmax=self.tmax, sfreq=raw.info["sfreq"],
-                                              overlap=self.overlap)
+                events = _events_pseudoonline(
+                    events_,
+                    tmin=self.tmin,
+                    tmax=self.tmax,
+                    sfreq=raw.info["sfreq"],
+                    overlap=self.overlap,
+                )
         else:
             try:
                 events, _ = mne.events_from_annotations(

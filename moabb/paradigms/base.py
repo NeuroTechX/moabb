@@ -173,7 +173,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                         interval=dataset.interval,
                         tmin=self.tmin,
                         tmax=self.tmax,
-                        overlap=self.overlap
+                        overlap=self.overlap,
                     ),
                 )
             )
@@ -518,7 +518,7 @@ class BaseParadigm(BaseProcessing):
         baseline=None,
         channels=None,
         resample=None,
-        overlap=None
+        overlap=None,
     ):
         super().__init__(
             filters=filters,
@@ -527,7 +527,7 @@ class BaseParadigm(BaseProcessing):
             resample=resample,
             tmin=tmin,
             tmax=tmax,
-            overlap=overlap
+            overlap=overlap,
         )
         self.events = events
 
@@ -543,4 +543,10 @@ class BaseParadigm(BaseProcessing):
 
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
-        return RawToEvents(event_id=event_id, interval=dataset.interval, tmin=self.tmin, tmax=self.tmax, overlap=self.overlap)
+        return RawToEvents(
+            event_id=event_id,
+            interval=dataset.interval,
+            tmin=self.tmin,
+            tmax=self.tmax,
+            overlap=self.overlap,
+        )

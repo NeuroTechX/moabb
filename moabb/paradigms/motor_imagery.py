@@ -3,11 +3,13 @@
 import abc
 import logging
 
+from sklearn.metrics import make_scorer
+
 from moabb.datasets import utils
 from moabb.datasets.fake import FakeDataset
-from moabb.paradigms.base import BaseParadigm
-from sklearn.metrics import make_scorer
 from moabb.evaluations.utils import _normalized_mcc
+from moabb.paradigms.base import BaseParadigm
+
 
 log = logging.getLogger(__name__)
 
@@ -65,7 +67,7 @@ class BaseMotorImagery(BaseParadigm):
         baseline=None,
         channels=None,
         resample=None,
-        overlap=None
+        overlap=None,
     ):
 
         if overlap is not None:
@@ -80,7 +82,7 @@ class BaseMotorImagery(BaseParadigm):
             resample=resample,
             tmin=tmin,
             tmax=tmax,
-            overlap=overlap
+            overlap=overlap,
         )
 
     def is_valid(self, dataset):

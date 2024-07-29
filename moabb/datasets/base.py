@@ -319,7 +319,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         paradigm,
         doi=None,
         unit_factor=1e6,
-        pseudoonline=False
+        pseudoonline=False,
     ):
         """Initialize function for the BaseDataset."""
         try:

@@ -33,7 +33,7 @@ def load_data(
     base_url=BNCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):  # noqa: D301
     """Get paths to local copies of a BNCI dataset files.
 
@@ -117,7 +117,7 @@ def load_data(
         baseurl_list[dataset],
         only_filenames,
         verbose,
-        pseudoonline
+        pseudoonline,
     )
 
 
@@ -130,7 +130,7 @@ def _load_data_001_2014(
     base_url=BNCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
     """Load data for 001-2014 dataset."""
     if (subject < 1) or (subject > 9):
@@ -157,7 +157,9 @@ def _load_data_001_2014(
             continue
 
         if pseudoonline:
-            runs, ev = _convert_mi_pseudoonline(filename[0], time_task, time_fix, ch_names, ch_types, pseudoonline)
+            runs, ev = _convert_mi_pseudoonline(
+                filename[0], time_task, time_fix, ch_names, ch_types, pseudoonline
+            )
         else:
             runs, ev = _convert_mi(filename[0], ch_names, ch_types)
         # FIXME: deal with run with no event (1:3) and name them
@@ -178,7 +180,7 @@ def _load_data_002_2014(
     base_url=BNCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
     """Load data for 002-2014 dataset."""
     if (subject < 1) or (subject > 14):
@@ -196,7 +198,9 @@ def _load_data_002_2014(
             continue
         # FIXME: electrode position and name are not provided directly.
         if pseudoonline:
-            raws, _ = _convert_mi_pseudoonline(filename, time_task, time_fix, None, ["eeg"] * 15, pseudoonline)
+            raws, _ = _convert_mi_pseudoonline(
+                filename, time_task, time_fix, None, ["eeg"] * 15, pseudoonline
+            )
         else:
             raws, _ = _convert_mi(filename, None, ["eeg"] * 15)
         runs.extend(zip([r] * len(raws), raws))
@@ -215,7 +219,7 @@ def _load_data_004_2014(
     base_url=BNCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
     """Load data for 004-2014 dataset."""
     if (subject < 1) or (subject > 9):
@@ -235,7 +239,9 @@ def _load_data_004_2014(
         if only_filenames:
             continue
         if pseudoonline:
-            raws, _ = _convert_mi_pseudoonline(filename, time_task, time_fix, ch_names, ch_types, pseudoonline)
+            raws, _ = _convert_mi_pseudoonline(
+                filename, time_task, time_fix, ch_names, ch_types, pseudoonline
+            )
         else:
             raws, _ = _convert_mi(filename, ch_names, ch_types)
         sessions.extend(zip([r] * len(raws), raws))
@@ -255,11 +261,13 @@ def _load_data_008_2014(
     base_url=BNCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
 
     if pseudoonline:
-        raise ValueError("Pseudo Online evaluation not currently implemented for this dataset")
+        raise ValueError(
+            "Pseudo Online evaluation not currently implemented for this dataset"
+        )
 
     """Load data for 008-2014 dataset."""
     if (subject < 1) or (subject > 8):
@@ -286,10 +294,12 @@ def _load_data_009_2014(
     base_url=BNCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
     if pseudoonline:
-        raise ValueError("Pseudo Online evaluation not currently implemented for this dataset")
+        raise ValueError(
+            "Pseudo Online evaluation not currently implemented for this dataset"
+        )
     """Load data for 009-2014 dataset."""
     if (subject < 1) or (subject > 10):
         raise ValueError("Subject must be between 1 and 10. Got %d." % subject)
@@ -328,7 +338,7 @@ def _load_data_001_2015(
     base_url=BNCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
     """Load data for 001-2015 dataset."""
     if (subject < 1) or (subject > 12):
@@ -358,7 +368,9 @@ def _load_data_001_2015(
         if only_filenames:
             continue
         if pseudoonline:
-            runs, ev = _convert_mi_pseudoonline(filename[0], time_task, time_fix, ch_names, ch_types, pseudoonline)
+            runs, ev = _convert_mi_pseudoonline(
+                filename[0], time_task, time_fix, ch_names, ch_types, pseudoonline
+            )
         else:
             runs, ev = _convert_mi(filename[0], ch_names, ch_types)
         sessions[f"{session_idx}{r}"] = {str(ii): run for ii, run in enumerate(runs)}
@@ -376,10 +388,12 @@ def _load_data_003_2015(
     base_url=BNCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
     if pseudoonline:
-        raise ValueError("Pseudo Online evaluation not currently implemented for this dataset")
+        raise ValueError(
+            "Pseudo Online evaluation not currently implemented for this dataset"
+        )
     """Load data for 003-2015 dataset."""
     if (subject < 1) or (subject > 10):
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
@@ -438,10 +452,12 @@ def _load_data_004_2015(
     base_url=BNCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
     if pseudoonline:
-        raise ValueError("Pseudo Online evaluation not currently implemented for this dataset")
+        raise ValueError(
+            "Pseudo Online evaluation not currently implemented for this dataset"
+        )
     """Load data for 004-2015 dataset."""
     if (subject < 1) or (subject > 9):
         raise ValueError("Subject must be between 1 and 9. Got %d." % subject)
@@ -475,10 +491,12 @@ def _load_data_009_2015(
     base_url=BBCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
     if pseudoonline:
-        raise ValueError("Pseudo Online evaluation not currently implemented for this dataset")
+        raise ValueError(
+            "Pseudo Online evaluation not currently implemented for this dataset"
+        )
     """Load data for 009-2015 dataset."""
     if (subject < 1) or (subject > 21):
         raise ValueError("Subject must be between 1 and 21. Got %d." % subject)
@@ -509,10 +527,12 @@ def _load_data_010_2015(
     base_url=BBCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
     if pseudoonline:
-        raise ValueError("Pseudo Online evaluation not currently implemented for this dataset")
+        raise ValueError(
+            "Pseudo Online evaluation not currently implemented for this dataset"
+        )
     """Load data for 010-2015 dataset."""
     if (subject < 1) or (subject > 12):
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
@@ -544,10 +564,12 @@ def _load_data_012_2015(
     base_url=BBCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
     if pseudoonline:
-        raise ValueError("Pseudo Online evaluation not currently implemented for this dataset")
+        raise ValueError(
+            "Pseudo Online evaluation not currently implemented for this dataset"
+        )
     """Load data for 012-2015 dataset."""
     if (subject < 1) or (subject > 12):
         raise ValueError("Subject must be between 1 and 12. Got %d." % subject)
@@ -574,10 +596,12 @@ def _load_data_013_2015(
     base_url=BNCI_URL,
     only_filenames=False,
     verbose=None,
-    pseudoonline=False
+    pseudoonline=False,
 ):
     if pseudoonline:
-        raise ValueError("Pseudo Online evaluation not currently implemented for this dataset")
+        raise ValueError(
+            "Pseudo Online evaluation not currently implemented for this dataset"
+        )
     """Load data for 013-2015 dataset."""
     if (subject < 1) or (subject > 6):
         raise ValueError("Subject must be between 1 and 6. Got %d." % subject)
@@ -637,7 +661,9 @@ def _convert_mi(filename, ch_names, ch_types):
     return runs, event_id
 
 
-def _convert_mi_pseudoonline(filename, time_task, time_fix, ch_names, ch_types, pseudoonline):
+def _convert_mi_pseudoonline(
+    filename, time_task, time_fix, ch_names, ch_types, pseudoonline
+):
     """Process (Graz) motor imagery data from MAT files.
 
     Parameters
@@ -667,7 +693,9 @@ def _convert_mi_pseudoonline(filename, time_task, time_fix, ch_names, ch_types, 
         run_array = [data["data"]]
 
     for run in run_array:
-        raw, evd = _convert_run_pseudoonline(run, time_task, time_fix, ch_names, ch_types, None, pseudoonline)
+        raw, evd = _convert_run_pseudoonline(
+            run, time_task, time_fix, ch_names, ch_types, None, pseudoonline
+        )
         if raw is None:
             continue
         runs.append(raw)
@@ -675,6 +703,7 @@ def _convert_mi_pseudoonline(filename, time_task, time_fix, ch_names, ch_types, 
     # change labels to match rest
     standardize_keys(event_id)
     return runs, event_id
+
 
 def standardize_keys(d):
     master_list = [
@@ -726,7 +755,15 @@ def _convert_run(run, ch_names=None, ch_types=None, verbose=None):
     return raw, event_id
 
 
-def _convert_run_pseudoonline(run, time_task, time_fix, ch_names=None, ch_types=None, verbose=None, pseudoonline=False):
+def _convert_run_pseudoonline(
+    run,
+    time_task,
+    time_fix,
+    ch_names=None,
+    ch_types=None,
+    verbose=None,
+    pseudoonline=False,
+):
     """Convert one run to raw."""
     # parse eeg data
     event_id = {}
@@ -770,19 +807,20 @@ def _convert_run_pseudoonline(run, time_task, time_fix, ch_names=None, ch_types=
         time_nothing = (sfreq * time_task) + 1
         # Time where the task actually begin, because the events of "stim" give us when the fix cross appear, but not when
         # the task begin.
-        time_fixation_cross = (sfreq * time_fix)
+        time_fixation_cross = sfreq * time_fix
         beta_rebound = 0.5 * sfreq
         for i in np.arange(len(events[:, 0])):
             stim_data[0, int(events[i, 0] + time_fixation_cross)] = events[i, 2]
             stim_data[0, int(events[i, 0] + time_fixation_cross + time_nothing)] = 9
 
-        info = create_info(ch_names=['STI'], ch_types=['stim'], sfreq=sfreq)
+        info = create_info(ch_names=["STI"], ch_types=["stim"], sfreq=sfreq)
         new_stim = RawArray(data=stim_data, info=info, verbose=verbose)
         raw.add_channels([new_stim], force_update_info=True)
-        raw.drop_channels(['stim']) # Delete old stim channel
+        raw.drop_channels(["stim"])  # Delete old stim channel
         event_id["nothing"] = 9
 
     return raw, event_id
+
 
 @verbose
 def _convert_run_p300_sl(run, verbose=None):
@@ -885,7 +923,12 @@ class MNEBNCI(BaseDataset):
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
-        sessions = load_data(subject=subject, dataset=self.code, verbose=False, pseudoonline=self.pseudoonline)
+        sessions = load_data(
+            subject=subject,
+            dataset=self.code,
+            verbose=False,
+            pseudoonline=self.pseudoonline,
+        )
         return sessions
 
     def data_path(
@@ -899,7 +942,7 @@ class MNEBNCI(BaseDataset):
             path=path,
             force_update=force_update,
             only_filenames=True,
-            pseudoonline=self.pseudoonline
+            pseudoonline=self.pseudoonline,
         )
 
 
@@ -950,7 +993,13 @@ class BNCI2014_001(MNEBNCI):
         super().__init__(
             subjects=list(range(1, 10)),
             sessions_per_subject=2,
-            events={"left_hand": 1, "right_hand": 2, "feet": 3, "tongue": 4, "nothing": 9},
+            events={
+                "left_hand": 1,
+                "right_hand": 2,
+                "feet": 3,
+                "tongue": 4,
+                "nothing": 9,
+            },
             code="BNCI2014-001",
             interval=[2, 6],
             paradigm="imagery",
