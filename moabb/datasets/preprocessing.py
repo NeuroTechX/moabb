@@ -111,11 +111,6 @@ class SetRawAnnotations(FixedTransformer):
             raise ValueError("Duplicate event code")
         self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
         self.interval = interval
-        self.overlap = overlap
-
-        if self.overlap:
-            self.tmin = tmin
-            self.tmax = tmax
 
     def transform(self, raw, y=None):
         duration = self.interval[1] - self.interval[0]
@@ -128,20 +123,62 @@ class SetRawAnnotations(FixedTransformer):
                 "No stim channel nor annotations found, skipping setting annotations."
             )
             return raw
-        if self.overlap == None:
-            events = mne.find_events(raw, shortest_event=0, verbose=False)
-            events = _unsafe_pick_events(events, include=list(self.event_id.values()))
-            events[:, 0] += offset
-        else:
-            events_ = mne.find_events(raw, shortest_event=0, verbose=False)
-            events = _events_pseudoonline(
-                events_,
-                tmin=self.tmin,
-                tmax=self.tmax,
-                sfreq=raw.info["sfreq"],
-                overlap=self.overlap,
+        events = mne.find_events(raw, shortest_event=0, verbose=False)
+        events = _unsafe_pick_events(events, include=list(self.event_id.values()))
+        events[:, 0] += offset
+
+        if len(events) != 0:
+            annotations = mne.annotations_from_events(
+                events,
+                raw.info["sfreq"],
+                self.event_desc,
+                first_samp=raw.first_samp,
+                verbose=False,
             )
-            duration = self.tmax - self.tmin
+            annotations.set_durations(duration)
+            raw.set_annotations(annotations)
+            # raw.plot()
+            # print("OK")
+        else:
+            log.warning("No events found, skipping setting annotations.")
+        return raw
+
+class SetRawAnnotations_PseudoOnline(FixedTransformer):
+    """
+    Always sets the annotations, even if the events list is empty
+    """
+
+    def __init__(self, event_id, interval: Tuple[float, float], tmin, tmax, overlap):
+        assert isinstance(event_id, dict)  # not None
+        self.event_id = event_id
+        if len(set(event_id.values())) != len(event_id):
+            raise ValueError("Duplicate event code")
+        self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
+        self.interval = interval
+        self.overlap = overlap
+        self.tmin = tmin
+        self.tmax = tmax
+
+    def transform(self, raw, y=None):
+        duration = self.interval[1] - self.interval[0]
+        offset = int(self.interval[0] * raw.info["sfreq"])
+        if raw.annotations:
+            return raw
+        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
+        if len(stim_channels) == 0:
+            log.warning(
+                "No stim channel nor annotations found, skipping setting annotations."
+            )
+            return raw
+        events_ = mne.find_events(raw, shortest_event=0, verbose=False)
+        events = _events_pseudoonline(
+            events_,
+            tmin=self.tmin,
+            tmax=self.tmax,
+            sfreq=raw.info["sfreq"],
+            overlap=self.overlap,
+        )
+        duration = self.tmax - self.tmin
 
         if len(events) != 0:
             annotations = mne.annotations_from_events(
@@ -161,6 +198,40 @@ class SetRawAnnotations(FixedTransformer):
 
 
 class RawToEvents(FixedTransformer):
+    """
+    Always returns an array for shape (n_events, 3), even if no events found
+    """
+
+    def __init__(
+        self, event_id: dict[str, int], interval: Tuple[float, float], tmin, tmax, overlap
+    ):
+        assert isinstance(event_id, dict)  # not None
+        self.event_id = event_id
+        self.interval = interval
+
+    def _find_events(self, raw):
+        stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
+        if len(stim_channels) > 0:
+            # returns empty array if none found
+            events = mne.find_events(raw, shortest_event=0, verbose=False)
+        else:
+            try:
+                events, _ = mne.events_from_annotations(
+                    raw, event_id=self.event_id, verbose=False
+                )
+                offset = int(self.interval[0] * raw.info["sfreq"])
+                events[:, 0] -= offset  # return the original events onset
+            except ValueError as e:
+                if str(e) == "Could not find any of the events you specified.":
+                    return np.zeros((0, 3), dtype="int32")
+                raise e
+        return events
+
+    def transform(self, raw, y=None):
+        events = self._find_events(raw)
+        return _unsafe_pick_events(events, list(self.event_id.values()))
+
+class RawToEvents_PseudoOnline(FixedTransformer):
     """
     Always returns an array for shape (n_events, 3), even if no events found
     """
@@ -206,7 +277,6 @@ class RawToEvents(FixedTransformer):
     def transform(self, raw, y=None):
         events = self._find_events(raw)
         return _unsafe_pick_events(events, list(self.event_id.values()))
-
 
 class RawToEventsP300(RawToEvents):
     def transform(self, raw, y=None):
