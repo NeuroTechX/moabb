@@ -31,6 +31,55 @@ def _unsafe_pick_events(events, include):
         raise e
 
 
+def _events_pseudoonline(events, tmin, tmax, sfreq, overlap):
+    """
+    This function create new events every duration length.
+    :param events: Real event created during registrations of the dataset
+    :param tmin: Minimum time where create new events(tmin MUST be 0). Is the starting time of epoch, and we consider as starting time
+    the initial value of the interval in normal MOABB [2, 6]
+    :param tmax: Maximum time of the windows. Is the final time of epoch.
+    :param sfreq: Sfreq of the recorded signal
+    :param overlap: Percentage of overlapping that we want in the sliding windows
+    :return:
+        return the new events, ove every starting point of the sliding windows and with univocal label
+    """
+    # Compute duration of the windows in seconds
+    duration_s = tmax-tmin
+    # Convert the duration in time point.
+    duration = duration_s * sfreq
+    # The starting point of the new windows in time point
+    ove = (((tmax - tmin) / 100) * (100 - overlap)) * sfreq
+
+    # Total number of new events that need to be created
+    total = int((events[-1, 0] - events[0, 0]) / (100 - overlap))
+    events_new = np.zeros((total, 3), dtype=int)
+    # Fill the first event with the same old events
+    events_new[0, :] = events[0, :]
+
+    j = 0
+    i = 1
+    # Go on while we are at a time sample less than the last events in the data acquisition
+    while events_new[i - 1, 0] + duration <= events[-1, -0]:
+        # Assign the time stamp to the new events, so we add ove
+        events_new[i, 0] = events_new[i - 1, 0] + ove
+        # Now we have to check. If the new added events plus the duration is less then the time stamp of the new event
+        # we assign an univocal label. If is not we check the percentage of time stamp associate with a label is predominant in a windows.
+        # If we have 50/50 we assign the label as the next event since the subject want to switch in that direction.
+        if events_new[i, 0] + duration <= events[j + 1, 0]:
+            events_new[i, 2] = events[j, 2]
+        else:
+            First = abs(events[j + 1, 0] - events_new[i, 0])
+            Second = abs((events_new[i, 0] + duration) - events[j + 1, 0])
+            if First > Second:
+                events_new[i, 2] = events[j, 2]
+            else:
+                events_new[i, 2] = events[j + 1, 2]
+            j = j + 1
+        i = i + 1
+
+    return events_new
+
+
 class ForkPipelines(TransformerMixin, BaseEstimator):
     def __init__(self, transformers: List[Tuple[str, Union[Pipeline, TransformerMixin]]]):
         for _, t in transformers:
@@ -55,13 +104,16 @@ class SetRawAnnotations(FixedTransformer):
     Always sets the annotations, even if the events list is empty
     """
 
-    def __init__(self, event_id, interval: Tuple[float, float]):
+    def __init__(self, event_id, interval: Tuple[float, float], tmin, tmax, overlap):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         if len(set(event_id.values())) != len(event_id):
             raise ValueError("Duplicate event code")
         self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
         self.interval = interval
+        self.tmin = tmin
+        self.tmax = tmax
+        self.overlap = overlap
 
     def transform(self, raw, y=None):
         duration = self.interval[1] - self.interval[0]
@@ -74,9 +126,15 @@ class SetRawAnnotations(FixedTransformer):
                 "No stim channel nor annotations found, skipping setting annotations."
             )
             return raw
-        events = mne.find_events(raw, shortest_event=0, verbose=False)
-        events = _unsafe_pick_events(events, include=list(self.event_id.values()))
-        events[:, 0] += offset
+        if self.overlap == None:
+            events = mne.find_events(raw, shortest_event=0, verbose=False)
+            events = _unsafe_pick_events(events, include=list(self.event_id.values()))
+            events[:, 0] += offset
+        else:
+            events_ = mne.find_events(raw, shortest_event=0, verbose=False)
+            events = _events_pseudoonline(events_, tmin=self.tmin, tmax=self.tmax, sfreq=raw.info["sfreq"], overlap=self.overlap)
+            duration = self.tmax - self.tmin
+
         if len(events) != 0:
             annotations = mne.annotations_from_events(
                 events,
@@ -87,6 +145,8 @@ class SetRawAnnotations(FixedTransformer):
             )
             annotations.set_durations(duration)
             raw.set_annotations(annotations)
+            # raw.plot()
+            # print("OK")
         else:
             log.warning("No events found, skipping setting annotations.")
         return raw
@@ -97,16 +157,24 @@ class RawToEvents(FixedTransformer):
     Always returns an array for shape (n_events, 3), even if no events found
     """
 
-    def __init__(self, event_id: dict[str, int], interval: Tuple[float, float]):
+    def __init__(self, event_id: dict[str, int], interval: Tuple[float, float], tmin, tmax, overlap):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         self.interval = interval
+        self.tmin = tmin
+        self.tmax = tmax
+        self.overlap = overlap
 
     def _find_events(self, raw):
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) > 0:
             # returns empty array if none found
-            events = mne.find_events(raw, shortest_event=0, verbose=False)
+            if self.overlap == None:
+                events = mne.find_events(raw, shortest_event=0, verbose=False)
+            else:
+                events_ = mne.find_events(raw, shortest_event=0, verbose=False)
+                events = _events_pseudoonline(events_, tmin=self.tmin, tmax=self.tmax, sfreq=raw.info["sfreq"],
+                                              overlap=self.overlap)
         else:
             try:
                 events, _ = mne.events_from_annotations(
