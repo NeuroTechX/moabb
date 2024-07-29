@@ -111,9 +111,11 @@ class SetRawAnnotations(FixedTransformer):
             raise ValueError("Duplicate event code")
         self.event_desc = dict((code, desc) for desc, code in self.event_id.items())
         self.interval = interval
-        self.tmin = tmin
-        self.tmax = tmax
         self.overlap = overlap
+
+        if self.overlap:
+            self.tmin = tmin
+            self.tmax = tmax
 
     def transform(self, raw, y=None):
         duration = self.interval[1] - self.interval[0]

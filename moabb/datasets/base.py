@@ -319,7 +319,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         paradigm,
         doi=None,
         unit_factor=1e6,
-        pseudoonline=False,
+        overlap=False,
     ):
         """Initialize function for the BaseDataset."""
         try:
@@ -349,7 +349,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         self.paradigm = paradigm
         self.doi = doi
         self.unit_factor = unit_factor
-        self.pseudoonline = pseudoonline
+        self.overlap = overlap
 
     def _create_process_pipeline(self):
         return Pipeline(
@@ -359,6 +359,7 @@ class BaseDataset(metaclass=MetaclassDataset):
                     SetRawAnnotations(
                         self.event_id,
                         interval=self.interval,
+                        overlap=self.overlap
                     ),
                 ),
             ]
