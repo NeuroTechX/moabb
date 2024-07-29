@@ -47,6 +47,7 @@ pipelines["FgMDM"] = Pipeline(
     steps=[("Covariances", Covariances("cov")), ("FgMDM", FgMDM())]
 )
 
+dataset.subject_list = dataset.subject_list[int(sub) - 1:int(sub)]
 # Select an evaluation Within Session
 evaluation_online = WithinSessionEvaluation(
     paradigm=paradigm, datasets=dataset, overwrite=True, random_state=42, n_jobs=-1
