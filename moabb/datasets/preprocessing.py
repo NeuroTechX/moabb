@@ -143,6 +143,7 @@ class SetRawAnnotations(FixedTransformer):
             log.warning("No events found, skipping setting annotations.")
         return raw
 
+
 class SetRawAnnotations_PseudoOnline(FixedTransformer):
     """
     Always sets the annotations, even if the events list is empty
@@ -231,6 +232,7 @@ class RawToEvents(FixedTransformer):
         events = self._find_events(raw)
         return _unsafe_pick_events(events, list(self.event_id.values()))
 
+
 class RawToEvents_PseudoOnline(FixedTransformer):
     """
     Always returns an array for shape (n_events, 3), even if no events found
@@ -277,6 +279,7 @@ class RawToEvents_PseudoOnline(FixedTransformer):
     def transform(self, raw, y=None):
         events = self._find_events(raw)
         return _unsafe_pick_events(events, list(self.event_id.values()))
+
 
 class RawToEventsP300(RawToEvents):
     def transform(self, raw, y=None):
