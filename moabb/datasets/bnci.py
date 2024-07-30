@@ -808,7 +808,6 @@ def _convert_run_pseudoonline(
         # Time where the task actually begin, because the events of "stim" give us when the fix cross appear, but not when
         # the task begin.
         time_fixation_cross = sfreq * time_fix
-        beta_rebound = 0.5 * sfreq
         for i in np.arange(len(events[:, 0])):
             stim_data[0, int(events[i, 0] + time_fixation_cross)] = events[i, 2]
             stim_data[0, int(events[i, 0] + time_fixation_cross + time_nothing)] = 9

@@ -161,8 +161,6 @@ class SetRawAnnotations_PseudoOnline(FixedTransformer):
         self.tmax = tmax
 
     def transform(self, raw, y=None):
-        duration = self.interval[1] - self.interval[0]
-        offset = int(self.interval[0] * raw.info["sfreq"])
         if raw.annotations:
             return raw
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
@@ -252,7 +250,7 @@ class RawToEvents_PseudoOnline(FixedTransformer):
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) > 0:
             # returns empty array if none found
-            if self.overlap == None:
+            if self.overlap is None:
                 events = mne.find_events(raw, shortest_event=0, verbose=False)
             else:
                 events_ = mne.find_events(raw, shortest_event=0, verbose=False)
