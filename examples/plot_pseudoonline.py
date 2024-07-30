@@ -9,14 +9,12 @@ from moabb.datasets import BNCI2014_001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import MotorImagery
 
-
 sub = 1
 
 # Initialize parameter for the Band Pass filter
 fmin = 8
 fmax = 30
-tmin = 0
-tmax = 2
+tmax = 3
 
 # Load Dataset and switch to Pseudoonline mode
 dataset = BNCI2014_001()
