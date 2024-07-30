@@ -167,7 +167,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         process_pipelines = []
         for raw_pipeline in raw_pipelines:
             steps = []
-            if self.overlap:
+            if self.overlap is not None:
                 steps.append(
                     (
                         StepType.RAW,
@@ -556,7 +556,7 @@ class BaseParadigm(BaseProcessing):
 
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
-        if self.overlap:
+        if self.overlap is not None:
             return RawToEvents_PseudoOnline(
                 event_id=event_id,
                 interval=dataset.interval,
