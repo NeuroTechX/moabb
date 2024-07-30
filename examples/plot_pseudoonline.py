@@ -48,7 +48,7 @@ pipelines["FgMDM"] = Pipeline(
 dataset.subject_list = dataset.subject_list[int(sub) - 1 : int(sub)]
 # Select an evaluation Within Session
 evaluation_online = WithinSessionEvaluation(
-    paradigm=paradigm, datasets=dataset, overwrite=True, random_state=42, n_jobs=-1
+    paradigm=paradigm, datasets=dataset, overwrite=True, random_state=42, n_jobs=1
 )
 
 # Print the results
