@@ -9,6 +9,7 @@ from moabb.datasets import BNCI2014_001
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import MotorImagery
 
+
 sub = 1
 
 # Initialize parameter for the Band Pass filter
