@@ -201,9 +201,7 @@ class RawToEvents(FixedTransformer):
     Always returns an array for shape (n_events, 3), even if no events found
     """
 
-    def __init__(
-        self, event_id: dict[str, int], interval: Tuple[float, float]
-    ):
+    def __init__(self, event_id: dict[str, int], interval: Tuple[float, float]):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         self.interval = interval
