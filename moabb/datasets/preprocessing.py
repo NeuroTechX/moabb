@@ -104,7 +104,7 @@ class SetRawAnnotations(FixedTransformer):
     Always sets the annotations, even if the events list is empty
     """
 
-    def __init__(self, event_id, interval: Tuple[float, float], tmin, tmax, overlap):
+    def __init__(self, event_id, interval: Tuple[float, float]):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
         if len(set(event_id.values())) != len(event_id):
@@ -202,7 +202,7 @@ class RawToEvents(FixedTransformer):
     """
 
     def __init__(
-        self, event_id: dict[str, int], interval: Tuple[float, float], tmin, tmax, overlap
+        self, event_id: dict[str, int], interval: Tuple[float, float]
     ):
         assert isinstance(event_id, dict)  # not None
         self.event_id = event_id
