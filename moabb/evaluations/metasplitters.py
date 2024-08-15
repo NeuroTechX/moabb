@@ -22,6 +22,8 @@ from moabb.evaluations.utils import sort_group
 class OfflineSplit(BaseCrossValidator):
     """Offline split for evaluation test data.
 
+    It can be used for further splitting of the test data based on sessions or runs as needed.
+
     Assumes that, per session, all test trials are available for inference. It can be used when
     no filtering or data alignment is needed.
 
@@ -31,9 +33,41 @@ class OfflineSplit(BaseCrossValidator):
     Not used in this case, just so it can be initialized in the same way as
     TimeSeriesSplit.
 
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> from moabb.evaluations.splitters import CrossSubjectSplitter
+    >>> X = np.array([[1, 2], [3, 4], [5, 6], [7, 8],[8,9],[5,4],[2,5],[1,7]])
+    >>> y = np.array([1, 2, 1, 2, 1, 2, 1, 2])
+    >>> subjects = np.array([1, 1, 2, 2, 3, 3, 4, 4])
+    >>> sessions = np.array([0, 0, 1, 1, 0, 0, 1, 1])
+    >>> metadata = pd.DataFrame(data={'subject': subjects, 'session': sessions})
+    >>> csubj = CrossSubjectSplitter()
+    >>> csubj.get_n_splits(metadata)
+    2
+    >>> for i, (train_index, test_index) in enumerate(csubj.split(X, y, metadata)):
+    >>>     print(f"Fold {i}:")
+    >>>     print(f"  Train: index={train_index}, group={subjects[train_index]}, sessions={sessions[train_index]}")
+    >>>     print(f"  Test:  index={test_index}, group={subjects[test_index]}, sessions={sessions[train_index]}")
+    >>>     X_test, y_test, meta_test = X[test_index], y[test_index], metadata.loc[test_index]
+    >>>     for j, test_session in enumerate(off.split(X_test, y_test, meta_test)):
+    >>>         print(f"  By session - Test:  index={test_session}, group={subjects[test_session]}, sessions={sessions[test_session]}")
+
+    Fold 0:
+      Train: index=[2 3 4 5 6 7], group=[2 2 3 3 4 4]
+      Test:  index=[0 1], group=[1 1]
+      By session - Test:  index=[0, 1], group=[1 1], sessions=[0 0]
+      By session - Test:  index=[2, 3], group=[1 1], sessions=[1 1]
+    Fold 1:
+      Train: index=[0 1 2 3], group=[1 1 1 1], sessions=[0 0 1 1]
+      Test:  index=[4 5 6 7], group=[2 2 2 2], sessions=[0 0 1 1]
+      By session - Test:  index=[4, 5], group=[2 2], sessions=[0 0]
+      By session - Test:  index=[6, 7], group=[2 2], sessions=[1 1]
+
     """
 
-    def __init__(self, n_folds: int):
+    def __init__(self, n_folds = None):
         self.n_folds = n_folds
 
     def get_n_splits(self, metadata):
@@ -41,9 +75,9 @@ class OfflineSplit(BaseCrossValidator):
 
     def split(self, X, y, metadata):
 
-        subjects = metadata.subject.unique()
+        subjects = metadata["subject"]
 
-        for subject in subjects:
+        for subject in subjects.unique():
             mask = subjects == subject
             X_, y_, meta_ = X[mask], y[mask], metadata[mask]
             sessions = meta_.session.unique()
@@ -51,7 +85,7 @@ class OfflineSplit(BaseCrossValidator):
             for session in sessions:
                 ix_test = meta_[meta_["session"] == session].index
 
-                yield ix_test
+                yield list(ix_test)
 
 
 class TimeSeriesSplit(BaseCrossValidator):
@@ -71,13 +105,53 @@ class TimeSeriesSplit(BaseCrossValidator):
     calib_size: int
     Size of calibration set, used if there is just one run.
 
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> from moabb.evaluations.splitters import CrossSubjectSplitter
+    >>> from moabb.evaluations.metasplitters import TimeSeriesSplit
+    >>> X = np.array([[1, 2], [3, 4], [5, 6], [7, 8], [8, 9], [5, 4], [2, 5], [1, 7]])
+    >>> y = np.array([1, 2, 1, 2, 1, 2, 1, 2])
+    >>> subjects = np.array([1, 1, 1, 1, 2, 2, 2, 2])
+    >>> sessions = np.array([0, 0, 1, 1, 0, 0, 1, 1])
+    >>> runs = np.array(['0', '1', '0', '1', '0', '1', '0', '1'])
+    >>> metadata = pd.DataFrame(data={'subject': subjects, 'session': sessions, 'run':runs})
+    >>> csubj = CrossSubjectSplitter()
+    >>> tssplit = TimeSeriesSplit()
+    >>> tssplit.get_n_splits(metadata)
+    4
+    >>> for i, (train_index, test_index) in enumerate(csubj.split(X, y, metadata)):
+    >>>     print(f"Fold {i}:")
+    >>>     print(f"  Train: index={train_index}, group={subjects[train_index]}, sessions={sessions[train_index]}, runs={runs[train_index]}")
+    >>>     print(f"  Test:  index={test_index}, group={subjects[test_index]}, sessions={sessions[test_index]}, runs={runs[test_index]}")
+    >>>     X_test, y_test, meta_test = X[test_index], y[test_index], metadata.loc[test_index]
+    >>>     for j, (test_ix, calib_ix) in enumerate(tssplit.split(X_test, y_test, meta_test)):
+    >>>         print(f"     Evaluation:  index={test_ix}, group={subjects[test_ix]}, sessions={sessions[test_ix]}, runs={runs[test_ix]}")
+    >>>         print(f"     Calibration:  index={calib_ix}, group={subjects[calib_ix]}, sessions={sessions[calib_ix]}, runs={runs[calib_ix]}")
+
+    Fold 0:
+      Train: index=[4 5 6 7], group=[2 2 2 2], sessions=[0 0 1 1], runs=['0' '1' '0' '1']
+      Test:  index=[0 1 2 3], group=[1 1 1 1], sessions=[0 0 1 1], runs=['0' '1' '0' '1']
+         Evaluation:  index=[1], group=[1], sessions=[0], runs=['1']
+         Calibration:  index=[0], group=[1], sessions=[0], runs=['0']
+         Evaluation:  index=[3], group=[1], sessions=[1], runs=['1']
+         Calibration:  index=[2], group=[1], sessions=[1], runs=['0']
+    Fold 1:
+      Train: index=[0 1 2 3], group=[1 1 1 1], sessions=[0 0 1 1], runs=['0' '1' '0' '1']
+      Test:  index=[4 5 6 7], group=[2 2 2 2], sessions=[0 0 1 1], runs=['0' '1' '0' '1']
+         Evaluation:  index=[5], group=[2], sessions=[0], runs=['1']
+         Calibration:  index=[4], group=[2], sessions=[0], runs=['0']
+         Evaluation:  index=[7], group=[2], sessions=[1], runs=['1']
+         Calibration:  index=[6], group=[2], sessions=[1], runs=['0']
+
     """
 
     def __init__(self, calib_size: int = None):
         self.calib_size = calib_size
 
     def get_n_splits(self, metadata):
-        return metadata.groupby(["subject", "session"])
+        return len(metadata.groupby(["subject", "session"]))
 
     def split(self, X, y, metadata):
 
@@ -93,10 +167,10 @@ class TimeSeriesSplit(BaseCrossValidator):
                     break  # Take the fist run as calibration
             else:
                 calib_size = self.calib_size
-                calib_ix = group[:calib_size]
-                test_ix = group[calib_size:]
+                calib_ix = group[:calib_size].index
+                test_ix = group[calib_size:].index
 
-                yield test_ix, calib_ix  # Take first #calib_size samples as calibration
+                yield list(test_ix), list(calib_ix)  # Take first #calib_size samples as calibration
 
 
 class SamplerSplit(BaseCrossValidator):
@@ -119,6 +193,40 @@ class SamplerSplit(BaseCrossValidator):
         'value' with the actual values as a numpy array. This array should be
         sorted, such that values in data_size are strictly monotonically increasing.
 
+    Examples
+    --------
+
+    >>> import pandas as pd
+    >>> X = np.array([[1, 2], [3, 4], [5, 6], [7, 8], [8, 9], [5, 4], [2, 5], [1, 7], [8, 9], [5, 4], [2, 5], [1, 7]])
+    >>> y = np.array([1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2])
+    >>> subjects = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+    >>> sessions = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
+    >>> runs = np.array(['0', '0', '1', '2', '0', '0', '1', '2', '0', '0', '1', '2'])
+    >>> metadata = pd.DataFrame(data={'subject': subjects, 'session': sessions, 'run':runs})
+    >>> from moabb.evaluations.metasplitters import SamplerSplit
+    >>> from moabb.evaluations.splitters import CrossSessionSplitter
+    >>> data_size = dict(policy="per_class", value=np.array([2,3]))
+    >>> data_eval = CrossSessionSplitter()
+    >>> sampler = SamplerSplit(data_eval, data_size)
+    >>> for i, (train_index, test_index) in enumerate(sampler.split(X, y, metadata)):
+    >>>    print(f"Fold {i}:")
+    >>>    print(f"  Train: index={train_index}, sessions={sessions[train_index]}")
+    >>>    print(f"  Test:  index={test_index}, sessions={sessions[test_index]}")
+
+    Fold 0:
+      Train: index=[6 8 7 9], sessions=[1 1 1 1]
+      Test:  index=[0 1 2 3 4 5], sessions=[0 0 0 0 0 0]
+    Fold 1:
+      Train: index=[ 6  8 10  7  9 11], sessions=[1 1 1 1 1 1]
+      Test:  index=[0 1 2 3 4 5], sessions=[0 0 0 0 0 0]
+    Fold 2:
+      Train: index=[0 2 1 3], sessions=[0 0 0 0]
+      Test:  index=[ 6  7  8  9 10 11], sessions=[1 1 1 1 1 1]
+    Fold 3:
+      Train: index=[0 2 4 1 3 5], sessions=[0 0 0 0 0 0]
+      Test:  index=[ 6  7  8  9 10 11], sessions=[1 1 1 1 1 1]
+
+
     """
 
     def __init__(self, data_eval, data_size):
@@ -136,9 +244,11 @@ class SamplerSplit(BaseCrossValidator):
         cv = self.data_eval
         sampler = self.sampler
 
-        for ix_train, _ in cv.split(X, y, metadata, **kwargs):
-            X_train, y_train, meta_train = X[ix_train], y[ix_train], metadata[ix_train]
-            yield sampler.split(X_train, y_train, meta_train)
+        for ix_train, ix_test in cv.split(X, y, metadata, **kwargs):
+            X_train, y_train, meta_train = X[ix_train], y[ix_train], metadata.iloc[ix_train]
+            for ix_train_sample in sampler.split(X_train, y_train, meta_train):
+                ix_train_sample = ix_train[ix_train_sample]
+                yield ix_train_sample, ix_test
 
 
 class IndividualSamplerSplit(BaseCrossValidator):

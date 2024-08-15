@@ -287,7 +287,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
     def __init__(self, n_groups=None):
         self.n_groups = n_groups
 
-    def get_n_splits(self, X, y, metadata):
+    def get_n_splits(self, metadata):
         return len(metadata.subject.unique())
 
     def split(self, X, y, metadata):
