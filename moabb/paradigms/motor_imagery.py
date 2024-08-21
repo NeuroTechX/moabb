@@ -3,8 +3,11 @@
 import abc
 import logging
 
+from sklearn.metrics import make_scorer
+
 from moabb.datasets import utils
 from moabb.datasets.fake import FakeDataset
+from moabb.evaluations.utils import _normalized_mcc
 from moabb.paradigms.base import BaseParadigm
 
 
@@ -51,6 +54,8 @@ class BaseMotorImagery(BaseParadigm):
 
     resample: float | None (default None)
         If not None, resample the eeg data with the sampling rate provided.
+
+    overlap: Overlap (in percentage) of the sliding windows approach for the pseudoonline evaluation
     """
 
     def __init__(
@@ -62,7 +67,13 @@ class BaseMotorImagery(BaseParadigm):
         baseline=None,
         channels=None,
         resample=None,
+        overlap=None,
     ):
+
+        if overlap is not None:
+            print("Overlap available only for pseudo online evaluation")
+            tmin = 0.0
+
         super().__init__(
             filters=filters,
             events=events,
@@ -71,6 +82,7 @@ class BaseMotorImagery(BaseParadigm):
             resample=resample,
             tmin=tmin,
             tmax=tmax,
+            overlap=overlap,
         )
 
     def is_valid(self, dataset):
@@ -102,7 +114,10 @@ class BaseMotorImagery(BaseParadigm):
 
     @property
     def scoring(self):
-        return "accuracy"
+        if self.overlap is None:
+            return "accuracy"
+        else:
+            return make_scorer(_normalized_mcc)
 
 
 class SinglePass(BaseMotorImagery):
@@ -401,7 +416,10 @@ class MotorImagery(SinglePass):
         if self.n_classes == 2:
             return "roc_auc"
         else:
-            return "accuracy"
+            if self.overlap is None:
+                return "accuracy"
+            else:
+                return make_scorer(_normalized_mcc)
 
 
 class FakeImageryParadigm(LeftRightImagery):
