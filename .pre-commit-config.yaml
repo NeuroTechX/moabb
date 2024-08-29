@@ -82,7 +82,7 @@ repos:
           - --ignore-words-list=assertIn,additionals,alle,alot,bund,currenty,datas,farenheit,falsy,fo,haa,hass,iif,incomfort,ines,ist,nam,nd,pres,pullrequests,resset,rime,ser,serie,te,technik,ue,unsecure,withing,zar,crate
           - --skip="./.*,*.csv,*.json,*.ambr"
           - --quiet-level=2
-        exclude_types: [ csv, json, svg ]
+        exclude_types: [ csv, json, svg, pdf ]
         exclude: ^tests/|generated/
 
   - repo: https://github.com/adrienverge/yamllint.git
