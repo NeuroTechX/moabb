@@ -62,15 +62,15 @@ jobs:
         if: |
           (runner.os != 'Windows') &&
           (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
-        run: poetry install --no-interaction --no-root --extras deeplearning
+        run: poetry install --no-interaction --no-root --extras deeplearning --extras optuna
 
       - name: Install library (Linux/OSX)
         if: ${{ runner.os != 'Windows' }}
-        run: poetry install --no-interaction --extras deeplearning
+        run: poetry install --no-interaction --extras deeplearning --extras optuna
 
       - name: Install library (Windows)
         if: ${{ runner.os == 'Windows' }}
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction --extras optuna
 
       - name: Run tests
         run: |
