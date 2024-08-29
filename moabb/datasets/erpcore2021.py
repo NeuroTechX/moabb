@@ -449,9 +449,12 @@ class ErpCore2021_N170(ErpCore2021):
         # Drop rows corresponding to the responses
         events_df.drop(events_df[events_df["value"].isin([201, 202])].index, inplace=True)
 
+        # Drop rows which correspond to trial_type = STATUS
+        events_df.drop(events_df[events_df["trial_type"] == "STATUS"].index, inplace=True)
+
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
-
+        
         # Create the mapping dictionary
         mapping = {
             "Stimulus - faces": "Target",
@@ -538,6 +541,9 @@ class ErpCore2021_N2pc(ErpCore2021):
 
         # Drop rows corresponding to the responses
         events_df.drop(events_df[events_df["value"].isin([201, 202])].index, inplace=True)
+        
+        # Drop rows which correspond to trial_type = STATUS
+        events_df.drop(events_df[events_df["trial_type"] == "STATUS"].index, inplace=True)
 
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
@@ -635,6 +641,9 @@ class ErpCore2021_P3(ErpCore2021):
         # Drop rows corresponding to the responses
         events_df.drop(events_df[events_df["value"].isin([201, 202])].index, inplace=True)
 
+        # Drop rows which correspond to trial_type = STATUS
+        events_df.drop(events_df[events_df["trial_type"] == "STATUS"].index, inplace=True)
+
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
 
@@ -706,9 +715,12 @@ class ErpCore2021_N400(ErpCore2021):
             inplace=True,
         )
 
+        # Drop rows which correspond to trial_type = STATUS
+        events_df.drop(events_df[events_df["trial_type"] == "STATUS"].index, inplace=True)
+
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
-
+        
         # Create the mapping dictionary
         # Target : Stimulus - related word pair,
         # NonTarget : Stimulus - unrelated word pair
@@ -784,9 +796,12 @@ class ErpCore2021_ERN(ErpCore2021):
             inplace=True,
         )
 
+        # Drop rows which correspond to trial_type = STATUS
+        events_df.drop(events_df[events_df["trial_type"] == "STATUS"].index, inplace=True)
+
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
-
+        
         # Create the mapping dictionary
         # Target: Correct response
         # NonTarget: Incorrect response,
@@ -867,9 +882,12 @@ class ErpCore2021_LRP(ErpCore2021):
             inplace=True,
         )
 
+        # Drop rows which correspond to trial_type = STATUS
+        events_df.drop(events_df[events_df["trial_type"] == "STATUS"].index, inplace=True)
+        
         # Apply the encoding function to each row
         encoded_column = events_df.apply(self.encode_event, axis=1)
-
+        
         # Create the mapping dictionary
         # Target: Response - left
         # NonTarget: Response - right
