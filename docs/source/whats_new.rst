@@ -52,6 +52,8 @@ Enhancements
 - Add new dataset :class:`moabb.datasets.Stieger2021` (:gh:`604` by `Reinmar Kobler`_ and `Bruno Aristimunha`_)
 - Exposing the `drop_rate` for all the deep learning parameters (:gh:`592` by `Bruno Aristimunha`_)
 - Add new dataset :class:`moabb.datasets.Rodrigues2017` dataset (:gh:`602` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
+- Change unittest to pytest (:gh:`618` by `Bruno Aristimunha`_)
+- Remove tensorflow import warning (:gh:`622` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
@@ -68,7 +70,9 @@ Bugs
 - Fix mne_bids version incompatibility with mne (:gh:`586` by `Bruna Lopes`_)
 - Updating the parameters of the SSVEP_TRCA method (:gh:`589` by `Bruno Aristimunha`_)
 - Fix and updating the parameters for the benchmark function (:gh:`588` by `Bruno Aristimunha`_)
+- Fix result table display (:gh:`599` by `Sylvain Chevallier`_)
 - Fix :class:`moabb.datasets.preprocessing.SetRawAnnotations` setting incorrect annotations when the dataset's interval does not start at 0 (:gh:`607` by `Pierre Guetschel`_)
+- Fix download link for GigaDB Cho2017 and Lee2019 datasets (:gh:`621` by `Anton Andreev`_)
 
 
 API changes
@@ -444,6 +448,7 @@ API changes
 .. _Sara Sedlar: https://github.com/Sara04
 .. _Emmanuel Kalunga: https://github.com/emmanuelkalunga
 .. _Gregoire Cattan: https://github.com/gcattan
+.. _Anton Andreev: https://github.com/toncho11
 .. _Igor Carrara: https://github.com/carraraig
 .. _Bruno Aristimunha: https://github.com/bruAristimunha
 .. _Alexandre Barachant: https://github.com/alexandrebarachant
