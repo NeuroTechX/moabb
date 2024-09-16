@@ -62,7 +62,7 @@ jobs:
           path: .venv
           key:
             docsvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
-            hashFiles('**/poetry.lock') }}
+            hashFiles('**/pyproject.toml') }}
 
       - name: Install dependencies
         if: (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
