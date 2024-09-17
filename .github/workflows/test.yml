@@ -56,7 +56,7 @@ jobs:
           path: .venv
           key:
             testvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
-            hashFiles('**/poetry.lock') }}
+            hashFiles('**/pyproject.toml') }}
 
       - name: Install dependencies
         if: |
