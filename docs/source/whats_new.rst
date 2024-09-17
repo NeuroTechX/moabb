@@ -17,18 +17,36 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
-- None
 
 Bugs
 ~~~~
-- None
 
 API changes
 ~~~~~~~~~~~
-- None
 
-Version - 1.1.0  (Stable - PyPi)
+Version - 1.1.1  (Stable - PyPi)
 ---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- Add possibility to use OptunaGridSearch (:gh:`630` by `Igor Carrara`_)
+- Add scripts to upload results on PapersWithCode (:gh:`561` by `Pierre Guetschel`_)
+- Centralize dataset summary tables in CSV files (:gh:`635` by `Pierre Guetschel`_)
+- Add new dataset :class:`moabb.datasets.Liu2024` dataset (:gh:`619` by `Taha Habib`_)
+
+
+Bugs
+~~~~
+- Fix caching in the workflows (:gh:`632` by `Pierre Guetschel`_)
+
+API changes
+~~~~~~~~~~~
+- Include optuna as soft-dependency in the benchmark function and in the base of evaluation (:gh:`630` by `Igor Carrara`_)
+
+
+
+Version - 1.1.0
+----------------
 
 
 Enhancements
@@ -473,3 +491,4 @@ API changes
 .. _Brian Irvine: https://github.com/brianjohannes
 .. _Bruna Lopes: https://github.com/brunaafl
 .. _Yash Chauhan: https://github.com/jiggychauhi
+.. _Taha Habib: https://github.com/tahatt13

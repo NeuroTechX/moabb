@@ -1,5 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
+from warnings import warn
 
 import pandas as pd
 from sklearn.base import BaseEstimator
@@ -7,10 +8,24 @@ from sklearn.model_selection import GridSearchCV
 
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
+from moabb.evaluations.utils import _convert_sklearn_params_to_optuna
 from moabb.paradigms.base import BaseParadigm
 
 
 log = logging.getLogger(__name__)
+
+# Making the optuna soft dependency
+try:
+    from optuna.integration import OptunaSearchCV
+
+    optuna_available = True
+except ImportError:
+    optuna_available = False
+
+if optuna_available:
+    search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
+else:
+    search_methods = {"grid": GridSearchCV}
 
 
 class BaseEvaluation(ABC):
@@ -53,11 +68,19 @@ class BaseEvaluation(ABC):
         Save model after training, for each fold of cross-validation if needed
     cache_config: bool, default=None
         Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+    optuna:bool, default=False
+        If optuna is enable it will change the GridSearch to a RandomizedGridSearch with 15 minutes of cut off time.
+        This option is compatible with list of entries of type None, bool, int, float and string
+    time_out: default=60*15
+        Cut off time for the optuna search expressed in seconds, the default value is 15 minutes.
+        Only used with optuna equal to True.
 
     Notes
     -----
     .. versionadded:: 1.1.0
        n_splits, save_model, cache_config parameters.
+    .. versionadded:: 1.1.1
+       optuna, time_out parameters.
     """
 
     def __init__(
@@ -77,6 +100,8 @@ class BaseEvaluation(ABC):
         n_splits=None,
         save_model=False,
         cache_config=None,
+        optuna=False,
+        time_out=60 * 15,
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -88,6 +113,16 @@ class BaseEvaluation(ABC):
         self.n_splits = n_splits
         self.save_model = save_model
         self.cache_config = cache_config
+        self.optuna = optuna
+        self.time_out = time_out
+
+        if self.optuna and not optuna_available:
+            raise ImportError("Optuna is not available. Please install it first.")
+        if (self.time_out != 60 * 15) and not self.optuna:
+            warn(
+                "time_out parameter is only used when optuna is enabled. "
+                "Ignoring time_out parameter."
+            )
         # check paradigm
         if not isinstance(paradigm, BaseParadigm):
             raise (ValueError("paradigm must be an Paradigm instance"))
@@ -261,9 +296,17 @@ class BaseEvaluation(ABC):
         """
 
     def _grid_search(self, param_grid, name, grid_clf, inner_cv):
+        extra_params = {}
         if param_grid is not None:
             if name in param_grid:
-                search = GridSearchCV(
+                if self.optuna:
+                    search = search_methods["optuna"]
+                    param_grid[name] = _convert_sklearn_params_to_optuna(param_grid[name])
+                    extra_params["timeout"] = self.time_out
+                else:
+                    search = search_methods["grid"]
+
+                search = search(
                     grid_clf,
                     param_grid[name],
                     refit=True,
@@ -271,9 +314,9 @@ class BaseEvaluation(ABC):
                     n_jobs=self.n_jobs,
                     scoring=self.paradigm.scoring,
                     return_train_score=True,
+                    **extra_params,
                 )
                 return search
-
             else:
                 return grid_clf
 
