@@ -227,8 +227,7 @@ class Stieger2021(BaseDataset):
                     and (container.TrialData[i].triallength + 2) > self.interval[1]
                 ):
                     # this should be the cue time-point
-                    if container.time[i][2 * srate] == 0:
-                        raise ValueError("This should be the cue time-point,")
+                    assert container.time[i][2 * srate] == 0, "This should be the cue time-point"
                     stim[2 * srate] = y
                 X_flat.append(x)
                 stim_flat.append(stim[None, :])
@@ -263,7 +262,7 @@ class Stieger2021(BaseDataset):
                 badchanidxs = []
 
             for idx in badchanidxs:
-                used_channels = ch_names if self.channels is None else self.channels
+                used_channels = ch_names if (not hasattr(self, "channels") or self.channels is None) else self.channels
                 if eeg_ch_names[idx - 1] in used_channels:
                     raw.info["bads"].append(eeg_ch_names[idx - 1])
 
@@ -276,5 +275,5 @@ class Stieger2021(BaseDataset):
                     bad_info=raw.info["bads"],
                 )
 
-            subject_data[session] = {"run_0": raw}
+            subject_data[str(session)] = {"0": raw}
         return subject_data
