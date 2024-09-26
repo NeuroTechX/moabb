@@ -21,6 +21,8 @@ Enhancements
 Bugs
 ~~~~
 
+- Fix Stieger2021 dataset bugs (:gh:`651` by `Martin Wimpff`_)
+
 API changes
 ~~~~~~~~~~~
 
