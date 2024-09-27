@@ -22,6 +22,7 @@ Bugs
 ~~~~
 
 - Fix Stieger2021 dataset bugs (:gh:`651` by `Martin Wimpff`_)
+- Unpinning major version Scikit-learn and numpy (:gh:`652` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
@@ -463,6 +464,7 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
+.. _Martin Wimpff: https://github.com/martinwimpff
 .. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001
 .. _Sara Sedlar: https://github.com/Sara04
