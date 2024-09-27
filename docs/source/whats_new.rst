@@ -17,12 +17,24 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+
+Bugs
+~~~~
+
+- Fix Stieger2021 dataset bugs (:gh:`651` by `Martin Wimpff`_)
+
+API changes
+~~~~~~~~~~~
+
+Version - 1.1.1  (Stable - PyPi)
+---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
 - Add possibility to use OptunaGridSearch (:gh:`630` by `Igor Carrara`_)
 - Add scripts to upload results on PapersWithCode (:gh:`561` by `Pierre Guetschel`_)
 - Centralize dataset summary tables in CSV files (:gh:`635` by `Pierre Guetschel`_)
 - Add new dataset :class:`moabb.datasets.Liu2024` dataset (:gh:`619` by `Taha Habib`_)
-- Increasing the version in the pre-commit config (:gh:`631` by pre-commit bot)
-
 
 
 Bugs
@@ -35,8 +47,8 @@ API changes
 
 
 
-Version - 1.1.0  (Stable - PyPi)
----------------------------------
+Version - 1.1.0
+----------------
 
 
 Enhancements

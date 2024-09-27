@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "moabb"
-version = "1.1.0"
+version = "1.1.1"
 description = "Mother of All BCI Benchmarks"
 authors = ["Alexandre Barachant", "Vinay Jayaram"]
 maintainers = ["Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>"]

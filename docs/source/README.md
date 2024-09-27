@@ -82,7 +82,6 @@ The project is currently maintained by:
       <th>Bruno Aristimunha</th>
       <th>Igor Carrara</th>
       <th>Pierre Guetschel</th>
-      <th>Sara Sedlar</th>
     </tr>
   </thead>
   <tbody>
@@ -91,7 +90,6 @@ The project is currently maintained by:
       <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/42702466?s=150&amp;v=4" alt="Bruno Aristimunha"></td>
       <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/94047258?s=150&amp;v=4" alt="Igor Carrara"></td>
       <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/25532709?s=150&amp;v=4" alt="Pierre Guetschel"></td>
-      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/5344945?s=150&amp;v=4" alt="Sara Sedlar"></td>
 </tr>
   </tbody>
 </table>
@@ -230,7 +228,6 @@ the link on the gitter channel. We are also on NeuroTechX Slack channel
 [link_bruno]: https://www.linkedin.com/in/bruaristimunha/
 [link_igor]: https://www.linkedin.com/in/carraraig/
 [link_pierre]: https://www.linkedin.com/in/pierreguetschel/
-[link_sara]: https://www.linkedin.com/in/sara-sedlar-28709893/
 [link_neurotechx_signup]: https://neurotechx.com/
 [link_gitter]: https://app.gitter.im/#/room/#moabb_dev_community:gitter.im
 [link_moabb_docs]: https://neurotechx.github.io/moabb/
