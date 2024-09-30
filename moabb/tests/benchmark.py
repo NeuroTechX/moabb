@@ -72,6 +72,16 @@ class TestBenchmark(unittest.TestCase):
             overwrite=True,
         )
 
+    def test_optuna(self):
+        res = benchmark(
+            pipelines=str(self.pp_dir),
+            evaluations=["WithinSession"],
+            paradigms=["FakeImageryParadigm"],
+            overwrite=True,
+            optuna=True,
+        )
+        self.assertEqual(len(res), 40)
+
 
 if __name__ == "__main__":
     unittest.main()

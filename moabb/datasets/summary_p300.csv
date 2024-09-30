@@ -1,0 +1,17 @@
+Dataset, #Subj, #Chan, #Trials / class, Trials length, Sampling rate, #Sessions, PapersWithCode leaderboard
+BNCI2014_008, 8, 8, 3500 NT / 700 T, 1s, 256Hz, 1,https://paperswithcode.com/dataset/bnci2014-008-moabb-1
+BNCI2014_009, 10, 16, 1440 NT / 288 T, 0.8s, 256Hz, 3,https://paperswithcode.com/dataset/bnci2014-009-moabb-1
+BNCI2015_003, 10, 8, 1500 NT / 300 T, 0.8s, 256Hz, 1,https://paperswithcode.com/dataset/bnci2015-003-moabb-1
+BI2012, 25, 16, 640 NT / 128 T, 1s, 128Hz, 2,https://paperswithcode.com/dataset/braininvaders2012-moabb
+BI2013a, 24, 16, 3200 NT / 640 T, 1s, 512Hz, 8 for subjects 1-7 else 1,https://paperswithcode.com/dataset/braininvaders2013a-moabb
+BI2014a, 64, 16, 990 NT / 198 T, 1s, 512Hz, up to 3,https://paperswithcode.com/dataset/braininvaders2014a-moabb
+BI2014b, 38, 32, 200 NT / 40 T, 1s, 512Hz, 3,https://paperswithcode.com/dataset/braininvaders2014b-moabb
+BI2015a, 43, 32, 4131 NT / 825 T, 1s, 512Hz, 3,https://paperswithcode.com/dataset/braininvaders2015a-moabb
+BI2015b, 44, 32, 2160 NT / 480 T, 1s, 512Hz, 1,https://paperswithcode.com/dataset/braininvaders2015b-moabb
+Cattan2019_VR, 21, 16, 600 NT / 120 T, 1s, 512Hz, 2,https://paperswithcode.com/dataset/cattan2019-vr-moabb-1
+Huebner2017, 13, 31, 364 NT / 112 T, 0.9s, 1000Hz, 3,https://paperswithcode.com/dataset/huebner2017-moabb
+Huebner2018, 12, 31, 364 NT / 112 T, 0.9s, 1000Hz, 3,https://paperswithcode.com/dataset/huebner2018-moabb
+Sosulski2019, 13, 31, 7500 NT / 1500 T, 1.2s, 1000Hz, 1,https://paperswithcode.com/dataset/sosulski2019-moabb
+EPFLP300, 8, 32, 2753 NT / 551 T, 1s, 2048Hz, 4,https://paperswithcode.com/dataset/epflp300-moabb
+Lee2019_ERP, 54, 62, 6900 NT / 1380 T, 1s, 1000Hz, 2,https://paperswithcode.com/dataset/lee2019-erp-moabb-1
+DemonsP300, 60, 8, 935 NT / 50 T, 1s, 500Hz, 1,
