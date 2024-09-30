@@ -222,7 +222,7 @@ def create_save_path(
         return str(path_save)
     else:
         print("No hdf5_path provided, models will not be saved.")
-        
+
 
 def sort_group(groups):
     runs_sort = []
@@ -233,7 +233,7 @@ def sort_group(groups):
         runs_sort.append(index)
     sorted_ix = np.argsort(runs_sort)
     return groups[sorted_ix]
-  
+
 
 def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
     """

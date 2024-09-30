@@ -67,7 +67,7 @@ class OfflineSplit(BaseCrossValidator):
 
     """
 
-    def __init__(self, n_folds = None):
+    def __init__(self, n_folds=None):
         self.n_folds = n_folds
 
     def get_n_splits(self, metadata):
@@ -170,7 +170,9 @@ class TimeSeriesSplit(BaseCrossValidator):
                 calib_ix = group[:calib_size].index
                 test_ix = group[calib_size:].index
 
-                yield list(test_ix), list(calib_ix)  # Take first #calib_size samples as calibration
+                yield list(test_ix), list(
+                    calib_ix
+                )  # Take first #calib_size samples as calibration
 
 
 class SamplerSplit(BaseCrossValidator):
@@ -245,7 +247,11 @@ class SamplerSplit(BaseCrossValidator):
         sampler = self.sampler
 
         for ix_train, ix_test in cv.split(X, y, metadata, **kwargs):
-            X_train, y_train, meta_train = X[ix_train], y[ix_train], metadata.iloc[ix_train]
+            X_train, y_train, meta_train = (
+                X[ix_train],
+                y[ix_train],
+                metadata.iloc[ix_train],
+            )
             for ix_train_sample in sampler.split(X_train, y_train, meta_train):
                 ix_train_sample = ix_train[ix_train_sample]
                 yield ix_train_sample, ix_test
