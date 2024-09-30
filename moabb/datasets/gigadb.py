@@ -19,15 +19,6 @@ GIGA_URL = "https://s3.ap-northeast-1.wasabisys.com/gigadb-datasets/live/pub/10.
 class Cho2017(BaseDataset):
     """Motor Imagery dataset from Cho et al 2017.
 
-    .. admonition:: Dataset summary
-
-
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
-        Name       #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
-        Cho2017       52       64           2                100  3s            512Hz                      1
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
-
     Dataset from the paper [1]_.
 
     **Dataset Description**

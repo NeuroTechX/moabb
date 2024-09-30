@@ -1,0 +1,8 @@
+Dataset, #Subj, #Chan, #Classes, #Trials / class, Trials length, Sampling rate, #Sessions, PapersWithCode leaderboard
+Lee2019_SSVEP,54,62,4,50,4s,1000Hz,2,https://paperswithcode.com/dataset/lee2019-ssvep-moabb-1
+Kalunga2016,12,8,4,16,2s,256Hz,1,https://paperswithcode.com/dataset/kalunga2016-moabb
+MAMEM1,10,256,5,12-15,3s,250Hz,1,https://paperswithcode.com/dataset/mamem1-moabb
+MAMEM2,10,256,5,20-30,3s,250Hz,1,https://paperswithcode.com/dataset/mamem2-moabb
+MAMEM3,10,14,4,20-30,3s,128Hz,1,https://paperswithcode.com/dataset/mamem3-moabb
+Nakanishi2015,9,8,12,15,4.15s,256Hz,1,https://paperswithcode.com/dataset/nakanishi2015-moabb
+Wang2016,34,62,40,6,5s,250Hz,1,https://paperswithcode.com/dataset/wang2016-moabb
