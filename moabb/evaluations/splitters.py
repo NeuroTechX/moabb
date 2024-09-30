@@ -80,7 +80,7 @@ class WithinSessionSplitter(BaseCrossValidator):
 
             for session in np.unique(sessions):
                 mask_s = sessions == session
-                X_s, y_s, meta_s = (
+                X_s, y_s, _ = (
                     X_[mask_s],
                     y_[mask_s],
                     meta_[mask_s],
@@ -126,7 +126,7 @@ class IndividualWithinSessionSplitter(BaseCrossValidator):
 
         for session in np.unique(sessions):
             mask = sessions == session
-            X_, y_, meta_ = (
+            X_, y_, _ = (
                 X[mask],
                 y[mask],
                 metadata[mask],
