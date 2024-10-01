@@ -73,8 +73,9 @@ class OfflineSplit(BaseCrossValidator):
 
     """
 
-    def __init__(self, n_folds=None):
+    def __init__(self, n_folds=None, run=False):
         self.n_folds = n_folds
+        self.run = run
 
     def get_n_splits(self, metadata):
         return metadata.groupby(["subject", "session"]).ngroups
@@ -85,14 +86,25 @@ class OfflineSplit(BaseCrossValidator):
 
         for subject in subjects.unique():
             mask = subjects == subject
-            _, _, meta_ = X[mask], y[mask], metadata[mask]
+            X_, y_, meta_ = X[mask], y[mask], metadata[mask]
             sessions = meta_.session.unique()
 
             for session in sessions:
-                ix_test = meta_[meta_["session"] == session].index
+                session_mask = meta_["session"] == session
+                X_session, y_session, meta_session = X_[session_mask], y_[session_mask], meta_[session_mask]
 
-                yield list(ix_test)
+                # If you can (amd want) to split by run also
+                if self.run and "run" in meta_session.columns:
+                    runs = meta_session["run"].unique()
 
+                    for run in runs:
+                        run_mask = meta_session["run"] == run
+                        ix_test = meta_session[run_mask].index
+                        yield list(ix_test)
+
+                else:
+                    ix_test = meta_session.index
+                    yield list(ix_test)
 
 class PseudoOnlineSplit(BaseCrossValidator):
     """Pseudo-online split for evaluation test data.
@@ -185,10 +197,10 @@ class SamplerSplit(BaseCrossValidator):
     """Return subsets of the training data with different number of samples.
 
     This splitter can be used for estimating a model's performance when using different
-    numbers of training samples, and for plotting the learning curve. You must define the
-    data evaluation type (WithinSubject, CrossSession, CrossSubject) so the training set
-    can be sampled. It is also needed to pass a dictionary indicating the policy used
-    for sampling the training set and the number of examples (or the percentage) that
+    numbers of training samples, and for plotting the learning curve per number of training
+    samples. You must define the data evaluation type (WithinSubject, CrossSession, CrossSubject)
+    so the training set can be sampled. It is also needed to pass a dictionary indicating the
+    policy used for sampling the training set and the number of examples (or the percentage) that
     each sample must contain.
 
     Parameters

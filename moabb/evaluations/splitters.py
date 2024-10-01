@@ -1,4 +1,5 @@
 import numpy as np
+from alembic.testing import assert_raises
 from sklearn.model_selection import (
     BaseCrossValidator,
     GroupKFold,
@@ -56,7 +57,7 @@ class WithinSessionSplitter(BaseCrossValidator):
 
     """
 
-    def __init__(self, n_folds: int):
+    def __init__(self, n_folds=5):
         self.n_folds = n_folds
 
     def get_n_splits(self, metadata):
@@ -64,6 +65,8 @@ class WithinSessionSplitter(BaseCrossValidator):
         return self.n_folds * sessions_subjects
 
     def split(self, X, y, metadata, **kwargs):
+
+        assert isinstance(self.n_folds, int)
 
         subjects = metadata.subject.values
         cv = StratifiedKFold(n_splits=self.n_folds, shuffle=True, **kwargs)
@@ -120,6 +123,7 @@ class IndividualWithinSessionSplitter(BaseCrossValidator):
     def split(self, X, y, metadata, **kwargs):
 
         assert len(np.unique(metadata.subject)) == 1
+        assert isinstance(self.n_folds, int)
 
         sessions = metadata.subject.values
         cv = StratifiedKFold(n_splits=self.n_folds, shuffle=True, **kwargs)
