@@ -1,18 +1,20 @@
-import os
-import os.path as osp
 
 import numpy as np
 import pytest
-import torch
-from sklearn.model_selection import StratifiedKFold, LeaveOneGroupOut
+from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 
-from moabb.evaluations.metasplitters import (OfflineSplit,PseudoOnlineSplit, SamplerSplit)
-from moabb.evaluations.splitters import (CrossSessionSplitter, CrossSubjectSplitter, WithinSessionSplitter)
 from moabb.datasets.fake import FakeDataset
+from moabb.evaluations.metasplitters import OfflineSplit, PseudoOnlineSplit, SamplerSplit
+from moabb.evaluations.splitters import (
+    CrossSessionSplitter,
+    CrossSubjectSplitter,
+)
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
+
 
 dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=3, seed=12)
 paradigm = FakeImageryParadigm()
+
 
 # Split done for the Within Session evaluation
 def eval_sampler_split():
@@ -28,6 +30,7 @@ def eval_sampler_split():
 
                 yield X_[train], X_[test]
 
+
 # Split done for the Cross Session evaluation
 def eval_split_cross_session():
     for subject in dataset.subject_list:
@@ -40,6 +43,7 @@ def eval_split_cross_session():
             for r in np.unique(runs):
                 ix = runs == r
                 yield X[test[ix]]
+
 
 def pseudo_split_cross_session():
     for subject in dataset.subject_list:
@@ -65,6 +69,7 @@ def eval_split_cross_subject():
             ix = sessions == sess
             yield X[test[ix]]
 
+
 # Split done for the Cross Subject evaluation
 def pseudo_split_cross_subject():
     X, y, metadata = paradigm.get_data(dataset=dataset)
@@ -76,7 +81,9 @@ def pseudo_split_cross_subject():
         runs = metadata_test.run.values
         for sess in np.unique(sessions):
             ix = sessions == sess
-            X_sess, metadata_sess = X[test[ix]], metadata_test.loc[test[ix]].reset_index(drop=True)
+            X_sess, metadata_sess = X[test[ix]], metadata_test.loc[test[ix]].reset_index(
+                drop=True
+            )
 
             runs_in_session = metadata_sess.run.values
             # yield just calibration part
@@ -98,14 +105,14 @@ def test_offline(split):
     metasplit = OfflineSplit(run=run)
 
     Tests = []
-    for (_,test) in split.split(X, y, metadata):
+    for _, test in split.split(X, y, metadata):
         X_test, y_test, metadata_test = X[test], y[test], metadata.loc[test]
         for i, (test_index) in enumerate(metasplit.split(X_test, y_test, metadata_test)):
             Tests.append(X[test_index])
 
     for ix, X_test_t in enumerate(eval_split()):
-            # Check if the output is the same as the input
-            assert np.array_equal(Tests[ix], X_test_t)
+        # Check if the output is the same as the input
+        assert np.array_equal(Tests[ix], X_test_t)
 
 
 @pytest.mark.parametrize("split", [CrossSubjectSplitter, CrossSessionSplitter])
@@ -121,14 +128,17 @@ def test_pseudoonline(split):
     metasplit = PseudoOnlineSplit()
 
     Tests = []
-    for (_,test) in split.split(X, y, metadata):
+    for _, test in split.split(X, y, metadata):
         X_test, y_test, metadata_test = X[test], y[test], metadata.loc[test]
-        for i, (_,calib_index) in enumerate(metasplit.split(X_test, y_test, metadata_test)):
+        for i, (_, calib_index) in enumerate(
+            metasplit.split(X_test, y_test, metadata_test)
+        ):
             Tests.append(X[calib_index])
 
     for ix, X_calib_t in enumerate(eval_split()):
-            # Check if the output is the same as the input
-            assert np.array_equal(Tests[ix], X_calib_t)
+        # Check if the output is the same as the input
+        assert np.array_equal(Tests[ix], X_calib_t)
+
 
 @pytest.mark.skip(reason="Still working on that")
 def test_sampler():
@@ -138,10 +148,10 @@ def test_sampler():
     split = SamplerSplit()
 
     for ix, ((X_train_t, X_test_t), (train, test)) in enumerate(
-            zip(eval_split_cross_subject(), split.split(X, y, metadata))):
+        zip(eval_split_cross_subject(), split.split(X, y, metadata))
+    ):
         X_train, X_test = X[train], X[test]
 
         # Check if the output is the same as the input
         assert np.array_equal(X_train, X_train_t)
         assert np.array_equal(X_test, X_test_t)
-
