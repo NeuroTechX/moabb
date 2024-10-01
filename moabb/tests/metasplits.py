@@ -22,7 +22,7 @@ def eval_sampler_split():
         for session in np.unique(sessions):
             ix = sessions == session
             cv = StratifiedKFold(5, shuffle=True, random_state=42)
-            X_, y_, meta_ = X[ix], y[ix], metadata.loc[ix]
+            X_, y_, _ = X[ix], y[ix], metadata.loc[ix]
             for train, test in cv.split(X_, y_):
                 yield X_[train], X_[test]
 
