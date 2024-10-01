@@ -14,7 +14,7 @@ from moabb.paradigms.motor_imagery import FakeImageryParadigm
 dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=3, seed=12)
 paradigm = FakeImageryParadigm()
 
-# Split done for the Within Session evaluation
+# Still working on this
 def eval_sampler_split():
     for subject in dataset.subject_list:
         X, y, metadata = paradigm.get_data(dataset=dataset, subjects=[subject])
@@ -24,8 +24,6 @@ def eval_sampler_split():
             cv = StratifiedKFold(5, shuffle=True, random_state=42)
             X_, y_, meta_ = X[ix], y[ix], metadata.loc[ix]
             for train, test in cv.split(X_, y_):
-                X_test, y_test, meta_test = X_[test], y_[test], meta_.loc[test]
-
                 yield X_[train], X_[test]
 
 # Split done for the Cross Session evaluation
@@ -73,7 +71,7 @@ def pseudo_split_cross_subject():
     for _, test in cv.split(X, y, groups):
         metadata_test = metadata.loc[test]
         sessions = metadata_test.session.values
-        runs = metadata_test.run.values
+
         for sess in np.unique(sessions):
             ix = sessions == sess
             X_sess, metadata_sess = X[test[ix]], metadata_test.loc[test[ix]].reset_index(drop=True)
@@ -131,11 +129,11 @@ def test_pseudoonline(split):
             assert np.array_equal(Tests[ix], X_calib_t)
 
 @pytest.mark.skip(reason="Still working on that")
-def test_sampler():
+def test_sampler(data_eval):
     X, y, metadata = paradigm.get_data(dataset=dataset)
     data_size = dict(policy="per_class", value=np.array([5, 10, 30, 50]))
 
-    split = SamplerSplit()
+    split = SamplerSplit(data_eval=data_eval, data_size=data_size)
 
     for ix, ((X_train_t, X_test_t), (train, test)) in enumerate(
             zip(eval_split_cross_subject(), split.split(X, y, metadata))):

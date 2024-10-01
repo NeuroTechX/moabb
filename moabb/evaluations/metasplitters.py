@@ -91,7 +91,7 @@ class OfflineSplit(BaseCrossValidator):
 
             for session in sessions:
                 session_mask = meta_["session"] == session
-                X_session, y_session, meta_session = X_[session_mask], y_[session_mask], meta_[session_mask]
+                _, _, meta_session = X_[session_mask], y_[session_mask], meta_[session_mask]
 
                 # If you can (amd want) to split by run also
                 if self.run and "run" in meta_session.columns:
