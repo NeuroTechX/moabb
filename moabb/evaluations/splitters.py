@@ -1,5 +1,4 @@
 import numpy as np
-from alembic.testing import assert_raises
 from sklearn.model_selection import (
     BaseCrossValidator,
     GroupKFold,

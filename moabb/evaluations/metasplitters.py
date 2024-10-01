@@ -106,6 +106,7 @@ class OfflineSplit(BaseCrossValidator):
                     ix_test = meta_session.index
                     yield list(ix_test)
 
+
 class PseudoOnlineSplit(BaseCrossValidator):
     """Pseudo-online split for evaluation test data.
 
