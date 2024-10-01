@@ -4,15 +4,13 @@ from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations.metasplitters import OfflineSplit, PseudoOnlineSplit, SamplerSplit
-from moabb.evaluations.splitters import (
-    CrossSessionSplitter,
-    CrossSubjectSplitter,
-)
+from moabb.evaluations.splitters import CrossSessionSplitter, CrossSubjectSplitter
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
 dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=3, seed=12)
 paradigm = FakeImageryParadigm()
+
 
 # Still working on this
 def eval_sampler_split():
@@ -151,4 +149,3 @@ def test_sampler(data_eval):
         # Check if the output is the same as the input
         assert np.array_equal(X_train, X_train_t)
         assert np.array_equal(X_test, X_test_t)
-
