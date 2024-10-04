@@ -323,16 +323,19 @@ def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
             )
 
     elif exclude_datasets is not None:
-        d = list(datasets)
+        d = []
         # Assert if the inputs are not key_codes i.e. expected to be dataset class objects
         if not isinstance(exclude_datasets[0], str):
             # Convert the input to key_codes
             exclude_datasets = [e.code for e in exclude_datasets]
-
-        # Map from key_codes to class instances
-        datasets_codes = [d.code for d in datasets]
-        for excdat in exclude_datasets:
-            del d[datasets_codes.index(excdat)]
+        
+        for ds in datasets:
+            class_inst = type(ds).__name__
+            if class_inst not in exclude_datasets:
+                d.append(ds)
+        
+        if len(d) != len(datasets) - len(exclude_datasets):
+            raise Exception("Could not exclude datasets correctly. Make sure you provide the correct class names.")
     else:
         d = list(datasets)
     return d
