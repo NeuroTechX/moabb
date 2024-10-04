@@ -17,18 +17,39 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
-- None
 
 Bugs
 ~~~~
-- None
+
+- Fix Stieger2021 dataset bugs (:gh:`651` by `Martin Wimpff`_)
+- Unpinning major version Scikit-learn and numpy (:gh:`652` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
-- None
 
-Version - 1.1.0  (Stable - PyPi)
+Version - 1.1.1  (Stable - PyPi)
 ---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- Add possibility to use OptunaGridSearch (:gh:`630` by `Igor Carrara`_)
+- Add scripts to upload results on PapersWithCode (:gh:`561` by `Pierre Guetschel`_)
+- Centralize dataset summary tables in CSV files (:gh:`635` by `Pierre Guetschel`_)
+- Add new dataset :class:`moabb.datasets.Liu2024` dataset (:gh:`619` by `Taha Habib`_)
+
+
+Bugs
+~~~~
+- Fix caching in the workflows (:gh:`632` by `Pierre Guetschel`_)
+
+API changes
+~~~~~~~~~~~
+- Include optuna as soft-dependency in the benchmark function and in the base of evaluation (:gh:`630` by `Igor Carrara`_)
+
+
+
+Version - 1.1.0
+----------------
 
 
 Enhancements
@@ -52,6 +73,8 @@ Enhancements
 - Add new dataset :class:`moabb.datasets.Stieger2021` (:gh:`604` by `Reinmar Kobler`_ and `Bruno Aristimunha`_)
 - Exposing the `drop_rate` for all the deep learning parameters (:gh:`592` by `Bruno Aristimunha`_)
 - Add new dataset :class:`moabb.datasets.Rodrigues2017` dataset (:gh:`602` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
+- Change unittest to pytest (:gh:`618` by `Bruno Aristimunha`_)
+- Remove tensorflow import warning (:gh:`622` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
@@ -68,7 +91,9 @@ Bugs
 - Fix mne_bids version incompatibility with mne (:gh:`586` by `Bruna Lopes`_)
 - Updating the parameters of the SSVEP_TRCA method (:gh:`589` by `Bruno Aristimunha`_)
 - Fix and updating the parameters for the benchmark function (:gh:`588` by `Bruno Aristimunha`_)
+- Fix result table display (:gh:`599` by `Sylvain Chevallier`_)
 - Fix :class:`moabb.datasets.preprocessing.SetRawAnnotations` setting incorrect annotations when the dataset's interval does not start at 0 (:gh:`607` by `Pierre Guetschel`_)
+- Fix download link for GigaDB Cho2017 and Lee2019 datasets (:gh:`621` by `Anton Andreev`_)
 
 
 API changes
@@ -439,11 +464,13 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
+.. _Martin Wimpff: https://github.com/martinwimpff
 .. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001
 .. _Sara Sedlar: https://github.com/Sara04
 .. _Emmanuel Kalunga: https://github.com/emmanuelkalunga
 .. _Gregoire Cattan: https://github.com/gcattan
+.. _Anton Andreev: https://github.com/toncho11
 .. _Igor Carrara: https://github.com/carraraig
 .. _Bruno Aristimunha: https://github.com/bruAristimunha
 .. _Alexandre Barachant: https://github.com/alexandrebarachant
@@ -468,3 +495,4 @@ API changes
 .. _Brian Irvine: https://github.com/brianjohannes
 .. _Bruna Lopes: https://github.com/brunaafl
 .. _Yash Chauhan: https://github.com/jiggychauhi
+.. _Taha Habib: https://github.com/tahatt13

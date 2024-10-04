@@ -17,16 +17,6 @@ ALPHAWAVES_URL = "https://zenodo.org/record/2348892/files/"
 class Rodrigues2017(BaseDataset):
     """Alphawaves dataset
 
-    .. admonition:: Dataset summary
-
-
-        =============== ======= ======= ========== =============== ============ =============== ===========
-        Name            #Subj   #Chan   #Classes   #Blocks/class   Trials len   Sampling rate   #Sessions
-        =============== ======= ======= ========== =============== ============ =============== ===========
-        Rodrigues2017   20      16      2          5               10s          512Hz           1
-        =============== ======= ======= ========== =============== ============ =============== ===========
-
-
     Dataset containing EEG recordings of subjects in a simple
     resting-state eyes open/closed experimental protocol. Data were recorded
     during a pilot experiment taking place in the GIPSA-lab, Grenoble,
@@ -139,7 +129,6 @@ class Rodrigues2017(BaseDataset):
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
     ):
-
         if subject not in self.subject_list:
             raise (ValueError("Invalid subject number"))
 
