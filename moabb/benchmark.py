@@ -328,14 +328,16 @@ def _inc_exc_datasets(datasets, include_datasets, exclude_datasets):
         if not isinstance(exclude_datasets[0], str):
             # Convert the input to key_codes
             exclude_datasets = [e.code for e in exclude_datasets]
-        
+
         for ds in datasets:
             class_inst = type(ds).__name__
             if class_inst not in exclude_datasets:
                 d.append(ds)
-        
+
         if len(d) != len(datasets) - len(exclude_datasets):
-            raise Exception("Could not exclude datasets correctly. Make sure you provide the correct class names.")
+            raise Exception(
+                "Could not exclude datasets correctly. Make sure you provide the correct class names."
+            )
     else:
         d = list(datasets)
     return d
