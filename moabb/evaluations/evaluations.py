@@ -270,7 +270,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-
+                    self.push_result(res, pipelines)
                     yield res
 
     def get_data_size_subsets(self, y):
@@ -599,7 +599,7 @@ class CrossSessionEvaluation(BaseEvaluation):
                     }
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
-
+                    self.push_result(res, pipelines)
                     yield res
 
     def is_valid(self, dataset):
@@ -776,6 +776,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
                     if _carbonfootprint:
                         res["carbon_emission"] = (1000 * emissions,)
+                    self.push_result(res, pipelines)
                     yield res
 
     def is_valid(self, dataset):
