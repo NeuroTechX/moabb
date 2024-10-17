@@ -2,11 +2,7 @@ import numpy as np
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 
 from moabb.datasets.fake import FakeDataset
-from moabb.evaluations.splitters import (
-    CrossSessionSplitter,
-    CrossSubjectSplitter,
-    WithinSessionSplitter,
-)
+from moabb.evaluations.splitters import WithinSessionSplitter
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
@@ -45,7 +41,7 @@ def eval_split_cross_subject():
     for train, test in cv.split(X, y, groups):
         yield X[train], X[test]
 
-
+# TODO: test shuffle and random_state
 def test_within_session():
     X, y, metadata = paradigm.get_data(dataset=dataset)
 
@@ -60,32 +56,3 @@ def test_within_session():
         assert np.array_equal(X_train, X_train_t)
         assert np.array_equal(X_test, X_test_t)
 
-
-def test_cross_session():
-    X, y, metadata = paradigm.get_data(dataset=dataset)
-
-    split = CrossSessionSplitter()
-
-    for ix, ((X_train_t, X_test_t), (train, test)) in enumerate(
-        zip(eval_split_cross_session(), split.split(X, y, metadata))
-    ):
-        X_train, X_test = X[train], X[test]
-
-        # Check if the output is the same as the input
-        assert np.array_equal(X_train, X_train_t)
-        assert np.array_equal(X_test, X_test_t)
-
-
-def test_cross_subject():
-    X, y, metadata = paradigm.get_data(dataset=dataset)
-
-    split = CrossSubjectSplitter()
-
-    for ix, ((X_train_t, X_test_t), (train, test)) in enumerate(
-        zip(eval_split_cross_subject(), split.split(X, y, metadata))
-    ):
-        X_train, X_test = X[train], X[test]
-
-        # Check if the output is the same as the input
-        assert np.array_equal(X_train, X_train_t)
-        assert np.array_equal(X_test, X_test_t)

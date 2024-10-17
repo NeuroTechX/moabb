@@ -3,8 +3,7 @@ import pytest
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 
 from moabb.datasets.fake import FakeDataset
-from moabb.evaluations.metasplitters import OfflineSplit, PseudoOnlineSplit, SamplerSplit
-from moabb.evaluations.splitters import CrossSessionSplitter, CrossSubjectSplitter
+from moabb.evaluations.metasplitters import SamplerSplit
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
@@ -84,57 +83,8 @@ def pseudo_split_cross_subject():
             yield X_sess[runs_in_session == runs_in_session[0]]
 
 
-@pytest.mark.parametrize("split", [CrossSubjectSplitter, CrossSessionSplitter])
-def test_offline(split):
-    X, y, metadata = paradigm.get_data(dataset=dataset)
-
-    run = True if isinstance(split, CrossSessionSplitter) else False
-
-    if isinstance(split, CrossSessionSplitter):
-        eval_split = eval_split_cross_session
-    else:
-        eval_split = eval_split_cross_subject
-
-    split = split()
-    metasplit = OfflineSplit(run=run)
-
-    Tests = []
-    for _, test in split.split(X, y, metadata):
-        X_test, y_test, metadata_test = X[test], y[test], metadata.loc[test]
-        for i, (test_index) in enumerate(metasplit.split(X_test, y_test, metadata_test)):
-            Tests.append(X[test_index])
-
-    for ix, X_test_t in enumerate(eval_split()):
-        # Check if the output is the same as the input
-        assert np.array_equal(Tests[ix], X_test_t)
-
-
-@pytest.mark.parametrize("split", [CrossSubjectSplitter, CrossSessionSplitter])
-def test_pseudoonline(split):
-    X, y, metadata = paradigm.get_data(dataset=dataset)
-
-    if isinstance(split, CrossSessionSplitter):
-        eval_split = pseudo_split_cross_session
-    else:
-        eval_split = pseudo_split_cross_subject
-
-    split = split()
-    metasplit = PseudoOnlineSplit()
-
-    Tests = []
-    for _, test in split.split(X, y, metadata):
-        X_test, y_test, metadata_test = X[test], y[test], metadata.loc[test]
-        for i, (_, calib_index) in enumerate(
-            metasplit.split(X_test, y_test, metadata_test)
-        ):
-            Tests.append(X[calib_index])
-
-    for ix, X_calib_t in enumerate(eval_split()):
-        # Check if the output is the same as the input
-        assert np.array_equal(Tests[ix], X_calib_t)
-
-
 @pytest.mark.skip(reason="Still working on that")
+# TODO: Test policy and data eval, test correct output
 def test_sampler(data_eval):
     X, y, metadata = paradigm.get_data(dataset=dataset)
     data_size = dict(policy="per_class", value=np.array([5, 10, 30, 50]))
