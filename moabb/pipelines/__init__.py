@@ -26,18 +26,11 @@ def __getattr__(name):
         "EEGNet",
         "TCN_block",
     }
-    utils_pytorch_classes = {
-        "InputShapeSetterEEG",
-        "BraindecodeDatasetLoader",
-        "get_shape_from_baseconcat",
-    }
 
     if name in deep_learning_classes and _check_if_tensorflow_installed():
         return _import_class(name, ".deep_learning")
     elif name in utils_deep_model_classes and _check_if_tensorflow_installed():
         return _import_class(name, ".utils_deep_model")
-    elif name in utils_pytorch_classes and _check_if_braindecode_installed():
-        return _import_class(name, ".utils_pytorch")
 
     raise AttributeError(f"Module '{__name__}' has no attribute '{name}'")
 
@@ -74,23 +67,6 @@ def _check_if_tensorflow_installed():
             "by running the following command in your terminal: \n"
             "\033[94m"  # This is the ANSI escape code for blue
             "pip install moabb[deeplearning]"
-            "\033[0m",  # This resets the color back to normal
-        )
-        return False
-
-
-def _check_if_braindecode_installed():
-    try:
-        import braindecode
-
-        return True
-    except ModuleNotFoundError:
-        warn(
-            "Braindecode is not installed. "
-            "You won't be able to use these braindecode functions if you "
-            "attempt to do so. \n"
-            "\033[94m"  # This is the ANSI escape code for blue
-            "pip install braindecode"
             "\033[0m",  # This resets the color back to normal
         )
         return False

@@ -44,5 +44,3 @@ Base & Utils
     utils_deep_model.EEGNet
     utils_deep_model.EEGNet_TC
     utils_deep_model.TCN_block
-    utils_pytorch.BraindecodeDatasetLoader
-    utils_pytorch.InputShapeSetterEEG
