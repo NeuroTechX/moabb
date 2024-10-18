@@ -11,8 +11,8 @@ class WithinSessionSplitter(BaseCrossValidator):
     all data from all subjects is already known and loaded.
 
      . image:: images/withinsess.pdf
-    :alt: The schematic diagram of the WithinSession split
-    :align: center
+        :alt: The schematic diagram of the WithinSession split
+        :align: center
 
     Parameters
     ----------
