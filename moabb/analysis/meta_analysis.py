@@ -322,8 +322,8 @@ def find_significant_differences(df, perm_cutoff=20):
     nsubs = np.array([df.loc[df.dataset == d, "nsub"].mean() for d in dsets])
     P_full = df.pivot_table(values="p", index=["dataset", "pipe1"], columns="pipe2")
     T_full = df.pivot_table(values="smd", index=["dataset", "pipe1"], columns="pipe2")
-    P = np.full((len(algs), len(algs)), np.NaN)
-    T = np.full((len(algs), len(algs)), np.NaN)
+    P = np.full((len(algs), len(algs)), np.nan)
+    T = np.full((len(algs), len(algs)), np.nan)
     for i in range(len(algs)):
         for j in range(len(algs)):
             if i != j:
