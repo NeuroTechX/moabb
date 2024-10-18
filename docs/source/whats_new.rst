@@ -23,6 +23,7 @@ Bugs
 
 - Fix Stieger2021 dataset bugs (:gh:`651` by `Martin Wimpff`_)
 - Unpinning major version Scikit-learn and numpy (:gh:`652` by `Bruno Aristimunha`_)
+- Replacing the func:`numpy.string_` to func:`numpy.str_
 
 API changes
 ~~~~~~~~~~~
