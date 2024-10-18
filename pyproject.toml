@@ -13,7 +13,7 @@ license = "BSD-3-Clause"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
-numpy = ">=1.22"
+numpy = "^1.22"
 scipy = "^1.9.3"
 mne = "^1.7.0"
 pandas = ">=1.5.2"
