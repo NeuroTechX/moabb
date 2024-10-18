@@ -10,9 +10,10 @@ class WithinSessionSplitter(BaseCrossValidator):
     and test sets on separate session for each subject. This splitter assumes that
     all data from all subjects is already known and loaded.
 
-     . image:: images/withinsess.pdf
+    .. image:: images/withinsess.pdf
         :alt: The schematic diagram of the WithinSession split
         :align: center
+
 
     Parameters
     ----------
