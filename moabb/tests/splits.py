@@ -41,6 +41,7 @@ def eval_split_cross_subject():
     for train, test in cv.split(X, y, groups):
         yield X[train], X[test]
 
+
 # TODO: test shuffle and random_state
 def test_within_session():
     X, y, metadata = paradigm.get_data(dataset=dataset)
@@ -55,4 +56,3 @@ def test_within_session():
         # Check if the output is the same as the input
         assert np.array_equal(X_train, X_train_t)
         assert np.array_equal(X_test, X_test_t)
-

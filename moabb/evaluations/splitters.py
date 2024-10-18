@@ -1,10 +1,5 @@
 import numpy as np
-
-from sklearn.model_selection import (
-    BaseCrossValidator,
-    StratifiedKFold,
-)
-
+from sklearn.model_selection import BaseCrossValidator, StratifiedKFold
 from sklearn.utils import check_random_state
 
 
@@ -62,7 +57,7 @@ class WithinSessionSplitter(BaseCrossValidator):
       Test:  index=[4 5], group=[1 1], sessions=['T' 'T']
     """
 
-    def __init__(self, n_folds:int=5, random_state:int=42, shuffle:bool=True):
+    def __init__(self, n_folds: int = 5, random_state: int = 42, shuffle: bool = True):
         # Check type
         assert isinstance(n_folds, int)
 
@@ -81,8 +76,9 @@ class WithinSessionSplitter(BaseCrossValidator):
 
         all_index = metadata.index.values
         subjects = metadata.subject.values
-        cv = StratifiedKFold(n_splits=self.n_folds, shuffle=self.shuffle,
-                             random_state=self.random_state)
+        cv = StratifiedKFold(
+            n_splits=self.n_folds, shuffle=self.shuffle, random_state=self.random_state
+        )
 
         for subject in np.unique(subjects):
             subject_mask = subjects == subject
@@ -98,7 +94,7 @@ class WithinSessionSplitter(BaseCrossValidator):
                 session_mask = sessions == session
                 session_indices, session_y = (
                     subject_indices[session_mask],
-                    subject_y[session_mask]
+                    subject_y[session_mask],
                 )
 
                 for ix_train, ix_test in cv.split(session_indices, session_y):
