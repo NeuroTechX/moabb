@@ -466,21 +466,14 @@ document.write(`
 <h1>moabb.set_download_dir<a class="headerlink" href="#moabb-set-download-dir" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="moabb.set_download_dir">
-<span class="sig-prename descclassname"><span class="pre">moabb.</span></span><span class="sig-name descname"><span class="pre">set_download_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/utils.py#L134-L161"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.set_download_dir" title="Permalink to this definition">#</a></dt>
-<dd><p>Set the download directory if required to change from default mne path.</p>
+<span class="sig-prename descclassname"><span class="pre">moabb.</span></span><span class="sig-name descname"><span class="pre">set_download_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/develop/moabb/utils.py#L155-L203"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#moabb.set_download_dir" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the download directory if required to change from default MNE path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – </p></li>
-<li><p><strong>location</strong> (<em>The new storage</em>) – </p></li>
-<li><p><strong>exist</strong> (<em>and MNE_DATA config does not</em>) – </p></li>
-<li><p><strong>the</strong> (<em>a warning is raised and</em>) – </p></li>
-<li><p><strong>created</strong> (<em>path is</em>) – </p></li>
-<li><p><strong>None</strong> (<em>If</em>) – </p></li>
-<li><p><strong>exist</strong> – </p></li>
-<li><p><strong>the</strong> – </p></li>
-<li><p><strong>directory</strong> (<em>storage location is set to the MNE default</em>) – </p></li>
-</ul>
+<dd class="field-odd"><p><strong>path</strong> (<em>None</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The new storage location. If it does not exist, a warning is raised and the
+path is created.
+If None, and MNE_DATA config does not exist, a warning is raised and the
+storage location is set to the MNE default directory.</p>
 </dd>
 </dl>
 </dd></dl>
