@@ -1,4 +1,5 @@
 import numpy as np
+
 from sklearn.model_selection import (
     BaseCrossValidator,
     StratifiedKFold,
@@ -42,7 +43,8 @@ class WithinSessionSplitter(BaseCrossValidator):
     >>> metadata = pd.DataFrame(data={'subject': subjects, 'session': sessions})
     >>> csess = WithinSessionSplitter(n_folds=2)
     >>> csess.get_n_splits(metadata)
-    >>> for i, (train_index, test_index) in enumerate(csess.split(X, y, metadata)):
+    4
+    >>> for i, (train_index, test_index) in enumerate(csess.split(y, metadata)):
     ...    print(f"Fold {i}:")
     ...    print(f"  Train: index={train_index}, group={subjects[train_index]}, session={sessions[train_index]}")
     ...    print(f"  Test:  index={test_index}, group={subjects[test_index]}, sessions={sessions[test_index]}")
@@ -66,13 +68,12 @@ class WithinSessionSplitter(BaseCrossValidator):
 
         self.n_folds = n_folds
         # Setting random state
-        self.random_state = check_random_state(random_state)
-
+        self.random_state = check_random_state(random_state) if shuffle else None
         self.shuffle = shuffle
 
     def get_n_splits(self, metadata):
-        sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
-        return self.n_folds * sessions_subjects
+        num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
+        return self.n_folds * num_sessions_subjects
 
     def split(self, y, metadata, **kwargs):
 
@@ -84,21 +85,21 @@ class WithinSessionSplitter(BaseCrossValidator):
                              random_state=self.random_state)
 
         for subject in np.unique(subjects):
-            mask = subjects == subject
-            index_subject, y_subject, meta_subject = (
-                all_index[mask],
-                y[mask],
-                metadata[mask],
+            subject_mask = subjects == subject
+            subject_indices, subject_y, subject_metadata = (
+                all_index[subject_mask],
+                y[subject_mask],
+                metadata[subject_mask],
             )
 
-            sessions = meta_subject.session.values
+            sessions = subject_metadata.session.values
 
             for session in np.unique(sessions):
-                mask_session = sessions == session
-                index_session, y_session = (
-                    index_subject[mask_session],
-                    y_subject[mask_session]
+                session_mask = sessions == session
+                session_indices, session_y = (
+                    subject_indices[session_mask],
+                    subject_y[session_mask]
                 )
 
-                for ix_train, ix_test in cv.split(index_session, y_session):
-                    yield index_session[ix_train], index_session[ix_test]
+                for ix_train, ix_test in cv.split(session_indices, session_y):
+                    yield session_indices[ix_train], session_indices[ix_test]

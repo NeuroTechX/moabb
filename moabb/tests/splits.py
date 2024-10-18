@@ -48,7 +48,7 @@ def test_within_session():
     split = WithinSessionSplitter(n_folds=5)
 
     for ix, ((X_train_t, X_test_t), (train, test)) in enumerate(
-        zip(eval_split_within_session(), split.split(X, y, metadata, random_state=42))
+        zip(eval_split_within_session(), split.split(y, metadata, random_state=42))
     ):
         X_train, X_test = X[train], X[test]
 
