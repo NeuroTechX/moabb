@@ -17,6 +17,7 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+- Adding :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`664` by `Bruna Lopes_`)
 
 Bugs
 ~~~~
@@ -76,7 +77,6 @@ Enhancements
 - Add new dataset :class:`moabb.datasets.Rodrigues2017` dataset (:gh:`602` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
 - Change unittest to pytest (:gh:`618` by `Bruno Aristimunha`_)
 - Remove tensorflow import warning (:gh:`622` by `Bruno Aristimunha`_)
-- Add data splitter classes (:gh:`612` by `Bruna Lopes_`)
 
 Bugs
 ~~~~
