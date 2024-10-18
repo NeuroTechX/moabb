@@ -254,7 +254,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     if _carbonfootprint:
                         emissions = tracker.stop()
                         if emissions is None:
-                            emissions = np.NaN
+                            emissions = np.nan
                     duration = time() - t_start
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
