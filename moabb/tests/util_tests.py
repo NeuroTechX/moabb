@@ -1,9 +1,11 @@
 import os.path as osp
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
 import pytest
-from mne import get_config
+from joblib import Parallel, delayed
+from mne import get_config, set_config
 
 from moabb.datasets import utils
 from moabb.utils import aliases_list, depreciated_alias, set_download_dir, setup_seed
@@ -207,6 +209,93 @@ class TestDepreciatedAlias(unittest.TestCase):
         self.assertRegex(cm.output[0], expected)
         # class name and type:
         self.assertEqual(dummy_b.__name__, "dummy_b")  # noqa: F821
+
+
+@pytest.fixture(autouse=True)
+def reset_mne_config():
+    """Fixture to reset MNE_DATA config before and after each test."""
+    original_config = get_config("MNE_DATA")
+    yield
+    if original_config is not None:
+        set_config("MNE_DATA", original_config, set_env=True)
+    else:
+        # Remove the config if it was not set originally
+        set_config("MNE_DATA", None, set_env=True)
+
+
+def test_set_download_dir_none_not_set(capsys):
+    """Test setting download directory to None when MNE_DATA is not set."""
+    # Ensure MNE_DATA is not set
+    set_config("MNE_DATA", None)
+
+    set_download_dir(None)
+
+    captured = capsys.readouterr()
+    expected_path = osp.join(osp.expanduser("~"), "mne_data")
+    assert "MNE_DATA is not already configured" in captured.out
+    assert "default location in the home directory" in captured.out
+    assert "mne_data" in captured.out
+
+    assert get_config("MNE_DATA") == expected_path
+
+
+def test_set_download_dir_none_already_set(capsys):
+    """Test setting download directory to None when MNE_DATA is already set."""
+    predefined_path = "/existing/mne_data_path"
+    set_config("MNE_DATA", predefined_path)
+
+    set_download_dir(None)
+
+    captured = capsys.readouterr()
+    # No print should occur since MNE_DATA is already set
+    assert captured.out == ""
+    assert get_config("MNE_DATA") == predefined_path
+
+
+def test_set_download_dir_existing_path(capsys):
+    """Test setting download directory to an existing path."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        set_download_dir(tmpdir)
+        captured = capsys.readouterr()
+        # No print should occur since the directory exists
+        assert captured.out == ""
+        assert get_config("MNE_DATA") == tmpdir
+
+
+def test_set_download_dir_nonexistent_path(capsys):
+    """Test setting download directory to a non-existent path."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        non_existent_path = osp.join(tmpdir, "new_mne_data")
+
+        # Ensure the path does not exist
+        assert not osp.exists(non_existent_path)
+
+        set_download_dir(non_existent_path)
+
+        captured = capsys.readouterr()
+        assert "The path given does not exist, creating it.." in captured.out
+        assert osp.isdir(non_existent_path)
+        assert get_config("MNE_DATA") == non_existent_path
+
+
+@pytest.mark.parametrize("path_exists", [True, False])
+def test_set_download_dir_parallel(path_exists, tmp_path, capsys):
+    """Test setting download directory in parallel with joblib."""
+    if path_exists:
+        path = tmp_path / "existing_dir"
+        path.mkdir()
+    else:
+        path = tmp_path / "non_existing_dir"
+
+    def worker(p):
+        set_download_dir(p)
+        mne_data_value = get_config("MNE_DATA")
+        return mne_data_value
+
+    results = Parallel(n_jobs=10)(delayed(worker)(path) for _ in range(100))
+
+    for mne_data_value in results:
+        assert mne_data_value == str(path)
 
 
 if __name__ == "__main__":
