@@ -62,7 +62,7 @@ jobs:
           path: .venv
           key:
             docsvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
-            hashFiles('**/poetry.lock') }}
+            hashFiles('**/pyproject.toml') }}
 
       - name: Install dependencies
         if: (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
@@ -76,7 +76,7 @@ jobs:
           cd docs && poetry run make html
 
       # Create an artifact of the html output.
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: DocumentationHTML
           path: docs/build/html/

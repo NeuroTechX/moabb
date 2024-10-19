@@ -17,12 +17,30 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+- Increasing the version in the pre-commit config (:gh:`631` by pre-commit bot)
+- Implementation of Pseudo Online framework (:gh:`641` by `Igor Carrara`_)
+
+Bugs
+~~~~
+
+- Fix Stieger2021 dataset bugs (:gh:`651` by `Martin Wimpff`_)
+- Unpinning major version Scikit-learn and numpy (:gh:`652` by `Bruno Aristimunha`_)
+- Replacing the func:`numpy.string_` to func:`numpy.bytes_` (:gh:`665` by `Bruno Aristimunha`_)
+-  Fixing the set_download_dir that was not working when we tried to set the dir more than 10 times at the same time (:gh:`668` by `Bruno Aristimunha`_)
+
+API changes
+~~~~~~~~~~~
+
+Version - 1.1.1  (Stable - PyPi)
+---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
 - Add possibility to use OptunaGridSearch (:gh:`630` by `Igor Carrara`_)
 - Add scripts to upload results on PapersWithCode (:gh:`561` by `Pierre Guetschel`_)
 - Centralize dataset summary tables in CSV files (:gh:`635` by `Pierre Guetschel`_)
 - Add new dataset :class:`moabb.datasets.Liu2024` dataset (:gh:`619` by `Taha Habib`_)
-- Increasing the version in the pre-commit config (:gh:`631` by pre-commit bot)
-- Implementation of Pseudo Online framework (:gh:`641` by `Igor Carrara`_)
+
 
 
 Bugs
@@ -35,8 +53,8 @@ API changes
 
 
 
-Version - 1.1.0  (Stable - PyPi)
----------------------------------
+Version - 1.1.0
+----------------
 
 
 Enhancements
@@ -451,6 +469,7 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
+.. _Martin Wimpff: https://github.com/martinwimpff
 .. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001
 .. _Sara Sedlar: https://github.com/Sara04

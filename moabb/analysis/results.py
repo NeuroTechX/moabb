@@ -112,7 +112,7 @@ class Results:
 
         if not osp.isfile(self.filepath):
             with h5py.File(self.filepath, "w") as f:
-                f.attrs["create_time"] = np.string_(
+                f.attrs["create_time"] = np.bytes_(
                     "{:%Y-%m-%d, %H:%M}".format(datetime.now())
                 )
 
