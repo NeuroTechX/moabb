@@ -19,6 +19,13 @@ Evaluations
     CrossSubjectEvaluation
 
 
+.. autosummary::
+    :toctree: generated/
+    :template: class.rst
+
+    WithinSessionSplitter
+
+
 ------------
 Base & Utils
 ------------
