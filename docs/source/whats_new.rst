@@ -17,6 +17,8 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+- Increasing the version in the pre-commit config (:gh:`631` by pre-commit bot)
+- Implementation of Pseudo Online framework (:gh:`641` by `Igor Carrara`_)
 
 Bugs
 ~~~~
@@ -38,6 +40,7 @@ Enhancements
 - Add scripts to upload results on PapersWithCode (:gh:`561` by `Pierre Guetschel`_)
 - Centralize dataset summary tables in CSV files (:gh:`635` by `Pierre Guetschel`_)
 - Add new dataset :class:`moabb.datasets.Liu2024` dataset (:gh:`619` by `Taha Habib`_)
+
 
 
 Bugs
