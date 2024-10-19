@@ -68,8 +68,8 @@ class WithinSessionSplitter(BaseCrossValidator):
 
         self.n_folds = n_folds
         # Setting random state
-        self.random_state = check_random_state(random_state) if shuffle else None
         self.shuffle = shuffle
+        self.random_state = check_random_state(random_state) if self.shuffle else None
 
     def get_n_splits(self, metadata):
         num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
