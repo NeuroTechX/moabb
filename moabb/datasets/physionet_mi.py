@@ -6,6 +6,7 @@ from mne.io import read_raw_edf
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.download import data_dl, get_dataset_path
+from moabb.datasets.utils import stim_channels_with_selected_ids
 
 
 BASE_URL = "https://physionet.org/files/eegmmidb/1.0.0/"
@@ -79,7 +80,7 @@ class PhysionetMI(BaseDataset):
             paradigm="imagery",
             doi="10.1109/TBME.2004.827072",
         )
-
+        self.events = dict(left_hand=2, right_hand=3, feet=5, hands=4, rest=1)
         self.imagined = imagined
         self.executed = executed
         self.feet_runs = []
@@ -123,7 +124,9 @@ class PhysionetMI(BaseDataset):
             stim[stim == "T1"] = "left_hand"
             stim[stim == "T2"] = "right_hand"
             raw.annotations.description = stim
-            data[str(idx)] = raw
+            data[str(idx)] = stim_channels_with_selected_ids(
+                raw, desired_event_id=self.events
+            )
             idx += 1
 
         # feet runs
@@ -136,7 +139,9 @@ class PhysionetMI(BaseDataset):
             stim[stim == "T1"] = "hands"
             stim[stim == "T2"] = "feet"
             raw.annotations.description = stim
-            data[str(idx)] = raw
+            data[str(idx)] = stim_channels_with_selected_ids(
+                raw, desired_event_id=self.events
+            )
             idx += 1
 
         return {"0": data}
@@ -171,3 +176,41 @@ class PhysionetMI(BaseDataset):
             p = data_dl(url, sign, path, force_update, verbose)
             data_paths.append(p)
         return data_paths
+
+    def _create_stim_channels(self, raw):
+        # Define a consistent mapping from event descriptions to integer IDs
+        desired_event_id = self.events
+
+        # Get events using the consistent event_id mapping
+        events, _ = mne.events_from_annotations(raw, event_id=desired_event_id)
+
+        # Filter the events array to include only desired events
+        desired_event_ids = list(desired_event_id.values())
+        filtered_events = events[np.isin(events[:, 2], desired_event_ids)]
+
+        # Create annotations from filtered events using the inverted mapping
+        event_desc = {v: k for k, v in desired_event_id.items()}
+        annot_from_events = mne.annotations_from_events(
+            events=filtered_events,
+            event_desc=event_desc,
+            sfreq=raw.info["sfreq"],
+            orig_time=raw.info["meas_date"],
+        )
+        raw.set_annotations(annot_from_events)
+
+        # Create the stim channel data array
+        stim_channs = np.zeros((1, raw.n_times))
+        for event in filtered_events:
+            sample_index = event[0]
+            event_code = event[2]  # Consistent event IDs
+            stim_channs[0, sample_index] = event_code
+
+        # Create the stim channel and add it to raw
+        stim_channel_name = "STIM"
+        stim_info = mne.create_info(
+            [stim_channel_name], sfreq=raw.info["sfreq"], ch_types=["stim"]
+        )
+        stim_raw = mne.io.RawArray(stim_channs, stim_info, verbose=False)
+        raw_with_stim = raw.copy().add_channels([stim_raw], force_update_info=True)
+
+        return raw_with_stim

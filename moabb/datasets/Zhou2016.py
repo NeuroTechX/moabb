@@ -7,7 +7,6 @@ import os
 import shutil
 import zipfile as z
 
-import mne
 import numpy as np
 from mne.channels import make_standard_montage
 from mne.io import read_raw_cnt
@@ -15,6 +14,7 @@ from pooch import retrieve
 
 from .base import BaseDataset
 from .download import get_dataset_path
+from .utils import stim_channels_with_selected_ids
 
 
 DATA_PATH = "https://ndownloader.figshare.com/files/3662952"
@@ -89,6 +89,7 @@ class Zhou2016(BaseDataset):
             paradigm="imagery",
             doi="10.1371/journal.pone.0162657",
         )
+        self.events = dict(left_hand=1, right_hand=2, feet=3)
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -106,7 +107,9 @@ class Zhou2016(BaseDataset):
                 stim[stim == "2"] = "right_hand"
                 stim[stim == "3"] = "feet"
                 raw.annotations.description = stim
-                out[sess_key][run_key] = self._create_stim_channels(raw)
+                out[sess_key][run_key] = stim_channels_with_selected_ids(
+                    raw, desired_event_id=self.events
+                )
                 out[sess_key][run_key].set_montage(make_standard_montage("standard_1005"))
         return out
 
@@ -120,42 +123,3 @@ class Zhou2016(BaseDataset):
         if not os.path.isdir(basepath):
             os.makedirs(basepath)
         return local_data_path(basepath, subject)
-
-    @staticmethod
-    def _create_stim_channels(raw):
-        # Define a consistent mapping from event descriptions to integer IDs
-        desired_event_id = dict(left_hand=1, right_hand=2, feet=3)
-
-        # Get events using the consistent event_id mapping
-        events, _ = mne.events_from_annotations(raw, event_id=desired_event_id)
-
-        # Filter the events array to include only desired events
-        desired_event_ids = list(desired_event_id.values())
-        filtered_events = events[np.isin(events[:, 2], desired_event_ids)]
-
-        # Create annotations from filtered events using the inverted mapping
-        event_desc = {v: k for k, v in desired_event_id.items()}
-        annot_from_events = mne.annotations_from_events(
-            events=filtered_events,
-            event_desc=event_desc,
-            sfreq=raw.info["sfreq"],
-            orig_time=raw.info["meas_date"],
-        )
-        raw.set_annotations(annot_from_events)
-
-        # Create the stim channel data array
-        stim_channs = np.zeros((1, raw.n_times))
-        for event in filtered_events:
-            sample_index = event[0]
-            event_code = event[2]  # Consistent event IDs
-            stim_channs[0, sample_index] = event_code
-
-        # Create the stim channel and add it to raw
-        stim_channel_name = "STIM"
-        stim_info = mne.create_info(
-            [stim_channel_name], sfreq=raw.info["sfreq"], ch_types=["stim"]
-        )
-        stim_raw = mne.io.RawArray(stim_channs, stim_info, verbose=False)
-        raw_with_stim = raw.copy().add_channels([stim_raw], force_update_info=True)
-
-        return raw_with_stim
