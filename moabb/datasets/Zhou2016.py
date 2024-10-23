@@ -7,7 +7,9 @@ import os
 import shutil
 import zipfile as z
 
+import mne
 import numpy as np
+from mne import events_from_annotations
 from mne.channels import make_standard_montage
 from mne.io import read_raw_cnt
 from pooch import retrieve
@@ -105,7 +107,7 @@ class Zhou2016(BaseDataset):
                 stim[stim == "2"] = "right_hand"
                 stim[stim == "3"] = "feet"
                 raw.annotations.description = stim
-                out[sess_key][run_key] = raw
+                out[sess_key][run_key] = self._create_stim_channels(raw)
                 out[sess_key][run_key].set_montage(make_standard_montage("standard_1005"))
         return out
 
@@ -119,3 +121,45 @@ class Zhou2016(BaseDataset):
         if not os.path.isdir(basepath):
             os.makedirs(basepath)
         return local_data_path(basepath, subject)
+
+    @staticmethod
+    def _create_stim_channels(raw):
+
+        desired_events = ["left_hand", "right_hand", "feet"]
+        # Step 1: getting the events from annotation.
+        events, events_ids = events_from_annotations(raw)
+
+        # Step 2: Filter the event_id dictionary
+        filtered_event_id = {
+            key: events_ids[key] for key in desired_events if key in events_ids
+        }
+
+        # Step 3: Filter the events array
+        desired_event_ids = list(filtered_event_id.values())
+        filtered_events = events[np.isin(events[:, 2], desired_event_ids)]
+
+        annot_from_events = mne.annotations_from_events(
+            events=events,
+            event_desc=desired_event_ids,
+            sfreq=raw.info["sfreq"],
+            orig_time=raw.info["meas_date"],
+        )
+        raw.set_annotations(annot_from_events)
+
+        # Creating the stim chans
+        stim_channs = np.zeros((1, raw.n_times))
+
+        for event in filtered_events:
+            sample_index = event[0]
+            event_code = event[2]
+            stim_channs[0, sample_index] = event_code
+
+        stim_channel_name = "STIM"
+        stim_info = mne.create_info(
+            [stim_channel_name], sfreq=raw.info["sfreq"], ch_types=["stim"]
+        )
+
+        stim_raw = mne.io.RawArray(stim_channs, stim_info)
+        raw = raw.copy().add_channels([stim_raw], force_update_info=True)
+
+        return raw
