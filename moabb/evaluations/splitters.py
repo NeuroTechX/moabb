@@ -1,4 +1,3 @@
-import numpy as np
 from sklearn.model_selection import BaseCrossValidator, StratifiedKFold
 from sklearn.utils import check_random_state
 
@@ -64,7 +63,7 @@ class WithinSessionSplitter(BaseCrossValidator):
 
         self.n_folds = n_folds
         # Setting random state
-        self.random_state = check_random_state(random_state) if shuffle else None
+        self.random_state = check_random_state(random_state)
         self.shuffle = shuffle
 
     def get_n_splits(self, metadata):
@@ -72,31 +71,29 @@ class WithinSessionSplitter(BaseCrossValidator):
         return self.n_folds * num_sessions_subjects
 
     def split(self, y, metadata, **kwargs):
-
-        assert isinstance(self.n_folds, int)
-
         all_index = metadata.index.values
         subjects = metadata.subject.values
-        cv = StratifiedKFold(
-            n_splits=self.n_folds, shuffle=self.shuffle, random_state=self.random_state
-        )
+        sessions = metadata.session.values
 
-        for subject in np.unique(subjects):
-            subject_mask = subjects == subject
-            subject_indices, subject_y, subject_metadata = (
-                all_index[subject_mask],
-                y[subject_mask],
-                metadata[subject_mask],
+        # Get the unique combinations of subject and session
+        group_keys = metadata.groupby(["subject", "session"]).groups.keys()
+        group_keys = list(group_keys)
+
+        # Shuffle the order of groups if shuffle is True
+        if self.shuffle:
+            self.random_state.shuffle(group_keys)
+
+        for subject, session in group_keys:
+            # Get the indices for the current group
+            group_mask = (subjects == subject) & (sessions == session)
+            group_indices = all_index[group_mask]
+            group_y = y[group_mask]
+
+            # Use StratifiedKFold with the group-specific random state
+            cv = StratifiedKFold(
+                n_splits=self.n_folds,
+                shuffle=self.shuffle,
+                random_state=self.random_state,
             )
-
-            sessions = subject_metadata.session.values
-
-            for session in np.unique(sessions):
-                session_mask = sessions == session
-                session_indices, session_y = (
-                    subject_indices[session_mask],
-                    subject_y[session_mask],
-                )
-
-                for ix_train, ix_test in cv.split(session_indices, session_y):
-                    yield session_indices[ix_train], session_indices[ix_test]
+            for ix_train, ix_test in cv.split(group_indices, group_y):
+                yield group_indices[ix_train], group_indices[ix_test]
