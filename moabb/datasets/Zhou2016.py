@@ -121,7 +121,8 @@ class Zhou2016(BaseDataset):
             os.makedirs(basepath)
         return local_data_path(basepath, subject)
 
-    def _create_stim_channels(self, raw):
+    @staticmethod
+    def _create_stim_channels(raw):
         # Define a consistent mapping from event descriptions to integer IDs
         desired_event_id = dict(left_hand=1, right_hand=2, feet=3)
 
