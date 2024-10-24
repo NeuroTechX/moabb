@@ -3,6 +3,7 @@ from mne.channels import make_standard_montage
 from mne.io import read_raw_gdf
 
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.utils import stim_channels_with_selected_ids
 
 from . import download as dl
 
@@ -58,7 +59,7 @@ class Ofner2017(BaseDataset):
     def __init__(self, imagined=True, executed=False):
         self.imagined = imagined
         self.executed = executed
-        event_id = {
+        self.event_id = {
             "right_elbow_flexion": 1536,
             "right_elbow_extension": 1537,
             "right_supination": 1538,
@@ -72,7 +73,7 @@ class Ofner2017(BaseDataset):
         super().__init__(
             subjects=list(range(1, 16)),
             sessions_per_subject=n_sessions,
-            events=event_id,
+            events=self.event_id,
             code="Ofner2017",
             interval=[0, 3],  # according to paper 2-5
             paradigm="imagery",
@@ -114,7 +115,7 @@ class Ofner2017(BaseDataset):
                 stim[stim == "1541"] = "right_hand_open"
                 stim[stim == "1542"] = "rest"
                 raw.annotations.description = stim
-                data[str(ii)] = raw
+                data[str(ii)] = stim_channels_with_selected_ids(raw, self.event_id)
 
             out[session_name] = data
         return out
