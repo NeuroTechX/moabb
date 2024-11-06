@@ -18,6 +18,8 @@ Develop branch
 Enhancements
 ~~~~~~~~~~~~
 
+- Update version of pyRiemann to 0.7 (:gh:`671` by `Gregoire Cattan`_)
+
 Bugs
 ~~~~
 
