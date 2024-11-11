@@ -14,6 +14,7 @@ from mne.channels import read_custom_montage
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.utils import stim_channels_with_selected_ids
 
 
 # Link to the raw data
@@ -77,15 +78,15 @@ class Liu2024(BaseDataset):
     def __init__(self, break_events=False, instr_events=False):
         self.break_events = break_events
         self.instr_events = instr_events
-        events = {"left_hand": 1, "right_hand": 2}
+        self.events = {"left_hand": 1, "right_hand": 2}
         if break_events:
-            events["instr"] = 3
+            self.events["instr"] = 3
         if instr_events:
-            events["break"] = 4
+            self.events["break"] = 4
         super().__init__(
             subjects=list(range(1, 50 + 1)),
             sessions_per_subject=1,
-            events=events,
+            events=self.events,
             code="Liu2024",
             interval=(2, 6),
             paradigm="imagery",
@@ -277,7 +278,7 @@ class Liu2024(BaseDataset):
         # Loading dataset
         raw = raw.load_data(verbose=False)
         # There is only one session
-        sessions = {"0": {"0": raw}}
+        sessions = {"0": {"0": stim_channels_with_selected_ids(raw, self.event_id)}}
 
         return sessions
 
