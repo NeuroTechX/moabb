@@ -470,10 +470,26 @@ documentation.</p>
 <p>Do not hesitate to help us complete this list. It is also possible to add new datasets,
 there is a tutorial explaining how to do so, and we welcome warmly any new contributions!</p>
 <p>See also <a class="reference external" href="https://github.com/NeuroTechX/moabb/wiki/Datasets-Support">Datasets-Support</a> for supplementary
-detail on datasets (class name, size, licence, etc.)</p>
+detail on datasets (class name, size, licence, etc.)
+Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, Total_trials, PapersWithCode leaderboard</p>
+<p>Columns definitions:
+* <strong>Dataset</strong> is the name of the dataset.
+* <strong>#Subj</strong> is the number of subjects.
+* <strong>#Chan</strong> is the number of EEG channels.
+* <strong>#Trials / class</strong> is the number of repetitions performed by one subject for each class. This number is computed using only the first subject of each dataset. <em>The definitions of a **class*</em> and of a <strong>trial</strong> depend on the paradigm used (see sections below)*.
+* <strong>Trial length</strong> is the duration of trial in seconds.
+* <strong>Total_trials</strong> is the total number of trials in the dataset (all subjects and classes together).
+* <strong>Freq</strong> is the sampling frequency of the raw data.
+* <strong>#Session</strong> is the number of sessions per subject. Different sessions are often recorded on different days.
+* <strong>#Runs</strong> is the number of runs per session. A run is a continuous recording of the EEG data. Often, the different runs of a given session are recorded without removing the EEG cap in between.
+* <strong>PapersWithCode leaderboard</strong> is the link to the dataset on the PapersWithCode leaderboard.</p>
 </section>
 <section id="motor-imagery">
 <h1>Motor Imagery<a class="headerlink" href="#motor-imagery" title="Permalink to this heading">#</a></h1>
+<p>Motor Imagery is a BCI paradigm where the subject imagines performing movements. Each movement is associated with a different command to build an application.</p>
+<p>Motor Imagery-specific definitions:
+* <strong>#Classes</strong> is the number of different imagery tasks.
+* <strong>Trial</strong> is one repetition of the imagery task.</p>
 <table class="sortable table">
 <colgroup>
 <col style="width: 9%" />
@@ -493,7 +509,7 @@ detail on datasets (class name, size, licence, etc.)</p>
 <th class="head"><p>#Subj</p></th>
 <th class="head"><p>#Chan</p></th>
 <th class="head"><p>#Classes</p></th>
-<th class="head"><p>#Trials</p></th>
+<th class="head"><p>#Trials / class</p></th>
 <th class="head"><p>Trial length</p></th>
 <th class="head"><p>Freq</p></th>
 <th class="head"><p>#Session</p></th>
@@ -724,6 +740,10 @@ detail on datasets (class name, size, licence, etc.)</p>
 </section>
 <section id="p300-erp">
 <h1>P300/ERP<a class="headerlink" href="#p300-erp" title="Permalink to this heading">#</a></h1>
+<p>ERP (Event-Related Potential) is a BCI paradigm where the subject is presented with a stimulus and the EEG response is recorded. The P300 is a positive peak in the EEG signal that occurs around 300 ms after the stimulus.</p>
+<p>P300-specific definitions:
+* <strong>A trial</strong> is one flash.
+* <strong>The classes</strong> are binary: a trial is <strong>target</strong> if the key on which the subject focuses is flashed and <strong>non-target</strong> otherwise.</p>
 <table class="sortable table">
 <colgroup>
 <col style="width: 13%" />
@@ -896,6 +916,10 @@ detail on datasets (class name, size, licence, etc.)</p>
 </section>
 <section id="ssvep">
 <h1>SSVEP<a class="headerlink" href="#ssvep" title="Permalink to this heading">#</a></h1>
+<p>SSVEP (Steady-State Visually Evoked Potential) is a BCI paradigm where the subject is presented with flickering stimuli. The EEG signal is modulated at the same frequency as the stimulus. Each stimulus is flickering at a different frequency.</p>
+<p>SSVEP-specific definitions:
+* <strong>#Classes</strong> is the number of different stimulation frequencies.
+* <strong>A trial</strong> is one symbol selection. This includes multiple flashes.</p>
 <table class="sortable table">
 <colgroup>
 <col style="width: 11%" />
@@ -1004,6 +1028,13 @@ non-periodic stimuli. For a review of c-VEP BCI, see:</p>
 Hornero, R. (2021). Brain–computer interfaces based on code-modulated visual evoked
 potentials (c-VEP): A literature review. Journal of Neural Engineering, 18(6), 061002.
 DOI: <a class="reference external" href="https://doi.org/10.1088/1741-2552/ac38cf">https://doi.org/10.1088/1741-2552/ac38cf</a></p>
+<p>c-VEP-specific definitions:
+* <strong>A trial</strong> is one symbol selection. This includes multiple flashes.
+* <strong>#Trial classes</strong> is the number of different symbols.
+* <strong>#Epoch classes</strong> is the number of possible intensities for the flashes  (for a visual cVEP paradigm). Typically, there are only two intensities: on and off.
+* <strong>#Epochs / class</strong> the number of flashes per intensity in each session.
+* <strong>Codes</strong> is the type of code used in the experiment.
+* <strong>Presentation rate</strong> is the rate at which the codes are presented.</p>
 <table class="sortable table">
 <colgroup>
 <col style="width: 8%" />
