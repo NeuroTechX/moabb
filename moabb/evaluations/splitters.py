@@ -78,7 +78,7 @@ class WithinSessionSplitter(BaseCrossValidator):
 
     def split(self, y, metadata, **kwargs):
         all_index = metadata.index.values
-        subjects = metadata['subject'].unique()
+        subjects = metadata["subject"].unique()
 
         # Shuffle subjects if required
         if self.shuffle_subjects:
