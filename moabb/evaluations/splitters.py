@@ -6,8 +6,8 @@ class WithinSessionSplitter(BaseCrossValidator):
     """Data splitter for within session evaluation.
 
     Within-session evaluation uses k-fold cross_validation to determine train
-    and test sets on separate session for each subject. This splitter assumes that
-    all data from all subjects is already known and loaded.
+    and test sets for each subject in each session. This splitter
+    assumes that all data from all subjects is already known and loaded.
 
     .. image:: images/withinsess.png
         :alt: The schematic diagram of the WithinSession split
