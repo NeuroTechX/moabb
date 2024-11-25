@@ -19,7 +19,7 @@ class WithinSessionSplitter(BaseCrossValidator):
     n_folds : int
         Number of folds. Must be at least 2.
     random_state: int, RandomState instance or None, default=None
-        Important when `shuffle` is True. Controls the randomness of splits.
+        Controls the randomness of splits. Only used when `shuffle` is True.
         Pass an int for reproducible output across multiple function calls.
     shuffle_session : bool, default=True
         Whether to shuffle each class's samples before splitting into batches.
