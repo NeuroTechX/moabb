@@ -1,5 +1,9 @@
+import copy
+
 from sklearn.model_selection import BaseCrossValidator, StratifiedKFold
 from sklearn.utils import check_random_state
+
+from moabb.evaluations.metasplitters import PseudoOnlineSplit
 
 
 class WithinSessionSplitter(BaseCrossValidator):
@@ -17,16 +21,21 @@ class WithinSessionSplitter(BaseCrossValidator):
     Parameters
     ----------
     n_folds : int
-        Number of folds. Must be at least 2.
+        Number of folds. Must be at least 2. If
     random_state: int, RandomState instance or None, default=None
         Controls the randomness of splits. Only used when `shuffle` is True.
         Pass an int for reproducible output across multiple function calls.
-    shuffle_session : bool, default=True
+    shuffle : bool, default=True
         Whether to shuffle each class's samples before splitting into batches.
         Note that the samples within each split will not be shuffled.
-    shuffle_subjects : bool, default=False
-        Apply shuffle in mixing subjects and sessions, this parameter allows
-        sample iterations of the sppliter.
+    custom_cv: bool, default=False
+        Indicates if you are using PseudoOnlineSplit as cv strategy
+    calib_size: int, default=None
+        Size of calibration set if custom_cv==True
+    cv: cros-validation object, default=StratifiedKFold
+        Inner cross-validation strategy for splitting the sessions. Be careful, if
+        PseudoOnlineSplit is used, it will return calibration and test indexes.
+
 
     Examples
     -----------
@@ -37,7 +46,7 @@ class WithinSessionSplitter(BaseCrossValidator):
     >>> X = np.array([[1, 2], [3, 4], [5, 6], [1,4], [7, 4], [5, 8], [0,3], [2,4]])
     >>> y = np.array([1, 2, 1, 2, 1, 2, 1, 2])
     >>> subjects = np.array([1, 1, 1, 1, 1, 1, 1, 1])
-    >>> sessions = np.array(['T', 'T', 'E', 'E', 'T', 'T', 'E', 'E'])
+    >>> sessions = np.array(['T', 'T', 'T', 'T', 'E', 'E', 'E', 'E'])
     >>> metadata = pd.DataFrame(data={'subject': subjects, 'session': sessions})
     >>> csess = WithinSessionSplitter(n_folds=2)
     >>> csess.get_n_splits(metadata)
@@ -47,63 +56,73 @@ class WithinSessionSplitter(BaseCrossValidator):
     ...    print(f"  Train: index={train_index}, group={subjects[train_index]}, session={sessions[train_index]}")
     ...    print(f"  Test:  index={test_index}, group={subjects[test_index]}, sessions={sessions[test_index]}")
     Fold 0:
-      Train: index=[2 7], group=[1 1], session=['E' 'E']
-      Test:  index=[3 6], group=[1 1], sessions=['E' 'E']
+      Train: index=[4 7], group=[1 1], session=['E' 'E']
+      Test:  index=[5 6], group=[1 1], sessions=['E' 'E']
     Fold 1:
-      Train: index=[3 6], group=[1 1], session=['E' 'E']
-      Test:  index=[2 7], group=[1 1], sessions=['E' 'E']
+      Train: index=[5 6], group=[1 1], session=['E' 'E']
+      Test:  index=[4 7], group=[1 1], sessions=['E' 'E']
     Fold 2:
-      Train: index=[4 5], group=[1 1], session=['T' 'T']
+      Train: index=[2 3], group=[1 1], session=['T' 'T']
       Test:  index=[0 1], group=[1 1], sessions=['T' 'T']
     Fold 3:
       Train: index=[0 1], group=[1 1], session=['T' 'T']
-      Test:  index=[4 5], group=[1 1], sessions=['T' 'T']
+      Test:  index=[2 3], group=[1 1], sessions=['T' 'T']
     """
 
     def __init__(
         self,
+        cv = StratifiedKFold,
+        custom_cv = False,
         n_folds: int = 5,
         random_state: int = 42,
-        shuffle_subjects: bool = False,
-        shuffle_session: bool = True,
+        shuffle: bool = True,
+        calib_size: int = None
     ):
         self.n_folds = n_folds
-        self.shuffle_subjects = shuffle_subjects
-        self.shuffle_session = shuffle_session
-        self.random_state = check_random_state(random_state)
+        self.shuffle = shuffle
+        self.random_state = check_random_state(random_state) if shuffle else None
+        self.cv = cv
+        self.calib_size = calib_size
+        self.custom_cv = custom_cv
 
     def get_n_splits(self, metadata):
         num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
-        return self.n_folds * num_sessions_subjects
+        return self.cv.get_n_splits(metadata) if self.custom_cv else self.n_folds * num_sessions_subjects
 
     def split(self, y, metadata, **kwargs):
         all_index = metadata.index.values
         subjects = metadata["subject"].unique()
 
         # Shuffle subjects if required
-        if self.shuffle_subjects:
+        if self.shuffle:
             self.random_state.shuffle(subjects)
 
-        for subject in subjects:
+        for i, subject in enumerate(subjects):
             subject_mask = metadata.subject == subject
             subject_indices = all_index[subject_mask]
             subject_metadata = metadata[subject_mask]
             sessions = subject_metadata.session.unique()
 
             # Shuffle sessions if required
-            if self.shuffle_session:
+            if self.shuffle:
                 self.random_state.shuffle(sessions)
 
-            for session in sessions:
+            for j, session in enumerate(sessions):
                 session_mask = subject_metadata.session == session
                 indices = subject_indices[session_mask]
                 group_y = y[indices]
 
-                # Use StratifiedKFold with the group-specific random state
-                cv = StratifiedKFold(
-                    n_splits=self.n_folds,
-                    shuffle=self.shuffle_session,
-                    random_state=self.random_state,
-                )
-                for ix_train, ix_test in cv.split(indices, group_y):
-                    yield indices[ix_train], indices[ix_test]
+                # Handle custom splitter
+                if isinstance(self.cv(), PseudoOnlineSplit):
+                    splitter = self.cv(calib_size=self.calib_size)
+                    for calib_ix, test_ix in splitter.split(indices, group_y, subject_metadata[session_mask]):
+                        yield calib_ix, test_ix
+                else:
+                    # Handle standard CV like StratifiedKFold
+                    splitter = self.cv(
+                        n_splits=self.n_folds,
+                        shuffle=self.shuffle,
+                        random_state=self.random_state.randint(0, 2**10),
+                    )
+                    for train_ix, test_ix in splitter.split(indices, group_y):
+                        yield indices[train_ix], indices[test_ix]
