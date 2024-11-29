@@ -2,6 +2,7 @@ from sklearn.model_selection import BaseCrossValidator
 
 from moabb.evaluations.utils import sort_group
 
+
 class PseudoOnlineSplit(BaseCrossValidator):
     """Pseudo-online split for evaluation test data.
 
@@ -69,7 +70,9 @@ class PseudoOnlineSplit(BaseCrossValidator):
                         break  # Take the fist run as calibration
                 else:
                     if self.calib_size is None:
-                        raise ValueError('Data contains just one run. Need to provide calibration size.')
+                        raise ValueError(
+                            "Data contains just one run. Need to provide calibration size."
+                        )
                     # Take first #calib_size samples as calibration
                     calib_size = self.calib_size
                     calib_ix = group[:calib_size].index
@@ -79,6 +82,6 @@ class PseudoOnlineSplit(BaseCrossValidator):
 
         else:
             if self.calib_size is None:
-                raise ValueError('Need to provide calibration size.')
+                raise ValueError("Need to provide calibration size.")
             calib_size = self.calib_size
             yield list(indices[:calib_size]), list(indices[calib_size:])

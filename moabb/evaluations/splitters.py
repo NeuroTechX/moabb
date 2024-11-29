@@ -1,4 +1,3 @@
-import copy
 
 from sklearn.model_selection import BaseCrossValidator, StratifiedKFold
 from sklearn.utils import check_random_state
@@ -71,12 +70,12 @@ class WithinSessionSplitter(BaseCrossValidator):
 
     def __init__(
         self,
-        cv = StratifiedKFold,
-        custom_cv = False,
+        cv=StratifiedKFold,
+        custom_cv=False,
         n_folds: int = 5,
         random_state: int = 42,
         shuffle: bool = True,
-        calib_size: int = None
+        calib_size: int = None,
     ):
         self.n_folds = n_folds
         self.shuffle = shuffle
@@ -87,7 +86,11 @@ class WithinSessionSplitter(BaseCrossValidator):
 
     def get_n_splits(self, metadata):
         num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
-        return self.cv.get_n_splits(metadata) if self.custom_cv else self.n_folds * num_sessions_subjects
+        return (
+            self.cv.get_n_splits(metadata)
+            if self.custom_cv
+            else self.n_folds * num_sessions_subjects
+        )
 
     def split(self, y, metadata, **kwargs):
         all_index = metadata.index.values
@@ -115,7 +118,9 @@ class WithinSessionSplitter(BaseCrossValidator):
                 # Handle custom splitter
                 if isinstance(self.cv(), PseudoOnlineSplit):
                     splitter = self.cv(calib_size=self.calib_size)
-                    for calib_ix, test_ix in splitter.split(indices, group_y, subject_metadata[session_mask]):
+                    for calib_ix, test_ix in splitter.split(
+                        indices, group_y, subject_metadata[session_mask]
+                    ):
                         yield calib_ix, test_ix
                 else:
                     # Handle standard CV like StratifiedKFold
