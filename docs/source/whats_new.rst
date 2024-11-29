@@ -19,13 +19,18 @@ Enhancements
 ~~~~~~~~~~~~
 - Adding :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`664` by `Bruna Lopes_`)
 
+- Update version of pyRiemann to 0.7 (:gh:`671` by `Gregoire Cattan`_)
+- Add columns definitions in the datasets doc (:gh:`672` by `Pierre Guetschel`_)
+
 Bugs
 ~~~~
 
 - Fix Stieger2021 dataset bugs (:gh:`651` by `Martin Wimpff`_)
 - Unpinning major version Scikit-learn and numpy (:gh:`652` by `Bruno Aristimunha`_)
 - Replacing the func:`numpy.string_` to func:`numpy.bytes_` (:gh:`665` by `Bruno Aristimunha`_)
--  Fixing the set_download_dir that was not working when we tried to set the dir more than 10 times at the same time (:gh:`668` by `Bruno Aristimunha`_)
+- Fixing the set_download_dir that was not working when we tried to set the dir more than 10 times at the same time (:gh:`668` by `Bruno Aristimunha`_)
+- Creating stimulus channels in :class:`moabb.datasets.Zhou2016` and :class:`moabb.datasets.PhysionetMI` to allow braindecode compatibility (:gh:`669` by `Bruno Aristimunha`_)
+
 
 API changes
 ~~~~~~~~~~~
