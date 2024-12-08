@@ -63,12 +63,9 @@ class PseudoOnlineSplit(BaseCrossValidator):
 
     def split(self, indices, y, metadata=None):
 
-        # If you have metadata information
         if metadata is not None:
             for _, group in metadata.groupby(["subject", "session"]):
-                group = group.reset_index(drop=True)
                 runs = group.run.unique()
-                # If you have more then 1 run, return first as calibrtion
                 if len(runs) > 1:
                     # To guarantee that the runs are on the right order
                     runs = sort_group(runs)
