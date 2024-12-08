@@ -41,11 +41,18 @@ class PseudoOnlineSplit(BaseCrossValidator):
     >>>     print(f"  Test:  index={test_index}, group={subjects[test_index]}, sessions={sessions[test_index]}, runs={runs[test_index]}")
 
     Fold 0:
-      Calibration: index=[6, 7], group=[1 1], sessions=[1 1], runs=['1' '1']
-      Test:  index=[4, 5], group=[1 1], sessions=[1 1], runs=['0' '0']
+      Calibration: index=[4], group=[1], sessions=[1], runs=['0']
+      Test:  index=[5], group=[1], sessions=[1], runs=['0']
     Fold 1:
-      Calibration: index=[2, 3], group=[1 1], sessions=[0 0], runs=['1' '1']
-      Test:  index=[0, 1], group=[1 1], sessions=[0 0], runs=['0' '0']
+      Calibration: index=[6], group=[1], sessions=[1], runs=['1']
+      Test:  index=[7], group=[1], sessions=[1], runs=['1']
+    Fold 2:
+      Calibration: index=[0], group=[1], sessions=[0], runs=['0']
+      Test:  index=[1], group=[1], sessions=[0], runs=['0']
+    Fold 3:
+      Calibration: index=[2], group=[1], sessions=[0], runs=['1']
+      Test:  index=[3], group=[1], sessions=[0], runs=['1']
+
     """
 
     def __init__(self, calib_size: int = None):
@@ -56,29 +63,47 @@ class PseudoOnlineSplit(BaseCrossValidator):
 
     def split(self, indices, y, metadata=None):
 
+        # If you have metadata information
         if metadata is not None:
             for _, group in metadata.groupby(["subject", "session"]):
+                group = group.reset_index(drop=True)
                 runs = group.run.unique()
+                # If you have more then 1 run, return first as calibrtion
                 if len(runs) > 1:
                     # To guarantee that the runs are on the right order
                     runs = sort_group(runs)
                     for run in runs:
-                        test_ix = group[group["run"] != run].index
-                        calib_ix = group[group["run"] == run].index
-                        yield list(test_ix), list(calib_ix)
-                        break  # Take the fist run as calibration
+                        calib_mask = group["run"] == run
+                        calib_ix = group[calib_mask].index
+
+                        if self.calib_size is None:
+                            test_ix = group[~calib_mask].index
+                            yield calib_ix, test_ix
+                            break  # Take the fist run as calibration
+                        else:
+                            mask_run = group["run"] == run
+                            if self.calib_size > len(mask_run):
+                                raise ValueError('Calibration size must be less than number of runs.')
+                            yield calib_ix[:self.calib_size], calib_ix[self.calib_size:]
+
+
+                # Else, get the first #calib_size trials
                 else:
                     if self.calib_size is None:
                         raise ValueError('Data contains just one run. Need to provide calibration size.')
                     # Take first #calib_size samples as calibration
                     calib_size = self.calib_size
+                    if calib_size < len(group):
+                        raise ValueError('Data contains just one run. Need to provide calibration size.')
+
+                    # Get indexes of respective groups
                     calib_ix = group[:calib_size].index
                     test_ix = group[calib_size:].index
 
-                    yield list(calib_ix), list(test_ix)
-
+                    yield calib_ix, test_ix
+        # If not
         else:
             if self.calib_size is None:
-                raise ValueError('Need to provide calibration size.')
+                raise ValueError('No metadata information. Need to provide calibration size.')
             calib_size = self.calib_size
-            yield list(indices[:calib_size]), list(indices[calib_size:])
+            yield list(range(calib_size)), list(range(calib_size,len(indices)))

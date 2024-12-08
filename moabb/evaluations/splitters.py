@@ -67,6 +67,7 @@ class WithinSessionSplitter(BaseCrossValidator):
     Fold 3:
       Train: index=[0 1], group=[1 1], session=['T' 'T']
       Test:  index=[2 3], group=[1 1], sessions=['T' 'T']
+
     """
 
     def __init__(
@@ -116,7 +117,7 @@ class WithinSessionSplitter(BaseCrossValidator):
                 if isinstance(self.cv(), PseudoOnlineSplit):
                     splitter = self.cv(calib_size=self.calib_size)
                     for calib_ix, test_ix in splitter.split(indices, group_y, subject_metadata[session_mask]):
-                        yield calib_ix, test_ix
+                        yield indices[calib_ix], indices[test_ix]
                 else:
                     # Handle standard CV like StratifiedKFold
                     splitter = self.cv(
