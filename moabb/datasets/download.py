@@ -220,16 +220,16 @@ def fs_get_file_list(article_id, version=None):
     fsurl = "https://api.figshare.com/v2"
     all_files = []
     page = 1
-    
+
     while True:
         if version is None:
             url = f"{fsurl}/articles/{article_id}/files?page={page}&page_size=100"
             headers = {"Content-Type": "application/json"}
             response = fs_issue_request("GET", url, headers=headers)
-            
+
             if not response:  # If response is empty, we've got all files
                 break
-                
+
             all_files.extend(response)
             page += 1
         else:
@@ -237,7 +237,7 @@ def fs_get_file_list(article_id, version=None):
             headers = {"Content-Type": "application/json"}
             request = fs_issue_request("GET", url, headers=headers)
             return request["files"]
-            
+
     return all_files
 
 
