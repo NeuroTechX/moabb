@@ -5,6 +5,22 @@ from sklearn.utils import check_random_state
 
 from moabb.evaluations.metasplitters import PseudoOnlineSplit
 
+class WrapperStratifiedKFold:
+    def __init__(self, n_folds=5, shuffle=True, global_seed=42):
+        self.n_folds = n_folds
+        self.shuffle = shuffle
+        self.global_seed = global_seed
+
+    def initialize(self, number_subjects, number_sessions):
+
+        for i in range(number_subjects):
+            for j in range(number_sessions):
+
+                yield StratifiedKFold(n_splits=self.n_folds,
+                                       shuffle=self.shuffle,
+                                       random_state= self.global_seed + 10000*i + j)
+
+
 
 class WithinSessionSplitter(BaseCrossValidator):
     """Data splitter for within session evaluation.
@@ -56,35 +72,38 @@ class WithinSessionSplitter(BaseCrossValidator):
     ...    print(f"  Train: index={train_index}, group={subjects[train_index]}, session={sessions[train_index]}")
     ...    print(f"  Test:  index={test_index}, group={subjects[test_index]}, sessions={sessions[test_index]}")
     Fold 0:
-      Train: index=[4 7], group=[1 1], session=['E' 'E']
-      Test:  index=[5 6], group=[1 1], sessions=['E' 'E']
+      Train: index=[4 5], group=[1 1], session=['E' 'E']
+      Test:  index=[6 7], group=[1 1], sessions=['E' 'E']
     Fold 1:
-      Train: index=[5 6], group=[1 1], session=['E' 'E']
-      Test:  index=[4 7], group=[1 1], sessions=['E' 'E']
+      Train: index=[6 7], group=[1 1], session=['E' 'E']
+      Test:  index=[4 5], group=[1 1], sessions=['E' 'E']
     Fold 2:
-      Train: index=[2 3], group=[1 1], session=['T' 'T']
-      Test:  index=[0 1], group=[1 1], sessions=['T' 'T']
-    Fold 3:
       Train: index=[0 1], group=[1 1], session=['T' 'T']
       Test:  index=[2 3], group=[1 1], sessions=['T' 'T']
+    Fold 3:
+      Train: index=[2 3], group=[1 1], session=['T' 'T']
+      Test:  index=[0 1], group=[1 1], sessions=['T' 'T']
 
     """
 
     def __init__(
         self,
-        cv = StratifiedKFold,
+        cv = None,
         custom_cv = False,
         n_folds: int = 5,
         random_state: int = 42,
+        global_seed = 66,
         shuffle: bool = True,
         calib_size: int = None
     ):
+        self.cv = cv
+        self.custom_cv = custom_cv
         self.n_folds = n_folds
         self.shuffle = shuffle
         self.random_state = check_random_state(random_state) if shuffle else None
-        self.cv = cv
+        self.global_seed = global_seed
         self.calib_size = calib_size
-        self.custom_cv = custom_cv
+
 
     def get_n_splits(self, metadata):
         num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
@@ -114,16 +133,23 @@ class WithinSessionSplitter(BaseCrossValidator):
                 group_y = y[indices]
 
                 # Handle custom splitter
-                if isinstance(self.cv(), PseudoOnlineSplit):
+                if self.custom_cv:
+                    if self.cv is None:
+                        raise ValueError("Need to pass a custom cv strategy.")
                     splitter = self.cv(calib_size=self.calib_size)
                     for calib_ix, test_ix in splitter.split(indices, group_y, subject_metadata[session_mask]):
                         yield indices[calib_ix], indices[test_ix]
+                # If we want to use normal Kfold
                 else:
-                    # Handle standard CV like StratifiedKFold
-                    splitter = self.cv(
-                        n_splits=self.n_folds,
+                    # Defining a different cv object per (subject,session)
+                    wrapper_cv = WrapperStratifiedKFold(
+                        n_folds=self.n_folds,
                         shuffle=self.shuffle,
-                        random_state=self.random_state.randint(0, 2**10),
+                        global_seed=self.global_seed,
                     )
+                    wrapper_iterator = wrapper_cv.initialize(len(subjects), len(sessions))
+                    splitter = next(wrapper_iterator)
+
+                    # Split using the current instance of StratifiedKFold
                     for train_ix, test_ix in splitter.split(indices, group_y):
                         yield indices[train_ix], indices[test_ix]
