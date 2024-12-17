@@ -2,6 +2,7 @@ from sklearn.model_selection import BaseCrossValidator
 
 from moabb.evaluations.utils import sort_group
 
+
 class PseudoOnlineSplit(BaseCrossValidator):
     """Pseudo-online split for evaluation test data.
 
@@ -81,18 +82,23 @@ class PseudoOnlineSplit(BaseCrossValidator):
                         else:
                             mask_run = group["run"] == run
                             if self.calib_size > len(mask_run):
-                                raise ValueError('Calibration size must be less than number of runs.')
-                            yield calib_ix[:self.calib_size], calib_ix[self.calib_size:]
-
+                                raise ValueError(
+                                    "Calibration size must be less than number of runs."
+                                )
+                            yield calib_ix[: self.calib_size], calib_ix[self.calib_size :]
 
                 # Else, get the first #calib_size trials
                 else:
                     if self.calib_size is None:
-                        raise ValueError('Data contains just one run. Need to provide calibration size.')
+                        raise ValueError(
+                            "Data contains just one run. Need to provide calibration size."
+                        )
                     # Take first #calib_size samples as calibration
                     calib_size = self.calib_size
                     if calib_size < len(group):
-                        raise ValueError('Data contains just one run. Need to provide calibration size.')
+                        raise ValueError(
+                            "Data contains just one run. Need to provide calibration size."
+                        )
 
                     # Get indexes of respective groups
                     calib_ix = group[:calib_size].index
@@ -102,6 +108,8 @@ class PseudoOnlineSplit(BaseCrossValidator):
         # If not
         else:
             if self.calib_size is None:
-                raise ValueError('No metadata information. Need to provide calibration size.')
+                raise ValueError(
+                    "No metadata information. Need to provide calibration size."
+                )
             calib_size = self.calib_size
-            yield list(range(calib_size)), list(range(calib_size,len(indices)))
+            yield list(range(calib_size)), list(range(calib_size, len(indices)))
