@@ -1,12 +1,15 @@
 import logging
 import os
 from pathlib import Path
+
 import mne
 import numpy as np
 import pooch
+
+import moabb.datasets.download as dl
+
 from .base import BaseDataset
 from .download import get_dataset_path
-import moabb.datasets.download as dl
 
 
 LOGGER = logging.getLogger(__name__)
@@ -16,9 +19,10 @@ LEADERBOARD_ARTICLE_ID = 14839650
 FINAL_EVALUATION_ARTICLE_ID = 16586213
 FINAL_LABEL_TXT_ARTICLE_ID = 21602622
 
+
 class BEETLA(BaseDataset):
     """Motor Imagery dataset from BEETL Competition - Dataset A.
-    
+
     Dataset A contains data from subjects with 500 Hz sampling rate and 63 EEG channels.
     In the leaderboard phase, this includes subjects 1-2, while in the final phase it includes
     subjects 1-3.
@@ -31,7 +35,7 @@ class BEETLA(BaseDataset):
     Note: for the competition the data is cut into 4 second trials, here the data is concatenated
     into one session! In order to get the data as provided in the competition, the data has to be
     cut into 4 second trials.
-    
+
     For the leaderboard phase, the dataset contains only training data, while for the final phase it
     includes both training and testing data. To learn more about the datasets in detail see [1].
     To lern more about the competition see [2].
@@ -44,14 +48,14 @@ class BEETLA(BaseDataset):
 
     Motor imagery tasks include:
     - Rest (label 0)
-    - Left hand (label 1) 
+    - Left hand (label 1)
     - Right hand (label 2)
     - Feet (label 3)
-    
+
     Attributes
     ----------
     phase : str
-        Either "leaderboard" or "final" 
+        Either "leaderboard" or "final"
 
     References
     ----------
@@ -61,7 +65,7 @@ class BEETLA(BaseDataset):
 
     def __init__(self, phase="final"):
         """Initialize BEETL Dataset A.
-        
+
         Parameters
         ----------
         phase : str
@@ -69,30 +73,83 @@ class BEETLA(BaseDataset):
         """
         if phase not in ["leaderboard", "final"]:
             raise ValueError("Phase must be either 'leaderboard' or 'final'")
-            
+
         self.phase = phase
         subjects = list(range(1, 3)) if phase == "leaderboard" else list(range(1, 4))
 
-                # Channel setup
-        self.ch_names = ['Fp1', 'Fz', 'F3', 'F7', 'FT9', 'FC5', 'FC1', 'C3', 'T7', 'TP9', 
-                   'CP5', 'CP1', 'Pz', 'P3', 'P7', 'O1', 'Oz', 'O2', 'P4', 'P8', 
-                   'TP10', 'CP6', 'CP2', 'C4', 'T8', 'FT10', 'FC6', 'FC2', 'F4', 
-                   'F8', 'Fp2', 'AF7', 'AF3', 'AFz', 'F1', 'F5', 'FT7', 'FC3', 
-                   'FCz', 'C1', 'C5', 'TP7', 'CP3', 'P1', 'P5', 'PO7', 'PO3', 
-                   'POz', 'PO4', 'PO8', 'P6', 'P2', 'CPz', 'CP4', 'TP8', 'C6', 
-                   'C2', 'FC4', 'FT8', 'F6', 'F2', 'AF4', 'AF8']
-        
+        # Channel setup
+        self.ch_names = [
+            "Fp1",
+            "Fz",
+            "F3",
+            "F7",
+            "FT9",
+            "FC5",
+            "FC1",
+            "C3",
+            "T7",
+            "TP9",
+            "CP5",
+            "CP1",
+            "Pz",
+            "P3",
+            "P7",
+            "O1",
+            "Oz",
+            "O2",
+            "P4",
+            "P8",
+            "TP10",
+            "CP6",
+            "CP2",
+            "C4",
+            "T8",
+            "FT10",
+            "FC6",
+            "FC2",
+            "F4",
+            "F8",
+            "Fp2",
+            "AF7",
+            "AF3",
+            "AFz",
+            "F1",
+            "F5",
+            "FT7",
+            "FC3",
+            "FCz",
+            "C1",
+            "C5",
+            "TP7",
+            "CP3",
+            "P1",
+            "P5",
+            "PO7",
+            "PO3",
+            "POz",
+            "PO4",
+            "PO8",
+            "P6",
+            "P2",
+            "CPz",
+            "CP4",
+            "TP8",
+            "C6",
+            "C2",
+            "FC4",
+            "FT8",
+            "F6",
+            "F2",
+            "AF4",
+            "AF8",
+        ]
+
         self.sfreq = 500
 
         super().__init__(
             subjects=subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
-            events=dict(
-                rest=0,
-                left_hand=1, 
-                right_hand=2,
-                feet=3
-            ),
+            events=dict(rest=0, left_hand=1, right_hand=2, feet=3),
             code="beetl",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",
@@ -101,70 +158,81 @@ class BEETLA(BaseDataset):
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
         file_paths = self.data_path(subject)
-        
+
         # Create MNE info
-        info = mne.create_info(ch_names=self.ch_names, sfreq=self.sfreq, ch_types=['eeg'] * len(self.ch_names))
-        
+        info = mne.create_info(
+            ch_names=self.ch_names,
+            sfreq=self.sfreq,
+            ch_types=["eeg"] * len(self.ch_names),
+        )
+
         phase_str = "leaderboardMI" if self.phase == "leaderboard" else "finalMI"
-        subject_dir = Path(file_paths[0]) / phase_str / phase_str / f'S{subject}'
-        
+        subject_dir = Path(file_paths[0]) / phase_str / phase_str / f"S{subject}"
+
         data_list = []
         labels_list = []
-        
+
         # Load training data
         for race in range(1, 6):
-            data_file = subject_dir / 'training' / f'race{race}_padsData.npy'
-            label_file = subject_dir / 'training' / f'race{race}_padsLabel.npy'
+            data_file = subject_dir / "training" / f"race{race}_padsData.npy"
+            label_file = subject_dir / "training" / f"race{race}_padsLabel.npy"
             if data_file.exists() and label_file.exists():
                 data_list.append(np.load(data_file, allow_pickle=True))
                 labels_list.append(np.load(label_file, allow_pickle=True))
-        
+
         data = np.concatenate(data_list)
         labels = np.concatenate(labels_list)
-        
+
         # Create events array
-        events = np.column_stack((
-            np.arange(0, len(labels) * data.shape[-1], data.shape[-1]),
-            np.zeros(len(labels), dtype=int),
-            labels
-        ))
-        
+        events = np.column_stack(
+            (
+                np.arange(0, len(labels) * data.shape[-1], data.shape[-1]),
+                np.zeros(len(labels), dtype=int),
+                labels,
+            )
+        )
+
         # Create Raw object
         event_desc = {int(code): name for name, code in self.event_id.items()}
         raw = mne.io.RawArray(np.hstack(data), info)
-        raw.set_annotations(mne.annotations_from_events(
-            events=events, 
-            event_desc=event_desc, 
-            sfreq=self.sfreq
-        ))
+        raw.set_annotations(
+            mne.annotations_from_events(
+                events=events, event_desc=event_desc, sfreq=self.sfreq
+            )
+        )
 
-        
         # Load test data
         test_data_list = []
         for race in range(6, 16):
-            data_file = subject_dir / 'testing' / f'race{race}_padsData.npy'
+            data_file = subject_dir / "testing" / f"race{race}_padsData.npy"
             if data_file.exists():
                 test_data_list.append(np.load(data_file, allow_pickle=True))
 
         test_data = np.concatenate(test_data_list)
-        
-        # load labels from .txt
-        test_labels = np.loadtxt(Path(file_paths[0]) / 'final_MI_label.txt', dtype=int)
-        subject_labels = test_labels[(subject-1)*test_data.shape[0]:(subject)*test_data.shape[0]]
 
-        test_events = np.column_stack((
-            np.arange(0, len(subject_labels) * test_data.shape[-1], test_data.shape[-1]),
-            np.zeros(len(subject_labels), dtype=int),
-            subject_labels
-        ))
+        # load labels from .txt
+        test_labels = np.loadtxt(Path(file_paths[0]) / "final_MI_label.txt", dtype=int)
+        subject_labels = test_labels[
+            (subject - 1) * test_data.shape[0] : (subject) * test_data.shape[0]
+        ]
+
+        test_events = np.column_stack(
+            (
+                np.arange(
+                    0, len(subject_labels) * test_data.shape[-1], test_data.shape[-1]
+                ),
+                np.zeros(len(subject_labels), dtype=int),
+                subject_labels,
+            )
+        )
 
         # Create Raw object
         test_raw = mne.io.RawArray(np.hstack(test_data), info)
-        test_raw.set_annotations(mne.annotations_from_events(
-            events=test_events, 
-            event_desc=event_desc, 
-            sfreq=self.sfreq
-        ))
+        test_raw.set_annotations(
+            mne.annotations_from_events(
+                events=test_events, event_desc=event_desc, sfreq=self.sfreq
+            )
+        )
 
         return {"0": {"0train": raw, "1test": test_raw}}
 
@@ -176,8 +244,7 @@ class BEETLA(BaseDataset):
             raise ValueError(f"Subject {subject} not in {self.subject_list}")
 
         path = get_dataset_path("BEETL", path)
-        base_path = Path(os.path.join(path, f"MNE-{self.code:s}-data")
-)
+        base_path = Path(os.path.join(path, f"MNE-{self.code:s}-data"))
         # Create the directory if it doesn't exist
         base_path.mkdir(parents=True, exist_ok=True)
 
@@ -206,7 +273,9 @@ class BEETLA(BaseDataset):
 
             for file_name in id_file_list.keys():
                 fpath = base_path / file_name
-                if (not fpath.exists() or force_update) and file_name == "final_MI_label.txt":
+                if (
+                    not fpath.exists() or force_update
+                ) and file_name == "final_MI_label.txt":
                     fpath = base_path / file_name
                     if not fpath.exists() or force_update:
                         pooch.retrieve(
@@ -222,10 +291,10 @@ class BEETLA(BaseDataset):
 
 class BEETLB(BaseDataset):
     """Motor Imagery dataset from BEETL Competition - Dataset B.
-    
+
     Dataset B contains data from subjects with 200 Hz sampling rate and 32 EEG channels.
     In the leaderboard phase, this includes subjects 3-5, while in the final phase it includes
-    subjects 4-5. 
+    subjects 4-5.
 
     Note: for the BEETL competition, there was a leaderboard phase and a final phase. Both phases
     contained data from two datasets, A and B. However, during leaderboard phase, dataset A contained
@@ -235,7 +304,7 @@ class BEETLB(BaseDataset):
     Note: for the competition the data is cut into 4 second trials, here the data is concatenated
     into one session! In order to get the data as provided in the competition, the data has to be
     cut into 4 second trials.
-    
+
     For the leaderboard phase, the dataset contains only training data, while for the final phase it
     includes both training and testing data. To learn more about the datasets in detail see [1].
     To lern more about the competition see [2].
@@ -254,7 +323,7 @@ class BEETLB(BaseDataset):
     Attributes
     ----------
     phase : str
-        Either "leaderboard" or "final" 
+        Either "leaderboard" or "final"
 
     References
     ----------
@@ -264,7 +333,7 @@ class BEETLB(BaseDataset):
 
     def __init__(self, phase="final"):
         """Initialize BEETL Dataset B.
-        
+
         Parameters
         ----------
         phase : str
@@ -272,81 +341,125 @@ class BEETLB(BaseDataset):
         """
         if phase not in ["leaderboard", "final"]:
             raise ValueError("Phase must be either 'leaderboard' or 'final'")
-            
+
         self.phase = phase
         subjects = list(range(3, 6)) if phase == "leaderboard" else list(range(4, 6))
-        
+
         super().__init__(
             subjects=subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
-            events=dict(
-                left_hand=0,
-                right_hand=1,
-                feet=2,
-                rest=3
-            ),
+            events=dict(left_hand=0, right_hand=1, feet=2, rest=3),
             code="beetl",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",
         )
 
-        self.ch_names = ['Fp1', 'Fp2', 'F3', 'Fz', 'F4', 'FC5', 'FC1', 'FC2', 'FC6', 
-                   'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP5', 'CP3', 'CP1', 
-                   'CPz', 'CP2', 'CP4', 'CP6', 'P7', 'P5', 'P3', 'P1', 'Pz', 'P2', 
-                   'P4', 'P6', 'P8']
+        self.ch_names = [
+            "Fp1",
+            "Fp2",
+            "F3",
+            "Fz",
+            "F4",
+            "FC5",
+            "FC1",
+            "FC2",
+            "FC6",
+            "C5",
+            "C3",
+            "C1",
+            "Cz",
+            "C2",
+            "C4",
+            "C6",
+            "CP5",
+            "CP3",
+            "CP1",
+            "CPz",
+            "CP2",
+            "CP4",
+            "CP6",
+            "P7",
+            "P5",
+            "P3",
+            "P1",
+            "Pz",
+            "P2",
+            "P4",
+            "P6",
+            "P8",
+        ]
         self.sfreq = 200
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
         file_paths = self.data_path(subject)
-        
-        
+
         # Create MNE info
-        info = mne.create_info(ch_names=self.ch_names, sfreq=self.sfreq, ch_types=['eeg'] * len(self.ch_names))
-        
+        info = mne.create_info(
+            ch_names=self.ch_names,
+            sfreq=self.sfreq,
+            ch_types=["eeg"] * len(self.ch_names),
+        )
+
         # Load data
         phase_str = "leaderboardMI" if self.phase == "leaderboard" else "finalMI"
-        subject_dir = Path(file_paths[0]) / phase_str / phase_str / f'S{subject}'
-        
+        subject_dir = Path(file_paths[0]) / phase_str / phase_str / f"S{subject}"
+
         # Load training data
-        train_data = np.load(subject_dir / 'training' / f'training_s{subject}X.npy', allow_pickle=True)
-        train_labels = np.load(subject_dir / 'training' / f'training_s{subject}y.npy', allow_pickle=True)
-        
+        train_data = np.load(
+            subject_dir / "training" / f"training_s{subject}X.npy", allow_pickle=True
+        )
+        train_labels = np.load(
+            subject_dir / "training" / f"training_s{subject}y.npy", allow_pickle=True
+        )
+
         # Create events array
-        events = np.column_stack((
-            np.arange(0, len(train_labels) * train_data.shape[-1], train_data.shape[-1]),
-            np.zeros(len(train_labels), dtype=int),
-            train_labels
-        ))
-        
+        events = np.column_stack(
+            (
+                np.arange(
+                    0, len(train_labels) * train_data.shape[-1], train_data.shape[-1]
+                ),
+                np.zeros(len(train_labels), dtype=int),
+                train_labels,
+            )
+        )
+
         # Create Raw object
         event_desc = {int(code): name for name, code in self.event_id.items()}
         raw = mne.io.RawArray(np.hstack(train_data), info)
-        raw.set_annotations(mne.annotations_from_events(
-            events=events, 
-            event_desc=event_desc, 
-            sfreq=self.sfreq
-        ))
-        
-        # Load test data
-        test_data = np.load(subject_dir / 'testing' / f'testing_s{subject}X.npy', allow_pickle=True)
-        # load labels from .txt
-        test_labels = np.loadtxt(Path(file_paths[0]) / 'final_MI_label.txt', dtype=int)
-        subject_labels = test_labels[(subject-1)*test_data.shape[0]:(subject)*test_data.shape[0]]
+        raw.set_annotations(
+            mne.annotations_from_events(
+                events=events, event_desc=event_desc, sfreq=self.sfreq
+            )
+        )
 
-        test_events = np.column_stack((
-            np.arange(0, len(subject_labels) * test_data.shape[-1], test_data.shape[-1]),
-            np.zeros(len(subject_labels), dtype=int),
-            subject_labels
-        ))
+        # Load test data
+        test_data = np.load(
+            subject_dir / "testing" / f"testing_s{subject}X.npy", allow_pickle=True
+        )
+        # load labels from .txt
+        test_labels = np.loadtxt(Path(file_paths[0]) / "final_MI_label.txt", dtype=int)
+        subject_labels = test_labels[
+            (subject - 1) * test_data.shape[0] : (subject) * test_data.shape[0]
+        ]
+
+        test_events = np.column_stack(
+            (
+                np.arange(
+                    0, len(subject_labels) * test_data.shape[-1], test_data.shape[-1]
+                ),
+                np.zeros(len(subject_labels), dtype=int),
+                subject_labels,
+            )
+        )
 
         # Create Raw object
         test_raw = mne.io.RawArray(np.hstack(test_data), info)
-        test_raw.set_annotations(mne.annotations_from_events(
-            events=test_events, 
-            event_desc=event_desc, 
-            sfreq=self.sfreq
-        ))
+        test_raw.set_annotations(
+            mne.annotations_from_events(
+                events=test_events, event_desc=event_desc, sfreq=self.sfreq
+            )
+        )
 
         return {"0": {"0train": raw, "1test": test_raw}}
 
@@ -380,7 +493,7 @@ class BEETLB(BaseDataset):
                         processor=pooch.Unzip(extract_dir=os.path.splitext(file_name)[0]),
                         downloader=pooch.HTTPDownloader(progressbar=True),
                     )
-        
+
         # Download labels for final phase
         if self.phase == "final":
             file_list = dl.fs_get_file_list(FINAL_LABEL_TXT_ARTICLE_ID)
@@ -389,7 +502,9 @@ class BEETLB(BaseDataset):
 
             for file_name in id_file_list.keys():
                 fpath = base_path / file_name
-                if (not fpath.exists() or force_update) and file_name == "final_MI_label.txt":
+                if (
+                    not fpath.exists() or force_update
+                ) and file_name == "final_MI_label.txt":
                     fpath = base_path / file_name
                     if not fpath.exists() or force_update:
                         pooch.retrieve(
