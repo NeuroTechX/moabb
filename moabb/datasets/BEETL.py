@@ -23,15 +23,36 @@ class BEETLA(BaseDataset):
     In the leaderboard phase, this includes subjects 1-2, while in the final phase it includes
     subjects 1-3.
 
+    Note: for the BEETL competition, there was a leaderboard phase and a final phase. Both phases
+    contained data from two datasets, A and B. However, during leaderboard phase, dataset A contained
+    data from subjects 1-2, while dataset B contained data from subjects 3-5. During the final phase,
+    dataset A contained data from subjects 1-3, while dataset B contained data from subjects 4-5.
+    
+    For the leaderboard phase, the dataset contains only training data, while for the final phase it
+    includes both training and testing data. To learn more about the datasets in detail see [1].
+    To lern more about the competition see [2].
+
+    For benchmarking the BEETL competition use phase "final", train on training data benchmark on testing data.
+
+
+    Data is sampled at 500 Hz and contains 63 EEG channels. The data underwent frequency-domain preprocessing
+    using a bandpass filter (1-100 Hz) and a 50 Hz notch filter to attenuate power line interference.
+
     Motor imagery tasks include:
     - Rest (label 0)
     - Left hand (label 1) 
     - Right hand (label 2)
     - Feet (label 3)
+    
+    Attributes
+    ----------
+    phase : str
+        Either "leaderboard" or "final" 
 
     References
     ----------
-    .. [1] Original dataset: https://www.kaggle.com/competitions/beetl
+    .. [1] Original dataset: https://github.com/XiaoxiWei/NeurIPS_BEETL
+    .. [2] Competition: https://beetl.ai/introduction
     """
 
     def __init__(self, phase="final"):
@@ -200,7 +221,21 @@ class BEETLB(BaseDataset):
     
     Dataset B contains data from subjects with 200 Hz sampling rate and 32 EEG channels.
     In the leaderboard phase, this includes subjects 3-5, while in the final phase it includes
-    subjects 4-5.
+    subjects 4-5. 
+
+    Note: for the BEETL competition, there was a leaderboard phase and a final phase. Both phases
+    contained data from two datasets, A and B. However, during leaderboard phase, dataset A contained
+    data from subjects 1-2, while dataset B contained data from subjects 3-5. During the final phase,
+    dataset A contained data from subjects 1-3, while dataset B contained data from subjects 4-5.
+
+    For the leaderboard phase, the dataset contains only training data, while for the final phase it
+    includes both training and testing data. To learn more about the datasets in detail see [1].
+    To lern more about the competition see [2].
+
+    For benchmarking the BEETL competition use phase "final", train on training data benchmark on testing data.
+
+    The data was filtered using a highpass filter with a cutoff frequency of 1 Hz and a
+    lowpass filter with a cutoff frequency of 100 Hz.
 
     Motor imagery tasks include:
     - Left hand (label 0)
@@ -208,9 +243,15 @@ class BEETLB(BaseDataset):
     - Feet (label 2)
     - Rest (label 3)
 
+    Attributes
+    ----------
+    phase : str
+        Either "leaderboard" or "final" 
+
     References
     ----------
-    .. [1] Original dataset: https://www.kaggle.com/competitions/beetl
+    .. [1] Original dataset: https://github.com/XiaoxiWei/NeurIPS_BEETL
+    .. [2] Competition: https://beetl.ai/introduction
     """
 
     def __init__(self, phase="final"):
