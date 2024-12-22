@@ -27,6 +27,10 @@ class BEETLA(BaseDataset):
     contained data from two datasets, A and B. However, during leaderboard phase, dataset A contained
     data from subjects 1-2, while dataset B contained data from subjects 3-5. During the final phase,
     dataset A contained data from subjects 1-3, while dataset B contained data from subjects 4-5.
+
+    Note: for the competition the data is cut into 4 second trials, here the data is concatenated
+    into one session! In order to get the data as provided in the competition, the data has to be
+    cut into 4 second trials.
     
     For the leaderboard phase, the dataset contains only training data, while for the final phase it
     includes both training and testing data. To learn more about the datasets in detail see [1].
@@ -228,6 +232,10 @@ class BEETLB(BaseDataset):
     data from subjects 1-2, while dataset B contained data from subjects 3-5. During the final phase,
     dataset A contained data from subjects 1-3, while dataset B contained data from subjects 4-5.
 
+    Note: for the competition the data is cut into 4 second trials, here the data is concatenated
+    into one session! In order to get the data as provided in the competition, the data has to be
+    cut into 4 second trials.
+    
     For the leaderboard phase, the dataset contains only training data, while for the final phase it
     includes both training and testing data. To learn more about the datasets in detail see [1].
     To lern more about the competition see [2].
