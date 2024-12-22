@@ -16,7 +16,7 @@ LEADERBOARD_ARTICLE_ID = 14839650
 FINAL_EVALUATION_ARTICLE_ID = 16586213
 FINAL_LABEL_TXT_ARTICLE_ID = 21602622
 
-class beetlA(BaseDataset):
+class BEETLA(BaseDataset):
     """Motor Imagery dataset from BEETL Competition - Dataset A.
     
     Dataset A contains data from subjects with 500 Hz sampling rate and 63 EEG channels.
@@ -59,8 +59,6 @@ class beetlA(BaseDataset):
         
         self.sfreq = 500
 
-        
-        
         super().__init__(
             subjects=subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
@@ -82,7 +80,6 @@ class beetlA(BaseDataset):
         # Create MNE info
         info = mne.create_info(ch_names=self.ch_names, sfreq=self.sfreq, ch_types=['eeg'] * len(self.ch_names))
         
-
         phase_str = "leaderboardMI" if self.phase == "leaderboard" else "finalMI"
         subject_dir = Path(file_paths[0]) / phase_str / phase_str / f'S{subject}'
         
@@ -115,8 +112,36 @@ class beetlA(BaseDataset):
             event_desc=event_desc, 
             sfreq=self.sfreq
         ))
+
         
-        return {"0": {"0": raw}}
+        # Load test data
+        test_data_list = []
+        for race in range(6, 16):
+            data_file = subject_dir / 'testing' / f'race{race}_padsData.npy'
+            if data_file.exists():
+                test_data_list.append(np.load(data_file, allow_pickle=True))
+
+        test_data = np.concatenate(test_data_list)
+        
+        # load labels from .txt
+        test_labels = np.loadtxt(Path(file_paths[0]) / 'final_MI_label.txt', dtype=int)
+        subject_labels = test_labels[(subject-1)*test_data.shape[0]:(subject)*test_data.shape[0]]
+
+        test_events = np.column_stack((
+            np.arange(0, len(subject_labels) * test_data.shape[-1], test_data.shape[-1]),
+            np.zeros(len(subject_labels), dtype=int),
+            subject_labels
+        ))
+
+        # Create Raw object
+        test_raw = mne.io.RawArray(np.hstack(test_data), info)
+        test_raw.set_annotations(mne.annotations_from_events(
+            events=test_events, 
+            event_desc=event_desc, 
+            sfreq=self.sfreq
+        ))
+
+        return {"0": {"0train": raw, "1test": test_raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
@@ -148,11 +173,29 @@ class beetlA(BaseDataset):
                         processor=pooch.Unzip(extract_dir=os.path.splitext(file_name)[0]),
                         downloader=pooch.HTTPDownloader(progressbar=True),
                     )
+        # Download labels for final phase
+        if self.phase == "final":
+            file_list = dl.fs_get_file_list(FINAL_LABEL_TXT_ARTICLE_ID)
+            hash_file_list = dl.fs_get_file_hash(file_list)
+            id_file_list = dl.fs_get_file_id(file_list)
+
+            for file_name in id_file_list.keys():
+                fpath = base_path / file_name
+                if (not fpath.exists() or force_update) and file_name == "final_MI_label.txt":
+                    fpath = base_path / file_name
+                    if not fpath.exists() or force_update:
+                        pooch.retrieve(
+                            url=BASE_URL + id_file_list[file_name],
+                            known_hash=hash_file_list[id_file_list[file_name]],
+                            fname=file_name,
+                            path=base_path,
+                            downloader=pooch.HTTPDownloader(progressbar=True),
+                        )
 
         return [str(base_path)]
 
 
-class beetlB(BaseDataset):
+class BEETLB(BaseDataset):
     """Motor Imagery dataset from BEETL Competition - Dataset B.
     
     Dataset B contains data from subjects with 200 Hz sampling rate and 32 EEG channels.
@@ -198,45 +241,65 @@ class beetlB(BaseDataset):
             paradigm="imagery",
         )
 
+        self.ch_names = ['Fp1', 'Fp2', 'F3', 'Fz', 'F4', 'FC5', 'FC1', 'FC2', 'FC6', 
+                   'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP5', 'CP3', 'CP1', 
+                   'CPz', 'CP2', 'CP4', 'CP6', 'P7', 'P5', 'P3', 'P1', 'Pz', 'P2', 
+                   'P4', 'P6', 'P8']
+        self.sfreq = 200
+
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
         file_paths = self.data_path(subject)
         
-        # Channel setup
-        ch_names = ['Fp1', 'Fp2', 'F3', 'Fz', 'F4', 'FC5', 'FC1', 'FC2', 'FC6', 
-                   'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP5', 'CP3', 'CP1', 
-                   'CPz', 'CP2', 'CP4', 'CP6', 'P7', 'P5', 'P3', 'P1', 'Pz', 'P2', 
-                   'P4', 'P6', 'P8']
-        sfreq = 200
         
         # Create MNE info
-        info = mne.create_info(ch_names=ch_names, sfreq=sfreq, ch_types=['eeg'] * len(ch_names))
+        info = mne.create_info(ch_names=self.ch_names, sfreq=self.sfreq, ch_types=['eeg'] * len(self.ch_names))
         
         # Load data
         phase_str = "leaderboardMI" if self.phase == "leaderboard" else "finalMI"
         subject_dir = Path(file_paths[0]) / phase_str / phase_str / f'S{subject}'
         
         # Load training data
-        data = np.load(subject_dir / 'training' / f'training_s{subject}X.npy', allow_pickle=True)
-        labels = np.load(subject_dir / 'training' / f'training_s{subject}y.npy', allow_pickle=True)
+        train_data = np.load(subject_dir / 'training' / f'training_s{subject}X.npy', allow_pickle=True)
+        train_labels = np.load(subject_dir / 'training' / f'training_s{subject}y.npy', allow_pickle=True)
         
         # Create events array
         events = np.column_stack((
-            np.arange(0, len(labels) * data.shape[-1], data.shape[-1]),
-            np.zeros(len(labels), dtype=int),
-            labels
+            np.arange(0, len(train_labels) * train_data.shape[-1], train_data.shape[-1]),
+            np.zeros(len(train_labels), dtype=int),
+            train_labels
         ))
         
         # Create Raw object
         event_desc = {int(code): name for name, code in self.event_id.items()}
-        raw = mne.io.RawArray(np.hstack(data), info)
+        raw = mne.io.RawArray(np.hstack(train_data), info)
         raw.set_annotations(mne.annotations_from_events(
             events=events, 
             event_desc=event_desc, 
-            sfreq=sfreq
+            sfreq=self.sfreq
         ))
         
-        return {"0": {"0": raw}}
+        # Load test data
+        test_data = np.load(subject_dir / 'testing' / f'testing_s{subject}X.npy', allow_pickle=True)
+        # load labels from .txt
+        test_labels = np.loadtxt(Path(file_paths[0]) / 'final_MI_label.txt', dtype=int)
+        subject_labels = test_labels[(subject-1)*test_data.shape[0]:(subject)*test_data.shape[0]]
+
+        test_events = np.column_stack((
+            np.arange(0, len(subject_labels) * test_data.shape[-1], test_data.shape[-1]),
+            np.zeros(len(subject_labels), dtype=int),
+            subject_labels
+        ))
+
+        # Create Raw object
+        test_raw = mne.io.RawArray(np.hstack(test_data), info)
+        test_raw.set_annotations(mne.annotations_from_events(
+            events=test_events, 
+            event_desc=event_desc, 
+            sfreq=self.sfreq
+        ))
+
+        return {"0": {"0train": raw, "1test": test_raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
@@ -246,7 +309,7 @@ class beetlB(BaseDataset):
             raise ValueError(f"Subject {subject} not in {self.subject_list}")
 
         path = get_dataset_path("BEETL", path)
-        base_path = Path(path)
+        base_path = Path(os.path.join(path, f"MNE-{self.code:s}-data"))
 
         # Create the directory if it doesn't exist
         base_path.mkdir(parents=True, exist_ok=True)
@@ -268,5 +331,24 @@ class beetlB(BaseDataset):
                         processor=pooch.Unzip(extract_dir=os.path.splitext(file_name)[0]),
                         downloader=pooch.HTTPDownloader(progressbar=True),
                     )
+        
+        # Download labels for final phase
+        if self.phase == "final":
+            file_list = dl.fs_get_file_list(FINAL_LABEL_TXT_ARTICLE_ID)
+            hash_file_list = dl.fs_get_file_hash(file_list)
+            id_file_list = dl.fs_get_file_id(file_list)
+
+            for file_name in id_file_list.keys():
+                fpath = base_path / file_name
+                if (not fpath.exists() or force_update) and file_name == "final_MI_label.txt":
+                    fpath = base_path / file_name
+                    if not fpath.exists() or force_update:
+                        pooch.retrieve(
+                            url=BASE_URL + id_file_list[file_name],
+                            known_hash=hash_file_list[id_file_list[file_name]],
+                            fname=file_name,
+                            path=base_path,
+                            downloader=pooch.HTTPDownloader(progressbar=True),
+                        )
 
         return [str(base_path)]

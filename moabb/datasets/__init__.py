@@ -82,7 +82,7 @@ from .upper_limb import Ofner2017
 from .utils import _init_dataset_list
 from .Weibo2014 import Weibo2014
 from .Zhou2016 import Zhou2016
-from .beetl import beetlA, beetlB
+from .BEETL import BEETLA, BEETLB
 
 
 # Call this last in order to make sure the dataset list is populated with
