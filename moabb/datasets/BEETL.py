@@ -235,7 +235,7 @@ class BEETLA(BaseDataset):
             )
         )
 
-        return {"0": {f"{self.phase}_train": raw, f"{self.phase}_test": test_raw}}
+        return {"0": {f"0{self.phase}_train": raw, f"1{self.phase}_test": test_raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
@@ -463,7 +463,7 @@ class BEETLB(BaseDataset):
             )
         )
 
-        return {"0": {f"{self.phase}_train": raw, f"{self.phase}_test": test_raw}}
+        return {"0": {f"0{self.phase}_train": raw, f"1{self.phase}_test": test_raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
