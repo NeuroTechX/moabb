@@ -145,6 +145,7 @@ class BEETLA(BaseDataset):
         ]
 
         self.sfreq = 500
+        self.phase = phase
 
         super().__init__(
             subjects=subjects,
@@ -234,7 +235,7 @@ class BEETLA(BaseDataset):
             )
         )
 
-        return {"0": {"0train": raw, "1test": test_raw}}
+        return {"0": {f"{self.phase}_train": raw, f"{self.phase}_test": test_raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
@@ -389,6 +390,7 @@ class BEETLB(BaseDataset):
             "P8",
         ]
         self.sfreq = 200
+        self.phase = phase
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -461,7 +463,7 @@ class BEETLB(BaseDataset):
             )
         )
 
-        return {"0": {"0train": raw, "1test": test_raw}}
+        return {"0": {f"{self.phase}_train": raw, f"{self.phase}_test": test_raw}}
 
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
