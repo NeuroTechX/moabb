@@ -660,20 +660,20 @@ P300 datasets.</p>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-<span class="kn">from</span> <span class="nn">mne.decoding</span> <span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="mne.decoding.Vectorizer" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">Vectorizer</span></a>
-<span class="kn">from</span> <span class="nn">pyriemann.estimation</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Xdawn</span></a><span class="p">,</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">XdawnCovariances</span></a>
-<span class="kn">from</span> <span class="nn">pyriemann.tangentspace</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.discriminant_analysis</span> <span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.decoding</span><span class="w"> </span><span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="mne.decoding.Vectorizer" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">Vectorizer</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Xdawn</span></a><span class="p">,</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">XdawnCovariances</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.tangentspace</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.discriminant_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
 
-<span class="kn">import</span> <span class="nn">moabb</span>
-<span class="kn">from</span> <span class="nn">moabb.datasets</span> <span class="kn">import</span> <a href="../generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_009</span></a>
-<span class="kn">from</span> <span class="nn">moabb.evaluations</span> <span class="kn">import</span> <a href="../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a>
-<span class="kn">from</span> <span class="nn">moabb.paradigms</span> <span class="kn">import</span> <a href="../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">P300</span></a>
+<span class="kn">import</span><span class="w"> </span><span class="nn">moabb</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_009</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.evaluations</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/moabb.evaluations.WithinSessionEvaluation.html#moabb.evaluations.WithinSessionEvaluation" title="moabb.evaluations.WithinSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">WithinSessionEvaluation</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/moabb.paradigms.P300.html#moabb.paradigms.P300" title="moabb.paradigms.P300" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">P300</span></a>
 </pre></div>
 </div>
 <p>getting rid of the warnings about the future</p>
@@ -733,32 +733,32 @@ be overwritten if necessary.</p>
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/18.5M [00:00&lt;04:38, 66.6kB/s]
+  0%|                                     | 8.19k/18.5M [00:00&lt;03:57, 77.9kB/s]
 
-  0%|                                      | 32.8k/18.5M [00:00&lt;02:07, 145kB/s]
+  0%|                                      | 32.8k/18.5M [00:00&lt;01:49, 168kB/s]
 
-  1%|▏                                     | 96.3k/18.5M [00:00&lt;00:58, 315kB/s]
+  1%|▏                                     | 96.3k/18.5M [00:00&lt;00:50, 364kB/s]
 
-  1%|▍                                      | 209k/18.5M [00:00&lt;00:33, 553kB/s]
+  1%|▍                                      | 209k/18.5M [00:00&lt;00:28, 639kB/s]
 
-  2%|▉                                     | 432k/18.5M [00:00&lt;00:17, 1.01MB/s]
+  2%|▉                                     | 432k/18.5M [00:00&lt;00:15, 1.16MB/s]
 
-  5%|█▊                                    | 889k/18.5M [00:00&lt;00:09, 1.93MB/s]
+  5%|█▊                                    | 889k/18.5M [00:00&lt;00:07, 2.22MB/s]
 
- 10%|███▌                                 | 1.80M/18.5M [00:00&lt;00:04, 3.72MB/s]
+ 10%|███▌                                 | 1.80M/18.5M [00:00&lt;00:03, 4.29MB/s]
 
- 20%|███████▏                             | 3.62M/18.5M [00:00&lt;00:02, 7.26MB/s]
+ 20%|███████▏                             | 3.62M/18.5M [00:00&lt;00:01, 8.36MB/s]
 
- 36%|█████████████▍                       | 6.74M/18.5M [00:01&lt;00:00, 12.9MB/s]
+ 36%|█████████████▎                       | 6.67M/18.5M [00:00&lt;00:00, 14.7MB/s]
 
- 53%|███████████████████▌                 | 9.82M/18.5M [00:01&lt;00:00, 16.6MB/s]
+ 48%|█████████████████▋                   | 8.88M/18.5M [00:01&lt;00:00, 16.5MB/s]
 
- 69%|█████████████████████████▋           | 12.9M/18.5M [00:01&lt;00:00, 19.1MB/s]
+ 70%|█████████████████████████▊           | 12.9M/18.5M [00:01&lt;00:00, 23.1MB/s]
 
- 85%|███████████████████████████████▌     | 15.8M/18.5M [00:01&lt;00:00, 20.5MB/s]
+ 91%|█████████████████████████████████▌   | 16.8M/18.5M [00:01&lt;00:00, 27.2MB/s]
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 48.4GB/s]
+100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 68.0GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
@@ -778,40 +778,38 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-009-WithinSession:  50%|#####     | 1/2 [00:13&lt;00:13, 13.44s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-009-WithinSession:  50%|#####     | 1/2 [00:12&lt;00:12, 12.12s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/18.5M [00:00&lt;04:34, 67.4kB/s]
+  0%|                                     | 8.19k/18.5M [00:00&lt;03:57, 78.0kB/s]
 
-  0%|                                      | 32.8k/18.5M [00:00&lt;02:07, 146kB/s]
+  0%|                                      | 32.8k/18.5M [00:00&lt;01:49, 169kB/s]
 
-  1%|▏                                     | 96.3k/18.5M [00:00&lt;00:58, 315kB/s]
+  1%|▏                                     | 96.3k/18.5M [00:00&lt;00:50, 364kB/s]
 
-  1%|▍                                      | 209k/18.5M [00:00&lt;00:33, 552kB/s]
+  1%|▍                                      | 209k/18.5M [00:00&lt;00:28, 638kB/s]
 
-  2%|▉                                     | 432k/18.5M [00:00&lt;00:17, 1.01MB/s]
+  2%|▉                                     | 432k/18.5M [00:00&lt;00:15, 1.16MB/s]
 
-  5%|█▊                                    | 889k/18.5M [00:00&lt;00:09, 1.93MB/s]
+  5%|█▊                                    | 889k/18.5M [00:00&lt;00:07, 2.23MB/s]
 
- 10%|███▌                                 | 1.80M/18.5M [00:00&lt;00:04, 3.72MB/s]
+ 10%|███▌                                 | 1.80M/18.5M [00:00&lt;00:03, 4.30MB/s]
 
- 20%|███████▏                             | 3.62M/18.5M [00:00&lt;00:02, 7.27MB/s]
+ 20%|███████▏                             | 3.62M/18.5M [00:00&lt;00:01, 8.38MB/s]
 
- 36%|█████████████▍                       | 6.74M/18.5M [00:01&lt;00:00, 12.9MB/s]
+ 39%|██████████████▎                      | 7.17M/18.5M [00:00&lt;00:00, 15.8MB/s]
 
- 52%|███████████████████▍                 | 9.71M/18.5M [00:01&lt;00:00, 16.4MB/s]
+ 60%|██████████████████████▏              | 11.1M/18.5M [00:01&lt;00:00, 22.4MB/s]
 
- 67%|████████████████████████▉            | 12.5M/18.5M [00:01&lt;00:00, 18.2MB/s]
+ 78%|█████████████████████████████        | 14.5M/18.5M [00:01&lt;00:00, 25.3MB/s]
 
- 83%|██████████████████████████████▌      | 15.3M/18.5M [00:01&lt;00:00, 19.7MB/s]
-
- 98%|████████████████████████████████████▎| 18.2M/18.5M [00:01&lt;00:00, 20.8MB/s]
+ 98%|████████████████████████████████████ | 18.1M/18.5M [00:01&lt;00:00, 27.7MB/s]
 
   0%|                                              | 0.00/18.5M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 67.0GB/s]
+100%|█████████████████████████████████████| 18.5M/18.5M [00:00&lt;00:00, 81.0GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
@@ -831,8 +829,8 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-009-WithinSession: 100%|##########| 2/2 [00:26&lt;00:00, 13.32s/it]
-BNCI2014-009-WithinSession: 100%|##########| 2/2 [00:26&lt;00:00, 13.33s/it]
+BNCI2014-009-WithinSession: 100%|##########| 2/2 [00:24&lt;00:00, 11.99s/it]
+BNCI2014-009-WithinSession: 100%|##########| 2/2 [00:24&lt;00:00, 12.01s/it]
 </pre></div>
 </div>
 </section>
@@ -859,7 +857,7 @@ BNCI2014-009-WithinSession: 100%|##########| 2/2 [00:26&lt;00:00, 13.33s/it]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_within_session_p300_001.png" srcset="../_images/sphx_glr_plot_within_session_p300_001.png" alt="plot within session p300" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  32.405 seconds)</p>
+<img src="../_images/sphx_glr_plot_within_session_p300_001.png" srcset="../_images/sphx_glr_plot_within_session_p300_001.png" alt="plot within session p300" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  29.428 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  10 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-within-session-p300-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
@@ -950,7 +948,7 @@ BNCI2014-009-WithinSession: 100%|##########| 2/2 [00:26&lt;00:00, 13.33s/it]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2018-2024 MOABB contributors.
+      © Copyright 2018-2025 MOABB contributors.
       <br/>
     
   </p>

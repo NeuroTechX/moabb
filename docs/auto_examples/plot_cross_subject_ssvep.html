@@ -661,21 +661,21 @@ We will compare four pipelines :</p>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-<span class="kn">from</span> <span class="nn">pyriemann.estimation</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
-<span class="kn">from</span> <span class="nn">pyriemann.tangentspace</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.tangentspace</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
 
-<span class="kn">import</span> <span class="nn">moabb</span>
-<span class="kn">from</span> <span class="nn">moabb.datasets</span> <span class="kn">import</span> <a href="../generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Kalunga2016</span></a>
-<span class="kn">from</span> <span class="nn">moabb.evaluations</span> <span class="kn">import</span> <a href="../generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation" title="moabb.evaluations.CrossSubjectEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">CrossSubjectEvaluation</span></a>
-<span class="kn">from</span> <span class="nn">moabb.paradigms</span> <span class="kn">import</span> <a href="../generated/moabb.paradigms.SSVEP.html#moabb.paradigms.SSVEP" title="moabb.paradigms.SSVEP" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">SSVEP</span></a><span class="p">,</span> <a href="../generated/moabb.paradigms.FilterBankSSVEP.html#moabb.paradigms.FilterBankSSVEP" title="moabb.paradigms.FilterBankSSVEP" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">FilterBankSSVEP</span></a>
-<span class="kn">from</span> <span class="nn">moabb.pipelines</span> <span class="kn">import</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.classification.SSVEP_CCA.html#moabb.pipelines.classification.SSVEP_CCA" title="moabb.pipelines.classification.SSVEP_CCA" class="sphx-glr-backref-module-moabb-pipelines-classification sphx-glr-backref-type-py-class"><span class="n">SSVEP_CCA</span></a><span class="p">,</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.classification.SSVEP_TRCA.html#moabb.pipelines.classification.SSVEP_TRCA" title="moabb.pipelines.classification.SSVEP_TRCA" class="sphx-glr-backref-module-moabb-pipelines-classification sphx-glr-backref-type-py-class"><span class="n">SSVEP_TRCA</span></a><span class="p">,</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.features.ExtendedSSVEPSignal.html#moabb.pipelines.features.ExtendedSSVEPSignal" title="moabb.pipelines.features.ExtendedSSVEPSignal" class="sphx-glr-backref-module-moabb-pipelines-features sphx-glr-backref-type-py-class"><span class="n">ExtendedSSVEPSignal</span></a><span class="p">,</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.classification.SSVEP_MsetCCA.html#moabb.pipelines.classification.SSVEP_MsetCCA" title="moabb.pipelines.classification.SSVEP_MsetCCA" class="sphx-glr-backref-module-moabb-pipelines-classification sphx-glr-backref-type-py-class"><span class="n">SSVEP_MsetCCA</span></a>
+<span class="kn">import</span><span class="w"> </span><span class="nn">moabb</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">Kalunga2016</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.evaluations</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/moabb.evaluations.CrossSubjectEvaluation.html#moabb.evaluations.CrossSubjectEvaluation" title="moabb.evaluations.CrossSubjectEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">CrossSubjectEvaluation</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/moabb.paradigms.SSVEP.html#moabb.paradigms.SSVEP" title="moabb.paradigms.SSVEP" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">SSVEP</span></a><span class="p">,</span> <a href="../generated/moabb.paradigms.FilterBankSSVEP.html#moabb.paradigms.FilterBankSSVEP" title="moabb.paradigms.FilterBankSSVEP" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">FilterBankSSVEP</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.pipelines</span><span class="w"> </span><span class="kn">import</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.classification.SSVEP_CCA.html#moabb.pipelines.classification.SSVEP_CCA" title="moabb.pipelines.classification.SSVEP_CCA" class="sphx-glr-backref-module-moabb-pipelines-classification sphx-glr-backref-type-py-class"><span class="n">SSVEP_CCA</span></a><span class="p">,</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.classification.SSVEP_TRCA.html#moabb.pipelines.classification.SSVEP_TRCA" title="moabb.pipelines.classification.SSVEP_TRCA" class="sphx-glr-backref-module-moabb-pipelines-classification sphx-glr-backref-type-py-class"><span class="n">SSVEP_TRCA</span></a><span class="p">,</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.features.ExtendedSSVEPSignal.html#moabb.pipelines.features.ExtendedSSVEPSignal" title="moabb.pipelines.features.ExtendedSSVEPSignal" class="sphx-glr-backref-module-moabb-pipelines-features sphx-glr-backref-type-py-class"><span class="n">ExtendedSSVEPSignal</span></a><span class="p">,</span> <a href="https://neurotechx.github.io/moabb/generated/moabb.pipelines.classification.SSVEP_MsetCCA.html#moabb.pipelines.classification.SSVEP_MsetCCA" title="moabb.pipelines.classification.SSVEP_MsetCCA" class="sphx-glr-backref-module-moabb-pipelines-classification sphx-glr-backref-type-py-class"><span class="n">SSVEP_MsetCCA</span></a>
 
 
 <a href="https://docs.python.org/3/library/warnings.html#warnings.simplefilter" title="warnings.simplefilter" class="sphx-glr-backref-module-warnings sphx-glr-backref-type-py-function"><span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span></a><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
@@ -772,50 +772,27 @@ be overwritten if necessary.</p>
   warnings.warn(
 
   0%|                                              | 0.00/2.06M [00:00&lt;?, ?B/s]
-  1%|▏                                     | 13.3k/2.06M [00:00&lt;00:20, 100kB/s]
-  2%|▋                                     | 35.8k/2.06M [00:00&lt;00:13, 153kB/s]
-  5%|██                                     | 105k/2.06M [00:00&lt;00:05, 353kB/s]
- 12%|████▊                                  | 252k/2.06M [00:00&lt;00:02, 709kB/s]
- 26%|█████████▋                            | 524k/2.06M [00:00&lt;00:01, 1.30MB/s]
- 52%|███████████████████▏                 | 1.06M/2.06M [00:00&lt;00:00, 2.45MB/s]
+  1%|▏                                    | 12.3k/2.06M [00:00&lt;00:20, 99.4kB/s]
+  5%|█▉                                     | 101k/2.06M [00:00&lt;00:05, 344kB/s]
+ 15%|█████▊                                 | 309k/2.06M [00:00&lt;00:01, 925kB/s]
+ 27%|██████████▎                           | 558k/2.06M [00:00&lt;00:01, 1.43MB/s]
+ 57%|█████████████████████▏               | 1.18M/2.06M [00:00&lt;00:00, 2.94MB/s]
   0%|                                              | 0.00/2.06M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.06M/2.06M [00:00&lt;00:00, 8.02GB/s]
+100%|█████████████████████████████████████| 2.06M/2.06M [00:00&lt;00:00, 10.8GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
   0%|                                              | 0.00/2.82M [00:00&lt;?, ?B/s]
-  1%|▏                                     | 14.3k/2.82M [00:00&lt;00:26, 106kB/s]
-  1%|▌                                     | 39.9k/2.82M [00:00&lt;00:16, 169kB/s]
-  3%|█▎                                    | 96.3k/2.82M [00:00&lt;00:08, 309kB/s]
-  7%|██▋                                    | 193k/2.82M [00:00&lt;00:05, 510kB/s]
- 12%|████▌                                  | 326k/2.82M [00:00&lt;00:03, 738kB/s]
- 16%|██████▎                                | 454k/2.82M [00:00&lt;00:02, 862kB/s]
- 19%|███████▍                               | 541k/2.82M [00:00&lt;00:02, 826kB/s]
- 23%|█████████                              | 650k/2.82M [00:00&lt;00:02, 863kB/s]
- 28%|███████████                            | 797k/2.82M [00:01&lt;00:02, 988kB/s]
- 32%|████████████▍                          | 896k/2.82M [00:01&lt;00:02, 945kB/s]
- 35%|█████████████▋                         | 991k/2.82M [00:01&lt;00:02, 904kB/s]
- 38%|██████████████▌                       | 1.08M/2.82M [00:01&lt;00:01, 869kB/s]
- 43%|████████████████▎                     | 1.21M/2.82M [00:01&lt;00:01, 928kB/s]
- 48%|█████████████████▊                   | 1.35M/2.82M [00:01&lt;00:01, 1.03MB/s]
- 52%|███████████████████▋                  | 1.46M/2.82M [00:01&lt;00:01, 984kB/s]
- 55%|████████████████████▉                 | 1.56M/2.82M [00:01&lt;00:01, 946kB/s]
- 59%|██████████████████████▎               | 1.65M/2.82M [00:01&lt;00:01, 908kB/s]
- 62%|███████████████████████▌              | 1.74M/2.82M [00:02&lt;00:01, 871kB/s]
- 66%|█████████████████████████             | 1.86M/2.82M [00:02&lt;00:01, 916kB/s]
- 70%|██████████████████████████▋           | 1.97M/2.82M [00:02&lt;00:00, 937kB/s]
- 74%|███████████████████████████▉          | 2.07M/2.82M [00:02&lt;00:00, 912kB/s]
- 77%|█████████████████████████████▏        | 2.16M/2.82M [00:02&lt;00:00, 875kB/s]
- 80%|██████████████████████████████▍       | 2.25M/2.82M [00:02&lt;00:00, 839kB/s]
- 84%|███████████████████████████████▉      | 2.37M/2.82M [00:02&lt;00:00, 883kB/s]
- 88%|█████████████████████████████████▍    | 2.48M/2.82M [00:02&lt;00:00, 914kB/s]
- 91%|██████████████████████████████████▋   | 2.57M/2.82M [00:03&lt;00:00, 876kB/s]
- 95%|████████████████████████████████████▏ | 2.68M/2.82M [00:03&lt;00:00, 883kB/s]
-100%|█████████████████████████████████████▉| 2.81M/2.82M [00:03&lt;00:00, 956kB/s]
+  1%|▏                                     | 15.4k/2.82M [00:00&lt;00:23, 118kB/s]
+  4%|█▌                                     | 117k/2.82M [00:00&lt;00:07, 386kB/s]
+ 12%|████▋                                 | 350k/2.82M [00:00&lt;00:02, 1.03MB/s]
+ 24%|████████▉                             | 663k/2.82M [00:00&lt;00:01, 1.70MB/s]
+ 48%|█████████████████▋                   | 1.35M/2.82M [00:00&lt;00:00, 3.32MB/s]
+ 89%|████████████████████████████████▊    | 2.50M/2.82M [00:00&lt;00:00, 5.85MB/s]
   0%|                                              | 0.00/2.82M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.82M/2.82M [00:00&lt;00:00, 16.0GB/s]
+100%|█████████████████████████████████████| 2.82M/2.82M [00:00&lt;00:00, 16.4GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 4 s (baseline off), ~785 kB, data loaded,
  &#39;13&#39;: 8
  &#39;17&#39;: 8
@@ -832,44 +809,27 @@ be overwritten if necessary.</p>
   warnings.warn(
 
   0%|                                              | 0.00/2.58M [00:00&lt;?, ?B/s]
-  1%|▏                                     | 14.3k/2.58M [00:00&lt;00:23, 110kB/s]
-  2%|▌                                     | 42.0k/2.58M [00:00&lt;00:13, 183kB/s]
-  4%|█▌                                     | 101k/2.58M [00:00&lt;00:07, 331kB/s]
-  8%|███                                    | 205k/2.58M [00:00&lt;00:04, 551kB/s]
- 11%|████▎                                  | 285k/2.58M [00:00&lt;00:03, 600kB/s]
- 17%|██████▋                                | 440k/2.58M [00:00&lt;00:02, 853kB/s]
- 21%|████████▏                              | 539k/2.58M [00:00&lt;00:02, 849kB/s]
- 27%|██████████▎                            | 685k/2.58M [00:00&lt;00:01, 981kB/s]
- 32%|████████████                          | 816k/2.58M [00:01&lt;00:01, 1.03MB/s]
- 41%|███████████████▏                     | 1.06M/2.58M [00:01&lt;00:01, 1.36MB/s]
- 46%|█████████████████▏                   | 1.20M/2.58M [00:01&lt;00:01, 1.31MB/s]
- 51%|███████████████████                  | 1.33M/2.58M [00:01&lt;00:00, 1.26MB/s]
- 58%|█████████████████████▎               | 1.49M/2.58M [00:01&lt;00:00, 1.29MB/s]
- 63%|███████████████████████▏             | 1.62M/2.58M [00:01&lt;00:00, 1.24MB/s]
- 67%|████████████████████████▉            | 1.74M/2.58M [00:01&lt;00:00, 1.19MB/s]
- 72%|██████████████████████████▋          | 1.86M/2.58M [00:01&lt;00:00, 1.14MB/s]
- 77%|████████████████████████████▌        | 1.99M/2.58M [00:01&lt;00:00, 1.14MB/s]
- 82%|██████████████████████████████▍      | 2.12M/2.58M [00:02&lt;00:00, 1.14MB/s]
- 87%|████████████████████████████████     | 2.24M/2.58M [00:02&lt;00:00, 1.09MB/s]
- 91%|█████████████████████████████████▌   | 2.35M/2.58M [00:02&lt;00:00, 1.05MB/s]
- 96%|███████████████████████████████████▎ | 2.47M/2.58M [00:02&lt;00:00, 1.05MB/s]
-100%|████████████████████████████████████▊| 2.57M/2.58M [00:02&lt;00:00, 1.01MB/s]
+  1%|▏                                     | 14.3k/2.58M [00:00&lt;00:21, 119kB/s]
+  4%|█▌                                     | 103k/2.58M [00:00&lt;00:06, 361kB/s]
+ 19%|███████▏                              | 486k/2.58M [00:00&lt;00:01, 1.38MB/s]
+ 42%|███████████████▍                     | 1.08M/2.58M [00:00&lt;00:00, 2.38MB/s]
+100%|████████████████████████████████████▉| 2.58M/2.58M [00:00&lt;00:00, 5.85MB/s]
   0%|                                              | 0.00/2.58M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.58M/2.58M [00:00&lt;00:00, 11.7GB/s]
+100%|█████████████████████████████████████| 2.58M/2.58M [00:00&lt;00:00, 15.9GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
   0%|                                              | 0.00/2.14M [00:00&lt;?, ?B/s]
-  1%|▎                                     | 14.3k/2.14M [00:00&lt;00:20, 103kB/s]
-  2%|▊                                     | 48.1k/2.14M [00:00&lt;00:10, 207kB/s]
-  5%|██                                     | 113k/2.14M [00:00&lt;00:05, 362kB/s]
- 11%|████▍                                  | 245k/2.14M [00:00&lt;00:02, 666kB/s]
- 24%|█████████▎                            | 524k/2.14M [00:00&lt;00:01, 1.29MB/s]
- 50%|██████████████████▎                  | 1.06M/2.14M [00:00&lt;00:00, 2.44MB/s]
+  0%|                                     | 1.02k/2.14M [00:00&lt;04:25, 8.08kB/s]
+  3%|█▏                                    | 69.6k/2.14M [00:00&lt;00:05, 367kB/s]
+  8%|██▉                                    | 164k/2.14M [00:00&lt;00:03, 615kB/s]
+ 16%|██████                                | 343k/2.14M [00:00&lt;00:01, 1.06MB/s]
+ 30%|███████████▎                          | 637k/2.14M [00:00&lt;00:00, 1.72MB/s]
+ 56%|████████████████████▊                | 1.20M/2.14M [00:00&lt;00:00, 3.04MB/s]
   0%|                                              | 0.00/2.14M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.14M/2.14M [00:00&lt;00:00, 7.32GB/s]
+100%|█████████████████████████████████████| 2.14M/2.14M [00:00&lt;00:00, 12.0GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 4 s (baseline off), ~785 kB, data loaded,
  &#39;13&#39;: 8
  &#39;17&#39;: 8
@@ -882,9 +842,9 @@ be overwritten if necessary.</p>
   warn(f&quot;warnEpochs {epochs}&quot;)
 
 Kalunga2016-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Kalunga2016-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  2.03it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.04it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.04it/s]
+Kalunga2016-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  2.04it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.07it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.06it/s]
 </pre></div>
 </div>
 <p>Filter bank processing, determine the filter automatically from the
@@ -957,9 +917,9 @@ stimulation frequency values of events.</p>
   warn(f&quot;warnEpochs {epochs}&quot;)
 
 Kalunga2016-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Kalunga2016-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  2.63it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.65it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.65it/s]
+Kalunga2016-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  2.70it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.71it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.71it/s]
 </pre></div>
 </div>
 <p>TRCA processing also relies on filter bank that is automatically designed.</p>
@@ -991,9 +951,9 @@ Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:00&lt;00:00,  2.65it/s]
   warn(f&quot;warnEpochs {epochs}&quot;)
 
 Kalunga2016-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Kalunga2016-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  1.29it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.31it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.31it/s]
+Kalunga2016-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  1.34it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.35it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.34it/s]
 </pre></div>
 </div>
 <p>MsetCCA processing</p>
@@ -1025,9 +985,9 @@ Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.31it/s]
   warn(f&quot;warnEpochs {epochs}&quot;)
 
 Kalunga2016-CrossSubject:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Kalunga2016-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  1.52it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.59it/s]
-Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.58it/s]
+Kalunga2016-CrossSubject:  50%|#####     | 1/2 [00:00&lt;00:00,  1.59it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.48it/s]
+Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.50it/s]
 </pre></div>
 </div>
 <p>After processing the four, we simply concatenate the results.</p>
@@ -1055,8 +1015,8 @@ Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.58it/s]
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" srcset="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" alt="plot cross subject ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  24.300 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  12 MB</p>
+<img src="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" srcset="../_images/sphx_glr_plot_cross_subject_ssvep_001.png" alt="plot cross subject ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  19.195 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  16 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-cross-subject-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5459b5c2be76a529eb282ae496a50415/plot_cross_subject_ssvep.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_cross_subject_ssvep.py</span></code></a></p>
@@ -1148,7 +1108,7 @@ Kalunga2016-CrossSubject: 100%|##########| 2/2 [00:01&lt;00:00,  1.58it/s]
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2018-2024 MOABB contributors.
+      © Copyright 2018-2025 MOABB contributors.
       <br/>
     
   </p>

@@ -551,7 +551,7 @@ containing the results of the evaluation.</p>
 <li><p><strong>pipelines</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em> of </em><em>pipeline instance.</em>) – A dict containing the sklearn pipeline to evaluate.</p></li>
 <li><p><strong>param_grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The key of the dictionary must be the same as the associated pipeline.</p></li>
 <li><p><strong>postprocess_pipeline</strong> (<em>Pipeline</em><em> | </em><em>None</em>) – Optional pipeline to apply to the data after the preprocessing.
-This pipeline will either receive <a class="reference external" href="https://mne.tools/stable/generated/mne.io.BaseRaw.html#mne.io.BaseRaw" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.BaseRaw</span></code></a>, <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>
+This pipeline will either receive <a class="reference external" href="https://mne.tools/stable/generated/mne.io.BaseRaw.html#mne.io.BaseRaw" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.BaseRaw</span></code></a>, <a class="reference external" href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="(in MNE v1.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Epochs</span></code></a>
 or <code class="xref py py-func docutils literal notranslate"><span class="pre">np.ndarray()</span></code> as input, depending on the values of <code class="docutils literal notranslate"><span class="pre">return_epochs</span></code>
 and <code class="docutils literal notranslate"><span class="pre">return_raws</span></code>.
 This pipeline must return an <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>.
@@ -713,7 +713,7 @@ i.e. no call to <code class="docutils literal notranslate"><span class="pre">fit
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2018-2024 MOABB contributors.
+      © Copyright 2018-2025 MOABB contributors.
       <br/>
     
   </p>

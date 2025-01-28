@@ -656,16 +656,16 @@ to easily scale to many datasets.</p>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">from</span> <span class="nn">absl.logging</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ERROR</span></a><span class="p">,</span> <span class="n">set_verbosity</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">absl.logging</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ERROR</span></a><span class="p">,</span> <span class="n">set_verbosity</span>
 
-<span class="kn">from</span> <span class="nn">moabb</span> <span class="kn">import</span> <a href="../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">,</span> <a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a>
-<span class="kn">from</span> <span class="nn">moabb.analysis.plotting</span> <span class="kn">import</span> <a href="../generated/moabb.analysis.plotting.score_plot.html#moabb.analysis.plotting.score_plot" title="moabb.analysis.plotting.score_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">score_plot</span></a>
-<span class="kn">from</span> <span class="nn">moabb.datasets</span> <span class="kn">import</span> <a href="../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a>
-<span class="kn">from</span> <span class="nn">moabb.utils</span> <span class="kn">import</span> <a href="../generated/moabb.setup_seed.html#moabb.setup_seed" title="moabb.setup_seed" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">setup_seed</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/moabb.benchmark.html#moabb.benchmark" title="moabb.benchmark" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">benchmark</span></a><span class="p">,</span> <a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.analysis.plotting</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/moabb.analysis.plotting.score_plot.html#moabb.analysis.plotting.score_plot" title="moabb.analysis.plotting.score_plot" class="sphx-glr-backref-module-moabb-analysis-plotting sphx-glr-backref-type-py-function"><span class="n">score_plot</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.utils</span><span class="w"> </span><span class="kn">import</span> <a href="../generated/moabb.setup_seed.html#moabb.setup_seed" title="moabb.setup_seed" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">setup_seed</span></a>
 
 
 <a href="../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
@@ -727,100 +727,94 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
 
   0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/42.8M [00:00&lt;10:34, 67.4kB/s]
+  0%|                                     | 8.19k/42.8M [00:00&lt;09:08, 78.1kB/s]
 
-  0%|                                      | 32.8k/42.8M [00:00&lt;04:53, 146kB/s]
+  0%|                                      | 32.8k/42.8M [00:00&lt;04:13, 168kB/s]
 
-  0%|                                      | 96.3k/42.8M [00:00&lt;02:15, 315kB/s]
+  0%|                                      | 96.3k/42.8M [00:00&lt;01:57, 364kB/s]
 
-  0%|▏                                      | 209k/42.8M [00:00&lt;01:17, 553kB/s]
+  0%|▏                                      | 209k/42.8M [00:00&lt;01:06, 639kB/s]
 
-  1%|▍                                     | 432k/42.8M [00:00&lt;00:41, 1.01MB/s]
+  1%|▍                                     | 432k/42.8M [00:00&lt;00:36, 1.17MB/s]
 
-  2%|▊                                     | 889k/42.8M [00:00&lt;00:21, 1.93MB/s]
+  2%|▊                                     | 889k/42.8M [00:00&lt;00:18, 2.23MB/s]
 
-  4%|█▌                                   | 1.80M/42.8M [00:00&lt;00:11, 3.72MB/s]
+  4%|█▌                                   | 1.80M/42.8M [00:00&lt;00:09, 4.30MB/s]
 
-  8%|███▏                                 | 3.62M/42.8M [00:00&lt;00:05, 7.26MB/s]
+  8%|███▏                                 | 3.62M/42.8M [00:00&lt;00:04, 8.39MB/s]
 
- 16%|█████▊                               | 6.71M/42.8M [00:01&lt;00:02, 12.8MB/s]
+ 16%|█████▉                               | 6.91M/42.8M [00:00&lt;00:02, 15.2MB/s]
 
- 22%|████████▎                            | 9.56M/42.8M [00:01&lt;00:02, 16.0MB/s]
+ 24%|████████▋                            | 10.1M/42.8M [00:01&lt;00:01, 19.7MB/s]
 
- 30%|██████████▉                          | 12.6M/42.8M [00:01&lt;00:01, 18.8MB/s]
+ 31%|███████████▌                         | 13.3M/42.8M [00:01&lt;00:01, 22.6MB/s]
 
- 36%|█████████████▍                       | 15.6M/42.8M [00:01&lt;00:01, 20.3MB/s]
+ 41%|███████████████                      | 17.4M/42.8M [00:01&lt;00:00, 26.5MB/s]
 
- 43%|███████████████▉                     | 18.5M/42.8M [00:01&lt;00:01, 21.3MB/s]
+ 49%|██████████████████                   | 20.9M/42.8M [00:01&lt;00:00, 28.3MB/s]
 
- 50%|██████████████████▍                  | 21.4M/42.8M [00:01&lt;00:00, 22.1MB/s]
+ 57%|████████████████████▉                | 24.2M/42.8M [00:01&lt;00:00, 29.2MB/s]
 
- 57%|████████████████████▉                | 24.3M/42.8M [00:01&lt;00:00, 22.4MB/s]
+ 64%|███████████████████████▋             | 27.4M/42.8M [00:01&lt;00:00, 29.1MB/s]
 
- 64%|███████████████████████▌             | 27.2M/42.8M [00:01&lt;00:00, 22.9MB/s]
+ 74%|███████████████████████████▎         | 31.5M/42.8M [00:01&lt;00:00, 30.9MB/s]
 
- 70%|██████████████████████████           | 30.1M/42.8M [00:02&lt;00:00, 23.2MB/s]
+ 82%|██████████████████████████████▎      | 35.0M/42.8M [00:01&lt;00:00, 30.9MB/s]
 
- 77%|████████████████████████████▌        | 33.0M/42.8M [00:02&lt;00:00, 23.3MB/s]
+ 91%|█████████████████████████████████▌   | 38.8M/42.8M [00:01&lt;00:00, 32.1MB/s]
 
- 84%|███████████████████████████████▏     | 36.0M/42.8M [00:02&lt;00:00, 23.6MB/s]
-
- 91%|█████████████████████████████████▋   | 38.9M/42.8M [00:02&lt;00:00, 23.6MB/s]
-
- 98%|████████████████████████████████████▏| 41.8M/42.8M [00:02&lt;00:00, 23.7MB/s]
+ 99%|████████████████████████████████████▋| 42.5M/42.8M [00:02&lt;00:00, 32.9MB/s]
 
   0%|                                              | 0.00/42.8M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 42.8M/42.8M [00:00&lt;00:00, 133GB/s]
+100%|██████████████████████████████████████| 42.8M/42.8M [00:00&lt;00:00, 166GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/43.8M [00:00&lt;10:48, 67.5kB/s]
+  0%|                                     | 8.19k/43.8M [00:00&lt;09:20, 78.0kB/s]
 
-  0%|                                      | 32.8k/43.8M [00:00&lt;05:00, 146kB/s]
+  0%|                                      | 32.8k/43.8M [00:00&lt;04:19, 169kB/s]
 
-  0%|                                      | 96.3k/43.8M [00:00&lt;02:18, 315kB/s]
+  0%|                                      | 96.3k/43.8M [00:00&lt;01:59, 365kB/s]
 
-  0%|▏                                      | 209k/43.8M [00:00&lt;01:18, 552kB/s]
+  0%|▏                                      | 209k/43.8M [00:00&lt;01:07, 641kB/s]
 
-  1%|▍                                     | 432k/43.8M [00:00&lt;00:43, 1.01MB/s]
+  1%|▍                                     | 432k/43.8M [00:00&lt;00:37, 1.17MB/s]
 
-  2%|▊                                     | 889k/43.8M [00:00&lt;00:22, 1.93MB/s]
+  2%|▊                                     | 889k/43.8M [00:00&lt;00:19, 2.23MB/s]
 
-  4%|█▌                                   | 1.80M/43.8M [00:00&lt;00:11, 3.72MB/s]
+  4%|█▌                                   | 1.80M/43.8M [00:00&lt;00:09, 4.31MB/s]
 
-  8%|███                                  | 3.62M/43.8M [00:00&lt;00:05, 7.26MB/s]
+  8%|███                                  | 3.62M/43.8M [00:00&lt;00:04, 8.41MB/s]
 
- 15%|█████▋                               | 6.74M/43.8M [00:01&lt;00:02, 12.9MB/s]
+ 15%|█████▋                               | 6.78M/43.8M [00:00&lt;00:02, 14.9MB/s]
 
- 23%|████████▎                            | 9.86M/43.8M [00:01&lt;00:02, 16.7MB/s]
+ 21%|███████▊                             | 9.20M/43.8M [00:01&lt;00:01, 17.3MB/s]
 
- 29%|██████████▊                          | 12.8M/43.8M [00:01&lt;00:01, 18.8MB/s]
+ 28%|██████████▍                          | 12.3M/43.8M [00:01&lt;00:01, 21.0MB/s]
 
- 36%|█████████████▏                       | 15.6M/43.8M [00:01&lt;00:01, 20.0MB/s]
+ 34%|████████████▌                        | 14.9M/43.8M [00:01&lt;00:01, 21.9MB/s]
 
- 42%|███████████████▋                     | 18.5M/43.8M [00:01&lt;00:01, 21.2MB/s]
+ 41%|███████████████▎                     | 18.1M/43.8M [00:01&lt;00:01, 24.4MB/s]
 
- 49%|██████████████████▏                  | 21.5M/43.8M [00:01&lt;00:01, 22.1MB/s]
+ 49%|██████████████████                   | 21.4M/43.8M [00:01&lt;00:00, 26.0MB/s]
 
- 55%|████████████████████▌                | 24.3M/43.8M [00:01&lt;00:00, 22.2MB/s]
+ 57%|█████████████████████                | 24.8M/43.8M [00:01&lt;00:00, 27.6MB/s]
 
- 62%|███████████████████████              | 27.2M/43.8M [00:01&lt;00:00, 22.8MB/s]
+ 65%|████████████████████████▏            | 28.6M/43.8M [00:01&lt;00:00, 30.0MB/s]
 
- 69%|█████████████████████████▌           | 30.3M/43.8M [00:02&lt;00:00, 23.4MB/s]
+ 73%|███████████████████████████▏         | 32.2M/43.8M [00:01&lt;00:00, 30.9MB/s]
 
- 76%|███████████████████████████▉         | 33.1M/43.8M [00:02&lt;00:00, 23.2MB/s]
+ 81%|██████████████████████████████       | 35.5M/43.8M [00:01&lt;00:00, 31.6MB/s]
 
- 83%|██████████████████████████████▋      | 36.2M/43.8M [00:02&lt;00:00, 23.9MB/s]
+ 88%|████████████████████████████████▋    | 38.7M/43.8M [00:02&lt;00:00, 31.0MB/s]
 
- 90%|█████████████████████████████████▏   | 39.3M/43.8M [00:02&lt;00:00, 24.1MB/s]
-
- 96%|███████████████████████████████████▋ | 42.2M/43.8M [00:02&lt;00:00, 24.1MB/s]
+ 95%|███████████████████████████████████▎ | 41.8M/43.8M [00:02&lt;00:00, 30.8MB/s]
 
   0%|                                              | 0.00/43.8M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 43.8M/43.8M [00:00&lt;00:00, 128GB/s]
+100%|██████████████████████████████████████| 43.8M/43.8M [00:00&lt;00:00, 190GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
@@ -869,16 +863,6 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
   super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
@@ -929,6 +913,16 @@ float32
 float32
 float32
 float32
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
   super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
@@ -940,110 +934,102 @@ float32
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
   super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 
-BNCI2014-001-WithinSession:  50%|#####     | 1/2 [06:12&lt;06:12, 372.42s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-001-WithinSession:  50%|#####     | 1/2 [06:05&lt;06:05, 365.67s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/43.1M [00:00&lt;10:41, 67.1kB/s]
+  0%|                                     | 8.19k/43.1M [00:00&lt;09:12, 78.0kB/s]
 
-  0%|                                      | 32.8k/43.1M [00:00&lt;04:55, 146kB/s]
+  0%|                                      | 32.8k/43.1M [00:00&lt;04:15, 168kB/s]
 
-  0%|                                      | 96.3k/43.1M [00:00&lt;02:19, 308kB/s]
+  0%|                                      | 96.3k/43.1M [00:00&lt;01:58, 364kB/s]
 
-  0%|▏                                      | 209k/43.1M [00:00&lt;01:18, 545kB/s]
+  0%|▏                                      | 209k/43.1M [00:00&lt;01:07, 638kB/s]
 
-  1%|▍                                      | 432k/43.1M [00:00&lt;00:42, 999kB/s]
+  1%|▍                                     | 432k/43.1M [00:00&lt;00:36, 1.16MB/s]
 
-  2%|▊                                     | 889k/43.1M [00:00&lt;00:22, 1.91MB/s]
+  2%|▊                                     | 889k/43.1M [00:00&lt;00:18, 2.23MB/s]
 
-  4%|█▌                                   | 1.80M/43.1M [00:00&lt;00:11, 3.70MB/s]
+  4%|█▌                                   | 1.80M/43.1M [00:00&lt;00:09, 4.30MB/s]
 
-  8%|███                                  | 3.62M/43.1M [00:00&lt;00:05, 7.23MB/s]
+  8%|███                                  | 3.62M/43.1M [00:00&lt;00:04, 8.38MB/s]
 
- 15%|█████▋                               | 6.67M/43.1M [00:01&lt;00:02, 12.7MB/s]
+ 17%|██████▏                              | 7.22M/43.1M [00:00&lt;00:02, 16.3MB/s]
 
- 22%|████████▏                            | 9.58M/43.1M [00:01&lt;00:02, 16.1MB/s]
+ 24%|████████▉                            | 10.5M/43.1M [00:01&lt;00:01, 20.0MB/s]
 
- 28%|██████████▍                          | 12.2M/43.1M [00:01&lt;00:01, 17.7MB/s]
+ 31%|███████████▎                         | 13.2M/43.1M [00:01&lt;00:01, 21.7MB/s]
 
- 35%|████████████▊                        | 15.0M/43.1M [00:01&lt;00:01, 19.2MB/s]
+ 37%|█████████████▋                       | 16.0M/43.1M [00:01&lt;00:01, 23.0MB/s]
 
- 41%|███████████████▎                     | 17.8M/43.1M [00:01&lt;00:01, 20.4MB/s]
+ 44%|████████████████                     | 18.8M/43.1M [00:01&lt;00:01, 23.9MB/s]
 
- 48%|█████████████████▊                   | 20.8M/43.1M [00:01&lt;00:01, 21.4MB/s]
+ 50%|██████████████████▌                  | 21.6M/43.1M [00:01&lt;00:00, 24.6MB/s]
 
- 55%|████████████████████▎                | 23.6M/43.1M [00:01&lt;00:00, 21.9MB/s]
+ 58%|█████████████████████▎               | 24.8M/43.1M [00:01&lt;00:00, 26.2MB/s]
 
- 61%|██████████████████████▋              | 26.4M/43.1M [00:01&lt;00:00, 22.2MB/s]
+ 65%|███████████████████████▉             | 27.8M/43.1M [00:01&lt;00:00, 26.8MB/s]
 
- 68%|█████████████████████████▎           | 29.5M/43.1M [00:02&lt;00:00, 23.0MB/s]
+ 73%|██████████████████████████▊          | 31.3M/43.1M [00:01&lt;00:00, 28.5MB/s]
 
- 76%|███████████████████████████▉         | 32.6M/43.1M [00:02&lt;00:00, 23.4MB/s]
+ 79%|█████████████████████████████▎       | 34.1M/43.1M [00:01&lt;00:00, 27.8MB/s]
 
- 83%|██████████████████████████████▌      | 35.6M/43.1M [00:02&lt;00:00, 23.9MB/s]
+ 87%|████████████████████████████████▏    | 37.5M/43.1M [00:02&lt;00:00, 29.2MB/s]
 
- 88%|████████████████████████████████▋    | 38.0M/43.1M [00:02&lt;00:00, 20.0MB/s]
-
- 94%|██████████████████████████████████▋  | 40.4M/43.1M [00:02&lt;00:00, 20.2MB/s]
-
- 99%|████████████████████████████████████▍| 42.5M/43.1M [00:02&lt;00:00, 19.3MB/s]
+ 95%|███████████████████████████████████▎ | 41.1M/43.1M [00:02&lt;00:00, 30.4MB/s]
 
   0%|                                              | 0.00/43.1M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 43.1M/43.1M [00:00&lt;00:00, 163GB/s]
+100%|██████████████████████████████████████| 43.1M/43.1M [00:00&lt;00:00, 171GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/44.2M [00:00&lt;10:58, 67.1kB/s]
+  0%|                                     | 8.19k/44.2M [00:00&lt;09:25, 78.2kB/s]
 
-  0%|                                      | 32.8k/44.2M [00:00&lt;05:03, 145kB/s]
+  0%|                                      | 32.8k/44.2M [00:00&lt;04:21, 169kB/s]
 
-  0%|                                      | 96.3k/44.2M [00:00&lt;02:20, 315kB/s]
+  0%|                                      | 96.3k/44.2M [00:00&lt;02:00, 365kB/s]
 
-  0%|▏                                      | 209k/44.2M [00:00&lt;01:19, 553kB/s]
+  0%|▏                                      | 209k/44.2M [00:00&lt;01:08, 641kB/s]
 
-  1%|▎                                     | 432k/44.2M [00:00&lt;00:43, 1.01MB/s]
+  1%|▎                                     | 432k/44.2M [00:00&lt;00:37, 1.17MB/s]
 
-  2%|▊                                     | 889k/44.2M [00:00&lt;00:22, 1.93MB/s]
+  2%|▊                                     | 889k/44.2M [00:00&lt;00:19, 2.24MB/s]
 
-  4%|█▌                                   | 1.80M/44.2M [00:00&lt;00:11, 3.72MB/s]
+  4%|█▌                                   | 1.80M/44.2M [00:00&lt;00:09, 4.31MB/s]
 
-  8%|███                                  | 3.62M/44.2M [00:00&lt;00:05, 7.25MB/s]
+  8%|███                                  | 3.62M/44.2M [00:00&lt;00:04, 8.41MB/s]
 
- 15%|█████▌                               | 6.66M/44.2M [00:01&lt;00:02, 12.5MB/s]
+ 16%|██████                               | 7.27M/44.2M [00:00&lt;00:02, 16.5MB/s]
 
- 21%|███████▉                             | 9.48M/44.2M [00:01&lt;00:02, 15.7MB/s]
+ 25%|█████████▏                           | 11.0M/44.2M [00:01&lt;00:01, 22.2MB/s]
 
- 27%|██████████                           | 12.1M/44.2M [00:01&lt;00:01, 17.4MB/s]
+ 32%|███████████▊                         | 14.1M/44.2M [00:01&lt;00:01, 24.3MB/s]
 
- 33%|████████████▎                        | 14.7M/44.2M [00:01&lt;00:01, 18.6MB/s]
+ 39%|██████████████▌                      | 17.4M/44.2M [00:01&lt;00:01, 26.0MB/s]
 
- 39%|██████████████▌                      | 17.4M/44.2M [00:01&lt;00:01, 19.6MB/s]
+ 46%|████████████████▉                    | 20.2M/44.2M [00:01&lt;00:00, 26.3MB/s]
 
- 45%|████████████████▊                    | 20.1M/44.2M [00:01&lt;00:01, 20.2MB/s]
+ 53%|███████████████████▍                 | 23.3M/44.2M [00:01&lt;00:00, 26.8MB/s]
 
- 52%|███████████████████                  | 22.8M/44.2M [00:01&lt;00:01, 20.9MB/s]
+ 60%|██████████████████████               | 26.4M/44.2M [00:01&lt;00:00, 27.7MB/s]
 
- 58%|█████████████████████▎               | 25.5M/44.2M [00:01&lt;00:00, 21.2MB/s]
+ 68%|█████████████████████████▏           | 30.1M/44.2M [00:01&lt;00:00, 29.8MB/s]
 
- 64%|███████████████████████▋             | 28.3M/44.2M [00:02&lt;00:00, 21.5MB/s]
+ 76%|████████████████████████████         | 33.6M/44.2M [00:01&lt;00:00, 30.6MB/s]
 
- 70%|█████████████████████████▉           | 31.0M/44.2M [00:02&lt;00:00, 21.7MB/s]
+ 84%|██████████████████████████████▉      | 37.0M/44.2M [00:01&lt;00:00, 31.0MB/s]
 
- 76%|████████████████████████████▏        | 33.7M/44.2M [00:02&lt;00:00, 21.8MB/s]
+ 92%|██████████████████████████████████▏  | 40.8M/44.2M [00:02&lt;00:00, 33.1MB/s]
 
- 83%|██████████████████████████████▌      | 36.5M/44.2M [00:02&lt;00:00, 22.1MB/s]
-
- 89%|████████████████████████████████▊    | 39.3M/44.2M [00:02&lt;00:00, 22.2MB/s]
-
- 95%|███████████████████████████████████▏ | 42.1M/44.2M [00:02&lt;00:00, 22.4MB/s]
+100%|████████████████████████████████████▉| 44.1M/44.2M [00:02&lt;00:00, 32.5MB/s]
 
   0%|                                              | 0.00/44.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 44.2M/44.2M [00:00&lt;00:00, 128GB/s]
+100%|██████████████████████████████████████| 44.2M/44.2M [00:00&lt;00:00, 206GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
@@ -1092,16 +1078,6 @@ BNCI2014-001-WithinSession:  50%|#####     | 1/2 [06:12&lt;06:12, 372.42s/it]/ho
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
-/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
-  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
   super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
@@ -1152,6 +1128,16 @@ float32
 float32
 float32
 float32
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
   super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
@@ -1163,11 +1149,11 @@ float32
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
   super().__init__(activity_regularizer=activity_regularizer, **kwargs)
 
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [12:31&lt;00:00, 376.25s/it]
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [12:31&lt;00:00, 375.68s/it]
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [12:13&lt;00:00, 367.07s/it]
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [12:13&lt;00:00, 366.86s/it]
         dataset     evaluation              pipeline  avg score
-0  BNCI2014-001  WithinSession     Keras_DeepConvNet   0.452636
-1  BNCI2014-001  WithinSession        Keras_EEGTCNet   0.471718
+0  BNCI2014-001  WithinSession     Keras_DeepConvNet   0.442789
+1  BNCI2014-001  WithinSession        Keras_EEGTCNet   0.471480
 2  BNCI2014-001  WithinSession        Keras_EEGITNet   0.578809
 3  BNCI2014-001  WithinSession          Keras_EEGNeX   0.565000
 4  BNCI2014-001  WithinSession      Keras_EEGNet_8_2   0.529286
@@ -1224,8 +1210,8 @@ classification</a>.
 IEEE Access, 10, 36672-36685.</p>
 </dd>
 </dl>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 12 minutes  33.998 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  3843 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 12 minutes  16.211 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  4013 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-benchmark-dl-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/14eea0f23180ed6c51f0ac41b2f0162e/plot_benchmark_DL.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_benchmark_DL.py</span></code></a></p>
@@ -1314,7 +1300,7 @@ IEEE Access, 10, 36672-36685.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2018-2024 MOABB contributors.
+      © Copyright 2018-2025 MOABB contributors.
       <br/>
     
   </p>

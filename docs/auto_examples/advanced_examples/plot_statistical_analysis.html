@@ -661,23 +661,23 @@ they can be used.</p>
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="c1"># sphinx_gallery_thumbnail_number = -2</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">mne.decoding</span> <span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a>
-<span class="kn">from</span> <span class="nn">pyriemann.estimation</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
-<span class="kn">from</span> <span class="nn">pyriemann.tangentspace</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.discriminant_analysis</span> <span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
-<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.decoding</span><span class="w"> </span><span class="kn">import</span> <a href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="mne.decoding.CSP" class="sphx-glr-backref-module-mne-decoding sphx-glr-backref-type-py-class"><span class="n">CSP</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.estimation</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">Covariances</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyriemann.tangentspace</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator" title="sklearn.base.BaseEstimator" class="sphx-glr-backref-module-sklearn-base sphx-glr-backref-type-py-class"><span class="n">TangentSpace</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.discriminant_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.discriminant_analysis.LinearDiscriminantAnalysis.html#sklearn.discriminant_analysis.LinearDiscriminantAnalysis" title="sklearn.discriminant_analysis.LinearDiscriminantAnalysis" class="sphx-glr-backref-module-sklearn-discriminant_analysis sphx-glr-backref-type-py-class"><span class="n">LDA</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression" title="sklearn.linear_model.LogisticRegression" class="sphx-glr-backref-module-sklearn-linear_model sphx-glr-backref-type-py-class"><span class="n">LogisticRegression</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.make_pipeline.html#sklearn.pipeline.make_pipeline" title="sklearn.pipeline.make_pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-function"><span class="n">make_pipeline</span></a>
 
-<span class="kn">import</span> <span class="nn">moabb</span>
-<span class="kn">import</span> <span class="nn">moabb.analysis.plotting</span> <span class="k">as</span> <span class="nn">moabb_plt</span>
-<span class="kn">from</span> <span class="nn">moabb.analysis.meta_analysis</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: E501</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">moabb</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">moabb.analysis.plotting</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">moabb_plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.analysis.meta_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: E501</span>
     <a href="https://neurotechx.github.io/moabb/generated/moabb.analysis.meta_analysis.compute_dataset_statistics.html#moabb.analysis.meta_analysis.compute_dataset_statistics" title="moabb.analysis.meta_analysis.compute_dataset_statistics" class="sphx-glr-backref-module-moabb-analysis-meta_analysis sphx-glr-backref-type-py-function"><span class="n">compute_dataset_statistics</span></a><span class="p">,</span>
     <a href="https://neurotechx.github.io/moabb/generated/moabb.analysis.meta_analysis.find_significant_differences.html#moabb.analysis.meta_analysis.find_significant_differences" title="moabb.analysis.meta_analysis.find_significant_differences" class="sphx-glr-backref-module-moabb-analysis-meta_analysis sphx-glr-backref-type-py-function"><span class="n">find_significant_differences</span></a><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">moabb.datasets</span> <span class="kn">import</span> <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a>
-<span class="kn">from</span> <span class="nn">moabb.evaluations</span> <span class="kn">import</span> <a href="../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">CrossSessionEvaluation</span></a>
-<span class="kn">from</span> <span class="nn">moabb.paradigms</span> <span class="kn">import</span> <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.datasets</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001" class="sphx-glr-backref-module-moabb-datasets sphx-glr-backref-type-py-class"><span class="n">BNCI2014_001</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.evaluations</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.evaluations.CrossSessionEvaluation.html#moabb.evaluations.CrossSessionEvaluation" title="moabb.evaluations.CrossSessionEvaluation" class="sphx-glr-backref-module-moabb-evaluations sphx-glr-backref-type-py-class"><span class="n">CrossSessionEvaluation</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.paradigms</span><span class="w"> </span><span class="kn">import</span> <a href="../../generated/moabb.paradigms.LeftRightImagery.html#moabb.paradigms.LeftRightImagery" title="moabb.paradigms.LeftRightImagery" class="sphx-glr-backref-module-moabb-paradigms sphx-glr-backref-type-py-class"><span class="n">LeftRightImagery</span></a>
 
 
 <a href="../../generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">moabb</span><span class="o">.</span><span class="n">set_log_level</span></a><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">)</span>
@@ -780,7 +780,7 @@ be overwritten if necessary.</p>
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession:  25%|##5       | 1/4 [00:05&lt;00:17,  5.89s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~4.1 MB, data loaded,
+BNCI2014-001-CrossSession:  25%|##5       | 1/4 [00:05&lt;00:17,  5.90s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -829,110 +829,100 @@ BNCI2014-001-CrossSession:  25%|##5       | 1/4 [00:05&lt;00:17,  5.89s/it]/home
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession:  50%|#####     | 2/4 [00:11&lt;00:11,  5.77s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-001-CrossSession:  50%|#####     | 2/4 [00:11&lt;00:11,  5.61s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/44.1M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/44.1M [00:00&lt;10:52, 67.5kB/s]
+  0%|                                     | 8.19k/44.1M [00:00&lt;09:24, 78.1kB/s]
 
-  0%|                                      | 32.8k/44.1M [00:00&lt;05:01, 146kB/s]
+  0%|                                      | 32.8k/44.1M [00:00&lt;04:21, 168kB/s]
 
-  0%|                                      | 96.3k/44.1M [00:00&lt;02:19, 315kB/s]
+  0%|                                      | 96.3k/44.1M [00:00&lt;02:00, 364kB/s]
 
-  0%|▏                                      | 209k/44.1M [00:00&lt;01:19, 553kB/s]
+  0%|▏                                      | 209k/44.1M [00:00&lt;01:08, 639kB/s]
 
-  1%|▎                                     | 432k/44.1M [00:00&lt;00:43, 1.01MB/s]
+  1%|▎                                     | 432k/44.1M [00:00&lt;00:37, 1.17MB/s]
 
-  2%|▊                                     | 889k/44.1M [00:00&lt;00:22, 1.93MB/s]
+  2%|▊                                     | 889k/44.1M [00:00&lt;00:19, 2.23MB/s]
 
-  4%|█▌                                   | 1.80M/44.1M [00:00&lt;00:11, 3.73MB/s]
+  4%|█▌                                   | 1.80M/44.1M [00:00&lt;00:09, 4.29MB/s]
 
-  8%|███                                  | 3.62M/44.1M [00:00&lt;00:05, 7.26MB/s]
+  8%|███                                  | 3.62M/44.1M [00:00&lt;00:04, 8.38MB/s]
 
- 15%|█████▌                               | 6.68M/44.1M [00:01&lt;00:02, 12.8MB/s]
+ 16%|██████                               | 7.22M/44.1M [00:00&lt;00:02, 16.0MB/s]
 
- 22%|████████                             | 9.54M/44.1M [00:01&lt;00:02, 16.0MB/s]
+ 25%|█████████▍                           | 11.2M/44.1M [00:01&lt;00:01, 22.6MB/s]
 
- 27%|██████████▏                          | 12.1M/44.1M [00:01&lt;00:01, 17.5MB/s]
+ 34%|████████████▍                        | 14.8M/44.1M [00:01&lt;00:01, 25.9MB/s]
 
- 34%|████████████▍                        | 14.8M/44.1M [00:01&lt;00:01, 18.9MB/s]
+ 42%|███████████████▌                     | 18.5M/44.1M [00:01&lt;00:00, 28.6MB/s]
 
- 40%|██████████████▋                      | 17.5M/44.1M [00:01&lt;00:01, 19.9MB/s]
+ 50%|██████████████████▌                  | 22.1M/44.1M [00:01&lt;00:00, 30.0MB/s]
 
- 46%|████████████████▉                    | 20.2M/44.1M [00:01&lt;00:01, 20.4MB/s]
+ 57%|█████████████████████                | 25.1M/44.1M [00:01&lt;00:00, 29.2MB/s]
 
- 52%|███████████████████▏                 | 22.9M/44.1M [00:01&lt;00:01, 20.9MB/s]
+ 64%|███████████████████████▊             | 28.4M/44.1M [00:01&lt;00:00, 29.5MB/s]
 
- 59%|█████████████████████▋               | 25.9M/44.1M [00:01&lt;00:00, 22.0MB/s]
+ 73%|██████████████████████████▊          | 31.9M/44.1M [00:01&lt;00:00, 30.6MB/s]
 
- 65%|████████████████████████▏            | 28.8M/44.1M [00:02&lt;00:00, 22.6MB/s]
+ 81%|█████████████████████████████▊       | 35.6M/44.1M [00:01&lt;00:00, 31.6MB/s]
 
- 72%|██████████████████████████▋          | 31.8M/44.1M [00:02&lt;00:00, 22.9MB/s]
+ 89%|████████████████████████████████▉    | 39.2M/44.1M [00:01&lt;00:00, 32.3MB/s]
 
- 79%|█████████████████████████████▎       | 34.9M/44.1M [00:02&lt;00:00, 23.6MB/s]
-
- 86%|███████████████████████████████▉     | 38.0M/44.1M [00:02&lt;00:00, 24.1MB/s]
-
- 93%|██████████████████████████████████▍  | 41.0M/44.1M [00:02&lt;00:00, 24.2MB/s]
-
-100%|████████████████████████████████████▉| 44.0M/44.1M [00:02&lt;00:00, 24.3MB/s]
+ 97%|███████████████████████████████████▊ | 42.7M/44.1M [00:02&lt;00:00, 32.5MB/s]
 
   0%|                                              | 0.00/44.1M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 44.1M/44.1M [00:00&lt;00:00, 188GB/s]
+100%|██████████████████████████████████████| 44.1M/44.1M [00:00&lt;00:00, 161GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/42.3M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/42.3M [00:00&lt;10:27, 67.4kB/s]
+  0%|                                     | 8.19k/42.3M [00:00&lt;09:01, 78.2kB/s]
 
-  0%|                                      | 32.8k/42.3M [00:00&lt;04:50, 146kB/s]
+  0%|                                      | 32.8k/42.3M [00:00&lt;04:10, 169kB/s]
 
-  0%|                                      | 88.1k/42.3M [00:00&lt;02:28, 285kB/s]
+  0%|                                      | 96.3k/42.3M [00:00&lt;01:55, 365kB/s]
 
-  0%|▏                                      | 193k/42.3M [00:00&lt;01:22, 508kB/s]
+  0%|▏                                      | 209k/42.3M [00:00&lt;01:05, 640kB/s]
 
-  1%|▍                                      | 409k/42.3M [00:00&lt;00:43, 959kB/s]
+  1%|▍                                     | 432k/42.3M [00:00&lt;00:35, 1.17MB/s]
 
-  2%|▊                                     | 849k/42.3M [00:00&lt;00:22, 1.85MB/s]
+  2%|▊                                     | 889k/42.3M [00:00&lt;00:18, 2.23MB/s]
 
-  4%|█▍                                   | 1.71M/42.3M [00:00&lt;00:11, 3.54MB/s]
+  4%|█▌                                   | 1.80M/42.3M [00:00&lt;00:09, 4.31MB/s]
 
-  8%|███                                  | 3.44M/42.3M [00:00&lt;00:05, 6.89MB/s]
+  9%|███▏                                 | 3.62M/42.3M [00:00&lt;00:04, 8.41MB/s]
 
- 15%|█████▋                               | 6.54M/42.3M [00:01&lt;00:02, 12.6MB/s]
+ 17%|██████▎                              | 7.22M/42.3M [00:00&lt;00:02, 16.0MB/s]
 
- 22%|████████▎                            | 9.46M/42.3M [00:01&lt;00:02, 16.1MB/s]
+ 25%|█████████▏                           | 10.5M/42.3M [00:01&lt;00:01, 20.6MB/s]
 
- 29%|██████████▌                          | 12.1M/42.3M [00:01&lt;00:01, 17.8MB/s]
+ 31%|███████████▋                         | 13.3M/42.3M [00:01&lt;00:01, 22.3MB/s]
 
- 35%|████████████▉                        | 14.8M/42.3M [00:01&lt;00:01, 18.9MB/s]
+ 40%|██████████████▊                      | 17.0M/42.3M [00:01&lt;00:00, 25.4MB/s]
 
- 40%|██████████████▋                      | 16.7M/42.3M [00:01&lt;00:01, 17.0MB/s]
+ 47%|█████████████████▌                   | 20.1M/42.3M [00:01&lt;00:00, 26.5MB/s]
 
- 46%|█████████████████▏                   | 19.7M/42.3M [00:01&lt;00:01, 18.9MB/s]
+ 55%|████████████████████▎                | 23.2M/42.3M [00:01&lt;00:00, 27.1MB/s]
 
- 52%|███████████████████▎                 | 22.0M/42.3M [00:01&lt;00:01, 19.0MB/s]
+ 62%|███████████████████████              | 26.4M/42.3M [00:01&lt;00:00, 28.1MB/s]
 
- 58%|█████████████████████▌               | 24.7M/42.3M [00:01&lt;00:00, 19.9MB/s]
+ 69%|█████████████████████████▋           | 29.4M/42.3M [00:01&lt;00:00, 27.9MB/s]
 
- 65%|████████████████████████             | 27.5M/42.3M [00:02&lt;00:00, 20.6MB/s]
+ 77%|████████████████████████████▋        | 32.8M/42.3M [00:01&lt;00:00, 29.1MB/s]
 
- 71%|██████████████████████████▎          | 30.1M/42.3M [00:02&lt;00:00, 21.0MB/s]
+ 84%|███████████████████████████████▏     | 35.7M/42.3M [00:01&lt;00:00, 28.3MB/s]
 
- 78%|████████████████████████████▋        | 32.8M/42.3M [00:02&lt;00:00, 21.2MB/s]
+ 92%|██████████████████████████████████▏  | 39.1M/42.3M [00:02&lt;00:00, 29.7MB/s]
 
- 84%|███████████████████████████████      | 35.5M/42.3M [00:02&lt;00:00, 21.4MB/s]
-
- 91%|█████████████████████████████████▍   | 38.3M/42.3M [00:02&lt;00:00, 21.7MB/s]
-
- 97%|███████████████████████████████████▊ | 41.0M/42.3M [00:02&lt;00:00, 21.9MB/s]
+ 99%|████████████████████████████████████▊| 42.1M/42.3M [00:02&lt;00:00, 28.8MB/s]
 
   0%|                                              | 0.00/42.3M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 42.3M/42.3M [00:00&lt;00:00, 150GB/s]
+100%|██████████████████████████████████████| 42.3M/42.3M [00:00&lt;00:00, 190GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
@@ -982,100 +972,96 @@ BNCI2014-001-CrossSession:  50%|#####     | 2/4 [00:11&lt;00:11,  5.77s/it]/home
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession:  75%|#######5  | 3/4 [00:24&lt;00:08,  8.92s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+BNCI2014-001-CrossSession:  75%|#######5  | 3/4 [00:22&lt;00:08,  8.33s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/37.2M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/37.2M [00:00&lt;09:10, 67.4kB/s]
+  0%|                                     | 8.19k/37.2M [00:00&lt;07:56, 77.9kB/s]
 
-  0%|                                      | 32.8k/37.2M [00:00&lt;04:14, 146kB/s]
+  0%|                                      | 32.8k/37.2M [00:00&lt;03:40, 168kB/s]
 
-  0%|                                      | 88.1k/37.2M [00:00&lt;02:09, 285kB/s]
+  0%|                                      | 96.3k/37.2M [00:00&lt;01:41, 364kB/s]
 
-  1%|▏                                      | 193k/37.2M [00:00&lt;01:12, 509kB/s]
+  1%|▏                                      | 209k/37.2M [00:00&lt;00:57, 638kB/s]
 
-  1%|▍                                      | 409k/37.2M [00:00&lt;00:38, 960kB/s]
+  1%|▍                                     | 432k/37.2M [00:00&lt;00:31, 1.16MB/s]
 
-  2%|▊                                     | 841k/37.2M [00:00&lt;00:19, 1.83MB/s]
+  2%|▉                                     | 889k/37.2M [00:00&lt;00:16, 2.23MB/s]
 
-  5%|█▋                                   | 1.71M/37.2M [00:00&lt;00:09, 3.55MB/s]
+  5%|█▊                                   | 1.80M/37.2M [00:00&lt;00:08, 4.29MB/s]
 
-  9%|███▍                                 | 3.44M/37.2M [00:00&lt;00:04, 6.90MB/s]
+ 10%|███▌                                 | 3.62M/37.2M [00:00&lt;00:04, 8.37MB/s]
 
- 17%|██████▍                              | 6.50M/37.2M [00:01&lt;00:02, 12.4MB/s]
+ 18%|██████▌                              | 6.56M/37.2M [00:00&lt;00:02, 14.4MB/s]
 
- 25%|█████████▍                           | 9.46M/37.2M [00:01&lt;00:01, 16.0MB/s]
+ 24%|████████▉                            | 8.94M/37.2M [00:01&lt;00:01, 16.8MB/s]
 
- 33%|████████████▎                        | 12.3M/37.2M [00:01&lt;00:01, 18.2MB/s]
+ 35%|████████████▉                        | 13.0M/37.2M [00:01&lt;00:01, 23.2MB/s]
 
- 41%|███████████████                      | 15.1M/37.2M [00:01&lt;00:01, 19.6MB/s]
+ 45%|████████████████▋                    | 16.7M/37.2M [00:01&lt;00:00, 27.4MB/s]
 
- 48%|█████████████████▉                   | 18.0M/37.2M [00:01&lt;00:00, 20.6MB/s]
+ 53%|███████████████████▋                 | 19.8M/37.2M [00:01&lt;00:00, 28.3MB/s]
 
- 56%|████████████████████▊                | 20.9M/37.2M [00:01&lt;00:00, 21.6MB/s]
+ 61%|██████████████████████▌              | 22.6M/37.2M [00:01&lt;00:00, 27.8MB/s]
 
- 64%|███████████████████████▋             | 23.8M/37.2M [00:01&lt;00:00, 22.1MB/s]
+ 68%|█████████████████████████▎           | 25.4M/37.2M [00:01&lt;00:00, 27.8MB/s]
 
- 72%|██████████████████████████▌          | 26.6M/37.2M [00:01&lt;00:00, 22.5MB/s]
+ 76%|████████████████████████████▏        | 28.3M/37.2M [00:01&lt;00:00, 28.0MB/s]
 
- 79%|█████████████████████████████▏       | 29.4M/37.2M [00:02&lt;00:00, 22.4MB/s]
+ 84%|███████████████████████████████      | 31.1M/37.2M [00:01&lt;00:00, 28.2MB/s]
 
- 87%|████████████████████████████████▏    | 32.3M/37.2M [00:02&lt;00:00, 22.9MB/s]
-
- 94%|██████████████████████████████████▉  | 35.0M/37.2M [00:02&lt;00:00, 22.7MB/s]
+ 93%|██████████████████████████████████▎  | 34.5M/37.2M [00:01&lt;00:00, 29.7MB/s]
 
   0%|                                              | 0.00/37.2M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 37.2M/37.2M [00:00&lt;00:00, 105GB/s]
+100%|██████████████████████████████████████| 37.2M/37.2M [00:00&lt;00:00, 145GB/s]
 /home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;lampx.tugraz.at&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
   warnings.warn(
 
 
   0%|                                              | 0.00/41.7M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 8.19k/41.7M [00:00&lt;10:20, 67.3kB/s]
+  0%|                                     | 8.19k/41.7M [00:00&lt;08:52, 78.3kB/s]
 
-  0%|                                      | 32.8k/41.7M [00:00&lt;04:46, 146kB/s]
+  0%|                                      | 32.8k/41.7M [00:00&lt;04:06, 169kB/s]
 
-  0%|                                      | 96.3k/41.7M [00:00&lt;02:12, 315kB/s]
+  0%|                                      | 96.3k/41.7M [00:00&lt;01:53, 365kB/s]
 
-  1%|▏                                      | 209k/41.7M [00:00&lt;01:15, 553kB/s]
+  1%|▏                                      | 209k/41.7M [00:00&lt;01:04, 640kB/s]
 
-  1%|▍                                     | 432k/41.7M [00:00&lt;00:41, 1.01MB/s]
+  1%|▍                                     | 432k/41.7M [00:00&lt;00:35, 1.17MB/s]
 
-  2%|▊                                     | 889k/41.7M [00:00&lt;00:21, 1.92MB/s]
+  2%|▊                                     | 889k/41.7M [00:00&lt;00:18, 2.23MB/s]
 
-  4%|█▌                                   | 1.80M/41.7M [00:00&lt;00:10, 3.71MB/s]
+  4%|█▌                                   | 1.80M/41.7M [00:00&lt;00:09, 4.31MB/s]
 
-  9%|███▏                                 | 3.62M/41.7M [00:00&lt;00:05, 7.24MB/s]
+  9%|███▏                                 | 3.62M/41.7M [00:00&lt;00:04, 8.41MB/s]
 
- 16%|█████▊                               | 6.53M/41.7M [00:01&lt;00:02, 12.3MB/s]
+ 17%|██████▏                              | 7.03M/41.7M [00:00&lt;00:02, 15.6MB/s]
 
- 23%|████████▍                            | 9.57M/41.7M [00:01&lt;00:01, 16.1MB/s]
+ 25%|█████████▍                           | 10.6M/41.7M [00:01&lt;00:01, 21.0MB/s]
 
- 30%|███████████                          | 12.4M/41.7M [00:01&lt;00:01, 18.3MB/s]
+ 34%|████████████▍                        | 14.0M/41.7M [00:01&lt;00:01, 24.5MB/s]
 
- 36%|█████████████▍                       | 15.2M/41.7M [00:01&lt;00:01, 19.6MB/s]
+ 43%|███████████████▊                     | 17.8M/41.7M [00:01&lt;00:00, 27.8MB/s]
 
- 44%|████████████████▏                    | 18.2M/41.7M [00:01&lt;00:01, 21.0MB/s]
+ 51%|██████████████████▉                  | 21.4M/41.7M [00:01&lt;00:00, 29.6MB/s]
 
- 50%|██████████████████▋                  | 21.1M/41.7M [00:01&lt;00:00, 21.7MB/s]
+ 58%|█████████████████████▌               | 24.4M/41.7M [00:01&lt;00:00, 28.9MB/s]
 
- 58%|█████████████████████▎               | 24.0M/41.7M [00:01&lt;00:00, 22.4MB/s]
+ 67%|████████████████████████▊            | 28.0M/41.7M [00:01&lt;00:00, 30.8MB/s]
 
- 65%|████████████████████████             | 27.1M/41.7M [00:01&lt;00:00, 23.1MB/s]
+ 75%|███████████████████████████▋         | 31.3M/41.7M [00:01&lt;00:00, 30.7MB/s]
 
- 72%|██████████████████████████▌          | 30.0M/41.7M [00:02&lt;00:00, 23.4MB/s]
+ 82%|██████████████████████████████▍      | 34.3M/41.7M [00:01&lt;00:00, 29.6MB/s]
 
- 79%|█████████████████████████████▏       | 32.9M/41.7M [00:02&lt;00:00, 23.3MB/s]
+ 90%|█████████████████████████████████▏   | 37.4M/41.7M [00:01&lt;00:00, 29.7MB/s]
 
- 86%|███████████████████████████████▊     | 35.9M/41.7M [00:02&lt;00:00, 23.5MB/s]
-
- 93%|██████████████████████████████████▍  | 38.8M/41.7M [00:02&lt;00:00, 23.7MB/s]
+ 98%|████████████████████████████████████▍| 41.1M/41.7M [00:02&lt;00:00, 31.3MB/s]
 
   0%|                                              | 0.00/41.7M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 41.7M/41.7M [00:00&lt;00:00, 115GB/s]
+100%|██████████████████████████████████████| 41.7M/41.7M [00:00&lt;00:00, 169GB/s]
 /home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~4.1 MB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
@@ -1125,8 +1111,8 @@ BNCI2014-001-CrossSession:  75%|#######5  | 3/4 [00:24&lt;00:08,  8.92s/it]/home
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-001-CrossSession: 100%|##########| 4/4 [00:35&lt;00:00, 10.04s/it]
-BNCI2014-001-CrossSession: 100%|##########| 4/4 [00:35&lt;00:00,  9.00s/it]
+BNCI2014-001-CrossSession: 100%|##########| 4/4 [00:33&lt;00:00,  9.37s/it]
+BNCI2014-001-CrossSession: 100%|##########| 4/4 [00:33&lt;00:00,  8.46s/it]
 </pre></div>
 </div>
 </section>
@@ -1177,8 +1163,8 @@ the x-axis over all datasets</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_statistical_analysis_004.png" srcset="../../_images/sphx_glr_plot_statistical_analysis_004.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  46.616 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  239 MB</p>
+<img src="../../_images/sphx_glr_plot_statistical_analysis_004.png" srcset="../../_images/sphx_glr_plot_statistical_analysis_004.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  43.683 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  28 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-statistical-analysis-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/fc103af82bd37a6a36f57f863e9fd4aa/plot_statistical_analysis.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_statistical_analysis.py</span></code></a></p>
@@ -1270,7 +1256,7 @@ the x-axis over all datasets</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2018-2024 MOABB contributors.
+      © Copyright 2018-2025 MOABB contributors.
       <br/>
     
   </p>
