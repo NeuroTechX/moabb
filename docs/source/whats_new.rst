@@ -33,6 +33,7 @@ Bugs
 
 API changes
 ~~~~~~~~~~~
+- Removing the braindecode module from inside moabb (:gh:`666` by `Bruno Aristimunha`_ )
 
 Version - 1.1.1  (Stable - PyPi)
 ---------------------------------
