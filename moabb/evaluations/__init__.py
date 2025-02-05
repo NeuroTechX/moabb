@@ -8,6 +8,7 @@ from .evaluations import (
     CrossSessionEvaluation,
     CrossSubjectEvaluation,
     WithinSessionEvaluation,
+    CrossDatasetEvaluation,
 )
 from .splitters import WithinSessionSplitter
 from .utils import create_save_path, save_model_cv, save_model_list
