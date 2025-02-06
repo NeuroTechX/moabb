@@ -795,34 +795,17 @@ class CrossDatasetEvaluation(BaseEvaluation):
         Pre-trained model to use (if None, will train from scratch)
     fine_tune : bool
         Whether to fine-tune the pretrained model on train_dataset
-    target_channels : list or None
-        List of channel names to use. If None, will use all channels from train_dataset
     sfreq : float
         Target sampling frequency for all datasets
-    channel_strategy : str
-        Strategy for handling different channel configurations:
-        - 'zero': Zero-filling for missing channels (default)
-        - 'ssi': Spherical spline interpolation
-        - 'subset': Use only common channels across datasets
-    montage : str or mne.channels.DigMontage
-        EEG montage to use for SSI. Default is 'standard_1020'.
-        Can be a string (standard montage name) or custom DigMontage.
-    min_channels : int
-        Minimum number of common channels required for subset strategy
     """
     def __init__(
-    self,
-    train_dataset,
-    test_dataset,
-    pretrained_model=None,
-    fine_tune=True,
-    target_channels=None,
-    sfreq=128,
-    channel_strategy='zero',
-    montage='standard_1020',
-    min_channels=3,
-    **kwargs
-
+        self,
+        train_dataset,
+        test_dataset,
+        pretrained_model=None,
+        fine_tune=True,
+        sfreq=128,
+        **kwargs
     ):
         super().__init__(**kwargs)
         self.train_dataset = train_dataset if isinstance(train_dataset, list) else [train_dataset]
@@ -830,46 +813,11 @@ class CrossDatasetEvaluation(BaseEvaluation):
         self.pretrained_model = pretrained_model
         self.fine_tune = fine_tune
         self.sfreq = sfreq
-        self.channel_strategy = channel_strategy
-        self.montage = montage
-        self.min_channels = min_channels
         
-        # Get channels from paradigm only
-        all_train_channels = set()
-        for dataset in self.train_dataset:
-            # Get channels from paradigm
-            X, _, _ = self.paradigm.get_data(dataset, [dataset.subject_list[0]], return_epochs=True)
-            all_train_channels.update(X.ch_names)
-        
-        # Set target channels based on strategy
-        self.target_channels = (target_channels if target_channels is not None 
-                            else list(all_train_channels))
-        
-        # Load montage if SSI strategy is selected
-        if self.channel_strategy == 'ssi':
-            self._setup_montage()
-        
-        # Validate datasets and channel strategy
+        # Validate datasets
         self._validate_datasets()
 
-    def _setup_montage(self):
-        """Set up and validate EEG montage for SSI strategy."""
-        try:
-            if isinstance(self.montage, str):
-                self.montage = make_standard_montage(self.montage)
-            
-            # Verify target channels exist in montage
-            missing_in_montage = set(self.target_channels) - set(self.montage.ch_names)
-            if missing_in_montage:
-                raise ValueError(
-                    f"Channels {missing_in_montage} not found in montage. "
-                    "Please use a different montage or channel strategy."
-                )
-        except Exception as e:
-            raise ValueError(f"Error setting up montage: {str(e)}")
-
     def _validate_datasets(self):
-
         """Validate compatibility of train and test datasets."""
         all_datasets = self.train_dataset + self.test_dataset
         
@@ -877,115 +825,6 @@ class CrossDatasetEvaluation(BaseEvaluation):
         for dataset in all_datasets:
             if not self.paradigm.is_valid(dataset):
                 raise ValueError(f"Dataset {dataset.code} not compatible with paradigm")
-        
-        # Validate channel strategy
-        valid_strategies = ['zero', 'ssi', 'subset']
-        if self.channel_strategy not in valid_strategies:
-            raise ValueError(f"Invalid channel strategy. Must be one of {valid_strategies}")
-        
-        # For subset strategy, verify common channels exist
-        if self.channel_strategy == 'subset':
-            # Get channels from first dataset through paradigm
-            X, _, _ = self.paradigm.get_data(all_datasets[0], [all_datasets[0].subject_list[0]], return_epochs=True)
-            common_channels = set(X.ch_names)
-            
-            # Get channels from remaining datasets
-            for dataset in all_datasets[1:]:
-                X, _, _ = self.paradigm.get_data(dataset, [dataset.subject_list[0]], return_epochs=True)
-                common_channels &= set(X.ch_names)
-            
-            if len(common_channels) < self.min_channels:
-                raise ValueError(
-                    f"Insufficient common channels found ({len(common_channels)}). "
-                    f"Minimum required: {self.min_channels}"
-                )
-            
-            self.target_channels = list(common_channels)
-
-    def _resolve_channels(self, epochs, dataset_channels):
-        """Apply channel resolution strategy to match target channels."""
-        try:
-            if self.channel_strategy == 'subset':
-                return epochs.pick_channels(self.target_channels, ordered=True)
-            
-            # Get missing and extra channels
-            missing_channels = list(set(self.target_channels) - set(dataset_channels))
-            extra_channels = list(set(dataset_channels) - set(self.target_channels))
-            
-            # Remove extra channels if any
-            if extra_channels:
-                epochs = epochs.drop_channels(extra_channels)
-            
-            # Handle missing channels
-            if missing_channels:
-                if self.channel_strategy == 'zero':
-                    # Create new info with all target channels
-                    info = mne.create_info(
-                        ch_names=self.target_channels,
-                        sfreq=epochs.info['sfreq'],
-                        ch_types=['eeg'] * len(self.target_channels)
-                    )
-                    
-                    # Get current data
-                    data = epochs.get_data()
-                    n_epochs, _, n_times = data.shape
-                    
-                    # Create new data array with correct channel order
-                    new_data = np.zeros((n_epochs, len(self.target_channels), n_times))
-                    
-                    # Fill in existing channels
-                    valid_channels = set(dataset_channels) & set(self.target_channels)
-                    for ch in valid_channels:
-                        target_idx = self.target_channels.index(ch)
-                        data_idx = dataset_channels.index(ch)
-                        if target_idx < len(self.target_channels) and data_idx < data.shape[1]:
-                            new_data[:, target_idx, :] = data[:, data_idx, :]
-                    
-                    # Create new epochs with zero-filled channels
-                    epochs = mne.EpochsArray(new_data, info)
-                    
-                elif self.channel_strategy == 'ssi':
-                    # Create temporary info with all channels
-                    info = mne.create_info(
-                        ch_names=self.target_channels,
-                        sfreq=epochs.info['sfreq'],
-                        ch_types=['eeg'] * len(self.target_channels)
-                    )
-                    
-                    # Get current data
-                    data = epochs.get_data()
-                    n_epochs, _, n_times = data.shape
-                    
-                    # Create temporary data array
-                    temp_data = np.zeros((n_epochs, len(self.target_channels), n_times))
-                    
-                    # Fill in existing channels
-                    valid_channels = set(dataset_channels) & set(self.target_channels)
-                    for ch in valid_channels:
-                        target_idx = self.target_channels.index(ch)
-                        data_idx = dataset_channels.index(ch)
-                        if target_idx < len(self.target_channels) and data_idx < data.shape[1]:
-                            temp_data[:, target_idx, :] = data[:, data_idx, :]
-                    
-                    # Create temporary epochs
-                    temp_epochs = mne.EpochsArray(temp_data, info)
-                    
-                    # Set montage for interpolation
-                    temp_epochs.set_montage(self.montage)
-                    
-                    # Mark missing channels as bad
-                    temp_epochs.info['bads'] = missing_channels
-                    
-                    # Interpolate missing channels
-                    epochs = temp_epochs.interpolate_bads(
-                        method='spline',
-                        reset_bads=True
-                    )
-            
-            return epochs
-            
-        except Exception as e:
-            raise RuntimeError(f"Error resolving channels: {str(e)}")
 
     def _prepare_data(self, dataset):
         """Prepare data from a dataset with consistent format."""
@@ -994,10 +833,7 @@ class CrossDatasetEvaluation(BaseEvaluation):
             subjects=dataset.subject_list,
             return_epochs=True
         )
-        
-        # Apply channel resolution strategy using channels from epochs
-        X = self._resolve_channels(X, X.ch_names)
-        
+            
         # Resample if needed
         if X.info['sfreq'] != self.sfreq:
             X = X.resample(self.sfreq)
@@ -1005,48 +841,47 @@ class CrossDatasetEvaluation(BaseEvaluation):
         return X, y, metadata
 
     def evaluate(self, dataset, pipelines, groups=None, param_grid=None, **kwargs):
-        """Evaluate models across datasets.
-        
-        Parameters
-        ----------
-        dataset : Dataset
-            The dataset to evaluate
-        pipelines : dict
-            Dictionary of pipelines to evaluate
-        groups : array-like, optional
-            Groups for cross-validation
-        param_grid : dict, optional
-            Parameters grid for grid search
-        **kwargs : dict
-            Additional parameters
-            
-        Yields
-        ------
-        dict
-            Evaluation results
-        """
+        """Evaluate models across datasets."""
         log.info("Starting cross-dataset evaluation")
         
         # Prepare training data
         train_X, train_y, train_metadata = [], [], []
         for train_ds in self.train_dataset:
-            X, y, meta = self._prepare_data(train_ds)
-            train_X.append(X)
-            train_y.extend(y)
-            train_metadata.append(meta)
+            # Get raw data directly from paradigm
+            raw, labels, events = self.paradigm.get_data(
+                dataset=train_ds,
+                subjects=train_ds.subject_list,
+                return_epochs=False
+            )
+            
+            # Skip if no events found
+            if len(events) == 0:
+                log.warning(f"No events found in training dataset {train_ds.code}, skipping...")
+                continue
+            
+            train_X.append(raw)  # Just pass the raw data
+            train_y.extend(labels)
+            train_metadata.append({'events': events})
         
-        # Combine training data
-        train_X = mne.concatenate_epochs(train_X)
-        train_y = np.array(train_y)
-        
-        # Convert EpochsArray to numpy array
-        train_X_data = train_X.get_data()
+        if not train_X:
+            raise ValueError("No valid training data found with events")
         
         # For each test dataset
         for test_ds in self.test_dataset:
-            test_X, test_y, test_metadata = self._prepare_data(test_ds)
-            # Convert test data to numpy array
-            test_X_data = test_X.get_data()
+            # Get raw data directly from paradigm
+            raw, labels, events = self.paradigm.get_data(
+                dataset=test_ds,
+                subjects=test_ds.subject_list,
+                return_epochs=False
+            )
+            
+            # Skip if no events found
+            if len(events) == 0:
+                log.warning(f"No events found in test dataset {test_ds.code}, skipping...")
+                continue
+            
+            test_X = raw  # Just pass the raw data
+            test_y = labels
             
             # Evaluate each pipeline
             for name, pipeline in pipelines.items():
@@ -1057,41 +892,25 @@ class CrossDatasetEvaluation(BaseEvaluation):
                 t_start = time()
                 
                 try:
-                    # If using pretrained model, clone it
-                    if self.pretrained_model is not None:
-                        model = clone(self.pretrained_model)
-                        if self.fine_tune:
-                            model.fit(train_X_data, train_y)
-                    else:
-                        # Train from scratch
-                        model = clone(pipeline).fit(train_X_data, train_y)
+                    # Train from scratch
+                    model = clone(pipeline).fit(train_X[0], train_y)  # Use first training dataset
                     
                     # Evaluate on test subjects
-                    for subject in test_ds.subject_list:
-                        subject_mask = test_metadata.subject == subject
-                        subject_X = test_X_data[subject_mask]
-                        subject_y = test_y[subject_mask]
-                        
-                        score = model.score(subject_X, subject_y)
-                        
-                        duration = time() - t_start
-                        
-                        result = {
-                            'time': duration,
-                            'dataset': test_ds,
-                            'subject': subject,
-                            'score': score,
-                            'n_samples': len(subject_y),
-                            'n_channels': subject_X.shape[1],
-                            'pipeline': name,
-                            'training_datasets': [ds.code for ds in self.train_dataset],
-                            'pretrained': self.pretrained_model is not None,
-                            'fine_tuned': self.fine_tune,
-                            'channel_strategy': self.channel_strategy
-                        }
-                        
-                        yield result
-                        
+                    score = model.score(test_X, test_y)
+                    
+                    duration = time() - t_start
+                    
+                    result = {
+                        'time': duration,
+                        'dataset': test_ds,
+                        'score': score,
+                        'n_samples': len(test_y),
+                        'pipeline': name,
+                        'training_datasets': [ds.code for ds in self.train_dataset]
+                    }
+                    
+                    yield result
+                    
                 except Exception as e:
                     log.error(f"Error evaluating pipeline {name}: {str(e)}")
                     raise

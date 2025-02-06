@@ -1,81 +1,109 @@
-import logging
-import yaml
+from moabb import set_log_level
 from moabb.datasets import BNCI2014001, Zhou2016
 from moabb.paradigms import MotorImagery
 from moabb.evaluations.evaluations import CrossDatasetEvaluation
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
 from sklearn.svm import SVC
+import matplotlib.pyplot as plt
+from moabb.analysis.plotting import score_plot
+import pandas as pd
+import mne
+import logging
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Configure logging - reduce verbosity
+set_log_level("WARNING")  # Changed from "info" to "WARNING"
+logging.getLogger('mne').setLevel(logging.ERROR)  # Reduce MNE logging
 
-def create_pipeline() -> Pipeline:
-    """Create the CSP + SVM pipeline manually."""
-    return Pipeline([
+def get_common_channels(datasets):
+    """Get channels that are available across all datasets."""
+    all_channels = []
+    for dataset in datasets:
+        # Get a sample raw from each dataset
+        subject = dataset.subject_list[0]
+        raw_dict = dataset.get_data([subject])
+        # Navigate through the nested dictionary structure
+        subject_data = raw_dict[subject]  # Get subject's data
+        first_session = list(subject_data.keys())[0]  # Get first session
+        first_run = list(subject_data[first_session].keys())[0]  # Get first run
+        raw = subject_data[first_session][first_run]  # Get raw data
+        all_channels.append(raw.ch_names)
+    
+    # Find common channels across all datasets
+    common_channels = set.intersection(*map(set, all_channels))
+    return sorted(list(common_channels))
+
+def create_pipeline(common_channels) -> Pipeline:
+    """Create classification pipeline."""
+    def raw_to_data(X):
+        """Convert raw MNE data to numpy array format"""
+        if hasattr(X, 'get_data'):
+            # Get only common channels to ensure consistency
+            picks = mne.pick_channels(X.info['ch_names'], 
+                                    include=common_channels,
+                                    ordered=True)
+            data = X.get_data()
+            if data.ndim == 2:
+                data = data.reshape(1, *data.shape)
+            data = data[:, picks, :]
+            return data
+        return X
+
+    pipeline = Pipeline([
+        ('to_array', FunctionTransformer(raw_to_data)),
         ('covariances', Covariances(estimator='oas')),
-        ('csp', CSP(nfilter=6)),
-        ('svc', SVC(kernel='linear'))
+        ('csp', CSP(nfilter=4, log=True)),  # Changed n_components to nfilter, removed invalid parameters
+        ('classifier', SVC(kernel='rbf', C=0.1))
     ])
 
-def main():
-    # Define train and test datasets
-    train_dataset = BNCI2014001()
-    test_dataset = Zhou2016()
-    
-    # Initialize the paradigm
-    paradigm = MotorImagery(n_classes=2)
-    
-    # Initialize the CrossDatasetEvaluation
-    evaluation = CrossDatasetEvaluation(
-        paradigm=paradigm,
-        train_dataset=train_dataset,
-        test_dataset=test_dataset,
-        pretrained_model=None,  # Not using a pre-trained model
-        fine_tune=False,        # Not fine-tuning
-        target_channels=None,   # Use all channels from train_dataset
-        sfreq=128,              # Target sampling frequency
-        channel_strategy='zero',# Strategy for handling channels
-        montage='standard_1020',# EEG montage for SSI
-        min_channels=3,         # Minimum common channels for subset strategy
-        hdf5_path=None,         # Path to save results and models
-        save_model=False        # Do not save models
-    )
-    
-    # Create the pipeline
-    pipeline = create_pipeline()
-    
-    # Define parameter grid if needed (optional)
-    param_grid = {
-        'svc__C': [0.1, 1, 10],
-        'svc__kernel': ['linear']
-    }
-    
-    # Run the evaluation
-    results = evaluation.evaluate(
-        dataset=None,          # Not used in CrossDatasetEvaluation
-        pipelines={'CSP_SVM': pipeline},
-        param_grid=param_grid
-    )
-    
-    # Collect and display results
-    for res in results:
-        # Create log message with available information
-        log_msg = [
-            f"Dataset: {res['dataset'].code}",
-            f"Subject: {res['subject']}",
-            f"Pipeline: {res['pipeline']}",
-            f"Score: {res['score']:.4f}",
-            f"Time: {res['time']:.2f}s"
-        ]
-        
-        # Add session info if available
-        if 'session' in res:
-            log_msg.insert(2, f"Session: {res['session']}")
-            
-        logger.info(", ".join(log_msg))
-                    
-if __name__ == "__main__":
-    main()
+    return pipeline
+
+# Define datasets
+train_dataset = BNCI2014001()
+test_dataset = Zhou2016()
+
+# Get common channels across datasets
+common_channels = get_common_channels([train_dataset, test_dataset])
+print(f"\nCommon channels across datasets: {common_channels}\n")
+
+# Initialize the paradigm with common channels
+paradigm = MotorImagery(
+    channels=common_channels,  # Use common channels
+    n_classes=2,
+    fmin=8,
+    fmax=32
+)
+
+# Initialize the CrossDatasetEvaluation
+evaluation = CrossDatasetEvaluation(
+    paradigm=paradigm,
+    train_dataset=train_dataset,
+    test_dataset=test_dataset,
+    hdf5_path="./res_test",
+    save_model=True
+)
+
+# Run the evaluation
+results = []
+for result in evaluation.evaluate(
+    dataset=None,
+    pipelines={'CSP_SVM': create_pipeline(common_channels)},
+    param_grid=None
+):
+    result['subject'] = 'all'
+    print(f"Cross-dataset score: {result.get('score', 'N/A'):.3f}")
+    results.append(result)
+
+# Convert list of results to DataFrame
+results_df = pd.DataFrame(results)
+results_df['dataset'] = results_df['dataset'].apply(lambda x: x.__class__.__name__)
+
+# Print evaluation scores
+print("\nCross-dataset evaluation scores:")
+print(results_df[['dataset', 'score', 'time']])
+
+# Plot the results
+score_plot(results_df)
+plt.show()
