@@ -8,18 +8,22 @@ class WrapperStratifiedKFold:
     def __init__(self, n_folds=5, shuffle=True, global_seed=42):
         self.n_folds = n_folds
         self.shuffle = shuffle
-        self.global_seed = global_seed
-
+        
     def initialize(self, number_subjects, number_sessions):
 
         for i in range(number_subjects):
             for j in range(number_sessions):
-
-                yield StratifiedKFold(
-                    n_splits=self.n_folds,
-                    shuffle=self.shuffle,
-                    random_state=self.global_seed + 10000 * i + j,
-                )
+                if not self.shuffle:
+                    yield StratifiedKFold(
+                        n_splits=self.n_folds,
+                        shuffle=self.shuffle,
+                        random_state=self.global_seed + 10000 * i + j,
+                    )
+                else:
+                    yield StratifiedKFold(
+                        n_splits=self.n_folds,
+                        shuffle=self.shuffle,
+                    )
 
 
 class WithinSessionSplitter(BaseCrossValidator):
@@ -100,7 +104,7 @@ class WithinSessionSplitter(BaseCrossValidator):
         self.custom_cv = custom_cv
         self.n_folds = n_folds
         self.shuffle = shuffle
-        self.random_state = check_random_state(random_state) if shuffle else None
+        self.rng = check_random_state(random_state) if shuffle else None
         self.global_seed = global_seed
         self.calib_size = calib_size
 
@@ -146,7 +150,7 @@ class WithinSessionSplitter(BaseCrossValidator):
                         yield indices[calib_ix], indices[test_ix]
                 # If we want to use normal Kfold
                 else:
-                    # Defining a different cv object per (subject,session)
+                    # Defining a different cv object per (subject, session)
                     wrapper_cv = WrapperStratifiedKFold(
                         n_folds=self.n_folds,
                         shuffle=self.shuffle,
