@@ -115,7 +115,7 @@ class WithinSessionSplitter(BaseCrossValidator):
 
         # Shuffle subjects if required
         if self.shuffle:
-            self.random_state.shuffle(subjects)
+            self.rng.shuffle(subjects)
 
         for i, subject in enumerate(subjects):
             subject_mask = metadata.subject == subject
@@ -125,7 +125,7 @@ class WithinSessionSplitter(BaseCrossValidator):
 
             # Shuffle sessions if required
             if self.shuffle:
-                self.random_state.shuffle(sessions)
+                self.rng.shuffle(sessions)
 
             for j, session in enumerate(sessions):
                 session_mask = subject_metadata.session == session
