@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 from sklearn.model_selection import StratifiedKFold
-from sklearn.preprocessing import LabelEncoder
 from sklearn.utils import check_random_state
 
 from moabb.datasets.fake import FakeDataset
@@ -16,24 +15,37 @@ paradigm = FakeImageryParadigm()
 # Split done for the Within Session evaluation
 def eval_split_within_session(shuffle, random_state):
     rng = check_random_state(random_state) if shuffle else None
-    for subject in dataset.subject_list:
-        X, y, metadata = paradigm.get_data(dataset=dataset, subjects=[subject])
-        sessions = metadata.session
-        for session in np.unique(sessions):
-            ix = sessions == session
-            cv = StratifiedKFold(n_splits=5, shuffle=shuffle, random_state=rng)
-            le = LabelEncoder()
 
-            y_ = le.fit_transform(y[ix])
-            metadata_ = metadata[ix]
+    X, y, metadata = paradigm.get_data(dataset=dataset)
+    all_index = metadata.index.values
+    subjects = metadata["subject"].unique()
+
+    for i, subject in enumerate(subjects):
+        subject_mask = metadata["subject"] == subject
+
+        subject_indices = all_index[subject_mask]
+        subject_metadata = metadata[subject_mask]
+        sessions = subject_metadata["session"].unique()
+        y_subject = y[subject_mask]
+
+        if shuffle:
+            rng.shuffle(sessions)
+
+        for session in sessions:
+            session_mask = subject_metadata["session"] == session
+            indices = subject_indices[session_mask]
+            metadata_ = subject_metadata[session_mask]
+            y_ = y_subject[session_mask]
+
+            cv = StratifiedKFold(n_splits=5, shuffle=shuffle, random_state=rng)
 
             for idx_train, idx_test in cv.split(metadata_, y_):
-                yield idx_train, idx_test
+                yield indices[idx_train], indices[idx_test]
 
 
 @pytest.mark.parametrize("shuffle", [True, False])
 @pytest.mark.parametrize("random_state", [0, 42])
-def test_within_session(shuffle, random_state):
+def test_within_session_compatibilil(shuffle, random_state):
     X, y, metadata = paradigm.get_data(dataset=dataset)
 
     split = WithinSessionSplitter(n_folds=5, shuffle=shuffle, random_state=random_state)
