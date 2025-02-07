@@ -89,7 +89,7 @@ def _pairedttest_exhaustive(data):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         array of pvalues
     """
-    out = np.ones((data.shape[1], data.shape[1]))
+    out = np.zeros((data.shape[1], data.shape[1]))
     true = data.sum(axis=0)
     nperms = 2 ** data.shape[0]
     for perm in itertools.product([-1, 1], repeat=data.shape[0]):
@@ -121,7 +121,7 @@ def _pairedttest_random(data, nperms):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         array of pvalues
     """
-    out = np.ones((data.shape[1], data.shape[1]))
+    out = np.zeros((data.shape[1], data.shape[1]))
     true = data.sum(axis=0)
     for _ in range(nperms):
         perm = np.random.randint(2, size=(data.shape[0],))
