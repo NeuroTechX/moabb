@@ -1,9 +1,8 @@
-import copy
 
 from sklearn.model_selection import BaseCrossValidator, StratifiedKFold
 from sklearn.utils import check_random_state
 
-from moabb.evaluations.metasplitters import PseudoOnlineSplit
+
 
 class WrapperStratifiedKFold:
     def __init__(self, n_folds=5, shuffle=True, global_seed=42):
@@ -16,10 +15,11 @@ class WrapperStratifiedKFold:
         for i in range(number_subjects):
             for j in range(number_sessions):
 
-                yield StratifiedKFold(n_splits=self.n_folds,
-                                       shuffle=self.shuffle,
-                                       random_state= self.global_seed + 10000*i + j)
-
+                yield StratifiedKFold(
+                    n_splits=self.n_folds,
+                    shuffle=self.shuffle,
+                    random_state=self.global_seed + 10000 * i + j,
+                )
 
 
 class WithinSessionSplitter(BaseCrossValidator):
@@ -88,13 +88,13 @@ class WithinSessionSplitter(BaseCrossValidator):
 
     def __init__(
         self,
-        cv = None,
-        custom_cv = False,
+        cv=None,
+        custom_cv=False,
         n_folds: int = 5,
         random_state: int = 42,
-        global_seed = 66,
+        global_seed=66,
         shuffle: bool = True,
-        calib_size: int = None
+        calib_size: int = None,
     ):
         self.cv = cv
         self.custom_cv = custom_cv
@@ -104,10 +104,13 @@ class WithinSessionSplitter(BaseCrossValidator):
         self.global_seed = global_seed
         self.calib_size = calib_size
 
-
     def get_n_splits(self, metadata):
         num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
-        return self.cv.get_n_splits(metadata) if self.custom_cv else self.n_folds * num_sessions_subjects
+        return (
+            self.cv.get_n_splits(metadata)
+            if self.custom_cv
+            else self.n_folds * num_sessions_subjects
+        )
 
     def split(self, y, metadata, **kwargs):
         all_index = metadata.index.values
@@ -137,7 +140,9 @@ class WithinSessionSplitter(BaseCrossValidator):
                     if self.cv is None:
                         raise ValueError("Need to pass a custom cv strategy.")
                     splitter = self.cv(calib_size=self.calib_size)
-                    for calib_ix, test_ix in splitter.split(indices, group_y, subject_metadata[session_mask]):
+                    for calib_ix, test_ix in splitter.split(
+                        indices, group_y, subject_metadata[session_mask]
+                    ):
                         yield indices[calib_ix], indices[test_ix]
                 # If we want to use normal Kfold
                 else:
