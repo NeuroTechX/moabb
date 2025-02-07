@@ -54,5 +54,5 @@ def test_is_shuffling():
         split.split(y, metadata), split_shuffle.split(y, metadata)
     ):
         # Check if the output is the same as the input
-        assert np.array_equal(train, train_shuffle) == False
-        assert np.array_equal(test, test_shuffle) == False
+        assert not np.array_equal(train, train_shuffle)
+        assert not np.array_equal(test, test_shuffle)
