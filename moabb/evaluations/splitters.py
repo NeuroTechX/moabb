@@ -6,16 +6,17 @@ class WrapperStratifiedKFold:
     def __init__(self, n_folds=5, shuffle=True, global_seed=42):
         self.n_folds = n_folds
         self.shuffle = shuffle
+        self.global_seed = check_random_state(global_seed)
 
     def initialize(self, number_subjects, number_sessions):
 
         for i in range(number_subjects):
             for j in range(number_sessions):
-                if not self.shuffle:
+                if self.shuffle:
                     yield StratifiedKFold(
                         n_splits=self.n_folds,
                         shuffle=self.shuffle,
-                        random_state=self.global_seed + 10000 * i + j,
+                        random_state=self.global_seed,  # + 10000 * i + j,
                     )
                 else:
                     yield StratifiedKFold(
@@ -118,10 +119,6 @@ class WithinSessionSplitter(BaseCrossValidator):
         all_index = metadata.index.values
         subjects = metadata["subject"].unique()
 
-        # Shuffle subjects if required
-        if self.shuffle:
-            self.rng.shuffle(subjects)
-
         for i, subject in enumerate(subjects):
             subject_mask = metadata.subject == subject
             subject_indices = all_index[subject_mask]
@@ -139,8 +136,10 @@ class WithinSessionSplitter(BaseCrossValidator):
 
                 # Handle custom splitter
                 if self.custom_cv:
+
                     if self.cv is None:
                         raise ValueError("Need to pass a custom cv strategy.")
+
                     splitter = self.cv(calib_size=self.calib_size)
                     for calib_ix, test_ix in splitter.split(
                         indices, group_y, subject_metadata[session_mask]
@@ -159,4 +158,4 @@ class WithinSessionSplitter(BaseCrossValidator):
 
                     # Split using the current instance of StratifiedKFold
                     for train_ix, test_ix in splitter.split(indices, group_y):
-                        yield indices[train_ix], indices[test_ix]
+                        yield train_ix, test_ix
