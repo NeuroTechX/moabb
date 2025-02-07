@@ -48,8 +48,8 @@ class WithinSessionSplitter(BaseCrossValidator):
         all_index = metadata.index.values
         subjects = metadata["subject"].unique()
 
-        for subject in enumerate(subjects):
-            subject_mask = metadata.subject == subject
+        for subject in subjects:
+            subject_mask = metadata["subject"] == subject
             subject_indices = all_index[subject_mask]
             subject_metadata = metadata[subject_mask]
             sessions = subject_metadata["session"].unique()
@@ -59,7 +59,7 @@ class WithinSessionSplitter(BaseCrossValidator):
             if self.shuffle:
                 self.rng.shuffle(sessions)
 
-            for session in enumerate(sessions):
+            for session in sessions:
                 session_mask = subject_metadata["session"] == session
                 indices = subject_indices[session_mask]
                 y_session = y_subject[session_mask]
