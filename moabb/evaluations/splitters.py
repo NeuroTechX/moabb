@@ -79,7 +79,7 @@ class WithinSessionSplitter(BaseCrossValidator):
     ):
         self.n_folds = n_folds
         self.shuffle = shuffle
-        self.random_state = check_random_state(random_state) if shuffle else None
+        self.rng = check_random_state(random_state) if shuffle else None
         self.cv = cv
         self.calib_size = calib_size
         self.custom_cv = custom_cv
@@ -98,7 +98,7 @@ class WithinSessionSplitter(BaseCrossValidator):
 
         # Shuffle subjects if required
         if self.shuffle:
-            self.random_state.shuffle(subjects)
+            self.rng.shuffle(subjects)
 
         for i, subject in enumerate(subjects):
             subject_mask = metadata.subject == subject
@@ -108,7 +108,7 @@ class WithinSessionSplitter(BaseCrossValidator):
 
             # Shuffle sessions if required
             if self.shuffle:
-                self.random_state.shuffle(sessions)
+                self.rng.shuffle(sessions)
 
             for j, session in enumerate(sessions):
                 session_mask = subject_metadata.session == session
@@ -127,7 +127,7 @@ class WithinSessionSplitter(BaseCrossValidator):
                     splitter = self.cv(
                         n_splits=self.n_folds,
                         shuffle=self.shuffle,
-                        random_state=self.random_state.randint(0, 2**10),
+                        random_state=self.rng.randint(0, 2**10),
                     )
                     for train_ix, test_ix in splitter.split(indices, group_y):
                         yield indices[train_ix], indices[test_ix]
