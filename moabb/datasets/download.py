@@ -221,10 +221,10 @@ def fs_get_file_list(article_id, version=None):
     """
     fsurl = "https://api.figshare.com/v2"
     if version is None:
-        url = fsurl + "/articles/{}/files".format(article_id)
+        url = fsurl + "/articles/{}".format(article_id)
         headers = {"Content-Type": "application/json"}
         response = fs_issue_request("GET", url, headers=headers)
-        return response
+        return response["files"]
     else:
         url = fsurl + "/articles/{}/versions/{}".format(article_id, version)
         headers = {"Content-Type": "application/json"}
