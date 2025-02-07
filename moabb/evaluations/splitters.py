@@ -1,14 +1,12 @@
-
 from sklearn.model_selection import BaseCrossValidator, StratifiedKFold
 from sklearn.utils import check_random_state
-
 
 
 class WrapperStratifiedKFold:
     def __init__(self, n_folds=5, shuffle=True, global_seed=42):
         self.n_folds = n_folds
         self.shuffle = shuffle
-        
+
     def initialize(self, number_subjects, number_sessions):
 
         for i in range(number_subjects):
