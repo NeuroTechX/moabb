@@ -46,9 +46,12 @@ jobs:
 
       - name: Update pip
         run: pip install --upgrade pip
-      # Install with MOABB and docs dependencies
-      - name: Install with doc dependencies
-        run: pip install -e .[docs]
-      ## Run Tests
-      - name: Run Tests
-        run: pytest test/
+      # Install the moabb package
+      - name: Install the moabb dependencies
+        run: pip install -e .
+
+      - name: Install braindecode and test braindecode
+        run: |
+          cd braindecode
+          pip install -e .[tests]
+          pytest test/
