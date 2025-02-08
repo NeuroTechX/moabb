@@ -47,6 +47,7 @@ jobs:
       - name: Run tests
         run: |
           echo "Running tests"
+          uv pip install pytest-cov
           pytest --cov=moabb --cov-report=xml moabb/tests
 
       - name: Run pipelines
