@@ -41,6 +41,11 @@ jobs:
           restore-keys: |
             doc-${{ runner.os }}-mne-data-v1
 
+      - name: Ensure MNE Data folder exists if cache fails
+        run: |
+          echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
+          mkdir -p ~/mne_data
+
       - name: Cache docs build
         id: cache-docs
         uses: actions/cache@v3
