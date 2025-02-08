@@ -32,6 +32,7 @@ edflib-python = "^1.0.6"
 edfio = "^0.4.2"
 pytest = "^7.4.0"
 mne-bids = "^0.14"
+scikit-learn = "<1.6"
 
 
 # Optional dependencies for carbon emission
@@ -68,10 +69,10 @@ tdlda = { git = "https://github.com/jsosulski/tdlda.git", rev = "0.1.0", optiona
 
 [tool.poetry.extras]
 carbonemission = ["codecarbon"]
-deeplearning = ["tensorflow", "keras", "scikeras", "braindecode", "docstring_inheritance", "torch", "libclang"]
+deeplearning = ["tensorflow", "keras", "scikeras", "braindecode", "libclang"]
 optuna = ["optuna", "optuna-integration"]
 tests = ["pytest", "pytest-cov", "codecov", "pytest_cases"]
-docs = ["Sphinx", "sphinx-gallery", "sphinx-bootstrap-theme", "pydata-sphinx-theme", "numpydoc", "pre-commit", "m2r2", "tdlda", "sphinx-design", "sphinx-rtd-theme", "sphinx_copybutton", "sphinxcontrib-bibtex", "sphinx-favicon"]
+docs = ["Sphinx", "sphinx-gallery", "sphinx-bootstrap-theme", "pydata-sphinx-theme", "numpydoc", "m2r2", "tdlda", "sphinx-design", "sphinx-rtd-theme", "sphinx_copybutton", "sphinxcontrib-bibtex", "sphinx-favicon"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
