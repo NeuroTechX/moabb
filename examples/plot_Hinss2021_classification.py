@@ -66,7 +66,9 @@ class EpochSelectChannel(TransformerMixin):
         # Get the average covariance between the channels
         m = np.mean(covs, axis=0)
         # Select the `n_chan` channels having the maximum covariances.
-        indices = np.unravel_index( np.argpartition(m, -self.n_chan, axis=None)[-self.n_chan:], m.shape)
+        indices = np.unravel_index(
+            np.argpartition(m, -self.n_chan, axis=None)[-self.n_chan :], m.shape
+        )
         # We will keep only these channels for the transform step.
         self._chs_idx = np.unique(indices)
         return self
