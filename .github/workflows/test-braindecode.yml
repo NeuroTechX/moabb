@@ -17,6 +17,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ ubuntu-latest ]
+        python-version: ["3.12"]
     defaults:
       run:
         shell: bash
@@ -26,7 +27,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
@@ -36,9 +37,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/mne_data
-          key: mne-data-v1-${{ github.run_id }}
+          key: ${{ runner.os }}-mne-data-v1
           restore-keys: |
-            mne-data-v1-
+            ${{ runner.os }}-mne-data-v1
 
       - name: Checkout Braindecode
         uses: actions/checkout@v4
