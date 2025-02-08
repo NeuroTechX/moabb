@@ -43,8 +43,6 @@ jobs:
       # Install the moabb package
       - name: Install the moabb dependencies
         run: uv pip install -e .
-        env:
-          UV_SYSTEM_PYTHON: 1
 
       - name: Checkout Braindecode
         uses: actions/checkout@v4
@@ -57,5 +55,3 @@ jobs:
           cd braindecode
           uv pip install -e .[tests]
           uv run pytest test/
-        env:
-          UV_SYSTEM_PYTHON: 1
