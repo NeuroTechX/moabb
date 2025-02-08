@@ -9,6 +9,9 @@ on:
   pull_request:
     branches: [ develop ]
 
+env:
+  UV_SYSTEM_PYTHON: 1
+
 jobs:
   test:
     name: dev ${{ matrix.os }}, py-${{ matrix.python-version }}
@@ -52,4 +55,3 @@ jobs:
           cd braindecode && uv pip install -e .[tests]
           echo "Running tests"
           pytest test/ --verbose
-      # from https://github.com/astral-sh/uv/issues/7260
