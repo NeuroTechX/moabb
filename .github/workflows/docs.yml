@@ -26,20 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create local data folder
-        run: |
-          mkdir ~/mne_data
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+          enable-cache: true
 
       - name: Create/Restore MNE Data Cache
         id: cache-mne_data
@@ -57,25 +48,13 @@ jobs:
           key: docs-build-${{ github.run_id }}-${{ github.run_attempt }}
           path: docs/build
 
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key:
-            docsvenv-${{ matrix.os }}-py${{matrix.python-version}}-${{
-            hashFiles('**/pyproject.toml') }}
-
-      - name: Install dependencies
-        if: (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
-        run: poetry install --no-interaction --no-root --with docs --extras deeplearning --extras optuna
-
-      - name: Install library
-        run: poetry install --no-interaction --with docs --extras deeplearning --extras optuna
+      - name: Install moabb
+        run: |
+          uv pip install -e .[docs,deeplearning,optuna]
 
       - name: Build docs
         run: |
-          cd docs && poetry run make html
+          cd docs && make html
 
       # Create an artifact of the html output.
       - uses: actions/upload-artifact@v4
