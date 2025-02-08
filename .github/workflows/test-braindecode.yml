@@ -40,18 +40,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mne-data-v1-
 
-      # Install the moabb package
-      - name: Install the moabb dependencies
-        run: uv pip install -e .
-
       - name: Checkout Braindecode
         uses: actions/checkout@v4
         with:
           repository: braindecode/braindecode
           path: braindecode
 
-      - name: Install braindecode and run tests
+      - name: Install moabb, braindecode and run tests
         run: |
-          cd braindecode
-          uv pip install -e .[tests]
-          uv run pytest test/
+          uv pip install -e .
+          cd braindecode && uv pip install -e .[tests]
+          uv run pytest braindecode/test/
