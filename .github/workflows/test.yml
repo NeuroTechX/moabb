@@ -47,7 +47,7 @@ jobs:
       - name: Run tests
         run: |
           echo "Running tests"
-          pytest --cov=moabb --cov-report=xml moabb/tests
+          pytest --cov=moabb --cov-report=xml moabb/tests --verbose
 
       - name: Run pipelines
         run: |
