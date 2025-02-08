@@ -1,0 +1,64 @@
+name: Test
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [ develop, master ]
+  pull_request:
+    branches: [ develop, master ]
+
+jobs:
+  test:
+    name: ${{ matrix.os }}, py-${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ ubuntu-latest] #, windows-latest, macOS-latest ]
+        python-version: [ "3.9"]#, "3.10", "3.11" ]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      # Cache MNE Data
+      - name: Create/Restore MNE Data Cache
+        id: cache-mne_data
+        uses: actions/cache@v4
+        with:
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne-data-v1
+          restore-keys: |
+            ${{ runner.os }}-mne-data-v1
+
+      - name: Install moabb
+        run: |
+          uv pip install -e .[tests,deeplearning,optuna]
+
+      - name: Run tests
+        run: |
+          echo "Running tests"
+          uv pip install pytest-xdist
+          pytest --cov=moabb --cov-report=xml moabb/tests --verbose -n auto
+
+      - name: Run pipelines
+        run: |
+          python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: success()
+        with:
+          verbose: true
+          directory: /home/runner/work/moabb/moabb
+          files: ./.coverage,coverage.xml
+          env_vars: OS,PYTHON
