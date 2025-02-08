@@ -22,11 +22,6 @@ jobs:
       run:
         shell: bash
     steps:
-      - name: Checkout Braindecode
-        uses: actions/checkout@v4
-        with:
-          repository: braindecode/braindecode
-          path: braindecode
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -49,6 +44,12 @@ jobs:
       # Install the moabb package
       - name: Install the moabb dependencies
         run: pip install -e .
+
+      - name: Checkout Braindecode
+        uses: actions/checkout@v4
+        with:
+          repository: braindecode/braindecode
+          path: braindecode
 
       - name: Install braindecode and test braindecode
         run: |
