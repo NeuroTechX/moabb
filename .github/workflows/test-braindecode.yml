@@ -52,4 +52,4 @@ jobs:
           uv pip install -e .
           cd braindecode && uv pip install -e .[tests]
           echo "Running tests"
-          uv --active run pytest test/ --verbose
+          uv run pytest test/ --verbose
