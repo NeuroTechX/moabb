@@ -1,4 +1,4 @@
-""" Example of P300 classification with different epoch size.
+"""Example of P300 classification with different epoch size.
 
 =======================================
 Changing epoch size in P300 VR dataset
