@@ -70,7 +70,7 @@ class WithinSessionSplitter(BaseCrossValidator):
                     random_state=self.rng,
                 )
 
-                # Split using the current instance of StratifiedKFold
+                # Split using the current instance of StratifiedKFold by default
                 for train_ix, test_ix in splitter.split(indices, y_session):
 
                     yield indices[train_ix], indices[test_ix]
