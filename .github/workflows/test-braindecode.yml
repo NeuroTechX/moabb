@@ -57,4 +57,5 @@ jobs:
 
       - name: Run tests
         run: |
+          cd braindecode
           uv run pytest test/
