@@ -52,6 +52,5 @@ jobs:
           uv pip install -e .
           cd braindecode && uv pip install -e .[tests]
           echo "Running tests"
-          pytest test/ --quiet
-        #uv pip install pytest-xdist
-        #pytest test/ --quiet -n auto
+          uv pip install pytest-xdist
+          pytest test/ --quiet -n auto
