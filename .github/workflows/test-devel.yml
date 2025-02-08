@@ -32,10 +32,12 @@ jobs:
       - name: Create/Restore MNE Data Cache
         if: runner.os != 'Windows'
         id: cache-mne_data
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/mne_data
-          key: ${{ runner.os }}-mne_data
+          key: ${{ runner.os }}-mne-data-v1
+          restore-keys: |
+            ${{ runner.os }}-mne-data-v1
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -51,7 +53,7 @@ jobs:
       - name: Load cached venv
         if: runner.os != 'Windows'
         id: cached-poetry-dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .venv
           key:
