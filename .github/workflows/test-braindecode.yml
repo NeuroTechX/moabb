@@ -17,68 +17,38 @@ jobs:
       fail-fast: true
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ "3.8" ]
+        python-version: [ "3.9" ]
     defaults:
       run:
         shell: bash
     steps:
-      - name: Checkout MOABB
-        uses: actions/checkout@v4
-
       - name: Checkout Braindecode
         uses: actions/checkout@v4
         with:
           repository: braindecode/braindecode
           path: braindecode
 
-      - name: Create local data folder
-        if: runner.os != 'Windows'
-        run: |
-          mkdir ~/mne_data
-
-      - name: Create/Restore MNE Data Cache
-        if: runner.os != 'Windows'
-        id: cache-mne_data
-        uses: actions/cache@v3
-        with:
-          path: ~/mne_data
-          key: ${{ runner.os }}-mne_data
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.12'
+          cache: 'pip' # caching pip dependencies
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      # Cache MNE Data
+      - name: Create/Restore MNE Data Cache
+        id: cache-mne_data
+        uses: actions/cache@v4
         with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne-data-v1-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-mne-data-v1-
 
-      - name: Load cached venv
-        if: runner.os != 'Windows'
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key:
-            testvenv-braindecode-${{ matrix.os }}-py${{matrix.python-version}}-${{
-            hashFiles('**/pyproject.toml') }}
-
-      - name: Install dependencies
-        if: |
-          (runner.os != 'Windows') &&
-          (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
-        run: poetry install --no-interaction --no-root
-
-      - name: Install library
-        run: poetry install --no-interaction
-
-      - name: Install and test braindecode
-        run: |
-          source $VENV
-          cd braindecode
-          pip install -e .[tests]
-          pytest test/
-
-      # poetry run pip install -U https://api.github.com/repos/braindecode/braindecode/zipball/master
+      - name: Update pip
+        run: pip install --upgrade pip
+      # Install with MOABB and docs dependencies
+      - name: Install with doc dependencies
+        run: pip install -e .[docs]
+      ## Run Tests
+      - name: Run Tests
+        run: pytest test/
