@@ -9,9 +9,6 @@ on:
   pull_request:
     branches: [ develop ]
 
-env:
-  UV_SYSTEM_PYTHON: 1
-
 jobs:
   test:
     name: dev ${{ matrix.os }}, py-${{ matrix.python-version }}
