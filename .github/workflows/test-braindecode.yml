@@ -23,12 +23,13 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: '3.12'
-          cache: 'pip' # caching pip dependencies
-
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
       # Cache MNE Data
       - name: Create/Restore MNE Data Cache
         id: cache-mne_data
@@ -39,11 +40,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mne-data-v1-
 
-      - name: Update pip
-        run: pip install --upgrade pip
       # Install the moabb package
       - name: Install the moabb dependencies
-        run: pip install -e .
+        run: uv pip install -e .
 
       - name: Checkout Braindecode
         uses: actions/checkout@v4
@@ -51,8 +50,11 @@ jobs:
           repository: braindecode/braindecode
           path: braindecode
 
-      - name: Install braindecode and test braindecode
+      - name: Install braindecode and
         run: |
           cd braindecode
-          pip install -e .[tests]
-          pytest test/
+          uv pip install -e .[tests]
+
+      - name: Run tests
+        run: |
+          uv run pytest test/
