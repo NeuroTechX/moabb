@@ -30,7 +30,7 @@ class WithinSessionSplitter(BaseCrossValidator):
 
     def __init__(
         self,
-        cross_val: BaseCrossValidator = StratifiedKFold,
+        cross_val: type[BaseCrossValidator] = StratifiedKFold,
         n_folds: int = 5,
         random_state: int = 42,
         shuffle: bool = True,
