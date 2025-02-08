@@ -49,7 +49,7 @@ jobs:
 
       - name: Install moabb, braindecode and run tests
         run: |
-          uv pip install -e .
-          cd braindecode && uv pip install -e .[tests]
+          uv --active pip install -e .
+          cd braindecode && uv --active pip install -e .[tests]
           echo "Running tests"
-          uv run pytest test/ --verbose
+          uv --active run pytest test/ --verbose
