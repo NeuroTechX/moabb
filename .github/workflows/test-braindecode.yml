@@ -50,12 +50,8 @@ jobs:
           repository: braindecode/braindecode
           path: braindecode
 
-      - name: Install braindecode and
+      - name: Install braindecode and run tests
         run: |
           cd braindecode
           uv pip install -e .[tests]
-
-      - name: Run tests
-        run: |
-          cd braindecode
           uv run pytest test/
