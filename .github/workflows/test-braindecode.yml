@@ -50,6 +50,6 @@ jobs:
         run: |
           uv pip install -e .
           cd braindecode && uv pip install -e .[tests]
-          uv add pytest --dev
-          uv run pytest braindecode/test/ --verbose
+          echo "Running tests"
+          pytest braindecode/test/ --verbose
       # from https://github.com/astral-sh/uv/issues/7260
