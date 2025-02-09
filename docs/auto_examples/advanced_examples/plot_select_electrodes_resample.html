@@ -424,7 +424,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../load_model.html">Load Model (Scikit, Pytorch, Keras) with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../load_model.html">Load Model (Scikit, Keras) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noplot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noplot_phmd_ml_spectrum.html">Spectral analysis of the trials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noplot_vr_pc_p300_different_epoch_size.html">Changing epoch size in P300 VR dataset</a></li>
@@ -432,9 +432,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_DL.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_braindecode.html">Benchmarking on MOABB with Braindecode (PyTorch) deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../plot_braindecode.html">Cross-session motor imagery with deep learning EEGNet v4 model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_cross_session_motor_imagery.html">Cross-Session Motor Imagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_cross_session_multiple_datasets.html">Cross-Session on Multiple Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../plot_cross_subject_ssvep.html">Cross-Subject SSVEP</a></li>
@@ -563,8 +561,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.pipelines.utils_deep_model.EEGNet.html">moabb.pipelines.utils_deep_model.EEGNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.pipelines.utils_deep_model.EEGNet_TC.html">moabb.pipelines.utils_deep_model.EEGNet_TC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.pipelines.utils_deep_model.TCN_block.html">moabb.pipelines.utils_deep_model.TCN_block</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader.html">moabb.pipelines.utils_pytorch.BraindecodeDatasetLoader</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.pipelines.utils_pytorch.InputShapeSetterEEG.html">moabb.pipelines.utils_pytorch.InputShapeSetterEEG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.analysis.plotting.score_plot.html">moabb.analysis.plotting.score_plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.analysis.plotting.paired_plot.html">moabb.analysis.plotting.paired_plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.analysis.plotting.summary_plot.html">moabb.analysis.plotting.summary_plot</a></li>
@@ -738,7 +734,7 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.61s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 50 events (all good), 0 – 5 s (baseline off), ~1.4 MB, data loaded,
+Zhou2016-WithinSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.22s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 50 events (all good), 0 – 5 s (baseline off), ~1.4 MB, data loaded,
  &#39;left_hand&#39;: 25
  &#39;right_hand&#39;: 25&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -769,8 +765,8 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.09s/it]
-Zhou2016-WithinSession: 100%|##########| 2/2 [00:10&lt;00:00,  5.16s/it]
+Zhou2016-WithinSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.64s/it]
+Zhou2016-WithinSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.73s/it]
 
 BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~582 kB, data loaded,
  &#39;left_hand&#39;: 12
@@ -825,7 +821,7 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.02s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~582 kB, data loaded,
+BNCI2014-001-WithinSession:  50%|#####     | 1/2 [00:06&lt;00:06,  6.16s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~582 kB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -878,14 +874,14 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.07s/it]
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.06s/it]
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:12&lt;00:00,  6.15s/it]
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:12&lt;00:00,  6.15s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.844823  0.057911    119.0       1  ...        3           3  Zhou2016    ts+lr
-1  0.900000  0.050763    100.0       1  ...        3           3  Zhou2016    ts+lr
-2  0.950000  0.050104    100.0       1  ...        3           3  Zhou2016    ts+lr
-3  0.918000  0.049873    100.0       2  ...        3           3  Zhou2016    ts+lr
-4  0.817284  0.045851     90.0       2  ...        3           3  Zhou2016    ts+lr
+0  0.843939  0.054317    119.0       1  ...        3           3  Zhou2016    ts+lr
+1  0.918000  0.046388    100.0       1  ...        3           3  Zhou2016    ts+lr
+2  0.940000  0.048199    100.0       1  ...        3           3  Zhou2016    ts+lr
+3  0.928000  0.046687    100.0       2  ...        3           3  Zhou2016    ts+lr
+4  0.817284  0.042930     90.0       2  ...        3           3  Zhou2016    ts+lr
 
 [5 rows x 9 columns]
 </pre></div>
@@ -939,7 +935,7 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  5.00s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 50 events (all good), 0 – 5 s (baseline off), ~1.4 MB, data loaded,
+Zhou2016-WithinSession:  50%|#####     | 1/2 [00:04&lt;00:04,  4.63s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 50 events (all good), 0 – 5 s (baseline off), ~1.4 MB, data loaded,
  &#39;left_hand&#39;: 25
  &#39;right_hand&#39;: 25&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -970,8 +966,8 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.75s/it]
-Zhou2016-WithinSession: 100%|##########| 2/2 [00:09&lt;00:00,  4.78s/it]
+Zhou2016-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.36s/it]
+Zhou2016-WithinSession: 100%|##########| 2/2 [00:08&lt;00:00,  4.40s/it]
 
 BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~582 kB, data loaded,
  &#39;left_hand&#39;: 12
@@ -1026,7 +1022,7 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  50%|#####     | 1/2 [00:03&lt;00:03,  3.93s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~582 kB, data loaded,
+BNCI2014-001-WithinSession:  50%|#####     | 1/2 [00:05&lt;00:05,  5.84s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 24 events (all good), 2 – 6 s (baseline off), ~582 kB, data loaded,
  &#39;left_hand&#39;: 12
  &#39;right_hand&#39;: 12&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -1079,14 +1075,14 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.94s/it]
-BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:07&lt;00:00,  3.94s/it]
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.90s/it]
+BNCI2014-001-WithinSession: 100%|##########| 2/2 [00:11&lt;00:00,  5.89s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.865657  0.058518    119.0       1  ...        3           3  Zhou2016    ts+lr
-1  0.916000  0.050176    100.0       1  ...        3           3  Zhou2016    ts+lr
-2  0.932000  0.049279    100.0       1  ...        3           3  Zhou2016    ts+lr
-3  0.924000  0.051130    100.0       2  ...        3           3  Zhou2016    ts+lr
-4  0.829630  0.045350     90.0       2  ...        3           3  Zhou2016    ts+lr
+0  0.865657  0.054088    119.0       1  ...        3           3  Zhou2016    ts+lr
+1  0.916000  0.046632    100.0       1  ...        3           3  Zhou2016    ts+lr
+2  0.932000  0.045853    100.0       1  ...        3           3  Zhou2016    ts+lr
+3  0.924000  0.046170    100.0       2  ...        3           3  Zhou2016    ts+lr
+4  0.829630  0.042671     90.0       2  ...        3           3  Zhou2016    ts+lr
 
 [5 rows x 9 columns]
 </pre></div>
@@ -1100,8 +1096,8 @@ regression computed in the tangent space of the covariance matrices.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  45.948 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  181 MB</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  53.577 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  498 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/83c876b60654b8a0b9ebaf6714ef3607/plot_select_electrodes_resample.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_select_electrodes_resample.py</span></code></a></p>
