@@ -30,7 +30,7 @@ Bugs
 - Replacing the func:`numpy.string_` to func:`numpy.bytes_` (:gh:`665` by `Bruno Aristimunha`_)
 - Fixing the set_download_dir that was not working when we tried to set the dir more than 10 times at the same time (:gh:`668` by `Bruno Aristimunha`_)
 - Creating stimulus channels in :class:`moabb.datasets.Zhou2016` and :class:`moabb.datasets.PhysionetMI` to allow braindecode compatibility (:gh:`669` by `Bruno Aristimunha`_)
-
+- Improving the CI (:gh:`686` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
