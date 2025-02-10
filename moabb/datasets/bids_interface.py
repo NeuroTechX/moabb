@@ -279,8 +279,6 @@ class BIDSInterfaceBase(abc.ABC):
         bids_path : mne_bids.BIDSPath
             The path to the BIDS dataset.
         """
-        log.info("Creating metadata for the BIDS dataset.", repr(bids_path.root))
-
         json_path = bids_path.root / "metadata.json"
         json_data = {}
 
