@@ -262,6 +262,9 @@ class BIDSInterfaceBase(abc.ABC):
         with self.lock_file.fpath.open("w") as file:
             dic = dict(processing_params=str(self.processing_params))
             json.dump(dic, file)
+
+        self._write_metainfo(bids_path)
+
         log.info("Finished caching %s to disk.", repr(self))
 
     @abc.abstractmethod
@@ -285,6 +288,11 @@ class BIDSInterfaceBase(abc.ABC):
     @property
     @abc.abstractmethod
     def _datatype(self):
+        pass
+
+    @staticmethod
+    @abc.abstractmethod
+    def _write_metainfo(bids_path):
         pass
 
 
@@ -355,6 +363,35 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
             overwrite=False,
             verbose=self.verbose,
         )
+
+    @staticmethod
+    def _write_metainfo(bids_path):
+        """Create metadata for the BIDS dataset.
+
+        To allow lazy loading of the metadata, we store the metadata in a JSON file
+        in the root of the BIDS dataset.
+
+        Parameters
+        ----------
+        bids_path : mne_bids.BIDSPath
+            The path to the BIDS dataset.
+        """
+        log.info("Creating metadata for the BIDS dataset.", repr(bids_path.root))
+
+        json_path = bids_path.root / "metadata.json"
+        json_data = {}
+
+        paths = mne_bids.find_matching_paths(
+            root=bids_path.root,
+        )
+
+        for path in paths:
+            uid = path.fpath.name
+            json_data[uid] = path.entities
+            json_data[uid]["fpath"] = str(path.fpath)
+
+        with json_path.open("w") as file:
+            json.dump(json_data, file)
 
 
 class BIDSInterfaceEpochs(BIDSInterfaceBase):
