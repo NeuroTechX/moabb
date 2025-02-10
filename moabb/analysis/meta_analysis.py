@@ -89,7 +89,7 @@ def _pairedttest_exhaustive(data):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         array of pvalues
     """
-    out = np.zeros((data.shape[1], data.shape[1]),dtype=np.int32)
+    out = np.zeros((data.shape[1], data.shape[1]), dtype=np.int32)
     true = data.sum(axis=0)
     nperms = 2 ** data.shape[0]
     for perm in itertools.product([-1, 1], repeat=data.shape[0]):
@@ -99,7 +99,7 @@ def _pairedttest_exhaustive(data):
         randperm = (data * perm[:, None, None]).sum(axis=0)
         # compare to true difference (numpy autocasts bool to 0/1)
         out += randperm >= true
-    
+
     out[out >= nperms] = nperms - 1
     return out / nperms
 
@@ -120,7 +120,7 @@ def _pairedttest_random(data, nperms):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         array of pvalues
     """
-    out = np.ones((data.shape[1], data.shape[1]),dtype=np.int32)
+    out = np.ones((data.shape[1], data.shape[1]), dtype=np.int32)
     true = data.sum(axis=0)
     for _ in range(nperms):
         perm = np.random.randint(2, size=(data.shape[0],))
@@ -129,7 +129,7 @@ def _pairedttest_random(data, nperms):
         randperm = (data * perm[:, None, None]).sum(axis=0)
         # compare to true difference (numpy autocasts bool to 0/1)
         out += randperm >= true
-    
+
     out[out >= nperms] = nperms - 1
     return out / nperms
 
