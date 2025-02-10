@@ -120,7 +120,7 @@ def _pairedttest_random(data, nperms):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         array of pvalues
     """
-    out = np.ones((data.shape[1], data.shape[1]), dtype=np.int32)
+    out = np.ones((data.shape[1], data.shape[1]), dtype=np.int32) #we use ones() so that out is never 0
     true = data.sum(axis=0)
     for _ in range(nperms):
         perm = np.random.randint(2, size=(data.shape[0],))
