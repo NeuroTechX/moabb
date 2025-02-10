@@ -98,7 +98,7 @@ def _pairedttest_exhaustive(data):
         # multiply permutation by subject dimension and sum over subjects
         randperm = (data * perm[:, None, None]).sum(axis=0)
         # compare to true difference (numpy autocasts bool to 0/1)
-        out += randperm > true
+        out += randperm >= true
     out = out / nperms
     # control for cases where pval is 1
     out[out == 1] = 1 - (1 / nperms)
@@ -129,7 +129,7 @@ def _pairedttest_random(data, nperms):
         # multiply permutation by subject dimension and sum over subjects
         randperm = (data * perm[:, None, None]).sum(axis=0)
         # compare to true difference (numpy autocasts bool to 0/1)
-        out += randperm > true
+        out += randperm >= true
     out[out == nperms] = nperms - 1
     return out / nperms
 
