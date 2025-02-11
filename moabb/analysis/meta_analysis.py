@@ -89,7 +89,7 @@ def _pairedttest_exhaustive(data):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         array of pvalues
     """
-    out = np.zeros((data.shape[1,:]), dtype=np.int32)
+    out = np.zeros((data.shape[1, :]), dtype=np.int32)
     true = data.sum(axis=0)
     nperms = 2 ** data.shape[0]
     for perm in itertools.product([-1, 1], repeat=data.shape[0]):
@@ -102,12 +102,12 @@ def _pairedttest_exhaustive(data):
 
     # Correct for p-values equal to 1
     # as they are invalid p-values for Stouffer's method.
-    # Note: as this is an exhaustive permutation test, 
+    # Note: as this is an exhaustive permutation test,
     # one of the t-test is computed with the original statistic
     # So in practice out cannot contain zeros.
 
     out[out >= nperms] = nperms - 1
-    
+
     return out / nperms
 
 
@@ -139,9 +139,9 @@ def _pairedttest_random(data, nperms):
 
     # Correct p-values >= 1
     # as they are invalid p-values for Stouffer's method.
-    # Note: as out is initialized with ones, 
+    # Note: as out is initialized with ones,
     # it cannot contain zeros.
-    
+
     out[out >= nperms] = nperms - 1
     return out / nperms
 
