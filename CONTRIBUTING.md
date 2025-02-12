@@ -57,7 +57,7 @@ pull request to the master branch referencing the specific issue you addressed.
 ## Setup development environment
 
 1. Install pre-commit to start to code:\
-   `pip install pre-commit` 
+   `pip install pre-commit`
 2. Install the pre-commit hooks:\
    `pre-commit install`
 3. you are ready to code!
