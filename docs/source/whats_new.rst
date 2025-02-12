@@ -31,6 +31,7 @@ Bugs
 - Creating stimulus channels in :class:`moabb.datasets.Zhou2016` and :class:`moabb.datasets.PhysionetMI` to allow braindecode compatibility (:gh:`669` by `Bruno Aristimunha`_)
 - Improving the CI (:gh:`686` by `Bruno Aristimunha`_)
 - Making the download test work again (:gh:`693` by `Bruno Aristimunha`_)
+- Fix the EpochSelectChannel that caused incorrect channel selection in `example <examples/plot_Hinss2021_classification.py>` (:gh:`685` by `AFF`)
 
 
 API changes
@@ -506,3 +507,4 @@ API changes
 .. _Bruna Lopes: https://github.com/brunaafl
 .. _Yash Chauhan: https://github.com/jiggychauhi
 .. _Taha Habib: https://github.com/tahatt13
+.. _AFF: https://github.com/allwaysFindFood
