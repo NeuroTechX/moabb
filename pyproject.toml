@@ -54,7 +54,7 @@ sphinx-gallery = { version = "^0.11.1", optional = true }
 sphinx-bootstrap-theme = { version = "^0.8.1", optional = true }
 pydata-sphinx-theme = { version = "^0.13.2", optional = true }
 numpydoc = { version = "^1.5.0", optional = true }
-m2r2 = { version = "^0.3.0", optional = true }
+myst-parser  = { version = ">=3.0.1", optional = true }
 sphinx-design = { version = "^0.3.0", optional = true }
 sphinx-rtd-theme = { version = "^1.2.0", optional = true }
 sphinx_copybutton = { version = "^0.4.0", optional = true }
@@ -68,7 +68,7 @@ carbonemission = ["codecarbon"]
 deeplearning = ["braindecode"]
 optuna = ["optuna", "optuna-integration"]
 tests = ["pytest", "pytest-cov", "codecov", "pytest_cases"]
-docs = ["Sphinx", "sphinx-gallery", "sphinx-bootstrap-theme", "pydata-sphinx-theme", "numpydoc", "m2r2", "tdlda", "sphinx-design", "sphinx-rtd-theme", "sphinx_copybutton", "sphinxcontrib-bibtex", "sphinx-favicon"]
+docs = ["Sphinx", "sphinx-gallery", "sphinx-bootstrap-theme", "pydata-sphinx-theme", "numpydoc", "myst-parser", "tdlda", "sphinx-design", "sphinx-rtd-theme", "sphinx_copybutton", "sphinxcontrib-bibtex", "sphinx-favicon"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
