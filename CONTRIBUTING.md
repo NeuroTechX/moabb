@@ -56,9 +56,11 @@ pull request to the master branch referencing the specific issue you addressed.
 
 ## Setup development environment
 
-1. install `pre-commit` hooks to git repo:\
+1. Install pre-commit to start to code:\
+   `pip install pre-commit` 
+2. Install the pre-commit hooks:\
    `pre-commit install`
-1. you are ready to code!
+3. you are ready to code!
 
 _Note 1:_\
 Your first commit will trigger `pre-commit` to download [Code Quality tools](#tools-used).

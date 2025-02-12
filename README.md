@@ -88,7 +88,7 @@ See [Troubleshooting](#Troubleshooting) section if you have a problem.
 
 ### Manual installation
 
-You could clone the repository and go to the downloaded directory with `pip`, then run:
+You could clone the repository and go to the downloaded directory with the follow steps:
 
 1. `git clone https://github.com/neurotechx/moabb.git && cd moabb`
 2. `pip install -e .`
