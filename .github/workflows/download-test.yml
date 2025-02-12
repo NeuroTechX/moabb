@@ -59,4 +59,5 @@ jobs:
         run: |
           echo "Running tests"
           cd moabb/tests
-          pytest download.py --verbose
+          uv pip install pytest-xdist
+          pytest -v -s --tb=long --durations=10 --maxfail=5 --log-cli-level=INFO download.py -n auto
