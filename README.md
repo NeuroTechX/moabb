@@ -12,7 +12,7 @@
 **This is an open science project that may evolve depending on the need of the
 community.**
 
-
+** If you use moabb, remember to [cite](https://neurotechx.github.io/moabb/#citing-moabb-and-related-publications)! **
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10034224.svg)](https://doi.org/10.5281/zenodo.10034224)
 [![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
@@ -83,27 +83,17 @@ state of the art by 5% ...”.
 ### Pip installation
 
 To use MOABB, you could simply do: \
-`pip install MOABB` \
+`pip install moabb` \
 See [Troubleshooting](#Troubleshooting) section if you have a problem.
 
 ### Manual installation
 
-You could fork or clone the repository and go to the downloaded directory, then run:
+You could clone the repository and go to the downloaded directory with `pip`, then run:
 
-1. install `poetry` (only once per machine):\
-   `curl -sSL https://install.python-poetry.org | python3 -`\
-   or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
-   use [conda forge version](https://anaconda.org/conda-forge/poetry)
-1. (Optional, skip if not sure) Disable automatic environment creation:\
-   `poetry config virtualenvs.create false`
-1. install all dependencies in one command (have to be run in the project directory):\
-   `poetry install`
+1. `git clone https://github.com/neurotechx/moabb.git && cd moabb`
+2. `pip install -e .`
 
 See [contributors' guidelines](CONTRIBUTING.md) for detailed explanation.
-
-### Requirements we use
-
-See `pyproject.toml` file for full list of dependencies
 
 ## Running
 
@@ -124,58 +114,6 @@ concepts and use cases. Also, we have a several [examples](./examples/) availabl
 
 You might be interested in [MOABB documentation][link_moabb_docs]
 
-### Moabb and docker
-
-Moabb has a default image to run the benchmark. You have two options to download this
-image: build from scratch or pull from the docker hub. **We recommend pulling from the
-docker hub**.
-
-If this were your first time using docker, you would need to **install the docker** and
-**login** on docker hub. We recommend the
-[official](https://docs.docker.com/desktop/install/linux-install/) docker documentation
-for this step, it is essential to follow the instructions.
-
-After installing docker, you can pull the image from the docker hub:
-
-```bash
-docker pull baristimunha/moabb
-# rename the tag to moabb
-docker tag baristimunha/moabb moabb
-```
-
-If you want to build the image from scratch, you can use the following command at the
-root. You may have to login with the API key in the
-[NGC Catalog](https://catalog.ngc.nvidia.com/) to run this command.
-
-```bash
-bash docker/create_docker.sh
-```
-
-With the image downloaded or rebuilt from scratch, you will have an image called `moabb`.
-To run the default benchmark, still at the root of the project, and you can use the
-following command:
-
-```bash
-mkdir dataset
-mkdir results
-mkdir output
-bash docker/run_docker.sh PATH_TO_ROOT_FOLDER
-```
-
-An example of the command is:
-
-```bash
-cd /home/user/project/moabb
-mkdir dataset
-mkdir results
-mkdir output
-bash docker/run_docker.sh /home/user/project/moabb
-```
-
-Note: It is important to use an absolute path for the root folder to run, but you can
-modify the run_docker.sh script to save in another path beyond the root of the project. By
-default, the script will save the results in the project's root in the folder `results`,
-the datasets in the folder `dataset` and the output in the folder `output`.
 
 ## Supported datasets
 
@@ -196,7 +134,7 @@ can be seen [here](https://github.com/NeuroTechX/moabb/wiki/Datasets-Support).
 The founders of the Mother of all BCI Benchmarks are [Alexander Barachant][link_alex_b]
 and [Vinay Jayaram][link_vinay]. This project is under the umbrella of
 [NeuroTechX][link_neurotechx], the international community for NeuroTech enthusiasts. The
-project is currently maintained by [Sylvain Chevallier][link_sylvain].
+project is currently maintained by [Sylvain Chevallier][link_sylvain] and [Bruno Aristimunha][link_bruno].
 
 ### What do we need?
 
@@ -335,3 +273,4 @@ BCI algorithms applied on an extensive list of freely available EEG datasets.
 [link_moabb_docs]: https://neurotechx.github.io/moabb/
 [link_arxiv]: https://arxiv.org/abs/1805.06427
 [link_jne]: http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta
+[link_bruno]: https://www.linkedin.com/in/bruaristimunha/
