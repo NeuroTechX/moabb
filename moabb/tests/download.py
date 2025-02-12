@@ -10,13 +10,11 @@ from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
 from moabb.datasets.utils import dataset_list
 
 
-# Only run these download tests if this file is explicitly selected.
-# If you run `pytest` from the project root (which does not mention this file),
-# the tests will be skipped.
-if not any(os.path.basename(arg) == "test_downloads.py" for arg in sys.argv):
+# If the file's own basename is not explicitly passed in sys.argv,
+# skip the tests. This means if you run "pytest" from the root, the tests are skipped.
+if not any(os.path.basename(arg) == os.path.basename(__file__) for arg in sys.argv):
     pytest.skip(
-        "Skipping download tests by default. "
-        "Run this file directly to execute these tests.",
+        "Skipping download tests by default. Run this file directly (e.g., pytest download.py) to execute these tests.",
         allow_module_level=True,
     )
 
