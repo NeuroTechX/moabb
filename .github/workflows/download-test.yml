@@ -35,20 +35,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
-
-      # Cache MNE Data
-      - name: Create/Restore MNE Data Cache
-        id: cache-mne_data
-        uses: actions/cache@v4
-        with:
-          path: ~/mne_data
-          key: ${{ runner.os }}-mne-data-download
-          restore-keys: |
-            ${{ runner.os }}-mne-data-download
-
-      - name: Ensure MNE Data folder exists if cache fails
+      - name: Ensure MNE Data folder exists
         run: |
-          echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
           mkdir -p ~/mne_data
 
       - name: Install moabb
