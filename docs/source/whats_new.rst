@@ -34,6 +34,7 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - Removing the braindecode module from inside moabb (:gh:`666` by `Bruno Aristimunha`_ )
+- Removing the deep learning module from inside moabb in favour of braindecode integration (:gh:`XXX` by `Bruno Aristimunha`_ )
 
 Version - 1.1.1  (Stable - PyPi)
 ---------------------------------
