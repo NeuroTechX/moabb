@@ -1,0 +1,61 @@
+name: Download-Test
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+  create:
+    tags:
+      - '**'
+  schedule:
+    # Run every 1st of the month at 7:42am UTC.
+    - cron:  '42 8 1 * *'
+
+jobs:
+  downloadtest:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ ubuntu-latest]
+        python-version: [ "3.9" ]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      # Cache MNE Data
+      - name: Create/Restore MNE Data Cache
+        id: cache-mne_data
+        uses: actions/cache@v4
+        with:
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne-data-download
+          restore-keys: |
+            ${{ runner.os }}-mne-data-download
+
+      - name: Ensure MNE Data folder exists if cache fails
+        run: |
+          echo "Cache hit: ${{ steps.cache-mne_data.outputs.cache-hit }}"
+          mkdir -p ~/mne_data
+
+      - name: Install moabb
+        run: |
+          uv pip install -e .[tests]
+
+      - name: Run download tests
+        run: |
+          echo "Running tests"
+          pytest moabb/tests/ --verbose
