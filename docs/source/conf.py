@@ -67,7 +67,7 @@ extensions = [
     "sphinx_design",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
-    "myst-parser",
+    "myst_parser",
     "numpydoc",
     "sphinx_favicon",
     "sphinxcontrib.jquery",
