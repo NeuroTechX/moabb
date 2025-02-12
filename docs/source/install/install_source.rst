@@ -85,7 +85,7 @@ You will need to run this command in the project directory:
 
 .. code-block:: console
 
-   poetry install --extras "deeplearning carbonemission docs"
+   pip install -e .[deeplearning,carbonemission,docs,tests]
 
 For a full list of dependencies, see the pyproject.toml file.
 
