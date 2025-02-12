@@ -47,41 +47,19 @@ Building MOABB from source with the development environment
 
 If you want to build from source to work on MOABB itself, then follow these steps:
 
-1. Install poetry by running the following command (only needs to be done once per machine):
-
-.. code-block:: bash
-
-   curl -sSL https://install.python-poetry.org | python3 -
-
-You could also check checkout `poetry installation instruction <https://python-poetry.org/docs/#installation>`__ or
-use `conda forge version <https://anaconda.org/conda-forge/poetry>`__
-
-We need the most updated version of the poetry to ensure the compatibility with optional dependency.
-
-.. note::
-    If you have any group-related errors at the end of this section, you may not run the proper version of poetry.
-
-
-2. (Optional) We recommend disabling automatic environment creation:
+1. You will need to clone the repository from GitHub and install the dependencies.
 
 .. code-block:: console
 
-   poetry config virtualenvs.create false
+   git clone https://github.com/neurotechx/moabb && cd moabb
 
-
-.. note::
-    This step is optional. Skip if you are not sure.
-3. If you want to install without any optional dependency
-
-You will need to run this command in the project directory:
+2. You will need to run this command in the project directory:
 
 .. code-block:: console
 
-   poetry install
+   pip install -e .
 
-4. If you want to install with an optional dependency
-
-You will need to run this command in the project directory:
+3. If you want to install with an optional dependency
 
 .. code-block:: console
 
