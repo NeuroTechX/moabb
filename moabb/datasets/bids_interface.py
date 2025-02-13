@@ -263,40 +263,7 @@ class BIDSInterfaceBase(abc.ABC):
             dic = dict(processing_params=str(self.processing_params))
             json.dump(dic, file)
 
-        self._write_metainfo(bids_path)
-
         log.info("Finished caching %s to disk.", repr(self))
-
-    @staticmethod
-    def _write_metainfo(bids_path: mne_bids.BIDSPath) -> dict:
-        """Create metadata for the BIDS dataset.
-
-        To allow lazy loading of the metadata, we store the metadata in a JSON file
-        in the root of the BIDS dataset.
-
-        Parameters
-        ----------
-        bids_path : mne_bids.BIDSPath
-            The path to the BIDS dataset.
-        """
-        json_path = bids_path.root / "metadata.json"
-        json_data = {}
-
-        paths = mne_bids.find_matching_paths(
-            root=bids_path.root,
-            datatypes="eeg",
-        )
-
-        for path in paths:
-            uid = path.fpath.name
-            json_data[uid] = path.entities
-            json_data[uid]["fpath"] = str(path.fpath)
-
-        # write the metadata to a json file
-        with json_path.open("w") as file:
-            json.dump(json_data, file)
-
-        return json_data
 
     @abc.abstractmethod
     def _load_file(self, bids_path, preload):
