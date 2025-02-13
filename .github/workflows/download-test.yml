@@ -47,4 +47,4 @@ jobs:
         run: |
           echo "Running tests"
           cd moabb/tests
-          pytest -v -s --tb=long --durations=10 --maxfail=5 --log-cli-level=INFO download.py
+          pytest -vv -s --tb=long --durations=0 --maxfail=5 --log-cli-level=INFO download.py
