@@ -4,15 +4,7 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  push:
-    branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
-  create:
-    tags:
-      - '**'
   schedule:
-    # Run every 1st of the month at 7:42am UTC.
     - cron:  '42 8 1 * *'
 
 jobs:
