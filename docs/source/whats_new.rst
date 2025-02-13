@@ -32,7 +32,7 @@ Bugs
 - Improving the CI (:gh:`686` by `Bruno Aristimunha`_)
 - Making the download test work again (:gh:`693` by `Bruno Aristimunha`_)
 - Fix the EpochSelectChannel that caused incorrect channel selection in `example <examples/plot_Hinss2021_classification.py>` (:gh:`685` by `AFF`)
-
+- Fixing the logger on the Stieger2021 and Wang2016 dataset (:gh:`693` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
