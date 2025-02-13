@@ -8,6 +8,7 @@ ErpCore2021 dataset
 
 import os
 import warnings
+import zipfile as z
 from abc import abstractmethod
 from functools import partialmethod
 from pathlib import Path
@@ -15,10 +16,9 @@ from pathlib import Path
 import mne
 import numpy as np
 import pandas as pd
-import pooch
-from mne.datasets import fetch_dataset
 from mne_bids import BIDSPath, read_raw_bids
 
+from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
 
 
@@ -50,11 +50,9 @@ OSF_JSON = {
 DATASET_PARAMS = {
     task: dict(
         archive_name=f"ERPCORE2021_{task}.zip",
+        zipfile=f"{task.upper()} Raw Data BIDS-Compatible.zip",
         url=OSF_BASE_URL + f"{osf[0]}/providers/osfstorage/{osf[1]}/?zip=",
         folder_name=f"MNE-erpcore{task.lower()}2021-data",
-        dataset_name=f"MNE-erpcore{task.lower()}2021",
-        hash=None,
-        config_key=f"MNE_ERPCORE_{task.upper()}_PATH",
     )
     for task, osf in OSF_IDS.items()
 }
@@ -270,9 +268,7 @@ class ErpCore2021(BaseDataset):
             raise ValueError("Invalid subject number")
 
         # Download and extract the dataset
-        dataset_path = self.download_and_extract(
-            path=path, force_update=force_update, update_path=update_path
-        )
+        dataset_path = self.download_and_extract(path=path, force_update=force_update)
 
         # Create a BIDSPath object for the subject
         bids_path = BIDSPath(
@@ -287,7 +283,7 @@ class ErpCore2021(BaseDataset):
 
         return subject_paths
 
-    def download_and_extract(self, path=None, force_update=False, update_path=None):
+    def download_and_extract(self, path=None, force_update=False):
         """
         Download and extract the dataset.
 
@@ -298,9 +294,6 @@ class ErpCore2021(BaseDataset):
             If None, the default directory is used.
         force_update : bool
             Force update of the dataset even if a local copy exists.
-        update_path: bool | None
-            If True, set the MNE_DATASETS_(dataset)_PATH in mne-python config
-            to the given path.
 
         Returns
         -------
@@ -310,21 +303,27 @@ class ErpCore2021(BaseDataset):
         if path is not None:
             path = Path(path) / DATASET_PARAMS[self.task]["folder_name"]
         else:
-            # Default path is in the user's home directory under 'mne_data'
+            # The Default path is in the user's home directory under 'mne_data'
             path = Path.home() / "mne_data" / DATASET_PARAMS[self.task]["folder_name"]
 
-        # Check if the dataset already exists and force_update is False
-        if not force_update and path.exists():
-            return path
+        path_zip = path / DATASET_PARAMS[self.task]["zipfile"]
 
-        # Download and extract the dataset
-        _ = fetch_dataset(
-            DATASET_PARAMS[self.task],
-            path=path,
-            force_update=force_update,
-            update_path=update_path,
-            processor=pooch.Unzip(extract_dir=path),
-        )
+        # checking if the zip of the dataset is already downloaded
+        if not Path(path_zip).exists() or force_update:
+            # Download and extract the dataset
+            path_zip = dl.data_dl(
+                DATASET_PARAMS[self.task]["url"],
+                f"erpcore{self.task.lower()}2021",
+                path,
+                force_update,
+            )
+
+        metainformation = path / "participants.tsv"
+        # check if it has to unzip
+        if not Path(metainformation).exists():
+            zip_ref = z.ZipFile(path_zip, "r")
+            zip_ref.extractall(path)
+
         return path
 
     def events_path(self, subject):
