@@ -1,145 +1,84 @@
-"""Tests to ensure that datasets download correctly."""
+"""Tests to ensure that datasets download correctly using pytest."""
 
-import unittest
+import os
+import sys
 
 import mne
+import pytest
 
 from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
+from moabb.datasets.utils import dataset_list
 
 
-# from moabb.datasets.gigadb import Cho2017
-# from moabb.datasets.alex_mi import AlexMI
-# from moabb.datasets.physionet_mi import PhysionetMI
-# from moabb.datasets.bnci import (BNCI2014_001, BNCI2014_002, BNCI2014_004,
-#                                  BNCI2014_008, BNCI2014_009, BNCI2015_001,
-#                                  BNCI2015_003, BNCI2015_004)
-# from moabb.datasets.bbci_eeg_fnirs import Shin2017A, Shin2017B
-# from moabb.datasets.upper_limb import Ofner2017
-# from moabb.datasets.mpi_mi import GrosseWentrup2009
-# from moabb.datasets.schirrmeister2017 import Schirrmeister2017
-# from moabb.datasets.Weibo2014 import Weibo2014
-# from moabb.datasets.Zhou2016 import Zhou2016
-# from moabb.datasets.ssvep_exo import Kalunga2016
-# from moabb.datasets.braininvaders import BI2013a
-# from moabb.datasets.epfl import EPFLP300
-# from moabb.datasets.Lee2019 import Lee2019_MI
-# from moabb.datasets.neiry import DemonsP300
-# from moabb.datasets.physionet_mi import PhysionetMI
-# from moabb.datasets.ssvep_mamem import MAMEM1, MAMEM2, MAMEM3
-# from moabb.datasets.ssvep_nakanishi import Nakanishi2015
-# from moabb.datasets.ssvep_wang import Wang2016
-# from moabb.datasets.thielen2021 import Thielen2021
+# If the file's own basename is not explicitly passed in sys.argv,
+# skip the tests. This means if you run "pytest" from the root, the tests are skipped.
+if not any(os.path.basename(arg) == os.path.basename(__file__) for arg in sys.argv):
+    pytest.skip(
+        "Skipping download tests by default. Run this file directly (e.g., pytest download.py) to execute these tests.",
+        allow_module_level=True,
+    )
 
 
-class Test_Downloads(unittest.TestCase):
-    def run_dataset(self, dataset, subj=(0, 2)):
-        def _get_events(raw):
-            stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
-            if len(stim_channels) > 0:
-                events = mne.find_events(raw, shortest_event=0, verbose=False)
-            else:
-                events, _ = mne.events_from_annotations(raw, verbose=False)
-            return events
-
-        if isinstance(dataset(), BaseShin2017):
-            obj = dataset(accept=True)
-        else:
-            obj = dataset()
-        obj.subject_list = obj.subject_list[subj[0] : subj[1]]
-        data = obj.get_data(obj.subject_list)
-
-        # get data return a dict
-        self.assertTrue(isinstance(data, dict))
-
-        # keys must corresponds to subjects list
-        self.assertTrue(list(data.keys()) == obj.subject_list)
-
-        # session must be a dict, and the length must match
-        for _, sessions in data.items():
-            self.assertTrue(isinstance(sessions, dict))
-            self.assertTrue(len(sessions) >= obj.n_sessions)
-
-            # each session is a dict, with multiple runs
-            for _, runs in sessions.items():
-                self.assertTrue(isinstance(runs, dict))
-
-                for _, raw in runs.items():
-                    self.assertTrue(isinstance(raw, mne.io.BaseRaw))
-
-                # each raw should contains events
-                for _, raw in runs.items():
-                    self.assertTrue(len(_get_events(raw) != 0))
-
-    # def test_cho2017(self):
-    #     self.run_dataset(Cho2017)
-
-    # def test_bnci(self):
-    #     self.run_dataset(BNCI2014_001)
-    #     self.run_dataset(BNCI2014_002)
-    #     self.run_dataset(BNCI2014_004)
-    #     self.run_dataset(BNCI2014_008)
-    #     self.run_dataset(BNCI2014_009)
-    #     self.run_dataset(BNCI2015_001)
-    #     self.run_dataset(BNCI2015_003)
-    #     self.run_dataset(BNCI2015_004)
-
-    # def test_alexmi(self):
-    #     self.run_dataset(AlexMI)
-
-    # def test_physionet(self):
-    #     self.run_dataset(PhysionetMI)
-
-    # def test_eegfnirs(self):
-    #     self.run_dataset(Shin2017A)
-    #     self.run_dataset(Shin2017B)
-
-    # def test_upper_limb(self):
-    #     self.run_dataset(Ofner2017)
-
-    # def test_mpi_mi(self):
-    #     self.run_dataset(GrosseWentrup2009)
-
-    # def test_schirrmeister2017(self):
-    #     self.run_dataset(Schirrmeister2017, subj=(0, 1))
-
-    # def test_Weibo2014(self):
-    #     self.run_dataset(Weibo2014)
-
-    # def test_Zhou2016(self):
-    #     self.run_dataset(Zhou2016)
-
-    # def test_ssvep_exo(self):
-    #     self.run_dataset(Kalunga2016)
-
-    # def test_bi2013a(self):
-    #     self.run_dataset(BI2013a)
-
-    # def test_epflp300(self):
-    #     self.run_dataset(EPFLP300)
-
-    # def test_lee2019_MI(self):
-    #     self.run_dataset(Lee2019_MI)
-
-    # def test_demonsp300(self):
-    #     self.run_dataset(DemonsP300)
-
-    # def test_physionetmi(self):
-    #     self.run_dataset(PhysionetMI)
-
-    # def test_mamem(self):
-    #     self.run_dataset(MAMEM1)
-    #     self.run_dataset(MAMEM2)
-    #     self.run_dataset(MAMEM3)
-
-    # def test_nakanishi2015(self):
-    #     self.run_dataset(Nakanishi2015)
-
-    # def test_wang2016(self):
-    #     self.run_dataset(Wang2016)
-
-    # def test_thielen2021(self):
-    #     self.run_dataset(Thielen2021)
+def _get_events(raw):
+    """Helper function to extract events from a raw object."""
+    stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
+    if len(stim_channels) > 0:
+        events = mne.find_events(raw, shortest_event=0, verbose=False)
+    else:
+        events, _ = mne.events_from_annotations(raw, verbose=False)
+    return events
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.parametrize("dataset", dataset_list)
+def test_dataset_download(dataset):
+    """
+    Test that a dataset downloads and returns data with the correct structure.
+
+    For datasets of type BaseShin2017, we need to pass an "accept" flag.
+    We then test that:
+
+    - The returned data is a dict.
+    - The keys of the dict match the subject list.
+    - For each subject, sessions are provided as a dict and their number is at least as expected.
+    - Each session contains runs that are dicts and each run is a valid MNE Raw object
+      that contains at least one event.
+    """
+    # Some datasets (e.g., BaseShin2017) require explicit acceptance of terms.
+    if isinstance(dataset(), BaseShin2017):
+        obj = dataset(accept=True)
+    else:
+        obj = dataset()
+
+    # Use only a subset of subjects for faster testing.
+    subj = (0, 1)
+    obj.subject_list = obj.subject_list[subj[0] : subj[1]]
+    data = obj.get_data(obj.subject_list)
+
+    # Check that the returned data is a dict.
+    assert isinstance(data, dict), "Data returned by get_data is not a dict."
+
+    # Check that the dictionary keys match the subject_list.
+    assert (
+        list(data.keys()) == obj.subject_list
+    ), "Data keys do not match the subject_list."
+
+    # For each subject, check the structure of sessions and runs.
+    for subject, sessions in data.items():
+        assert isinstance(
+            sessions, dict
+        ), f"Sessions for subject {subject} is not a dict."
+        assert (
+            len(sessions) >= obj.n_sessions
+        ), f"Number of sessions for subject {subject} is less than expected."
+
+        for session, runs in sessions.items():
+            assert isinstance(runs, dict), f"Runs for session {session} is not a dict."
+
+            for run, raw in runs.items():
+                assert isinstance(
+                    raw, mne.io.BaseRaw
+                ), f"Data for run {run} in session {session} is not an instance of mne.io.BaseRaw."
+                events = _get_events(raw)
+                assert (
+                    len(events) != 0
+                ), f"No events found in run {run} of session {session}."
