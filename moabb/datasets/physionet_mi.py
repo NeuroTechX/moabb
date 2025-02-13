@@ -6,6 +6,7 @@ from mne.io import read_raw_edf
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.download import data_dl, get_dataset_path
+from moabb.datasets.utils import stim_channels_with_selected_ids
 
 
 BASE_URL = "https://physionet.org/files/eegmmidb/1.0.0/"
@@ -79,7 +80,7 @@ class PhysionetMI(BaseDataset):
             paradigm="imagery",
             doi="10.1109/TBME.2004.827072",
         )
-
+        self.events = dict(left_hand=2, right_hand=3, feet=5, hands=4, rest=1)
         self.imagined = imagined
         self.executed = executed
         self.feet_runs = []
@@ -123,7 +124,9 @@ class PhysionetMI(BaseDataset):
             stim[stim == "T1"] = "left_hand"
             stim[stim == "T2"] = "right_hand"
             raw.annotations.description = stim
-            data[str(idx)] = raw
+            data[str(idx)] = stim_channels_with_selected_ids(
+                raw, desired_event_id=self.events
+            )
             idx += 1
 
         # feet runs
@@ -136,7 +139,9 @@ class PhysionetMI(BaseDataset):
             stim[stim == "T1"] = "hands"
             stim[stim == "T2"] = "feet"
             raw.annotations.description = stim
-            data[str(idx)] = raw
+            data[str(idx)] = stim_channels_with_selected_ids(
+                raw, desired_event_id=self.events
+            )
             idx += 1
 
         return {"0": data}

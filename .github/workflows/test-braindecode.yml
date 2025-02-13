@@ -17,13 +17,28 @@ jobs:
       fail-fast: true
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ "3.8" ]
+        python-version: ["3.12"]
     defaults:
       run:
         shell: bash
     steps:
-      - name: Checkout MOABB
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      # Cache MNE Data
+      - name: Create/Restore MNE Data Cache
+        id: cache-mne_data
+        uses: actions/cache@v4
+        with:
+          path: ~/mne_data
+          key: ${{ runner.os }}-mne-data-v1
+          restore-keys: |
+            ${{ runner.os }}-mne-data-v1
 
       - name: Checkout Braindecode
         uses: actions/checkout@v4
@@ -31,54 +46,10 @@ jobs:
           repository: braindecode/braindecode
           path: braindecode
 
-      - name: Create local data folder
-        if: runner.os != 'Windows'
+      - name: Install moabb, braindecode and run tests
         run: |
-          mkdir ~/mne_data
-
-      - name: Create/Restore MNE Data Cache
-        if: runner.os != 'Windows'
-        id: cache-mne_data
-        uses: actions/cache@v3
-        with:
-          path: ~/mne_data
-          key: ${{ runner.os }}-mne_data
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      - name: Load cached venv
-        if: runner.os != 'Windows'
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key:
-            testvenv-braindecode-${{ matrix.os }}-py${{matrix.python-version}}-${{
-            hashFiles('**/poetry.lock') }}
-
-      - name: Install dependencies
-        if: |
-          (runner.os != 'Windows') &&
-          (steps.cached-poetry-dependencies.outputs.cache-hit != 'true')
-        run: poetry install --no-interaction --no-root
-
-      - name: Install library
-        run: poetry install --no-interaction
-
-      - name: Install and test braindecode
-        run: |
-          source $VENV
-          cd braindecode
-          pip install -e .[tests]
-          pytest test/
-
-      # poetry run pip install -U https://api.github.com/repos/braindecode/braindecode/zipball/master
+          uv pip install -e .
+          cd braindecode && uv pip install -e .[tests]
+          echo "Running tests"
+          uv pip install pytest-xdist
+          pytest test/ --quiet -n auto
