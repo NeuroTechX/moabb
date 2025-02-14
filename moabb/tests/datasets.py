@@ -22,6 +22,7 @@ from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
 from moabb.datasets.utils import block_rep, dataset_list
 from moabb.paradigms import P300
+from moabb.testing import get_config
 from moabb.utils import aliases_list
 
 
@@ -214,7 +215,7 @@ class Test_Datasets(unittest.TestCase):
         # Only BaseShin2017 (bbci_eeg_fnirs) for now
         for ds in [Shin2017A(), Shin2017B()]:
             # if the data is already downloaded:
-            if mne.get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:
+            if get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:
                 self.assertRaises(AttributeError, ds.get_data, [1])
 
     def test_datasets_init(self):

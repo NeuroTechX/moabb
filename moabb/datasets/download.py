@@ -9,12 +9,13 @@ import os.path as osp
 from pathlib import Path
 
 import requests
-from mne import get_config, set_config
 from mne.datasets.utils import _get_path
 from mne.utils import _url_to_local_path, verbose
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
+
+from moabb.testing import get_config, set_config
 
 
 def get_dataset_path(sign, path):
