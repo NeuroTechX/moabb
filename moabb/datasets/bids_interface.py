@@ -262,7 +262,6 @@ class BIDSInterfaceBase(abc.ABC):
         with self.lock_file.fpath.open("w") as file:
             dic = dict(processing_params=str(self.processing_params))
             json.dump(dic, file)
-
         log.info("Finished caching %s to disk.", repr(self))
 
     @abc.abstractmethod
