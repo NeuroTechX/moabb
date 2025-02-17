@@ -13,20 +13,11 @@ from .base import BaseDataset
 
 
 log = logging.getLogger(__name__)
-GIGA_URL = "https://ftp.cngb.org/pub/gigadb/pub/10.5524/100001_101000/100295/mat_data/"
+GIGA_URL = "https://s3.ap-northeast-1.wasabisys.com/gigadb-datasets/live/pub/10.5524/100001_101000/100295/mat_data/"
 
 
 class Cho2017(BaseDataset):
     """Motor Imagery dataset from Cho et al 2017.
-
-    .. admonition:: Dataset summary
-
-
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
-        Name       #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
-        Cho2017       52       64           2                100  3s            512Hz                      1
-        =======  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from the paper [1]_.
 

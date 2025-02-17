@@ -4,43 +4,69 @@ Pipelines are typically a chain of sklearn compatible transformers and
 end with a sklearn compatible estimator.
 """
 
-# flake8: noqa
-from mne.utils import warn
+from warnings import warn
 
+# flake8: noqa
 from .classification import SSVEP_CCA, SSVEP_TRCA, SSVEP_MsetCCA
 from .features import FM, AugmentedDataset, ExtendedSSVEPSignal, LogVariance
 from .utils import FilterBank, create_pipeline_from_config
 
 
-try:
-    from .deep_learning import (
-        KerasDeepConvNet,
-        KerasEEGITNet,
-        KerasEEGNet_8_2,
-        KerasEEGNeX,
-        KerasEEGTCNet,
-        KerasShallowConvNet,
-    )
-    from .utils_deep_model import EEGNet, TCN_block
-except ModuleNotFoundError as err:
-    warn(
-        "Tensorflow is not installed. "
-        "You won't be able to use these MOABB pipelines if you attempt to do "
-        "so.",
-        category=ModuleNotFoundError,
-        module="moabb.pipelines",
+def __getattr__(name):
+
+    deep_learning_classes = {
+        "KerasDeepConvNet",
+        "KerasEEGITNet",
+        "KerasEEGNet_8_2",
+        "KerasEEGNeX",
+        "KerasEEGTCNet",
+        "KerasShallowConvNet",
+    }
+    utils_deep_model_classes = {
+        "EEGNet",
+        "TCN_block",
+    }
+
+    if name in deep_learning_classes and _check_if_tensorflow_installed():
+        return _import_class(name, ".deep_learning")
+    elif name in utils_deep_model_classes and _check_if_tensorflow_installed():
+        return _import_class(name, ".utils_deep_model")
+
+    raise AttributeError(f"Module '{__name__}' has no attribute '{name}'")
+
+
+def _import_class(name, module_name):
+    import importlib
+
+    warning_msg = _warning_msg(name, module_name)
+    warn(warning_msg)
+
+    module = importlib.import_module(module_name, __package__)
+    return getattr(module, name)
+
+
+def _warning_msg(name, submodule):
+    return (
+        f"{name} is incorrectly imported. \nPlease use:\033[1m "
+        f"from moabb.pipeline{submodule} import {name}\033[0m.\n"
+        f"Instead of: \033[1mfrom moabb.pipeline import {name}\033[0m."
     )
 
 
-try:
-    from .utils_pytorch import (
-        BraindecodeDatasetLoader,
-        InputShapeSetterEEG,
-        get_shape_from_baseconcat,
-    )
-except ModuleNotFoundError as err:
-    print(
-        "To use the get_shape_from_baseconcar, InputShapeSetterEEG, BraindecodeDatasetLoader"
-        "you need to install `braindecode`."
-        "`pip install braindecode` or Please refer to `https://braindecode.org`."
-    )
+def _check_if_tensorflow_installed():
+    try:
+        import scikeras
+
+        return True
+    except ModuleNotFoundError:
+        warn(
+            "\nThere was a problem importing tensorflow or keras, "
+            "which are required for the deep learning pipelines. \n"
+            "The Keras MOABB deep learning pipelines cannot be used.\n "
+            "To resolve this issue, please install the necessary dependencies "
+            "by running the following command in your terminal: \n"
+            "\033[94m"  # This is the ANSI escape code for blue
+            "pip install moabb[deeplearning]"
+            "\033[0m",  # This resets the color back to normal
+        )
+        return False

@@ -8,6 +8,14 @@ from numpy import argmax
 from sklearn.pipeline import Pipeline
 
 
+try:
+    from optuna.distributions import CategoricalDistribution
+
+    optuna_available = True
+except ImportError:
+    optuna_available = False
+
+
 def _check_if_is_keras_model(model):
     """Check if the model is a Keras model.
 
@@ -71,7 +79,7 @@ def _check_if_is_keras_steps(model):
 
 
 def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
-    """Save a model fitted to a folder.
+    """Save a model fitted to a given fold from cross-validation.
 
     Parameters
     ----------
@@ -212,3 +220,36 @@ def create_save_path(
         return str(path_save)
     else:
         print("No hdf5_path provided, models will not be saved.")
+
+
+def _convert_sklearn_params_to_optuna(param_grid: dict) -> dict:
+    """
+    Function to convert the parameter in Optuna format. This function will
+    create a categorical distribution of values from the list of values
+    provided in the parameter grid.
+
+    Parameters
+    ----------
+    param_grid:
+        Dictionary with the parameters to be converted.
+
+    Returns
+    -------
+    optuna_params: dict
+        Dictionary with the parameters converted to Optuna format.
+    """
+    if not optuna_available:
+        raise ImportError(
+            "Optuna is not available. Please install it optuna " "and optuna-integration."
+        )
+    else:
+        optuna_params = {}
+        for key, value in param_grid.items():
+            try:
+                if isinstance(value, list):
+                    optuna_params[key] = CategoricalDistribution(value)
+                else:
+                    optuna_params[key] = value
+            except Exception as e:
+                raise ValueError(f"Conversion failed for parameter {key}: {e}")
+        return optuna_params

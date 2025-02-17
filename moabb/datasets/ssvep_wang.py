@@ -14,24 +14,14 @@ from .base import BaseDataset
 
 log = logging.getLogger(__name__)
 
+WANG_URL = "https://zenodo.org/records/14865172/files/"
 # WANG_URL = 'http://bci.med.tsinghua.edu.cn/upload/yijun/' # 403 error
-WANG_URL = "ftp://sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
-
-
+# WANG_URL = "ftp://sccn.ucsd.edu/pub/ssvep_benchmark_dataset/"
 # WANG_URL = "http://www.thubci.com/uploads/down/"
 
 
 class Wang2016(BaseDataset):
     """SSVEP Wang 2016 dataset.
-
-    .. admonition:: Dataset summary
-
-
-        ========  =======  =======  ==========  =================  ===============  ===============  ===========
-        Name        #Subj    #Chan    #Classes    #Trials / class  Trials length    Sampling rate      #Sessions
-        ========  =======  =======  ==========  =================  ===============  ===============  ===========
-        Wang2016       34       62          40                  6  5s               250Hz                      1
-        ========  =======  =======  ==========  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 

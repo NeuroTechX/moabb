@@ -4,11 +4,10 @@ from collections import OrderedDict
 
 import mne
 import numpy as np
-from mne import create_info
-from mne.io import RawArray
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.utils import add_stim_channel_epoch, add_stim_channel_trial
 
 
 Castillos2023_URL = "https://zenodo.org/records/8255618"
@@ -41,87 +40,6 @@ class BaseCastillos2023(BaseDataset):
         self.n_channels = 32
         self.window_size = window_size
 
-    def _add_stim_channel_trial(
-        self, raw, onsets, labels, offset=200, ch_name="stim_trial"
-    ):
-        """
-        Add a stimulus channel with trial onsets and their labels.
-
-        Parameters
-        ----------
-        raw: mne.Raw
-            The raw object to add the stimulus channel to.
-        onsets: List | np.ndarray
-            The onsets of the trials in sample numbers.
-        labels: List | np.ndarray
-            The labels of the trials.
-        offset: int (default: 200)
-            The integer value to start markers with. For instance, if 200, then label 0 will be marker 200, label 1
-            will be be marker 201, etc.
-        ch_name: str (default: "stim_trial")
-            The name of the added stimulus channel.
-
-        Returns
-        -------
-        mne.Raw
-            The raw object with the added stimulus channel.
-        """
-        stim_chan = np.zeros((1, len(raw)))
-        for onset, label in zip(onsets, labels):
-            stim_chan[0, onset] = offset + label
-        info = create_info(
-            ch_names=[ch_name],
-            ch_types=["stim"],
-            sfreq=raw.info["sfreq"],
-            verbose=False,
-        )
-        raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
-        return raw
-
-    def _add_stim_channel_epoch(
-        self,
-        raw,
-        onsets,
-        labels,
-        offset=100,
-        ch_name="stim_epoch",
-    ):
-        """
-        Add a stimulus channel with epoch onsets and their labels, which are the values of the presented code for each
-        of the trials.
-
-        Parameters
-        ----------
-        raw: mne.Raw
-            The raw object to add the stimulus channel to.
-        onsets: List | np.ndarray
-            The onsets of the trials in secondes
-        labels: List | np.ndarray
-            The labels of the trials.
-        codes: np.ndarray
-            The codebook containing each presented code of shape (nb_bits, nb_codes), sampled at the presentation rate.
-        offset: int (default: 100)
-            The integer value to start markers with. For instance, if 100, then label 0 will be marker 100, label 1
-            will be be marker 101, etc.
-        ch_name: str (default: "stim_epoch")
-            The name of the added stimulus channel.
-
-        Returns
-        -------
-        mne.Raw
-            The raw object with the added stimulus channel.
-        """
-        stim_chan = np.zeros((1, len(raw)))
-        for onset, label in zip(onsets, labels):
-            stim_chan[0, int(onset * self.sfreq)] = offset + label
-        info = create_info(
-            ch_names=[ch_name],
-            ch_types=["stim"],
-            sfreq=raw.info["sfreq"],
-            verbose=False,
-        )
-        raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
-        return raw
 
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject."""
@@ -183,10 +101,10 @@ class BaseCastillos2023(BaseDataset):
 
         # Create stim channel with trial information (i.e., symbols)
         # Specifically: 200 = symbol-0, 201 = symbol-1, 202 = symbol-2, etc.
-        raw = self._add_stim_channel_trial(raw, onset_code, labels, offset=200)
+        raw = add_stim_channel_trial(raw, onset_code, labels, offset=200)
         # Create stim channel with epoch information (i.e., 1 / 0, or on / off)
         # Specifically: 100 = "0", 101 = "1"
-        raw = self._add_stim_channel_epoch(
+        raw = add_stim_channel_epoch(
             raw,
             np.concatenate([onset, onset_0]),
             np.concatenate([np.ones(onset.shape), np.zeros(onset_0.shape)]),
@@ -371,18 +289,10 @@ class BaseCastillos2023(BaseDataset):
         return np.array(new_onset_1) / self.fps, np.array(new_onset_0) / self.fps
 
 
-class CasitllosBurstVEP100(BaseCastillos2023):
+class CastillosBurstVEP100(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
-
-    .. admonition:: Dataset summary
-
-        =============            =======  =======  ==============================  ===============  ===============  ===========
-        Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
-        =============            =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202BurstVEP100       12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
-        =============            =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
 
@@ -427,25 +337,18 @@ class CasitllosBurstVEP100(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP100",
+            code="CastillosBurstVEP100",
             paradigm="cvep",
             paradigm_type="burst100",
             window_size=window_size,
         )
 
 
-class CasitllosBurstVEP40(BaseCastillos2023):
+class CastillosBurstVEP40(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
-    .. admonition:: Dataset summary
-
-        ======================   =======  =======  ==============================  ===============  ===============  ===========
-        Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
-        ======================   =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202BurstVEP40        12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  window_sizes             500Hz                     1
-        ======================   =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
 
@@ -490,25 +393,17 @@ class CasitllosBurstVEP40(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP40",
+            code="CastillosBurstVEP40",
             paradigm="cvep",
             paradigm_type="burst40",
             window_size=window_size,
         )
 
 
-class CasitllosCVEP100(BaseCastillos2023):
+class CastillosCVEP100(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
-
-    .. admonition:: Dataset summary
-
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202CVEP100           12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  window_sizes             500Hz                     1
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
 
@@ -553,25 +448,18 @@ class CasitllosCVEP100(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP100",
+            code="CastillosCVEP100",
             paradigm="cvep",
             paradigm_type="mseq100",
             window_size=window_size,
         )
 
 
-class CasitllosCVEP40(BaseCastillos2023):
+class CastillosCVEP40(BaseCastillos2023):
     """c-VEP and Burst-VEP dataset from Castillos et al. (2023)
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
-    .. admonition:: Dataset summary
-
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202CVEP40            12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  window_sizes             500Hz                     1
-        ===================      =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
 
@@ -616,7 +504,7 @@ class CasitllosCVEP40(BaseCastillos2023):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
-            code="CasitllosBurstVEP40",
+            code="CastillosCVEP40",
             paradigm="cvep",
             paradigm_type="mseq40",
             window_size=window_size,
