@@ -31,7 +31,7 @@ class BaseCastillos2023(BaseDataset):
             sessions_per_subject=sessions_per_subject,
             events=events,
             code=code,
-            interval=(0, 0.25),
+            interval=(0, window_size),
             paradigm=paradigm,
             doi="https://doi.org/10.1016/j.neuroimage.2023.120446",
         )
@@ -95,7 +95,7 @@ class BaseCastillos2023(BaseDataset):
         raw: mne.Raw
             The raw object to add the stimulus channel to.
         onsets: List | np.ndarray
-            The onsets of the trials in sample numbers.
+            The onsets of the trials in secondes
         labels: List | np.ndarray
             The labels of the trials.
         codes: np.ndarray
@@ -225,7 +225,7 @@ class BaseCastillos2023(BaseDataset):
 
         url = "https://zenodo.org/records/8255618/files/4Class-CVEP.zip"
         path_zip = dl.data_dl(url, "4Class-VEP", path, force_update, verbose)
-        path_folder = "C" + path_zip.strip("4Class-VEP.zip")
+        path_folder = path_zip.rstrip("4Class-VEP.zip")
         print(path_folder)
 
         # check if has to unzip
@@ -423,13 +423,14 @@ class CasitllosBurstVEP100(BaseCastillos2023):
 
     """
 
-    def __init__(self):
+    def __init__(self,window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CasitllosBurstVEP100",
             paradigm="cvep",
             paradigm_type="burst100",
+            window_size=window_size,
         )
 
 
@@ -443,7 +444,7 @@ class CasitllosBurstVEP40(BaseCastillos2023):
         ======================   =======  =======  ==============================  ===============  ===============  ===========
         Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
         ======================   =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202BurstVEP40        12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
+        Castillos202BurstVEP40        12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  window_sizes             500Hz                     1
         ======================   =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
@@ -485,13 +486,14 @@ class CasitllosBurstVEP40(BaseCastillos2023):
 
     """
 
-    def __init__(self):
+    def __init__(self,window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CasitllosBurstVEP40",
             paradigm="cvep",
             paradigm_type="burst40",
+            window_size=window_size,
         )
 
 
@@ -505,7 +507,7 @@ class CasitllosCVEP100(BaseCastillos2023):
         ===================      =======  =======  ==============================  ===============  ===============  ===========
         Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
         ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202CVEP100           12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
+        Castillos202CVEP100           12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  window_sizes             500Hz                     1
         ===================      =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
@@ -547,13 +549,14 @@ class CasitllosCVEP100(BaseCastillos2023):
 
     """
 
-    def __init__(self):
+    def __init__(self,window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CasitllosBurstVEP100",
             paradigm="cvep",
             paradigm_type="mseq100",
+            window_size=window_size,
         )
 
 
@@ -567,7 +570,7 @@ class CasitllosCVEP40(BaseCastillos2023):
         ===================      =======  =======  ==============================  ===============  ===============  ===========
         Name                     #Subj    #Chan     #Trials / class              Trials length    Sampling rate      #Sessions
         ===================      =======  =======  ==============================  ===============  ===============  ===========
-        Castillos202CVEP40            12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  0.25s             500Hz                     1
+        Castillos202CVEP40            12       32   15 "1"/15 "2"/ 15 "3"/ 15 "4"  window_sizes             500Hz                     1
         ===================      =======  =======  ==============================  ===============  ===============  ===========
 
     **Dataset description**
@@ -609,11 +612,12 @@ class CasitllosCVEP40(BaseCastillos2023):
 
     """
 
-    def __init__(self):
+    def __init__(self,window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CasitllosBurstVEP40",
             paradigm="cvep",
             paradigm_type="mseq40",
+            window_size=window_size,
         )
