@@ -773,11 +773,328 @@ select electrodes based on the covariance information</p>
 <span class="n">results</span> <span class="o">=</span> <a href="../generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2025-02-13 14:34:00,133 INFO MainThread moabb.evaluations.base Processing dataset: Hinss2021
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2025-02-17 10:03:04,092 INFO MainThread moabb.evaluations.base Processing dataset: Hinss2021
 
-Hinss2021-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]Subject 1 already processed
+Hinss2021-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]MNE_DATA is not already configured. It will be set to default location in the home directory - /home/runner/mne_data
+All datasets will be downloaded to this location, if anything is already downloaded, please move manually to this location
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
 
-Hinss2021-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
+
+  0%|                                               | 0.00/181M [00:00&lt;?, ?B/s]
+
+  0%|                                      | 15.4k/181M [00:00&lt;37:28, 80.5kB/s]
+
+  0%|                                       | 48.1k/181M [00:00&lt;20:35, 147kB/s]
+
+  0%|                                        | 110k/181M [00:00&lt;12:10, 248kB/s]
+
+  0%|                                        | 252k/181M [00:00&lt;06:10, 488kB/s]
+
+  0%|                                        | 423k/181M [00:00&lt;04:22, 687kB/s]
+
+  0%|▏                                      | 848k/181M [00:01&lt;02:15, 1.33MB/s]
+
+  1%|▎                                     | 1.71M/181M [00:01&lt;01:08, 2.62MB/s]
+
+  2%|▋                                     | 3.46M/181M [00:01&lt;00:34, 5.19MB/s]
+
+  4%|█▎                                    | 6.34M/181M [00:01&lt;00:19, 9.07MB/s]
+
+  5%|█▊                                    | 8.40M/181M [00:01&lt;00:16, 10.2MB/s]
+
+  6%|██▎                                   | 11.3M/181M [00:01&lt;00:13, 12.5MB/s]
+
+  7%|██▊                                   | 13.5M/181M [00:01&lt;00:13, 12.7MB/s]
+
+  9%|███▍                                  | 16.4M/181M [00:02&lt;00:11, 14.2MB/s]
+
+ 10%|███▉                                  | 18.7M/181M [00:02&lt;00:11, 14.3MB/s]
+
+ 12%|████▌                                 | 21.6M/181M [00:02&lt;00:10, 15.3MB/s]
+
+ 13%|█████                                 | 24.0M/181M [00:02&lt;00:10, 15.1MB/s]
+
+ 15%|█████▋                                | 26.9M/181M [00:02&lt;00:09, 15.9MB/s]
+
+ 16%|██████▏                               | 29.2M/181M [00:02&lt;00:09, 15.4MB/s]
+
+ 18%|██████▋                               | 32.1M/181M [00:03&lt;00:09, 16.2MB/s]
+
+ 19%|███████▏                              | 34.5M/181M [00:03&lt;00:09, 15.7MB/s]
+
+ 21%|███████▉                              | 37.6M/181M [00:03&lt;00:08, 16.6MB/s]
+
+ 23%|████████▌                             | 40.8M/181M [00:03&lt;00:07, 17.5MB/s]
+
+ 24%|█████████▏                            | 43.8M/181M [00:03&lt;00:07, 17.7MB/s]
+
+ 26%|█████████▊                            | 46.5M/181M [00:03&lt;00:07, 17.4MB/s]
+
+ 28%|██████████▌                           | 50.2M/181M [00:04&lt;00:06, 19.0MB/s]
+
+ 30%|███████████▎                          | 53.7M/181M [00:04&lt;00:05, 22.4MB/s]
+
+ 31%|███████████▊                          | 56.1M/181M [00:04&lt;00:05, 22.4MB/s]
+
+ 32%|████████████▎                         | 58.5M/181M [00:04&lt;00:06, 20.0MB/s]
+
+ 34%|█████████████                         | 62.2M/181M [00:04&lt;00:04, 24.1MB/s]
+
+ 36%|█████████████▌                        | 64.8M/181M [00:04&lt;00:05, 22.4MB/s]
+
+ 37%|██████████████                        | 67.2M/181M [00:04&lt;00:05, 20.9MB/s]
+
+ 38%|██████████████▌                       | 69.4M/181M [00:04&lt;00:05, 21.0MB/s]
+
+ 40%|███████████████▏                      | 72.2M/181M [00:05&lt;00:04, 22.6MB/s]
+
+ 41%|███████████████▋                      | 74.6M/181M [00:05&lt;00:05, 20.5MB/s]
+
+ 43%|████████████████▏                     | 77.2M/181M [00:05&lt;00:04, 21.1MB/s]
+
+ 44%|████████████████▊                     | 80.1M/181M [00:05&lt;00:04, 23.3MB/s]
+
+ 46%|█████████████████▎                    | 82.5M/181M [00:05&lt;00:04, 22.1MB/s]
+
+ 47%|█████████████████▉                    | 85.3M/181M [00:05&lt;00:04, 20.3MB/s]
+
+ 49%|██████████████████▋                   | 88.8M/181M [00:05&lt;00:03, 23.7MB/s]
+
+ 50%|███████████████████▏                  | 91.3M/181M [00:05&lt;00:04, 21.5MB/s]
+
+ 52%|███████████████████▋                  | 93.5M/181M [00:06&lt;00:04, 21.0MB/s]
+
+ 53%|████████████████████▏                 | 96.0M/181M [00:06&lt;00:03, 22.0MB/s]
+
+ 54%|████████████████████▋                 | 98.3M/181M [00:06&lt;00:03, 21.5MB/s]
+
+ 56%|█████████████████████▊                 | 101M/181M [00:06&lt;00:03, 20.7MB/s]
+
+ 58%|██████████████████████▌                | 105M/181M [00:06&lt;00:03, 24.0MB/s]
+
+ 59%|███████████████████████▏               | 107M/181M [00:06&lt;00:03, 21.7MB/s]
+
+ 61%|███████████████████████▌               | 110M/181M [00:06&lt;00:03, 19.8MB/s]
+
+ 63%|████████████████████████▍              | 114M/181M [00:07&lt;00:03, 20.7MB/s]
+
+ 65%|█████████████████████████▎             | 117M/181M [00:07&lt;00:02, 24.8MB/s]
+
+ 66%|█████████████████████████▉             | 120M/181M [00:07&lt;00:02, 22.7MB/s]
+
+ 68%|██████████████████████████▍            | 123M/181M [00:07&lt;00:02, 20.7MB/s]
+
+ 69%|██████████████████████████▉            | 125M/181M [00:07&lt;00:02, 21.0MB/s]
+
+ 70%|███████████████████████████▎           | 127M/181M [00:07&lt;00:02, 19.8MB/s]
+
+ 72%|████████████████████████████           | 130M/181M [00:07&lt;00:02, 20.4MB/s]
+
+ 74%|████████████████████████████▊          | 134M/181M [00:07&lt;00:02, 22.8MB/s]
+
+ 75%|█████████████████████████████▎         | 136M/181M [00:08&lt;00:02, 20.9MB/s]
+
+ 77%|█████████████████████████████▊         | 139M/181M [00:08&lt;00:02, 20.0MB/s]
+
+ 79%|██████████████████████████████▋        | 143M/181M [00:08&lt;00:01, 20.8MB/s]
+
+ 81%|███████████████████████████████▌       | 147M/181M [00:08&lt;00:01, 21.3MB/s]
+
+ 83%|████████████████████████████████▍      | 151M/181M [00:08&lt;00:01, 25.0MB/s]
+
+ 85%|█████████████████████████████████      | 153M/181M [00:08&lt;00:01, 22.9MB/s]
+
+ 86%|█████████████████████████████████▌     | 156M/181M [00:08&lt;00:01, 22.4MB/s]
+
+ 87%|██████████████████████████████████     | 158M/181M [00:09&lt;00:01, 22.7MB/s]
+
+ 89%|██████████████████████████████████▌    | 160M/181M [00:09&lt;00:00, 21.0MB/s]
+
+ 90%|███████████████████████████████████    | 163M/181M [00:09&lt;00:00, 18.5MB/s]
+
+ 92%|███████████████████████████████████▋   | 166M/181M [00:09&lt;00:00, 19.5MB/s]
+
+ 94%|████████████████████████████████████▌  | 170M/181M [00:09&lt;00:00, 22.1MB/s]
+
+ 95%|█████████████████████████████████████  | 172M/181M [00:09&lt;00:00, 22.0MB/s]
+
+ 96%|█████████████████████████████████████▌ | 174M/181M [00:09&lt;00:00, 20.1MB/s]
+
+ 98%|██████████████████████████████████████▎| 178M/181M [00:09&lt;00:00, 23.7MB/s]
+
+100%|██████████████████████████████████████▊| 180M/181M [00:10&lt;00:00, 21.6MB/s]
+
+  0%|                                               | 0.00/181M [00:00&lt;?, ?B/s]
+100%|████████████████████████████████████████| 181M/181M [00:00&lt;00:00, 719GB/s]
+/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 298 events (all good), 0 – 0.5 s (baseline off), ~34.9 MB, data loaded,
+ &#39;easy&#39;: 149
+ &#39;diff&#39;: 149&gt;
+  warn(f&quot;warnEpochs {epochs}&quot;)
+/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 298 events (all good), 0 – 0.5 s (baseline off), ~34.9 MB, data loaded,
+ &#39;easy&#39;: 149
+ &#39;diff&#39;: 149&gt;
+  warn(f&quot;warnEpochs {epochs}&quot;)
+2025-02-17 10:03:22,550 INFO MainThread moabb.evaluations.base Xdawn+Cov+TS+LDA | Hinss2021 | 1 | 1: Score 0.712
+2025-02-17 10:03:23,024 INFO MainThread moabb.evaluations.base Xdawn+Cov+TS+LDA | Hinss2021 | 1 | 2: Score 0.473
+2025-02-17 10:03:24,901 INFO MainThread moabb.evaluations.base Cov+ElSel+TS+LDA | Hinss2021 | 1 | 1: Score 0.597
+2025-02-17 10:03:26,785 INFO MainThread moabb.evaluations.base Cov+ElSel+TS+LDA | Hinss2021 | 1 | 2: Score 0.791
+2025-02-17 10:03:27,307 INFO MainThread moabb.evaluations.base ElSel+Cov+TS+LDA | Hinss2021 | 1 | 1: Score 0.812
+2025-02-17 10:03:27,800 INFO MainThread moabb.evaluations.base ElSel+Cov+TS+LDA | Hinss2021 | 1 | 2: Score 0.747
+
+Hinss2021-CrossSession:  50%|#####     | 1/2 [00:23&lt;00:23, 23.83s/it]/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
+/home/runner/work/moabb/moabb/.venv/lib/python3.9/site-packages/urllib3/connectionpool.py:1064: InsecureRequestWarning: Unverified HTTPS request is being made to host &#39;zenodo.org&#39;. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/1.26.x/advanced-usage.html#ssl-warnings
+  warnings.warn(
+
+
+  0%|                                               | 0.00/181M [00:00&lt;?, ?B/s]
+
+  0%|                                    | 1.02k/181M [00:00&lt;9:57:02, 5.05kB/s]
+
+  0%|                                       | 49.2k/181M [00:00&lt;24:34, 123kB/s]
+
+  0%|                                        | 124k/181M [00:00&lt;12:13, 247kB/s]
+
+  0%|                                        | 270k/181M [00:00&lt;06:23, 472kB/s]
+
+  0%|                                        | 564k/181M [00:00&lt;03:18, 911kB/s]
+
+  1%|▏                                     | 1.15M/181M [00:01&lt;01:43, 1.74MB/s]
+
+  1%|▍                                     | 2.35M/181M [00:01&lt;00:51, 3.47MB/s]
+
+  3%|▉                                     | 4.72M/181M [00:01&lt;00:25, 6.87MB/s]
+
+  5%|█▊                                    | 8.45M/181M [00:01&lt;00:14, 11.6MB/s]
+
+  6%|██▍                                   | 11.5M/181M [00:01&lt;00:12, 13.8MB/s]
+
+  8%|██▉                                   | 14.2M/181M [00:01&lt;00:11, 14.6MB/s]
+
+ 10%|███▋                                  | 17.4M/181M [00:02&lt;00:10, 16.0MB/s]
+
+ 11%|████▏                                 | 20.1M/181M [00:02&lt;00:09, 16.3MB/s]
+
+ 13%|████▊                                 | 22.9M/181M [00:02&lt;00:09, 16.5MB/s]
+
+ 14%|█████▌                                | 26.2M/181M [00:02&lt;00:08, 17.6MB/s]
+
+ 16%|██████▏                               | 29.5M/181M [00:02&lt;00:08, 18.4MB/s]
+
+ 18%|██████▊                               | 32.5M/181M [00:02&lt;00:08, 18.3MB/s]
+
+ 20%|███████▌                              | 35.8M/181M [00:03&lt;00:07, 18.8MB/s]
+
+ 21%|████████▏                             | 38.9M/181M [00:03&lt;00:07, 18.9MB/s]
+
+ 23%|████████▉                             | 42.3M/181M [00:03&lt;00:07, 19.3MB/s]
+
+ 25%|█████████▋                            | 45.9M/181M [00:03&lt;00:06, 20.0MB/s]
+
+ 27%|██████████▎                           | 49.3M/181M [00:03&lt;00:06, 20.2MB/s]
+
+ 29%|██████████▉                           | 52.1M/181M [00:03&lt;00:06, 19.2MB/s]
+
+ 31%|███████████▋                          | 55.6M/181M [00:04&lt;00:06, 19.9MB/s]
+
+ 32%|████████████▎                         | 58.6M/181M [00:04&lt;00:06, 19.5MB/s]
+
+ 34%|████████████▉                         | 61.6M/181M [00:04&lt;00:06, 19.1MB/s]
+
+ 36%|█████████████▋                        | 65.2M/181M [00:04&lt;00:05, 19.9MB/s]
+
+ 38%|██████████████▎                       | 67.9M/181M [00:04&lt;00:05, 19.0MB/s]
+
+ 39%|██████████████▉                       | 71.4M/181M [00:04&lt;00:05, 19.6MB/s]
+
+ 41%|███████████████▋                      | 74.8M/181M [00:05&lt;00:05, 20.0MB/s]
+
+ 43%|████████████████▍                     | 78.5M/181M [00:05&lt;00:04, 20.8MB/s]
+
+ 45%|█████████████████▎                    | 82.4M/181M [00:05&lt;00:04, 21.7MB/s]
+
+ 47%|█████████████████▉                    | 85.5M/181M [00:05&lt;00:04, 20.2MB/s]
+
+ 49%|██████████████████▌                   | 88.7M/181M [00:05&lt;00:04, 20.0MB/s]
+
+ 51%|███████████████████▍                  | 92.8M/181M [00:05&lt;00:04, 20.4MB/s]
+
+ 53%|████████████████████▏                 | 96.3M/181M [00:06&lt;00:04, 20.9MB/s]
+
+ 55%|████████████████████▉                 | 99.7M/181M [00:06&lt;00:03, 20.8MB/s]
+
+ 57%|██████████████████████                 | 103M/181M [00:06&lt;00:03, 20.0MB/s]
+
+ 58%|██████████████████████▊                | 106M/181M [00:06&lt;00:03, 19.5MB/s]
+
+ 60%|███████████████████████▍               | 109M/181M [00:06&lt;00:03, 19.2MB/s]
+
+ 62%|████████████████████████               | 112M/181M [00:06&lt;00:03, 19.2MB/s]
+
+ 64%|████████████████████████▊              | 115M/181M [00:07&lt;00:03, 19.2MB/s]
+
+ 65%|█████████████████████████▍             | 118M/181M [00:07&lt;00:03, 18.8MB/s]
+
+ 67%|██████████████████████████             | 121M/181M [00:07&lt;00:03, 19.2MB/s]
+
+ 69%|██████████████████████████▋            | 124M/181M [00:07&lt;00:03, 18.8MB/s]
+
+ 70%|███████████████████████████▍           | 127M/181M [00:07&lt;00:02, 18.8MB/s]
+
+ 72%|████████████████████████████           | 130M/181M [00:07&lt;00:02, 18.6MB/s]
+
+ 74%|████████████████████████████▋          | 133M/181M [00:08&lt;00:02, 19.0MB/s]
+
+ 75%|█████████████████████████████▍         | 136M/181M [00:08&lt;00:02, 18.9MB/s]
+
+ 77%|██████████████████████████████         | 140M/181M [00:08&lt;00:02, 19.0MB/s]
+
+ 79%|██████████████████████████████▊        | 143M/181M [00:08&lt;00:01, 20.1MB/s]
+
+ 81%|███████████████████████████████▌       | 147M/181M [00:08&lt;00:01, 20.0MB/s]
+
+ 83%|████████████████████████████████▏      | 149M/181M [00:08&lt;00:01, 19.4MB/s]
+
+ 85%|████████████████████████████████▉      | 153M/181M [00:09&lt;00:01, 20.0MB/s]
+
+ 86%|█████████████████████████████████▋     | 156M/181M [00:09&lt;00:01, 20.1MB/s]
+
+ 88%|██████████████████████████████████▎    | 159M/181M [00:09&lt;00:01, 19.2MB/s]
+
+ 90%|███████████████████████████████████    | 163M/181M [00:09&lt;00:00, 19.8MB/s]
+
+ 91%|███████████████████████████████████▋   | 166M/181M [00:09&lt;00:00, 19.5MB/s]
+
+ 93%|████████████████████████████████████▍  | 169M/181M [00:09&lt;00:00, 20.0MB/s]
+
+ 95%|█████████████████████████████████████▏ | 173M/181M [00:10&lt;00:00, 20.3MB/s]
+
+ 97%|█████████████████████████████████████▊ | 176M/181M [00:10&lt;00:00, 19.7MB/s]
+
+ 99%|██████████████████████████████████████▌| 179M/181M [00:10&lt;00:00, 19.9MB/s]
+
+  0%|                                               | 0.00/181M [00:00&lt;?, ?B/s]
+100%|████████████████████████████████████████| 181M/181M [00:00&lt;00:00, 676GB/s]
+/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 298 events (all good), 0 – 0.5 s (baseline off), ~34.9 MB, data loaded,
+ &#39;easy&#39;: 149
+ &#39;diff&#39;: 149&gt;
+  warn(f&quot;warnEpochs {epochs}&quot;)
+/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:279: UserWarning: warnEpochs &lt;Epochs | 298 events (all good), 0 – 0.5 s (baseline off), ~34.9 MB, data loaded,
+ &#39;easy&#39;: 149
+ &#39;diff&#39;: 149&gt;
+  warn(f&quot;warnEpochs {epochs}&quot;)
+2025-02-17 10:03:46,343 INFO MainThread moabb.evaluations.base Xdawn+Cov+TS+LDA | Hinss2021 | 2 | 1: Score 0.712
+2025-02-17 10:03:46,807 INFO MainThread moabb.evaluations.base Xdawn+Cov+TS+LDA | Hinss2021 | 2 | 2: Score 0.738
+2025-02-17 10:03:48,846 INFO MainThread moabb.evaluations.base Cov+ElSel+TS+LDA | Hinss2021 | 2 | 1: Score 0.773
+2025-02-17 10:03:50,797 INFO MainThread moabb.evaluations.base Cov+ElSel+TS+LDA | Hinss2021 | 2 | 2: Score 0.920
+2025-02-17 10:03:51,319 INFO MainThread moabb.evaluations.base ElSel+Cov+TS+LDA | Hinss2021 | 2 | 1: Score 0.757
+2025-02-17 10:03:51,814 INFO MainThread moabb.evaluations.base ElSel+Cov+TS+LDA | Hinss2021 | 2 | 2: Score 0.786
+
+Hinss2021-CrossSession: 100%|##########| 2/2 [00:47&lt;00:00, 23.94s/it]
+Hinss2021-CrossSession: 100%|##########| 2/2 [00:47&lt;00:00, 23.92s/it]
 </pre></div>
 </div>
 <p>Here, with the ElSel+Cov+TS+LDA pipeline, we reduce the computation time
@@ -789,9 +1106,9 @@ in approximately 8 times to the Cov+ElSel+TS+LDA pipeline.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Averaging the session performance:
                      score      time
 pipeline
-Cov+ElSel+TS+LDA  0.770303  1.749008
-ElSel+Cov+TS+LDA  0.736622  0.399847
-Xdawn+Cov+TS+LDA  0.658810  0.310156
+Cov+ElSel+TS+LDA  0.770303  1.782743
+ElSel+Cov+TS+LDA  0.775472  0.366166
+Xdawn+Cov+TS+LDA  0.658810  0.322670
 </pre></div>
 </div>
 </section>
@@ -828,8 +1145,8 @@ Xdawn+Cov+TS+LDA  0.658810  0.310156
 <li><p>Electrode selection strategy based on covariance matrices demonstrates less variability and typically yields better performance.</p></li>
 <li><p>However, this strategy is more time-consuming compared to the simpler electrode selection based on time epoch data.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.795 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  24 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  49.275 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  484 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-hinss2021-classification-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/63b412797a45350b72c090ea95e36ee8/plot_Hinss2021_classification.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_Hinss2021_classification.py</span></code></a></p>
