@@ -40,7 +40,6 @@ class BaseCastillos2023(BaseDataset):
         self.n_channels = 32
         self.window_size = window_size
 
-
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject."""
         file_path_list = self.data_path(subject, self.paradigm_type)
@@ -333,7 +332,7 @@ class CastillosBurstVEP100(BaseCastillos2023):
 
     """
 
-    def __init__(self,window_size=0.25):
+    def __init__(self, window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
@@ -389,7 +388,7 @@ class CastillosBurstVEP40(BaseCastillos2023):
 
     """
 
-    def __init__(self,window_size=0.25):
+    def __init__(self, window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
@@ -444,7 +443,7 @@ class CastillosCVEP100(BaseCastillos2023):
 
     """
 
-    def __init__(self,window_size=0.25):
+    def __init__(self, window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
@@ -500,7 +499,7 @@ class CastillosCVEP40(BaseCastillos2023):
 
     """
 
-    def __init__(self,window_size=0.25):
+    def __init__(self, window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
