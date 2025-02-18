@@ -84,6 +84,7 @@ class Rodrigues2017(BaseDataset):
             paradigm="rstate",
             doi="https://doi.org/10.5281/zenodo.2348892",
         )
+        self.event_id = dict(closed=1, open=2)
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
@@ -117,7 +118,11 @@ class Rodrigues2017(BaseDataset):
             "stim",
         ]
         chtypes = ["eeg"] * 16 + ["stim"]
-        X = np.concatenate([S, stim[:, None]], axis=1).T
+        X = np.concatenate([S * 1e-6, stim[:, None]], axis=1).T
+
+        # Important to convert to mne-bids format.
+        # Convert to micro volts, as default of MNE-BIDS is
+        # micro volts.
 
         info = mne.create_info(
             ch_names=chnames, sfreq=512, ch_types=chtypes, verbose=False

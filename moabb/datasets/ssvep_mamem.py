@@ -130,7 +130,7 @@ class BaseMAMEM(BaseDataset):
                     labels = m["labels"]
                 else:
                     labels = None
-                eeg = mamem_event(m["eeg"], m["DIN_1"], labels=labels)
+                eeg = mamem_event(m["eeg"] * 1e-6, m["DIN_1"], labels=labels)
                 montage = make_standard_montage("GSN-HydroCel-256")
             ch_types = ["eeg"] * (len(ch_names) - 1) + ["stim"]
             info = create_info(ch_names, sfreq, ch_types)

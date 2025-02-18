@@ -240,12 +240,12 @@ def _read_raw_llp_study_data(vhdr_fname, raw_slice_offset, verbose=None):
     """
     non_scalp_channels = ["EOGvu", "x_EMGl", "x_GSR", "x_Respi", "x_Pulse", "x_Optic"]
     raw_bvr = mne.io.read_raw_brainvision(
-        vhdr_fname=vhdr_fname,  # eog='EOGvu',
+        vhdr_fname=vhdr_fname,
         misc=non_scalp_channels,
         preload=True,
         verbose=verbose,
     )  # type: mne.io.Raw
-    raw_bvr.set_montage("standard_1020")
+    raw_bvr = raw_bvr.set_montage("standard_1020")
 
     events = _parse_events(raw_bvr)
 

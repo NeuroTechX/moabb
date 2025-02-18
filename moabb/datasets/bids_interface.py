@@ -152,12 +152,15 @@ class BIDSInterfaceBase(abc.ABC):
     def erase(self):
         """Erase the cache of the subject if it exists."""
         log.info("Starting erasing cache of %s...", repr(self))
+
         path = mne_bids.BIDSPath(
             root=self.root,
             subject=subject_moabb_to_bids(self.subject),
             description=self.desc,
+            extension=".eeg",
             check=False,
         )
+
         path.rm(safe_remove=False)
         log.info("Finished erasing cache of %s.", repr(self))
 
@@ -352,7 +355,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
             format="EDF",
             allow_preload=True,
             montage=raw.get_montage(),
-            overwrite=False,
+            overwrite=True,
             verbose=self.verbose,
         )
 

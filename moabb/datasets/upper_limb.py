@@ -102,6 +102,9 @@ class Ofner2017(BaseDataset):
                 raw = read_raw_gdf(
                     path, eog=eog, misc=range(64, 96), preload=True, verbose="ERROR"
                 )
+                # convert the unit to microvolt
+                raw._data *= 1e-6
+
                 raw.set_montage(montage)
                 # there is nan in the data
                 raw._data[np.isnan(raw._data)] = 0
@@ -144,7 +147,6 @@ class Ofner2017(BaseDataset):
         else:
             sessions = [session]
 
-        # FIXME check the value are in V and not uV.
         for session in sessions:
             for run in range(1, 11):
                 url = (
