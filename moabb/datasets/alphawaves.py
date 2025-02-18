@@ -84,7 +84,6 @@ class Rodrigues2017(BaseDataset):
             paradigm="rstate",
             doi="https://doi.org/10.5281/zenodo.2348892",
         )
-        self.event_id = dict(closed=1, open=2)
 
     def _get_single_subject_data(self, subject):
         """return data for a single subject"""
