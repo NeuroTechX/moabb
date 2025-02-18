@@ -33,7 +33,8 @@ Bugs
 - Making the download test work again (:gh:`693` by `Bruno Aristimunha`_)
 - Fix the EpochSelectChannel that caused incorrect channel selection in `example <examples/plot_Hinss2021_classification.py>` (:gh:`685` by `AFF`)
 - Fixing the logger on the Stieger2021 and Wang2016 dataset (:gh:`693` by `Bruno Aristimunha`_)
-- Change the way of creating the path to the folder (by `Sebastien Velut`_)
+- Change the way of creating the path to the folder (:gh:`697` by `Sebastien Velut`_)
+- Fixing the dataset details for bids conversion (:gh:`698` by `Bruno Aristimunha`_)
 
 API changes
 ~~~~~~~~~~~
