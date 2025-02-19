@@ -120,7 +120,7 @@ class BaseMAMEM(BaseDataset):
                 ch_names = [e[0] for e in m["info"][0, 0][9][0]]
                 sfreq = 128
                 montage = make_standard_montage("standard_1020")
-                eeg = m["eeg"]
+                eeg = m["eeg"] * 1e-6
             else:
                 m = loadmat(fpath, squeeze_me=True)
                 ch_names = [f"E{i + 1}" for i in range(0, 256)]
@@ -130,7 +130,7 @@ class BaseMAMEM(BaseDataset):
                     labels = m["labels"]
                 else:
                     labels = None
-                eeg = mamem_event(m["eeg"], m["DIN_1"], labels=labels)
+                eeg = mamem_event(m["eeg"] * 1e-6, m["DIN_1"], labels=labels)
                 montage = make_standard_montage("GSN-HydroCel-256")
             ch_types = ["eeg"] * (len(ch_names) - 1) + ["stim"]
             info = create_info(ch_names, sfreq, ch_types)
