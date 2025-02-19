@@ -95,6 +95,7 @@ class BaseMAMEM(BaseDataset):
             code=code,
             doi=doi,
         )
+        self.event_id = events
         self.figshare_id = figshare_id
 
     def _get_single_subject_data(self, subject):
@@ -120,7 +121,7 @@ class BaseMAMEM(BaseDataset):
                 ch_names = [e[0] for e in m["info"][0, 0][9][0]]
                 sfreq = 128
                 montage = make_standard_montage("standard_1020")
-                eeg = m["eeg"]
+                eeg = m["eeg"] * 1e-6
             else:
                 m = loadmat(fpath, squeeze_me=True)
                 ch_names = [f"E{i + 1}" for i in range(0, 256)]
