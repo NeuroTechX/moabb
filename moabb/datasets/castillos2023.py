@@ -44,8 +44,7 @@ class BaseCastillos2023(BaseDataset):
         """Return the data of a single subject."""
         file_path_list = self.data_path(subject, self.paradigm_type)
         raw = mne.io.read_raw_eeglab(file_path_list[0], preload=True, verbose=False)
-        montage = mne.channels.make_standard_montage("standard_1020")
-        raw.set_montage(montage)
+
         # Strip the annotations that were script to make them easier to process
         events, event_id = mne.events_from_annotations(
             raw, event_id="auto", verbose=False

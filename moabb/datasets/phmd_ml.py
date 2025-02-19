@@ -95,7 +95,7 @@ class Cattan2019_PHMD(BaseDataset):
         S = data["data"][:, first_channel:last_channel]
         stim = data["data"][:, -1]
 
-        X = np.concatenate([S * 1e-6, stim[:, None]], axis=1).T
+        X = np.concatenate([S, stim[:, None]], axis=1).T
 
         info = mne.create_info(
             ch_names=self._chnames, sfreq=512, ch_types=self._chtypes, verbose=False

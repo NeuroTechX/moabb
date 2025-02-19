@@ -117,11 +117,7 @@ class Rodrigues2017(BaseDataset):
             "stim",
         ]
         chtypes = ["eeg"] * 16 + ["stim"]
-        X = np.concatenate([S * 1e-6, stim[:, None]], axis=1).T
-
-        # Important to convert to mne-bids format.
-        # Convert to micro volts, as default of MNE-BIDS is
-        # micro volts.
+        X = np.concatenate([S, stim[:, None]], axis=1).T
 
         info = mne.create_info(
             ch_names=chnames, sfreq=512, ch_types=chtypes, verbose=False

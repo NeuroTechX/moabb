@@ -102,8 +102,6 @@ class Ofner2017(BaseDataset):
                 raw = read_raw_gdf(
                     path, eog=eog, misc=range(64, 96), preload=True, verbose="ERROR"
                 )
-                # convert the unit to microvolt
-                raw._data *= 1e-6
 
                 raw.set_montage(montage)
                 # there is nan in the data
@@ -136,7 +134,7 @@ class Ofner2017(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         paths = []
-
+        # FIXME check the value are in V and not uV.
         if session is None:
             sessions = []
             if self.imagined:
