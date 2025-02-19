@@ -133,6 +133,7 @@ class Ofner2017(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         paths = []
+
         if session is None:
             sessions = []
             if self.imagined:
@@ -142,6 +143,7 @@ class Ofner2017(BaseDataset):
                 sessions.append("execution")
         else:
             sessions = [session]
+
         # FIXME check the value are in V and not uV.
         for session in sessions:
             for run in range(1, 11):
