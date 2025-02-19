@@ -33,7 +33,9 @@ Bugs
 - Improving the CI (:gh:`686` by `Bruno Aristimunha`_)
 - Making the download test work again (:gh:`693` by `Bruno Aristimunha`_)
 - Fix the EpochSelectChannel that caused incorrect channel selection in `example <examples/plot_Hinss2021_classification.py>` (:gh:`685` by `AFF`)
-- Fixing the logger on the Stieger2021 and Wang2016 dataset (:gh:`693` by `Bruno Aristimunha`_)
+- Fixing the logger on the Stieger2021 and Wang2016 dataset (:gh:`693` by `Bruno Aristimunha`_
+- Fixing bug with braindecode and moabb datasets EPFLP300 (:gh:`696` by `Bruno Aristimunha`_)
+- Change the way of creating the path to the folder (by `Sebastien Velut`_)
 
 API changes
 ~~~~~~~~~~~
@@ -48,6 +50,7 @@ Enhancements
 - Add scripts to upload results on PapersWithCode (:gh:`561` by `Pierre Guetschel`_)
 - Centralize dataset summary tables in CSV files (:gh:`635` by `Pierre Guetschel`_)
 - Add new dataset :class:`moabb.datasets.Liu2024` dataset (:gh:`619` by `Taha Habib`_)
+- Add choice to choose the size of time window (by `Sebastien Velut`_)
 
 
 Bugs
