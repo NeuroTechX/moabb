@@ -102,7 +102,6 @@ class Ofner2017(BaseDataset):
                 raw = read_raw_gdf(
                     path, eog=eog, misc=range(64, 96), preload=True, verbose="ERROR"
                 )
-
                 raw.set_montage(montage)
                 # there is nan in the data
                 raw._data[np.isnan(raw._data)] = 0
@@ -134,7 +133,6 @@ class Ofner2017(BaseDataset):
             raise (ValueError("Invalid subject number"))
 
         paths = []
-        # FIXME check the value are in V and not uV.
         if session is None:
             sessions = []
             if self.imagined:
@@ -144,7 +142,7 @@ class Ofner2017(BaseDataset):
                 sessions.append("execution")
         else:
             sessions = [session]
-
+        # FIXME check the value are in V and not uV.
         for session in sessions:
             for run in range(1, 11):
                 url = (
