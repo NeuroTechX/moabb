@@ -1,7 +1,8 @@
-import numpy as np
 import pytest
-from sklearn.model_selection import StratifiedKFold
+
+import numpy as np
 from sklearn.utils import check_random_state
+from sklearn.model_selection import StratifiedKFold, TimeSeriesSplit
 
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations.splitters import WithinSessionSplitter
@@ -45,7 +46,7 @@ def eval_split_within_session(shuffle, random_state):
 
 @pytest.mark.parametrize("shuffle", [True, False])
 @pytest.mark.parametrize("random_state", [0, 42])
-def test_within_session_compatibilil(shuffle, random_state):
+def test_within_session_compatibility(shuffle, random_state):
     X, y, metadata = paradigm.get_data(dataset=dataset)
 
     split = WithinSessionSplitter(n_folds=5, shuffle=shuffle, random_state=random_state)
@@ -71,3 +72,17 @@ def test_is_shuffling():
         # Check if the output is the same as the input
         assert not np.array_equal(train, train_shuffle)
         assert not np.array_equal(test, test_shuffle)
+
+
+@pytest.mark.parametrize("cv_class", [StratifiedKFold, TimeSeriesSplit])
+def test_custom_inner_cv(cv_class):
+    X, y, metadata = paradigm.get_data(dataset=dataset)
+
+    split = WithinSessionSplitter(
+        n_folds=5, shuffle=False, cv_class=TimeSeriesSplit,
+        max_train_size=2
+    )
+
+    for train, test in split.split(y, metadata):
+        # Check if the output is the same as the input
+        print(train, test)
