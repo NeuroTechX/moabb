@@ -1,22 +1,10 @@
 """Tests to ensure that datasets download correctly using pytest."""
 
-import os
-import sys
-
 import mne
 import pytest
 
 from moabb.datasets.bbci_eeg_fnirs import BaseShin2017
 from moabb.datasets.utils import dataset_list
-
-
-# If the file's own basename is not explicitly passed in sys.argv,
-# skip the tests. This means if you run "pytest" from the root, the tests are skipped.
-if not any(os.path.basename(arg) == os.path.basename(__file__) for arg in sys.argv):
-    pytest.skip(
-        "Skipping download tests by default. Run this file directly (e.g., pytest download.py) to execute these tests.",
-        allow_module_level=True,
-    )
 
 
 def _get_events(raw):
@@ -30,7 +18,7 @@ def _get_events(raw):
 
 
 @pytest.mark.parametrize("dataset", dataset_list)
-def test_dataset_download(dataset):
+def test_dataset_download(dl_data, dataset):
     """
     Test that a dataset downloads and returns data with the correct structure.
 
@@ -43,6 +31,12 @@ def test_dataset_download(dataset):
     - Each session contains runs that are dicts and each run is a valid MNE Raw object
       that contains at least one event.
     """
+    if not dl_data:
+        pytest.skip(
+            "Skipping download tests by default. "
+            "Run the test with option --dl-data to execute these tests."
+        )
+
     # Some datasets (e.g., BaseShin2017) require explicit acceptance of terms.
     if isinstance(dataset(), BaseShin2017):
         obj = dataset(accept=True)
