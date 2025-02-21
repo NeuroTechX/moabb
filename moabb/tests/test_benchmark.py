@@ -1,6 +1,7 @@
 import shutil
-import pytest
 from pathlib import Path
+
+import pytest
 
 from moabb import benchmark
 from moabb.datasets.fake import FakeDataset

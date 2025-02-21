@@ -1,5 +1,4 @@
 import pytest
-
 from sklearn.utils.validation import NotFittedError, check_is_fitted
 
 from moabb.datasets.fake import FakeDataset

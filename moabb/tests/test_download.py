@@ -1,4 +1,5 @@
 """Tests to ensure that datasets download correctly using pytest."""
+
 import mne
 import pytest
 

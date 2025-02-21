@@ -3,8 +3,9 @@ import pytest
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--dl-data", action="store_true",
-        help="Run the download tests. This requires an internet connection and can take a long time."
+        "--dl-data",
+        action="store_true",
+        help="Run the download tests. This requires an internet connection and can take a long time.",
     )
 
 

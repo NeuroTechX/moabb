@@ -17,9 +17,9 @@ from moabb.analysis.results import get_string_rep
 from moabb.datasets.compound_dataset import compound
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import evaluations as ev
+from moabb.evaluations.base import optuna_available
 from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
-from moabb.evaluations.base import optuna_available
 
 
 try:
@@ -266,7 +266,8 @@ class TestWithinSessLearningCurve:
         )
         with pytest.raises(ValueError):
             ev.WithinSessionEvaluation(
-                data_size={"policy": "does_not_exist", "value": [0.2, 0.5]}, **kwargs,
+                data_size={"policy": "does_not_exist", "value": [0.2, 0.5]},
+                **kwargs,
             )
 
     @pytest.mark.skip(reason="This test is not working")
@@ -448,18 +449,10 @@ class UtilEvaluation:
         save_model_cv(model, save_path, cv_index)
 
         # Assert that the saved model files exist
-        assert os.path.isfile(
-            os.path.join(save_path, "step_fitted_0_model.pkl")
-        )
-        assert os.path.isfile(
-            os.path.join(save_path, "step_fitted_0_optim.pkl")
-        )
-        assert os.path.isfile(
-            os.path.join(save_path, "step_fitted_0_history.json")
-        )
-        assert os.path.isfile(
-            os.path.join(save_path, "step_fitted_0_criterion.pkl")
-        )
+        assert os.path.isfile(os.path.join(save_path, "step_fitted_0_model.pkl"))
+        assert os.path.isfile(os.path.join(save_path, "step_fitted_0_optim.pkl"))
+        assert os.path.isfile(os.path.join(save_path, "step_fitted_0_history.json"))
+        assert os.path.isfile(os.path.join(save_path, "step_fitted_0_criterion.pkl"))
 
     def test_save_model_list_with_multiple_models(self):
         model1 = Dummy()
