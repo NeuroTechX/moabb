@@ -1,3 +1,5 @@
+import inspect
+
 from sklearn.model_selection import BaseCrossValidator, StratifiedKFold
 from sklearn.utils import check_random_state
 
@@ -45,9 +47,15 @@ class WithinSessionSplitter(BaseCrossValidator):
         self.n_folds = n_folds
         self.shuffle = shuffle
         self.cv_kwargs = cv_kwargs
+        self._cv_kwargs = dict(**cv_kwargs)
 
         self.random_state = random_state
-        self._rng = check_random_state(random_state)
+        self._rng = check_random_state(random_state) if shuffle else None
+
+        params = inspect.signature(self.cv_class).parameters
+        for p, v in [("n_splits", n_folds), ("shuffle", shuffle), ('random_state', self._rng)]:
+            if p in params:
+                self._cv_kwargs[p] = v
 
     def get_n_splits(self, metadata):
         num_sessions_subjects = metadata.groupby(["subject", "session"]).ngroups
@@ -78,12 +86,7 @@ class WithinSessionSplitter(BaseCrossValidator):
                 y_session = y_subject[session_mask]
 
                 # Instanciate a new internal splitter for each session
-                splitter = self.cv_class(
-                    n_splits=self.n_folds,
-                    shuffle=self.shuffle,
-                    **self.cv_kwargs,
-                    random_state=self._rng,
-                )
+                splitter = self.cv_class(**self._cv_kwargs)
 
                 # Split using the current instance of StratifiedKFold by default
                 for train_ix, test_ix in splitter.split(indices, y_session):

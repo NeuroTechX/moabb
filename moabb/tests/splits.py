@@ -20,6 +20,8 @@ def eval_split_within_session(shuffle, random_state):
     X, y, metadata = paradigm.get_data(dataset=dataset)
     all_index = metadata.index.values
     subjects = metadata["subject"].unique()
+    if shuffle:
+        rng.shuffle(subjects)
 
     for i, subject in enumerate(subjects):
         subject_mask = metadata["subject"] == subject
@@ -44,8 +46,9 @@ def eval_split_within_session(shuffle, random_state):
                 yield indices[idx_train], indices[idx_test]
 
 
-@pytest.mark.parametrize("shuffle", [True, False])
-@pytest.mark.parametrize("random_state", [0, 42])
+@pytest.mark.parametrize("shuffle, random_state", [
+    (True, 0), (True, 42), (False, None)
+])
 def test_within_session_compatibility(shuffle, random_state):
     X, y, metadata = paradigm.get_data(dataset=dataset)
 
@@ -74,15 +77,12 @@ def test_is_shuffling():
         assert not np.array_equal(test, test_shuffle)
 
 
-@pytest.mark.parametrize("cv_class", [StratifiedKFold, TimeSeriesSplit])
-def test_custom_inner_cv(cv_class):
+def test_custom_inner_cv():
     X, y, metadata = paradigm.get_data(dataset=dataset)
 
-    split = WithinSessionSplitter(
-        n_folds=5, shuffle=False, cv_class=TimeSeriesSplit,
-        max_train_size=2
-    )
+    split = WithinSessionSplitter(cv_class=TimeSeriesSplit, max_train_size=2)
 
     for train, test in split.split(y, metadata):
         # Check if the output is the same as the input
-        print(train, test)
+        assert len(train) == 2
+        assert len(test) == 20
