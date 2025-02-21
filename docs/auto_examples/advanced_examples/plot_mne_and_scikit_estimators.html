@@ -519,6 +519,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.evaluations.WithinSessionEvaluation.html">moabb.evaluations.WithinSessionEvaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.evaluations.CrossSessionEvaluation.html">moabb.evaluations.CrossSessionEvaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.evaluations.CrossSubjectEvaluation.html">moabb.evaluations.CrossSubjectEvaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.evaluations.WithinSessionSplitter.html">moabb.evaluations.WithinSessionSplitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.evaluations.base.BaseEvaluation.html">moabb.evaluations.base.BaseEvaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.MotorImagery.html">moabb.paradigms.MotorImagery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../generated/moabb.paradigms.LeftRightImagery.html">moabb.paradigms.LeftRightImagery</a></li>
@@ -799,7 +800,7 @@ ROC-AUC metric.</p>
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:06,  3.41s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:07,  3.53s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -812,7 +813,7 @@ BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:06,  3.41s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.10s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.17s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -825,8 +826,8 @@ BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.10s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.63s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.52s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.72s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.61s/it]
 </pre></div>
 </div>
 </section>
@@ -868,7 +869,7 @@ then apply a logistic regression.</p>
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:07,  3.64s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:07,  3.81s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -881,7 +882,7 @@ BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:03&lt;00:07,  3.64s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.16s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.31s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -894,8 +895,8 @@ BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:06&lt;00:03,  3.16s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.67s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:10&lt;00:00,  3.58s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:11&lt;00:00,  3.79s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:11&lt;00:00,  3.71s/it]
 </pre></div>
 </div>
 </section>
@@ -932,7 +933,7 @@ on the tangent space and classified with a logistic regression.</p>
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:05&lt;00:10,  5.23s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:05&lt;00:10,  5.39s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -945,7 +946,7 @@ BNCI2014-009-CrossSession:  33%|###3      | 1/3 [00:05&lt;00:10,  5.23s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:10&lt;00:05,  5.14s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
+BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:10&lt;00:05,  5.27s/it]/home/runner/work/moabb/moabb/moabb/datasets/preprocessing.py:278: UserWarning: warnEpochs &lt;Epochs | 576 events (all good), 0 – 0.801 s (baseline off), ~14.5 MB, data loaded,
  &#39;Target&#39;: 96
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
@@ -958,8 +959,8 @@ BNCI2014-009-CrossSession:  67%|######6   | 2/3 [00:10&lt;00:05,  5.14s/it]/home
  &#39;NonTarget&#39;: 480&gt;
   warn(f&quot;warnEpochs {epochs}&quot;)
 
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:15&lt;00:00,  5.11s/it]
-BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:15&lt;00:00,  5.13s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:15&lt;00:00,  5.22s/it]
+BNCI2014-009-CrossSession: 100%|##########| 3/3 [00:15&lt;00:00,  5.24s/it]
 </pre></div>
 </div>
 </section>
@@ -986,7 +987,7 @@ differences between pipelines.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  45.571 seconds)</p>
+<img src="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" srcset="../../_images/sphx_glr_plot_mne_and_scikit_estimators_002.png" alt="Algorithm comparison" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  47.173 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  360 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-mne-and-scikit-estimators-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
