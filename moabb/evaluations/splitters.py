@@ -39,7 +39,7 @@ class WithinSessionSplitter(BaseCrossValidator):
         self,
         n_folds: int = 5,
         shuffle: bool = True,
-        random_state: int = 42,
+        random_state: int = None,
         cv_class: type[BaseCrossValidator] = StratifiedKFold,
         **cv_kwargs: dict,
     ):
@@ -52,6 +52,11 @@ class WithinSessionSplitter(BaseCrossValidator):
         self.random_state = random_state
         self._rng = check_random_state(random_state) if shuffle else None
 
+        if not shuffle and random_state is not None:
+            raise ValueError("random_state should be None when shuffle is False")
+
+        # Create a dictionary of parameters by adding arguments only if they
+        # are part of the inner cross-validation strategy's signature
         params = inspect.signature(self.cv_class).parameters
         for p, v in [("n_splits", n_folds), ("shuffle", shuffle), ('random_state', self._rng)]:
             if p in params:

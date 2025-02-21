@@ -80,6 +80,7 @@ def test_is_shuffling():
 def test_custom_inner_cv():
     X, y, metadata = paradigm.get_data(dataset=dataset)
 
+    # Use a custom inner cv
     split = WithinSessionSplitter(cv_class=TimeSeriesSplit, max_train_size=2)
 
     for train, test in split.split(y, metadata):
