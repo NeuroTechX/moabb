@@ -58,7 +58,11 @@ class WithinSessionSplitter(BaseCrossValidator):
         # Create a dictionary of parameters by adding arguments only if they
         # are part of the inner cross-validation strategy's signature
         params = inspect.signature(self.cv_class).parameters
-        for p, v in [("n_splits", n_folds), ("shuffle", shuffle), ('random_state', self._rng)]:
+        for p, v in [
+            ("n_splits", n_folds),
+            ("shuffle", shuffle),
+            ("random_state", self._rng),
+        ]:
             if p in params:
                 self._cv_kwargs[p] = v
 

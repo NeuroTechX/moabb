@@ -1,8 +1,7 @@
-import pytest
-
 import numpy as np
-from sklearn.utils import check_random_state
+import pytest
 from sklearn.model_selection import StratifiedKFold, TimeSeriesSplit
+from sklearn.utils import check_random_state
 
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations.splitters import WithinSessionSplitter
@@ -46,9 +45,7 @@ def eval_split_within_session(shuffle, random_state):
                 yield indices[idx_train], indices[idx_test]
 
 
-@pytest.mark.parametrize("shuffle, random_state", [
-    (True, 0), (True, 42), (False, None)
-])
+@pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
 def test_within_session_compatibility(shuffle, random_state):
     X, y, metadata = paradigm.get_data(dataset=dataset)
 
