@@ -94,7 +94,7 @@ class WithinSessionSplitter(BaseCrossValidator):
                 indices = subject_indices[session_mask]
                 y_session = y_subject[session_mask]
 
-                # Instanciate a new internal splitter for each session
+                # Instantiate a new internal splitter for each session
                 splitter = self.cv_class(**self._cv_kwargs)
 
                 # Split using the current instance of StratifiedKFold by default
