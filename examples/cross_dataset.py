@@ -30,7 +30,7 @@ from moabb.paradigms import MotorImagery
 
 # Configure logging
 set_log_level("WARNING")
-logging.getLogger('mne').setLevel(logging.ERROR)
+logging.getLogger("mne").setLevel(logging.ERROR)
 
 
 def get_common_channels(datasets: List[Any]) -> List[str]:
@@ -78,6 +78,7 @@ def create_pipeline(common_channels: List[str]) -> Pipeline:
     Pipeline
         Sklearn pipeline for classification
     """
+
     def raw_to_data(X: np.ndarray) -> np.ndarray:
         """Convert raw MNE data to numpy array format.
 
@@ -91,11 +92,9 @@ def create_pipeline(common_channels: List[str]) -> Pipeline:
         np.ndarray
             Converted data array
         """
-        if hasattr(X, 'get_data'):
+        if hasattr(X, "get_data"):
             picks = mne.pick_channels(
-                X.info['ch_names'],
-                include=common_channels,
-                ordered=True
+                X.info["ch_names"], include=common_channels, ordered=True
             )
             data = X.get_data()
             if data.ndim == 2:
@@ -104,12 +103,14 @@ def create_pipeline(common_channels: List[str]) -> Pipeline:
             return data
         return X
 
-    pipeline = Pipeline([
-        ('to_array', FunctionTransformer(raw_to_data)),
-        ('covariances', Covariances(estimator='oas')),
-        ('csp', CSP(nfilter=4, log=True)),
-        ('classifier', SVC(kernel='rbf', C=0.1))
-    ])
+    pipeline = Pipeline(
+        [
+            ("to_array", FunctionTransformer(raw_to_data)),
+            ("covariances", Covariances(estimator="oas")),
+            ("csp", CSP(nfilter=4, log=True)),
+            ("classifier", SVC(kernel="rbf", C=0.1)),
+        ]
+    )
 
     return pipeline
 
@@ -123,12 +124,7 @@ common_channels = get_common_channels([train_dataset, test_dataset])
 print(f"\nCommon channels across datasets: {common_channels}\n")
 
 # Initialize the paradigm with common channels
-paradigm = MotorImagery(
-    channels=common_channels,
-    n_classes=2,
-    fmin=8,
-    fmax=32
-)
+paradigm = MotorImagery(channels=common_channels, n_classes=2, fmin=8, fmax=32)
 
 # Initialize the CrossDatasetEvaluation
 evaluation = CrossDatasetEvaluation(
@@ -136,28 +132,25 @@ evaluation = CrossDatasetEvaluation(
     train_dataset=train_dataset,
     test_dataset=test_dataset,
     hdf5_path="./res_test",
-    save_model=True
+    save_model=True,
 )
 
 # Run the evaluation
 results = []
 for result in evaluation.evaluate(
-    dataset=None,
-    pipelines={'CSP_SVM': create_pipeline(common_channels)}
+    dataset=None, pipelines={"CSP_SVM": create_pipeline(common_channels)}
 ):
-    result['subject'] = 'all'
+    result["subject"] = "all"
     print(f"Cross-dataset score: {result.get('score', 'N/A'):.3f}")
     results.append(result)
 
 # Convert results to DataFrame and process
 results_df = pd.DataFrame(results)
-results_df['dataset'] = results_df['dataset'].apply(
-    lambda x: x.__class__.__name__
-)
+results_df["dataset"] = results_df["dataset"].apply(lambda x: x.__class__.__name__)
 
 # Print evaluation scores
 print("\nCross-dataset evaluation scores:")
-print(results_df[['dataset', 'score', 'time']])
+print(results_df[["dataset", "score", "time"]])
 
 # Plot the results
 score_plot(results_df)

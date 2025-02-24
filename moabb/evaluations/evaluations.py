@@ -781,6 +781,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
     def is_valid(self, dataset):
         return len(dataset.subject_list) > 1
 
+
 class CrossDatasetEvaluation(BaseEvaluation):
     """Evaluation class for deep learning models across different datasets. Useful for cross-dataset transfer learning.
 
@@ -799,6 +800,7 @@ class CrossDatasetEvaluation(BaseEvaluation):
     **kwargs : dict
         Additional parameters passed to BaseEvaluation (paradigm, n_jobs, etc.)
     """
+
     def __init__(
         self,
         train_dataset,
@@ -806,11 +808,15 @@ class CrossDatasetEvaluation(BaseEvaluation):
         pretrained_model=None,
         fine_tune=True,
         sfreq=128,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
-        self.train_dataset = train_dataset if isinstance(train_dataset, list) else [train_dataset]
-        self.test_dataset = test_dataset if isinstance(test_dataset, list) else [test_dataset]
+        self.train_dataset = (
+            train_dataset if isinstance(train_dataset, list) else [train_dataset]
+        )
+        self.test_dataset = (
+            test_dataset if isinstance(test_dataset, list) else [test_dataset]
+        )
         self.pretrained_model = pretrained_model
         self.fine_tune = fine_tune
         self.sfreq = sfreq
@@ -846,9 +852,7 @@ class CrossDatasetEvaluation(BaseEvaluation):
         train_X, train_y, train_metadata = [], [], []
         for train_ds in self.train_dataset:
             raw, labels, events = self.paradigm.get_data(
-                dataset=train_ds,
-                subjects=train_ds.subject_list,
-                return_epochs=False
+                dataset=train_ds, subjects=train_ds.subject_list, return_epochs=False
             )
 
             if len(events) == 0:
@@ -857,7 +861,7 @@ class CrossDatasetEvaluation(BaseEvaluation):
 
             train_X.append(raw)
             train_y.extend(labels)
-            train_metadata.append({'events': events})
+            train_metadata.append({"events": events})
 
         if not train_X:
             raise ValueError("No valid training data found with events")
@@ -865,9 +869,7 @@ class CrossDatasetEvaluation(BaseEvaluation):
         # Evaluate on test datasets
         for test_ds in self.test_dataset:
             raw, labels, events = self.paradigm.get_data(
-                dataset=test_ds,
-                subjects=test_ds.subject_list,
-                return_epochs=False
+                dataset=test_ds, subjects=test_ds.subject_list, return_epochs=False
             )
 
             if len(events) == 0:
@@ -890,12 +892,12 @@ class CrossDatasetEvaluation(BaseEvaluation):
                     duration = time() - t_start
 
                     result = {
-                        'time': duration,
-                        'dataset': test_ds,
-                        'score': score,
-                        'n_samples': len(test_y),
-                        'pipeline': name,
-                        'training_datasets': [ds.code for ds in self.train_dataset]
+                        "time": duration,
+                        "dataset": test_ds,
+                        "score": score,
+                        "n_samples": len(test_y),
+                        "pipeline": name,
+                        "training_datasets": [ds.code for ds in self.train_dataset],
                     }
 
                     yield result
