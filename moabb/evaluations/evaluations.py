@@ -20,9 +20,8 @@ from tqdm import tqdm
 
 from moabb.evaluations.base import BaseEvaluation
 from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
-from mne.channels import make_standard_montage
-from mne.io.constants import FIFF
-import mne
+
+
 try:
     from codecarbon import EmissionsTracker
 
@@ -783,8 +782,8 @@ class CrossSubjectEvaluation(BaseEvaluation):
         return len(dataset.subject_list) > 1
 
 class CrossDatasetEvaluation(BaseEvaluation):
-    """Evaluation class for deep learning models across datasets.
-    
+    """Evaluation class for deep learning models across different datasets. Useful for cross-dataset transfer learning.
+
     Parameters
     ----------
     train_dataset : Dataset or list of Dataset
@@ -793,10 +792,12 @@ class CrossDatasetEvaluation(BaseEvaluation):
         Dataset(s) to use for testing
     pretrained_model : Optional[BaseEstimator]
         Pre-trained model to use (if None, will train from scratch)
-    fine_tune : bool
+    fine_tune : bool, default=True
         Whether to fine-tune the pretrained model on train_dataset
-    sfreq : float
+    sfreq : float, default=128
         Target sampling frequency for all datasets
+    **kwargs : dict
+        Additional parameters passed to BaseEvaluation (paradigm, n_jobs, etc.)
     """
     def __init__(
         self,
@@ -813,93 +814,81 @@ class CrossDatasetEvaluation(BaseEvaluation):
         self.pretrained_model = pretrained_model
         self.fine_tune = fine_tune
         self.sfreq = sfreq
-        
-        # Validate datasets
+
         self._validate_datasets()
 
     def _validate_datasets(self):
         """Validate compatibility of train and test datasets."""
         all_datasets = self.train_dataset + self.test_dataset
-        
-        # Check paradigm compatibility
+
         for dataset in all_datasets:
             if not self.paradigm.is_valid(dataset):
                 raise ValueError(f"Dataset {dataset.code} not compatible with paradigm")
 
-    def _prepare_data(self, dataset):
-        """Prepare data from a dataset with consistent format."""
-        X, y, metadata = self.paradigm.get_data(
-            dataset=dataset,
-            subjects=dataset.subject_list,
-            return_epochs=True
-        )
-            
-        # Resample if needed
-        if X.info['sfreq'] != self.sfreq:
-            X = X.resample(self.sfreq)
-            
-        return X, y, metadata
+    def evaluate(self, dataset, pipelines):
+        """Evaluate models across datasets.
 
-    def evaluate(self, dataset, pipelines, groups=None, param_grid=None, **kwargs):
-        """Evaluate models across datasets."""
+        Parameters
+        ----------
+        dataset : Dataset
+            Unused but required by interface
+        pipelines : dict
+            Dictionary of pipelines to evaluate
+
+        Yields
+        ------
+        dict
+            Evaluation results containing scores and metadata
+        """
         log.info("Starting cross-dataset evaluation")
-        
+
         # Prepare training data
         train_X, train_y, train_metadata = [], [], []
         for train_ds in self.train_dataset:
-            # Get raw data directly from paradigm
             raw, labels, events = self.paradigm.get_data(
                 dataset=train_ds,
                 subjects=train_ds.subject_list,
                 return_epochs=False
             )
-            
-            # Skip if no events found
+
             if len(events) == 0:
-                log.warning(f"No events found in training dataset {train_ds.code}, skipping...")
+                log.warning(f"No events found in dataset {train_ds.code}, skipping")
                 continue
-            
-            train_X.append(raw)  # Just pass the raw data
+
+            train_X.append(raw)
             train_y.extend(labels)
             train_metadata.append({'events': events})
-        
+
         if not train_X:
             raise ValueError("No valid training data found with events")
-        
-        # For each test dataset
+
+        # Evaluate on test datasets
         for test_ds in self.test_dataset:
-            # Get raw data directly from paradigm
             raw, labels, events = self.paradigm.get_data(
                 dataset=test_ds,
                 subjects=test_ds.subject_list,
                 return_epochs=False
             )
-            
-            # Skip if no events found
+
             if len(events) == 0:
-                log.warning(f"No events found in test dataset {test_ds.code}, skipping...")
+                log.warning(f"No events found in dataset {test_ds.code}, skipping")
                 continue
-            
-            test_X = raw  # Just pass the raw data
+
+            test_X = raw
             test_y = labels
-            
-            # Evaluate each pipeline
+
             for name, pipeline in pipelines.items():
                 if _carbonfootprint:
                     tracker = EmissionsTracker(save_to_file=False, log_level="error")
                     tracker.start()
-                
+
                 t_start = time()
-                
+
                 try:
-                    # Train from scratch
-                    model = clone(pipeline).fit(train_X[0], train_y)  # Use first training dataset
-                    
-                    # Evaluate on test subjects
+                    model = clone(pipeline).fit(train_X[0], train_y)
                     score = model.score(test_X, test_y)
-                    
                     duration = time() - t_start
-                    
+
                     result = {
                         'time': duration,
                         'dataset': test_ds,
@@ -908,13 +897,13 @@ class CrossDatasetEvaluation(BaseEvaluation):
                         'pipeline': name,
                         'training_datasets': [ds.code for ds in self.train_dataset]
                     }
-                    
+
                     yield result
-                    
+
                 except Exception as e:
                     log.error(f"Error evaluating pipeline {name}: {str(e)}")
                     raise
 
     def is_valid(self, dataset):
         """Check if dataset is valid for this evaluation."""
-        return True  # All datasets are valid for cross-dataset evaluation
+        return True

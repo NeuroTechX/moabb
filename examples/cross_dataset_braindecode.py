@@ -5,28 +5,30 @@ This example shows how to train deep learning models on one dataset
 and test on another using Braindecode.
 """
 
-from braindecode.datasets import MOABBDataset
-from numpy import multiply
-from braindecode.preprocessing import (Preprocessor,
-                                     exponential_moving_standardize,
-                                     preprocess,
-                                     create_windows_from_events)
-from braindecode.models import ShallowFBCSPNet
-from braindecode.util import set_random_seeds
-from braindecode import EEGClassifier
-from skorch.callbacks import LRScheduler
-from skorch.helper import predefined_split
-import torch
+import logging
+from typing import Dict, List, Tuple
+
 import matplotlib.pyplot as plt
+import mne
+import numpy as np
 import pandas as pd
+import torch
+from braindecode import EEGClassifier
+from braindecode.datasets import BaseConcatDataset, MOABBDataset
+from braindecode.models import ShallowFBCSPNet
+from braindecode.preprocessing import (
+    Preprocessor,
+    create_windows_from_events,
+    exponential_moving_standardize,
+    preprocess,
+)
+from braindecode.util import set_random_seeds
+from braindecode.visualization import plot_confusion_matrix
 from matplotlib.lines import Line2D
 from sklearn.metrics import confusion_matrix
-from braindecode.visualization import plot_confusion_matrix
-import logging
-import mne
-from numpy import array
-import numpy as np
-from braindecode.datasets import BaseConcatDataset
+from skorch.callbacks import LRScheduler
+from skorch.helper import predefined_split
+
 
 # Configure logging
 logging.basicConfig(level=logging.WARNING)
@@ -44,186 +46,217 @@ def get_all_events(train_dataset, test_dataset):
     # Get events from first subject of each dataset
     train_events = train_dataset.datasets[0].raw.annotations.description
     test_events = test_dataset.datasets[0].raw.annotations.description
-    
+
     # Get all unique events
     all_events = sorted(list(set(train_events).union(set(test_events))))
     print(f"\nAll unique events across datasets: {all_events}\n")
-    
+
     # Create event mapping (event description -> numerical ID)
     event_id = {str(event): idx for idx, event in enumerate(all_events)}
     print(f"Event mapping: {event_id}\n")
-    
+
     return event_id
 
-def standardize_windows(train_dataset, test_dataset, all_channels, event_id):
-    """Standardize datasets with consistent preprocessing."""
-    # Define preprocessing parameters
+def interpolate_missing_channels(raw_data: mne.io.Raw, all_channels: List[str]) -> mne.io.Raw:
+    """Interpolate missing channels using spherical spline interpolation.
+
+    Parameters
+    ----------
+    raw_data : mne.io.Raw
+        Raw EEG data to process
+    all_channels : List[str]
+        List of all required channel names
+
+    Returns
+    -------
+    mne.io.Raw
+        Processed data with interpolated channels
+
+    Raises
+    ------
+    TypeError
+        If raw_data is not an MNE Raw object
+    """
+    if isinstance(raw_data, np.ndarray):
+        return raw_data
+
+    if not isinstance(raw_data, mne.io.Raw):
+        raise TypeError("Expected MNE Raw object")
+
+    missing_channels = [ch for ch in all_channels if ch not in raw_data.ch_names]
+    existing_channels = raw_data.ch_names
+
+    print("\nChannel Information:")
+    print(f"Total channels needed: {len(all_channels)}")
+    print(f"Existing channels: {len(existing_channels)}")
+    print(f"Missing channels to interpolate: {len(missing_channels)}")
+
+    if missing_channels:
+        print("\nMissing channels:")
+        for ch in missing_channels:
+            print(f"- {ch}")
+
+        # Mark missing channels as bad
+        raw_data.info['bads'] = missing_channels
+
+        # Add missing channels (temporarily with zeros)
+        print("\nAdding temporary channels for interpolation...")
+        raw_data.add_channels([
+            mne.io.RawArray(
+                np.zeros((1, len(raw_data.times))),
+                mne.create_info([ch], raw_data.info['sfreq'], ['eeg'])
+            ) for ch in missing_channels
+        ])
+
+        # Interpolate the bad channels
+        print("Performing spherical spline interpolation...")
+        raw_data.interpolate_bads(reset_bads=True)
+
+        # Calculate and print interpolation statistics
+        data_after = raw_data.get_data()
+        for ch in missing_channels:
+            ch_idx = raw_data.ch_names.index(ch)
+            interpolated_data = data_after[ch_idx]
+            stats = {
+                'mean': np.mean(interpolated_data),
+                'std': np.std(interpolated_data),
+                'min': np.min(interpolated_data),
+                'max': np.max(interpolated_data)
+            }
+            print(f"\nInterpolated channel {ch} statistics:")
+            print(f"- Mean: {stats['mean']:.2f}")
+            print(f"- Std: {stats['std']:.2f}")
+            print(f"- Range: [{stats['min']:.2f}, {stats['max']:.2f}]")
+
+        print("\nInterpolation complete.")
+    else:
+        print("No channels need interpolation.")
+
+    return raw_data
+
+def create_fixed_windows(
+    dataset: BaseConcatDataset,
+    samples_before: int,
+    samples_after: int,
+    event_id: Dict[str, int]
+) -> BaseConcatDataset:
+    """Create windows with consistent size across datasets.
+
+    Parameters
+    ----------
+    dataset : BaseConcatDataset
+        Dataset to create windows from
+    samples_before : int
+        Number of samples before event
+    samples_after : int
+        Number of samples after event
+    event_id : Dict[str, int]
+        Mapping of event names to numerical IDs
+
+    Returns
+    -------
+    BaseConcatDataset
+        Windowed dataset
+    """
+    return create_windows_from_events(
+        dataset,
+        trial_start_offset_samples=-samples_before,
+        trial_stop_offset_samples=samples_after,
+        preload=True,
+        mapping=event_id,
+        window_size_samples=samples_before + samples_after,
+        window_stride_samples=samples_before + samples_after
+    )
+
+def standardize_windows(
+    train_dataset: BaseConcatDataset,
+    test_dataset: BaseConcatDataset,
+    all_channels: List[str],
+    event_id: Dict[str, int]
+) -> Tuple[BaseConcatDataset, BaseConcatDataset, int, int, int]:
+    """Standardize datasets with consistent preprocessing.
+
+    Parameters
+    ----------
+    train_dataset : BaseConcatDataset
+        Training dataset to standardize
+    test_dataset : BaseConcatDataset
+        Test dataset to standardize
+    all_channels : List[str]
+        List of all required channel names
+    event_id : Dict[str, int]
+        Mapping of event names to numerical IDs
+
+    Returns
+    -------
+    Tuple[BaseConcatDataset, BaseConcatDataset, int, int, int]
+        Processed training windows, test windows, window length,
+        samples before and after
+    """
     target_sfreq = 100  # Target sampling frequency
-    
+
     print("\nInitial dataset properties:")
     for name, dataset in [("Train", train_dataset), ("Test", test_dataset)]:
         for i, ds in enumerate(dataset.datasets):
             print(f"{name} dataset {i} sampling rate: {ds.raw.info['sfreq']} Hz")
-    
-    def interpolate_missing_channels(raw_data, all_channels):
-        """Interpolate missing channels using spherical spline interpolation."""
-        if isinstance(raw_data, np.ndarray):
-            return raw_data
-            
-        if not isinstance(raw_data, mne.io.Raw):
-            raise TypeError("Expected MNE Raw object")
-            
-        missing_channels = [ch for ch in all_channels if ch not in raw_data.ch_names]
-        existing_channels = raw_data.ch_names
-        
-        print("\nChannel Information:")
-        print(f"Total channels needed: {len(all_channels)}")
-        print(f"Existing channels: {len(existing_channels)}")
-        print(f"Missing channels to interpolate: {len(missing_channels)}")
-        
-        if missing_channels:
-            print("\nMissing channels:")
-            for ch in missing_channels:
-                print(f"- {ch}")
-            
-            # Mark missing channels as bad
-            raw_data.info['bads'] = missing_channels
-            
-            # Add missing channels (temporarily with zeros)
-            print("\nAdding temporary channels for interpolation...")
-            raw_data.add_channels([
-                mne.io.RawArray(
-                    np.zeros((1, len(raw_data.times))),
-                    mne.create_info([ch], raw_data.info['sfreq'], ['eeg'])
-                ) for ch in missing_channels
-            ])
-            
-            # Get data before interpolation
-            data_before = raw_data.get_data()
-            
-            # Interpolate the bad channels
-            print("Performing spherical spline interpolation...")
-            raw_data.interpolate_bads(reset_bads=True)
-            
-            # Get data after interpolation
-            data_after = raw_data.get_data()
-            
-            # Calculate and print interpolation statistics
-            for idx, ch in enumerate(missing_channels):
-                ch_idx = raw_data.ch_names.index(ch)
-                interpolated_data = data_after[ch_idx]
-                stats = {
-                    'mean': np.mean(interpolated_data),
-                    'std': np.std(interpolated_data),
-                    'min': np.min(interpolated_data),
-                    'max': np.max(interpolated_data)
-                }
-                print(f"\nInterpolated channel {ch} statistics:")
-                print(f"- Mean: {stats['mean']:.2f}")
-                print(f"- Std: {stats['std']:.2f}")
-                print(f"- Range: [{stats['min']:.2f}, {stats['max']:.2f}]")
-            
-            print("\nInterpolation complete.")
-        else:
-            print("No channels need interpolation.")
-            
-        return raw_data
-    
-    # Modified preprocessors to handle missing channels with interpolation
+
+    # Define preprocessing pipeline
     preprocessors = [
-        # Add and interpolate missing channels only for MNE Raw objects
         Preprocessor(lambda raw: interpolate_missing_channels(raw, all_channels)),
         Preprocessor('pick_channels', ch_names=all_channels, ordered=True),
         Preprocessor('resample', sfreq=target_sfreq),
-        Preprocessor(lambda data: multiply(data, 1e6)),
+        Preprocessor(lambda data: np.multiply(data, 1e6)),
         Preprocessor('filter', l_freq=4., h_freq=38.),
         Preprocessor(exponential_moving_standardize,
                     factor_new=1e-3, init_block_size=1000)
     ]
-    
+
     # Apply preprocessing
     preprocess(train_dataset, preprocessors, n_jobs=-1)
     preprocess(test_dataset, preprocessors, n_jobs=-1)
-    
-    print("\nAfter resampling:")
-    for name, dataset in [("Train", train_dataset), ("Test", test_dataset)]:
-        for i, ds in enumerate(dataset.datasets):
-            print(f"{name} dataset {i} sampling rate: {ds.raw.info['sfreq']} Hz")
-    
-    # Fixed window parameters (in seconds)
+
+    # Define window parameters
     window_start = -0.5  # Start 0.5s before event
-    window_duration = 4.0  # Increased from 3.0 to ensure enough samples for kernel
-    
-    # Convert to samples based on target frequency
-    samples_before = int(abs(window_start) * target_sfreq)  # 50 samples
-    samples_after = int(window_duration * target_sfreq)     # 400 samples
-    
-    print(f"\nWindow configuration:")
-    print(f"Sampling frequency: {target_sfreq} Hz")
-    print(f"Window: {window_start}s to {window_duration}s")
-    print(f"Samples before: {samples_before}")
-    print(f"Samples after: {samples_after}")
-    print(f"Total window length: {samples_before + samples_after} samples")
-    
-    # Standardize event durations to 0 for both datasets
-    for name, dataset in [("Train", train_dataset), ("Test", test_dataset)]:
-        for i, ds in enumerate(dataset.datasets):
-            # Drop last event and standardize durations
+    window_duration = 4.0  # Window duration in seconds
+    samples_before = int(abs(window_start) * target_sfreq)
+    samples_after = int(window_duration * target_sfreq)
+
+    # Standardize event durations
+    for dataset in [train_dataset, test_dataset]:
+        for ds in dataset.datasets:
             events = ds.raw.annotations[:-1]
             new_annotations = mne.Annotations(
                 onset=events.onset,
-                duration=np.zeros_like(events.duration),  # Set all durations to 0
+                duration=np.zeros_like(events.duration),
                 description=events.description
             )
             ds.raw.set_annotations(new_annotations)
-            
-            print(f"\n{name} dataset {i}:")
-            print(f"Number of events: {len(ds.raw.annotations)}")
-            print(f"Event timings: {ds.raw.annotations.onset[:5]}")
-            print(f"Event durations: {ds.raw.annotations.duration[:5]}")
-    
-    # Create windows with explicit trial_stop_offset_samples
-    def create_fixed_windows(dataset):
-        return create_windows_from_events(
-            dataset,
-            trial_start_offset_samples=-samples_before,
-            trial_stop_offset_samples=samples_after,
-            preload=True,
-            mapping=event_id,
-            window_size_samples=samples_before + samples_after,  # Force window size
-            window_stride_samples=samples_before + samples_after  # Add stride parameter
-        )
-    
-    # Create windows
-    train_windows = create_fixed_windows(train_dataset)
-    test_windows = create_fixed_windows(test_dataset)
-    
+
+    # Create and validate windows
+    train_windows = create_fixed_windows(
+        train_dataset, samples_before, samples_after, event_id
+    )
+    test_windows = create_fixed_windows(
+        test_dataset, samples_before, samples_after, event_id
+    )
+
     # Verify window shapes
     train_shape = train_windows[0][0].shape
     test_shape = test_windows[0][0].shape
-    print(f"\nActual window shapes:")
-    print(f"Train windows: {train_shape}")
-    print(f"Test windows: {test_shape}")
-    print(f"Expected shape: (9, {samples_before + samples_after})")
-    
+
     if train_shape != test_shape:
-        print("\nWindow size mismatch analysis:")
-        print(f"Train window size: {train_shape[1]} samples")
-        print(f"Test window size: {test_shape[1]} samples")
-        print(f"Difference: {train_shape[1] - test_shape[1]} samples")
-        print(f"In seconds: {(train_shape[1] - test_shape[1])/target_sfreq:.2f}s")
-        raise ValueError(f"Window shapes don't match: train={train_shape}, test={test_shape}")
-    
+        raise ValueError(
+            f"Window shapes don't match: train={train_shape}, test={test_shape}"
+        )
+
     window_length = train_shape[1]
-    print(f"Final window length: {window_length} samples")
-    
     return train_windows, test_windows, window_length, samples_before, samples_after
 
 # Load datasets with validation
 def load_and_validate_dataset(dataset_name, subject_ids):
     """Load dataset and validate its contents."""
     dataset = MOABBDataset(dataset_name=dataset_name, subject_ids=subject_ids)
-    
+
     print(f"\nValidating dataset: {dataset_name}")
     for i, ds in enumerate(dataset.datasets):
         events = ds.raw.annotations
@@ -232,7 +265,7 @@ def load_and_validate_dataset(dataset_name, subject_ids):
         print(f"Unique event types: {set(events.description)}")
         print(f"First 5 event timings: {events.onset[:5]}")
         print(f"Sample event descriptions: {list(events.description[:5])}")
-    
+
     return dataset
 
 # Load datasets with validation
@@ -246,9 +279,9 @@ test_dataset = load_and_validate_dataset("Zhou2016", subject_ids=[1, 2, 3])
 
 # Verify datasets are different
 print("\nVerifying dataset uniqueness...")
-for name1, ds1 in [("Train1", train_dataset_1), ("Train2", train_dataset_2), 
+for name1, ds1 in [("Train1", train_dataset_1), ("Train2", train_dataset_2),
                    ("Train3", train_dataset_3), ("Test", test_dataset)]:
-    for name2, ds2 in [("Train1", train_dataset_1), ("Train2", train_dataset_2), 
+    for name2, ds2 in [("Train1", train_dataset_1), ("Train2", train_dataset_2),
                        ("Train3", train_dataset_3), ("Test", test_dataset)]:
         if name1 < name2:  # Compare each pair only once
             print(f"\nComparing {name1} vs {name2}:")

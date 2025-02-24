@@ -1,49 +1,102 @@
-from moabb import set_log_level
-from moabb.datasets import BNCI2014001, Zhou2016
-from moabb.paradigms import MotorImagery
-from moabb.evaluations.evaluations import CrossDatasetEvaluation
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import FunctionTransformer
+"""Cross-dataset motor imagery classification example.
+
+This example demonstrates how to perform cross-dataset evaluation using MOABB,
+training on one dataset and testing on another.
+"""
+
+# Standard library imports
+import logging
+from typing import Any, List
+
+import matplotlib.pyplot as plt
+
+# Third-party imports
+import mne
+import numpy as np
+import pandas as pd
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer
 from sklearn.svm import SVC
-import matplotlib.pyplot as plt
+
+# MOABB imports
+from moabb import set_log_level
 from moabb.analysis.plotting import score_plot
-import pandas as pd
-import mne
-import logging
+from moabb.datasets import BNCI2014001, Zhou2016
+from moabb.evaluations.evaluations import CrossDatasetEvaluation
+from moabb.paradigms import MotorImagery
 
-# Configure logging - reduce verbosity
-set_log_level("WARNING")  # Changed from "info" to "WARNING"
-logging.getLogger('mne').setLevel(logging.ERROR)  # Reduce MNE logging
 
-def get_common_channels(datasets):
-    """Get channels that are available across all datasets."""
+# Configure logging
+set_log_level("WARNING")
+logging.getLogger('mne').setLevel(logging.ERROR)
+
+
+def get_common_channels(datasets: List[Any]) -> List[str]:
+    """Get channels that are available across all datasets.
+
+    Parameters
+    ----------
+    datasets : List[Dataset]
+        List of MOABB dataset objects to analyze
+
+    Returns
+    -------
+    List[str]
+        Sorted list of common channel names
+    """
     all_channels = []
     for dataset in datasets:
         # Get a sample raw from each dataset
         subject = dataset.subject_list[0]
         raw_dict = dataset.get_data([subject])
+
         # Navigate through the nested dictionary structure
-        subject_data = raw_dict[subject]  # Get subject's data
-        first_session = list(subject_data.keys())[0]  # Get first session
-        first_run = list(subject_data[first_session].keys())[0]  # Get first run
-        raw = subject_data[first_session][first_run]  # Get raw data
+        subject_data = raw_dict[subject]
+        first_session = list(subject_data.keys())[0]
+        first_run = list(subject_data[first_session].keys())[0]
+        raw = subject_data[first_session][first_run]
+
         all_channels.append(raw.ch_names)
-    
+
     # Find common channels across all datasets
     common_channels = set.intersection(*map(set, all_channels))
     return sorted(list(common_channels))
 
-def create_pipeline(common_channels) -> Pipeline:
-    """Create classification pipeline."""
-    def raw_to_data(X):
-        """Convert raw MNE data to numpy array format"""
+
+def create_pipeline(common_channels: List[str]) -> Pipeline:
+    """Create classification pipeline with CSP and SVM.
+
+    Parameters
+    ----------
+    common_channels : List[str]
+        List of channel names to use in the pipeline
+
+    Returns
+    -------
+    Pipeline
+        Sklearn pipeline for classification
+    """
+    def raw_to_data(X: np.ndarray) -> np.ndarray:
+        """Convert raw MNE data to numpy array format.
+
+        Parameters
+        ----------
+        X : np.ndarray or mne.io.Raw
+            Input data to convert
+
+        Returns
+        -------
+        np.ndarray
+            Converted data array
+        """
         if hasattr(X, 'get_data'):
-            # Get only common channels to ensure consistency
-            picks = mne.pick_channels(X.info['ch_names'], 
-                                    include=common_channels,
-                                    ordered=True)
+            picks = mne.pick_channels(
+                X.info['ch_names'],
+                include=common_channels,
+                ordered=True
+            )
             data = X.get_data()
             if data.ndim == 2:
                 data = data.reshape(1, *data.shape)
@@ -54,11 +107,12 @@ def create_pipeline(common_channels) -> Pipeline:
     pipeline = Pipeline([
         ('to_array', FunctionTransformer(raw_to_data)),
         ('covariances', Covariances(estimator='oas')),
-        ('csp', CSP(nfilter=4, log=True)),  # Changed n_components to nfilter, removed invalid parameters
+        ('csp', CSP(nfilter=4, log=True)),
         ('classifier', SVC(kernel='rbf', C=0.1))
     ])
 
     return pipeline
+
 
 # Define datasets
 train_dataset = BNCI2014001()
@@ -70,7 +124,7 @@ print(f"\nCommon channels across datasets: {common_channels}\n")
 
 # Initialize the paradigm with common channels
 paradigm = MotorImagery(
-    channels=common_channels,  # Use common channels
+    channels=common_channels,
     n_classes=2,
     fmin=8,
     fmax=32
@@ -89,16 +143,17 @@ evaluation = CrossDatasetEvaluation(
 results = []
 for result in evaluation.evaluate(
     dataset=None,
-    pipelines={'CSP_SVM': create_pipeline(common_channels)},
-    param_grid=None
+    pipelines={'CSP_SVM': create_pipeline(common_channels)}
 ):
     result['subject'] = 'all'
     print(f"Cross-dataset score: {result.get('score', 'N/A'):.3f}")
     results.append(result)
 
-# Convert list of results to DataFrame
+# Convert results to DataFrame and process
 results_df = pd.DataFrame(results)
-results_df['dataset'] = results_df['dataset'].apply(lambda x: x.__class__.__name__)
+results_df['dataset'] = results_df['dataset'].apply(
+    lambda x: x.__class__.__name__
+)
 
 # Print evaluation scores
 print("\nCross-dataset evaluation scores:")

@@ -5,10 +5,10 @@ accuracy, across-subject accuracy, or other transfer learning settings."""
 
 # flake8: noqa
 from .evaluations import (
+    CrossDatasetEvaluation,
     CrossSessionEvaluation,
     CrossSubjectEvaluation,
     WithinSessionEvaluation,
-    CrossDatasetEvaluation,
 )
 from .splitters import WithinSessionSplitter
 from .utils import create_save_path, save_model_cv, save_model_list
