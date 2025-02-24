@@ -242,7 +242,7 @@ train_dataset_2 = load_and_validate_dataset("BNCI2015_001", subject_ids=[1, 2, 3
 train_dataset_3 = load_and_validate_dataset("BNCI2014_004", subject_ids=[1, 2, 3, 4])
 
 print("\nLoading test dataset...")
-test_dataset = load_and_validate_dataset("Zhou2016", subject_ids=[1])
+test_dataset = load_and_validate_dataset("Zhou2016", subject_ids=[1, 2, 3])
 
 # Verify datasets are different
 print("\nVerifying dataset uniqueness...")
