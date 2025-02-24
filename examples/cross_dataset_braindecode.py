@@ -5,29 +5,30 @@ This example shows how to train deep learning models on one dataset
 and test on another using Braindecode.
 """
 
-from braindecode.datasets import MOABBDataset
-from numpy import multiply
-from braindecode.preprocessing import (Preprocessor,
-                                     exponential_moving_standardize,
-                                     preprocess,
-                                     create_windows_from_events)
-from braindecode.models import ShallowFBCSPNet
-from braindecode.util import set_random_seeds
-from braindecode import EEGClassifier
-from skorch.callbacks import LRScheduler
-from skorch.helper import predefined_split
-import torch
+import logging
+from typing import Dict, List, Tuple
+
 import matplotlib.pyplot as plt
+import mne
+import numpy as np
 import pandas as pd
+import torch
+from braindecode import EEGClassifier
+from braindecode.datasets import BaseConcatDataset, MOABBDataset
+from braindecode.models import ShallowFBCSPNet
+from braindecode.preprocessing import (
+    Preprocessor,
+    create_windows_from_events,
+    exponential_moving_standardize,
+    preprocess,
+)
+from braindecode.util import set_random_seeds
+from braindecode.visualization import plot_confusion_matrix
 from matplotlib.lines import Line2D
 from sklearn.metrics import confusion_matrix
-from braindecode.visualization import plot_confusion_matrix
-import logging
-import mne
-from numpy import array
-import numpy as np
-from braindecode.datasets import BaseConcatDataset
-from typing import List, Dict, Tuple
+from skorch.callbacks import LRScheduler
+from skorch.helper import predefined_split
+
 
 # Configure logging
 logging.basicConfig(level=logging.WARNING)
@@ -41,23 +42,27 @@ def get_common_channels(train_dataset, test_dataset):
     print(f"\nCommon channels across datasets: {common_channels}\n")
     return common_channels
 
+
 def get_all_events(train_dataset, test_dataset):
     """Get all unique events across datasets."""
     # Get events from first subject of each dataset
     train_events = train_dataset.datasets[0].raw.annotations.description
     test_events = test_dataset.datasets[0].raw.annotations.description
-    
+
     # Get all unique events
     all_events = sorted(list(set(train_events).union(set(test_events))))
     print(f"\nAll unique events across datasets: {all_events}\n")
-    
+
     # Create event mapping (event description -> numerical ID)
     event_id = {str(event): idx for idx, event in enumerate(all_events)}
     print(f"Event mapping: {event_id}\n")
-    
+
     return event_id
 
-def interpolate_missing_channels(raw_data: mne.io.Raw, all_channels: List[str]) -> mne.io.Raw:
+
+def interpolate_missing_channels(
+    raw_data: mne.io.Raw, all_channels: List[str]
+) -> mne.io.Raw:
     """Interpolate missing channels using spherical spline interpolation.
 
     Parameters
@@ -97,16 +102,19 @@ def interpolate_missing_channels(raw_data: mne.io.Raw, all_channels: List[str]) 
             print(f"- {ch}")
 
         # Mark missing channels as bad
-        raw_data.info['bads'] = missing_channels
+        raw_data.info["bads"] = missing_channels
 
         # Add missing channels (temporarily with zeros)
         print("\nAdding temporary channels for interpolation...")
-        raw_data.add_channels([
-            mne.io.RawArray(
-                np.zeros((1, len(raw_data.times))),
-                mne.create_info([ch], raw_data.info['sfreq'], ['eeg'])
-            ) for ch in missing_channels
-        ])
+        raw_data.add_channels(
+            [
+                mne.io.RawArray(
+                    np.zeros((1, len(raw_data.times))),
+                    mne.create_info([ch], raw_data.info["sfreq"], ["eeg"]),
+                )
+                for ch in missing_channels
+            ]
+        )
 
         # Interpolate the bad channels
         print("Performing spherical spline interpolation...")
@@ -118,10 +126,10 @@ def interpolate_missing_channels(raw_data: mne.io.Raw, all_channels: List[str]) 
             ch_idx = raw_data.ch_names.index(ch)
             interpolated_data = data_after[ch_idx]
             stats = {
-                'mean': np.mean(interpolated_data),
-                'std': np.std(interpolated_data),
-                'min': np.min(interpolated_data),
-                'max': np.max(interpolated_data)
+                "mean": np.mean(interpolated_data),
+                "std": np.std(interpolated_data),
+                "min": np.min(interpolated_data),
+                "max": np.max(interpolated_data),
             }
             print(f"\nInterpolated channel {ch} statistics:")
             print(f"- Mean: {stats['mean']:.2f}")
@@ -134,11 +142,12 @@ def interpolate_missing_channels(raw_data: mne.io.Raw, all_channels: List[str]) 
 
     return raw_data
 
+
 def create_fixed_windows(
     dataset: BaseConcatDataset,
     samples_before: int,
     samples_after: int,
-    event_id: Dict[str, int]
+    event_id: Dict[str, int],
 ) -> BaseConcatDataset:
     """Create windows with consistent size across datasets.
 
@@ -165,14 +174,15 @@ def create_fixed_windows(
         preload=True,
         mapping=event_id,
         window_size_samples=samples_before + samples_after,
-        window_stride_samples=samples_before + samples_after
+        window_stride_samples=samples_before + samples_after,
     )
+
 
 def standardize_windows(
     train_dataset: BaseConcatDataset,
     test_dataset: BaseConcatDataset,
     all_channels: List[str],
-    event_id: Dict[str, int]
+    event_id: Dict[str, int],
 ) -> Tuple[BaseConcatDataset, BaseConcatDataset, int, int, int]:
     """Standardize datasets with consistent preprocessing.
 
@@ -203,12 +213,13 @@ def standardize_windows(
     # Define preprocessing pipeline
     preprocessors = [
         Preprocessor(lambda raw: interpolate_missing_channels(raw, all_channels)),
-        Preprocessor('pick_channels', ch_names=all_channels, ordered=True),
-        Preprocessor('resample', sfreq=target_sfreq),
+        Preprocessor("pick_channels", ch_names=all_channels, ordered=True),
+        Preprocessor("resample", sfreq=target_sfreq),
         Preprocessor(lambda data: np.multiply(data, 1e6)),
-        Preprocessor('filter', l_freq=4., h_freq=38.),
-        Preprocessor(exponential_moving_standardize,
-                    factor_new=1e-3, init_block_size=1000)
+        Preprocessor("filter", l_freq=4.0, h_freq=38.0),
+        Preprocessor(
+            exponential_moving_standardize, factor_new=1e-3, init_block_size=1000
+        ),
     ]
 
     # Apply preprocessing
@@ -228,7 +239,7 @@ def standardize_windows(
             new_annotations = mne.Annotations(
                 onset=events.onset,
                 duration=np.zeros_like(events.duration),
-                description=events.description
+                description=events.description,
             )
             ds.raw.set_annotations(new_annotations)
 
@@ -252,11 +263,12 @@ def standardize_windows(
     window_length = train_shape[1]
     return train_windows, test_windows, window_length, samples_before, samples_after
 
+
 # Load datasets with validation
 def load_and_validate_dataset(dataset_name, subject_ids):
     """Load dataset and validate its contents."""
     dataset = MOABBDataset(dataset_name=dataset_name, subject_ids=subject_ids)
-    
+
     print(f"\nValidating dataset: {dataset_name}")
     for i, ds in enumerate(dataset.datasets):
         events = ds.raw.annotations
@@ -265,8 +277,9 @@ def load_and_validate_dataset(dataset_name, subject_ids):
         print(f"Unique event types: {set(events.description)}")
         print(f"First 5 event timings: {events.onset[:5]}")
         print(f"Sample event descriptions: {list(events.description[:5])}")
-    
+
     return dataset
+
 
 # Load datasets with validation
 print("\nLoading training datasets...")
@@ -279,17 +292,27 @@ test_dataset = load_and_validate_dataset("Zhou2016", subject_ids=[1, 2, 3])
 
 # Verify datasets are different
 print("\nVerifying dataset uniqueness...")
-for name1, ds1 in [("Train1", train_dataset_1), ("Train2", train_dataset_2), 
-                   ("Train3", train_dataset_3), ("Test", test_dataset)]:
-    for name2, ds2 in [("Train1", train_dataset_1), ("Train2", train_dataset_2), 
-                       ("Train3", train_dataset_3), ("Test", test_dataset)]:
+for name1, ds1 in [
+    ("Train1", train_dataset_1),
+    ("Train2", train_dataset_2),
+    ("Train3", train_dataset_3),
+    ("Test", test_dataset),
+]:
+    for name2, ds2 in [
+        ("Train1", train_dataset_1),
+        ("Train2", train_dataset_2),
+        ("Train3", train_dataset_3),
+        ("Test", test_dataset),
+    ]:
         if name1 < name2:  # Compare each pair only once
             print(f"\nComparing {name1} vs {name2}:")
             # Compare first subject of each dataset
             events1 = ds1.datasets[0].raw.annotations
             events2 = ds2.datasets[0].raw.annotations
             print(f"Event counts: {len(events1)} vs {len(events2)}")
-            print(f"Event types: {set(events1.description)} vs {set(events2.description)}")
+            print(
+                f"Event types: {set(events1.description)} vs {set(events2.description)}"
+            )
             print(f"First timing: {events1.onset[0]} vs {events2.onset[0]}")
 
 # Get common channels across all datasets
@@ -298,10 +321,14 @@ train_chans_2 = train_dataset_2.datasets[0].raw.ch_names
 train_chans_3 = train_dataset_3.datasets[0].raw.ch_names
 test_chans = test_dataset.datasets[0].raw.ch_names
 
-common_channels = sorted(list(set(train_chans_1)
-                        .intersection(set(train_chans_2))
-                        .intersection(set(train_chans_3))
-                        .intersection(set(test_chans))))
+common_channels = sorted(
+    list(
+        set(train_chans_1)
+        .intersection(set(train_chans_2))
+        .intersection(set(train_chans_3))
+        .intersection(set(test_chans))
+    )
+)
 print(f"\nCommon channels across all datasets: {common_channels}\n")
 
 # Get all events across all datasets
@@ -310,10 +337,14 @@ train_events_2 = train_dataset_2.datasets[0].raw.annotations.description
 train_events_3 = train_dataset_3.datasets[0].raw.annotations.description
 test_events = test_dataset.datasets[0].raw.annotations.description
 
-all_events = sorted(list(set(train_events_1)
-                   .union(set(train_events_2))
-                   .union(set(train_events_3))
-                   .union(set(test_events))))
+all_events = sorted(
+    list(
+        set(train_events_1)
+        .union(set(train_events_2))
+        .union(set(train_events_3))
+        .union(set(test_events))
+    )
+)
 print(f"\nAll unique events across datasets: {all_events}\n")
 
 event_id = {str(event): idx for idx, event in enumerate(all_events)}
@@ -333,25 +364,23 @@ train_windows_2, _, _, _, _ = standardize_windows(
 train_windows_3, _, _, _, _ = standardize_windows(
     train_dataset_3, test_dataset, common_channels, event_id
 )
-train_windows_test, test_windows, window_length, samples_before, samples_after = standardize_windows(
-    train_dataset_1, test_dataset, common_channels, event_id
+train_windows_test, test_windows, window_length, samples_before, samples_after = (
+    standardize_windows(train_dataset_1, test_dataset, common_channels, event_id)
 )
 
 # Combine all training windows
-combined_train_windows = BaseConcatDataset([
-    train_windows_1,
-    train_windows_2,
-    train_windows_3
-])
+combined_train_windows = BaseConcatDataset(
+    [train_windows_1, train_windows_2, train_windows_3]
+)
 
 # Split training data using only the combined dataset
-split = combined_train_windows.split('session')
-train_set = split['0train']
-valid_set = split['1test']
+split = combined_train_windows.split("session")
+train_set = split["0train"]
+valid_set = split["1test"]
 
 # Setup compute device
 cuda = torch.cuda.is_available()
-device = 'cuda' if cuda else 'cpu'
+device = "cuda" if cuda else "cpu"
 if cuda:
     torch.backends.cudnn.benchmark = True
 
@@ -371,7 +400,7 @@ model = ShallowFBCSPNet(
     filter_time_length=20,
     pool_time_length=35,
     pool_time_stride=7,
-    final_conv_length='auto'
+    final_conv_length="auto",
 )
 
 if cuda:
@@ -388,7 +417,7 @@ clf = EEGClassifier(
     batch_size=64,
     callbacks=[
         "accuracy",
-        ("lr_scheduler", LRScheduler('CosineAnnealingLR', T_max=11)),
+        ("lr_scheduler", LRScheduler("CosineAnnealingLR", T_max=11)),
     ],
     device=device,
     classes=list(range(n_classes)),
@@ -412,39 +441,46 @@ plt.show()
 
 # Create visualization
 fig = plt.figure(figsize=(10, 5))
-plt.plot(clf.history[:, 'train_loss'], label='Training Loss')
-plt.plot(clf.history[:, 'valid_loss'], label='Validation Loss')
+plt.plot(clf.history[:, "train_loss"], label="Training Loss")
+plt.plot(clf.history[:, "valid_loss"], label="Validation Loss")
 plt.legend()
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-plt.title('Training and Validation Loss Over Time')
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.title("Training and Validation Loss Over Time")
 plt.show()
 
 # Plot training curves
-results_columns = ['train_loss', 'valid_loss', 'train_accuracy', 'valid_accuracy']
-df = pd.DataFrame(clf.history[:, results_columns], columns=results_columns,
-                 index=clf.history[:, 'epoch'])
+results_columns = ["train_loss", "valid_loss", "train_accuracy", "valid_accuracy"]
+df = pd.DataFrame(
+    clf.history[:, results_columns],
+    columns=results_columns,
+    index=clf.history[:, "epoch"],
+)
 
-df = df.assign(train_misclass=100 - 100 * df.train_accuracy,
-               valid_misclass=100 - 100 * df.valid_accuracy)
+df = df.assign(
+    train_misclass=100 - 100 * df.train_accuracy,
+    valid_misclass=100 - 100 * df.valid_accuracy,
+)
 
 # Plot results
 fig, ax1 = plt.subplots(figsize=(8, 3))
-df.loc[:, ['train_loss', 'valid_loss']].plot(
-    ax=ax1, style=['-', ':'], marker='o', color='tab:blue', legend=False)
+df.loc[:, ["train_loss", "valid_loss"]].plot(
+    ax=ax1, style=["-", ":"], marker="o", color="tab:blue", legend=False
+)
 
-ax1.tick_params(axis='y', labelcolor='tab:blue')
-ax1.set_ylabel("Loss", color='tab:blue')
+ax1.tick_params(axis="y", labelcolor="tab:blue")
+ax1.set_ylabel("Loss", color="tab:blue")
 
 ax2 = ax1.twinx()
-df.loc[:, ['train_misclass', 'valid_misclass']].plot(
-    ax=ax2, style=['-', ':'], marker='o', color='tab:red', legend=False)
-ax2.tick_params(axis='y', labelcolor='tab:red')
-ax2.set_ylabel("Misclassification Rate [%]", color='tab:red')
+df.loc[:, ["train_misclass", "valid_misclass"]].plot(
+    ax=ax2, style=["-", ":"], marker="o", color="tab:red", legend=False
+)
+ax2.tick_params(axis="y", labelcolor="tab:red")
+ax2.set_ylabel("Misclassification Rate [%]", color="tab:red")
 ax2.set_ylim(ax2.get_ylim()[0], 85)
 
 handles = []
-handles.append(Line2D([0], [0], color='black', linestyle='-', label='Train'))
-handles.append(Line2D([0], [0], color='black', linestyle=':', label='Valid'))
+handles.append(Line2D([0], [0], color="black", linestyle="-", label="Train"))
+handles.append(Line2D([0], [0], color="black", linestyle=":", label="Valid"))
 plt.legend(handles, [h.get_label() for h in handles])
 plt.tight_layout()
