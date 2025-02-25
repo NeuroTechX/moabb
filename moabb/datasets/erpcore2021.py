@@ -8,7 +8,6 @@ ErpCore2021 dataset
 
 import os
 import warnings
-import zipfile as z
 from abc import abstractmethod
 from functools import partialmethod
 from pathlib import Path
@@ -16,6 +15,7 @@ from pathlib import Path
 import mne
 import numpy as np
 import pandas as pd
+import tqdm
 from mne_bids import BIDSPath, read_raw_bids
 
 from moabb.datasets import download as dl
@@ -26,35 +26,17 @@ OSF_BASE_URL = "https://files.osf.io/v1/resources/"
 
 # Ids for the buckets on OSF and the folder OSF hash
 # To download data from osf for each task
-OSF_IDS = {
-    "ERN": ["q6gwp", "600df65e75226b017d517f6d"],
-    "LRP": ["28e6c", "600dffbf327cbe019d7b6a0c"],
-    "MMN": ["5q4xs", "6007896286541a091d14b102"],
-    "N170": ["pfde9", "60060f8ae80d370812a5b15d"],
-    "N2pc": ["yefrq", "60077f09ba010908a4892b3a"],
-    "N400": ["29xpq", "6007857286541a092614c5d3"],
-    "P3": ["etdkz", "60077b04ba010908a78927e9"],
-}
-
-# URLs for JSON files containing the original value mapping
-OSF_JSON = {
-    "N170": "pfde9/providers/osfstorage/60077b01ba010908a78927da?",
-    "MMN": "5q4xs/providers/osfstorage/60078d9e86541a092c15ebbe?",
-    "N2pc": "yefrq/providers/osfstorage/6007856fba010908a2892c48?",
-    "P3": "etdkz/providers/osfstorage/60077f07e80d3708e6a57d56?",
-    "N400": "29xpq/providers/osfstorage/60078961e80d3708e3a57da1?",
-    "LRP": "28e6c/providers/osfstorage/600e039db6416f01c5b03286?",
-    "ERN": "q6gwp/providers/osfstorage/600dfa3eb6416f01b7b0467f?",
-}
+_ERPCORE_TASKS = ["ERN", "LRP", "MMN", "N170", "N2pc", "N400", "P3"]
+_manifest_link = (
+    "https://zenodo.org/records/14866307/files/erpcore_manifest.csv?download=1"
+)
 
 DATASET_PARAMS = {
     task: dict(
         archive_name=f"ERPCORE2021_{task}.zip",
-        zipfile=f"{task.upper()} Raw Data BIDS-Compatible.zip",
-        url=OSF_BASE_URL + f"{osf[0]}/providers/osfstorage/{osf[1]}/?zip=",
         folder_name=f"MNE-erpcore{task.lower()}2021-data",
     )
-    for task, osf in OSF_IDS.items()
+    for task in _ERPCORE_TASKS
 }
 
 _docstring_head = """
@@ -169,33 +151,6 @@ class ErpCore2021(BaseDataset):
             doi="10.1016/j.neuroimage.2020.117465",
         )
 
-    def get_meta_data(self, subject):
-        """
-        Retrieve original events mapping and original event data for a given subject.
-
-        Parameters
-        ----------
-        subject : int
-            The subject number for which to retrieve data.
-
-        Returns
-        -------
-        tuple A tuple containing the original events mapping
-        and the original events DataFrame.
-        """
-        # Get the path to the events file for the subject
-        events_path = self.events_path(subject)
-        # Read the events data
-        original_events = pd.read_csv(events_path, sep="\t")
-
-        # Read the JSON file containing the original value mapping
-        json_file_data = pd.read_json(OSF_BASE_URL + OSF_JSON[self.task])
-
-        # Extract the value mapping
-        original_mapping = json_file_data["value"]["Levels"]
-
-        return original_mapping, original_events
-
     def _get_single_subject_data(self, subject):
         """Return the data of a single subject.
 
@@ -268,7 +223,9 @@ class ErpCore2021(BaseDataset):
             raise ValueError("Invalid subject number")
 
         # Download and extract the dataset
-        dataset_path = self.download_and_extract(path=path, force_update=force_update)
+        dataset_path = self.download_by_subject(
+            subject=subject, path=path, force_update=force_update
+        )
 
         # Create a BIDSPath object for the subject
         bids_path = BIDSPath(
@@ -283,7 +240,7 @@ class ErpCore2021(BaseDataset):
 
         return subject_paths
 
-    def download_and_extract(self, path=None, force_update=False):
+    def download_by_subject(self, subject, path=None):
         """
         Download and extract the dataset.
 
@@ -303,26 +260,30 @@ class ErpCore2021(BaseDataset):
         if path is not None:
             path = Path(path) / DATASET_PARAMS[self.task]["folder_name"]
         else:
-            # The Default path is in the user's home directory under 'mne_data'
-            path = Path.home() / "mne_data" / DATASET_PARAMS[self.task]["folder_name"]
+            mne_path = Path(dl.get_dataset_path(self.task, path))
+            path = mne_path / DATASET_PARAMS[self.task]["folder_name"]
 
-        path_zip = path / DATASET_PARAMS[self.task]["zipfile"]
+        # checking it there is manifest file in the dataset folder.
+        dl.download_if_missing(path / "erpcore_manifest.csv", _manifest_link)
 
-        # checking if the zip of the dataset is already downloaded
-        if not Path(path_zip).exists() or force_update:
-            # Download and extract the dataset
-            path_zip = dl.data_dl(
-                DATASET_PARAMS[self.task]["url"],
-                f"erpcore{self.task.lower()}2021",
-                path,
-                force_update,
+        manifest = pd.read_csv(path / "erpcore_manifest.csv")
+
+        manifest_task = manifest[manifest["component"] == self.task.upper()]
+
+        subject_index = manifest_task["participant_id"] == f"sub-{subject:03d}"
+        dataset_index = pd.isna(manifest_task["participant_id"])
+
+        manifest_subject = manifest_task[(subject_index | dataset_index)]
+
+        manifest_subject = manifest_subject.copy()
+        manifest_subject["local_path"] = manifest_subject["local_path"].str.replace(
+            f"erpcore/{self.task}/", ""
+        )
+
+        for _, row in tqdm.tqdm(manifest_subject.iterrows()):
+            dl.download_if_missing(
+                path / row["local_path"], row["url"], warn_missing=False
             )
-
-        metainformation = path / "participants.tsv"
-        # check if it has to unzip
-        if not Path(metainformation).exists():
-            zip_ref = z.ZipFile(path_zip, "r")
-            zip_ref.extractall(path)
 
         return path
 
