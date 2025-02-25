@@ -244,11 +244,13 @@ class ErpCore2021(BaseDataset):
 
         Parameters
         ----------
+        subject : int
+            The subject number to download the dataset for.
+
         path : str | None
             The path to the directory where the dataset should be downloaded.
             If None, the default directory is used.
-        force_update : bool
-            Force update of the dataset even if a local copy exists.
+
 
         Returns
         -------
