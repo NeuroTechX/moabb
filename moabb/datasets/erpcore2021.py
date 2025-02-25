@@ -223,9 +223,7 @@ class ErpCore2021(BaseDataset):
             raise ValueError("Invalid subject number")
 
         # Download and extract the dataset
-        dataset_path = self.download_by_subject(
-            subject=subject, path=path, force_update=force_update
-        )
+        dataset_path = self.download_by_subject(subject=subject, path=path)
 
         # Create a BIDSPath object for the subject
         bids_path = BIDSPath(
