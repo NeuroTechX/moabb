@@ -102,7 +102,7 @@ See [contributors' guidelines](CONTRIBUTING.md) for detailed explanation.
 To ensure it is running correctly, you can also run
 
 ```
-python -m unittest moabb.tests
+pytest moabb.tests
 ```
 
 once it is installed.

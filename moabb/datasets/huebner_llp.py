@@ -245,7 +245,7 @@ def _read_raw_llp_study_data(vhdr_fname, raw_slice_offset, verbose=None):
         preload=True,
         verbose=verbose,
     )  # type: mne.io.Raw
-    raw_bvr.set_montage("standard_1020")
+    raw_bvr = raw_bvr.set_montage("standard_1020")
 
     events = _parse_events(raw_bvr)
 
