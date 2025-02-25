@@ -66,8 +66,7 @@ class SetRawAnnotations(FixedTransformer):
     def transform(self, raw, y=None):
         duration = self.interval[1] - self.interval[0]
         offset = int(self.interval[0] * raw.info["sfreq"])
-        if raw.annotations:
-            return raw
+
         stim_channels = mne.utils._get_stim_channel(None, raw.info, raise_error=False)
         if len(stim_channels) == 0:
             log.warning(
