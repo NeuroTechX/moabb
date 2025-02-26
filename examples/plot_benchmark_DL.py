@@ -17,7 +17,6 @@ import os
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from absl.logging import ERROR, set_verbosity
-from tensorflow import keras
 
 from moabb import benchmark, set_log_level
 from moabb.analysis.plotting import score_plot
@@ -30,9 +29,6 @@ set_log_level("info")
 set_verbosity(ERROR)
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-# Print Information Tensorflow
-print(f"Tensorflow Version: {tf.__version__}")
-print(f"Keras Version: {keras.__version__}")
 
 CPU = len(tf.config.list_physical_devices("CPU")) > 0
 print("CPU is", "AVAILABLE" if CPU else "NOT AVAILABLE")

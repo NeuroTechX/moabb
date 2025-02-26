@@ -2,6 +2,7 @@
 
 import inspect
 
+import mne
 import numpy as np
 from mne import create_info
 from mne.io import RawArray
@@ -193,6 +194,10 @@ def add_stim_channel_trial(raw, onsets, labels, offset=200, ch_name="stim_trial"
     -------
     mne.Raw
         The raw object with the added stimulus channel.
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
     """
     stim_chan = np.zeros((1, len(raw)))
     for onset, label in zip(onsets, labels):
@@ -244,6 +249,10 @@ def add_stim_channel_epoch(
     -------
     mne.Raw
         The raw object with the added stimulus channel.
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
     """
     if presentation_rate is None:
         presentation_rate = raw.info["sfreq"]
@@ -265,3 +274,52 @@ def add_stim_channel_epoch(
     )
     raw = raw.add_channels([RawArray(data=stim_chan, info=info, verbose=False)])
     return raw
+
+
+def stim_channels_with_selected_ids(
+    raw: mne.io.BaseRaw, desired_event_id: dict, stim_channel_name="STIM"
+):
+    """
+    Add a stimulus channel with filtering and renaming based on events_ids.
+
+    Parameters
+    ----------
+    raw: mne.Raw
+        The raw object to add the stimulus channel to.
+    desired_event_id: dict
+        Dictionary with events
+    """
+
+    # Get events using the consistent event_id mapping
+    events, _ = mne.events_from_annotations(raw, event_id=desired_event_id)
+
+    # Filter the events array to include only desired events
+    desired_event_ids = list(desired_event_id.values())
+    filtered_events = events[np.isin(events[:, 2], desired_event_ids)]
+
+    # Create annotations from filtered events using the inverted mapping
+    event_desc = {v: k for k, v in desired_event_id.items()}
+    annot_from_events = mne.annotations_from_events(
+        events=filtered_events,
+        event_desc=event_desc,
+        sfreq=raw.info["sfreq"],
+        orig_time=raw.info["meas_date"],
+    )
+    raw.set_annotations(annot_from_events)
+
+    # Create the stim channel data array
+    stim_channs = np.zeros((1, raw.n_times))
+    for event in filtered_events:
+        sample_index = event[0]
+        event_code = event[2]  # Consistent event IDs
+        stim_channs[0, sample_index] = event_code
+
+    # Create the stim channel and add it to raw
+
+    stim_info = mne.create_info(
+        [stim_channel_name], sfreq=raw.info["sfreq"], ch_types=["stim"]
+    )
+    stim_raw = mne.io.RawArray(stim_channs, stim_info, verbose=False)
+    raw_with_stim = raw.copy().add_channels([stim_raw], force_update_info=True)
+
+    return raw_with_stim

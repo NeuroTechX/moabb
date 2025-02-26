@@ -1,5 +1,7 @@
 """Base class for a dataset."""
 
+from __future__ import annotations
+
 import abc
 import logging
 import re
@@ -9,6 +11,7 @@ from inspect import signature
 from pathlib import Path
 from typing import Dict, Union
 
+import pandas as pd
 from sklearn.pipeline import Pipeline
 
 from moabb.datasets.bids_interface import StepType, _interface_map
@@ -16,6 +19,36 @@ from moabb.datasets.preprocessing import SetRawAnnotations
 
 
 log = logging.getLogger(__name__)
+
+
+def get_summary_table(paradigm: str, dir_name: str | None = None):
+    if dir_name is None:
+        dir_name = Path(__file__).parent
+    path = Path(dir_name) / f"summary_{paradigm}.csv"
+    df = pd.read_csv(
+        path,
+        header=0,
+        index_col="Dataset",
+        skipinitialspace=True,
+        dtype={"PapersWithCode leaderboard": str},
+    )
+    return df
+
+
+_summary_table_imagery = get_summary_table("imagery")
+_summary_table_p300 = get_summary_table("p300")
+_summary_table_ssvep = get_summary_table("ssvep")
+_summary_table_cvep = get_summary_table("cvep")
+_summary_table_rstate = get_summary_table("rstate")
+_summary_table = pd.concat(
+    [
+        _summary_table_imagery,
+        _summary_table_p300,
+        _summary_table_ssvep,
+        _summary_table_cvep,
+        _summary_table_rstate,
+    ],
+)
 
 
 @dataclass
@@ -178,7 +211,64 @@ def check_run_names(data):
                 )
 
 
-class BaseDataset(metaclass=abc.ABCMeta):
+def format_row(row: pd.Series):
+    pwc_key = "PapersWithCode leaderboard"
+    tab_prefix = " " * 8
+    tab_sep = "="
+    row = row[~row.isna()]
+    pwc_link = row.get(pwc_key, None)
+    if pwc_link is not None:
+        row = row.drop(pwc_key)
+    col_names = [str(col) for col in row.index]
+
+    def to_int(x):
+        try:
+            i = int(x)
+            if i == x:
+                return i
+            return x
+        except ValueError:
+            return x
+
+    values = [str(to_int(val)) for val in row.values]
+    widths = [max(len(col), len(val)) for col, val in zip(col_names, values)]
+    row_sep = " ".join([tab_sep * width for width in widths])
+    cols_row = " ".join([col.rjust(width) for col, width in zip(col_names, widths)])
+    values_row = " ".join([val.rjust(width) for val, width in zip(values, widths)])
+    out = (
+        "    .. admonition:: Dataset summary\n\n"
+        f"{tab_prefix}{row_sep}\n"
+        f"{tab_prefix}{cols_row}\n"
+        f"{tab_prefix}{row_sep}\n"
+        f"{tab_prefix}{values_row}\n"
+        f"{tab_prefix}{row_sep}"
+    )
+    if pwc_link is not None:
+        out = f"    **{pwc_key}:** {pwc_link}\n\n" + out
+    return out
+
+
+class MetaclassDataset(abc.ABCMeta):
+    def __new__(cls, name, bases, attrs):
+        doc = attrs.get("__doc__", "")
+        try:
+            row = _summary_table.loc[name]
+            row_str = format_row(row)
+            doc_list = doc.split("\n\n")
+            if len(doc_list) >= 2:
+                doc_list = [doc_list[0], row_str] + doc_list[1:]
+            else:
+                doc_list.append(row_str)
+            attrs["__doc__"] = "\n\n".join(doc_list)
+        except KeyError:
+            log.debug(
+                f"No description found for dataset {name}. "
+                f"Complete the appropriate moabb/datasets/summary_*.csv file"
+            )
+        return super().__new__(cls, name, bases, attrs)
+
+
+class BaseDataset(metaclass=MetaclassDataset):
     """Abstract Moabb BaseDataset.
 
     Parameters required for all datasets
@@ -266,7 +356,7 @@ class BaseDataset(metaclass=abc.ABCMeta):
                     StepType.RAW,
                     SetRawAnnotations(
                         self.event_id,
-                        durations=self.interval[1] - self.interval[0],
+                        interval=self.interval,
                     ),
                 ),
             ]

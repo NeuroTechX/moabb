@@ -17,15 +17,82 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+- Adding :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`664` by `Bruna Lopes`_)
+- Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
+- Update version of pyRiemann to 0.7 (:gh:`671` by `Gregoire Cattan`_)
+- Add columns definitions in the datasets doc (:gh:`672` by `Pierre Guetschel`_)
+- Add ERP CORE datasets :class:`moabb.datasets.ErpCore2021` dataset (:gh:`627` by `Taha Habib`_)
 
-- Adding cache option to the evaluation (:gh:`517` by `Bruno Aristimunha`_)
+Bugs
+~~~~
+
+- Fix Stieger2021 dataset bugs (:gh:`651` by `Martin Wimpff`_)
+- Unpinning major version Scikit-learn and numpy (:gh:`652` by `Bruno Aristimunha`_)
+- Replacing the func:`numpy.string_` to func:`numpy.bytes_` (:gh:`665` by `Bruno Aristimunha`_)
+- Fixing the set_download_dir that was not working when we tried to set the dir more than 10 times at the same time (:gh:`668` by `Bruno Aristimunha`_)
+- Creating stimulus channels in :class:`moabb.datasets.Zhou2016` and :class:`moabb.datasets.PhysionetMI` to allow braindecode compatibility (:gh:`669` by `Bruno Aristimunha`_)
+- Improving the CI (:gh:`686` by `Bruno Aristimunha`_)
+- Making the download test work again (:gh:`693` by `Bruno Aristimunha`_)
+- Fix the EpochSelectChannel that caused incorrect channel selection in `example <examples/plot_Hinss2021_classification.py>` (:gh:`685` by `AFF`)
+- Fixing the logger on the Stieger2021 and Wang2016 dataset (:gh:`693` by `Bruno Aristimunha`_
+- Fixing bug with braindecode and moabb datasets EPFLP300 (:gh:`696` by `Bruno Aristimunha`_)
+- Change the way of creating the path to the folder (by `Sebastien Velut`_)
+- Fixing unit issue and lack of montage with :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.Huebner2018`,  :class:`moabb.datasets.Cattan2019_PHMD`, :class:`moabb.datasets.Ofner2017`  (:gh:`700`  `Bruno Aristimunha`_)
+
+
+API changes
+~~~~~~~~~~~
+- Removing the braindecode module from inside moabb (:gh:`666` by `Bruno Aristimunha`_ )
+
+Version - 1.1.1  (Stable - PyPi)
+---------------------------------
+
+Enhancements
+~~~~~~~~~~~~
+- Add possibility to use OptunaGridSearch (:gh:`630` by `Igor Carrara`_)
+- Add scripts to upload results on PapersWithCode (:gh:`561` by `Pierre Guetschel`_)
+- Centralize dataset summary tables in CSV files (:gh:`635` by `Pierre Guetschel`_)
+- Add new dataset :class:`moabb.datasets.Liu2024` dataset (:gh:`619` by `Taha Habib`_)
+- Add choice to choose the size of time window (by `Sebastien Velut`_)
+
+
+Bugs
+~~~~
+- Fix caching in the workflows (:gh:`632` by `Pierre Guetschel`_)
+
+API changes
+~~~~~~~~~~~
+- Include optuna as soft-dependency in the benchmark function and in the base of evaluation (:gh:`630` by `Igor Carrara`_)
+
+
+
+Version - 1.1.0
+----------------
+
+
+Enhancements
+~~~~~~~~~~~~
+
+- Add cache option to the evaluation (:gh:`518` by `Bruno Aristimunha`_)
 - Option to interpolate channel in paradigms' `match_all` method (:gh:`480` by `Gregoire Cattan`_)
-- Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_ and `Sylvain Chevallier`_)
-- Adding leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
+- Add leave k-Subjects out evaluations (:gh:`470` by `Bruno Aristimunha`_)
 - Update Braindecode dependency to 0.8 (:gh:`542` by `Pierre Guetschel`_)
 - Improve transform function of AugmentedDataset (:gh:`541` by `Quentin Barthelemy`_)
+- Add new paper results website (:gh:`556` by `Bruno Aristimunha`_)
 - Move cVEP common functions to :mod:`moabb.datasets.utils` (:gh:`564` :gh:`557` by `Pierre Guetschel`_)
 - Normalize c-VEP description tables (:gh:`562` :gh:`566` by `Pierre Guetschel`_ and `Bruno Aristimunha`_)
+- Update citation in README (:gh:`573` by `Igor Carrara`_)
+- Update pyRiemann dependency (:gh:`577` by `Gregoire Cattan`_)
+- Add resting stage Hinss2021 dataset (:gh:`580` by `Gregoire Cattan`_ and `Yash Chauhan`_)
+- Expose the `learning` rate parameter in the keras deep learning methods and optimize parameters (:gh:`589` and :gh:`592` by `Bruno Aristimunha`_)
+- Updating the braindecode pipelines for the new braindecode version 0.8.1 (:gh:`589` by `Bruno Aristimunha`_)
+- Add SSVEP and ERP paradigms to DL pipelines (:gh:`590` by `Pierre Guetschel`_)
+- Allow to pass a single pipeline file to ``benchmark`` (:gh:`591` by `Pierre Guetschel`_)
+- Add new dataset :class:`moabb.datasets.Stieger2021` (:gh:`604` by `Reinmar Kobler`_ and `Bruno Aristimunha`_)
+- Exposing the `drop_rate` for all the deep learning parameters (:gh:`592` by `Bruno Aristimunha`_)
+- Add new dataset :class:`moabb.datasets.Rodrigues2017` dataset (:gh:`602` by `Gregoire Cattan`_ and `Pedro L. C. Rodrigues`_)
+- Change unittest to pytest (:gh:`618` by `Bruno Aristimunha`_)
+- Remove tensorflow import warning (:gh:`622` by `Bruno Aristimunha`_)
 
 Bugs
 ~~~~
@@ -38,6 +105,15 @@ Bugs
 - Fix the doc summary for Castillos2023 dataset (:gh:`561` by `Bruno Aristimunha`_)
 - Fix format string receiving incorrect number of args in bids interface (:gh:`563` by `Pierre Guetschel`_)
 - Fix number of sessions in doc of :class:`moabb.datasets.Sosulski2019` (:gh:`565` by `Pierre Guetschel`_)
+- Fix `code` column of :class:`moabb.datasets.CastillosCVEP100` and :class:`moabb.datasets.CastillosCVEP100` (:gh:`567` by `Pierre Guetschel`_)
+- MAINT updating the packages pre-release (:gh:`578` by `Bruno Aristimunha`_)
+- Fix mne_bids version incompatibility with mne (:gh:`586` by `Bruna Lopes`_)
+- Updating the parameters of the SSVEP_TRCA method (:gh:`589` by `Bruno Aristimunha`_)
+- Fix and updating the parameters for the benchmark function (:gh:`588` by `Bruno Aristimunha`_)
+- Fix result table display (:gh:`599` by `Sylvain Chevallier`_)
+- Fix :class:`moabb.datasets.preprocessing.SetRawAnnotations` setting incorrect annotations when the dataset's interval does not start at 0 (:gh:`607` by `Pierre Guetschel`_)
+- Fix download link for GigaDB Cho2017 and Lee2019 datasets (:gh:`621` by `Anton Andreev`_)
+
 
 API changes
 ~~~~~~~~~~~
@@ -45,8 +121,8 @@ API changes
 - None
 
 
-Version - 1.0.0  (Stable - PyPi)
----------------------------------
+Version - 1.0.0
+----------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -407,10 +483,13 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
+.. _Martin Wimpff: https://github.com/martinwimpff
+.. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001
 .. _Sara Sedlar: https://github.com/Sara04
 .. _Emmanuel Kalunga: https://github.com/emmanuelkalunga
 .. _Gregoire Cattan: https://github.com/gcattan
+.. _Anton Andreev: https://github.com/toncho11
 .. _Igor Carrara: https://github.com/carraraig
 .. _Bruno Aristimunha: https://github.com/bruAristimunha
 .. _Alexandre Barachant: https://github.com/alexandrebarachant
@@ -433,3 +512,7 @@ API changes
 .. _Jordy Thielen: https://github.com/thijor
 .. _Sebastien Velut: https://github.com/swetbear
 .. _Brian Irvine: https://github.com/brianjohannes
+.. _Bruna Lopes: https://github.com/brunaafl
+.. _Yash Chauhan: https://github.com/jiggychauhi
+.. _Taha Habib: https://github.com/tahatt13
+.. _AFF: https://github.com/allwaysFindFood

@@ -14,6 +14,7 @@ from pooch import retrieve
 
 from .base import BaseDataset
 from .download import get_dataset_path
+from .utils import stim_channels_with_selected_ids
 
 
 DATA_PATH = "https://ndownloader.figshare.com/files/3662952"
@@ -49,15 +50,6 @@ def local_data_path(base_path, subject):
 
 class Zhou2016(BaseDataset):
     """Motor Imagery dataset from Zhou et al 2016.
-
-    .. admonition:: Dataset summary
-
-
-        ========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name        #Subj    #Chan    #Classes    #Trials / class  Trials len    Sampling rate      #Sessions
-        ========  =======  =======  ==========  =================  ============  ===============  ===========
-        Zhou2016        4       14           3                160  5s            250Hz                      3
-        ========  =======  =======  ==========  =================  ============  ===============  ===========
 
     Dataset from the article *A Fully Automated Trial Selection Method for
     Optimization of Motor Imagery Based Brain-Computer Interface* [1]_.
@@ -97,6 +89,7 @@ class Zhou2016(BaseDataset):
             paradigm="imagery",
             doi="10.1371/journal.pone.0162657",
         )
+        self.events = dict(left_hand=1, right_hand=2, feet=3)
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -114,7 +107,9 @@ class Zhou2016(BaseDataset):
                 stim[stim == "2"] = "right_hand"
                 stim[stim == "3"] = "feet"
                 raw.annotations.description = stim
-                out[sess_key][run_key] = raw
+                out[sess_key][run_key] = stim_channels_with_selected_ids(
+                    raw, desired_event_id=self.events
+                )
                 out[sess_key][run_key].set_montage(make_standard_montage("standard_1005"))
         return out
 

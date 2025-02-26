@@ -69,9 +69,6 @@ class WithinSessionEvaluation(BaseEvaluation):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -257,7 +254,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     if _carbonfootprint:
                         emissions = tracker.stop()
                         if emissions is None:
-                            emissions = np.NaN
+                            emissions = np.nan
                     duration = time() - t_start
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
@@ -322,7 +319,13 @@ class WithinSessionEvaluation(BaseEvaluation):
         t_start = time()
         try:
             model = clf.fit(X_train, y_train)
-            score = _score(model, X_test, y_test, scorer)
+            score = _score(
+                estimator=model,
+                X_test=X_test,
+                y_test=y_test,
+                scorer=scorer,
+                score_params={},
+            )
         except ValueError as e:
             if self.error_score == "raise":
                 raise e
@@ -447,9 +450,6 @@ class CrossSessionEvaluation(BaseEvaluation):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -467,6 +467,15 @@ class CrossSessionEvaluation(BaseEvaluation):
         use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
+    save_model: bool, default=False
+        Save model after training, for each fold of cross-validation if needed
+    cache_config: bool, default=None
+        Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
+       Add save_model and cache_config parameters.
     """
 
     # flake8: noqa: C901
@@ -549,17 +558,18 @@ class CrossSessionEvaluation(BaseEvaluation):
                             )
                     else:
                         result = _fit_and_score(
-                            clone(grid_clf),
-                            X,
-                            y,
-                            scorer,
-                            train,
-                            test,
+                            estimator=clone(grid_clf),
+                            X=X,
+                            y=y,
+                            scorer=scorer,
+                            train=train,
+                            test=test,
                             verbose=False,
                             parameters=None,
                             fit_params=None,
                             error_score=self.error_score,
                             return_estimator=True,
+                            score_params={},
                         )
                         score = result["test_scores"]
                         model_list = result["estimator"]
@@ -613,9 +623,6 @@ class CrossSubjectEvaluation(BaseEvaluation):
         If not None, can guarantee same seed for shuffling examples.
     n_jobs: int, default=1
         Number of jobs for fitting of pipeline.
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
     overwrite: bool, default=False
         If true, overwrite the results.
     error_score: "raise" or numeric, default="raise"
@@ -633,9 +640,18 @@ class CrossSubjectEvaluation(BaseEvaluation):
         use MNE raw to train pipelines.
     mne_labels: bool, default=False
         if returning MNE epoch, use original dataset label if True
+    save_model: bool, default=False
+        Save model after training, for each fold of cross-validation if needed
+    cache_config: bool, default=None
+        Configuration for caching of datasets. See :class:`moabb.datasets.base.CacheConfig` for details.
     n_splits: int, default=None
         Number of splits for cross-validation. If None, the number of splits
         is equal to the number of subjects.
+
+    Notes
+    -----
+    .. versionadded:: 1.1.0
+         Add save_model, cache_config and n_splits parameters
     """
 
     # flake8: noqa: C901
@@ -644,7 +660,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
     ):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
-        # this is a bit akward, but we need to check if at least one pipe
+        # this is a bit awkward, but we need to check if at least one pipe
         # have to be run before loading the data. If at least one pipeline
         # need to be run, we have to load all the data.
         # we might need a better granularity, if we query the DB
@@ -738,7 +754,13 @@ class CrossSubjectEvaluation(BaseEvaluation):
                 # we eval on each session
                 for session in np.unique(sessions[test]):
                     ix = sessions[test] == session
-                    score = _score(model, X[test[ix]], y[test[ix]], scorer)
+                    score = _score(
+                        estimator=model,
+                        X_test=X[test[ix]],
+                        y_test=y[test[ix]],
+                        scorer=scorer,
+                        score_params={},
+                    )
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
                     res = {

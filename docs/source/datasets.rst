@@ -33,7 +33,8 @@ Motor Imagery Datasets
     Shin2017B
     Weibo2014
     Zhou2016
-
+    Stieger2021
+    Liu2024
 
 ------------
 ERP Datasets
@@ -103,6 +104,8 @@ Resting State Datasets
     :template: class.rst
 
     Cattan2019_PHMD
+    Hinss2021
+    Rodrigues2017
 
 
 ------------

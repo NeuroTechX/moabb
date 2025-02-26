@@ -112,7 +112,7 @@ See `pyproject.toml` file for full list of dependencies
 To ensure it is running correctly, you can also run
 
 ```
-python -m unittest moabb.tests
+pytest moabb.tests
 ```
 
 once it is installed.
@@ -176,12 +176,6 @@ Note: It is important to use an absolute path for the root folder to run, but yo
 modify the run_docker.sh script to save in another path beyond the root of the project. By
 default, the script will save the results in the project's root in the folder `results`,
 the datasets in the folder `dataset` and the output in the folder `output`.
-
-### Troubleshooting
-
-Currently pip install moabb fails when pip version < 21, e.g. with 20.0.2 due to an `idna`
-package conflict. Newer pip versions resolve this conflict automatically. To fix this you
-can upgrade your pip version using: `pip install -U pip` before installing `moabb`.
 
 ## Supported datasets
 
@@ -296,21 +290,26 @@ analyze(results)
 If you use MOABB in your experiments, please cite this library when
 publishing a paper to increase the visibility of open science initiatives:
 
-> Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Quentin, B., Schirrmeister, R. T.,Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant,A., & Chevallier, S.
-> Mother of all BCI Benchmarks (MOABB), 2023. DOI: 10.5281/zenodo.10034223.
-
+```
+Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Reinmar, K., Schirrmeister, R. T.,Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant,A., & Chevallier, S.
+Mother of all BCI Benchmarks (MOABB), 2023. DOI: 10.5281/zenodo.10034223.
+```
 and here is the Bibtex version:
-
-> @software{Aristimunha_Mother_of_all_2023,
-> author = {Aristimunha, Bruno and Carrara, Igor and Guetschel, Pierre and Sedlar, Sara and Rodrigues, Pedro and Sosulski, Jan and Narayanan, Divyesh and Bjareholt, Erik and Quentin, Barthelemy and Schirrmeister, Robin Tibor and Kalunga, Emmanuel and Darmet, Ludovic and Gregoire, Cattan and Abdul Hussain, Ali and Gatti, Ramiro and Goncharenko, Vladislav and Thielen, Jordy and Moreau, Thomas and Roy, Yannick and Jayaram, Vinay and Barachant, Alexandre and Chevallier, Sylvain},
-> doi = {10.5281/zenodo.10034223},
-> title = {{Mother of all BCI Benchmarks}},
-> url = {https://github.com/NeuroTechX/moabb},
-> version = {1.0.0},
-> year = {2023}
-> }
-
+```bibtex
+@software{Aristimunha_Mother_of_all,
+ author = {Aristimunha, Bruno and Carrara, Igor and Guetschel, Pierre and Sedlar, Sara and Rodrigues, Pedro and Sosulski, Jan and Narayanan, Divyesh and Bjareholt, Erik and Barthelemy, Quentin and Kobler, Reinmar and Schirrmeister, Robin Tibor and Kalunga, Emmanuel and Darmet, Ludovic and Gregoire, Cattan and Abdul Hussain, Ali and Gatti, Ramiro and Goncharenko, Vladislav and Thielen, Jordy and Moreau, Thomas and Roy, Yannick and Jayaram, Vinay and Barachant, Alexandre and Chevallier, Sylvain},
+ doi = {10.5281/zenodo.10034223},
+ title = {{Mother of all BCI Benchmarks}},
+ url = {https://github.com/NeuroTechX/moabb},
+ version = {1.1.0},
+ year = {2024}
+ }
+```
 If you want to cite the scientific contributions of MOABB, you could use the following paper:
+
+> Sylvain Chevallier, Igor Carrara, Bruno Aristimunha, Pierre Guetschel, Sara Sedlar, Bruna Junqueira Lopes, Sébastien Velut, Salim Khazem, Thomas Moreau
+> ["The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark"](https://cnrs.hal.science/hal-04537061/)
+> HAL: hal-04537061.
 
 > Vinay Jayaram and Alexandre Barachant.
 > ["MOABB: trustworthy algorithm benchmarking for BCIs."](http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta)

@@ -11,6 +11,7 @@ from . import compound_dataset
 
 # flake8: noqa
 from .alex_mi import AlexMI
+from .alphawaves import Rodrigues2017
 from .bbci_eeg_fnirs import Shin2017A, Shin2017B
 
 # Depreciated datasets (will be removed in the future):
@@ -56,10 +57,21 @@ from .castillos2023 import (
 )
 from .Dreyer2023 import Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
+from .erpcore2021 import (
+    ErpCore2021_ERN,
+    ErpCore2021_LRP,
+    ErpCore2021_MMN,
+    ErpCore2021_N2pc,
+    ErpCore2021_N170,
+    ErpCore2021_N400,
+    ErpCore2021_P3,
+)
 from .fake import FakeDataset, FakeVirtualRealityDataset
 from .gigadb import Cho2017
+from .hinss2021 import Hinss2021
 from .huebner_llp import Huebner2017, Huebner2018
 from .Lee2019 import Lee2019_ERP, Lee2019_MI, Lee2019_SSVEP
+from .liu2024 import Liu2024
 from .mpi_mi import MunichMI  # noqa: F401
 from .mpi_mi import GrosseWentrup2009
 from .neiry import DemonsP300
@@ -73,6 +85,7 @@ from .ssvep_exo import Kalunga2016
 from .ssvep_mamem import MAMEM1, MAMEM2, MAMEM3
 from .ssvep_nakanishi import Nakanishi2015
 from .ssvep_wang import Wang2016
+from .stieger2021 import Stieger2021
 from .thielen2015 import Thielen2015
 from .thielen2021 import Thielen2021
 from .upper_limb import Ofner2017

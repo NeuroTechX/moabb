@@ -39,11 +39,13 @@ def benchmark(  # noqa: C901
     overwrite=False,
     output="./benchmark/",
     n_jobs=-1,
-    n_jobs_evaluation=1,
     plot=False,
     contexts=None,
     include_datasets=None,
     exclude_datasets=None,
+    n_splits=None,
+    cache_config=None,
+    optuna=False,
 ):
     """Run benchmarks for selected pipelines and datasets.
 
@@ -53,9 +55,6 @@ def benchmark(  # noqa: C901
 
     If particular paradigms are mentioned through select_paradigms, only the pipelines corresponding to those paradigms
     will be run. If no paradigms are mentioned, all pipelines will be run.
-
-    Pipelines stored in a file named braindecode_xxx.py will be recognized as Braindecode architectures
-    and they will receive epochs as input, instead of numpy array.
 
     To define the include_datasets or exclude_dataset, you could start from the full dataset list,
     using for example the following code:
@@ -69,7 +68,7 @@ def benchmark(  # noqa: C901
     Parameters
     ----------
     pipelines: str
-        Folder containing the pipelines to evaluate
+        Folder containing the pipelines to evaluate or path to a single pipeline file.
     evaluations: list of str
         If to restrict the types of evaluations to be run. By default, all 3 base types are run
         Can be a list of these elements ["WithinSession", "CrossSession", "CrossSubject"]
@@ -85,9 +84,10 @@ def benchmark(  # noqa: C901
         Folder to store the analysis results
     n_jobs: int
         Number of threads to use for running parallel jobs
-    n_jobs_evaluation: int, default=1
-        Number of jobs for evaluation, processing in parallel the within session,
-        cross-session or cross-subject.
+    n_splits: int or None, default=None
+        This parameter only works for CrossSubjectEvaluation. It defines the
+        number of splits to be done in the cross-validation. If None,
+        the number of splits is equal to the number of subjects in the dataset.
     plot: bool
         Plot results after computing
     contexts: str
@@ -100,6 +100,7 @@ def benchmark(  # noqa: C901
         and exclude_datasets are specified, raise an error.
     exclude_datasets: list of str or Dataset object
         Datasets to exclude from the benchmark run
+    optuna: Enable Optuna for the hyperparameter search
 
     Returns
     -------
@@ -108,7 +109,11 @@ def benchmark(  # noqa: C901
 
     Notes
     -----
+    .. versionadded:: 1.1.1
+        Includes the possibility to use Optuna for hyperparameter search.
+
     .. versionadded:: 0.5.0
+        Create the function to run the benchmark
     """
     # set logs
     if evaluations is None:
@@ -163,22 +168,24 @@ def benchmark(  # noqa: C901
 
             ppl_with_epochs, ppl_with_array = {}, {}
             for pn, pv in prdgms[paradigm].items():
-                if "braindecode" in pn or "Keras" in pn:
+                if "Keras" in pn:
                     ppl_with_epochs[pn] = pv
                 else:
                     ppl_with_array[pn] = pv
 
             if len(ppl_with_epochs) > 0:
-                # Braindecode pipelines require return_epochs=True
+                # Keras pipelines require return_epochs=True
                 context = eval_type[evaluation](
                     paradigm=p,
                     datasets=d,
                     random_state=42,
                     hdf5_path=results,
                     n_jobs=n_jobs,
-                    n_jobs_evaluation=n_jobs_evaluation,
                     overwrite=overwrite,
                     return_epochs=True,
+                    n_splits=n_splits,
+                    cache_config=cache_config,
+                    optuna=optuna,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_epochs, param_grid=param_grid
@@ -196,8 +203,10 @@ def benchmark(  # noqa: C901
                     random_state=42,
                     hdf5_path=results,
                     n_jobs=n_jobs,
-                    n_jobs_evaluation=n_jobs_evaluation,
                     overwrite=overwrite,
+                    n_splits=n_splits,
+                    cache_config=cache_config,
+                    optuna=optuna,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_array, param_grid=param_grid

@@ -30,7 +30,7 @@ class BaseCastillos2023(BaseDataset):
             sessions_per_subject=sessions_per_subject,
             events=events,
             code=code,
-            interval=(0, 0.25),
+            interval=(0, window_size),
             paradigm=paradigm,
             doi="https://doi.org/10.1016/j.neuroimage.2023.120446",
         )
@@ -44,7 +44,8 @@ class BaseCastillos2023(BaseDataset):
         """Return the data of a single subject."""
         file_path_list = self.data_path(subject, self.paradigm_type)
         raw = mne.io.read_raw_eeglab(file_path_list[0], preload=True, verbose=False)
-
+        montage = mne.channels.make_standard_montage("standard_1020")
+        raw = raw.set_montage(montage)
         # Strip the annotations that were script to make them easier to process
         events, event_id = mne.events_from_annotations(
             raw, event_id="auto", verbose=False
@@ -142,7 +143,7 @@ class BaseCastillos2023(BaseDataset):
 
         url = "https://zenodo.org/records/8255618/files/4Class-CVEP.zip"
         path_zip = dl.data_dl(url, "4Class-VEP", path, force_update, verbose)
-        path_folder = "C" + path_zip.strip("4Class-VEP.zip")
+        path_folder = path_zip.rstrip("4Class-VEP.zip")
         print(path_folder)
 
         # check if has to unzip
@@ -293,14 +294,6 @@ class CastillosBurstVEP100(BaseCastillos2023):
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
-    .. admonition:: Dataset summary
-
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        CastillosBurstVEP100  12        1          500Hz      32        2.2s            4        15/15/15/15       2            5820NT/1200T   Burst-CVEP      60Hz
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-
     **Dataset description**
 
     Participants were comfortably seated and instructed to read and sign the informed consent. EEG data were recorded
@@ -340,13 +333,14 @@ class CastillosBurstVEP100(BaseCastillos2023):
 
     """
 
-    def __init__(self):
+    def __init__(self, window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CastillosBurstVEP100",
             paradigm="cvep",
             paradigm_type="burst100",
+            window_size=window_size,
         )
 
 
@@ -355,13 +349,6 @@ class CastillosBurstVEP40(BaseCastillos2023):
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
-    .. admonition:: Dataset summary
-
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        CastillosBurstVEP40   12        1          500Hz      32        2.2s            4        15/15/15/15       2            5820NT/1200T   Burst-CVEP            60Hz
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
 
     **Dataset description**
 
@@ -402,13 +389,14 @@ class CastillosBurstVEP40(BaseCastillos2023):
 
     """
 
-    def __init__(self):
+    def __init__(self, window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CastillosBurstVEP40",
             paradigm="cvep",
             paradigm_type="burst40",
+            window_size=window_size,
         )
 
 
@@ -417,15 +405,6 @@ class CastillosCVEP100(BaseCastillos2023):
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
-    .. admonition:: Dataset summary
-
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        CastillosCVEP100      12        1          500Hz      32        2.2s            4        15/15/15/15       2            3525NT/3495T   Burst-CVEP    60Hz
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-
-
     **Dataset description**
 
     Participants were comfortably seated and instructed to read and sign the informed consent. EEG data were recorded
@@ -465,13 +444,14 @@ class CastillosCVEP100(BaseCastillos2023):
 
     """
 
-    def __init__(self):
+    def __init__(self, window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CastillosCVEP100",
             paradigm="cvep",
             paradigm_type="mseq100",
+            window_size=window_size,
         )
 
 
@@ -480,12 +460,6 @@ class CastillosCVEP40(BaseCastillos2023):
 
     Dataset [1]_ from the study on burst-VEP [2]_.
 
-    .. admonition:: Dataset summary
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        Name                 #Subj   #Sessions Sampling rate #Chan Trials length #Trial classes #Trials / class #Epoch classes #Epochs / class Codes      Presentation rate
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
-        CastillosCVEP40       12        1          500Hz      32        2.2s            4        15/15/15/15       2            3525NT/3495T   Burst-CVEP          60Hz
-        ==================== ======= ========= ============= ===== ============= ============== =============== ============== =============== ========== =================
 
     **Dataset description**
 
@@ -526,11 +500,12 @@ class CastillosCVEP40(BaseCastillos2023):
 
     """
 
-    def __init__(self):
+    def __init__(self, window_size=0.25):
         super().__init__(
             events={"0": 100, "1": 101},
             sessions_per_subject=1,
             code="CastillosCVEP40",
             paradigm="cvep",
             paradigm_type="mseq40",
+            window_size=window_size,
         )
