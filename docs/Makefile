@@ -22,3 +22,7 @@ help:
 
 apidoc:
 	sphinx-apidoc -o "$(SOURCEDIR)" ../"$(SPHINXPROJ)" --module-first -d 1
+
+html-noplot:
+	@$(SPHINXBUILD) -D plot_gallery=0 -b html "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)
+	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
