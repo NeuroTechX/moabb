@@ -157,7 +157,6 @@ class BIDSInterfaceBase(abc.ABC):
             root=self.root,
             subject=subject_moabb_to_bids(self.subject),
             description=self.desc,
-            extension=".eeg",
             check=False,
         )
 
@@ -355,7 +354,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
             format="EDF",
             allow_preload=True,
             montage=raw.get_montage(),
-            overwrite=True,
+            overwrite=False,
             verbose=self.verbose,
         )
 
