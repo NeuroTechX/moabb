@@ -17,9 +17,11 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+- Adding :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`664` by `Bruna Lopes_`)
 
 - Update version of pyRiemann to 0.7 (:gh:`671` by `Gregoire Cattan`_)
 - Add columns definitions in the datasets doc (:gh:`672` by `Pierre Guetschel`_)
+- Add ERP CORE datasets :class:`moabb.datasets.ErpCore2021` dataset (:gh:`627` by `Taha Habib`_)
 
 Bugs
 ~~~~
@@ -36,6 +38,8 @@ Bugs
 - Change the way of creating the path to the folder (:gh:`697` by `Sebastien Velut`_)
 - Fixing bug with braindecode and moabb datasets EPFLP300 (:gh:`696` by `Bruno Aristimunha`_)
 - Fixing the dataset details for bids conversion (:gh:`698` by `Bruno Aristimunha`_)
+- Fixing unit issue and lack of montage with :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.Huebner2018`,  :class:`moabb.datasets.Cattan2019_PHMD`, :class:`moabb.datasets.Ofner2017`  (:gh:`700`  `Bruno Aristimunha`_)
+
 
 API changes
 ~~~~~~~~~~~

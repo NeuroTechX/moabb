@@ -6,12 +6,13 @@
 import json
 import os
 import os.path as osp
+import urllib
 from pathlib import Path
 
 import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
-from mne.utils import _url_to_local_path, verbose
+from mne.utils import _url_to_local_path, verbose, warn
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
@@ -278,3 +279,21 @@ def fs_get_file_name(filelist):
         keys are file_id and values are file name
     """
     return {str(f["id"]): f["name"] for f in filelist}
+
+
+def download_if_missing(file_path, url, warn_missing=True):
+    """Download file from url to a specified path if it is not already there."""
+
+    folder_path = osp.dirname(file_path)
+
+    # Ensure the folder exists
+    if not osp.exists(folder_path):
+        if warn_missing:
+            warn(f"Directory {folder_path} not found. Creating directory.")
+        os.makedirs(folder_path)
+
+    # Check if file exists, if not download it
+    if not osp.exists(file_path):
+        if warn_missing:
+            warn(f"{file_path} not found. Downloading from {url}")
+        urllib.request.urlretrieve(url, file_path)

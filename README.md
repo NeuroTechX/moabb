@@ -112,7 +112,7 @@ See `pyproject.toml` file for full list of dependencies
 To ensure it is running correctly, you can also run
 
 ```
-python -m unittest moabb.tests
+pytest moabb.tests
 ```
 
 once it is installed.

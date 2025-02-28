@@ -102,9 +102,13 @@ class Ofner2017(BaseDataset):
                 raw = read_raw_gdf(
                     path, eog=eog, misc=range(64, 96), preload=True, verbose="ERROR"
                 )
-                raw.set_montage(montage)
+                raw = raw.set_montage(montage)
+
                 # there is nan in the data
                 raw._data[np.isnan(raw._data)] = 0
+
+                raw._data *= 1e-6
+
                 # Modify the annotations to match the name of the command
                 stim = raw.annotations.description.astype(np.dtype("<21U"))
                 stim[stim == "1536"] = "right_elbow_flexion"

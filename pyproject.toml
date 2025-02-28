@@ -95,5 +95,4 @@ minversion = "7.0"
 addopts = "-ra -q"
 python_files = [
     "test_*.py",
-	 "[!_]*.py",
 ]
