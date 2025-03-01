@@ -119,14 +119,47 @@ class Test_Stats(unittest.TestCase):
         self.assertTrue(np.allclose(np.tril(P), 0), P)
 
     def test_perm_exhaustive(self):
-        P = ma.compute_pvals_perm(self.return_df((4, 5)))
-        Pl = P[np.tril_indices(P.shape[0])]
-        self.assertTrue(np.allclose(Pl, (1 / 2**4)), np.tril(P))
+        n_samples = 6
+        data = self.return_df((n_samples, 5)) * 0 # We provide the exact same data for each pipeline
+        n_perms = 2 ** n_samples
+        pvals = ma.compute_pvals_perm(data)
+        self.assertTrue(np.all(pvals == 1 - 1 / n_perms), f"P-values should be equal to 1 - 1/n_perms {pvals}")
 
     def test_perm_random(self):
-        P = ma.compute_pvals_perm(self.return_df((18, 5)))
-        Pl = P[np.tril_indices(P.shape[0])]
-        self.assertTrue(np.allclose(Pl, 1e-4), np.tril(P))
+        data = self.return_df((18, 5)) * 0 # We provide the exact same data for each pipeline
+        n_perms = 10000 # hardcoded in _pairedttest_random
+
+        pvals = ma.compute_pvals_perm(data)
+        self.assertTrue(np.all(pvals == 1 - 1 / n_perms), f"P-values should be equal to 1 - 1/n_perms {pvals}")
+    
+    def test_edge_case_one_sample(self):
+        data = self.return_df((1, 2))
+        n_perms = 2
+        pvals = ma.compute_pvals_perm(data)
+        self.assertEqual(pvals.shape, (2, 2), f"Incorrect dimension of p-values array {pvals.shape}")
+        self.assertTrue(np.all(pvals == 1 - 1 / n_perms), f"P-values should be equal to 1 - 1/n_perms {pvals}")
+    
+    def test_compute_pvals_exhaustif_cannot_be_zero(self):
+        df = pd.DataFrame({
+            'pipeline_1': [1, 1],
+            'pipeline_2': [0, 0]
+        })
+        n_perms = 4
+        pvals = ma.compute_pvals_perm(df)
+        p1vsp2 = pvals[0, 1]
+        self.assertTrue(p1vsp2 == 1 / n_perms, f"P-values cannot be zero {pvals}")
+    
+    def test_compute_pvals_exhaustif_cannot_be_zero(self):
+        df = pd.DataFrame({
+            'pipeline_1': [1] * 18,
+            'pipeline_2': [0] * 18
+        })
+        n_perms = 10000 # hardcoded in _pairedttest_random
+        pvals = ma.compute_pvals_perm(df)
+        p1vsp2 = pvals[0, 1]
+        self.assertTrue(p1vsp2 == 1 / n_perms, f"P-values cannot be zero ")
+    
+
 
 
 class Test_Integration(unittest.TestCase):
