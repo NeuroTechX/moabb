@@ -274,12 +274,10 @@ class Stieger2021(BaseDataset):
 
             if len(raw.info["bads"]) > 0:
                 LOGGER.info(
-                    "Record {subject}/{session} (subject/session) contains "
-                    "bad channels: {bad_info}",
-                    subject=subject,
-                    session=session,
-                    bad_info=raw.info["bads"],
+                    "Record %s/%s (subject/session) contains bad channels: %s",
+                    subject,
+                    session,
+                    raw.info["bads"],
                 )
-
             subject_data[str(session)] = {"0": raw}
         return subject_data

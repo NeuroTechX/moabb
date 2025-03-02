@@ -17,9 +17,11 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+- Adding :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`664` by `Bruna Lopes_`)
 
 - Update version of pyRiemann to 0.7 (:gh:`671` by `Gregoire Cattan`_)
 - Add columns definitions in the datasets doc (:gh:`672` by `Pierre Guetschel`_)
+- Add ERP CORE datasets :class:`moabb.datasets.ErpCore2021` dataset (:gh:`627` by `Taha Habib`_)
 
 Bugs
 ~~~~
@@ -30,7 +32,13 @@ Bugs
 - Fixing the set_download_dir that was not working when we tried to set the dir more than 10 times at the same time (:gh:`668` by `Bruno Aristimunha`_)
 - Creating stimulus channels in :class:`moabb.datasets.Zhou2016` and :class:`moabb.datasets.PhysionetMI` to allow braindecode compatibility (:gh:`669` by `Bruno Aristimunha`_)
 - Improving the CI (:gh:`686` by `Bruno Aristimunha`_)
+- Making the download test work again (:gh:`693` by `Bruno Aristimunha`_)
 - Fix the EpochSelectChannel that caused incorrect channel selection in `example <examples/plot_Hinss2021_classification.py>` (:gh:`685` by `AFF`)
+- Fixing the logger on the Stieger2021 and Wang2016 dataset (:gh:`693` by `Bruno Aristimunha`_)
+- Change the way of creating the path to the folder (:gh:`697` by `Sebastien Velut`_)
+- Fixing bug with braindecode and moabb datasets EPFLP300 (:gh:`696` by `Bruno Aristimunha`_)
+- Fixing the dataset details for bids conversion (:gh:`698` by `Bruno Aristimunha`_)
+- Fixing unit issue and lack of montage with :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.Huebner2018`,  :class:`moabb.datasets.Cattan2019_PHMD`, :class:`moabb.datasets.Ofner2017`  (:gh:`700`  `Bruno Aristimunha`_)
 
 
 API changes
@@ -46,6 +54,7 @@ Enhancements
 - Add scripts to upload results on PapersWithCode (:gh:`561` by `Pierre Guetschel`_)
 - Centralize dataset summary tables in CSV files (:gh:`635` by `Pierre Guetschel`_)
 - Add new dataset :class:`moabb.datasets.Liu2024` dataset (:gh:`619` by `Taha Habib`_)
+- Add choice to choose the size of time window (by `Sebastien Velut`_)
 
 
 Bugs
