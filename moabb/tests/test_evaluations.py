@@ -382,6 +382,67 @@ class Test_CrossSess(TestWithinSess):
         assert self.eval.is_valid(dataset=ds)
 
 
+class Test_CrossDataset:
+    """Test CrossDatasetEvaluation class."""
+
+    def setup_method(self):
+        self.train_ds = FakeDataset(
+            paradigm="imagery",
+            event_list=["left_hand", "right_hand"],
+            n_subjects=2,
+            n_sessions=2,
+        )
+        self.test_ds = FakeDataset(
+            paradigm="imagery",
+            event_list=["left_hand", "right_hand"],
+            n_subjects=1,  # Different number of subjects
+            n_sessions=3,  # Different number of sessions
+        )
+        self.paradigm = FakeImageryParadigm()
+        self.eval = ev.CrossDatasetEvaluation(
+            train_dataset=self.train_ds,
+            test_dataset=self.test_ds,
+            paradigm=self.paradigm,
+        )
+
+        self.test_pipelines = OrderedDict()
+        self.test_pipelines["dummy"] = make_pipeline(
+            FunctionTransformer(),
+            Dummy(strategy="stratified", random_state=42)
+        )
+
+    def test_validate_datasets(self):
+        """Test dataset validation."""
+        # Test with compatible dataset
+        assert self.eval.is_valid(self.test_ds)
+
+        # Test with incompatible dataset (different events)
+        incompatible_ds = FakeDataset(
+            paradigm="imagery",
+            event_list=["left_hand"],  # Only one class
+            n_subjects=1,
+        )
+
+        # This should work but return a warning
+        eval_incompatible = ev.CrossDatasetEvaluation(
+            train_dataset=self.train_ds,
+            test_dataset=incompatible_ds,
+            paradigm=self.paradigm,
+        )
+        assert eval_incompatible.is_valid(incompatible_ds)
+
+    def test_evaluate(self):
+        """Test basic evaluation functionality."""
+        results = list(self.eval.evaluate(dataset=None, pipelines=self.test_pipelines))
+
+        # Check results structure
+        assert len(results) > 0
+        assert "score" in results[0]
+        assert "training_datasets" in results[0]
+        assert isinstance(results[0]["training_datasets"], list)
+        assert self.train_ds.code in results[0]["training_datasets"]
+
+
 class UtilEvaluation:
     def test_save_model_cv(self):
         model = Dummy()

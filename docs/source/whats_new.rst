@@ -17,6 +17,7 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+- Adding :class:`moabb.evaluations.CrossDatasetEvaluation` for cross-dataset evaluation, enabling training on one dataset and testing on another (:gh:`703` by `Ali Imran`_)
 - Adding :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`664` by `Bruna Lopes_`)
 
 - Update version of pyRiemann to 0.7 (:gh:`671` by `Gregoire Cattan`_)
@@ -516,3 +517,4 @@ API changes
 .. _Yash Chauhan: https://github.com/jiggychauhi
 .. _Taha Habib: https://github.com/tahatt13
 .. _AFF: https://github.com/allwaysFindFood
+.. _Ali Imran: https://github.com/ali-sehar
