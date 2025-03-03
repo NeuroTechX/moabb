@@ -124,10 +124,7 @@ class TestStats:
         )  # We provide the exact same data for each pipeline
         n_perms = 2**n_samples
         pvals = ma.compute_pvals_perm(data)
-        self.assertTrue(
-            np.all(pvals == 1 - 1 / n_perms),
-            f"P-values should be equal to 1 - 1/n_perms {pvals}",
-        )
+        assert np.all(pvals == 1 - 1 / n_perms), f"P-values should be equal to 1 - 1/n_perms {pvals}"
 
     def test_perm_random(self):
         data = (
@@ -136,10 +133,7 @@ class TestStats:
         n_perms = 10000  # hardcoded in _pairedttest_random
 
         pvals = ma.compute_pvals_perm(data)
-        self.assertTrue(
-            np.all(pvals == 1 - 1 / n_perms),
-            f"P-values should be equal to 1 - 1/n_perms {pvals}",
-        )
+        assert np.all(pvals == 1 - 1 / n_perms), f"P-values should be equal to 1 - 1/n_perms {pvals}"
 
     def test_edge_case_one_sample(self):
         data = self.return_df((1, 2))
@@ -148,24 +142,21 @@ class TestStats:
         self.assertEqual(
             pvals.shape, (2, 2), f"Incorrect dimension of p-values array {pvals.shape}"
         )
-        self.assertTrue(
-            np.all(pvals == 1 - 1 / n_perms),
-            f"P-values should be equal to 1 - 1/n_perms {pvals}",
-        )
+        assert np.all(pvals == 1 - 1 / n_perms), f"P-values should be equal to 1 - 1/n_perms {pvals}"
 
     def test_compute_pvals_exhaustif_cannot_be_zero(self):
         df = pd.DataFrame({"pipeline_1": [1, 1], "pipeline_2": [0, 0]})
         n_perms = 4
         pvals = ma.compute_pvals_perm(df)
         p1vsp2 = pvals[0, 1]
-        self.assertTrue(p1vsp2 == 1 / n_perms, f"P-values cannot be zero {pvals}")
+        assert p1vsp2 == 1 / n_perms, f"P-values cannot be zero {pvals}"
 
     def test_compute_pvals_random_cannot_be_zero(self):
         df = pd.DataFrame({"pipeline_1": [1] * 18, "pipeline_2": [0] * 18})
         n_perms = 10000  # hardcoded in _pairedttest_random
         pvals = ma.compute_pvals_perm(df)
         p1vsp2 = pvals[0, 1]
-        self.assertTrue(p1vsp2 == 1 / n_perms, "P-values cannot be zero ")
+        assert p1vsp2 == 1 / n_perms, "P-values cannot be zero "
 
 
 class TestResults:
