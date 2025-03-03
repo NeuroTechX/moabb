@@ -296,7 +296,7 @@ for name1, ds1 in [
     ("Train1", train_dataset_1),
     ("Train2", train_dataset_2),
     ("Train3", train_dataset_3),
-    ("Test", test_dataset),
+    ("Test", test_dataset)
 ]:
     for name2, ds2 in [
         ("Train1", train_dataset_1),
