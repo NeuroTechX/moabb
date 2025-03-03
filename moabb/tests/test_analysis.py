@@ -124,7 +124,9 @@ class TestStats:
         )  # We provide the exact same data for each pipeline
         n_perms = 2**n_samples
         pvals = ma.compute_pvals_perm(data)
-        assert np.all(pvals == 1 - 1 / n_perms), f"P-values should be equal to 1 - 1/n_perms {pvals}"
+        assert np.all(
+            pvals == 1 - 1 / n_perms
+        ), f"P-values should be equal to 1 - 1/n_perms {pvals}"
 
     def test_perm_random(self):
         data = (
@@ -133,7 +135,9 @@ class TestStats:
         n_perms = 10000  # hardcoded in _pairedttest_random
 
         pvals = ma.compute_pvals_perm(data)
-        assert np.all(pvals == 1 - 1 / n_perms), f"P-values should be equal to 1 - 1/n_perms {pvals}"
+        assert np.all(
+            pvals == 1 - 1 / n_perms
+        ), f"P-values should be equal to 1 - 1/n_perms {pvals}"
 
     def test_edge_case_one_sample(self):
         data = self.return_df((1, 2))
@@ -142,7 +146,9 @@ class TestStats:
         self.assertEqual(
             pvals.shape, (2, 2), f"Incorrect dimension of p-values array {pvals.shape}"
         )
-        assert np.all(pvals == 1 - 1 / n_perms), f"P-values should be equal to 1 - 1/n_perms {pvals}"
+        assert np.all(
+            pvals == 1 - 1 / n_perms
+        ), f"P-values should be equal to 1 - 1/n_perms {pvals}"
 
     def test_compute_pvals_exhaustif_cannot_be_zero(self):
         df = pd.DataFrame({"pipeline_1": [1, 1], "pipeline_2": [0, 0]})
