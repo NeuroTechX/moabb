@@ -31,7 +31,7 @@ memory-profiler = "^0.61.0"
 edflib-python = "^1.0.6"
 edfio = "^0.4.2"
 pytest = "^7.4.0"
-mne-bids = "^0.14"
+mne-bids = ">=0.14"
 scikit-learn = "<1.6"
 
 
