@@ -22,6 +22,7 @@ Enhancements
 - Update version of pyRiemann to 0.7 (:gh:`671` by `Gregoire Cattan`_)
 - Add columns definitions in the datasets doc (:gh:`672` by `Pierre Guetschel`_)
 - Add ERP CORE datasets :class:`moabb.datasets.ErpCore2021` dataset (:gh:`627` by `Taha Habib`_)
+- Update paths of BIDS cache to better follow the standards. Cache created in previous MOABB versions should still be compatible (:gh:`707` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~

@@ -154,10 +154,10 @@ class Test_Datasets(unittest.TestCase):
                 )
             print("\n".join(cm.output))
             expected = [
-                "Attempting to retrieve cache .* datatype-eeg",  # empty pipeline
+                "Attempting to retrieve cache .* suffix-eeg",  # empty pipeline
                 "No cache found at",
-                "Starting caching .* datatype-eeg",
-                "Finished caching .* datatype-eeg",
+                "Starting caching .* suffix-eeg",
+                "Finished caching .* suffix-eeg",
             ]
             assert len(expected) == len(cm.output)
             for i, regex in enumerate(expected):
@@ -178,8 +178,8 @@ class Test_Datasets(unittest.TestCase):
                 )
             print("\n".join(cm.output))
             expected = [
-                "Attempting to retrieve cache .* datatype-eeg",
-                "Finished reading cache .* datatype-eeg",
+                "Attempting to retrieve cache .* suffix-eeg",
+                "Finished reading cache .* suffix-eeg",
             ]
             assert len(expected) == len(cm.output)
             for i, regex in enumerate(expected):
@@ -200,10 +200,10 @@ class Test_Datasets(unittest.TestCase):
                 )
             print("\n".join(cm.output))
             expected = [
-                "Starting erasing cache .* datatype-eeg",
-                "Finished erasing cache .* datatype-eeg",
-                "Starting caching .* datatype-eeg",
-                "Finished caching .* datatype-eeg",
+                "Starting erasing cache .* suffix-eeg",
+                "Finished erasing cache .* suffix-eeg",
+                "Starting caching .* suffix-eeg",
+                "Finished caching .* suffix-eeg",
             ]
             assert len(expected) == len(cm.output)
             for i, regex in enumerate(expected):
