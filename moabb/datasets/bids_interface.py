@@ -121,7 +121,7 @@ class BIDSInterfaceBase(abc.ABC):
         """Return the representation of the BIDSInterface."""
         return (
             f"{self.dataset.code!r} sub-{self.subject} "
-            f"datatype-{self._datatype} desc-{self.desc:.7}"
+            f"suffix-{self._suffix} desc-{self.desc:.7}"
         )
 
     @property
@@ -184,8 +184,8 @@ class BIDSInterfaceBase(abc.ABC):
             descriptions=self.desc,
             extensions=self._extension,
             check=self._check,
-            datatypes=self._datatype,
-            suffixes=self._datatype,
+            datatypes="eeg",
+            suffixes=self._suffix,
         )
         sessions_data = {}
         for path in paths:
@@ -252,8 +252,8 @@ class BIDSInterfaceBase(abc.ABC):
                     **run_kwargs,
                     description=self.desc,
                     extension=self._extension,
-                    datatype=self._datatype,
-                    suffix=self._datatype,
+                    datatype="eeg",
+                    suffix=self._suffix,
                     check=self._check,
                 )
 
@@ -286,7 +286,7 @@ class BIDSInterfaceBase(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def _datatype(self):
+    def _suffix(self):
         pass
 
 
@@ -305,7 +305,7 @@ class BIDSInterfaceRawEDF(BIDSInterfaceBase):
         return True
 
     @property
-    def _datatype(self):
+    def _suffix(self):
         return "eeg"
 
     def _load_file(self, bids_path, preload):
@@ -378,9 +378,7 @@ class BIDSInterfaceEpochs(BIDSInterfaceBase):
         return False
 
     @property
-    def _datatype(self):
-        # because of mne conventions, we need the suffix to be "epo"
-        # because of mne_bids conventions, we need datatype and suffix to match
+    def _suffix(self):
         return "epo"
 
     def _load_file(self, bids_path, preload):
@@ -410,7 +408,7 @@ class BIDSInterfaceNumpyArray(BIDSInterfaceBase):
         return False
 
     @property
-    def _datatype(self):
+    def _suffix(self):
         return "array"
 
     def _load_file(self, bids_path, preload):
