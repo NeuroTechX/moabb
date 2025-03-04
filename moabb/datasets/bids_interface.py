@@ -184,7 +184,7 @@ class BIDSInterfaceBase(abc.ABC):
             descriptions=self.desc,
             extensions=self._extension,
             check=self._check,
-            datatypes="eeg",
+            # datatypes="eeg", # commented for compatibility with cache saved in previous versions
             suffixes=self._suffix,
         )
         sessions_data = {}
