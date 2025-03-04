@@ -156,8 +156,8 @@ sys.path.append(os.path.abspath(os.path.join(curdir, "..", "moabb")))
 sys.path.append(os.path.abspath(os.path.join(curdir, "sphinxext")))
 
 sphinx_gallery_conf = {
-    "examples_dirs": ["../../examples", "../../tutorials"],
-    "gallery_dirs": ["auto_examples", "auto_tutorials"],
+    "examples_dirs": ["../../examples"],
+    "gallery_dirs": ["auto_examples"],
     "doc_module": ("moabb", "mne"),
     "backreferences_dir": "generated",
     "show_memory": True,

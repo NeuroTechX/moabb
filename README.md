@@ -119,7 +119,7 @@ once it is installed.
 
 ### Use MOABB
 
-First, you could take a look at our [tutorials](./tutorials) that cover the most important
+First, you could take a look at our [tutorials](examples/tutorials) that cover the most important
 concepts and use cases. Also, we have a several [examples](./examples/) available.
 
 You might be interested in [MOABB documentation][link_moabb_docs]
