@@ -1,6 +1,7 @@
 :html_theme.sidebar_secondary.remove:
 
-.. mdinclude:: README.md
+.. include:: README.md
+   :parser: myst
 
 .. include:: cite.rst
 

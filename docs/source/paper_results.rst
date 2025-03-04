@@ -1,4 +1,9 @@
+.. meta::
+   :hide_sidebar: true
+
 :html_theme.sidebar_secondary.remove:
+:html_theme.sidebar_primary.remove:
+
 .. _paper_results:
 .. raw:: html
 

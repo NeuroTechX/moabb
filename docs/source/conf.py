@@ -67,7 +67,7 @@ extensions = [
     "sphinx_design",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
-    "m2r2",
+    "myst_parser",
     "numpydoc",
     "sphinx_favicon",
     "sphinxcontrib.jquery",
@@ -207,11 +207,8 @@ todo_include_todos = True
 # a list of builtin themes.
 #
 
-import sphinx_rtd_theme  # noqa
-
 
 html_theme = "pydata_sphinx_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 switcher_version_match = "dev" if release.endswith("dev0") else version
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -234,7 +231,6 @@ html_theme_options = {
     "show_toc_level": 1,
     "nosidebar": "true",
     "navbar_end": ["theme-switcher"],
-    "footer_items": ["copyright"],
     "pygment_light_style": "default",
     "announcement": "https://raw.githubusercontent.com/NeuroTechX/moabb"
     "/develop/docs/source/_templates/custom-template.html",

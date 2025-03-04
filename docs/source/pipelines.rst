@@ -23,24 +23,3 @@ Pipelines
 	classification.SSVEP_CCA
     classification.SSVEP_TRCA
     classification.SSVEP_MsetCCA
-    deep_learning.KerasDeepConvNet
-    deep_learning.KerasEEGITNet
-    deep_learning.KerasEEGNet_8_2
-    deep_learning.KerasEEGNeX
-    deep_learning.KerasEEGTCNet
-    deep_learning.KerasShallowConvNet
-
-
-------------
-Base & Utils
-------------
-
-.. autosummary::
-    :toctree: generated/
-    :template: function.rst
-
-    utils.create_pipeline_from_config
-    utils.FilterBank
-    utils_deep_model.EEGNet
-    utils_deep_model.EEGNet_TC
-    utils_deep_model.TCN_block
