@@ -187,21 +187,21 @@ class TestMotorImagery(unittest.TestCase):
             )
         print("\n".join(cm.output))
         expected = [
-            "Attempting to retrieve cache .* datatype-array",
+            "Attempting to retrieve cache .* suffix-array",
             "No cache found at",
-            "Attempting to retrieve cache .* datatype-epo",
+            "Attempting to retrieve cache .* suffix-epo",
             "No cache found at",
-            "Attempting to retrieve cache .* datatype-eeg",  # raw_pipeline
+            "Attempting to retrieve cache .* suffix-eeg",  # raw_pipeline
             "No cache found at",
-            "Attempting to retrieve cache .* datatype-eeg",
+            "Attempting to retrieve cache .* suffix-eeg",
             # SetRawAnnotations pipeline
             "No cache found at",
-            "Starting caching .* datatype-eeg",
-            "Finished caching .* datatype-eeg",
-            "Starting caching .* datatype-epo",
-            "Finished caching .* datatype-epo",
-            "Starting caching .* datatype-array",
-            "Finished caching .* datatype-array",
+            "Starting caching .* suffix-eeg",
+            "Finished caching .* suffix-eeg",
+            "Starting caching .* suffix-epo",
+            "Finished caching .* suffix-epo",
+            "Starting caching .* suffix-array",
+            "Finished caching .* suffix-array",
         ]
         assert len(expected) == len(cm.output)
         for i, regex in enumerate(expected):
@@ -225,8 +225,8 @@ class TestMotorImagery(unittest.TestCase):
             )
         print("\n".join(cm.output))
         expected = [
-            "Attempting to retrieve cache .* datatype-array",
-            "Finished reading cache .* datatype-array",
+            "Attempting to retrieve cache .* suffix-array",
+            "Finished reading cache .* suffix-array",
         ]
         assert len(expected) == len(cm.output)
         for i, regex in enumerate(expected):
@@ -250,10 +250,10 @@ class TestMotorImagery(unittest.TestCase):
             )
         print("\n".join(cm.output))
         expected = [
-            "Starting erasing cache .* datatype-array",
-            "Finished erasing cache .* datatype-array",
-            "Attempting to retrieve cache .* datatype-epo",
-            "Finished reading cache .* datatype-epo",
+            "Starting erasing cache .* suffix-array",
+            "Finished erasing cache .* suffix-array",
+            "Attempting to retrieve cache .* suffix-epo",
+            "Finished reading cache .* suffix-epo",
         ]
         assert len(expected) == len(cm.output)
         for i, regex in enumerate(expected):
@@ -277,12 +277,12 @@ class TestMotorImagery(unittest.TestCase):
             )
         print("\n".join(cm.output))
         expected = [
-            "Attempting to retrieve cache .* datatype-array",
+            "Attempting to retrieve cache .* suffix-array",
             "No cache found at",
-            "Starting erasing cache .* datatype-epo",
-            "Finished erasing cache .* datatype-epo",
-            "Attempting to retrieve cache .* datatype-eeg",
-            "Finished reading cache .* datatype-eeg",
+            "Starting erasing cache .* suffix-epo",
+            "Finished erasing cache .* suffix-epo",
+            "Attempting to retrieve cache .* suffix-eeg",
+            "Finished reading cache .* suffix-eeg",
         ]
         assert len(expected) == len(cm.output)
         for i, regex in enumerate(expected):
