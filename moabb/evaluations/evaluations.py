@@ -780,3 +780,132 @@ class CrossSubjectEvaluation(BaseEvaluation):
 
     def is_valid(self, dataset):
         return len(dataset.subject_list) > 1
+
+
+class CrossDatasetEvaluation(BaseEvaluation):
+    """Evaluation class for deep learning models across different datasets. Useful for cross-dataset transfer learning.
+
+    Parameters
+    ----------
+    train_dataset : Dataset or list of Dataset
+        Dataset(s) to use for training
+    test_dataset : Dataset or list of Dataset
+        Dataset(s) to use for testing
+    pretrained_model : Optional[BaseEstimator]
+        Pre-trained model to use (if None, will train from scratch)
+    fine_tune : bool, default=True
+        Whether to fine-tune the pretrained model on train_dataset
+    sfreq : float, default=128
+        Target sampling frequency for all datasets
+    **kwargs : dict
+        Additional parameters passed to BaseEvaluation (paradigm, n_jobs, etc.)
+    """
+
+    def __init__(
+        self,
+        train_dataset,
+        test_dataset,
+        pretrained_model=None,
+        fine_tune=True,
+        sfreq=128,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self.train_dataset = (
+            train_dataset if isinstance(train_dataset, list) else [train_dataset]
+        )
+        self.test_dataset = (
+            test_dataset if isinstance(test_dataset, list) else [test_dataset]
+        )
+        self.pretrained_model = pretrained_model
+        self.fine_tune = fine_tune
+        self.sfreq = sfreq
+
+        self._validate_datasets()
+
+    def _validate_datasets(self):
+        """Validate compatibility of train and test datasets."""
+        all_datasets = self.train_dataset + self.test_dataset
+
+        for dataset in all_datasets:
+            if not self.paradigm.is_valid(dataset):
+                raise ValueError(f"Dataset {dataset.code} not compatible with paradigm")
+
+    def evaluate(self, dataset, pipelines):
+        """Evaluate models across datasets.
+
+        Parameters
+        ----------
+        dataset : Dataset
+            Unused but required by interface
+        pipelines : dict
+            Dictionary of pipelines to evaluate
+
+        Yields
+        ------
+        dict
+            Evaluation results containing scores and metadata
+        """
+        log.info("Starting cross-dataset evaluation")
+
+        # Prepare training data
+        train_X, train_y, train_metadata = [], [], []
+        for train_ds in self.train_dataset:
+            raw, labels, events = self.paradigm.get_data(
+                dataset=train_ds, subjects=train_ds.subject_list, return_epochs=False
+            )
+
+            if len(events) == 0:
+                log.warning(f"No events found in dataset {train_ds.code}, skipping")
+                continue
+
+            train_X.append(raw)
+            train_y.extend(labels)
+            train_metadata.append({"events": events})
+
+        if not train_X:
+            raise ValueError("No valid training data found with events")
+
+        # Evaluate on test datasets
+        for test_ds in self.test_dataset:
+            raw, labels, events = self.paradigm.get_data(
+                dataset=test_ds, subjects=test_ds.subject_list, return_epochs=False
+            )
+
+            if len(events) == 0:
+                log.warning(f"No events found in dataset {test_ds.code}, skipping")
+                continue
+
+            test_X = raw
+            test_y = labels
+
+            for name, pipeline in pipelines.items():
+                if _carbonfootprint:
+                    tracker = EmissionsTracker(save_to_file=False, log_level="error")
+                    tracker.start()
+
+                t_start = time()
+
+                try:
+                    model = clone(pipeline).fit(train_X[0], train_y)
+                    score = model.score(test_X, test_y)
+                    duration = time() - t_start
+
+                    result = {
+                        "time": duration,
+                        "dataset": test_ds,
+                        "score": score,
+                        "n_samples": len(test_y),
+                        "pipeline": name,
+                        "training_datasets": [ds.code for ds in self.train_dataset],
+                    }
+
+                    yield result
+
+                except Exception as e:
+                    log.error(f"Error evaluating pipeline {name}: {str(e)}")
+                    raise
+
+    def is_valid(self, dataset):
+        """Check if dataset is valid for this evaluation."""
+        return True

@@ -5,6 +5,7 @@ accuracy, across-subject accuracy, or other transfer learning settings."""
 
 # flake8: noqa
 from .evaluations import (
+    CrossDatasetEvaluation,
     CrossSessionEvaluation,
     CrossSubjectEvaluation,
     WithinSessionEvaluation,
