@@ -79,7 +79,7 @@ state of the art by 5% ...”.
 
 ## Installation
 
-Please check the instalation webpage with the description and step to install moabb!
+Please check the installation webpage with the description and step to install moabb!
 
 [Install](https://neurotechx.github.io/moabb/install/install.html)]
 
