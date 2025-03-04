@@ -39,6 +39,7 @@ Bugs
 - Fixing bug with braindecode and moabb datasets EPFLP300 (:gh:`696` by `Bruno Aristimunha`_)
 - Fixing the dataset details for bids conversion (:gh:`698` by `Bruno Aristimunha`_)
 - Fixing unit issue and lack of montage with :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.Huebner2018`,  :class:`moabb.datasets.Cattan2019_PHMD`, :class:`moabb.datasets.Ofner2017`  (:gh:`700`  `Bruno Aristimunha`_)
+- Fix t-test permutation tests (:gh:`684` by `Gregoire Cattan`_, `Anton Andreev`_ and `Marco Congedo`_)
 
 
 API changes
@@ -516,3 +517,4 @@ API changes
 .. _Yash Chauhan: https://github.com/jiggychauhi
 .. _Taha Habib: https://github.com/tahatt13
 .. _AFF: https://github.com/allwaysFindFood
+.. _Marco Congedo: https://github.com/Marco-Congedo
