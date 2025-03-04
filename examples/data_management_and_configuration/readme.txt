@@ -1,7 +1,4 @@
-External examples
------------------
+Data Management and Configuration
+---------------------------------
 
-You need to install external dependencies to run these examples. These consist mostly of
-various classifier implementations. When using poetry, you can use
-
-``poetry install --extras external``
+Utility examples focused on data handling, configuration, and environment setup in MOABB. These scripts help ensure reproducible research through proper data management (download directories, standard formats) and optimized processing.
