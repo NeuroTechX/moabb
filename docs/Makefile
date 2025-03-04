@@ -18,6 +18,7 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@python prepare_summary_tables.py ../moabb/datasets $(BUILDDIR)
+	@cp ..README.rst "$(SOURCEDIR)"
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 apidoc:
