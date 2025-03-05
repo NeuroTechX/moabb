@@ -20,7 +20,7 @@ FINAL_EVALUATION_ARTICLE_ID = 16586213
 FINAL_LABEL_TXT_ARTICLE_ID = 21602622
 
 
-class BEETLA(BaseDataset):
+class Beetl2021A(BaseDataset):
     """Motor Imagery dataset from BEETL Competition - Dataset A.
 
     Dataset A contains data from subjects with 500 Hz sampling rate and 63 EEG channels.
@@ -42,7 +42,6 @@ class BEETLA(BaseDataset):
 
     For benchmarking the BEETL competition use phase "final", train on training data benchmark on testing data.
 
-
     Data is sampled at 500 Hz and contains 63 EEG channels. The data underwent frequency-domain preprocessing
     using a bandpass filter (1-100 Hz) and a 50 Hz notch filter to attenuate power line interference.
 
@@ -59,7 +58,11 @@ class BEETLA(BaseDataset):
 
     References
     ----------
-    .. [1] Original dataset: https://github.com/XiaoxiWei/NeurIPS_BEETL
+    .. [1] Wei, X., Faisal, A. A., Grosse-Wentrup, M., Gramfort, A.,
+        Chevallier, S., Jayaram, V., ... & Tempczyk, P. (2022, July). 2021
+        BEETL competition: Advancing transfer learning for subject independence
+        and heterogeneous EEG data sets. In NeurIPS 2021 Competitions and
+        Demonstrations Track (pp. 205-219). PMLR.
     .. [2] Competition: https://beetl.ai/introduction
     """
 
@@ -290,7 +293,7 @@ class BEETLA(BaseDataset):
         return [str(base_path)]
 
 
-class BEETLB(BaseDataset):
+class Beetl2021B(BaseDataset):
     """Motor Imagery dataset from BEETL Competition - Dataset B.
 
     Dataset B contains data from subjects with 200 Hz sampling rate and 32 EEG channels.
@@ -328,7 +331,11 @@ class BEETLB(BaseDataset):
 
     References
     ----------
-    .. [1] Original dataset: https://github.com/XiaoxiWei/NeurIPS_BEETL
+    .. [1] Wei, X., Faisal, A. A., Grosse-Wentrup, M., Gramfort, A.,
+        Chevallier, S., Jayaram, V., ... & Tempczyk, P. (2022, July). 2021
+        BEETL competition: Advancing transfer learning for subject independence
+        and heterogeneous EEG data sets. In NeurIPS 2021 Competitions and
+        Demonstrations Track (pp. 205-219). PMLR.
     .. [2] Competition: https://beetl.ai/introduction
     """
 
