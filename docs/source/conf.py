@@ -237,6 +237,14 @@ html_theme_options = {
     "show_version_warning_banner": True,
     "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
 }
+
+html_sidebars = {
+    "whats_new": [],
+    "paper_results": [],
+    "dataset_summary": [],
+    "api": [],
+}
+
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
 html_logo = "images/moabb_logo.svg"
