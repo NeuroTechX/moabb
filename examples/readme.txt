@@ -3,7 +3,7 @@ Let's use MOABB! (Example)
 
 The documentation for MOABB is divided into three main sections:
 
-1. The Getting Started section provide a sequential tutorial to start to
+1. The Getting Started section provides a sequential tutorial to start to
    use MOABB. They are designed to be read in **order**, and provide detailed
    explanations, sample code, and expected output for the most common MOABB
    analysis tasks. The emphasis is on thorough explanations that get new users
@@ -18,8 +18,7 @@ The documentation for MOABB is divided into three main sections:
 
 3. The :doc:`API reference <api>` that provides documentation for
    the classes, functions and methods in the MOABB codebase. This is the
-   same information that is rendered when running
-   :samp:`help(moabb.{<function_name>})` in an interactive Python session, or
+   same information that is rendered when running: samp:`help(moabb.{<function_name>})` in an interactive Python session, or
    when typing :samp:`moabb.{<function_name>}?` in an IPython session or Jupyter
    notebook.
 
