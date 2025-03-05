@@ -11,7 +11,7 @@ The documentation for MOABB is divided into three main sections:
    topics.
 
 2. MOABB comes with working code samples that exhibit various modules and techniques.
-   The examples are categorized into the categories :ref:`<../auto_examples/index.html>`.
+   The examples are categorized into the categories.
    While these examples may not provide the same level of descriptive explanations as
    tutorials, they are a beneficial resource for discovering novel ideas for analysis
    or plotting. Moreover, they illustrate how to use MOABB to implement specific module.
