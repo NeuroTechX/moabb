@@ -238,7 +238,7 @@ class Dreyer2023A(_Dreyer2023Base):
     **Dataset description**
 
     "A large EEG database with users' profile information for motor imagery
-    Brain-Computer Interface research" [1, 2]
+    Brain-Computer Interface research" [1]_ [2]_
 
     Data collectors : Appriou Aurélien; Caselli Damien; Benaroch Camille;
                       Yamamoto Sayu Maria; Roc Aline; Lotte Fabien;
@@ -249,21 +249,21 @@ class Dreyer2023A(_Dreyer2023Base):
 
     Dataset Dreyer2023A contains EEG, EOG and EMG signals recorded on 60 healthy subjects
     performing Left-Right Motor Imagery experiments
-    (29 women, age 19-59, M = 29, SD = 9.32) [1].
+    (29 women, age 19-59, M = 29, SD = 9.32) [1]_.
     Experiments were conducted by six experimenters. In addition, for each recording
     the following pieces of information are provided:
     subject's demographic, personality and cognitive profiles, the OpenViBE experimental
     instructions and codes, and experimenter's gender.
 
     The experiment is designed for the investigation of the impact of the participant's
-    and experimenter's gender on MI BCI performance [1].
+    and experimenter's gender on MI BCI performance [1]_.
 
     A recording contains open and closed eyes baseline recordings and 6 runs of the MI
     experiments. First 2 runs (acquisition runs) were used to train system and
     the following 4 runs (training runs) to train the participant. Each run contained
-    40 trials [1].
+    40 trials [1]_.
 
-    Each trial was recorded as follows [1]:
+    Each trial was recorded as follows [1]_:
         - t=0.00s  cross displayed on screen
         - t=2.00s  acoustic signal announced appearance of a red arrow
         - t=3.00s  a red arrow appears (subject starts to perform task)
@@ -272,17 +272,17 @@ class Dreyer2023A(_Dreyer2023Base):
                    with update frequency of 16 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
 
-    EEG signals [1]:
+    EEG signals [1]_:
         - recorded with 27 electrodes, namely:
           Fz, FCz, Cz, CPz, Pz, C1, C3, C5, C2, C4, C6, F4, FC2, FC4, FC6, CP2,
           CP4, CP6, P4, F3, FC1, FC3, FC5, CP1, CP3, CP5, P3 (10-20 system),
           referenced to the left earlobe.
 
-    EOG signals [1]:
+    EOG signals [1]_:
         - recorded with 3 electrodes, namely: EOG1, EOG2, EOG3
           placed below, above and on the side of one eye.
 
-    EMG signals [1]:
+    EMG signals [1]_:
         - recorded with 2 electrodes, namely: EMGg, EMGd
           placed 2.5cm below the skinfold on each wrist.
 
@@ -293,30 +293,30 @@ class Dreyer2023A(_Dreyer2023Base):
         - physical activity, meditation
         - attentional, neurological, psychiatrics symptoms
 
-    Personality and the cognitive profile [1]:
+    Personality and the cognitive profile [1]_:
         - evaluated via 5th edition of the 16 Personality Factors (16PF5) test
         - and mental rotation test
         - index of learning style
 
-    Pre and post experiment questionnaires [1]:
+    Pre and post experiment questionnaires [1]_:
         - evaluation of pre and post mood, mindfulness and motivational states
 
-    The online OpenViBE BCI classification performance [1]:
+    The online OpenViBE BCI classification performance [1]_:
         - only performance measure used to give the feedback to the participants
 
     * Subject 59 contains only 4 runs
 
     # TO DO:
-        * Article [1] states there is 29/60 women, in the excel file it is 30/60
-        * Sampling frequency? 256 Hz in [1], 512 in loaded info and at URL
+        * Article [1]_ states there is 29/60 women, in the excel file it is 30/60
+        * Sampling frequency? 256 Hz in [1]_, 512 in loaded info and at URL
 
     References
     ----------
 
-    [1] Pillette, L., Roc, A., N’kaoua, B., & Lotte, F. (2021).
+    .. [1] Pillette, L., Roc, A., N’kaoua, B., & Lotte, F. (2021).
         Experimenters' influence on mental-imagery based brain-computer interface user training.
         International Journal of Human-Computer Studies, 149, 102603.
-    [2] Benaroch, C., Yamamoto, M. S., Roc, A., Dreyer, P., Jeunet, C., & Lotte, F. (2022).
+    .. [2] Benaroch, C., Yamamoto, M. S., Roc, A., Dreyer, P., Jeunet, C., & Lotte, F. (2022).
         When should MI-BCI feature optimization include prior knowledge, and which one?.
         Brain-Computer Interfaces, 9(2), 115-128.
     """
@@ -332,7 +332,7 @@ class Dreyer2023B(_Dreyer2023Base):
     **Dataset description**
 
     "A large EEG database with users' profile information for motor imagery
-    Brain-Computer Interface research" [1, 2]
+    Brain-Computer Interface research" [1]_ [2]_
 
     Data collectors : Appriou Aurélien; Caselli Damien; Benaroch Camille;
                       Yamamoto Sayu Maria; Roc Aline; Lotte Fabien;
@@ -343,21 +343,21 @@ class Dreyer2023B(_Dreyer2023Base):
 
     Dataset Dreyer2023B contains EEG, EOG and EMG signals recorded on 21 healthy subjects
     performing Left-Right Motor Imagery experiments
-    (8 women, age 19-37, M = 29, SD = 9.318) [2].
+    (8 women, age 19-37, M = 29, SD = 9.318) [2]_.
     Experiments were conducted by female experimenters. In addition, for each recording
     the following pieces of information are provided:
     subject's demographic, personality and cognitive profiles, the OpenViBE experimental
     instructions and codes, and experimenter's gender.
 
     The experiment is designed for the investigation of the relation between MI-BCI online
-    performance and Most Discriminant Frequency Band (MDFB) [2].
+    performance and Most Discriminant Frequency Band (MDFB) [2]_.
 
     A recording contains open and closed eyes baseline recordings and 6 runs of the MI
     experiments. First 2 runs (acquisition runs) were used to train system and
     the following 4 runs (training runs) to train the participant. Each run contained
-    40 trials [1].
+    40 trials [1]_.
 
-    Each trial was recorded as follows [1]:
+    Each trial was recorded as follows [1]_:
         - t=0.00s  cross displayed on screen
         - t=2.00s  acoustic signal announced appearance of a red arrow
         - t=3.00s  a red arrow appears (subject starts to perform task)
@@ -366,17 +366,17 @@ class Dreyer2023B(_Dreyer2023Base):
                    with update frequency of 16 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
 
-    EEG signals [1]:
+    EEG signals [1]_:
         - recorded with 27 electrodes, namely:
           Fz, FCz, Cz, CPz, Pz, C1, C3, C5, C2, C4, C6, F4, FC2, FC4, FC6, CP2,
           CP4, CP6, P4, F3, FC1, FC3, FC5, CP1, CP3, CP5, P3 (10-20 system),
           referenced to the left earlobe.
 
-    EOG signals [1]:
+    EOG signals [1]_:
         - recorded with 3 electrodes, namely: EOG1, EOG2, EOG3
           placed below, above and on the side of one eye.
 
-    EMG signals [1]:
+    EMG signals [1]_:
         - recorded with 2 electrodes, namely: EMGg, EMGd
           placed 2.5cm below the skinfold on each wrist.
 
@@ -387,20 +387,20 @@ class Dreyer2023B(_Dreyer2023Base):
         - physical activity, meditation
         - attentional, neurological, psychiatrics symptoms
 
-    Personality and the cognitive profile [1]:
+    Personality and the cognitive profile [1]_:
         - evaluated via 5th edition of the 16 Personality Factors (16PF5) test
         - and mental rotation test
         - index of learning style
 
-    Pre and post experiment questionnaires [1]:
+    Pre and post experiment questionnaires [1]_:
         - evaluation of pre and post mood, mindfulness and motivational states
 
-    The online OpenViBE BCI classification performance [1]:
+    The online OpenViBE BCI classification performance [1]_:
         - only performance measure used to give the feedback to the participants
 
     # TO DO:
-        * Sampling frequency? 256 Hz in [1], 512 in loaded info and at URL
-        Mapping based on MDFB as in [2]
+        * Sampling frequency? 256 Hz in [1]_, 512 in loaded info and at URL
+        Mapping based on MDFB as in [2]_
         database_B = ['B' + str(i) for i in range(61, 82)]
         database_A = ['A' + str(i) for i in [43, 44, 6, 10, 52, 23, 48, 24, 40, 43, 2, 1,
                                              13, 22, 25, 29, 3, 11, 30, 19, 21]]
@@ -409,10 +409,10 @@ class Dreyer2023B(_Dreyer2023Base):
     References
     ----------
 
-    [1] Pillette, L., Roc, A., N’kaoua, B., & Lotte, F. (2021).
+    .. [1] Pillette, L., Roc, A., N’kaoua, B., & Lotte, F. (2021).
         Experimenters' influence on mental-imagery based brain-computer interface user training.
         International Journal of Human-Computer Studies, 149, 102603.
-    [2] Benaroch, C., Yamamoto, M. S., Roc, A., Dreyer, P., Jeunet, C., & Lotte, F. (2022).
+    .. [2] Benaroch, C., Yamamoto, M. S., Roc, A., Dreyer, P., Jeunet, C., & Lotte, F. (2022).
         When should MI-BCI feature optimization include prior knowledge, and which one?.
         Brain-Computer Interfaces, 9(2), 115-128.
     """
@@ -428,7 +428,7 @@ class Dreyer2023C(_Dreyer2023Base):
     **Dataset description**
 
     "A large EEG database with users' profile information for motor imagery
-    Brain-Computer Interface research" [1, 2]
+    Brain-Computer Interface research" [1]_ [2]_
 
     Data collectors : Appriou Aurélien; Caselli Damien; Benaroch Camille;
                       Yamamoto Sayu Maria; Roc Aline; Lotte Fabien;
@@ -447,9 +447,9 @@ class Dreyer2023C(_Dreyer2023Base):
     A recording contains open and closed eyes baseline recordings and 6 runs of the MI
     experiments. First 2 runs (acquisition runs) were used to train system and
     the following 4 runs (training runs) to train the participant. Each run contained
-    40 trials [1].
+    40 trials [1]_.
 
-    Each trial was recorded as follows [1]:
+    Each trial was recorded as follows [1]_:
         - t=0.00s  cross displayed on screen
         - t=2.00s  acoustic signal announced appearance of a red arrow
         - t=3.00s  a red arrow appears (subject starts to perform task)
@@ -458,17 +458,17 @@ class Dreyer2023C(_Dreyer2023Base):
                    with update frequency of 16 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
 
-    EEG signals [1]:
+    EEG signals [1]_:
         - recorded with 27 electrodes, namely:
           Fz, FCz, Cz, CPz, Pz, C1, C3, C5, C2, C4, C6, F4, FC2, FC4, FC6, CP2,
           CP4, CP6, P4, F3, FC1, FC3, FC5, CP1, CP3, CP5, P3 (10-20 system),
           referenced to the left earlobe.
 
-    EOG signals [1]:
+    EOG signals [1]_:
         - recorded with 3 electrodes, namely: EOG1, EOG2, EOG3
           placed below, above and on the side of one eye.
 
-    EMG signals [1]:
+    EMG signals [1]_:
         - recorded with 2 electrodes, namely: EMGg, EMGd
           placed 2.5cm below the skinfold on each wrist.
 
@@ -479,27 +479,27 @@ class Dreyer2023C(_Dreyer2023Base):
         - physical activity, meditation
         - attentional, neurological, psychiatrics symptoms
 
-    Personality and the cognitive profile [1]:
+    Personality and the cognitive profile [1]_:
         - evaluated via 5th edition of the 16 Personality Factors (16PF5) test
         - and mental rotation test
         - index of learning style
 
-    Pre and post experiment questionnaires [1]:
+    Pre and post experiment questionnaires [1]_:
         - evaluation of pre and post mood, mindfulness and motivational states
 
-    The online OpenViBE BCI classification performance [1]:
+    The online OpenViBE BCI classification performance [1]_:
         - only performance measure used to give the feedback to the participants
 
     # TO DO:
-        * Sampling frequency? 256 Hz in [1], 512 in loaded info and at URL
+        * Sampling frequency? 256 Hz in [1]_, 512 in loaded info and at URL
 
     References
     ----------
 
-    [1] Pillette, L., Roc, A., N’kaoua, B., & Lotte, F. (2021).
+    .. [1] Pillette, L., Roc, A., N’kaoua, B., & Lotte, F. (2021).
         Experimenters' influence on mental-imagery based brain-computer interface user training.
         International Journal of Human-Computer Studies, 149, 102603.
-    [2] Benaroch, C., Yamamoto, M. S., Roc, A., Dreyer, P., Jeunet, C., & Lotte, F. (2022).
+    .. [2] Benaroch, C., Yamamoto, M. S., Roc, A., Dreyer, P., Jeunet, C., & Lotte, F. (2022).
         When should MI-BCI feature optimization include prior knowledge, and which one?.
         Brain-Computer Interfaces, 9(2), 115-128.
     """
