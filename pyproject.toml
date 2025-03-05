@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "moabb"
-version = "1.1.2"
+version = "1.2.0"
 description = "Mother of All BCI Benchmarks"
 authors = ["Alexandre Barachant", "Vinay Jayaram"]
 maintainers = ["Sylvain Chevallier <sylvain.chevallier@universite-paris-saclay.fr>"]
@@ -9,7 +9,6 @@ repository = "https://github.com/NeuroTechX/moabb"
 documentation = "https://neurotechx.github.io/moabb"
 keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
 license = "BSD-3-Clause"
-
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
@@ -34,18 +33,17 @@ pytest = "^7.4.0"
 mne-bids = ">=0.14"
 scikit-learn = "<1.6"
 
-
 # Optional dependencies for carbon emission
 codecarbon = { version = "^2.1.4", optional = true }
 
 # Optional dependencies for deep learning
 tensorflow = { version = ">=2.16", optional = true }
 keras = { version = ">=3.2.0", optional = true }
-scikeras =  { version = "^0.13.0", optional = true }
+scikeras = { version = "^0.13.0", optional = true }
 libclang = { version = "^15.0", optional = true }
 optuna = { version = "^3.6.1", optional = true }
 optuna-integration = { version = "^3.6.0", optional = true }
-braindecode = {version = ">=0.8.1", optional = true}
+braindecode = { version = ">=0.8.1", optional = true }
 
 # Optional dependencies for tests
 pytest-cov = { version = ">=5.0.0", optional = true }
@@ -64,16 +62,26 @@ sphinx-rtd-theme = { version = "^1.2.0", optional = true }
 sphinx_copybutton = { version = "^0.4.0", optional = true }
 sphinxcontrib-bibtex = { version = "^2.2.0", optional = true }
 sphinx-favicon = { version = "^1.0.1", optional = true }
-tdlda = { git = "https://github.com/jsosulski/tdlda.git", rev = "0.1.0", optional = true}
-
+tdlda = { git = "https://github.com/jsosulski/tdlda.git", optional = true }
 
 [tool.poetry.extras]
 carbonemission = ["codecarbon"]
 deeplearning = ["tensorflow", "keras", "scikeras", "braindecode", "libclang"]
 optuna = ["optuna", "optuna-integration"]
 tests = ["pytest", "pytest-cov", "codecov", "pytest_cases"]
-docs = ["Sphinx", "sphinx-gallery", "sphinx-bootstrap-theme", "pydata-sphinx-theme", "numpydoc", "m2r2", "tdlda", "sphinx-design", "sphinx-rtd-theme", "sphinx_copybutton", "sphinxcontrib-bibtex", "sphinx-favicon"]
-external = ["tdlda"]
+docs = [
+  "sphinx",
+  "sphinx-gallery",
+  "sphinx-bootstrap-theme",
+  "pydata-sphinx-theme",
+  "numpydoc",
+  "m2r2",
+  "sphinx-design",
+  "sphinx-rtd-theme",
+  "sphinx_copybutton",
+  "sphinxcontrib-bibtex",
+  "sphinx-favicon"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -83,14 +91,12 @@ build-backend = "poetry.core.masonry.api"
 line-length = 90
 target-version = ["py38"]
 
-
 [tool.isort]
 src_paths = ["moabb"]
 profile = "black"
 line_length = 90
 lines_after_imports = 2
 
-# pyproject.toml
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -q"
