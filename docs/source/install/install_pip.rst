@@ -13,9 +13,9 @@ MOABB can be installed via pip from `PyPI <https://pypi.org/project/moabb>`__.
 
 Below are the installation commands for the most common use cases.
 
-.. code-block:: console
+.. code-block:: bash
 
-   pip install bash
+   pip install moabb
 
 MOABB can also be installed with sets of optional dependencies to enable the deep learning modules, the tracker of the carbon emission module or the documentation environment.
 
