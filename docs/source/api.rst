@@ -6,9 +6,13 @@ API and Main Concepts
 
    architecture
 
-There are 4 main concepts in the MOABB: the datasets, the paradigm, the
-evaluation, and the pipelines. In addition, we offer statistical and
-visualization utilities to simplify the workflow.
+There are 4 main concepts in the MOABB: **the datasets**, **the paradigm**, **the
+evaluation**, and **the pipelines**. In addition, we offer **statistical**,
+**visualization**, **utilities** to simplify the workflow.
+
+And if you want to just run the benchmark, you can use our **benchmark** module that wraps
+all the steps in a single function.
+
 
 Datasets
 --------
@@ -54,19 +58,40 @@ for more info.
 
 .. include:: api/pipelines.rst
 
-Statistics and visualization
-----------------------------
+Statistics, visualization and utilities
+---------------------------------------
 
 Once an evaluation has been run, the raw results are returned as a
 DataFrame. This can be further processed via the following commands to
 generate some basic visualization and statistical comparisons:
 
-.. code:: python
-
-   from moabb.analysis import analyze
-
-   results = evaluation.process(pipeline_dict)
-   analyze(results)
 
 .. include:: api/analysis.rst
 .. include:: api/utils.rst
+
+Benchmark
+----------------------------
+
+The benchmark module wraps all the steps in a single function. It
+downloads the data, runs the benchmark, and returns the results. It is
+the easiest way to run a benchmark.
+
+.. code:: python
+
+    from moabb import benchmark
+
+    results = benchmark(
+        pipelines="./pipelines",
+        evaluations=["WithinSession"],
+        paradigms=["LeftRightImagery"],
+        include_datasets=[BNCI2014_001(), PhysionetMI()],
+        exclude_datasets=None,
+        results="./results/",
+        overwrite=True,
+        plot=True,
+        output="./benchmark/",
+        n_jobs=-1,
+    )
+
+
+.. include:: api/benchmark.rst

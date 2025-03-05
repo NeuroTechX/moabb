@@ -1,9 +1,3 @@
-=========
-Paradigms
-=========
-
-.. automodule:: moabb.paradigms
-
 .. currentmodule:: moabb.paradigms
 
 -----------------------
@@ -65,9 +59,9 @@ Resting state Paradigms
 
     RestingStateToP300Adapter
 
---------------
+-----------------------------------
 Fixed Interval Windows Processings
---------------
+-----------------------------------
 
 .. autosummary::
     :toctree: generated/

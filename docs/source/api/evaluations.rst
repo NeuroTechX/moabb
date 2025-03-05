@@ -1,14 +1,4 @@
-===========
-Evaluations
-===========
-
-.. automodule:: moabb.evaluations
-
 .. currentmodule:: moabb.evaluations
-
------------
-Evaluations
------------
 
 .. autosummary::
     :toctree: generated/

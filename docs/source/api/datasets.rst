@@ -1,9 +1,3 @@
-========
-Datasets
-========
-
-.. automodule:: moabb.datasets
-
 .. currentmodule:: moabb.datasets
 
 ----------------------
