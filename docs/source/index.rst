@@ -16,6 +16,5 @@
    Datasets <dataset_summary>
    Install <install/install>
    Gallery <auto_examples/index>
-   How does Moabb work? <main_concepts>
-   API reference <api>
+   API <api>
    Release notes <whats_new>
