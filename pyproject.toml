@@ -73,6 +73,7 @@ deeplearning = ["tensorflow", "keras", "scikeras", "braindecode", "libclang"]
 optuna = ["optuna", "optuna-integration"]
 tests = ["pytest", "pytest-cov", "codecov", "pytest_cases"]
 docs = ["Sphinx", "sphinx-gallery", "sphinx-bootstrap-theme", "pydata-sphinx-theme", "numpydoc", "m2r2", "tdlda", "sphinx-design", "sphinx-rtd-theme", "sphinx_copybutton", "sphinxcontrib-bibtex", "sphinx-favicon"]
+external = ["tdlda"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
