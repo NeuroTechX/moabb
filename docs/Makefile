@@ -1,6 +1,5 @@
 # Minimal makefile for Sphinx documentation
 #
-
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
@@ -17,7 +16,6 @@ help:
 copy-readme:
 	cp ../README.md source/README.md
 
-
 .PHONY: help Makefile
 
 # Catch-all target: route all unknown targets to Sphinx using the new
@@ -26,10 +24,9 @@ copy-readme:
 	@python prepare_summary_tables.py ../moabb/datasets $(BUILDDIR)
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-
 apidoc: copy-readme
 	sphinx-apidoc -o "$(SOURCEDIR)" ../"$(SPHINXPROJ)" --module-first -d 1
 
-html-noplot:
+html-noplot: copy-readme
 	@$(SPHINXBUILD) -D plot_gallery=0 -b html "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
