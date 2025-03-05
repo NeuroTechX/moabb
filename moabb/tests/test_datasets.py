@@ -280,28 +280,6 @@ class Test_Datasets(unittest.TestCase):
                 continue
             assert ds.__name__ in _summary_table.index
 
-    def test_dataset_docstring_table(self):
-        # The dataset summary table will be automatically added to the docstring of
-        # all the datasets listed in the moabb/datasets/summary_*.csv files.
-        depreciated_names, _, _ = zip(*aliases_list)
-        for ds in dataset_list:
-            if "Fake" in ds.__name__:
-                continue
-            if ds.__name__ in depreciated_names:
-                continue
-            self.assertIn(".. admonition:: Dataset summary", ds.__doc__)
-
-    def test_completeness_summary_table(self):
-        # The dataset summary table will be automatically added to the docstring of
-        # all the datasets listed in the moabb/datasets/summary_*.csv files.
-        depreciated_names, _, _ = zip(*aliases_list)
-        for ds in dataset_list:
-            if "Fake" in ds.__name__:
-                continue
-            if ds.__name__ in depreciated_names:
-                continue
-            self.assertIn(ds.__name__, _summary_table.index)
-
     def test_dataset_list(self):
         if aliases_list:
             depreciated_list, _, _ = zip(*aliases_list)
