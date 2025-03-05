@@ -79,7 +79,7 @@ state of the art by 5% ...”.
 
 ## Installation
 
-Please check the instalation webpage with the description and step to install moabb!
+Please check the installation webpage with the description and step to install moabb!
 
 [Install](https://neurotechx.github.io/moabb/install/install.html)]
 
@@ -119,8 +119,8 @@ The project is currently maintained by:
 </table>
 
 The Mother of all BCI Benchmarks was founded by Alexander Barachant and Vinay Jayaram, who
-are experts in the field of Brain-Computer Interfaces (BCI). At moment, both works as
-Research Scientist
+are experts in the field of Brain-Computer Interfaces (BCI). At the moment, both work as
+Research Scientists.
 
 <table style="text-align: center;">
   <thead>
@@ -138,7 +138,7 @@ Research Scientist
 
 ## Contributors
 
-The MOABB is a community project, and we are always thankful for all the contributors!
+The MOABB is a community project, and we are always thankful to all the contributors!
 
 <div id="contributors-container"></div>
 
