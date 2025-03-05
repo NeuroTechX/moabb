@@ -17,6 +17,8 @@ Develop branch  - 1.2.1
 
 Enhancements
 ~~~~~~~~~~~~
+- Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
+
 
 Bugs
 ~~~~
