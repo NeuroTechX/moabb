@@ -1,7 +1,5 @@
-# Mother of all BCI Benchmarks
-
 <p align="center" class="large-text">
-  <img src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
+  <span style="font-size: 50px; font-weight: 900;">Mother of all BCI Benchmarks</span>   <img src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
   Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
 </p>
 
@@ -26,21 +24,6 @@ First and foremost, Welcome! :tada: Willkommen! :confetti_ball: Bienvenue!
 :balloon::balloon::balloon:
 
 Thank you for visiting the Mother of all BCI Benchmark repository.
-
-This document is a hub to give you some information about the project. Jump straight to
-one of the sections below, or just scroll down to find out more.
-
-- [What are we doing? (And why?)](#what-are-we-doing)
-- [Installation](#installation)
-- [Running](#running)
-- [Supported datasets](#supported-datasets)
-- [Who are we?](#who-are-we)
-- [Get in touch](#contact-us)
-- [Documentation][link_moabb_docs]
-- [Architecture and main concepts](#architecture-and-main-concepts)
-- [Citing MOABB and related publications](#citing-moabb-and-related-publications)
-
-## What are we doing?
 
 ### The problem
 
@@ -77,21 +60,6 @@ This project will be successful when we read in an abstract “ … the proposed
 obtained a score of 89% on the MOABB (Mother of All BCI Benchmarks), outperforming the
 state of the art by 5% ...”.
 
-## Installation
-
-Please check the installation webpage with the description and step to install moabb!
-
-[Install](https://neurotechx.github.io/moabb/install/install.html)]
-
-See [contributors' guidelines](CONTRIBUTING.md) for detailed explanation.
-
-
-### Use MOABB
-
-First, you could take a look at our [tutorials](./auto_tutorials/index.html) that cover
-the most important concepts and use cases. Also, we have a gallery of
-[examples](./auto_examples/index.html) available.
-
 ## Core Team
 
 This project is under the umbrella of [NeuroTechX][link_neurotechx], the international
@@ -120,7 +88,7 @@ The project is currently maintained by:
 
 The Mother of all BCI Benchmarks was founded by Alexander Barachant and Vinay Jayaram, who
 are experts in the field of Brain-Computer Interfaces (BCI). At the moment, both work as
-Research Scientists.
+Research Scientists at Meta.
 
 <table style="text-align: center;">
   <thead>
@@ -202,21 +170,47 @@ we're here to help.
 If you use MOABB in your experiments, please cite this library when
 publishing a paper to increase the visibility of open science initiatives:
 
+* Here is the APA version:
 ```
-Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Reinmar, K., Schirrmeister, R. T.,Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant,A., & Chevallier, S.
-Mother of all BCI Benchmarks (MOABB), 2023. DOI: 10.5281/zenodo.10034223.
+Aristimunha, B., Carrara, I., Guetschel, P., Sedlar, S., Rodrigues, P., Sosulski, J., Narayanan, D., Bjareholt, E., Barthelemy, Q., Schirrmeister, R. T., Kobler, R., Kalunga, E., Darmet, L., Gregoire, C., Abdul Hussain, A., Gatti, R., Goncharenko, V., Thielen, J., Moreau, T., Roy, Y., Jayaram, V., Barachant, A., & Chevallier, S. (2025).
+Mother of all BCI Benchmarks (MOABB), 2025. DOI: 10.5281/zenodo.10034223.
 ```
-and here is the Bibtex version:
+
+and the Bibtex version:
+
 ```bibtex
 
-@software{Aristimunha_Mother_of_all,
- author = {Aristimunha, Bruno and Carrara, Igor and Guetschel, Pierre and Sedlar, Sara and Rodrigues, Pedro and Sosulski, Jan and Narayanan, Divyesh and Bjareholt, Erik and Barthelemy, Quentin and Kobler, Reinmar and Schirrmeister, Robin Tibor and Kalunga, Emmanuel and Darmet, Ludovic and Gregoire, Cattan and Abdul Hussain, Ali and Gatti, Ramiro and Goncharenko, Vladislav and Thielen, Jordy and Moreau, Thomas and Roy, Yannick and Jayaram, Vinay and Barachant, Alexandre and Chevallier, Sylvain},
- doi = {10.5281/zenodo.10034223},
- title = {{Mother of all BCI Benchmarks}},
- url = {https://github.com/NeuroTechX/moabb},
- version = {1.1.2},
- year = {2025}
- }
+    @software{Aristimunha_Mother_of_all,
+      author       = {Aristimunha, Bruno and
+                      Carrara, Igor and
+                      Guetschel, Pierre and
+                      Sedlar, Sara and
+                      Rodrigues, Pedro and
+                      Sosulski, Jan and
+                      Narayanan, Divyesh and
+                      Bjareholt, Erik and
+                      Barthelemy, Quentin and
+                      Schirrmeister, Robin Tibor and
+                      Kobler, Reinmar and
+                      Kalunga, Emmanuel and
+                      Darmet, Ludovic and
+                      Gregoire, Cattan and
+                      Abdul Hussain, Ali and
+                      Gatti, Ramiro and
+                      Goncharenko, Vladislav and
+                      Thielen, Jordy and
+                      Moreau, Thomas and
+                      Roy, Yannick and
+                      Jayaram, Vinay and
+                      Barachant, Alexandre and
+                      Chevallier, Sylvain},
+            title        = {Mother of all BCI Benchmarks},
+            year         = 2025,
+            publisher    = {Zenodo},
+            version      = {v1.2.0},
+            url = {https://github.com/NeuroTechX/moabb},
+            doi = {10.5281/zenodo.10034223},
+    }
 ```
 
 If you want to cite the scientific contributions of MOABB, you could use the following paper:
@@ -231,8 +225,7 @@ If you want to cite the scientific contributions of MOABB, you could use the fol
 > [DOI](https://doi.org/10.1088/1741-2552/aadea0)
 
 If you publish a paper using MOABB, please contact us on [gitter][link_gitter] or open an
-issue, and we will add your paper to the
-[dedicated wiki page](https://github.com/NeuroTechX/moabb/wiki/MOABB-bibliography).
+issue! We would love to hear about your work and help you promote it.
 
 
 ## Contact us
@@ -241,8 +234,7 @@ If you want to report a problem or suggest an enhancement, we'd love for you to
 [open an issue](https://github.com/NeuroTechX/moabb/issues) at this GitHub repository
 because then we can get right on it.
 
-For a less formal discussion or exchanging ideas, you can also reach us on the [Gitter
-channel][link_gitter] or join our weekly office hours! This an open video meeting
+For a less formal discussion or exchanging ideas, you can also reach us on the Github or join our weekly office hours! This an open video meeting
 happening on a [regular basis](https://github.com/NeuroTechX/moabb/issues/191), please ask
 the link on the gitter channel. We are also on NeuroTechX Slack channel
 [#moabb][link_neurotechx_signup].

@@ -65,7 +65,5 @@ Here is the BibTeX entry for the above paper:
      publisher={IOP Publishing}
    }
 
-If you publish a paper using MOABB, please contact us on
-`gitter <https://app.gitter.im/#/room/#moabb_dev_community:gitter.im>`__
-or open an issue, and we will add your paper to the `dedicated wiki
-page <https://github.com/NeuroTechX/moabb/wiki/MOABB-bibliography>`__.
+If you publish a paper using MOABB, please contact us on [gitter][link_gitter] or open an
+issue! We would love to hear about your work and help you promote it.
