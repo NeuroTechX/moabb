@@ -48,9 +48,9 @@ temp_dir = Path(tempfile.mkdtemp())
 # by simply calling its ``get_data`` method and using the ``cache_config``
 # parameter. This parameter is a dictionary.
 dataset = AlexMI()
-dataset.subject_list = dataset.subject_list[
-    :1
-]  # Reducing the number of subjects to speed up the example
+# Reducing the number of subjects to speed up the example
+
+dataset.subject_list = dataset.subject_list[:1]
 _ = dataset.get_data(cache_config=dict(path=temp_dir, save_raw=True))
 
 
