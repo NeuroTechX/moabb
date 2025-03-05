@@ -3,8 +3,6 @@
 .. include:: README.md
    :parser: myst
 
-.. include:: cite.rst
-
 .. toctree::
    :glob:
    :hidden:
@@ -17,4 +15,5 @@
    Installation <install/install>
    Examples <auto_examples/index>
    API <api>
+   Citation <cite>
    Release notes <whats_new>
