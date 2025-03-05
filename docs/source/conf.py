@@ -172,7 +172,6 @@ sphinx_gallery_conf = {
             "../../examples/how_to_benchmark",
             "../../examples/advanced_examples",
             "../../examples/learning_curve",
-            "../../examples/external",
         ]
     ),
     "within_subsection_order": FileNameSortKey,
