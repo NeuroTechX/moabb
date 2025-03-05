@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
     <link rel="moabb icon" sizes="180x180" href="../_static/moabb_logo.png" type="image/png">
-    <title>Installing from sources &#8212; moabb 1.1.1-dev documentation</title>
+    <title>Installing from sources &#8212; moabb 1.2.0-dev documentation</title>
   
   
   
@@ -64,7 +64,7 @@
     <script src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Moabb and docker" href="using_docker.html" />
+    <link rel="next" title="Documentation overview" href="../overview.html" />
     <link rel="prev" title="Installing from PyPI" href="install_pip.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -415,7 +415,6 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="install_pip.html">Installing from PyPI</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Installing from sources</a></li>
 
-<li class="toctree-l1"><a class="reference internal" href="using_docker.html">Moabb and docker</a></li>
 </ul>
 </div>
 </nav></div>
@@ -506,40 +505,18 @@ work, then the recommended way to build and install is to use <code class="docut
 <h2>Building MOABB from source with the development environment<a class="headerlink" href="#building-moabb-from-source-with-the-development-environment" title="Permalink to this heading">#</a></h2>
 <p>If you want to build from source to work on MOABB itself, then follow these steps:</p>
 <ol class="arabic simple">
-<li><p>Install poetry by running the following command (only needs to be done once per machine):</p></li>
-</ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-sSL<span class="w"> </span>https://install.python-poetry.org<span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-
-</pre></div>
-</div>
-<p>You could also check checkout <a class="reference external" href="https://python-poetry.org/docs/#installation">poetry installation instruction</a> or
-use <a class="reference external" href="https://anaconda.org/conda-forge/poetry">conda forge version</a></p>
-<p>We need the most updated version of the poetry to ensure the compatibility with optional dependency.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you have any group-related errors at the end of this section, you may not run the proper version of poetry.</p>
-</div>
-<ol class="arabic simple" start="2">
-<li><p>(Optional) We recommend disabling automatic environment creation:</p></li>
-</ol>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">poetry config virtualenvs.create false</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This step is optional. Skip if you are not sure.</p>
-</div>
-<ol class="arabic simple" start="3">
+<li><p>Install pip on your system follow the tutorial: <a class="reference external" href="https://pip.pypa.io/en/stable/installation/">https://pip.pypa.io/en/stable/installation/</a>.</p></li>
 <li><p>If you want to install without any optional dependency</p></li>
 </ol>
 <p>You will need to run this command in the project directory:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">poetry install</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install -e .</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="4">
+<ol class="arabic simple" start="3">
 <li><p>If you want to install with an optional dependency</p></li>
 </ol>
 <p>You will need to run this command in the project directory:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">poetry install --extras &quot;deeplearning carbonemission docs&quot;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install -e .[deeplearning,carbonemission,docs,optuna,tests,external]</span>
 </pre></div>
 </div>
 <p>For a full list of dependencies, see the pyproject.toml file.</p>
@@ -551,7 +528,7 @@ for a detailed explanation.</p>
 <section id="testing-if-your-installation-is-working">
 <h1>Testing if your installation is working<a class="headerlink" href="#testing-if-your-installation-is-working" title="Permalink to this heading">#</a></h1>
 <p>To verify that MOABB is installed and running correctly, run the following command:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m unittest moabb.tests</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pytest moabb/tests --verbose</span>
 </pre></div>
 </div>
 <p>For more information, please see the contributors’ guidelines.</p>
@@ -578,11 +555,11 @@ for a detailed explanation.</p>
       </div>
     </a>
     <a class="right-next"
-       href="using_docker.html"
+       href="../overview.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Moabb and docker</p>
+        <p class="prev-next-title">Documentation overview</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
