@@ -21,7 +21,6 @@ MOABB can also be installed with sets of optional dependencies to enable the dee
 
 For example, to install all the optional dependencies.
 
-
 .. code-block:: bash
 
    pip install moabb[deepleaning, carbonemission, docs]
