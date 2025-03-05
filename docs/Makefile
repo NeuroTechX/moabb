@@ -15,6 +15,7 @@ help:
 
 copy-readme:
 	cp ../README.md source/README.md
+	cp ../CONTRIBUTING.md source/CONTRIBUTING.md
 
 .PHONY: help Makefile
 
