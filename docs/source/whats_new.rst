@@ -17,6 +17,8 @@ Develop branch
 
 Enhancements
 ~~~~~~~~~~~~
+- Adding :class:`moabb.dataset.Beetl2021A` and :class:`moabb.dataset.Beetl2021B`(:gh:`675` by `Samuel Boehm_`)
+
 - Adding :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`664` by `Bruna Lopes_`)
 - Update version of pyRiemann to 0.7 (:gh:`671` by `Gregoire Cattan`_)
 - Add columns definitions in the datasets doc (:gh:`672` by `Pierre Guetschel`_)
@@ -518,3 +520,4 @@ API changes
 .. _Taha Habib: https://github.com/tahatt13
 .. _AFF: https://github.com/allwaysFindFood
 .. _Marco Congedo: https://github.com/Marco-Congedo
+.. _Samuel Boehm: https://github.com/Samuel-Boehm
