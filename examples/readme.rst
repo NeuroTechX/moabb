@@ -11,3 +11,7 @@ The rest of the MOABB documentation pages are shown in the navigation menu,
 including the :ref:`list of example datasets<data_summary>`, :doc:`how to cite MOABB <cite>`, and explanations of the
 external library dependencies that MOABB uses, including Deep Learning, Code Carbon,
 Docs and others.
+
+.. toctree::
+   :glob:
+   :hidden:
