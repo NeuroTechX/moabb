@@ -48,9 +48,9 @@ dataset.subject_list = subj
 #
 # We select the paradigm SSVEP, applying a bandpass filter (3-15 Hz) on
 # the data and we keep only the first 3 classes, that is stimulation
-# frequency of 6.66, 7.50 and 8.57 Hz.
+# frequency of 13Hz, 17Hz and 21Hz.
 
-paradigm = SSVEP(fmin=3, fmax=15, n_classes=3)
+paradigm = SSVEP(fmin=10, fmax=40, n_classes=3)
 
 ##############################################################################
 # Create Pipelines
