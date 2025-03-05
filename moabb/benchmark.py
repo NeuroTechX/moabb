@@ -45,6 +45,7 @@ def benchmark(  # noqa: C901
     exclude_datasets=None,
     n_splits=None,
     cache_config=None,
+    optuna=False,
 ):
     """Run benchmarks for selected pipelines and datasets.
 
@@ -54,9 +55,6 @@ def benchmark(  # noqa: C901
 
     If particular paradigms are mentioned through select_paradigms, only the pipelines corresponding to those paradigms
     will be run. If no paradigms are mentioned, all pipelines will be run.
-
-    Pipelines stored in a file named braindecode_xxx.py will be recognized as Braindecode architectures
-    and they will receive epochs as input, instead of numpy array.
 
     To define the include_datasets or exclude_dataset, you could start from the full dataset list,
     using for example the following code:
@@ -102,6 +100,7 @@ def benchmark(  # noqa: C901
         and exclude_datasets are specified, raise an error.
     exclude_datasets: list of str or Dataset object
         Datasets to exclude from the benchmark run
+    optuna: Enable Optuna for the hyperparameter search
 
     Returns
     -------
@@ -110,7 +109,11 @@ def benchmark(  # noqa: C901
 
     Notes
     -----
+    .. versionadded:: 1.1.1
+        Includes the possibility to use Optuna for hyperparameter search.
+
     .. versionadded:: 0.5.0
+        Create the function to run the benchmark
     """
     # set logs
     if evaluations is None:
@@ -165,13 +168,13 @@ def benchmark(  # noqa: C901
 
             ppl_with_epochs, ppl_with_array = {}, {}
             for pn, pv in prdgms[paradigm].items():
-                if "braindecode" in pn or "Keras" in pn:
+                if "Keras" in pn:
                     ppl_with_epochs[pn] = pv
                 else:
                     ppl_with_array[pn] = pv
 
             if len(ppl_with_epochs) > 0:
-                # Braindecode pipelines require return_epochs=True
+                # Keras pipelines require return_epochs=True
                 context = eval_type[evaluation](
                     paradigm=p,
                     datasets=d,
@@ -182,6 +185,7 @@ def benchmark(  # noqa: C901
                     return_epochs=True,
                     n_splits=n_splits,
                     cache_config=cache_config,
+                    optuna=optuna,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_epochs, param_grid=param_grid
@@ -202,6 +206,7 @@ def benchmark(  # noqa: C901
                     overwrite=overwrite,
                     n_splits=n_splits,
                     cache_config=cache_config,
+                    optuna=optuna,
                 )
                 paradigm_results = context.process(
                     pipelines=ppl_with_array, param_grid=param_grid

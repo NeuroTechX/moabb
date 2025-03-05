@@ -120,7 +120,9 @@ class BaseMAMEM(BaseDataset):
                 ch_names = [e[0] for e in m["info"][0, 0][9][0]]
                 sfreq = 128
                 montage = make_standard_montage("standard_1020")
-                eeg = m["eeg"]
+                eeg = m["eeg"][:-1] * 1e-6
+                stim = np.expand_dims(np.round(m["eeg"][-1], 0).astype(int), 0)
+                eeg = np.concatenate([eeg, stim], axis=0)
             else:
                 m = loadmat(fpath, squeeze_me=True)
                 ch_names = [f"E{i + 1}" for i in range(0, 256)]
@@ -130,7 +132,7 @@ class BaseMAMEM(BaseDataset):
                     labels = m["labels"]
                 else:
                     labels = None
-                eeg = mamem_event(m["eeg"], m["DIN_1"], labels=labels)
+                eeg = mamem_event(m["eeg"] * 1e-6, m["DIN_1"], labels=labels)
                 montage = make_standard_montage("GSN-HydroCel-256")
             ch_types = ["eeg"] * (len(ch_names) - 1) + ["stim"]
             info = create_info(ch_names, sfreq, ch_types)
@@ -169,15 +171,6 @@ class BaseMAMEM(BaseDataset):
 
 class MAMEM1(BaseMAMEM):
     """SSVEP MAMEM 1 dataset.
-
-    .. admonition:: Dataset summary
-
-
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        Name      #Subj    #Chan    #Classes  #Trials / class    Trials length    Sampling rate      #Sessions
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        MAMEM1       10      256           5  12-15              3s               250Hz                      1
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 
@@ -290,15 +283,6 @@ class MAMEM1(BaseMAMEM):
 class MAMEM2(BaseMAMEM):
     """SSVEP MAMEM 2 dataset.
 
-    .. admonition:: Dataset summary
-
-
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        Name      #Subj    #Chan    #Classes  #Trials / class    Trials length    Sampling rate      #Sessions
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        MAMEM2       10      256           5  20-30              3s               250Hz                      1
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-
     Dataset from [1]_.
 
     EEG signals with 256 channels captured from 11 subjects executing a
@@ -382,15 +366,6 @@ class MAMEM2(BaseMAMEM):
 
 class MAMEM3(BaseMAMEM):
     """SSVEP MAMEM 3 dataset.
-
-    .. admonition:: Dataset summary
-
-
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        Name      #Subj    #Chan    #Classes  #Trials / class    Trials length    Sampling rate      #Sessions
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
-        MAMEM3       10       14           4  20-30              3s               128Hz                      1
-        ======  =======  =======  ==========  =================  ===============  ===============  ===========
 
     Dataset from [1]_.
 

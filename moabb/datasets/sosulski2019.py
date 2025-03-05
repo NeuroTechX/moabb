@@ -7,6 +7,7 @@ import mne
 
 from moabb.datasets import download as dl
 from moabb.datasets.base import BaseDataset
+from moabb.datasets.utils import stim_channels_with_selected_ids
 
 
 SPOT_PILOT_P300_URL = (
@@ -18,15 +19,6 @@ class Sosulski2019(BaseDataset):
     """P300 dataset from initial spot study.
 
     Dataset [1]_, study on spatial transfer between SOAs [2]_, actual paradigm / online optimization [3]_.
-
-    .. admonition:: Dataset summary
-
-
-        =============  =======  =======  =================  ===============  ===============  ===========
-        Name             #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        =============  =======  =======  =================  ===============  ===============  ===========
-        Sosulski2019       13       31   7500 NT / 1500 T        1.2s        1000Hz                     1
-        =============  =======  =======  =================  ===============  ===============  ===========
 
     **Dataset description**
     This dataset contains multiple small trials of an auditory oddball paradigm. The paradigm presented two different
@@ -104,12 +96,13 @@ class Sosulski2019(BaseDataset):
         self.n_channels = 31
         self.use_soas_as_sessions = use_soas_as_sessions
         self.description_map = {"Stimulus/S 21": "Target", "Stimulus/S  1": "NonTarget"}
+        self.events = dict(Target=21, NonTarget=1)
         code = "Sosulski2019"
         interval = [-0.2, 1] if interval is None else interval
         super().__init__(
             subjects=list(range(1, 13 + 1)),
             sessions_per_subject=1,
-            events=dict(Target=21, NonTarget=1),
+            events=self.events,
             code=code,
             interval=interval,
             paradigm="p300",
@@ -142,7 +135,7 @@ class Sosulski2019(BaseDataset):
         if self.reject_non_iid:
             raw.set_annotations(raw.annotations[7:85])  # non-iid rejection
         raw.annotations.rename(self.description_map)
-        return raw
+        return stim_channels_with_selected_ids(raw, self.events)
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""

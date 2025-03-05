@@ -24,8 +24,8 @@ authors:
 - family-names: "Bjareholt"
   given-names: "Erik"
   orcid: "https://orcid.org/0000-0003-1350-9677"
-- family-names: "Quentin"
-  given-names: "Barthelemy"
+- family-names: "Barthelemy"
+  given-names: "Quentin"
   orcid: "https://orcid.org/0000-0002-7059-6028"
 - family-names: "Schirrmeister"
   given-names: "Robin Tibor"
@@ -70,7 +70,7 @@ authors:
   given-names: "Sylvain"
   orcid: "https://orcid.org/0000-0003-3027-8241"
 title: "Mother of all BCI Benchmarks"
-version: 1.1.0
+version: 1.2.0
 doi: 10.5281/zenodo.10034223
-date-released: 2024-05-30
+date-released: 2025-03-05
 url: "https://github.com/NeuroTechX/moabb"

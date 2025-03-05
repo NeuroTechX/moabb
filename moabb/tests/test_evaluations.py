@@ -1,7 +1,6 @@
 import os
 import os.path as osp
 import platform
-import unittest
 import warnings
 from collections import OrderedDict
 
@@ -18,6 +17,7 @@ from moabb.analysis.results import get_string_rep
 from moabb.datasets.compound_dataset import compound
 from moabb.datasets.fake import FakeDataset
 from moabb.evaluations import evaluations as ev
+from moabb.evaluations.base import optuna_available
 from moabb.evaluations.utils import create_save_path, save_model_cv, save_model_list
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
@@ -43,7 +43,7 @@ class DummyClassifier(sklearn.base.BaseEstimator):
         self.kernel = kernel
 
 
-class Test_WithinSess(unittest.TestCase):
+class TestWithinSess:
     """This is actually integration testing but I don't know how to do this
     better.
 
@@ -52,23 +52,25 @@ class Test_WithinSess(unittest.TestCase):
     run it. Putting this on the future docket...
     """
 
-    def setUp(self):
+    def setup_method(self):
         self.eval = ev.WithinSessionEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
             hdf5_path="res_test",
             save_model=True,
+            optuna=False,
         )
+
+    def teardown_method(self):
+        path = self.eval.results.filepath
+        if os.path.isfile(path):
+            os.remove(path)
 
     def test_mne_labels(self):
         kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset])
         epochs = dict(return_epochs=False, mne_labels=True)
-        self.assertRaises(ValueError, ev.WithinSessionEvaluation, **epochs, **kwargs)
-
-    def tearDown(self):
-        path = self.eval.results.filepath
-        if os.path.isfile(path):
-            os.remove(path)
+        with pytest.raises(ValueError):
+            ev.WithinSessionEvaluation(**epochs, **kwargs)
 
     def test_eval_results(self):
         process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
@@ -80,9 +82,9 @@ class Test_WithinSess(unittest.TestCase):
         ]
 
         # We should get 4 results, 2 sessions 2 subjects
-        self.assertEqual(len(results), 4)
+        assert len(results) == 4
         # We should have 9 columns in the results data frame
-        self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
+        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
 
     def test_compound_dataset(self):
         ch1 = ["C3", "Cz", "Fz"]
@@ -115,9 +117,9 @@ class Test_WithinSess(unittest.TestCase):
         ]
 
         # We should get 4 results, 2 sessions 2 subjects
-        self.assertEqual(len(results), 4)
+        assert len(results) == 4
         # We should have 9 columns in the results data frame
-        self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
+        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
 
     def test_eval_grid_search(self):
         # Test grid search
@@ -134,9 +136,36 @@ class Test_WithinSess(unittest.TestCase):
         ]
 
         # We should get 4 results, 2 sessions 2 subjects
-        self.assertEqual(len(results), 4)
+        assert len(results) == 4
         # We should have 9 columns in the results data frame
-        self.assertEqual(len(results[0].keys()), 9 if _carbonfootprint else 8)
+        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
+
+    def test_eval_grid_search_optuna(self):
+        if not optuna_available:
+            pytest.skip("Optuna is not available")
+
+        # Test grid search
+        param_grid = {"C": {"csp__metric": ["euclid", "riemann"]}}
+        process_pipeline = self.eval.paradigm.make_process_pipelines(dataset)[0]
+
+        self.eval.optuna = True
+
+        results = [
+            r
+            for r in self.eval.evaluate(
+                dataset,
+                pipelines,
+                param_grid=param_grid,
+                process_pipeline=process_pipeline,
+            )
+        ]
+
+        self.eval.optuna = False
+
+        # We should get 4 results, 2 sessions 2 subjects
+        assert len(results) == 4
+        # We should have 9 columns in the results data frame
+        assert len(results[0].keys()) == (9 if _carbonfootprint else 8)
 
     def test_within_session_evaluation_save_model(self):
         res_test_path = "./res_test"
@@ -152,8 +181,7 @@ class Test_WithinSess(unittest.TestCase):
         model_folder_exists = any("Model" in folder for folder in subdirectories)
 
         # Assert that at least one folder with the partial name 'Model' exists
-        self.assertTrue(
-            model_folder_exists,
+        assert model_folder_exists, (
             "No folder with partial name 'Model' found inside 'res_test' directory",
         )
 
@@ -166,15 +194,15 @@ class Test_WithinSess(unittest.TestCase):
 
         c3 = DummyClassifier(kernel=explicit_kernel)
 
-        self.assertFalse(repr(c1) == repr(c2))
+        assert repr(c1) != repr(c2)
         if platform.system() != "Windows":
-            with self.assertWarns(RuntimeWarning):
-                self.assertTrue(get_string_rep(c1) == get_string_rep(c2))
+            with pytest.warns(RuntimeWarning):
+                assert get_string_rep(c1) == get_string_rep(c2)
 
         # I do not know an elegant way to check for no warnings
         with warnings.catch_warnings(record=True) as w:
             get_string_rep(c3)
-            self.assertTrue(len(w) == 0)
+            assert len(w) == 0
 
     def test_postprocess_pipeline(self):
         cov = Covariances("oas")
@@ -198,7 +226,7 @@ class Test_WithinSess(unittest.TestCase):
         np.testing.assert_allclose(results0.score, results2.score)
 
 
-class Test_WithinSessLearningCurve(unittest.TestCase):
+class TestWithinSessLearningCurve:
     """Some tests for the learning curve evaluation.
 
     TODO if we ever extend dataset metadata, e.g. including y for
@@ -223,9 +251,9 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
             )
         ]
         keys = results[0].keys()
-        self.assertEqual(len(keys), 10)  # 8 + 2 new for learning curve
-        self.assertTrue("permutation" in keys)
-        self.assertTrue("data_size" in keys)
+        assert len(keys) == 10  # 8 + 2 new for learning curve
+        assert "permutation" in keys
+        assert "data_size" in keys
 
     def test_all_policies_work(self):
         kwargs = dict(paradigm=FakeImageryParadigm(), datasets=[dataset], n_perms=[2, 2])
@@ -236,11 +264,11 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
         ev.WithinSessionEvaluation(
             data_size={"policy": "ratio", "value": [0.2, 0.5]}, **kwargs
         )
-        self.assertRaises(
-            ValueError,
-            ev.WithinSessionEvaluation,
-            **dict(data_size={"policy": "does_not_exist", "value": [0.2, 0.5]}, **kwargs),
-        )
+        with pytest.raises(ValueError):
+            ev.WithinSessionEvaluation(
+                data_size={"policy": "does_not_exist", "value": [0.2, 0.5]},
+                **kwargs,
+            )
 
     @pytest.mark.skip(reason="This test is not working")
     def test_data_sanity(self):
@@ -263,13 +291,8 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
         )
         # This one should run
         run_evaluation(should_work, dataset, pipelines)
-        self.assertRaises(
-            ValueError,
-            run_evaluation,
-            too_many_samples,
-            dataset,
-            pipelines,
-        )
+        with pytest.raises(ValueError):
+            run_evaluation(too_many_samples, dataset, pipelines)
 
     def test_eval_grid_search(self):
         pass
@@ -286,10 +309,12 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
         increasing_perms = dict(
             data_size={"policy": "per_class", "value": [3, 4]}, n_perms=[2, 3], **kwargs
         )
-        self.assertRaises(ValueError, ev.WithinSessionEvaluation, **decreasing_datasize)
-        self.assertRaises(ValueError, ev.WithinSessionEvaluation, **constant_datasize)
-        self.assertRaises(ValueError, ev.WithinSessionEvaluation, **increasing_perms)
-        pass
+        with pytest.raises(ValueError):
+            ev.WithinSessionEvaluation(**decreasing_datasize)
+        with pytest.raises(ValueError):
+            ev.WithinSessionEvaluation(**constant_datasize)
+        with pytest.raises(ValueError):
+            ev.WithinSessionEvaluation(**increasing_perms)
 
     def test_postprocess_pipeline(self):
         learning_curve_eval = ev.WithinSessionEvaluation(
@@ -320,22 +345,8 @@ class Test_WithinSessLearningCurve(unittest.TestCase):
         np.testing.assert_allclose(results0.score, results2.score)
 
 
-class Test_AdditionalColumns(unittest.TestCase):
-    def setUp(self):
-        self.eval = ev.WithinSessionEvaluation(
-            paradigm=FakeImageryParadigm(),
-            datasets=[dataset],
-            additional_columns=["one", "two"],
-        )
-
-    def tearDown(self):
-        path = self.eval.results.filepath
-        if os.path.isfile(path):
-            os.remove(path)
-
-
-class Test_CrossSubj(Test_WithinSess):
-    def setUp(self):
+class Test_CrossSubj(TestWithinSess):
+    def setup_method(self):
         self.eval = ev.CrossSubjectEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
@@ -346,15 +357,15 @@ class Test_CrossSubj(Test_WithinSess):
     def test_compatible_dataset(self):
         # raise
         ds = FakeDataset(["left_hand", "right_hand"], n_subjects=1)
-        self.assertFalse(self.eval.is_valid(dataset=ds))
+        assert not self.eval.is_valid(dataset=ds)
 
         # do not raise
         ds = FakeDataset(["left_hand", "right_hand"], n_subjects=2)
-        self.assertTrue(self.eval.is_valid(dataset=ds))
+        assert self.eval.is_valid(dataset=ds)
 
 
-class Test_CrossSess(Test_WithinSess):
-    def setUp(self):
+class Test_CrossSess(TestWithinSess):
+    def setup_method(self):
         self.eval = ev.CrossSessionEvaluation(
             paradigm=FakeImageryParadigm(),
             datasets=[dataset],
@@ -364,14 +375,14 @@ class Test_CrossSess(Test_WithinSess):
 
     def test_compatible_dataset(self):
         ds = FakeDataset(["left_hand", "right_hand"], n_sessions=1)
-        self.assertFalse(self.eval.is_valid(ds))
+        assert not self.eval.is_valid(ds)
 
         # do not raise
         ds = FakeDataset(["left_hand", "right_hand"], n_sessions=2)
-        self.assertTrue(self.eval.is_valid(dataset=ds))
+        assert self.eval.is_valid(dataset=ds)
 
 
-class UtilEvaluation(unittest.TestCase):
+class UtilEvaluation:
     def test_save_model_cv(self):
         model = Dummy()
         save_path = "test_save_path"
@@ -380,7 +391,7 @@ class UtilEvaluation(unittest.TestCase):
         save_model_cv(model, save_path, cv_index)
 
         # Assert that the saved model file exists
-        self.assertTrue(os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl")))
+        assert os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl"))
 
     def test_save_model_list(self):
         step = Dummy()
@@ -391,7 +402,7 @@ class UtilEvaluation(unittest.TestCase):
         save_model_list(model_list, score_list, save_path)
 
         # Assert that the saved model file for best model exists
-        self.assertTrue(os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl")))
+        assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
 
     def test_create_save_path(self):
         hdf5_path = "base_path"
@@ -407,7 +418,7 @@ class UtilEvaluation(unittest.TestCase):
         expected_path = os.path.join(
             hdf5_path, "Models_WithinSession", code, "1", "0", "evaluation_name"
         )
-        self.assertEqual(save_path, expected_path)
+        assert save_path == expected_path
 
         grid_save_path = create_save_path(
             hdf5_path, code, subject, session, name, grid=True, eval_type=eval_type
@@ -421,7 +432,7 @@ class UtilEvaluation(unittest.TestCase):
             "0",
             "evaluation_name",
         )
-        self.assertEqual(grid_save_path, expected_grid_path)
+        assert grid_save_path == expected_grid_path
 
     def test_save_model_cv_with_pytorch_model(self):
         try:
@@ -438,18 +449,10 @@ class UtilEvaluation(unittest.TestCase):
         save_model_cv(model, save_path, cv_index)
 
         # Assert that the saved model files exist
-        self.assertTrue(
-            os.path.isfile(os.path.join(save_path, "step_fitted_0_model.pkl"))
-        )
-        self.assertTrue(
-            os.path.isfile(os.path.join(save_path, "step_fitted_0_optim.pkl"))
-        )
-        self.assertTrue(
-            os.path.isfile(os.path.join(save_path, "step_fitted_0_history.json"))
-        )
-        self.assertTrue(
-            os.path.isfile(os.path.join(save_path, "step_fitted_0_criterion.pkl"))
-        )
+        assert os.path.isfile(os.path.join(save_path, "step_fitted_0_model.pkl"))
+        assert os.path.isfile(os.path.join(save_path, "step_fitted_0_optim.pkl"))
+        assert os.path.isfile(os.path.join(save_path, "step_fitted_0_history.json"))
+        assert os.path.isfile(os.path.join(save_path, "step_fitted_0_criterion.pkl"))
 
     def test_save_model_list_with_multiple_models(self):
         model1 = Dummy()
@@ -460,11 +463,11 @@ class UtilEvaluation(unittest.TestCase):
         save_model_list(model_list, score_list, save_path)
 
         # Assert that the saved model files for each model exist
-        self.assertTrue(os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl")))
-        self.assertTrue(os.path.isfile(os.path.join(save_path, "fitted_model_1.pkl")))
+        assert os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl"))
+        assert os.path.isfile(os.path.join(save_path, "fitted_model_1.pkl"))
 
         # Assert that the saved model file for the best model exists
-        self.assertTrue(os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl")))
+        assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
 
     def test_create_save_path_with_cross_session_evaluation(self):
         hdf5_path = "base_path"
@@ -480,7 +483,7 @@ class UtilEvaluation(unittest.TestCase):
         expected_path = os.path.join(
             hdf5_path, "Models_CrossSession", code, "1", "evaluation_name"
         )
-        self.assertEqual(save_path, expected_path)
+        assert save_path == expected_path
 
         grid_save_path = create_save_path(
             hdf5_path, code, subject, session, name, grid=True, eval_type=eval_type
@@ -489,7 +492,7 @@ class UtilEvaluation(unittest.TestCase):
         expected_grid_path = os.path.join(
             hdf5_path, "GridSearch_CrossSession", code, "1", "evaluation_name"
         )
-        self.assertEqual(grid_save_path, expected_grid_path)
+        assert grid_save_path == expected_grid_path
 
     def test_create_save_path_without_hdf5_path(self):
         hdf5_path = None
@@ -502,7 +505,7 @@ class UtilEvaluation(unittest.TestCase):
             hdf5_path, code, subject, session, name, eval_type=eval_type
         )
 
-        self.assertIsNone(save_path)
+        assert save_path is None
 
     def test_save_model_cv_without_hdf5_path(self):
         model = DummyClassifier(kernel="rbf")
@@ -510,7 +513,7 @@ class UtilEvaluation(unittest.TestCase):
         cv_index = 0
 
         # Assert that calling save_model_cv without a save_path does raise an IOError
-        with self.assertRaises(IOError):
+        with pytest.raises(IOError):
             save_model_cv(model, save_path, cv_index)
 
     def test_save_model_list_with_single_model(self):
@@ -521,10 +524,10 @@ class UtilEvaluation(unittest.TestCase):
         save_model_list(model_list, score_list, save_path)
 
         # Assert that the saved model file for the single model exists
-        self.assertTrue(os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl")))
+        assert os.path.isfile(os.path.join(save_path, "fitted_model_0.pkl"))
 
         # Assert that the saved model file for the best model exists
-        self.assertTrue(os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl")))
+        assert os.path.isfile(os.path.join(save_path, "fitted_model_best.pkl"))
 
     def test_create_save_path_with_cross_subject_evaluation(self):
         hdf5_path = "base_path"
@@ -540,7 +543,7 @@ class UtilEvaluation(unittest.TestCase):
         expected_path = os.path.join(
             hdf5_path, "Models_CrossSubject", code, "1", "evaluation_name"
         )
-        self.assertEqual(save_path, expected_path)
+        assert save_path == expected_path
 
         grid_save_path = create_save_path(
             hdf5_path, code, subject, session, name, grid=True, eval_type=eval_type
@@ -549,7 +552,7 @@ class UtilEvaluation(unittest.TestCase):
         expected_grid_path = os.path.join(
             hdf5_path, "GridSearch_CrossSubject", code, "1", "evaluation_name"
         )
-        self.assertEqual(grid_save_path, expected_grid_path)
+        assert grid_save_path == expected_grid_path
 
     def test_create_save_path_without_hdf5_path_or_session(self):
         hdf5_path = None
@@ -562,13 +565,13 @@ class UtilEvaluation(unittest.TestCase):
             hdf5_path, code, subject, session, name, eval_type=eval_type
         )
 
-        self.assertIsNone(save_path)
+        assert save_path is None
 
         grid_save_path = create_save_path(
             hdf5_path, code, subject, session, name, grid=True, eval_type=eval_type
         )
 
-        self.assertIsNone(grid_save_path)
+        assert grid_save_path is None
 
     def test_create_save_path_with_special_characters(self):
         hdf5_path = "base_path"
@@ -584,8 +587,4 @@ class UtilEvaluation(unittest.TestCase):
         expected_path = os.path.join(
             hdf5_path, "Models_WithinSession", code, "1", "0", "evalu@tion#name"
         )
-        self.assertEqual(save_path, expected_path)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert save_path == expected_path

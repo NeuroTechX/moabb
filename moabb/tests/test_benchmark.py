@@ -1,18 +1,20 @@
 import shutil
-import unittest
 from pathlib import Path
+
+import pytest
 
 from moabb import benchmark
 from moabb.datasets.fake import FakeDataset
+from moabb.evaluations.base import optuna_available
 
 
-class TestBenchmark(unittest.TestCase):
+class TestBenchmark:
     @classmethod
-    def setUpClass(cls):
+    def setup_class(cls):
         cls.pp_dir = Path.cwd() / Path("moabb/tests/test_pipelines/")
 
     @classmethod
-    def tearDownClass(cls):
+    def teardown_class(cls):
         rep_dir = Path.cwd() / Path("benchmark/")
         shutil.rmtree(rep_dir)
 
@@ -28,7 +30,7 @@ class TestBenchmark(unittest.TestCase):
             ],
             overwrite=True,
         )
-        self.assertEqual(len(res), 80)
+        assert len(res) == 80
 
     def test_benchmark_objdataset(self):
         res = benchmark(
@@ -42,16 +44,15 @@ class TestBenchmark(unittest.TestCase):
             ],
             overwrite=True,
         )
-        self.assertEqual(len(res), 80)
+        assert len(res) == 80
 
     def test_nodataset(self):
-        self.assertRaises(
-            Exception,
-            benchmark,
-            pipelines=str(self.pp_dir),
-            exclude_datasets=["FakeDataset"],
-            overwrite=True,
-        )
+        with pytest.raises(ValueError):
+            benchmark(
+                pipelines=str(self.pp_dir),
+                exclude_datasets=["FakeDataset"],
+                overwrite=True,
+            )
 
     def test_selectparadigm(self):
         res = benchmark(
@@ -60,18 +61,25 @@ class TestBenchmark(unittest.TestCase):
             paradigms=["FakeImageryParadigm"],
             overwrite=True,
         )
-        self.assertEqual(len(res), 40)
+        assert len(res) == 40
 
     def test_include_exclude(self):
-        self.assertRaises(
-            AttributeError,
-            benchmark,
+        with pytest.raises(AttributeError):
+            benchmark(
+                pipelines=str(self.pp_dir),
+                include_datasets=["FakeDataset"],
+                exclude_datasets=["AnotherDataset"],
+                overwrite=True,
+            )
+
+    def test_optuna(self):
+        if not optuna_available:
+            pytest.skip("Optuna is not installed")
+        res = benchmark(
             pipelines=str(self.pp_dir),
-            include_datasets=["FakeDataset"],
-            exclude_datasets=["AnotherDataset"],
+            evaluations=["WithinSession"],
+            paradigms=["FakeImageryParadigm"],
             overwrite=True,
+            optuna=True,
         )
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert len(res) == 40

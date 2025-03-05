@@ -18,15 +18,6 @@ EPFLP300_URL = "http://documents.epfl.ch/groups/m/mm/mmspg/www/BCI/p300/"
 class EPFLP300(BaseDataset):
     """P300 dataset from Hoffmann et al 2008.
 
-    .. admonition:: Dataset summary
-
-
-        ========  =======  =======  =================  ===============  ===============  ===========
-        Name        #Subj    #Chan  #Trials / class    Trials length    Sampling rate      #Sessions
-        ========  =======  =======  =================  ===============  ===============  ===========
-        EPFLP300        8       32  2753 NT / 551 T    1s               2048Hz                     4
-        ========  =======  =======  =================  ===============  ===============  ===========
-
     Dataset from the paper [1]_.
 
     **Dataset Description**
