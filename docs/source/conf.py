@@ -15,7 +15,7 @@ from datetime import datetime
 
 import sphinx_gallery  # noqa
 from numpydoc import docscrape, numpydoc  # noqa
-from sphinx_gallery.sorting import FileNameSortKey  # noqa
+from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey  # noqa
 
 import moabb  # noqa
 
@@ -164,6 +164,16 @@ sphinx_gallery_conf = {
     "reference_url": dict(moabb=None),
     "filename_pattern": "(/plot_|/tutorial_)",
     "default_thumb_file": "../images/M.png",
+    "subsection_order": ExplicitOrder(
+        [
+            "../examples/tutorials",
+            "../examples/paradigm_examples",
+            "../examples/data_management_and_configuration",
+            "../examples/how_to_benchmark",
+            "../examples/advanced_examples",
+            "../examples/external",
+        ]
+    ),
     "within_subsection_order": FileNameSortKey,
 }
 
