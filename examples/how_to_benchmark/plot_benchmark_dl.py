@@ -67,7 +67,7 @@ dataset.subject_list = dataset.subject_list[:2]
 datasets = [dataset]
 
 results = benchmark(
-    pipelines="./pipelines_DL",
+    pipelines="./pipelines_dl",
     evaluations=["WithinSession"],
     paradigms=["LeftRightImagery"],
     include_datasets=datasets,
