@@ -6,6 +6,7 @@ import logging
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
+from sklearn.utils import check_random_state
 
 
 log = logging.getLogger(__name__)
@@ -111,7 +112,7 @@ def _pairedttest_exhaustive(data):
     return out / nperms
 
 
-def _pairedttest_random(data, nperms):
+def _pairedttest_random(data, nperms, seed=None):
     """Return p-values based on nperms permutations of a paired ttest.
 
     data is a (subj, alg, alg) matrix of differences between scores for each
@@ -127,10 +128,11 @@ def _pairedttest_random(data, nperms):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         array of pvalues
     """
+    rng = check_random_state(seed)
     out = np.ones(data.shape[1:], dtype=np.int32)
     true = data.sum(axis=0)
     for _ in range(nperms):
-        perm = np.random.randint(2, size=(data.shape[0],))
+        perm = rng.randint(2, size=(data.shape[0],))
         perm[perm == 0] = -1
         # multiply permutation by subject dimension and sum over subjects
         randperm = (data * perm[:, None, None]).sum(axis=0)
