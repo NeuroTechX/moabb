@@ -166,12 +166,13 @@ sphinx_gallery_conf = {
     "default_thumb_file": "../images/M.png",
     "subsection_order": ExplicitOrder(
         [
-            "../examples/tutorials",
-            "../examples/paradigm_examples",
-            "../examples/data_management_and_configuration",
-            "../examples/how_to_benchmark",
-            "../examples/advanced_examples",
-            "../examples/external",
+            "../../examples/tutorials",
+            "../../examples/paradigm_examples",
+            "../../examples/data_management_and_configuration",
+            "../../examples/how_to_benchmark",
+            "../../examples/advanced_examples",
+            "../../examples/learning_curve",
+            "../../examples/external",
         ]
     ),
     "within_subsection_order": FileNameSortKey,
