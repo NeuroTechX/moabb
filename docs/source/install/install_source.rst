@@ -47,11 +47,7 @@ Building MOABB from source with the development environment
 
 If you want to build from source to work on MOABB itself, then follow these steps:
 
-1. You will need to clone the repository from GitHub and install the dependencies.
-
-.. code-block:: console
-
-   git clone https://github.com/neurotechx/moabb && cd moabb
+1. Install pip on your system follow the tutorial: https://pip.pypa.io/en/stable/installation/.
 
 2. You will need to run this command in the project directory:
 
@@ -63,7 +59,7 @@ If you want to build from source to work on MOABB itself, then follow these step
 
 .. code-block:: console
 
-   pip install -e .[deeplearning,carbonemission,docs,tests]
+   pip install -e .[deeplearning,carbonemission,docs,optuna,tests]
 
 For a full list of dependencies, see the pyproject.toml file.
 
@@ -79,6 +75,6 @@ To verify that MOABB is installed and running correctly, run the following comma
 
 .. code-block:: console
 
-   python -m unittest moabb.tests
+   pytest moabb/tests --verbose
 
 For more information, please see the contributors' guidelines.

@@ -56,7 +56,7 @@ jobs:
 
       - name: Install moabb
         run: |
-          uv pip install -e .[docs,deeplearning,optuna]
+          uv pip install -e .[docs,deeplearning,optuna,external]
 
       - name: Build docs
         run: |

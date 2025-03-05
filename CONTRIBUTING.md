@@ -3,7 +3,16 @@
 :tada::clinking_glasses: First off, thanks for taking the time to contribute!
 :tada::clinking_glasses:
 
-Contributions are always welcome, no matter how small.
+Contributions are always welcome, no matter how small!
+
+If you think you can help in any of the areas of MOABB (and we bet you can) or in any of
+the many areas that we haven't yet thought of (and here we're _sure_ you can) then please
+check out our [roadmap](https://github.com/NeuroTechX/moabb/blob/master/ROADMAP.md).
+
+Please note that it's very important to us that we maintain a positive and supportive
+environment for everyone who wants to participate. When you join us we ask that you follow
+our [code of conduct](https://github.com/NeuroTechX/moabb/blob/master/CODE_OF_CONDUCT.md)
+in all interactions both on and offline.
 
 The following is a small set of guidelines for how to contribute to the project
 
@@ -13,7 +22,7 @@ The following is a small set of guidelines for how to contribute to the project
 
 This project adheres to the Contributor Covenant [Code of Conduct](CODE_OF_CONDUCT.md). By
 participating you are expected to adhere to these expectations. Please report unacceptable
-behavior to [hi@pushtheworld.us](mailto:hi@pushtheworld.us)
+behavior.
 
 ### Contributing on Github
 
@@ -23,15 +32,13 @@ include those additions in the master version of this project, check out this
 
 ### Community
 
-This project is maintained by the [NeuroTechX](www.neurotechx.com) community. Join the
-[Gitter](https://gitter.im/moabb_dev/community), where discussions about MOABB takes
-place.
+This project is maintained by the [NeuroTechX](www.neurotechx.com) community.
 
 ## How can I contribute?
 
 If there's a feature you'd be interested in building or you find a bug or have a
 suggestion on how to improve the project, go ahead! Let us know on the
-[Gitter](https://gitter.im/moabb_dev/community) or [open an issue](../../issues) so others
+[open an issue](../../issues) so others
 can follow along and we'll support you as much as we can. When you're finished submit a
 pull request to the master branch referencing the specific issue you addressed.
 
@@ -53,6 +60,7 @@ pull request to the master branch referencing the specific issue you addressed.
 1. Don't forget to update the
    [what's new](http://moabb.neurotechx.com/docs/whats_new.html) and
    [documentation](http://moabb.neurotechx.com/docs/index.html) pages if needed
+
 
 ## Setup development environment
 
@@ -88,7 +96,7 @@ For Code Quality verification, we use:
 
 To generate a local version of the documentation:
 
-```
+```bash
 cd docs
 make html
 ```
