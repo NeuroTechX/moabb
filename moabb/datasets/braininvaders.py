@@ -188,7 +188,7 @@ def _bi_get_subject_data(ds, subject):  # noqa: C901
             S = data[:, 1:17]
             stim = 2 * data[:, 18] + 1 * data[:, 19]
             chtypes = ["eeg"] * 16 + ["stim"]
-            X = np.concatenate([S, stim[:, None]], axis=1).T
+            X = np.concatenate([S * 1e-6, stim[:, None]], axis=1).T
 
             sfreq = 512
 

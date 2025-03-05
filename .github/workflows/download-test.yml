@@ -1,0 +1,42 @@
+name: Download-Test
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
+  cancel-in-progress: true
+
+on:
+  schedule:
+    - cron:  '42 8 1 * *'
+
+jobs:
+  downloadtest:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ ubuntu-latest]
+        python-version: [ "3.9" ]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+      - name: Ensure MNE Data folder exists
+        run: |
+          mkdir -p ~/mne_data
+
+      - name: Install moabb
+        run: |
+          uv pip install -e .[tests]
+
+      - name: Run download tests
+        run: |
+          echo "Running tests"
+          cd moabb/tests
+          pytest -vv -s --tb=long --durations=0 --maxfail=5 --log-cli-level=INFO --dl-data download.py

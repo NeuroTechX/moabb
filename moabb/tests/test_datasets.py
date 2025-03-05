@@ -44,7 +44,7 @@ def _run_tests_on_dataset(d):
         print(d.event_id)
 
 
-class TestRegex(unittest.TestCase):
+class TestRegex:
     def test_is_abbrev(self):
         assert is_abbrev("a", "a-")
         assert is_abbrev("a", "a0")
@@ -87,22 +87,23 @@ class Test_Datasets(unittest.TestCase):
             data = ds.get_data()
 
             # we should get a dict
-            self.assertTrue(isinstance(data, dict))
+            assert isinstance(data, dict)
 
             # we get the right number of subject
-            self.assertEqual(len(data), n_subjects)
+            assert len(data) == n_subjects
 
             # right number of session
-            self.assertEqual(len(data[1]), n_sessions)
+            assert len(data[1]) == n_sessions
 
             # right number of run
-            self.assertEqual(len(data[1]["0"]), n_runs)
+            assert len(data[1]["0"]) == n_runs
 
             # We should get a raw array at the end
-            self.assertIsInstance(data[1]["0"]["0"], mne.io.BaseRaw)
+            assert isinstance(data[1]["0"]["0"], mne.io.BaseRaw)
 
             # bad subject id must raise error
-            self.assertRaises(ValueError, ds.get_data, [1000])
+            with pytest.raises(ValueError):
+                ds.get_data([1000])
 
     def test_fake_dataset_seed(self):
         """this test will insure the fake dataset's random seed works"""
@@ -131,8 +132,8 @@ class Test_Datasets(unittest.TestCase):
             X3, _, _ = ds2.get_data()
 
             # All the arrays should be equal:
-            self.assertIsNone(np.testing.assert_array_equal(X1, X2))
-            self.assertIsNone(np.testing.assert_array_equal(X3, X3))
+            assert np.allclose(X1, X2)
+            assert np.allclose(X3, X3)
 
     def test_cache_dataset(self):
         tempdir = tempfile.mkdtemp()
@@ -153,12 +154,12 @@ class Test_Datasets(unittest.TestCase):
                 )
             print("\n".join(cm.output))
             expected = [
-                "Attempting to retrieve cache .* datatype-eeg",  # empty pipeline
+                "Attempting to retrieve cache .* suffix-eeg",  # empty pipeline
                 "No cache found at",
-                "Starting caching .* datatype-eeg",
-                "Finished caching .* datatype-eeg",
+                "Starting caching .* suffix-eeg",
+                "Finished caching .* suffix-eeg",
             ]
-            self.assertEqual(len(expected), len(cm.output))
+            assert len(expected) == len(cm.output)
             for i, regex in enumerate(expected):
                 self.assertRegex(cm.output[i], regex)
 
@@ -177,10 +178,10 @@ class Test_Datasets(unittest.TestCase):
                 )
             print("\n".join(cm.output))
             expected = [
-                "Attempting to retrieve cache .* datatype-eeg",
-                "Finished reading cache .* datatype-eeg",
+                "Attempting to retrieve cache .* suffix-eeg",
+                "Finished reading cache .* suffix-eeg",
             ]
-            self.assertEqual(len(expected), len(cm.output))
+            assert len(expected) == len(cm.output)
             for i, regex in enumerate(expected):
                 self.assertRegex(cm.output[i], regex)
 
@@ -199,12 +200,12 @@ class Test_Datasets(unittest.TestCase):
                 )
             print("\n".join(cm.output))
             expected = [
-                "Starting erasing cache .* datatype-eeg",
-                "Finished erasing cache .* datatype-eeg",
-                "Starting caching .* datatype-eeg",
-                "Finished caching .* datatype-eeg",
+                "Starting erasing cache .* suffix-eeg",
+                "Finished erasing cache .* suffix-eeg",
+                "Starting caching .* suffix-eeg",
+                "Finished caching .* suffix-eeg",
             ]
-            self.assertEqual(len(expected), len(cm.output))
+            assert len(expected) == len(cm.output)
             for i, regex in enumerate(expected):
                 self.assertRegex(cm.output[i], regex)
         shutil.rmtree(tempdir)
@@ -215,7 +216,8 @@ class Test_Datasets(unittest.TestCase):
         for ds in [Shin2017A(), Shin2017B()]:
             # if the data is already downloaded:
             if mne.get_config("MNE_DATASETS_BBCIFNIRS_PATH") is None:
-                self.assertRaises(AttributeError, ds.get_data, [1])
+                with pytest.raises(AttributeError):
+                    ds.get_data([1])
 
     def test_datasets_init(self):
         codes = []
@@ -232,13 +234,13 @@ class Test_Datasets(unittest.TestCase):
                 logger.warning(f"Testing {ds.__name__}")
                 obj = ds(**kwargs)
             if type(obj).__name__ not in deprecated_list:
-                self.assertEqual(len(cm.output), 1)
-            self.assertIsNotNone(obj)
+                assert len(cm.output) == 1
+            assert obj is not None
             if type(obj).__name__ not in deprecated_list:
                 codes.append(obj.code)
 
         # Check that all codes are unique:
-        self.assertEqual(len(codes), len(set(codes)))
+        assert len(codes) == len(set(codes))
 
     def test_depreciated_datasets_init(self):
         depreciated_names, _, _ = zip(*aliases_list)
@@ -253,8 +255,8 @@ class Test_Datasets(unittest.TestCase):
             with self.assertLogs(logger="moabb.utils", level="WARNING"):
                 # We test if depreciated_alias throws a warning.
                 obj = ds(**kwargs)
-            self.assertIsNotNone(obj)
-            self.assertIn(ds.__name__, depreciated_names)
+            assert obj is not None
+            assert ds.__name__ in depreciated_names
 
     def test_dataset_docstring_table(self):
         # The dataset summary table will be automatically added to the docstring of
@@ -265,7 +267,7 @@ class Test_Datasets(unittest.TestCase):
                 continue
             if ds.__name__ in depreciated_names:
                 continue
-            self.assertIn(".. admonition:: Dataset summary", ds.__doc__)
+            assert ".. admonition:: Dataset summary" in ds.__doc__
 
     def test_completeness_summary_table(self):
         # The dataset summary table will be automatically added to the docstring of
@@ -276,7 +278,7 @@ class Test_Datasets(unittest.TestCase):
                 continue
             if ds.__name__ in depreciated_names:
                 continue
-            self.assertIn(ds.__name__, _summary_table.index)
+            assert ds.__name__ in _summary_table.index
 
     def test_dataset_list(self):
         if aliases_list:
@@ -324,7 +326,7 @@ class Test_Datasets(unittest.TestCase):
             ds.get_data()
 
 
-class Test_VirtualReality_Dataset(unittest.TestCase):
+class TestVirtualRealityDataset:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -332,7 +334,7 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         assert Cattan2019_VR() is not None
 
     def test_warning_if_parameters_false(self):
-        with self.assertWarns(UserWarning):
+        with pytest.warns(UserWarning):
             Cattan2019_VR(virtual_reality=False, screen_display=False)
 
     # Access to Zenodo could fail on CI
@@ -353,7 +355,7 @@ class Test_VirtualReality_Dataset(unittest.TestCase):
         assert ret.run.unique()[0] == block_rep(block, repetition, ds.n_repetitions)
 
 
-class Test_CompoundDataset(unittest.TestCase):
+class TestCompoundDataset:
     def __init__(self, *args, **kwargs):
         self.paradigm = "p300"
         self.n_sessions = 2
@@ -383,24 +385,25 @@ class Test_CompoundDataset(unittest.TestCase):
                 data = compound_data.get_data()
 
                 # Check event_id is correctly set
-                self.assertEqual(compound_data.event_id, self.ds.event_id)
+                assert compound_data.event_id == self.ds.event_id
 
                 # Check data origin is correctly set
-                self.assertEqual(data[1]["data_origin"], subjects_list[0])
+                assert data[1]["data_origin"] == subjects_list[0]
 
                 # Check data type
-                self.assertTrue(isinstance(data, dict))
-                self.assertIsInstance(data[1]["0"]["0"], mne.io.BaseRaw)
+                assert isinstance(data, dict)
+                assert isinstance(data[1]["0"]["0"], mne.io.BaseRaw)
 
                 # Check data size
-                self.assertEqual(len(data), 1)
+                assert len(data) == 1
                 expected_session_number = self.n_sessions if sessions is None else 1
-                self.assertEqual(len(data[1]), expected_session_number)
+                assert len(data[1]) == expected_session_number
                 expected_runs_number = self.n_runs if runs is None else 1
-                self.assertEqual(len(data[1]["0"]), expected_runs_number)
+                assert len(data[1]["0"]) == expected_runs_number
 
                 # bad subject id must raise error
-                self.assertRaises(ValueError, compound_data.get_data, [1000])
+                with pytest.raises(ValueError):
+                    compound_data.get_data([1000])
 
     def test_compound_dataset_composition(self):
         # Test we can compound two instance of CompoundDataset into a new one.
@@ -422,11 +425,11 @@ class Test_CompoundDataset(unittest.TestCase):
         )
 
         # Assert there is only one source dataset in the compound dataset
-        self.assertEqual(len(compound_data.datasets), 1)
+        assert len(compound_data.datasets) == 1
 
         # Assert that the coumpouned dataset has two times more subject than the original one.
         data = compound_data.get_data()
-        self.assertEqual(len(data), 2)
+        assert len(data) == 2
 
     def test_get_sessions_per_subject(self):
         # define a new fake dataset with two times more sessions:
@@ -447,10 +450,10 @@ class Test_CompoundDataset(unittest.TestCase):
         )
 
         # Assert there are two source datasets (ds and ds2) in the compound dataset
-        self.assertEqual(len(compound_dataset.datasets), 2)
+        assert len(compound_dataset.datasets) == 2
 
         # Test private method _get_sessions_per_subject returns the minimum number of sessions per subjects
-        self.assertEqual(compound_dataset._get_sessions_per_subject(), self.n_sessions)
+        assert compound_dataset._get_sessions_per_subject() == self.n_sessions
 
     def test_event_id_correctly_updated(self):
         # define a new fake dataset with different event_id
@@ -472,17 +475,17 @@ class Test_CompoundDataset(unittest.TestCase):
         )
 
         # Check that the event_id of the compound_dataset is the same has the first dataset
-        self.assertEqual(compound_dataset.event_id, self.ds.event_id)
+        assert compound_dataset.event_id == self.ds.event_id
 
         # Check event_id get correctly updated when taking a subject from dataset 2
         data = compound_dataset.get_data(subjects=[2])
-        self.assertEqual(compound_dataset.event_id, self.ds2.event_id)
-        self.assertEqual(len(data.keys()), 1)
+        assert compound_dataset.event_id == self.ds2.event_id
+        assert len(data.keys()) == 1
 
         # Check event_id is correctly put back when taking a subject from the first dataset
         data = compound_dataset.get_data(subjects=[1])
-        self.assertEqual(compound_dataset.event_id, self.ds.event_id)
-        self.assertEqual(len(data.keys()), 1)
+        assert compound_dataset.event_id == self.ds.event_id
+        assert len(data.keys()) == 1
 
     def test_datasets_init(self):
         codes = []
@@ -491,11 +494,11 @@ class Test_CompoundDataset(unittest.TestCase):
             if inspect.signature(ds).parameters.get("accept"):
                 kwargs["accept"] = True
             obj = ds(**kwargs)
-            self.assertIsNotNone(obj)
+            assert obj is not None
             codes.append(obj.code)
 
         # Check that all codes are unique:
-        self.assertEqual(len(codes), len(set(codes)))
+        assert len(codes) == len(set(codes))
 
     def test_dataset_list(self):
         if aliases_list:
@@ -516,7 +519,7 @@ class Test_CompoundDataset(unittest.TestCase):
         assert set(compound_dataset_list) == set(all_datasets)
 
 
-class Test_Data:
+class TestData:
     @pytest.fixture
     def dataset(self):
         return BNCI2014_001()
