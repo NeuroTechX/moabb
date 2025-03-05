@@ -14,7 +14,7 @@
 
    The largest EEG benchmark <paper_results>
    Datasets <dataset_summary>
-   Install <install/install>
-   Gallery <auto_examples/index>
+   Installation <install/install>
+   Examples <auto_examples/index>
    API <api>
    Release notes <whats_new>
