@@ -6,7 +6,6 @@ URL PATH: https://zenodo.org/record/7554429
 
 import os
 import zipfile
-from functools import partialmethod
 from os.path import exists, join
 
 import pandas as pd
@@ -321,9 +320,8 @@ class Dreyer2023A(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
-    __init__ = partialmethod(
-        _Dreyer2023Base.__init__, subjects=list(range(1, 61)), db_id="A"
-    )
+    def __init__(self):
+        super().__init__(subjects=list(range(1, 61)), db_id="A")
 
 
 class Dreyer2023B(_Dreyer2023Base):
@@ -417,9 +415,8 @@ class Dreyer2023B(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
-    __init__ = partialmethod(
-        _Dreyer2023Base.__init__, subjects=list(range(1, 22)), db_id="B"
-    )
+    def __init__(self):
+        super().__init__(subjects=list(range(1, 22)), db_id="B")
 
 
 class Dreyer2023C(_Dreyer2023Base):
@@ -504,6 +501,5 @@ class Dreyer2023C(_Dreyer2023Base):
         Brain-Computer Interfaces, 9(2), 115-128.
     """
 
-    __init__ = partialmethod(
-        _Dreyer2023Base.__init__, subjects=list(range(1, 7)), db_id="C"
-    )
+    def __init__(self):
+        super().__init__(subjects=list(range(1, 7)), db_id="C")
