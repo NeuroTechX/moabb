@@ -32,7 +32,7 @@ include those additions in the master version of this project, check out this
 
 ### Community
 
-This project is maintained by the [NeuroTechX](www.neurotechx.com) community. 
+This project is maintained by the [NeuroTechX](www.neurotechx.com) community.
 
 ## How can I contribute?
 
