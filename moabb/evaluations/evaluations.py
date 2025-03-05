@@ -254,7 +254,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                     if _carbonfootprint:
                         emissions = tracker.stop()
                         if emissions is None:
-                            emissions = np.NaN
+                            emissions = np.nan
                     duration = time() - t_start
 
                     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
@@ -660,7 +660,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
     ):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
-        # this is a bit akward, but we need to check if at least one pipe
+        # this is a bit awkward, but we need to check if at least one pipe
         # have to be run before loading the data. If at least one pipeline
         # need to be run, we have to load all the data.
         # we might need a better granularity, if we query the DB

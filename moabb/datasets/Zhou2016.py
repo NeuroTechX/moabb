@@ -14,6 +14,7 @@ from pooch import retrieve
 
 from .base import BaseDataset
 from .download import get_dataset_path
+from .utils import stim_channels_with_selected_ids
 
 
 DATA_PATH = "https://ndownloader.figshare.com/files/3662952"
@@ -88,6 +89,7 @@ class Zhou2016(BaseDataset):
             paradigm="imagery",
             doi="10.1371/journal.pone.0162657",
         )
+        self.events = dict(left_hand=1, right_hand=2, feet=3)
 
     def _get_single_subject_data(self, subject):
         """Return data for a single subject."""
@@ -105,7 +107,9 @@ class Zhou2016(BaseDataset):
                 stim[stim == "2"] = "right_hand"
                 stim[stim == "3"] = "feet"
                 raw.annotations.description = stim
-                out[sess_key][run_key] = raw
+                out[sess_key][run_key] = stim_channels_with_selected_ids(
+                    raw, desired_event_id=self.events
+                )
                 out[sess_key][run_key].set_montage(make_standard_montage("standard_1005"))
         return out
 

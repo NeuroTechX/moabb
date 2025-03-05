@@ -42,42 +42,41 @@ class SimpleMotorImagery(BaseMotorImagery):  # Needed to assess BaseImagery
         return dataset.event_id
 
 
-class Test_MotorImagery(unittest.TestCase):
+class TestMotorImagery(unittest.TestCase):
     def test_BaseImagery_paradigm(self):
         paradigm = SimpleMotorImagery()
         dataset = FakeDataset(paradigm="imagery")
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # we should have all the same length
-        self.assertEqual(len(X), len(labels), len(metadata))
+        assert len(X) == len(labels), len(metadata)
         # X must be a 3D Array
-        self.assertEqual(len(X.shape), 3)
+        assert len(X.shape) == 3
         # labels must contain 3 values
-        self.assertEqual(len(np.unique(labels)), 3)
+        assert len(np.unique(labels)) == 3
         # metadata must have subjets, sessions, runs
-        self.assertTrue("subject" in metadata.columns)
-        self.assertTrue("session" in metadata.columns)
-        self.assertTrue("run" in metadata.columns)
+        assert "subject" in metadata.columns
+        assert "session" in metadata.columns
+        assert "run" in metadata.columns
         # we should have only one subject in the metadata
-        self.assertEqual(np.unique(metadata.subject), 1)
+        assert np.unique(metadata.subject) == 1
         # we should have two sessions in the metadata
-        self.assertEqual(len(np.unique(metadata.session)), 2)
+        assert len(np.unique(metadata.session)) == 2
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
         # should return raws
         raws, _, _ = paradigm.get_data(dataset, subjects=[1], return_raws=True)
         for raw in raws:
-            self.assertIsInstance(raw, BaseRaw)
+            assert isinstance(raw, BaseRaw)
         # should raise error
-        self.assertRaises(
-            ValueError,
-            paradigm.get_data,
-            dataset,
-            subjects=[1],
-            return_epochs=True,
-            return_raws=True,
-        )
+        with pytest.raises(ValueError):
+            paradigm.get_data(
+                dataset,
+                subjects=[1],
+                return_epochs=True,
+                return_raws=True,
+            )
 
     def test_BaseImagery_channel_order(self):
         """Test if paradigm return correct channel order, see issue #227."""
@@ -87,10 +86,11 @@ class Test_MotorImagery(unittest.TestCase):
 
         ep1, _, _ = paradigm.get_data(datasetA, subjects=[1], return_epochs=True)
         ep2, _, _ = paradigm.get_data(datasetB, subjects=[1], return_epochs=True)
-        self.assertEqual(ep1.info["ch_names"], ep2.info["ch_names"])
+        assert ep1.info["ch_names"] == ep2.info["ch_names"]
 
     def test_BaseImagery_tmintmax(self):
-        self.assertRaises(ValueError, SimpleMotorImagery, tmin=1, tmax=0)
+        with pytest.raises(ValueError):
+            SimpleMotorImagery(tmin=1, tmax=0)
 
     def test_BaseImagery_filters(self):
         # can work with filter bank
@@ -99,11 +99,11 @@ class Test_MotorImagery(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D Array
-        self.assertEqual(len(X.shape), 4)
-        self.assertEqual(X.shape[-1], 2)
+        assert len(X.shape) == 4
+        assert X.shape[-1] == 2
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
 
     def test_baseImagery_wrongevent(self):
         # test process_raw return empty list if raw does not contain any
@@ -118,21 +118,22 @@ class Test_MotorImagery(unittest.TestCase):
             "0"
         ]
         raw.load_data()
-        self.assertEqual("stim", raw.ch_names[-1])
+        assert "stim" == raw.ch_names[-1]
         # add something on the event channel
         raw._data[-1] *= 10
-        with self.assertRaises(ValueError, msg="No events found"):
+        with pytest.raises(ValueError, match="No events found"):
             epochs_pipeline.transform(raw)
         # zeros it out
         raw._data[-1] *= 0
-        with self.assertRaises(ValueError, msg="No events found"):
+        with pytest.raises(ValueError, match="No events found"):
             epochs_pipeline.transform(raw)
 
     def test_BaseImagery_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap
         paradigm = SimpleMotorImagery(events=["left_hand", "right_hand"])
         dataset = FakeDataset(paradigm="imagery")
-        self.assertRaises(AssertionError, paradigm.get_data, dataset)
+        with pytest.raises(AssertionError):
+            paradigm.get_data(dataset)
 
     def test_BaseImagery_droppedevent(self):
         dataset = FakeDataset(paradigm="imagery")
@@ -144,22 +145,22 @@ class Test_MotorImagery(unittest.TestCase):
         # with epochs:
         epochs1, labels1, metadata1 = paradigm1.get_data(dataset, return_epochs=True)
         epochs2, labels2, metadata2 = paradigm2.get_data(dataset, return_epochs=True)
-        self.assertEqual(len(epochs1), len(labels1), len(metadata1))
-        self.assertEqual(len(epochs2), len(labels2), len(metadata2))
-        self.assertGreater(len(epochs1), len(epochs2))
+        assert len(epochs1) == len(labels1), len(metadata1)
+        assert len(epochs2) == len(labels2), len(metadata2)
+        assert len(epochs1) > len(epochs2)
         # with np.array:
         X1, labels1, metadata1 = paradigm1.get_data(dataset)
         X2, labels2, metadata2 = paradigm2.get_data(dataset)
-        self.assertEqual(len(X1), len(labels1), len(metadata1))
-        self.assertEqual(len(X2), len(labels2), len(metadata2))
-        self.assertGreater(len(X1), len(X2))
+        assert len(X1) == len(labels1), len(metadata1)
+        assert len(X2) == len(labels2), len(metadata2)
+        assert len(X1) > len(X2)
 
     def test_BaseImagery_epochsmetadata(self):
         dataset = FakeDataset(paradigm="imagery")
         paradigm = SimpleMotorImagery()
         epochs, _, metadata = paradigm.get_data(dataset, return_epochs=True)
         # does not work with multiple filters:
-        self.assertTrue(metadata.equals(epochs.metadata))
+        assert metadata.equals(epochs.metadata)
 
     def test_BaseImagery_cache(self):
         tempdir = tempfile.mkdtemp()
@@ -186,23 +187,23 @@ class Test_MotorImagery(unittest.TestCase):
             )
         print("\n".join(cm.output))
         expected = [
-            "Attempting to retrieve cache .* datatype-array",
+            "Attempting to retrieve cache .* suffix-array",
             "No cache found at",
-            "Attempting to retrieve cache .* datatype-epo",
+            "Attempting to retrieve cache .* suffix-epo",
             "No cache found at",
-            "Attempting to retrieve cache .* datatype-eeg",  # raw_pipeline
+            "Attempting to retrieve cache .* suffix-eeg",  # raw_pipeline
             "No cache found at",
-            "Attempting to retrieve cache .* datatype-eeg",
+            "Attempting to retrieve cache .* suffix-eeg",
             # SetRawAnnotations pipeline
             "No cache found at",
-            "Starting caching .* datatype-eeg",
-            "Finished caching .* datatype-eeg",
-            "Starting caching .* datatype-epo",
-            "Finished caching .* datatype-epo",
-            "Starting caching .* datatype-array",
-            "Finished caching .* datatype-array",
+            "Starting caching .* suffix-eeg",
+            "Finished caching .* suffix-eeg",
+            "Starting caching .* suffix-epo",
+            "Finished caching .* suffix-epo",
+            "Starting caching .* suffix-array",
+            "Finished caching .* suffix-array",
         ]
-        self.assertEqual(len(expected), len(cm.output))
+        assert len(expected) == len(cm.output)
         for i, regex in enumerate(expected):
             self.assertRegex(cm.output[i], regex)
 
@@ -224,10 +225,10 @@ class Test_MotorImagery(unittest.TestCase):
             )
         print("\n".join(cm.output))
         expected = [
-            "Attempting to retrieve cache .* datatype-array",
-            "Finished reading cache .* datatype-array",
+            "Attempting to retrieve cache .* suffix-array",
+            "Finished reading cache .* suffix-array",
         ]
-        self.assertEqual(len(expected), len(cm.output))
+        assert len(expected) == len(cm.output)
         for i, regex in enumerate(expected):
             self.assertRegex(cm.output[i], regex)
 
@@ -249,12 +250,12 @@ class Test_MotorImagery(unittest.TestCase):
             )
         print("\n".join(cm.output))
         expected = [
-            "Starting erasing cache .* datatype-array",
-            "Finished erasing cache .* datatype-array",
-            "Attempting to retrieve cache .* datatype-epo",
-            "Finished reading cache .* datatype-epo",
+            "Starting erasing cache .* suffix-array",
+            "Finished erasing cache .* suffix-array",
+            "Attempting to retrieve cache .* suffix-epo",
+            "Finished reading cache .* suffix-epo",
         ]
-        self.assertEqual(len(expected), len(cm.output))
+        assert len(expected) == len(cm.output)
         for i, regex in enumerate(expected):
             self.assertRegex(cm.output[i], regex)
 
@@ -276,14 +277,14 @@ class Test_MotorImagery(unittest.TestCase):
             )
         print("\n".join(cm.output))
         expected = [
-            "Attempting to retrieve cache .* datatype-array",
+            "Attempting to retrieve cache .* suffix-array",
             "No cache found at",
-            "Starting erasing cache .* datatype-epo",
-            "Finished erasing cache .* datatype-epo",
-            "Attempting to retrieve cache .* datatype-eeg",
-            "Finished reading cache .* datatype-eeg",
+            "Starting erasing cache .* suffix-epo",
+            "Finished erasing cache .* suffix-epo",
+            "Attempting to retrieve cache .* suffix-eeg",
+            "Finished reading cache .* suffix-eeg",
         ]
-        self.assertEqual(len(expected), len(cm.output))
+        assert len(expected) == len(cm.output)
         for i, regex in enumerate(expected):
             self.assertRegex(cm.output[i], regex)
         shutil.rmtree(tempdir)
@@ -294,21 +295,23 @@ class Test_MotorImagery(unittest.TestCase):
         dataset = FakeDataset(event_list=["left_hand", "right_hand"], paradigm="imagery")
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
-        self.assertEqual(len(np.unique(labels)), 2)
-        self.assertEqual(list(np.unique(labels)), ["left_hand", "right_hand"])
+        assert len(np.unique(labels)) == 2
+        assert list(np.unique(labels)) == ["left_hand", "right_hand"]
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
 
     def test_LeftRightImagery_noevent(self):
         # we can't pass event to this class
-        self.assertRaises(ValueError, LeftRightImagery, events=["a"])
+        with pytest.raises(ValueError):
+            LeftRightImagery(events=["a"])
 
     def test_LeftRightImagery_badevents(self):
         paradigm = LeftRightImagery()
         # does not accept dataset with bad event
         dataset = FakeDataset(paradigm="imagery")
-        self.assertRaises(AssertionError, paradigm.get_data, dataset)
+        with pytest.raises(AssertionError):
+            paradigm.get_data(dataset)
 
     def test_FilterBankMotorImagery_paradigm(self):
         # can work with filter bank
@@ -317,16 +320,15 @@ class Test_MotorImagery(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D Array
-        self.assertEqual(len(X.shape), 4)
-        self.assertEqual(X.shape[-1], 6)
+        assert len(X.shape) == 4
+        assert X.shape[-1] == 6
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
 
     def test_FilterBankMotorImagery_moreclassesthanevent(self):
-        self.assertRaises(
-            AssertionError, FilterBankMotorImagery, n_classes=3, events=["hands", "feet"]
-        )
+        with pytest.raises(AssertionError):
+            FilterBankMotorImagery(n_classes=3, events=["hands", "feet"])
 
     def test_FilterBankLeftRightImagery_paradigm(self):
         # can work with filter bank
@@ -335,11 +337,11 @@ class Test_MotorImagery(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D Array
-        self.assertEqual(len(X.shape), 4)
-        self.assertEqual(X.shape[-1], 6)
+        assert len(X.shape) == 4
+        assert X.shape[-1] == 6
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
 
 
 class SimpleP300(BaseP300):  # Needed to assess BaseP300
@@ -347,7 +349,7 @@ class SimpleP300(BaseP300):  # Needed to assess BaseP300
         return dataset.event_id
 
 
-class Test_P300(unittest.TestCase):
+class TestP300:
     def test_match_all(self):
         # Note: the match all property is implemented in the base paradigm.
         # Thus, although it is located in the P300 section, this test stands for all paradigms.
@@ -377,24 +379,24 @@ class Test_P300(unittest.TestCase):
         )
         # match_all should returns the smallest frequency minus 0.5.
         # See comment inside the match_all method
-        self.assertEqual(paradigm.resample, 64 + shift)
-        self.assertEqual(paradigm.channels.sort(), ["C3", "Cz", "Fz", "C4"].sort())
-        self.assertEqual(paradigm.interpolate_missing_channels, True)
+        assert paradigm.resample == 64 + shift
+        assert paradigm.channels.sort() == ["C3", "Cz", "Fz", "C4"].sort()
+        assert paradigm.interpolate_missing_channels
         X, _, _ = paradigm.get_data(dataset1, subjects=[1])
         n_channels, _ = X[0].shape
-        self.assertEqual(n_channels, 4)
+        assert n_channels == 4
 
         paradigm.match_all(
             [dataset1, dataset2, dataset3],
             shift=shift,
             channel_merge_strategy="intersect",
         )
-        self.assertEqual(paradigm.resample, 64 + shift)
-        self.assertEqual(paradigm.channels.sort(), ["C3", "Cz"].sort())
-        self.assertEqual(paradigm.interpolate_missing_channels, False)
+        assert paradigm.resample == 64 + shift
+        assert paradigm.channels.sort() == ["C3", "Cz"].sort()
+        assert not paradigm.interpolate_missing_channels
         X, _, _ = paradigm.get_data(dataset1, subjects=[1])
         n_channels, _ = X[0].shape
-        self.assertEqual(n_channels, 2)
+        assert n_channels == 2
 
     def test_BaseP300_paradigm(self):
         paradigm = SimpleP300()
@@ -402,35 +404,34 @@ class Test_P300(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # we should have all the same length
-        self.assertEqual(len(X), len(labels), len(metadata))
+        assert len(X) == len(labels), len(metadata)
         # X must be a 3D Array
-        self.assertEqual(len(X.shape), 3)
+        assert len(X.shape) == 3
         # labels must contain 2 values (Target/NonTarget)
-        self.assertEqual(len(np.unique(labels)), 2)
+        assert len(np.unique(labels)) == 2
         # metadata must have subjets, sessions, runs
-        self.assertTrue("subject" in metadata.columns)
-        self.assertTrue("session" in metadata.columns)
-        self.assertTrue("run" in metadata.columns)
+        assert "subject" in metadata.columns
+        assert "session" in metadata.columns
+        assert "run" in metadata.columns
         # we should have only one subject in the metadata
-        self.assertEqual(np.unique(metadata.subject), 1)
+        assert np.unique(metadata.subject) == 1
         # we should have two sessions in the metadata
-        self.assertEqual(len(np.unique(metadata.session)), 2)
+        assert len(np.unique(metadata.session)) == 2
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
         # should return raws
         raws, _, _ = paradigm.get_data(dataset, subjects=[1], return_raws=True)
         for raw in raws:
-            self.assertIsInstance(raw, BaseRaw)
+            assert isinstance(raw, BaseRaw)
         # should raise error
-        self.assertRaises(
-            ValueError,
-            paradigm.get_data,
-            dataset,
-            subjects=[1],
-            return_epochs=True,
-            return_raws=True,
-        )
+        with pytest.raises(ValueError):
+            paradigm.get_data(
+                dataset,
+                subjects=[1],
+                return_epochs=True,
+                return_raws=True,
+            )
 
     def test_BaseP300_channel_order(self):
         """Test if paradigm return correct channel order, see issue #227."""
@@ -448,10 +449,11 @@ class Test_P300(unittest.TestCase):
 
         ep1, _, _ = paradigm.get_data(datasetA, subjects=[1], return_epochs=True)
         ep2, _, _ = paradigm.get_data(datasetB, subjects=[1], return_epochs=True)
-        self.assertEqual(ep1.info["ch_names"], ep2.info["ch_names"])
+        assert ep1.info["ch_names"] == ep2.info["ch_names"]
 
     def test_BaseP300_tmintmax(self):
-        self.assertRaises(ValueError, SimpleP300, tmin=1, tmax=0)
+        with pytest.raises(ValueError):
+            SimpleP300(tmin=1, tmax=0)
 
     def test_BaseP300_filters(self):
         # can work with filter bank
@@ -460,11 +462,11 @@ class Test_P300(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D Array
-        self.assertEqual(len(X.shape), 4)
-        self.assertEqual(X.shape[-1], 2)
+        assert len(X.shape) == 4
+        assert X.shape[-1] == 2
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
 
     def test_BaseP300_wrongevent(self):
         # test process_raw return empty list if raw does not contain any
@@ -479,14 +481,14 @@ class Test_P300(unittest.TestCase):
             "0"
         ]
         raw.load_data()
-        self.assertEqual("stim", raw.ch_names[-1])
+        assert "stim" == raw.ch_names[-1]
         # add something on the event channel
         raw._data[-1] *= 10
-        with self.assertRaises(ValueError, msg="No events found"):
+        with pytest.raises(ValueError, match="No events found"):
             epochs_pipeline.transform(raw)
         # zeros it out
         raw._data[-1] *= 0
-        with self.assertRaises(ValueError, msg="No events found"):
+        with pytest.raises(ValueError, match="No events found"):
             epochs_pipeline.transform(raw)
 
     def test_BaseP300_droppedevent(self):
@@ -499,46 +501,48 @@ class Test_P300(unittest.TestCase):
         # with epochs:
         epochs1, labels1, metadata1 = paradigm1.get_data(dataset, return_epochs=True)
         epochs2, labels2, metadata2 = paradigm2.get_data(dataset, return_epochs=True)
-        self.assertEqual(len(epochs1), len(labels1), len(metadata1))
-        self.assertEqual(len(epochs2), len(labels2), len(metadata2))
-        self.assertGreater(len(epochs1), len(epochs2))
+        assert len(epochs1) == len(labels1), len(metadata1)
+        assert len(epochs2) == len(labels2), len(metadata2)
+        assert len(epochs1) > len(epochs2)
         # with np.array:
         X1, labels1, metadata1 = paradigm1.get_data(dataset)
         X2, labels2, metadata2 = paradigm2.get_data(dataset)
-        self.assertEqual(len(X1), len(labels1), len(metadata1))
-        self.assertEqual(len(X2), len(labels2), len(metadata2))
-        self.assertGreater(len(X1), len(X2))
+        assert len(X1) == len(labels1), len(metadata1)
+        assert len(X2) == len(labels2), len(metadata2)
+        assert len(X1) > len(X2)
 
     def test_BaseP300_epochsmetadata(self):
         dataset = FakeDataset(paradigm="p300", event_list=["Target", "NonTarget"])
         paradigm = SimpleP300()
         epochs, _, metadata = paradigm.get_data(dataset, return_epochs=True)
         # does not work with multiple filters:
-        self.assertTrue(metadata.equals(epochs.metadata))
+        assert metadata.equals(epochs.metadata)
 
     def test_P300_specifyevent(self):
         # we can't pass event to this class
-        self.assertRaises(ValueError, P300, events=["a"])
+        with pytest.raises(ValueError):
+            P300(events=["a"])
 
     def test_P300_wrongevent(self):
         # does not accept dataset with bad event
         paradigm = P300()
         dataset = FakeDataset(paradigm="p300")
-        self.assertRaises(AssertionError, paradigm.get_data, dataset)
+        with pytest.raises(AssertionError):
+            paradigm.get_data(dataset)
 
     def test_P300_paradigm(self):
         # with a good dataset
         paradigm = P300()
         dataset = FakeDataset(event_list=["Target", "NonTarget"], paradigm="p300")
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
-        self.assertEqual(len(np.unique(labels)), 2)
-        self.assertEqual(list(np.unique(labels)), sorted(["Target", "NonTarget"]))
+        assert len(np.unique(labels)) == 2
+        assert list(np.unique(labels)) == sorted(["Target", "NonTarget"])
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
 
 
-class Test_RestingState(unittest.TestCase):
+class TestRestingState:
     def test_RestingState_paradigm(self):
         event_list = ["Open", "Close"]
         paradigm = RestingStateToP300Adapter(events=event_list)
@@ -546,26 +550,26 @@ class Test_RestingState(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # we should have all the same length
-        self.assertEqual(len(X), len(labels), len(metadata))
+        assert len(X) == len(labels), len(metadata)
         # X must be a 3D Array
-        self.assertEqual(len(X.shape), 3)
+        assert len(X.shape) == 3
         # labels must contain 2 values (Open/Close)
-        self.assertEqual(len(np.unique(labels)), 2)
+        assert len(np.unique(labels)) == 2
         # metadata must have subjets, sessions, runs
-        self.assertTrue("subject" in metadata.columns)
-        self.assertTrue("session" in metadata.columns)
-        self.assertTrue("run" in metadata.columns)
+        assert "subject" in metadata.columns
+        assert "session" in metadata.columns
+        assert "run" in metadata.columns
         # we should have only one subject in the metadata
-        self.assertEqual(np.unique(metadata.subject), 1)
+        assert np.unique(metadata.subject) == 1
         # we should have two sessions in the metadata
-        self.assertEqual(len(np.unique(metadata.session)), 2)
+        assert len(np.unique(metadata.session)) == 2
         # should return epochs
         epochs, _, _ = paradigm.get_data(
             dataset,
             subjects=[1],
             return_epochs=True,
         )
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
         # should return raws
         raws, _, _ = paradigm.get_data(
             dataset,
@@ -573,16 +577,15 @@ class Test_RestingState(unittest.TestCase):
             return_raws=True,
         )
         for raw in raws:
-            self.assertIsInstance(raw, BaseRaw)
+            assert isinstance(raw, BaseRaw)
         # should raise error
-        self.assertRaises(
-            ValueError,
-            paradigm.get_data,
-            dataset,
-            subjects=[1],
-            return_epochs=True,
-            return_raws=True,
-        )
+        with pytest.raises(ValueError):
+            paradigm.get_data(
+                dataset,
+                subjects=[1],
+                return_epochs=True,
+                return_raws=True,
+            )
 
     def test_RestingState_default_values(self):
         paradigm = RestingStateToP300Adapter()
@@ -593,42 +596,41 @@ class Test_RestingState(unittest.TestCase):
         assert paradigm.resample == 128
 
 
-class Test_SSVEP(unittest.TestCase):
+class TestSSVEP:
     def test_BaseSSVEP_paradigm(self):
         paradigm = BaseSSVEP(n_classes=None)
         dataset = FakeDataset(paradigm="ssvep")
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # Verify that they have the same length
-        self.assertEqual(len(X), len(labels), len(metadata))
+        assert len(X) == len(labels), len(metadata)
         # X must be a 3D array
-        self.assertEqual(len(X.shape), 3)
+        assert len(X.shape) == 3
         # labels must contain 3 values
-        self.assertEqual(len(np.unique(labels)), 3)
+        assert len(np.unique(labels)) == 3
         # metadata must have subjets, sessions, runs
-        self.assertTrue("subject" in metadata.columns)
-        self.assertTrue("session" in metadata.columns)
-        self.assertTrue("run" in metadata.columns)
+        assert "subject" in metadata.columns
+        assert "session" in metadata.columns
+        assert "run" in metadata.columns
         # Only one subject in the metadata
-        self.assertEqual(np.unique(metadata.subject), 1)
+        assert np.unique(metadata.subject) == 1
         # we should have two sessions in the metadata, n_classes = 2 as default
-        self.assertEqual(len(np.unique(metadata.session)), 2)
+        assert len(np.unique(metadata.session)) == 2
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
         # should return raws
         raws, _, _ = paradigm.get_data(dataset, subjects=[1], return_raws=True)
         for raw in raws:
-            self.assertIsInstance(raw, BaseRaw)
+            assert isinstance(raw, BaseRaw)
         # should raise error
-        self.assertRaises(
-            ValueError,
-            paradigm.get_data,
-            dataset,
-            subjects=[1],
-            return_epochs=True,
-            return_raws=True,
-        )
+        with pytest.raises(ValueError):
+            paradigm.get_data(
+                dataset,
+                subjects=[1],
+                return_epochs=True,
+                return_raws=True,
+            )
 
     def test_BaseSSVEP_channel_order(self):
         """Test if paradigm return correct channel order, see issue #227."""
@@ -638,11 +640,12 @@ class Test_SSVEP(unittest.TestCase):
 
         ep1, _, _ = paradigm.get_data(datasetA, subjects=[1], return_epochs=True)
         ep2, _, _ = paradigm.get_data(datasetB, subjects=[1], return_epochs=True)
-        self.assertEqual(ep1.info["ch_names"], ep2.info["ch_names"])
+        assert ep1.info["ch_names"] == ep2.info["ch_names"]
 
     def test_baseSSVEP_tmintmax(self):
         # Verify that tmin < tmax
-        self.assertRaises(ValueError, BaseSSVEP, tmin=1, tmax=0)
+        with pytest.raises(ValueError):
+            BaseSSVEP(tmin=1, tmax=0)
 
     def test_BaseSSVEP_filters(self):
         # Accept filters
@@ -651,12 +654,12 @@ class Test_SSVEP(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D array
-        self.assertEqual(len(X.shape), 4)
+        assert len(X.shape) == 4
         # Last dim should be 2 as the number of filters
-        self.assertEqual(X.shape[-1], 2)
+        assert X.shape[-1] == 2
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
 
     def test_BaseSSVEP_nclasses_default(self):
         # Default is with 3 classes
@@ -666,7 +669,7 @@ class Test_SSVEP(unittest.TestCase):
 
         # labels must contain all 3 classes of dataset,
         # as n_classes is "None" by default (taking all classes)
-        self.assertEqual(len(np.unique(labels)), 3)
+        assert len(np.unique(labels)) == 3
 
     def test_BaseSSVEP_specified_nclasses(self):
         # Set the number of classes
@@ -675,15 +678,17 @@ class Test_SSVEP(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # labels must contain 3 values
-        self.assertEqual(len(np.unique(labels)), 3)
+        assert len(np.unique(labels)) == 3
 
     def test_BaseSSVEP_toomany_nclasses(self):
         paradigm = BaseSSVEP(n_classes=4)
         dataset = FakeDataset(event_list=["13", "15"], paradigm="ssvep")
-        self.assertRaises(ValueError, paradigm.get_data, dataset)
+        with pytest.raises(ValueError):
+            paradigm.get_data(dataset)
 
     def test_BaseSSVEP_moreclassesthanevent(self):
-        self.assertRaises(AssertionError, BaseSSVEP, n_classes=3, events=["13.", "14."])
+        with pytest.raises(AssertionError):
+            BaseSSVEP(n_classes=3, events=["13.", "14."])
 
     def test_BaseSSVEP_droppedevent(self):
         dataset = FakeDataset(paradigm="ssvep")
@@ -695,28 +700,29 @@ class Test_SSVEP(unittest.TestCase):
         # with epochs:
         epochs1, labels1, metadata1 = paradigm1.get_data(dataset, return_epochs=True)
         epochs2, labels2, metadata2 = paradigm2.get_data(dataset, return_epochs=True)
-        self.assertEqual(len(epochs1), len(labels1), len(metadata1))
-        self.assertEqual(len(epochs2), len(labels2), len(metadata2))
-        self.assertGreater(len(epochs1), len(epochs2))
+        assert len(epochs1) == len(labels1), len(metadata1)
+        assert len(epochs2) == len(labels2), len(metadata2)
+        assert len(epochs1) > len(epochs2)
         # with np.array:
         X1, labels1, metadata1 = paradigm1.get_data(dataset)
         X2, labels2, metadata2 = paradigm2.get_data(dataset)
-        self.assertEqual(len(X1), len(labels1), len(metadata1))
-        self.assertEqual(len(X2), len(labels2), len(metadata2))
-        self.assertGreater(len(X1), len(X2))
+        assert len(X1) == len(labels1), len(metadata1)
+        assert len(X2) == len(labels2), len(metadata2)
+        assert len(X1) > len(X2)
 
     def test_BaseSSVEP_epochsmetadata(self):
         dataset = FakeDataset(paradigm="ssvep")
         paradigm = BaseSSVEP()
         epochs, _, metadata = paradigm.get_data(dataset, return_epochs=True)
         # does not work with multiple filters:
-        self.assertTrue(metadata.equals(epochs.metadata))
+        assert metadata.equals(epochs.metadata)
 
     def test_SSVEP_noevent(self):
         # Assert error if events from paradigm and dataset dont overlap
         paradigm = SSVEP(events=["11", "12"], n_classes=2)
         dataset = FakeDataset(event_list=["13", "14"], paradigm="ssvep")
-        self.assertRaises(AssertionError, paradigm.get_data, dataset)
+        with pytest.raises(AssertionError):
+            paradigm.get_data(dataset)
 
     def test_SSVEP_paradigm(self):
         paradigm = SSVEP(n_classes=None)
@@ -724,22 +730,22 @@ class Test_SSVEP(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # Verify that they have the same length
-        self.assertEqual(len(X), len(labels), len(metadata))
+        assert len(X) == len(labels), len(metadata)
         # X must be a 3D array
-        self.assertEqual(len(X.shape), 3)
+        assert len(X.shape) == 3
         # labels must contain 4 values, defined in the dataset
-        self.assertEqual(len(np.unique(labels)), 4)
+        assert len(np.unique(labels)) == 4
         # metadata must have subjets, sessions, runs
-        self.assertTrue("subject" in metadata.columns)
-        self.assertTrue("session" in metadata.columns)
-        self.assertTrue("run" in metadata.columns)
+        assert "subject" in metadata.columns
+        assert "session" in metadata.columns
+        assert "run" in metadata.columns
         # Only one subject in the metadata
-        self.assertEqual(np.unique(metadata.subject), 1)
+        assert np.unique(metadata.subject) == 1
         # We should have two sessions in the metadata
-        self.assertEqual(len(np.unique(metadata.session)), 2)
+        assert len(np.unique(metadata.session)) == 2
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
 
     def test_SSVEP_singlepass(self):
         # Accept only single pass filter
@@ -748,19 +754,20 @@ class Test_SSVEP(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # Verify that they have the same length
-        self.assertEqual(len(X), len(labels), len(metadata))
+        assert len(X) == len(labels), len(metadata)
         # X must be a 3D array
-        self.assertEqual(len(X.shape), 3)
+        assert len(X.shape) == 3
         # labels must contain all 3 classes of dataset,
         # as n_classes is "None" by default (taking all classes)
-        self.assertEqual(len(np.unique(labels)), 3)
+        assert len(np.unique(labels)) == 3
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
 
     def test_SSVEP_filter(self):
         # Do not accept multiple filters
-        self.assertRaises(ValueError, SSVEP, filters=[(10.5, 11.5), (12.5, 13.5)])
+        with pytest.raises(ValueError):
+            SSVEP(filters=[(10.5, 11.5), (12.5, 13.5)])
 
     def test_FilterBankSSVEP_paradigm(self):
         # FilterBankSSVEP with all events
@@ -769,12 +776,12 @@ class Test_SSVEP(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D array
-        self.assertEqual(len(X.shape), 4)
+        assert len(X.shape) == 4
         # X must be a 4D array with d=4 as last dimension for the 4 events
-        self.assertEqual(X.shape[-1], 4)
+        assert X.shape[-1] == 4
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
 
     def test_FilterBankSSVEP_filters(self):
         # can work with filter bank
@@ -783,14 +790,14 @@ class Test_SSVEP(unittest.TestCase):
         X, labels, metadata = paradigm.get_data(dataset, subjects=[1])
 
         # X must be a 4D array with d=2 as last dimension for the 2 filters
-        self.assertEqual(len(X.shape), 4)
-        self.assertEqual(X.shape[-1], 2)
+        assert len(X.shape) == 4
+        assert X.shape[-1] == 2
         # should return epochs
         epochs, _, _ = paradigm.get_data(dataset, subjects=[1], return_epochs=True)
-        self.assertIsInstance(epochs, BaseEpochs)
+        assert isinstance(epochs, BaseEpochs)
 
 
-class Test_FixedIntervalWindowsProcessing(unittest.TestCase):
+class TestFixedIntervalWindowsProcessing:
     def test_processing(self):
         processings = [
             FixedIntervalWindowsProcessing(length=0.51, stride=0.27, resample=99),
@@ -810,42 +817,41 @@ class Test_FixedIntervalWindowsProcessing(unittest.TestCase):
                 X, labels, metadata = processing.get_data(dataset, subjects=[1])
 
                 # Verify that they have the same length
-                self.assertEqual(len(X), len(labels), len(metadata))
+                assert len(X) == len(labels), len(metadata)
                 # X must be a 3D array
-                self.assertEqual(len(X.shape), 3)
+                assert len(X.shape) == 3
                 # labels must contain 3 values
-                self.assertTrue(all(label == "Window" for label in labels))
+                assert all(label == "Window" for label in labels)
                 # metadata must have subjets, sessions, runs
-                self.assertTrue("subject" in metadata.columns)
-                self.assertTrue("session" in metadata.columns)
-                self.assertTrue("run" in metadata.columns)
+                assert "subject" in metadata.columns
+                assert "session" in metadata.columns
+                assert "run" in metadata.columns
                 # Only one subject in the metadata
-                self.assertEqual(np.unique(metadata.subject), 1)
-                self.assertEqual(len(np.unique(metadata.session)), 1)
+                assert np.unique(metadata.subject) == 1
+                assert len(np.unique(metadata.session)) == 1
                 # should return epochs
                 epochs, _, _ = processing.get_data(
                     dataset, subjects=[1], return_epochs=True
                 )
-                self.assertIsInstance(epochs, BaseEpochs)
+                assert isinstance(epochs, BaseEpochs)
                 # should return raws
                 raws, _, _ = processing.get_data(dataset, subjects=[1], return_raws=True)
                 for raw in raws:
-                    self.assertIsInstance(raw, BaseRaw)
+                    assert isinstance(raw, BaseRaw)
                 n_times = int(55.4 * 128)
                 n_epochs = ceil(
                     (n_times - int(processing.length * 128))
                     / int(processing.stride * 128)
                 )  # no start/stop offset
-                self.assertEqual(n_epochs, len(epochs))
+                assert n_epochs == len(epochs)
                 # should raise error
-                self.assertRaises(
-                    ValueError,
-                    processing.get_data,
-                    dataset,
-                    subjects=[1],
-                    return_epochs=True,
-                    return_raws=True,
-                )
+                with pytest.raises(ValueError):
+                    processing.get_data(
+                        dataset,
+                        subjects=[1],
+                        return_epochs=True,
+                        return_raws=True,
+                    )
 
 
 # Define the FakeLogger class outside of the test class

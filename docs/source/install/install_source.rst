@@ -47,45 +47,23 @@ Building MOABB from source with the development environment
 
 If you want to build from source to work on MOABB itself, then follow these steps:
 
-1. Install poetry by running the following command (only needs to be done once per machine):
+1. Install pip on your system follow the tutorial: https://pip.pypa.io/en/stable/installation/.
 
-.. code-block:: bash
-
-   curl -sSL https://install.python-poetry.org | python3 -
-
-You could also check checkout `poetry installation instruction <https://python-poetry.org/docs/#installation>`__ or
-use `conda forge version <https://anaconda.org/conda-forge/poetry>`__
-
-We need the most updated version of the poetry to ensure the compatibility with optional dependency.
-
-.. note::
-    If you have any group-related errors at the end of this section, you may not run the proper version of poetry.
-
-
-2. (Optional) We recommend disabling automatic environment creation:
-
-.. code-block:: console
-
-   poetry config virtualenvs.create false
-
-
-.. note::
-    This step is optional. Skip if you are not sure.
-3. If you want to install without any optional dependency
+2. If you want to install without any optional dependency
 
 You will need to run this command in the project directory:
 
 .. code-block:: console
 
-   poetry install
+   pip install -e .
 
-4. If you want to install with an optional dependency
+3. If you want to install with an optional dependency
 
 You will need to run this command in the project directory:
 
 .. code-block:: console
 
-   poetry install --extras "deeplearning carbonemission docs"
+   pip install -e .[deeplearning,carbonemission,docs,optuna,tests,external]
 
 For a full list of dependencies, see the pyproject.toml file.
 
@@ -101,6 +79,6 @@ To verify that MOABB is installed and running correctly, run the following comma
 
 .. code-block:: console
 
-   python -m unittest moabb.tests
+   pytest moabb/tests --verbose
 
 For more information, please see the contributors' guidelines.
