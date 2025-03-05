@@ -4,7 +4,6 @@ API and Main Concepts
 .. figure:: images/architecture.png
    :alt: architecture
 
-   architecture
 
 There are 4 main concepts in the MOABB: **the datasets**, **the paradigm**, **the
 evaluation**, and **the pipelines**. In addition, we offer **statistical**,
