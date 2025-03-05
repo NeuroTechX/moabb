@@ -1,8 +1,8 @@
 API Reference
 ======================
-.. include:: datasets.rst
-.. include:: evaluations.rst
-.. include:: paradigms.rst
-.. include:: pipelines.rst
-.. include:: analysis.rst
-.. include:: utils.rst
+.. include:: api/datasets.rst
+.. include:: api/evaluations.rst
+.. include:: api/paradigms.rst
+.. include:: api/pipelines.rst
+.. include:: api/analysis.rst
+.. include:: api/utils.rst

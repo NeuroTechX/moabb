@@ -22,8 +22,9 @@ copy-readme:
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
+# @python prepare_summary_tables.py ../moabb/datasets $(BUILDDIR)
 %: Makefile
-	@python prepare_summary_tables.py ../moabb/datasets $(BUILDDIR)
+
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 apidoc: copy-readme

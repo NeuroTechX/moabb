@@ -15,8 +15,6 @@
    The largest EEG benchmark <paper_results>
    Datasets <dataset_summary>
    Install <install/install>
-   Overview <overview>
-   Getting Started <auto_tutorials/index>
    Gallery <auto_examples/index>
    How does Moabb work? <main_concepts>
    API reference <api>
