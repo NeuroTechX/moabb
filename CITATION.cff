@@ -70,7 +70,7 @@ authors:
   given-names: "Sylvain"
   orcid: "https://orcid.org/0000-0003-3027-8241"
 title: "Mother of all BCI Benchmarks"
-version: 1.1.2
+version: 1.2.0
 doi: 10.5281/zenodo.10034223
-date-released: 2025-03-02
+date-released: 2025-03-05
 url: "https://github.com/NeuroTechX/moabb"
