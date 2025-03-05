@@ -151,7 +151,7 @@ class BEETLA(BaseDataset):
             subjects=subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
             events=dict(rest=0, left_hand=1, right_hand=2, feet=3),
-            code="beetl",
+            code="beetla",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",
         )
@@ -350,7 +350,7 @@ class BEETLB(BaseDataset):
             subjects=subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
             events=dict(left_hand=0, right_hand=1, feet=2, rest=3),
-            code="beetl",
+            code="beetlb",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",
         )
