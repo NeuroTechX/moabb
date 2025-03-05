@@ -23,6 +23,6 @@ For example, to install all the optional dependencies.
 
 .. code-block:: bash
 
-   pip install moabb[deepleaning, carbonemission, docs]
+   pip install moabb[deepleaning,carbonemission,docs]
 
-See `Troubleshooting <moabb.Troubleshooting.com>`__ section if you have a problem.
+See the issue at Github if you have a problem.
