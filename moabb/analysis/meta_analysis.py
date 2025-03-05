@@ -6,6 +6,7 @@ import logging
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
+from sklearn.utils import check_random_state
 
 
 log = logging.getLogger(__name__)
@@ -89,7 +90,7 @@ def _pairedttest_exhaustive(data):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         array of pvalues
     """
-    out = np.ones((data.shape[1], data.shape[1]))
+    out = np.zeros(data.shape[1:], dtype=np.int32)
     true = data.sum(axis=0)
     nperms = 2 ** data.shape[0]
     for perm in itertools.product([-1, 1], repeat=data.shape[0]):
@@ -98,14 +99,20 @@ def _pairedttest_exhaustive(data):
         # multiply permutation by subject dimension and sum over subjects
         randperm = (data * perm[:, None, None]).sum(axis=0)
         # compare to true difference (numpy autocasts bool to 0/1)
-        out += randperm > true
-    out = out / nperms
-    # control for cases where pval is 1
-    out[out == 1] = 1 - (1 / nperms)
-    return out
+        out += randperm >= true
+
+    # Correct for p-values equal to 1
+    # as they are invalid p-values for Stouffer's method.
+    # Note: as this is an exhaustive permutation test,
+    # one of the t-test is computed with the original statistic
+    # So in practice out cannot contain zeros.
+
+    out[out >= nperms] = nperms - 1
+
+    return out / nperms
 
 
-def _pairedttest_random(data, nperms):
+def _pairedttest_random(data, nperms, seed=None):
     """Return p-values based on nperms permutations of a paired ttest.
 
     data is a (subj, alg, alg) matrix of differences between scores for each
@@ -121,16 +128,23 @@ def _pairedttest_random(data, nperms):
     pvals: ndarray of shape (n_pipelines, n_pipelines)
         array of pvalues
     """
-    out = np.ones((data.shape[1], data.shape[1]))
+    rng = check_random_state(seed)
+    out = np.ones(data.shape[1:], dtype=np.int32)
     true = data.sum(axis=0)
     for _ in range(nperms):
-        perm = np.random.randint(2, size=(data.shape[0],))
+        perm = rng.randint(2, size=(data.shape[0],))
         perm[perm == 0] = -1
         # multiply permutation by subject dimension and sum over subjects
         randperm = (data * perm[:, None, None]).sum(axis=0)
         # compare to true difference (numpy autocasts bool to 0/1)
-        out += randperm > true
-    out[out == nperms] = nperms - 1
+        out += randperm >= true
+
+    # Correct p-values >= 1
+    # as they are invalid p-values for Stouffer's method.
+    # Note: as out is initialized with ones,
+    # it cannot contain zeros.
+
+    out[out >= nperms] = nperms - 1
     return out / nperms
 
 

@@ -1,11 +1,10 @@
 # Mother of all BCI Benchmarks
 
-<p align=center>
-  <img alt="banner" src="/images/M.png/">
-</p>
-<p align=center>
+<p align="center" class="large-text">
+  <img src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
   Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
 </p>
+
 
 ## Disclaimer
 
@@ -80,123 +79,108 @@ state of the art by 5% ...”.
 
 ## Installation
 
-### Pip installation
+Please check the installation webpage with the description and step to install moabb!
 
-To use MOABB, you could simply do: \
-`pip install MOABB` \
-See [Troubleshooting](#Troubleshooting) section if you have a problem.
-
-### Manual installation
-
-You could fork or clone the repository and go to the downloaded directory, then run:
-
-1. install `poetry` (only once per machine):\
-   `curl -sSL https://install.python-poetry.org | python3 -`\
-   or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
-   use [conda forge version](https://anaconda.org/conda-forge/poetry)
-1. (Optional, skip if not sure) Disable automatic environment creation:\
-   `poetry config virtualenvs.create false`
-1. install all dependencies in one command (have to be run in the project directory):\
-   `poetry install`
+[Install](https://neurotechx.github.io/moabb/install/install.html)]
 
 See [contributors' guidelines](CONTRIBUTING.md) for detailed explanation.
 
-### Requirements we use
-
-See `pyproject.toml` file for full list of dependencies
-
-## Running
-
-### Verify Installation
-
-To ensure it is running correctly, you can also run
-
-```
-pytest moabb.tests
-```
-
-once it is installed.
 
 ### Use MOABB
 
-First, you could take a look at our [tutorials](./tutorials) that cover the most important
-concepts and use cases. Also, we have a several [examples](./examples/) available.
+First, you could take a look at our [tutorials](./auto_tutorials/index.html) that cover
+the most important concepts and use cases. Also, we have a gallery of
+[examples](./auto_examples/index.html) available.
 
-You might be interested in [MOABB documentation][link_moabb_docs]
+## Core Team
 
-### Moabb and docker
+This project is under the umbrella of [NeuroTechX][link_neurotechx], the international
+community for NeuroTech enthusiasts.
 
-Moabb has a default image to run the benchmark. You have two options to download this
-image: build from scratch or pull from the docker hub. **We recommend pulling from the
-docker hub**.
+The project is currently maintained by:
 
-If this were your first time using docker, you would need to **install the docker** and
-**login** on docker hub. We recommend the
-[official](https://docs.docker.com/desktop/install/linux-install/) docker documentation
-for this step, it is essential to follow the instructions.
+<table style="text-align: center;">
+  <thead>
+    <tr>
+      <th>Sylvain Chevallier</th>
+      <th>Bruno Aristimunha</th>
+      <th>Igor Carrara</th>
+      <th>Pierre Guetschel</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/5824988?s=150&amp;v=4" alt="Sylvain Chevallier"></td>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/42702466?s=150&amp;v=4" alt="Bruno Aristimunha"></td>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/94047258?s=150&amp;v=4" alt="Igor Carrara"></td>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/25532709?s=150&amp;v=4" alt="Pierre Guetschel"></td>
+</tr>
+  </tbody>
+</table>
 
-After installing docker, you can pull the image from the docker hub:
+The Mother of all BCI Benchmarks was founded by Alexander Barachant and Vinay Jayaram, who
+are experts in the field of Brain-Computer Interfaces (BCI). At the moment, both work as
+Research Scientists.
 
-```bash
-docker pull baristimunha/moabb
-# rename the tag to moabb
-docker tag baristimunha/moabb moabb
-```
+<table style="text-align: center;">
+  <thead>
+    <tr>
+      <th>Alexander Barachant</th>
+      <th>Vinay Jayaram</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+<td style="padding: 0 15px;"><img src="http://alexandre.barachant.org/images/avatar.jpg" alt="Alexander Barachant" width="150" height="150"></td>
+<td style="padding: 0 15px;"><img src="https://beetl.ai/static/media/vinay.217f36bc.jpeg" alt="Vinay Jayaram" width="150" height="150"></td></tr>
+  </tbody>
+</table>
 
-If you want to build the image from scratch, you can use the following command at the
-root. You may have to login with the API key in the
-[NGC Catalog](https://catalog.ngc.nvidia.com/) to run this command.
+## Contributors
 
-```bash
-bash docker/create_docker.sh
-```
+The MOABB is a community project, and we are always thankful to all the contributors!
 
-With the image downloaded or rebuilt from scratch, you will have an image called `moabb`.
-To run the default benchmark, still at the root of the project, and you can use the
-following command:
+<div id="contributors-container"></div>
 
-```bash
-mkdir dataset
-mkdir results
-mkdir output
-bash docker/run_docker.sh PATH_TO_ROOT_FOLDER
-```
+<script>
+const endpoint = 'https://api.github.com/repos/NeuroTechX/moabb/contributors';
+const container = document.getElementById('contributors-container');
+const filterList = ["bruAristimunha", "sylvchev", "carraraig", "pierreGtch", "sara04", "pre-commit-ci[bot]", "dependabot[bot]", "alexandrebarachant", "vinay-jayaram"];
+fetch(endpoint)
+  .then(response => response.json())
+  .then(contributors => {
+    const filteredContributors = contributors.filter(contributor => !filterList.includes(contributor.login));    filteredContributors.forEach(contributor => {
+      const link = document.createElement('a');
+      link.href = contributor.html_url;
+      link.target = '_blank';
+      const img = document.createElement('img');
+      img.src = contributor.avatar_url;
+      img.alt = contributor.login;
+      img.style.width = '100px';
+      img.style.height = '100px';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '50%';
+      link.appendChild(img);
+      container.appendChild(link);
+    });
+  });
+</script>
 
-An example of the command is:
+<div id="contributors-container"></div>
 
-```bash
-cd /home/user/project/moabb
-mkdir dataset
-mkdir results
-mkdir output
-bash docker/run_docker.sh /home/user/project/moabb
-```
+Special acknowledge for the extra MOABB contributors:
 
-Note: It is important to use an absolute path for the root folder to run, but you can
-modify the run_docker.sh script to save in another path beyond the root of the project. By
-default, the script will save the results in the project's root in the folder `results`,
-the datasets in the folder `dataset` and the output in the folder `output`.
-
-## Supported datasets
-
-The list of supported datasets can be found here :
-https://neurotechx.github.io/moabb/datasets.html
-
-Detailed information regarding datasets (electrodes, trials, sessions) are indicated on
-the wiki: https://github.com/NeuroTechX/moabb/wiki/Datasets-Support
-
-### Submit a new dataset
-
-you can submit a new dataset by mentioning it to this
-[issue](https://github.com/NeuroTechX/moabb/issues/1). The datasets currently on our radar
-can be seen [here](https://github.com/NeuroTechX/moabb/wiki/Datasets-Support).
-
-## Who are we?
-
-The founders of the Mother of all BCI Benchmarks are [Alexander Barachant][link_alex_b]
-and [Vinay Jayaram][link_vinay]. This project is under the umbrella of
-[NeuroTechX][link_neurotechx], the international community for NeuroTech enthusiasts. The
-project is currently maintained by [Sylvain Chevallier][link_sylvain].
+<table style="text-align: center;">
+  <thead>
+    <tr>
+      <th>Pedro Rodrigues</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+<td style="padding: 0 15px;"><img src="https://avatars.githubusercontent.com/u/4588557?v=4" alt=" Pedro L. C. Rodrigues" width="150" height="150"></td>
+  </tbody>
+</table>
 
 ### What do we need?
 
@@ -213,78 +197,6 @@ professional development of any and all of our contributors. If you're looking t
 code, try out working collaboratively, or translate your skills to the digital domain,
 we're here to help.
 
-### Get involved
-
-If you think you can help in any of the areas listed above (and we bet you can) or in any
-of the many areas that we haven't yet thought of (and here we're _sure_ you can) then
-please check out our [contributors' guidelines](CONTRIBUTING.md) and our
-[roadmap](ROADMAP.md).
-
-Please note that it's very important to us that we maintain a positive and supportive
-environment for everyone who wants to participate. When you join us we ask that you follow
-our [code of conduct](CODE_OF_CONDUCT.md) in all interactions both on and offline.
-
-## Contact us
-
-If you want to report a problem or suggest an enhancement, we'd love for you to
-[open an issue](../../issues) at this GitHub repository because then we can get right on
-it.
-
-For a less formal discussion or exchanging ideas, you can also reach us on the [Gitter
-channel][link_gitter] or join our weekly office hours! This an open video meeting
-happening on a [regular basis](https://github.com/NeuroTechX/moabb/issues/191), please ask
-the link on the gitter channel. We are also on [NeuroTechX Slack #moabb
-channel][link_neurotechx_signup].
-
-## Architecture and Main Concepts
-
-<p align="center">
-  <img alt="banner" src="/images/architecture.png/" width="400">
-</p>
-There are 4 main concepts in the MOABB: the datasets, the paradigm, the evaluation, and the pipelines. In addition, we offer statistical and visualization utilities to simplify the workflow.
-
-### Datasets
-
-A dataset handles and abstracts low-level access to the data. The dataset will read data
-stored locally, in the format in which they have been downloaded, and will convert them
-into a MNE raw object. There are options to pool all the different recording sessions per
-subject or to evaluate them separately.
-
-### Paradigm
-
-A paradigm defines how the raw data will be converted to trials ready to be processed by a
-decoding algorithm. This is a function of the paradigm used, i.e. in motor imagery one can
-have two-class, multi-class, or continuous paradigms; similarly, different preprocessing
-is necessary for ERP vs ERD paradigms.
-
-### Evaluations
-
-An evaluation defines how we go from trials per subject and session to a generalization
-statistic (AUC score, f-score, accuracy, etc) -- it can be either within-recording-session
-accuracy, across-session within-subject accuracy, across-subject accuracy, or other
-transfer learning settings.
-
-### Pipelines
-
-Pipeline defines all steps required by an algorithm to obtain predictions. Pipelines are
-typically a chain of sklearn compatible transformers and end with a sklearn compatible
-estimator. See
-[Pipelines](http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html)
-for more info.
-
-### Statistics and visualization
-
-Once an evaluation has been run, the raw results are returned as a DataFrame. This can be
-further processed via the following commands to generate some basic visualization and
-statistical comparisons:
-
-```
-from moabb.analysis import analyze
-
-results = evaluation.process(pipeline_dict)
-analyze(results)
-```
-
 ## Citing MOABB and related publications
 
 If you use MOABB in your experiments, please cite this library when
@@ -296,15 +208,17 @@ Mother of all BCI Benchmarks (MOABB), 2023. DOI: 10.5281/zenodo.10034223.
 ```
 and here is the Bibtex version:
 ```bibtex
+
 @software{Aristimunha_Mother_of_all,
  author = {Aristimunha, Bruno and Carrara, Igor and Guetschel, Pierre and Sedlar, Sara and Rodrigues, Pedro and Sosulski, Jan and Narayanan, Divyesh and Bjareholt, Erik and Barthelemy, Quentin and Kobler, Reinmar and Schirrmeister, Robin Tibor and Kalunga, Emmanuel and Darmet, Ludovic and Gregoire, Cattan and Abdul Hussain, Ali and Gatti, Ramiro and Goncharenko, Vladislav and Thielen, Jordy and Moreau, Thomas and Roy, Yannick and Jayaram, Vinay and Barachant, Alexandre and Chevallier, Sylvain},
  doi = {10.5281/zenodo.10034223},
  title = {{Mother of all BCI Benchmarks}},
  url = {https://github.com/NeuroTechX/moabb},
- version = {1.1.0},
- year = {2024}
+ version = {1.1.2},
+ year = {2025}
  }
 ```
+
 If you want to cite the scientific contributions of MOABB, you could use the following paper:
 
 > Sylvain Chevallier, Igor Carrara, Bruno Aristimunha, Pierre Guetschel, Sara Sedlar, Bruna Junqueira Lopes, Sébastien Velut, Salim Khazem, Thomas Moreau
@@ -320,16 +234,27 @@ If you publish a paper using MOABB, please contact us on [gitter][link_gitter] o
 issue, and we will add your paper to the
 [dedicated wiki page](https://github.com/NeuroTechX/moabb/wiki/MOABB-bibliography).
 
-## Thank You
 
-Thank you so much (Danke schön! Merci beaucoup!) for visiting the project and we do hope
-that you'll join us on this amazing journey to build a comprehensive benchmark of popular
-BCI algorithms applied on an extensive list of freely available EEG datasets.
+## Contact us
+
+If you want to report a problem or suggest an enhancement, we'd love for you to
+[open an issue](https://github.com/NeuroTechX/moabb/issues) at this GitHub repository
+because then we can get right on it.
+
+For a less formal discussion or exchanging ideas, you can also reach us on the [Gitter
+channel][link_gitter] or join our weekly office hours! This an open video meeting
+happening on a [regular basis](https://github.com/NeuroTechX/moabb/issues/191), please ask
+the link on the gitter channel. We are also on NeuroTechX Slack channel
+[#moabb][link_neurotechx_signup].
+
 
 [link_alex_b]: http://alexandre.barachant.org/
-[link_vinay]: https://ei.is.tuebingen.mpg.de/~vjayaram
+[link_vinay]: https://www.linkedin.com/in/vinay-jayaram-8635aa25
 [link_neurotechx]: http://neurotechx.com/
 [link_sylvain]: https://sylvchev.github.io/
+[link_bruno]: https://www.linkedin.com/in/bruaristimunha/
+[link_igor]: https://www.linkedin.com/in/carraraig/
+[link_pierre]: https://www.linkedin.com/in/pierreguetschel/
 [link_neurotechx_signup]: https://neurotechx.com/
 [link_gitter]: https://app.gitter.im/#/room/#moabb_dev_community:gitter.im
 [link_moabb_docs]: https://neurotechx.github.io/moabb/
