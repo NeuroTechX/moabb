@@ -42,7 +42,7 @@ set_log_level("info")
 # to compute a CSP filter and then a linear SVM is trained on the CSP filtered
 # signals.
 
-with open("sample_pipelines/CSP_SVM.yml", "r") as f:
+with open("sample_pipelines/csp_svm.yml", "r") as f:
     lines = f.readlines()
     for line in lines:
         print(line, end="")
