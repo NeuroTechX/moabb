@@ -70,7 +70,7 @@ def dreyer2023_subject_path(basepath, db_id, subject):
     return subj_path
 
 
-class Dreyer2023Base(BaseDataset):
+class _Dreyer2023Base(BaseDataset):
     """Class for Dreyer2023 dataset management. MI dataset."""
 
     """
@@ -232,18 +232,10 @@ class Dreyer2023Base(BaseDataset):
         )
 
 
-class Dreyer2023A(Dreyer2023Base):
+class Dreyer2023A(_Dreyer2023Base):
     """Class for Dreyer2023A dataset management. MI dataset.
 
-    .. admonition:: Dataset summary
-
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name          #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate    #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        Dreyer2023A     60      27         2               20              5s            512 Hz           6
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-
-    Dataset description:
+    **Dataset description**
 
     "A large EEG database with users' profile information for motor imagery
     Brain-Computer Interface research" [1, 2]
@@ -318,6 +310,9 @@ class Dreyer2023A(Dreyer2023Base):
         * Article [1] states there is 29/60 women, in the excel file it is 30/60
         * Sampling frequency? 256 Hz in [1], 512 in loaded info and at URL
 
+    References
+    ----------
+
     [1] Pillette, L., Roc, A., N’kaoua, B., & Lotte, F. (2021).
         Experimenters' influence on mental-imagery based brain-computer interface user training.
         International Journal of Human-Computer Studies, 149, 102603.
@@ -327,22 +322,14 @@ class Dreyer2023A(Dreyer2023Base):
     """
 
     __init__ = partialmethod(
-        Dreyer2023Base.__init__, subjects=list(range(1, 61)), db_id="A"
+        _Dreyer2023Base.__init__, subjects=list(range(1, 61)), db_id="A"
     )
 
 
-class Dreyer2023B(Dreyer2023Base):
+class Dreyer2023B(_Dreyer2023Base):
     """Class for Dreyer2023B dataset management. MI dataset.
 
-    .. admonition:: Dataset summary
-
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name          #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate    #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        Dreyer2023B     21      27         2               20              5s            512 Hz           6
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-
-    Dataset description:
+    **Dataset description**
 
     "A large EEG database with users' profile information for motor imagery
     Brain-Computer Interface research" [1, 2]
@@ -419,6 +406,9 @@ class Dreyer2023B(Dreyer2023Base):
                                              13, 22, 25, 29, 3, 11, 30, 19, 21]]
         cross_database_mapping = dict(zip(database_B, database_A))
 
+    References
+    ----------
+
     [1] Pillette, L., Roc, A., N’kaoua, B., & Lotte, F. (2021).
         Experimenters' influence on mental-imagery based brain-computer interface user training.
         International Journal of Human-Computer Studies, 149, 102603.
@@ -428,22 +418,14 @@ class Dreyer2023B(Dreyer2023Base):
     """
 
     __init__ = partialmethod(
-        Dreyer2023Base.__init__, subjects=list(range(1, 22)), db_id="B"
+        _Dreyer2023Base.__init__, subjects=list(range(1, 22)), db_id="B"
     )
 
 
-class Dreyer2023C(Dreyer2023Base):
+class Dreyer2023C(_Dreyer2023Base):
     """Class for Dreyer2023C dataset management. MI dataset.
 
-    .. admonition:: Dataset summary
-
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        Name          #Subj    #Chan    #Classes    #Trials / class    Trials len    Sampling rate    #Sessions
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-        Dreyer2023C     6       27         2               20              5s            512 Hz           6
-        ===========  =======  =======  ==========  =================  ============  ===============  ===========
-
-    Dataset description:
+    **Dataset description**
 
     "A large EEG database with users' profile information for motor imagery
     Brain-Computer Interface research" [1, 2]
@@ -511,6 +493,9 @@ class Dreyer2023C(Dreyer2023Base):
     # TO DO:
         * Sampling frequency? 256 Hz in [1], 512 in loaded info and at URL
 
+    References
+    ----------
+
     [1] Pillette, L., Roc, A., N’kaoua, B., & Lotte, F. (2021).
         Experimenters' influence on mental-imagery based brain-computer interface user training.
         International Journal of Human-Computer Studies, 149, 102603.
@@ -520,5 +505,5 @@ class Dreyer2023C(Dreyer2023Base):
     """
 
     __init__ = partialmethod(
-        Dreyer2023Base.__init__, subjects=list(range(1, 7)), db_id="C"
+        _Dreyer2023Base.__init__, subjects=list(range(1, 7)), db_id="C"
     )
