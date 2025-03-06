@@ -1,20 +1,4 @@
-=====
-Utils
-=====
-
-.. automodule:: moabb
-
 .. currentmodule:: moabb
-
----------
-Benchmark
----------
-
-.. autosummary::
-    :toctree: generated/
-    :template: function.rst
-
-    benchmark
 
 -----
 Utils

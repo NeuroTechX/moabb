@@ -1,9 +1,3 @@
-========
-Datasets
-========
-
-.. automodule:: moabb.datasets
-
 .. currentmodule:: moabb.datasets
 
 ----------------------
@@ -60,7 +54,13 @@ ERP Datasets
     Huebner2018
     Lee2019_ERP
     Sosulski2019
-
+    ErpCore2021_ERN
+    ErpCore2021_LRP
+    ErpCore2021_MMN
+    ErpCore2021_N2pc
+    ErpCore2021_N170
+    ErpCore2021_N400
+    ErpCore2021_P3
 
 --------------
 SSVEP Datasets

@@ -17,11 +17,13 @@ Develop branch  - 1.2.1
 
 Enhancements
 ~~~~~~~~~~~~
-- Adding :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`664` by `Bruna Lopes`_)
 - Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
+- Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
+
 
 Bugs
 ~~~~
+- Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
@@ -33,6 +35,7 @@ Version - 1.2.0  (Stable - PyPi)
 
 Enhancements
 ~~~~~~~~~~~~
+- Adding :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`664` by `Bruna Lopes_`)
 - Update version of pyRiemann to 0.7 (:gh:`671` by `Gregoire Cattan`_)
 - Add columns definitions in the datasets doc (:gh:`672` by `Pierre Guetschel`_)
 - Add ERP CORE datasets :class:`moabb.datasets.ErpCore2021` dataset (:gh:`627` by `Taha Habib`_)
@@ -117,7 +120,6 @@ Bugs
 
 - Fix TRCA implementation for different stimulation freqs and for signal filtering (:gh:522 by `Sylvain Chevallier`_)
 - Fix saving to BIDS runs with a description string in their name (:gh:`530` by `Pierre Guetschel`_)
-- Fix issue with WithinSessionEvaluation with multiple datasets (PR :gh: `521`, issue :gh: `514` by `Sara Sedlar`_)
 - Fix import of keras BatchNormalization for TF 2.13 and higher (:gh:`544` by `Brian Irvine`_)
 - Fix the doc summary tables of :class:`moabb.datasets.Lee2019_SSVEP` (:gh:`548` :gh:`547` :gh:`546` by `Pierre Guetschel`_)
 - Fix the doc summary for Castillos2023 dataset (:gh:`561` by `Bruno Aristimunha`_)
