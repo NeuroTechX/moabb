@@ -1,0 +1,728 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="moabb icon" sizes="180x180" href="_static/moabb_logo.png" type="image/png">
+    <title>Disclaimer &#8212; moabb 1.2.0-dev documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=7c1988a6" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/jquery.js?v=5d32c60e"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/documentation_options.js?v=b76c3557"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-5WJBKDMSTE');
+            </script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-5WJBKDMSTE');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'README';</script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.2.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+  <aside class="bd-header-announcement d-print-none d-none" aria-label="Announcement" data-pst-announcement-url="https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="_static/moabb_logo.svg" class="logo__image only-light" alt="moabb 1.2.0-dev documentation - Home"/>
+    <img src="_static/moabb_logo.svg" class="logo__image only-dark pst-js-only" alt="moabb 1.2.0-dev documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="paper_results.html">
+    The largest EEG benchmark
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="dataset_summary.html">
+    Datasets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install/install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="cite.html">
+    Citation
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="whats_new.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="paper_results.html">
+    The largest EEG benchmark
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="dataset_summary.html">
+    Datasets
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install/install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cite.html">
+    Citation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="whats_new.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Disclaimer</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <p align="center" class="large-text">
+  <span style="font-size: 50px; font-weight: 900;">Mother of all BCI Benchmarks</span>   <img src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
+  Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
+</p>
+<section id="disclaimer">
+<h1>Disclaimer<a class="headerlink" href="#disclaimer" title="Link to this heading">#</a></h1>
+<p><strong>This is an open science project that may evolve depending on the need of the
+community.</strong></p>
+<p><a class="reference external" href="https://doi.org/10.5281/zenodo.10034224"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.10034224.svg" /></a>
+<a class="reference external" href="https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster"><img alt="Build Status" src="https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg" /></a>
+<a class="reference external" href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a>
+<a class="reference external" href="https://codecov.io/gh/NeuroTechX/moabb"><img alt="codecov" src="https://codecov.io/gh/NeuroTechX/moabb/graph/badge.svg?token=NwHD3ethB5" /></a>
+<a class="reference external" href="https://img.shields.io/pypi/v/moabb"><img alt="PyPI" src="https://img.shields.io/pypi/v/moabb?color=blue&amp;style=plastic" /></a>
+<a class="reference external" href="https://pepy.tech/project/moabb"><img alt="Downloads" src="https://pepy.tech/badge/moabb" /></a></p>
+</section>
+<section id="welcome">
+<h1>Welcome!<a class="headerlink" href="#welcome" title="Link to this heading">#</a></h1>
+<p>First and foremost, Welcome! :tada: Willkommen! :confetti_ball: Bienvenue!
+:balloon::balloon::balloon:</p>
+<p>Thank you for visiting the Mother of all BCI Benchmark repository.</p>
+<section id="the-problem">
+<h2>The problem<a class="headerlink" href="#the-problem" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Brain%E2%80%93computer_interface">Brain-Computer Interfaces</a>
+allow to interact with a computer using brain signals. In this project, we focus mostly on
+electroencephalographic signals
+(<a class="reference external" href="https://en.wikipedia.org/wiki/Electroencephalography">EEG</a>), that is a very active
+research domain, with worldwide scientific contributions. Still:</p>
+<ul class="simple">
+<li><p>Reproducible Research in BCI has a long way to go.</p></li>
+<li><p>While many BCI datasets are made freely available, researchers do not publish code, and
+reproducing results required to benchmark new algorithms turns out to be trickier than
+it should be.</p></li>
+<li><p>Performances can be significantly impacted by parameters of the preprocessing steps,
+toolboxes used and implementation “tricks” that are almost never reported in the
+literature.</p></li>
+</ul>
+<p>As a result, there is no comprehensive benchmark of BCI algorithms, and newcomers are
+spending a tremendous amount of time browsing literature to find out what algorithm works
+best and on which dataset.</p>
+</section>
+<section id="the-solution">
+<h2>The solution<a class="headerlink" href="#the-solution" title="Link to this heading">#</a></h2>
+<p>The Mother of all BCI Benchmarks allows to:</p>
+<ul class="simple">
+<li><p>Build a comprehensive benchmark of popular BCI algorithms applied on an extensive list
+of freely available EEG datasets.</p></li>
+<li><p>The code is available on GitHub, serving as a reference point for the future algorithmic
+developments.</p></li>
+<li><p>Algorithms can be ranked and promoted on a website, providing a clear picture of the
+different solutions available in the field.</p></li>
+</ul>
+<p>This project will be successful when we read in an abstract “ … the proposed method
+obtained a score of 89% on the MOABB (Mother of All BCI Benchmarks), outperforming the
+state of the art by 5% …”.</p>
+</section>
+</section>
+<section id="core-team">
+<h1>Core Team<a class="headerlink" href="#core-team" title="Link to this heading">#</a></h1>
+<p>This project is under the umbrella of <a class="reference external" href="http://neurotechx.com/">NeuroTechX</a>, the international
+community for NeuroTech enthusiasts.</p>
+<p>The project is currently maintained by:</p>
+<table style="text-align: center;">
+  <thead>
+    <tr>
+      <th>Sylvain Chevallier</th>
+      <th>Bruno Aristimunha</th>
+      <th>Igor Carrara</th>
+      <th>Pierre Guetschel</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/5824988?s=150&amp;v=4" alt="Sylvain Chevallier"></td>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/42702466?s=150&amp;v=4" alt="Bruno Aristimunha"></td>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/94047258?s=150&amp;v=4" alt="Igor Carrara"></td>
+      <td style="padding: 0 7px;"><img src="https://avatars.githubusercontent.com/u/25532709?s=150&amp;v=4" alt="Pierre Guetschel"></td>
+</tr>
+  </tbody>
+</table>
+<p>The Mother of all BCI Benchmarks was founded by Alexander Barachant and Vinay Jayaram, who
+are experts in the field of Brain-Computer Interfaces (BCI). At the moment, both work as
+Research Scientists at Meta.</p>
+<table style="text-align: center;">
+  <thead>
+    <tr>
+      <th>Alexander Barachant</th>
+      <th>Vinay Jayaram</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+<td style="padding: 0 15px;"><img src="http://alexandre.barachant.org/images/avatar.jpg" alt="Alexander Barachant" width="150" height="150"></td>
+<td style="padding: 0 15px;"><img src="https://beetl.ai/static/media/vinay.217f36bc.jpeg" alt="Vinay Jayaram" width="150" height="150"></td></tr>
+  </tbody>
+</table>
+</section>
+<section id="contributors">
+<h1>Contributors<a class="headerlink" href="#contributors" title="Link to this heading">#</a></h1>
+<p>The MOABB is a community project, and we are always thankful to all the contributors!</p>
+<div id="contributors-container"></div>
+<script>
+const endpoint = 'https://api.github.com/repos/NeuroTechX/moabb/contributors';
+const container = document.getElementById('contributors-container');
+const filterList = ["bruAristimunha", "sylvchev", "carraraig", "pierreGtch", "sara04", "pre-commit-ci[bot]", "dependabot[bot]", "alexandrebarachant", "vinay-jayaram"];
+fetch(endpoint)
+  .then(response => response.json())
+  .then(contributors => {
+    const filteredContributors = contributors.filter(contributor => !filterList.includes(contributor.login));    filteredContributors.forEach(contributor => {
+      const link = document.createElement('a');
+      link.href = contributor.html_url;
+      link.target = '_blank';
+      const img = document.createElement('img');
+      img.src = contributor.avatar_url;
+      img.alt = contributor.login;
+      img.style.width = '100px';
+      img.style.height = '100px';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '50%';
+      link.appendChild(img);
+      container.appendChild(link);
+    });
+  });
+</script>
+<div id="contributors-container"></div>
+<p>Special acknowledge for the extra MOABB contributors:</p>
+<table style="text-align: center;">
+  <thead>
+    <tr>
+      <th>Pedro Rodrigues</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+<td style="padding: 0 15px;"><img src="https://avatars.githubusercontent.com/u/4588557?v=4" alt=" Pedro L. C. Rodrigues" width="150" height="150"></td>
+  </tbody>
+</table>
+<section id="what-do-we-need">
+<h2>What do we need?<a class="headerlink" href="#what-do-we-need" title="Link to this heading">#</a></h2>
+<p><strong>You</strong>! In whatever way you can help.</p>
+<p>We need expertise in programming, user experience, software sustainability, documentation
+and technical writing and project management.</p>
+<p>We’d love your feedback along the way.</p>
+<p>Our primary goal is to build a comprehensive benchmark of popular BCI algorithms applied
+on an extensive list of freely available EEG datasets, and we’re excited to support the
+professional development of any and all of our contributors. If you’re looking to learn to
+code, try out working collaboratively, or translate your skills to the digital domain,
+we’re here to help.</p>
+</section>
+</section>
+<section id="citing-moabb-and-related-publications">
+<h1>Citing MOABB and related publications<a class="headerlink" href="#citing-moabb-and-related-publications" title="Link to this heading">#</a></h1>
+<p>If you use MOABB in your experiments, please cite this library when
+publishing a paper to increase the visibility of open science initiatives:</p>
+<ul class="simple">
+<li><p>Here is the APA version:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Aristimunha</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="p">,</span> <span class="n">Carrara</span><span class="p">,</span> <span class="n">I</span><span class="o">.</span><span class="p">,</span> <span class="n">Guetschel</span><span class="p">,</span> <span class="n">P</span><span class="o">.</span><span class="p">,</span> <span class="n">Sedlar</span><span class="p">,</span> <span class="n">S</span><span class="o">.</span><span class="p">,</span> <span class="n">Rodrigues</span><span class="p">,</span> <span class="n">P</span><span class="o">.</span><span class="p">,</span> <span class="n">Sosulski</span><span class="p">,</span> <span class="n">J</span><span class="o">.</span><span class="p">,</span> <span class="n">Narayanan</span><span class="p">,</span> <span class="n">D</span><span class="o">.</span><span class="p">,</span> <span class="n">Bjareholt</span><span class="p">,</span> <span class="n">E</span><span class="o">.</span><span class="p">,</span> <span class="n">Barthelemy</span><span class="p">,</span> <span class="n">Q</span><span class="o">.</span><span class="p">,</span> <span class="n">Schirrmeister</span><span class="p">,</span> <span class="n">R</span><span class="o">.</span> <span class="n">T</span><span class="o">.</span><span class="p">,</span> <span class="n">Kobler</span><span class="p">,</span> <span class="n">R</span><span class="o">.</span><span class="p">,</span> <span class="n">Kalunga</span><span class="p">,</span> <span class="n">E</span><span class="o">.</span><span class="p">,</span> <span class="n">Darmet</span><span class="p">,</span> <span class="n">L</span><span class="o">.</span><span class="p">,</span> <span class="n">Gregoire</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="p">,</span> <span class="n">Abdul</span> <span class="n">Hussain</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="p">,</span> <span class="n">Gatti</span><span class="p">,</span> <span class="n">R</span><span class="o">.</span><span class="p">,</span> <span class="n">Goncharenko</span><span class="p">,</span> <span class="n">V</span><span class="o">.</span><span class="p">,</span> <span class="n">Thielen</span><span class="p">,</span> <span class="n">J</span><span class="o">.</span><span class="p">,</span> <span class="n">Moreau</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="p">,</span> <span class="n">Roy</span><span class="p">,</span> <span class="n">Y</span><span class="o">.</span><span class="p">,</span> <span class="n">Jayaram</span><span class="p">,</span> <span class="n">V</span><span class="o">.</span><span class="p">,</span> <span class="n">Barachant</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="p">,</span> <span class="o">&amp;</span> <span class="n">Chevallier</span><span class="p">,</span> <span class="n">S</span><span class="o">.</span> <span class="p">(</span><span class="mi">2025</span><span class="p">)</span><span class="o">.</span>
+<span class="n">Mother</span> <span class="n">of</span> <span class="nb">all</span> <span class="n">BCI</span> <span class="n">Benchmarks</span> <span class="p">(</span><span class="n">MOABB</span><span class="p">),</span> <span class="mf">2025.</span> <span class="n">DOI</span><span class="p">:</span> <span class="mf">10.5281</span><span class="o">/</span><span class="n">zenodo</span><span class="mf">.10034223</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>and the Bibtex version:</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nc">@software</span><span class="p">{</span><span class="nl">Aristimunha_Mother_of_all</span><span class="p">,</span>
+<span class="w">      </span><span class="na">author</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="s">{Aristimunha, Bruno and</span>
+<span class="s">                      Carrara, Igor and</span>
+<span class="s">                      Guetschel, Pierre and</span>
+<span class="s">                      Sedlar, Sara and</span>
+<span class="s">                      Rodrigues, Pedro and</span>
+<span class="s">                      Sosulski, Jan and</span>
+<span class="s">                      Narayanan, Divyesh and</span>
+<span class="s">                      Bjareholt, Erik and</span>
+<span class="s">                      Barthelemy, Quentin and</span>
+<span class="s">                      Schirrmeister, Robin Tibor and</span>
+<span class="s">                      Kobler, Reinmar and</span>
+<span class="s">                      Kalunga, Emmanuel and</span>
+<span class="s">                      Darmet, Ludovic and</span>
+<span class="s">                      Gregoire, Cattan and</span>
+<span class="s">                      Abdul Hussain, Ali and</span>
+<span class="s">                      Gatti, Ramiro and</span>
+<span class="s">                      Goncharenko, Vladislav and</span>
+<span class="s">                      Thielen, Jordy and</span>
+<span class="s">                      Moreau, Thomas and</span>
+<span class="s">                      Roy, Yannick and</span>
+<span class="s">                      Jayaram, Vinay and</span>
+<span class="s">                      Barachant, Alexandre and</span>
+<span class="s">                      Chevallier, Sylvain}</span><span class="p">,</span>
+<span class="w">            </span><span class="na">title</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="s">{Mother of all BCI Benchmarks}</span><span class="p">,</span>
+<span class="w">            </span><span class="na">year</span><span class="w">         </span><span class="p">=</span><span class="w"> </span><span class="m">2025</span><span class="p">,</span>
+<span class="w">            </span><span class="na">publisher</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{Zenodo}</span><span class="p">,</span>
+<span class="w">            </span><span class="na">version</span><span class="w">      </span><span class="p">=</span><span class="w"> </span><span class="s">{v1.2.0}</span><span class="p">,</span>
+<span class="w">            </span><span class="na">url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://github.com/NeuroTechX/moabb}</span><span class="p">,</span>
+<span class="w">            </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.5281/zenodo.10034223}</span><span class="p">,</span>
+<span class="w">    </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If you want to cite the scientific contributions of MOABB, you could use the following paper:</p>
+<blockquote>
+<div><p>Sylvain Chevallier, Igor Carrara, Bruno Aristimunha, Pierre Guetschel, Sara Sedlar, Bruna Junqueira Lopes, Sébastien Velut, Salim Khazem, Thomas Moreau
+<a class="reference external" href="https://cnrs.hal.science/hal-04537061/">“The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark”</a>
+HAL: hal-04537061.</p>
+</div></blockquote>
+<blockquote>
+<div><p>Vinay Jayaram and Alexandre Barachant.
+<a class="reference external" href="http://iopscience.iop.org/article/10.1088/1741-2552/aadea0/meta">“MOABB: trustworthy algorithm benchmarking for BCIs.”</a>
+Journal of neural engineering 15.6 (2018): 066011.
+<a class="reference external" href="https://doi.org/10.1088/1741-2552/aadea0">DOI</a></p>
+</div></blockquote>
+<p>If you publish a paper using MOABB, please contact us on <a class="reference external" href="https://app.gitter.im/#/room/#moabb_dev_community:gitter.im">gitter</a> or open an
+issue! We would love to hear about your work and help you promote it.</p>
+</section>
+<section id="contact-us">
+<h1>Contact us<a class="headerlink" href="#contact-us" title="Link to this heading">#</a></h1>
+<p>If you want to report a problem or suggest an enhancement, we’d love for you to
+<a class="reference external" href="https://github.com/NeuroTechX/moabb/issues">open an issue</a> at this GitHub repository
+because then we can get right on it.</p>
+<p>For a less formal discussion or exchanging ideas, you can also reach us on the Github or join our weekly office hours! This an open video meeting
+happening on a <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/191">regular basis</a>, please ask
+the link on the gitter channel. We are also on NeuroTechX Slack channel
+<a class="reference external" href="https://neurotechx.com/">#moabb</a>.</p>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Disclaimer</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#welcome">Welcome!</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem">The problem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-solution">The solution</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#core-team">Core Team</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#contributors">Contributors</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-do-we-need">What do we need?</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#citing-moabb-and-related-publications">Citing MOABB and related publications</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#contact-us">Contact us</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2018-2025 MOABB contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

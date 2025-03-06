@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-theme="light">
+<html lang="en" data-content_root="./" data-theme="light">
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="moabb icon" sizes="180x180" href="_static/moabb_logo.png" type="image/png">
     <title>Data Summary &#8212; moabb 1.2.0-dev documentation</title>
   
@@ -17,42 +16,51 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=7c1988a6" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
-    <script src="_static/design-tabs.js"></script>
+    <script src="_static/jquery.js?v=5d32c60e"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/documentation_options.js?v=b76c3557"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-5WJBKDMSTE"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-5WJBKDMSTE');
+            </script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -68,6 +76,7 @@
     <link rel="prev" title="The largest EEG-based Benchmark for Open Science" href="paper_results.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.2.0" />
   </head>
   
   
@@ -75,23 +84,16 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+  <div id="pst-scroll-pixel-helper"></div>
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
   
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -99,7 +101,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -107,33 +108,28 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+  <aside class="bd-header-announcement d-print-none d-none" aria-label="Announcement" data-pst-announcement-url="https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html"></aside>
+</div>
 
-<script>
-document.write(`<div class="bd-header-announcement"></div>`);
-fetch("https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html")
-  .then(res => {return res.text();})
-  .then(data => {
-    div = document.querySelector(".bd-header-announcement");
-    div.classList.add(...["bd-header-announcement", "container-fluid"]);
-    div.innerHTML = `<div class="bd-header-announcement__content">${data}</div>`;
-  })
-  .catch(error => {
-    console.log("[PST]: Failed to load announcement at: https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html");
-  });
-</script>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
+  
+    
   
 
 <a class="navbar-brand logo" href="index.html">
@@ -141,100 +137,83 @@ fetch("https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_t
   
   
   
+  
     
     
     
-    <img src="_static/moabb_logo.svg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="_static/moabb_logo.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="_static/moabb_logo.svg" class="logo__image only-light" alt="moabb 1.2.0-dev documentation - Home"/>
+    <img src="_static/moabb_logo.svg" class="logo__image only-dark pst-js-only" alt="moabb 1.2.0-dev documentation - Home"/>
   
   
 </a></div>
     
   </div>
   
-  
   <div class="col-lg-9 navbar-header-items">
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+        <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="paper_results.html">
-                        The largest EEG benchmark
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="paper_results.html">
+    The largest EEG benchmark
+  </a>
+</li>
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
-                        Datasets
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="install/install.html">
-                        Install
-                      </a>
-                    </li>
-                
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Datasets
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="overview.html">
-                        Overview
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_tutorials/index.html">
-                        Getting Started
-                      </a>
-                    </li>
-                
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install/install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
                     More
                 </button>
-                <div class="dropdown-menu">
+                <ul id="pst-nav-more-links" class="dropdown-menu">
                     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_examples/index.html">
-                        Gallery
-                      </a>
-                    </li>
-                
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="cite.html">
+    Citation
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="main_concepts.html">
-                        How does Moabb work?
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api.html">
-                        API reference
-                      </a>
-                    </li>
-                
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="whats_new.html">
+    Release notes
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="whats_new.html">
-                        Release notes
-                      </a>
-                    </li>
-                
-                </div>
-            </div>
+                </ul>
+            </li>
             
   </ul>
 </nav></div>
@@ -246,26 +225,22 @@ fetch("https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_t
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-  </button>
-`);
-</script></div>
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
     </div>
     
@@ -273,29 +248,32 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -304,87 +282,63 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+          
+          
+            <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="paper_results.html">
-                        The largest EEG benchmark
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="paper_results.html">
+    The largest EEG benchmark
+  </a>
+</li>
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
-                        Datasets
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="install/install.html">
-                        Install
-                      </a>
-                    </li>
-                
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Datasets
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="overview.html">
-                        Overview
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_tutorials/index.html">
-                        Getting Started
-                      </a>
-                    </li>
-                
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="auto_examples/index.html">
-                        Gallery
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install/install.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="main_concepts.html">
-                        How does Moabb work?
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api.html">
-                        API reference
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="whats_new.html">
-                        Release notes
-                      </a>
-                    </li>
-                
-                </div>
-            </div>
-            
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cite.html">
+    Citation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="whats_new.html">
+    Release notes
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -393,15 +347,12 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-  </button>
-`);
-</script></div>
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
       </div>
     
@@ -409,37 +360,40 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
       
         <div class="header-article-item">
 
-
-
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="index.html" class="nav-link" aria-label="Home">
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Data Summary</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Data Summary</span></li>
   </ul>
 </nav>
 </div>
@@ -454,16 +408,16 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
-  <span class="target" id="module-moabb.datasets"><span id="data-summary"></span></span><p>A dataset handle and abstract low level access to the data. the dataset will
+  <p id="module-moabb.datasets"><span id="data-summary"></span>A dataset handle and abstract low level access to the data. the dataset will
 takes data stored locally, in the format in which they have been downloaded,
 and will convert them into a MNE raw object. There are options to pool all the
 different recording sessions per subject or to evaluate them separately.</p>
 <p>See <a class="github reference external" href="https://github.com/NeuroTechX/moabb/wiki/Datasets-Support">NeuroTechX/moabb</a> for detail
 on datasets (electrodes, number of trials, sessions, etc.)</p>
 <section id="id1">
-<h1>Data Summary<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<h1>Data Summary<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
 <p>MOABB gather many datasets, here is list summarizing important information. Most of the
 datasets are listed here but this list not complete yet, check API for complete
 documentation.</p>
@@ -472,617 +426,57 @@ there is a tutorial explaining how to do so, and we welcome warmly any new contr
 <p>See also <a class="reference external" href="https://github.com/NeuroTechX/moabb/wiki/Datasets-Support">Datasets-Support</a> for supplementary
 detail on datasets (class name, size, licence, etc.)
 Dataset, #Subj, #Chan, #Classes, #Trials, Trial length, Freq, #Session, #Runs, Total_trials, PapersWithCode leaderboard</p>
-<p>Columns definitions:
-* <strong>Dataset</strong> is the name of the dataset.
-* <strong>#Subj</strong> is the number of subjects.
-* <strong>#Chan</strong> is the number of EEG channels.
-* <strong>#Trials / class</strong> is the number of repetitions performed by one subject for each class. This number is computed using only the first subject of each dataset. <em>The definitions of a **class*</em> and of a <strong>trial</strong> depend on the paradigm used (see sections below)*.
-* <strong>Trial length</strong> is the duration of trial in seconds.
-* <strong>Total_trials</strong> is the total number of trials in the dataset (all subjects and classes together).
-* <strong>Freq</strong> is the sampling frequency of the raw data.
-* <strong>#Session</strong> is the number of sessions per subject. Different sessions are often recorded on different days.
-* <strong>#Runs</strong> is the number of runs per session. A run is a continuous recording of the EEG data. Often, the different runs of a given session are recorded without removing the EEG cap in between.
-* <strong>PapersWithCode leaderboard</strong> is the link to the dataset on the PapersWithCode leaderboard.</p>
+<dl class="simple">
+<dt>Columns definitions:</dt><dd><ul class="simple">
+<li><p><strong>Dataset</strong> is the name of the dataset.</p></li>
+<li><p><strong>#Subj</strong> is the number of subjects.</p></li>
+<li><p><strong>#Chan</strong> is the number of EEG channels.</p></li>
+<li><p><strong>#Trials / class</strong> is the number of repetitions performed by one subject for each class. This number is computed using only the first subject of each dataset. <em>The definitions of a **class*</em> and of a <strong>trial</strong> depend on the paradigm used (see sections below)*.</p></li>
+<li><p><strong>Trial length</strong> is the duration of trial in seconds.</p></li>
+<li><p><strong>Total_trials</strong> is the total number of trials in the dataset (all subjects and classes together).</p></li>
+<li><p><strong>Freq</strong> is the sampling frequency of the raw data.</p></li>
+<li><p><strong>#Session</strong> is the number of sessions per subject. Different sessions are often recorded on different days.</p></li>
+<li><p><strong>#Runs</strong> is the number of runs per session. A run is a continuous recording of the EEG data. Often, the different runs of a given session are recorded without removing the EEG cap in between.</p></li>
+<li><p><strong>PapersWithCode leaderboard</strong> is the link to the dataset on the PapersWithCode leaderboard.</p></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section id="motor-imagery">
-<h1>Motor Imagery<a class="headerlink" href="#motor-imagery" title="Permalink to this heading">#</a></h1>
+<h1>Motor Imagery<a class="headerlink" href="#motor-imagery" title="Link to this heading">#</a></h1>
 <p>Motor Imagery is a BCI paradigm where the subject imagines performing movements. Each movement is associated with a different command to build an application.</p>
-<p>Motor Imagery-specific definitions:
-* <strong>#Classes</strong> is the number of different imagery tasks.
-* <strong>Trial</strong> is one repetition of the imagery task.</p>
-<table class="sortable table">
-<colgroup>
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Dataset</p></th>
-<th class="head"><p>#Subj</p></th>
-<th class="head"><p>#Chan</p></th>
-<th class="head"><p>#Classes</p></th>
-<th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trial length(s)</p></th>
-<th class="head"><p>Freq(Hz)</p></th>
-<th class="head"><p>#Session</p></th>
-<th class="head"><p>#Runs</p></th>
-<th class="head"><p>Total_trials</p></th>
-<th class="head"><p>PapersWithCode leaderboard</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.AlexMI.html#moabb.datasets.AlexMI" title="moabb.datasets.AlexMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlexMI</span></code></a></p></td>
-<td><p>8</p></td>
-<td><p>16</p></td>
-<td><p>3</p></td>
-<td><p>20</p></td>
-<td><p>3.0</p></td>
-<td><p>512</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>480</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/alexandremotorimagery-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_001.html#moabb.datasets.BNCI2014_001" title="moabb.datasets.BNCI2014_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_001</span></code></a></p></td>
-<td><p>9</p></td>
-<td><p>22</p></td>
-<td><p>4</p></td>
-<td><p>144</p></td>
-<td><p>4.0</p></td>
-<td><p>250</p></td>
-<td><p>2</p></td>
-<td><p>6</p></td>
-<td><p>62208</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/bnci2014-001-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_002.html#moabb.datasets.BNCI2014_002" title="moabb.datasets.BNCI2014_002"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_002</span></code></a></p></td>
-<td><p>14</p></td>
-<td><p>15</p></td>
-<td><p>2</p></td>
-<td><p>80</p></td>
-<td><p>5.0</p></td>
-<td><p>512</p></td>
-<td><p>1</p></td>
-<td><p>8</p></td>
-<td><p>17920</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/bnci2014-002-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_004.html#moabb.datasets.BNCI2014_004" title="moabb.datasets.BNCI2014_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_004</span></code></a></p></td>
-<td><p>9</p></td>
-<td><p>3</p></td>
-<td><p>2</p></td>
-<td><p>360</p></td>
-<td><p>4.5</p></td>
-<td><p>250</p></td>
-<td><p>5</p></td>
-<td><p>1</p></td>
-<td><p>32400</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/bnci2014-004-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_001.html#moabb.datasets.BNCI2015_001" title="moabb.datasets.BNCI2015_001"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_001</span></code></a></p></td>
-<td><p>12</p></td>
-<td><p>13</p></td>
-<td><p>2</p></td>
-<td><p>200</p></td>
-<td><p>5.0</p></td>
-<td><p>512</p></td>
-<td><p>3</p></td>
-<td><p>1</p></td>
-<td><p>14400</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/bnci2015-001-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_004.html#moabb.datasets.BNCI2015_004" title="moabb.datasets.BNCI2015_004"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_004</span></code></a></p></td>
-<td><p>9</p></td>
-<td><p>30</p></td>
-<td><p>5</p></td>
-<td><p>80</p></td>
-<td><p>7.0</p></td>
-<td><p>256</p></td>
-<td><p>2</p></td>
-<td><p>1</p></td>
-<td><p>7200</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/bnci2015-004-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Cho2017.html#moabb.datasets.Cho2017" title="moabb.datasets.Cho2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cho2017</span></code></a></p></td>
-<td><p>52</p></td>
-<td><p>64</p></td>
-<td><p>2</p></td>
-<td><p>100</p></td>
-<td><p>3.0</p></td>
-<td><p>512</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>9800</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/cho2017-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_MI.html#moabb.datasets.Lee2019_MI" title="moabb.datasets.Lee2019_MI"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_MI</span></code></a></p></td>
-<td><p>54</p></td>
-<td><p>62</p></td>
-<td><p>2</p></td>
-<td><p>100</p></td>
-<td><p>4.0</p></td>
-<td><p>1000</p></td>
-<td><p>2</p></td>
-<td><p>1</p></td>
-<td><p>11000</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/lee2019-mi-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.GrosseWentrup2009.html#moabb.datasets.GrosseWentrup2009" title="moabb.datasets.GrosseWentrup2009"><code class="xref py py-class docutils literal notranslate"><span class="pre">GrosseWentrup2009</span></code></a></p></td>
-<td><p>10</p></td>
-<td><p>128</p></td>
-<td><p>2</p></td>
-<td><p>150</p></td>
-<td><p>7.0</p></td>
-<td><p>500</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>3000</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/grossewentrup2009-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Schirrmeister2017.html#moabb.datasets.Schirrmeister2017" title="moabb.datasets.Schirrmeister2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schirrmeister2017</span></code></a></p></td>
-<td><p>14</p></td>
-<td><p>128</p></td>
-<td><p>4</p></td>
-<td><p>120</p></td>
-<td><p>4.0</p></td>
-<td><p>500</p></td>
-<td><p>1</p></td>
-<td><p>2</p></td>
-<td><p>13440</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/schirrmeister2017-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Ofner2017.html#moabb.datasets.Ofner2017" title="moabb.datasets.Ofner2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ofner2017</span></code></a></p></td>
-<td><p>15</p></td>
-<td><p>61</p></td>
-<td><p>7</p></td>
-<td><p>60</p></td>
-<td><p>3.0</p></td>
-<td><p>512</p></td>
-<td><p>1</p></td>
-<td><p>10</p></td>
-<td><p>63000</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.PhysionetMI.html#moabb.datasets.PhysionetMI" title="moabb.datasets.PhysionetMI"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysionetMI</span></code></a></p></td>
-<td><p>109</p></td>
-<td><p>64</p></td>
-<td><p>4</p></td>
-<td><p>23</p></td>
-<td><p>3.0</p></td>
-<td><p>160</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>69760</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/physionetmotorimagery-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Shin2017A.html#moabb.datasets.Shin2017A" title="moabb.datasets.Shin2017A"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shin2017A</span></code></a></p></td>
-<td><p>29</p></td>
-<td><p>30</p></td>
-<td><p>2</p></td>
-<td><p>30</p></td>
-<td><p>10.0</p></td>
-<td><p>200</p></td>
-<td><p>3</p></td>
-<td><p>1</p></td>
-<td><p>5220</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/shin2017a-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Shin2017B.html#moabb.datasets.Shin2017B" title="moabb.datasets.Shin2017B"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shin2017B</span></code></a></p></td>
-<td><p>29</p></td>
-<td><p>30</p></td>
-<td><p>2</p></td>
-<td><p>30</p></td>
-<td><p>10.0</p></td>
-<td><p>200</p></td>
-<td><p>3</p></td>
-<td><p>1</p></td>
-<td><p>5220</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Weibo2014.html#moabb.datasets.Weibo2014" title="moabb.datasets.Weibo2014"><code class="xref py py-class docutils literal notranslate"><span class="pre">Weibo2014</span></code></a></p></td>
-<td><p>10</p></td>
-<td><p>60</p></td>
-<td><p>7</p></td>
-<td><p>80</p></td>
-<td><p>4.0</p></td>
-<td><p>200</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>5600</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/weibo2014-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Zhou2016.html#moabb.datasets.Zhou2016" title="moabb.datasets.Zhou2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Zhou2016</span></code></a></p></td>
-<td><p>4</p></td>
-<td><p>14</p></td>
-<td><p>3</p></td>
-<td><p>160</p></td>
-<td><p>5.0</p></td>
-<td><p>250</p></td>
-<td><p>3</p></td>
-<td><p>2</p></td>
-<td><p>11496</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/zhou2016-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Stieger2021.html#moabb.datasets.Stieger2021" title="moabb.datasets.Stieger2021"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stieger2021</span></code></a></p></td>
-<td><p>62</p></td>
-<td><p>64</p></td>
-<td><p>4</p></td>
-<td><p>450</p></td>
-<td><p>3.0</p></td>
-<td><p>1000</p></td>
-<td><p>7 or 11</p></td>
-<td><p>1</p></td>
-<td><p>250000</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Liu2024.html#moabb.datasets.Liu2024" title="moabb.datasets.Liu2024"><code class="xref py py-class docutils literal notranslate"><span class="pre">Liu2024</span></code></a></p></td>
-<td><p>50</p></td>
-<td><p>29</p></td>
-<td><p>2</p></td>
-<td><p>20</p></td>
-<td><p>4.0</p></td>
-<td><p>500</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>2000</p></td>
-<td><p>No</p></td>
-</tr>
-</tbody>
-</table>
+<dl class="simple">
+<dt>Motor Imagery-specific definitions:</dt><dd><ul class="simple">
+<li><p><strong>#Classes</strong> is the number of different imagery tasks.</p></li>
+<li><p><strong>Trial</strong> is one repetition of the imagery task.</p></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section id="p300-erp">
-<h1>P300/ERP<a class="headerlink" href="#p300-erp" title="Permalink to this heading">#</a></h1>
+<h1>P300/ERP<a class="headerlink" href="#p300-erp" title="Link to this heading">#</a></h1>
 <p>ERP (Event-Related Potential) is a BCI paradigm where the subject is presented with a stimulus and the EEG response is recorded. The P300 is a positive peak in the EEG signal that occurs around 300 ms after the stimulus.</p>
-<p>P300-specific definitions:
-* <strong>A trial</strong> is one flash.
-* <strong>The classes</strong> are binary: a trial is <strong>target</strong> if the key on which the subject focuses is flashed and <strong>non-target</strong> otherwise.</p>
-<table class="sortable table">
-<colgroup>
-<col style="width: 13%" />
-<col style="width: 13%" />
-<col style="width: 13%" />
-<col style="width: 13%" />
-<col style="width: 13%" />
-<col style="width: 13%" />
-<col style="width: 13%" />
-<col style="width: 13%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Dataset</p></th>
-<th class="head"><p>#Subj</p></th>
-<th class="head"><p>#Chan</p></th>
-<th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trials length(s)</p></th>
-<th class="head"><p>Freq(Hz)</p></th>
-<th class="head"><p>#Sessions</p></th>
-<th class="head"><p>PapersWithCode leaderboard</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_008.html#moabb.datasets.BNCI2014_008" title="moabb.datasets.BNCI2014_008"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_008</span></code></a></p></td>
-<td><p>8</p></td>
-<td><p>8</p></td>
-<td><p>3500 NT / 700 T</p></td>
-<td><p>1.0</p></td>
-<td><p>256</p></td>
-<td><p>1</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/bnci2014-008-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2014_009.html#moabb.datasets.BNCI2014_009" title="moabb.datasets.BNCI2014_009"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2014_009</span></code></a></p></td>
-<td><p>10</p></td>
-<td><p>16</p></td>
-<td><p>1440 NT / 288 T</p></td>
-<td><p>0.8</p></td>
-<td><p>256</p></td>
-<td><p>3</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/bnci2014-009-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BNCI2015_003.html#moabb.datasets.BNCI2015_003" title="moabb.datasets.BNCI2015_003"><code class="xref py py-class docutils literal notranslate"><span class="pre">BNCI2015_003</span></code></a></p></td>
-<td><p>10</p></td>
-<td><p>8</p></td>
-<td><p>1500 NT / 300 T</p></td>
-<td><p>0.8</p></td>
-<td><p>256</p></td>
-<td><p>1</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/bnci2015-003-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2012.html#moabb.datasets.BI2012" title="moabb.datasets.BI2012"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2012</span></code></a></p></td>
-<td><p>25</p></td>
-<td><p>16</p></td>
-<td><p>640 NT / 128 T</p></td>
-<td><p>1.0</p></td>
-<td><p>128</p></td>
-<td><p>2</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/braininvaders2012-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2013a.html#moabb.datasets.BI2013a" title="moabb.datasets.BI2013a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2013a</span></code></a></p></td>
-<td><p>24</p></td>
-<td><p>16</p></td>
-<td><p>3200 NT / 640 T</p></td>
-<td><p>1.0</p></td>
-<td><p>512</p></td>
-<td><p>8 for subjects 1-7 else 1</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/braininvaders2013a-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2014a.html#moabb.datasets.BI2014a" title="moabb.datasets.BI2014a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a</span></code></a></p></td>
-<td><p>64</p></td>
-<td><p>16</p></td>
-<td><p>990 NT / 198 T</p></td>
-<td><p>1.0</p></td>
-<td><p>512</p></td>
-<td><p>up to 3</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/braininvaders2014a-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2014b.html#moabb.datasets.BI2014b" title="moabb.datasets.BI2014b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b</span></code></a></p></td>
-<td><p>38</p></td>
-<td><p>32</p></td>
-<td><p>200 NT / 40 T</p></td>
-<td><p>1.0</p></td>
-<td><p>512</p></td>
-<td><p>3</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/braininvaders2014b-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2015a.html#moabb.datasets.BI2015a" title="moabb.datasets.BI2015a"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a</span></code></a></p></td>
-<td><p>43</p></td>
-<td><p>32</p></td>
-<td><p>4131 NT / 825 T</p></td>
-<td><p>1.0</p></td>
-<td><p>512</p></td>
-<td><p>3</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/braininvaders2015a-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.BI2015b.html#moabb.datasets.BI2015b" title="moabb.datasets.BI2015b"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b</span></code></a></p></td>
-<td><p>44</p></td>
-<td><p>32</p></td>
-<td><p>2160 NT / 480 T</p></td>
-<td><p>1.0</p></td>
-<td><p>512</p></td>
-<td><p>1</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/braininvaders2015b-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Cattan2019_VR.html#moabb.datasets.Cattan2019_VR" title="moabb.datasets.Cattan2019_VR"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR</span></code></a></p></td>
-<td><p>21</p></td>
-<td><p>16</p></td>
-<td><p>600 NT / 120 T</p></td>
-<td><p>1.0</p></td>
-<td><p>512</p></td>
-<td><p>2</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/cattan2019-vr-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Huebner2017.html#moabb.datasets.Huebner2017" title="moabb.datasets.Huebner2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2017</span></code></a></p></td>
-<td><p>13</p></td>
-<td><p>31</p></td>
-<td><p>364 NT / 112 T</p></td>
-<td><p>0.9</p></td>
-<td><p>1000</p></td>
-<td><p>3</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/huebner2017-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Huebner2018.html#moabb.datasets.Huebner2018" title="moabb.datasets.Huebner2018"><code class="xref py py-class docutils literal notranslate"><span class="pre">Huebner2018</span></code></a></p></td>
-<td><p>12</p></td>
-<td><p>31</p></td>
-<td><p>364 NT / 112 T</p></td>
-<td><p>0.9</p></td>
-<td><p>1000</p></td>
-<td><p>3</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/huebner2018-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Sosulski2019.html#moabb.datasets.Sosulski2019" title="moabb.datasets.Sosulski2019"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sosulski2019</span></code></a></p></td>
-<td><p>13</p></td>
-<td><p>31</p></td>
-<td><p>7500 NT / 1500 T</p></td>
-<td><p>1.2</p></td>
-<td><p>1000</p></td>
-<td><p>1</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/sosulski2019-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.EPFLP300.html#moabb.datasets.EPFLP300" title="moabb.datasets.EPFLP300"><code class="xref py py-class docutils literal notranslate"><span class="pre">EPFLP300</span></code></a></p></td>
-<td><p>8</p></td>
-<td><p>32</p></td>
-<td><p>2753 NT / 551 T</p></td>
-<td><p>1.0</p></td>
-<td><p>2048</p></td>
-<td><p>4</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/epflp300-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_ERP.html#moabb.datasets.Lee2019_ERP" title="moabb.datasets.Lee2019_ERP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_ERP</span></code></a></p></td>
-<td><p>54</p></td>
-<td><p>62</p></td>
-<td><p>6900 NT / 1380 T</p></td>
-<td><p>1.0</p></td>
-<td><p>1000</p></td>
-<td><p>2</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/lee2019-erp-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.DemonsP300.html#moabb.datasets.DemonsP300" title="moabb.datasets.DemonsP300"><code class="xref py py-class docutils literal notranslate"><span class="pre">DemonsP300</span></code></a></p></td>
-<td><p>60</p></td>
-<td><p>8</p></td>
-<td><p>935 NT / 50 T</p></td>
-<td><p>1.0</p></td>
-<td><p>500</p></td>
-<td><p>1</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ErpCore2021_N170</span></code></p></td>
-<td><p>40</p></td>
-<td><p>30</p></td>
-<td><p>240 NT / 80 T</p></td>
-<td><p>1.0</p></td>
-<td><p>1024</p></td>
-<td><p>1</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ErpCore2021_MMN</span></code></p></td>
-<td><p>40</p></td>
-<td><p>30</p></td>
-<td><p>800 NT / 200 T</p></td>
-<td><p>1.0</p></td>
-<td><p>1024</p></td>
-<td><p>1</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ErpCore2021_N2pc</span></code></p></td>
-<td><p>40</p></td>
-<td><p>30</p></td>
-<td><p>160 NT / 160 T</p></td>
-<td><p>1.0</p></td>
-<td><p>1024</p></td>
-<td><p>1</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ErpCore2021_P3</span></code></p></td>
-<td><p>40</p></td>
-<td><p>30</p></td>
-<td><p>160 NT / 40 T</p></td>
-<td><p>1.0</p></td>
-<td><p>1024</p></td>
-<td><p>1</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ErpCore2021_N400</span></code></p></td>
-<td><p>40</p></td>
-<td><p>30</p></td>
-<td><p>60 NT / 60 T</p></td>
-<td><p>1.0</p></td>
-<td><p>1024</p></td>
-<td><p>1</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ErpCore2021_ERN</span></code></p></td>
-<td><p>40</p></td>
-<td><p>30</p></td>
-<td><p>~400 All</p></td>
-<td><p>1.0</p></td>
-<td><p>1024</p></td>
-<td><p>1</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ErpCore2021_LRP</span></code></p></td>
-<td><p>40</p></td>
-<td><p>30</p></td>
-<td><p>~400 All</p></td>
-<td><p>1.0</p></td>
-<td><p>1024</p></td>
-<td><p>1</p></td>
-<td><p>No</p></td>
-</tr>
-</tbody>
-</table>
+<dl class="simple">
+<dt>P300-specific definitions:</dt><dd><ul class="simple">
+<li><p><strong>A trial</strong> is one flash.</p></li>
+<li><p><strong>The classes</strong> are binary: a trial is <strong>target</strong> if the key on which the subject focuses is flashed and <strong>non-target</strong> otherwise.</p></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section id="ssvep">
-<h1>SSVEP<a class="headerlink" href="#ssvep" title="Permalink to this heading">#</a></h1>
+<h1>SSVEP<a class="headerlink" href="#ssvep" title="Link to this heading">#</a></h1>
 <p>SSVEP (Steady-State Visually Evoked Potential) is a BCI paradigm where the subject is presented with flickering stimuli. The EEG signal is modulated at the same frequency as the stimulus. Each stimulus is flickering at a different frequency.</p>
-<p>SSVEP-specific definitions:
-* <strong>#Classes</strong> is the number of different stimulation frequencies.
-* <strong>A trial</strong> is one symbol selection. This includes multiple flashes.</p>
-<table class="sortable table">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Dataset</p></th>
-<th class="head"><p>#Subj</p></th>
-<th class="head"><p>#Chan</p></th>
-<th class="head"><p>#Classes</p></th>
-<th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>Trials length(s)</p></th>
-<th class="head"><p>Freq(Hz)</p></th>
-<th class="head"><p>#Sessions</p></th>
-<th class="head"><p>PapersWithCode leaderboard</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Lee2019_SSVEP.html#moabb.datasets.Lee2019_SSVEP" title="moabb.datasets.Lee2019_SSVEP"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lee2019_SSVEP</span></code></a></p></td>
-<td><p>54</p></td>
-<td><p>62</p></td>
-<td><p>4</p></td>
-<td><p>50</p></td>
-<td><p>4s</p></td>
-<td><p>1000</p></td>
-<td><p>2</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/lee2019-ssvep-moabb-1">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Kalunga2016.html#moabb.datasets.Kalunga2016" title="moabb.datasets.Kalunga2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Kalunga2016</span></code></a></p></td>
-<td><p>12</p></td>
-<td><p>8</p></td>
-<td><p>4</p></td>
-<td><p>16</p></td>
-<td><p>2s</p></td>
-<td><p>256</p></td>
-<td><p>1</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/kalunga2016-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.MAMEM1.html#moabb.datasets.MAMEM1" title="moabb.datasets.MAMEM1"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM1</span></code></a></p></td>
-<td><p>10</p></td>
-<td><p>256</p></td>
-<td><p>5</p></td>
-<td><p>12-15</p></td>
-<td><p>3s</p></td>
-<td><p>250</p></td>
-<td><p>1</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/mamem1-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.MAMEM2.html#moabb.datasets.MAMEM2" title="moabb.datasets.MAMEM2"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM2</span></code></a></p></td>
-<td><p>10</p></td>
-<td><p>256</p></td>
-<td><p>5</p></td>
-<td><p>20-30</p></td>
-<td><p>3s</p></td>
-<td><p>250</p></td>
-<td><p>1</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/mamem2-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.MAMEM3.html#moabb.datasets.MAMEM3" title="moabb.datasets.MAMEM3"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAMEM3</span></code></a></p></td>
-<td><p>10</p></td>
-<td><p>14</p></td>
-<td><p>4</p></td>
-<td><p>20-30</p></td>
-<td><p>3s</p></td>
-<td><p>128</p></td>
-<td><p>1</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/mamem3-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Nakanishi2015.html#moabb.datasets.Nakanishi2015" title="moabb.datasets.Nakanishi2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nakanishi2015</span></code></a></p></td>
-<td><p>9</p></td>
-<td><p>8</p></td>
-<td><p>12</p></td>
-<td><p>15</p></td>
-<td><p>4.15s</p></td>
-<td><p>256</p></td>
-<td><p>1</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/nakanishi2015-moabb">Yes</a></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Wang2016.html#moabb.datasets.Wang2016" title="moabb.datasets.Wang2016"><code class="xref py py-class docutils literal notranslate"><span class="pre">Wang2016</span></code></a></p></td>
-<td><p>34</p></td>
-<td><p>62</p></td>
-<td><p>40</p></td>
-<td><p>6</p></td>
-<td><p>5s</p></td>
-<td><p>250</p></td>
-<td><p>1</p></td>
-<td><p><a class="reference external" href="https://paperswithcode.com/dataset/wang2016-moabb">Yes</a></p></td>
-</tr>
-</tbody>
-</table>
+<dl class="simple">
+<dt>SSVEP-specific definitions:</dt><dd><ul class="simple">
+<li><p><strong>#Classes</strong> is the number of different stimulation frequencies.</p></li>
+<li><p><strong>A trial</strong> is one symbol selection. This includes multiple flashes.</p></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section id="c-vep">
-<h1>c-VEP<a class="headerlink" href="#c-vep" title="Permalink to this heading">#</a></h1>
+<h1>c-VEP<a class="headerlink" href="#c-vep" title="Link to this heading">#</a></h1>
 <p>Include neuro experiments where the participant is presented with psuedo-random noise-codes,
 such as m-sequences, Gold codes, or any arbitrary “pseudo-random” code. Specifically, the
 difference with SSVEP is that SSVEP presents periodic stimuli, while c-VEP presents
@@ -1091,207 +485,30 @@ non-periodic stimuli. For a review of c-VEP BCI, see:</p>
 Hornero, R. (2021). Brain–computer interfaces based on code-modulated visual evoked
 potentials (c-VEP): A literature review. Journal of Neural Engineering, 18(6), 061002.
 DOI: <a class="reference external" href="https://doi.org/10.1088/1741-2552/ac38cf">https://doi.org/10.1088/1741-2552/ac38cf</a></p>
-<p>c-VEP-specific definitions:
-* <strong>A trial</strong> is one symbol selection. This includes multiple flashes.
-* <strong>#Trial classes</strong> is the number of different symbols.
-* <strong>#Epoch classes</strong> is the number of possible intensities for the flashes  (for a visual cVEP paradigm). Typically, there are only two intensities: on and off.
-* <strong>#Epochs / class</strong> the number of flashes per intensity in each session.
-* <strong>Codes</strong> is the type of code used in the experiment.
-* <strong>Presentation rate</strong> is the rate at which the codes are presented.</p>
-<table class="sortable table">
-<colgroup>
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Dataset</p></th>
-<th class="head"><p>#Subj</p></th>
-<th class="head"><p>#Sessions</p></th>
-<th class="head"><p>Freq(Hz)</p></th>
-<th class="head"><p>#Chan</p></th>
-<th class="head"><p>Trials length (s)</p></th>
-<th class="head"><p>#Trial classes</p></th>
-<th class="head"><p>#Trials / class</p></th>
-<th class="head"><p>#Epochs classes</p></th>
-<th class="head"><p>#Epochs / class</p></th>
-<th class="head"><p>Codes</p></th>
-<th class="head"><p>Presentation rate</p></th>
-<th class="head"><p>PapersWithCode leaderboard</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Thielen2015.html#moabb.datasets.Thielen2015" title="moabb.datasets.Thielen2015"><code class="xref py py-class docutils literal notranslate"><span class="pre">Thielen2015</span></code></a></p></td>
-<td><p>12</p></td>
-<td><p>1</p></td>
-<td><p>2048</p></td>
-<td><p>64</p></td>
-<td><p>4.2</p></td>
-<td><p>36</p></td>
-<td><p>3</p></td>
-<td><p>2</p></td>
-<td><p>27216 NT / 27216 T</p></td>
-<td><p>Gold codes</p></td>
-<td><p>120Hz</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Thielen2021.html#moabb.datasets.Thielen2021" title="moabb.datasets.Thielen2021"><code class="xref py py-class docutils literal notranslate"><span class="pre">Thielen2021</span></code></a></p></td>
-<td><p>30</p></td>
-<td><p>1</p></td>
-<td><p>512</p></td>
-<td><p>8</p></td>
-<td><p>31.5</p></td>
-<td><p>20</p></td>
-<td><p>5</p></td>
-<td><p>2</p></td>
-<td><p>18900 NT / 18900 T</p></td>
-<td><p>Gold codes</p></td>
-<td><p>60Hz</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.CastillosCVEP100.html#moabb.datasets.CastillosCVEP100" title="moabb.datasets.CastillosCVEP100"><code class="xref py py-class docutils literal notranslate"><span class="pre">CastillosCVEP100</span></code></a></p></td>
-<td><p>12</p></td>
-<td><p>1</p></td>
-<td><p>500</p></td>
-<td><p>32</p></td>
-<td><p>2.2</p></td>
-<td><p>4</p></td>
-<td><p>15/15/15/15</p></td>
-<td><p>2</p></td>
-<td><p>3525 NT / 3495 T</p></td>
-<td><p>m-sequence</p></td>
-<td><p>60Hz</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.CastillosCVEP40.html#moabb.datasets.CastillosCVEP40" title="moabb.datasets.CastillosCVEP40"><code class="xref py py-class docutils literal notranslate"><span class="pre">CastillosCVEP40</span></code></a></p></td>
-<td><p>12</p></td>
-<td><p>1</p></td>
-<td><p>500</p></td>
-<td><p>32</p></td>
-<td><p>2.2</p></td>
-<td><p>4</p></td>
-<td><p>15/15/15/15</p></td>
-<td><p>2</p></td>
-<td><p>3525 NT / 3495 T</p></td>
-<td><p>m-sequence</p></td>
-<td><p>60Hz</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.CastillosBurstVEP40.html#moabb.datasets.CastillosBurstVEP40" title="moabb.datasets.CastillosBurstVEP40"><code class="xref py py-class docutils literal notranslate"><span class="pre">CastillosBurstVEP40</span></code></a></p></td>
-<td><p>12</p></td>
-<td><p>1</p></td>
-<td><p>500</p></td>
-<td><p>32</p></td>
-<td><p>2.2</p></td>
-<td><p>4</p></td>
-<td><p>15/15/15/15</p></td>
-<td><p>2</p></td>
-<td><p>5820 NT / 1200 T</p></td>
-<td><p>Burst-CVEP</p></td>
-<td><p>60Hz</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.CastillosBurstVEP100.html#moabb.datasets.CastillosBurstVEP100" title="moabb.datasets.CastillosBurstVEP100"><code class="xref py py-class docutils literal notranslate"><span class="pre">CastillosBurstVEP100</span></code></a></p></td>
-<td><p>12</p></td>
-<td><p>1</p></td>
-<td><p>500</p></td>
-<td><p>32</p></td>
-<td><p>2.2</p></td>
-<td><p>4</p></td>
-<td><p>15/15/15/15</p></td>
-<td><p>2</p></td>
-<td><p>5820 NT / 1200 T</p></td>
-<td><p>Burst-CVEP</p></td>
-<td><p>60Hz</p></td>
-<td><p>No</p></td>
-</tr>
-</tbody>
-</table>
+<dl class="simple">
+<dt>c-VEP-specific definitions:</dt><dd><ul class="simple">
+<li><p><strong>A trial</strong> is one symbol selection. This includes multiple flashes.</p></li>
+<li><p><strong>#Trial classes</strong> is the number of different symbols.</p></li>
+<li><p><strong>#Epoch classes</strong> is the number of possible intensities for the flashes  (for a visual cVEP paradigm). Typically, there are only two intensities: on and off.</p></li>
+<li><p><strong>#Epochs / class</strong> the number of flashes per intensity in each session.</p></li>
+<li><p><strong>Codes</strong> is the type of code used in the experiment.</p></li>
+<li><p><strong>Presentation rate</strong> is the rate at which the codes are presented.</p></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section id="resting-states">
-<h1>Resting States<a class="headerlink" href="#resting-states" title="Permalink to this heading">#</a></h1>
+<h1>Resting States<a class="headerlink" href="#resting-states" title="Link to this heading">#</a></h1>
 <p>Include neuro experiments where the participant is not actively doing something.
 For example, recoding the EEG of a subject while s/he is having the eye closed or opened
 is a resting state experiment.</p>
-<table class="sortable table">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-<col style="width: 11%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Dataset</p></th>
-<th class="head"><p>#Subj</p></th>
-<th class="head"><p>#Chan</p></th>
-<th class="head"><p>#Classes</p></th>
-<th class="head"><p>#Blocks / class</p></th>
-<th class="head"><p>Trials length(s)</p></th>
-<th class="head"><p>Freq(Hz)</p></th>
-<th class="head"><p>#Sessions</p></th>
-<th class="head"><p>PapersWithCode leaderboard</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Cattan2019_PHMD.html#moabb.datasets.Cattan2019_PHMD" title="moabb.datasets.Cattan2019_PHMD"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_PHMD</span></code></a></p></td>
-<td><p>12</p></td>
-<td><p>16</p></td>
-<td><p>2</p></td>
-<td><p>10</p></td>
-<td><p>60</p></td>
-<td><p>512</p></td>
-<td><p>1</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.Hinss2021.html#moabb.datasets.Hinss2021" title="moabb.datasets.Hinss2021"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hinss2021</span></code></a></p></td>
-<td><p>15</p></td>
-<td><p>62</p></td>
-<td><p>4</p></td>
-<td><p>1</p></td>
-<td><p>2</p></td>
-<td><p>250</p></td>
-<td><p>1</p></td>
-<td><p>No</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.Rodrigues2017.html#moabb.datasets.Rodrigues2017" title="moabb.datasets.Rodrigues2017"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rodrigues2017</span></code></a></p></td>
-<td><p>20</p></td>
-<td><p>16</p></td>
-<td><p>2</p></td>
-<td><p>5</p></td>
-<td><p>10</p></td>
-<td><p>512</p></td>
-<td><p>1</p></td>
-<td><p>No</p></td>
-</tr>
-</tbody>
-</table>
 </section>
 <section id="module-moabb.datasets.compound_dataset">
-<span id="compound-datasets"></span><h1>Compound Datasets<a class="headerlink" href="#module-moabb.datasets.compound_dataset" title="Permalink to this heading">#</a></h1>
+<span id="compound-datasets"></span><h1>Compound Datasets<a class="headerlink" href="#module-moabb.datasets.compound_dataset" title="Link to this heading">#</a></h1>
 <p>Compound Datasets are datasets compounded with subjects from other datasets.
 It is useful for merging different datasets (including other Compound Datasets),
 select a sample of subject inside a dataset (e.g. subject with high/low performance).</p>
-<table class="sortable table">
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
+<div class="pst-scrollable-table-container"><table class="sortable table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Dataset</p></th>
 <th class="head"><p>#Subj</p></th>
@@ -1299,34 +516,35 @@ select a sample of subject inside a dataset (e.g. subject with high/low performa
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2014a_Il.html#moabb.datasets.compound_dataset.BI2014a_Il" title="moabb.datasets.compound_dataset.BI2014a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a_Il</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/generated/moabb.datasets.compound_dataset.BI2014a_Il.html#moabb.datasets.compound_dataset.BI2014a_Il" title="moabb.datasets.compound_dataset.BI2014a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a_Il</span></code></a></p></td>
 <td><p>17</p></td>
 <td><p>BI2014a</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2014b_Il.html#moabb.datasets.compound_dataset.BI2014b_Il" title="moabb.datasets.compound_dataset.BI2014b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b_Il</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/generated/moabb.datasets.compound_dataset.BI2014b_Il.html#moabb.datasets.compound_dataset.BI2014b_Il" title="moabb.datasets.compound_dataset.BI2014b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b_Il</span></code></a></p></td>
 <td><p>11</p></td>
 <td><p>BI2014b</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2015a_Il.html#moabb.datasets.compound_dataset.BI2015a_Il" title="moabb.datasets.compound_dataset.BI2015a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a_Il</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/generated/moabb.datasets.compound_dataset.BI2015a_Il.html#moabb.datasets.compound_dataset.BI2015a_Il" title="moabb.datasets.compound_dataset.BI2015a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a_Il</span></code></a></p></td>
 <td><p>2</p></td>
 <td><p>BI2015a</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2015b_Il.html#moabb.datasets.compound_dataset.BI2015b_Il" title="moabb.datasets.compound_dataset.BI2015b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b_Il</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/generated/moabb.datasets.compound_dataset.BI2015b_Il.html#moabb.datasets.compound_dataset.BI2015b_Il" title="moabb.datasets.compound_dataset.BI2015b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b_Il</span></code></a></p></td>
 <td><p>25</p></td>
 <td><p>BI2015b</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.Cattan2019_VR_Il.html#moabb.datasets.compound_dataset.Cattan2019_VR_Il" title="moabb.datasets.compound_dataset.Cattan2019_VR_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR_Il</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="api/generated/moabb.datasets.compound_dataset.Cattan2019_VR_Il.html#moabb.datasets.compound_dataset.Cattan2019_VR_Il" title="moabb.datasets.compound_dataset.Cattan2019_VR_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR_Il</span></code></a></p></td>
 <td><p>4</p></td>
 <td><p>Cattan2019_VR</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI_Il.html#moabb.datasets.compound_dataset.BI_Il" title="moabb.datasets.compound_dataset.BI_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI_Il</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="api/generated/moabb.datasets.compound_dataset.BI_Il.html#moabb.datasets.compound_dataset.BI_Il" title="moabb.datasets.compound_dataset.BI_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI_Il</span></code></a></p></td>
 <td><p>59</p></td>
-<td><p><a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2014a_Il.html#moabb.datasets.compound_dataset.BI2014a_Il" title="moabb.datasets.compound_dataset.BI2014a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a_Il</span></code></a> <a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2014b_Il.html#moabb.datasets.compound_dataset.BI2014b_Il" title="moabb.datasets.compound_dataset.BI2014b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b_Il</span></code></a> <a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2015a_Il.html#moabb.datasets.compound_dataset.BI2015a_Il" title="moabb.datasets.compound_dataset.BI2015a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a_Il</span></code></a> <a class="reference internal" href="generated/moabb.datasets.compound_dataset.BI2015b_Il.html#moabb.datasets.compound_dataset.BI2015b_Il" title="moabb.datasets.compound_dataset.BI2015b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b_Il</span></code></a> <a class="reference internal" href="generated/moabb.datasets.compound_dataset.Cattan2019_VR_Il.html#moabb.datasets.compound_dataset.Cattan2019_VR_Il" title="moabb.datasets.compound_dataset.Cattan2019_VR_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR_Il</span></code></a></p></td>
+<td><p><a class="reference internal" href="api/generated/moabb.datasets.compound_dataset.BI2014a_Il.html#moabb.datasets.compound_dataset.BI2014a_Il" title="moabb.datasets.compound_dataset.BI2014a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014a_Il</span></code></a> <a class="reference internal" href="api/generated/moabb.datasets.compound_dataset.BI2014b_Il.html#moabb.datasets.compound_dataset.BI2014b_Il" title="moabb.datasets.compound_dataset.BI2014b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2014b_Il</span></code></a> <a class="reference internal" href="api/generated/moabb.datasets.compound_dataset.BI2015a_Il.html#moabb.datasets.compound_dataset.BI2015a_Il" title="moabb.datasets.compound_dataset.BI2015a_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015a_Il</span></code></a> <a class="reference internal" href="api/generated/moabb.datasets.compound_dataset.BI2015b_Il.html#moabb.datasets.compound_dataset.BI2015b_Il" title="moabb.datasets.compound_dataset.BI2015b_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">BI2015b_Il</span></code></a> <a class="reference internal" href="api/generated/moabb.datasets.compound_dataset.Cattan2019_VR_Il.html#moabb.datasets.compound_dataset.Cattan2019_VR_Il" title="moabb.datasets.compound_dataset.Cattan2019_VR_Il"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cattan2019_VR_Il</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <section id="submit-a-new-dataset">
-<h2>Submit a new dataset<a class="headerlink" href="#submit-a-new-dataset" title="Permalink to this heading">#</a></h2>
+<h2>Submit a new dataset<a class="headerlink" href="#submit-a-new-dataset" title="Link to this heading">#</a></h2>
 <p>you can submit a new dataset by mentioning it to this
 <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">issue</a>. The datasets
 currently on our radar can be seen <a class="reference external" href="https://github.com/NeuroTechX/moabb/wiki/Datasets-Support">here</a>,
@@ -1351,11 +569,10 @@ but we are open to any suggestion.</p>
               
               
               
-                <footer class="bd-footer-article">
+              
+              
+                <footer class="prev-next-footer d-print-none">
                   
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="paper_results.html"
@@ -1375,23 +592,24 @@ but we are open to any suggestion.</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Data Summary</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#motor-imagery">Motor Imagery</a></li>
@@ -1420,8 +638,8 @@ but we are open to any suggestion.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1429,6 +647,7 @@ but we are open to any suggestion.</p>
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
       © Copyright 2018-2025 MOABB contributors.
@@ -1440,10 +659,13 @@ but we are open to any suggestion.</p>
     </div>
   
   
+  
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>
