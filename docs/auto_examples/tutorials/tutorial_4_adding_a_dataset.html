@@ -400,6 +400,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../advanced_examples/index.html">Advanced examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_dreyer_clf_scores_vs_subj_info.html">Examples of analysis of a Dreyer2023 A dataset.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_filterbank_csp_vs_csp.html">FilterBank CSP versus CSP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_grid_search_withinsession.html">GridSearch within a session</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_examples/plot_hinss2021_classification.html">Hinss2021 classification example</a></li>
@@ -638,68 +639,57 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-  1%|▏                                     | 15.4k/2.77M [00:00&lt;00:23, 119kB/s]
-  2%|▊                                     | 58.4k/2.77M [00:00&lt;00:10, 262kB/s]
-  5%|█▊                                     | 128k/2.77M [00:00&lt;00:06, 415kB/s]
- 11%|████                                   | 292k/2.77M [00:00&lt;00:03, 808kB/s]
- 22%|████████▎                             | 602k/2.77M [00:00&lt;00:01, 1.49MB/s]
- 45%|████████████████▌                    | 1.24M/2.77M [00:00&lt;00:00, 2.86MB/s]
- 89%|█████████████████████████████████    | 2.47M/2.77M [00:00&lt;00:00, 5.65MB/s]
+  1%|▏                                     | 15.4k/2.77M [00:00&lt;00:23, 115kB/s]
+  4%|█▌                                     | 115k/2.77M [00:00&lt;00:06, 388kB/s]
+ 19%|███████▏                              | 523k/2.77M [00:00&lt;00:01, 1.25MB/s]
+ 56%|████████████████████▋                | 1.55M/2.77M [00:00&lt;00:00, 3.66MB/s]
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 13.6GB/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 8.62GB/s]
 
 ExampleDataset-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 
-ExampleDataset-WithinSession:  33%|███▎      | 1/3 [00:00&lt;00:00,  2.51it/s]
+ExampleDataset-WithinSession:  33%|███▎      | 1/3 [00:00&lt;00:00,  2.44it/s]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 1.02k/2.77M [00:00&lt;06:03, 7.60kB/s]
+  1%|▏                                     | 14.3k/2.77M [00:00&lt;00:25, 108kB/s]
 
-  2%|▋                                     | 46.1k/2.77M [00:00&lt;00:12, 219kB/s]
+  2%|▌                                     | 45.1k/2.77M [00:00&lt;00:14, 194kB/s]
 
-  4%|█▍                                     | 104k/2.77M [00:00&lt;00:07, 346kB/s]
+  8%|███▎                                   | 231k/2.77M [00:00&lt;00:03, 678kB/s]
 
-  8%|███                                    | 215k/2.77M [00:00&lt;00:04, 585kB/s]
+ 21%|███████▉                              | 573k/2.77M [00:00&lt;00:01, 1.46MB/s]
 
- 17%|██████▍                               | 466k/2.77M [00:00&lt;00:01, 1.15MB/s]
-
- 35%|█████████████▏                        | 956k/2.77M [00:00&lt;00:00, 2.21MB/s]
-
- 71%|██████████████████████████▏          | 1.95M/2.77M [00:00&lt;00:00, 4.31MB/s]
+ 54%|████████████████████▏                | 1.51M/2.77M [00:00&lt;00:00, 3.79MB/s]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 12.1GB/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 8.36GB/s]
 No hdf5_path provided, models will not be saved.
 
-ExampleDataset-WithinSession:  67%|██████▋   | 2/3 [00:02&lt;00:01,  1.15s/it]
+ExampleDataset-WithinSession:  67%|██████▋   | 2/3 [00:01&lt;00:01,  1.04s/it]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
 
-  1%|▏                                     | 14.3k/2.77M [00:00&lt;00:27, 101kB/s]
+  2%|▌                                     | 44.0k/2.77M [00:00&lt;00:08, 324kB/s]
 
-  2%|▊                                     | 56.3k/2.77M [00:00&lt;00:11, 243kB/s]
+  5%|█▊                                     | 132k/2.77M [00:00&lt;00:05, 478kB/s]
 
-  5%|█▉                                     | 135k/2.77M [00:00&lt;00:06, 435kB/s]
+ 18%|██████▋                               | 488k/2.77M [00:00&lt;00:01, 1.42MB/s]
 
- 10%|████                                   | 287k/2.77M [00:00&lt;00:03, 773kB/s]
+ 44%|████████████████▍                    | 1.22M/2.77M [00:00&lt;00:00, 2.97MB/s]
 
- 22%|████████▍                             | 614k/2.77M [00:00&lt;00:01, 1.51MB/s]
-
- 45%|████████████████▊                    | 1.25M/2.77M [00:00&lt;00:00, 2.86MB/s]
-
- 91%|█████████████████████████████████▊   | 2.53M/2.77M [00:00&lt;00:00, 5.52MB/s]
+ 90%|█████████████████████████████████▍   | 2.50M/2.77M [00:00&lt;00:00, 5.60MB/s]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 13.1GB/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 12.2GB/s]
 No hdf5_path provided, models will not be saved.
 
-ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:03&lt;00:00,  1.37s/it]
-ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:03&lt;00:00,  1.24s/it]
+ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:03&lt;00:00,  1.22s/it]
+ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:03&lt;00:00,  1.11s/it]
    score      time  samples  ... n_sessions         dataset  pipeline
-0    1.0  0.022860     40.0  ...          1  ExampleDataset       MDM
-1    1.0  0.022327     40.0  ...          1  ExampleDataset       MDM
-2    1.0  0.022185     40.0  ...          1  ExampleDataset       MDM
+0    1.0  0.023371     40.0  ...          1  ExampleDataset       MDM
+1    1.0  0.023329     40.0  ...          1  ExampleDataset       MDM
+2    1.0  0.022613     40.0  ...          1  ExampleDataset       MDM
 
 [3 rows x 9 columns]
 </pre></div>
@@ -711,7 +701,7 @@ ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:03&lt
 your data on public server (like Zenodo or Figshare) and signal that you
 want to add your dataset to MOABB in the  <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">dedicated issue</a>.  # noqa: E501
 You could then follow the instructions on <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">how to contribute</a>  # noqa: E501</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.836 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.231 seconds)</p>
 <p><strong>Estimated memory usage:</strong>  249 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
