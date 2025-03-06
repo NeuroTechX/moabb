@@ -29,16 +29,14 @@ class _Dreyer2023Base(BaseDataset):
     Should not be instantiated.
     """
 
-    def __init__(self, subjects, sub_id="A"):
+    def __init__(self, subjects, sub_id=""):
 
         self.sub_id = sub_id
-        self.sub_id_shift = dict(A=0, B=60, C=81)
 
         if sub_id is None:
-            self.subject_list = subjects
             self.sub_id = ""
-        else:
-            self.subject_list = [sub_id + str(i) for i in subjects]
+
+        self.subject_list = subjects
 
         super().__init__(
             self.subject_list,
@@ -349,13 +347,6 @@ class Dreyer2023B(_Dreyer2023Base):
     The online OpenViBE BCI classification performance [1]_:
         - only performance measure used to give the feedback to the participants
 
-    # TO DO:
-        * Sampling frequency? 256 Hz in [1]_, 512 in loaded info and at URL
-        Mapping based on MDFB as in [2]_
-        database_B = ['B' + str(i) for i in range(61, 82)]
-        database_A = ['A' + str(i) for i in [43, 44, 6, 10, 52, 23, 48, 24, 40, 43, 2, 1,
-                                             13, 22, 25, 29, 3, 11, 30, 19, 21]]
-        cross_database_mapping = dict(zip(database_B, database_A))
 
     References
     ----------
@@ -369,7 +360,7 @@ class Dreyer2023B(_Dreyer2023Base):
     """
 
     def __init__(self):
-        super().__init__(subjects=list(range(1, 22)), sub_id="B")
+        super().__init__(subjects=list(range(61, 82)), sub_id="B")
 
 
 class Dreyer2023C(_Dreyer2023Base):
@@ -378,7 +369,7 @@ class Dreyer2023C(_Dreyer2023Base):
     **Dataset description**
 
     "A large EEG database with users' profile information for motor imagery
-    Brain-Computer Interface research" [1]_ [2]_
+    Brain-Computer Interface research" [1]_ [2]_.
 
     Data collectors : Appriou Aurélien; Caselli Damien; Benaroch Camille;
                       Yamamoto Sayu Maria; Roc Aline; Lotte Fabien;
@@ -434,14 +425,12 @@ class Dreyer2023C(_Dreyer2023Base):
         - and mental rotation test
         - index of learning style
 
-    Pre and post experiment questionnaires [1]_:
+    Pre and post-experiment questionnaires [1]_:
         - evaluation of pre and post mood, mindfulness and motivational states
 
     The online OpenViBE BCI classification performance [1]_:
         - only performance measure used to give the feedback to the participants
 
-    # TO DO:
-        * Sampling frequency? 256 Hz in [1]_, 512 in loaded info and at URL
 
     References
     ----------
@@ -455,7 +444,7 @@ class Dreyer2023C(_Dreyer2023Base):
     """
 
     def __init__(self):
-        super().__init__(subjects=list(range(1, 6)), sub_id="C")
+        super().__init__(subjects=list(range(82, 87)), sub_id="C")
 
 
 class Dreyer2023(_Dreyer2023Base):
@@ -473,9 +462,8 @@ class Dreyer2023(_Dreyer2023Base):
     Project leader  : Lotte Fabien
     Project members : Rimbert Sébastien; Monseigne Thibaut
 
-    Dataset Dreyer2023A contains EEG, EOG and EMG signals recorded on 60 healthy subjects
-    performing Left-Right Motor Imagery experiments
-    (29 women, age 19-59, M = 29, SD = 9.32) [1]_.
+    Dataset Dreyer2023 contains concatenated datasets Dreyer2023A, Dreyer2023B and Dreyer2023C.
+
     Experiments were conducted by six experimenters. In addition, for each recording
     the following pieces of information are provided:
     subject's demographic, personality and cognitive profiles, the OpenViBE experimental
@@ -494,7 +482,7 @@ class Dreyer2023(_Dreyer2023Base):
         - t=2.00s  acoustic signal announced appearance of a red arrow
         - t=3.00s  a red arrow appears (subject starts to perform task)
         - t=4.25s  the red arrow disappears
-        - t=4.25s  the feedback on performance is given in form of a blue bar
+        - t=4.25s  the feedback on performance is given in the form of a blue bar
                    with update frequency of 16 Hz
         - t=8.00s  cross turns off (subject stops to perform task)
 
@@ -530,7 +518,6 @@ class Dreyer2023(_Dreyer2023Base):
     The online OpenViBE BCI classification performance [1]_:
         - only performance measure used to give the feedback to the participants
 
-    * Subject 59 contains only 4 runs
 
     References
     ----------
@@ -544,4 +531,4 @@ class Dreyer2023(_Dreyer2023Base):
     """
 
     def __init__(self):
-        super().__init__(subjects=list(range(1, 88)), sub_id=None)
+        super().__init__(subjects=list(range(1, 87)))
