@@ -18,6 +18,7 @@ from .base import BaseDataset
 
 
 _manifest_link = "https://osf.io/download/67c9abecc1b99765d8bb36b0/"
+_metainfo_link = "https://osf.io/download/67c9e8234f014fc76e0411ba/"
 
 _osf_tag = "8tdk5"
 _api_base_url = f"https://files.de-1.osf.io/v1/resources/{_osf_tag}/providers/osfstorage/"
@@ -184,6 +185,27 @@ class _Dreyer2023Base(BaseDataset):
                         zip_ref.extractall(path)
 
         return path
+
+    def get_subject_info(self, path=None):
+        """
+        Return the demographic information of the subjects.
+
+        Returns
+        -------
+        DataFrame
+            A DataFrame containing the demographic information of the subjects.
+        """
+        path = Path(dl.get_dataset_path(self.code, path)) / (f"MNE-{self.code}-data")
+
+        # checking it there is manifest file in the dataset folder.
+        dl.download_if_missing(path / "performance.csv", _metainfo_link)
+
+        metainfo = pd.read_csv(path / "performance.csv", sep=";")
+
+        if self.sub_id == "":
+            return metainfo
+        else:
+            return metainfo[metainfo["SUBDATASET"] == self.sub_id].reset_index(drop=True)
 
 
 class Dreyer2023A(_Dreyer2023Base):

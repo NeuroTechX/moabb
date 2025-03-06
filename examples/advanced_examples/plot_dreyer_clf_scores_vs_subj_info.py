@@ -17,7 +17,6 @@ To reduce computational time, the example is provided for four subjects.
 
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
-import pandas as pd
 import seaborn as sb
 from pyriemann.estimation import Covariances
 from pyriemann.spatialfilters import CSP
@@ -44,15 +43,22 @@ pipelines["CSP+LDA"] = make_pipeline(
 ########################################################################################
 # 3. Within session evaluation of the pipeline
 evaluation = WithinSessionEvaluation(
-    paradigm=paradigm, datasets=[dreyer2023], suffix="examples", overwrite=True
+    paradigm=paradigm, datasets=[dreyer2023], suffix="examples", overwrite=False
 )
 results = evaluation.process(pipelines)
-results = results.loc[results["subject"].isin([str(s) for s in dreyer2023.subject_list])]
+
 ########################################################################################
 # 4. Loading dataset info and concatenation with the obtained results
 info = dreyer2023.get_subject_info().rename(columns={"score": "score_MR"})
-results_info = pd.concat([info, results], axis=1)
-results_info["Age"] = 2019 - results_info["Birth_year"]
+# Creating a new column with subject's age
+info["Age"] = 2019 - info["Birth_year"]
+# Casting to int for merging
+info["subject"] = info["SUJ_ID"].astype(int)
+results["subject"] = results["subject"].astype(int)
+
+results_info = results.merge(info, on="subject", how="left")
+
+########################################################################################
 ########################################################################################
 # 5.1 Plotting subject AUC ROC scores vs subject's gender
 fig, ax = plt.subplots(nrows=2, ncols=2, facecolor="white", figsize=[16, 8], sharey=True)
