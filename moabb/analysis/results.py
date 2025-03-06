@@ -235,7 +235,26 @@ class Results:
         return pd.concat(df_list, ignore_index=True)
 
     def not_yet_computed(self, pipelines, dataset, subj, process_pipeline):
-        """Check if a results has already been computed."""
+        """Check if a results is missing.
+
+        Parameters
+        ----------
+        pipelines : dict of pipeline instance.
+            A dict containing the sklearn pipeline to evaluate.
+        dataset : Dataset instance
+            The dataset to check for
+        subj : str
+            The subject to check for
+        process_pipeline : Pipeline | None
+            Optional pipeline to apply to the data after the preprocessing.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
+
+        Returns
+        -------
+        dict
+            A dict containing the pipelines to compute.
+        """
         ret = {
             k: pipelines[k]
             for k in pipelines.keys()
@@ -246,8 +265,29 @@ class Results:
     def _already_computed(
         self, pipeline, dataset, subject, process_pipeline, session=None
     ):
-        """Check if we have results for a current combination of pipeline /
-        dataset / subject."""
+        """Check existing results for pipeline / dataset / subject combination.
+
+        Parameters
+        ----------
+        pipeline : dict of pipeline instance.
+            A dict containing the sklearn pipeline to evaluate.
+        dataset : Dataset instance
+            The dataset to check for
+        subject : str
+            The subject to check for
+        process_pipeline : Pipeline | None
+            Optional pipeline to apply to the data after the preprocessing.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
+        session : str | None
+            Not used, kept for compatibility reason.
+
+        Returns
+        -------
+        bool
+            True if the pipeline has already been computed for the given
+            dataset and subject, False otherwise.
+        """
         with h5py.File(self.filepath, "r") as f:
             # get the digest from repr
             digest = get_pipeline_digest(process_pipeline, pipeline)

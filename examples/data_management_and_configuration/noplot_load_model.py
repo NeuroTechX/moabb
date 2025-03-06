@@ -48,7 +48,7 @@ with open(
 # We load the single Keras model, if we want we can set in the exact same pipeline.
 
 model_Keras = keras.models.load_model(
-    "./results/Models_WithinSession/BNCI2014-001/1/1E/Keras_DeepConvNet/kerasdeepconvnet_fitted_model_best.h5"
+    "../how_to_benchmark/results/Models_WithinSession/BNCI2014-001/1/1E/Keras_DeepConvNet/kerasdeepconvnet_fitted_model_best.h5"
 )
 # Now we need to instantiate a new SciKeras object since we only saved the Keras model
 Keras_DeepConvNet_Trained = KerasClassifier(model_Keras)
