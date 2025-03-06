@@ -84,7 +84,7 @@ for subject in [1, 2, 3]:
 # The global variable with the dataset's URL should specify an online
 # repository where all the files are stored.
 
-ExampleDataset_URL = "https://sandbox.zenodo.org/record/369543/files/"
+ExampleDataset_URL = "https://zenodo.org/records/14973598/files/"
 
 
 ##############################################################################

@@ -6,7 +6,7 @@ Within Session P300 with Learning Curve
 This example shows how to perform a within session analysis while also
 creating learning curves for a P300 dataset.
 Additionally, we will evaluate external code. Make sure to have tdlda installed
-, which can be found in requirements_external.txt
+, which can be `pip install git+https://github.com/jsosulski/tdlda.git`.
 
 We will compare three pipelines :
 
