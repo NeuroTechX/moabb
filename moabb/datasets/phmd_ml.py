@@ -15,7 +15,7 @@ HEADMOUNTED_URL = "https://zenodo.org/record/2617085/files/"
 
 @depreciated_alias("HeadMountedDisplay", "1.1")
 class Cattan2019_PHMD(BaseDataset):
-    """Passive Head Mounted Display with Music Listening dataset.
+    """Passive Head Mounted Display with Music Listening dataset [1]_.
 
     We describe the experimental procedures for a dataset that we have made publicly available
     at https://doi.org/10.5281/zenodo.2617084 in mat (Mathworks, Natick, USA) and csv formats.
@@ -95,7 +95,7 @@ class Cattan2019_PHMD(BaseDataset):
         S = data["data"][:, first_channel:last_channel]
         stim = data["data"][:, -1]
 
-        X = np.concatenate([S, stim[:, None]], axis=1).T
+        X = np.concatenate([S * 1e-6, stim[:, None]], axis=1).T
 
         info = mne.create_info(
             ch_names=self._chnames, sfreq=512, ch_types=self._chtypes, verbose=False

@@ -22,7 +22,7 @@ BASE_URL = "https://ndownloader.figshare.com/files/"
 
 
 class Stieger2021(BaseDataset):
-    """Motor Imagery dataset from Stieger et al. 2021.
+    """Motor Imagery dataset from Stieger et al. 2021 [1]_.
 
     The main goals of our original study were to characterize how individuals
     learn to control SMR-BCIs and to test whether this learning can be improved
