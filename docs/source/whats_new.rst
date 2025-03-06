@@ -536,3 +536,4 @@ API changes
 .. _Yash Chauhan: https://github.com/jiggychauhi
 .. _Taha Habib: https://github.com/tahatt13
 .. _AFF: https://github.com/allwaysFindFood
+.. _Marco Congedo: https://github.com/Marco-Congedo
