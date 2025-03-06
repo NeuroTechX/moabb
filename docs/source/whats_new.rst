@@ -17,12 +17,14 @@ Develop branch  - 1.2.1
 
 Enhancements
 ~~~~~~~~~~~~
+- Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
 - Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
 - Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
 
 
 Bugs
 ~~~~
+- Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
@@ -57,7 +59,6 @@ Bugs
 - Fixing the dataset details for bids conversion (:gh:`698` by `Bruno Aristimunha`_)
 - Fixing unit issue and lack of montage with :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.Huebner2018`,  :class:`moabb.datasets.Cattan2019_PHMD`, :class:`moabb.datasets.Ofner2017`  (:gh:`700`  `Bruno Aristimunha`_)
 - Fix t-test permutation tests (:gh:`684` and :gh:`709` by `Gregoire Cattan`_, `Anton Andreev`_, `Marco Congedo`_ and `Bruno Aristimunha`_)
-- Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
 
 
 API changes
