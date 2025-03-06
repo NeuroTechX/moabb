@@ -18,6 +18,7 @@ Develop branch  - 1.2.1
 Enhancements
 ~~~~~~~~~~~~
 - Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
+- Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
 
 
 Bugs
