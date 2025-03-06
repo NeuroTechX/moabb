@@ -553,4 +553,4 @@ class Dreyer2023(_Dreyer2023Base):
     """
 
     def __init__(self):
-        super().__init__(subjects=list(range(1, 87)))
+        super().__init__(subjects=list(range(1, 88)))
