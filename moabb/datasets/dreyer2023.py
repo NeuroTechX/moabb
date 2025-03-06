@@ -466,7 +466,7 @@ class Dreyer2023C(_Dreyer2023Base):
     """
 
     def __init__(self):
-        super().__init__(subjects=list(range(82, 87)), sub_id="C")
+        super().__init__(subjects=list(range(82, 88)), sub_id="C")
 
 
 class Dreyer2023(_Dreyer2023Base):
