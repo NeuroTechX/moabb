@@ -31,7 +31,7 @@ from pyriemann.tangentspace import TangentSpace
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer
-from toeplitzlda.classification import ToeplitzLDA, EpochsVectorizer
+from toeplitzlda.classification import EpochsVectorizer, ToeplitzLDA
 
 import moabb
 from moabb.datasets import BNCI2014_009
