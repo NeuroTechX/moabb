@@ -17,7 +17,7 @@ from moabb.datasets import download as dl
 from .base import BaseDataset
 
 
-_manifest_link = "https://osf.io/download/67c98a88c3e9405339fd8881/"
+_manifest_link = "https://osf.io/download/67c9abecc1b99765d8bb36b0/"
 
 _osf_tag = "8tdk5"
 _api_base_url = f"https://files.de-1.osf.io/v1/resources/{_osf_tag}/providers/osfstorage/"
