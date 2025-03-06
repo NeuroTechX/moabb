@@ -62,7 +62,8 @@ sphinx-rtd-theme = { version = "^1.2.0", optional = true }
 sphinx_copybutton = { version = "^0.4.0", optional = true }
 sphinxcontrib-bibtex = { version = "^2.2.0", optional = true }
 sphinx-favicon = { version = "^1.0.1", optional = true }
-tdlda = { git = "https://github.com/jsosulski/tdlda.git", optional = true }
+toeplitz = { version = "^0.3.2", optional = true }
+toeplitzlda = { version = "^0.2.6", optional = true }
 
 [tool.poetry.extras]
 carbonemission = ["codecarbon"]
@@ -80,7 +81,9 @@ docs = [
   "sphinx-rtd-theme",
   "sphinx_copybutton",
   "sphinxcontrib-bibtex",
-  "sphinx-favicon"
+  "sphinx-favicon",
+  "toeplitz",
+  "toeplitzlda",
 ]
 
 [build-system]
