@@ -20,7 +20,7 @@ FINAL_EVALUATION_ARTICLE_ID = 16586213
 FINAL_LABEL_TXT_ARTICLE_ID = 21602622
 
 
-class Beetl2021A(BaseDataset):
+class Beetl2021_A(BaseDataset):
     """Motor Imagery dataset from BEETL Competition - Dataset A.
 
     **Dataset description**
@@ -156,7 +156,7 @@ class Beetl2021A(BaseDataset):
             subjects=subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
             events=dict(rest=0, left_hand=1, right_hand=2, feet=3),
-            code="beetla",
+            code="Beetl2021-A",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",
         )
@@ -295,7 +295,7 @@ class Beetl2021A(BaseDataset):
         return [str(base_path)]
 
 
-class Beetl2021B(BaseDataset):
+class Beetl2021_B(BaseDataset):
     """Motor Imagery dataset from BEETL Competition - Dataset B.
 
     **Dataset description**
@@ -361,7 +361,7 @@ class Beetl2021B(BaseDataset):
             subjects=subjects,
             sessions_per_subject=1,  # Data is concatenated into one session
             events=dict(left_hand=0, right_hand=1, feet=2, rest=3),
-            code="beetlb",
+            code="Beetl2021-B",
             interval=[0, 4],  # 4s trial window
             paradigm="imagery",
         )
