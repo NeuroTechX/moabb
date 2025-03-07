@@ -37,10 +37,6 @@ scikit-learn = "<1.6"
 codecarbon = { version = "^2.1.4", optional = true }
 
 # Optional dependencies for deep learning
-tensorflow = { version = ">=2.16", optional = true }
-keras = { version = ">=3.2.0", optional = true }
-scikeras = { version = "^0.13.0", optional = true }
-libclang = { version = "^15.0", optional = true }
 optuna = { version = "^3.6.1", optional = true }
 optuna-integration = { version = "^3.6.0", optional = true }
 braindecode = { version = ">=0.8.1", optional = true }
@@ -66,7 +62,7 @@ sphinx-favicon = { version = "^1.0.1", optional = true }
 
 [tool.poetry.extras]
 carbonemission = ["codecarbon"]
-deeplearning = ["tensorflow", "keras", "scikeras", "braindecode", "libclang"]
+deeplearning = ["braindecode"]
 optuna = ["optuna", "optuna-integration"]
 tests = ["pytest", "pytest-cov", "codecov", "pytest_cases"]
 docs = ["Sphinx", "sphinx-gallery", "sphinx-bootstrap-theme", "pydata-sphinx-theme", "numpydoc", "myst-parser", "tdlda", "sphinx-design", "sphinx-rtd-theme", "sphinx_copybutton", "sphinxcontrib-bibtex", "sphinx-favicon"]
