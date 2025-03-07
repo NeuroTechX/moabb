@@ -29,10 +29,11 @@ apidoc: copy-readme
 
 # HTML build target.
 html: copy-readme
-	@python prepare_summary_tables.py ../datasets $(BUILDDIR)
+	@python prepare_summary_tables.py ../moabb/datasets $(BUILDDIR)
 	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # HTML build target without plot gallery.
 html-noplot: copy-readme
+	@python prepare_summary_tables.py ../moabb/datasets $(BUILDDIR)
 	@$(SPHINXBUILD) -D plot_gallery=0 -b html "$(SOURCEDIR)" "$(BUILDDIR)/html" $(SPHINXOPTS) $(O)
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
