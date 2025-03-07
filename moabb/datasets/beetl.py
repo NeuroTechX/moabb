@@ -23,6 +23,8 @@ FINAL_LABEL_TXT_ARTICLE_ID = 21602622
 class Beetl2021A(BaseDataset):
     """Motor Imagery dataset from BEETL Competition - Dataset A.
 
+    **Dataset description**
+
     Dataset A contains data from subjects with 500 Hz sampling rate and 63 EEG channels.
     In the leaderboard phase, this includes subjects 1-2, while in the final phase it includes
     subjects 1-3.
@@ -295,6 +297,8 @@ class Beetl2021A(BaseDataset):
 
 class Beetl2021B(BaseDataset):
     """Motor Imagery dataset from BEETL Competition - Dataset B.
+
+    **Dataset description**
 
     Dataset B contains data from subjects with 200 Hz sampling rate and 32 EEG channels.
     In the leaderboard phase, this includes subjects 3-5, while in the final phase it includes
