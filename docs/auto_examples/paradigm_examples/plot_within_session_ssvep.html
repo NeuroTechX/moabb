@@ -383,7 +383,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../data_management_and_configuration/index.html">Data Management and Configuration</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/noplot_load_model.html">Load Model (Scikit, Keras) with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/noplot_load_model.html">Load Model (Scikit) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
@@ -393,7 +393,6 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/noplot_benchmark_dl.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
@@ -572,41 +571,113 @@ each subject and pipeline.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Kalunga2016-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 
-Kalunga2016-WithinSession:  50%|█████     | 1/2 [00:00&lt;00:00,  1.67it/s]
+Kalunga2016-WithinSession:  50%|█████     | 1/2 [00:00&lt;00:00,  1.79it/s]
 
   0%|                                              | 0.00/2.27M [00:00&lt;?, ?B/s]
 
-  1%|▎                                     | 15.4k/2.27M [00:00&lt;00:18, 124kB/s]
+  1%|▏                                    | 14.3k/2.27M [00:00&lt;00:29, 76.6kB/s]
 
-  4%|█▋                                    | 99.3k/2.27M [00:00&lt;00:06, 342kB/s]
+  2%|▋                                     | 44.0k/2.27M [00:00&lt;00:16, 135kB/s]
 
- 13%|█████▏                                 | 301k/2.27M [00:00&lt;00:02, 698kB/s]
+  4%|█▍                                    | 86.0k/2.27M [00:00&lt;00:11, 189kB/s]
 
- 49%|█████████████████▉                   | 1.10M/2.27M [00:00&lt;00:00, 2.69MB/s]
+  8%|███▏                                   | 184k/2.27M [00:00&lt;00:06, 347kB/s]
+
+ 12%|████▌                                  | 265k/2.27M [00:00&lt;00:05, 399kB/s]
+
+ 15%|█████▉                                 | 347k/2.27M [00:01&lt;00:04, 433kB/s]
+
+ 20%|███████▉                               | 462k/2.27M [00:01&lt;00:03, 519kB/s]
+
+ 24%|█████████▎                             | 544k/2.27M [00:01&lt;00:03, 512kB/s]
+
+ 30%|███████████▊                           | 691k/2.27M [00:01&lt;00:02, 632kB/s]
+
+ 37%|██████████████▍                        | 838k/2.27M [00:01&lt;00:02, 711kB/s]
+
+ 43%|████████████████▋                      | 969k/2.27M [00:01&lt;00:01, 736kB/s]
+
+ 48%|██████████████████                    | 1.08M/2.27M [00:01&lt;00:01, 723kB/s]
+
+ 52%|███████████████████▊                  | 1.18M/2.27M [00:02&lt;00:01, 685kB/s]
+
+ 57%|█████████████████████▋                | 1.30M/2.27M [00:02&lt;00:01, 688kB/s]
+
+ 61%|███████████████████████▎              | 1.39M/2.27M [00:02&lt;00:01, 659kB/s]
+
+ 64%|████████████████████████▍             | 1.46M/2.27M [00:02&lt;00:01, 583kB/s]
+
+ 70%|██████████████████████████▌           | 1.59M/2.27M [00:02&lt;00:01, 645kB/s]
+
+ 74%|███████████████████████████▉          | 1.67M/2.27M [00:02&lt;00:00, 601kB/s]
+
+ 77%|█████████████████████████████▎        | 1.75M/2.27M [00:03&lt;00:00, 570kB/s]
+
+ 83%|███████████████████████████████▌      | 1.88M/2.27M [00:03&lt;00:00, 636kB/s]
+
+ 87%|████████████████████████████████▉     | 1.97M/2.27M [00:03&lt;00:00, 595kB/s]
+
+ 90%|██████████████████████████████████▎   | 2.05M/2.27M [00:03&lt;00:00, 566kB/s]
+
+ 95%|████████████████████████████████████▏ | 2.16M/2.27M [00:03&lt;00:00, 605kB/s]
 
   0%|                                              | 0.00/2.27M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.27M/2.27M [00:00&lt;00:00, 5.57GB/s]
+100%|█████████████████████████████████████| 2.27M/2.27M [00:00&lt;00:00, 9.14GB/s]
 
 
   0%|                                              | 0.00/2.13M [00:00&lt;?, ?B/s]
 
-  1%|▎                                     | 15.4k/2.13M [00:00&lt;00:16, 132kB/s]
+  0%|                                     | 1.02k/2.13M [00:00&lt;06:35, 5.38kB/s]
 
-  5%|██▏                                    | 117k/2.13M [00:00&lt;00:04, 411kB/s]
+  2%|▉                                     | 49.2k/2.13M [00:00&lt;00:12, 164kB/s]
 
- 23%|████████▌                             | 481k/2.13M [00:00&lt;00:01, 1.16MB/s]
+  5%|██                                     | 115k/2.13M [00:00&lt;00:07, 268kB/s]
 
- 67%|████████████████████████▊            | 1.43M/2.13M [00:00&lt;00:00, 3.42MB/s]
+  8%|███                                    | 164k/2.13M [00:00&lt;00:07, 280kB/s]
+
+ 11%|████▏                                  | 230k/2.13M [00:00&lt;00:05, 324kB/s]
+
+ 15%|█████▊                                 | 317k/2.13M [00:01&lt;00:04, 393kB/s]
+
+ 19%|███████▍                               | 403k/2.13M [00:01&lt;00:03, 435kB/s]
+
+ 24%|█████████▍                             | 518k/2.13M [00:01&lt;00:03, 517kB/s]
+
+ 31%|███████████▉                           | 649k/2.13M [00:01&lt;00:02, 604kB/s]
+
+ 37%|██████████████▎                        | 780k/2.13M [00:01&lt;00:02, 663kB/s]
+
+ 42%|████████████████▍                      | 894k/2.13M [00:01&lt;00:01, 671kB/s]
+
+ 48%|██████████████████▎                   | 1.03M/2.13M [00:02&lt;00:01, 708kB/s]
+
+ 52%|███████████████████▊                  | 1.11M/2.13M [00:02&lt;00:01, 644kB/s]
+
+ 59%|██████████████████████▍               | 1.25M/2.13M [00:02&lt;00:01, 720kB/s]
+
+ 64%|████████████████████████▏             | 1.35M/2.13M [00:02&lt;00:01, 683kB/s]
+
+ 70%|██████████████████████████▊           | 1.50M/2.13M [00:02&lt;00:00, 743kB/s]
+
+ 74%|████████████████████████████▏         | 1.58M/2.13M [00:02&lt;00:00, 669kB/s]
+
+ 81%|██████████████████████████████▊       | 1.73M/2.13M [00:02&lt;00:00, 737kB/s]
+
+ 85%|████████████████████████████████▎     | 1.81M/2.13M [00:03&lt;00:00, 665kB/s]
+
+ 91%|██████████████████████████████████▋   | 1.94M/2.13M [00:03&lt;00:00, 704kB/s]
+
+ 96%|████████████████████████████████████▍ | 2.04M/2.13M [00:03&lt;00:00, 670kB/s]
 
   0%|                                              | 0.00/2.13M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.13M/2.13M [00:00&lt;00:00, 5.86GB/s]
+100%|█████████████████████████████████████| 2.13M/2.13M [00:00&lt;00:00, 9.67GB/s]
 No hdf5_path provided, models will not be saved.
 
-Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:03&lt;00:00,  2.03s/it]
-Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:03&lt;00:00,  1.82s/it]
+Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:09&lt;00:00,  5.77s/it]
+Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.99s/it]
       score      time  samples  ... n_sessions      dataset  pipeline
-0  0.246667  0.043414     48.0  ...          1  Kalunga2016       CCA
-1  0.333333  0.042234     48.0  ...          1  Kalunga2016       CCA
+0  0.251111  0.041751     48.0  ...          1  Kalunga2016       CCA
+1  0.335556  0.040728     48.0  ...          1  Kalunga2016       CCA
 
 [2 rows x 9 columns]
 </pre></div>
@@ -629,8 +700,8 @@ Kalunga2016-WithinSession: 100%|██████████| 2/2 [00:03&lt;00
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.197 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  249 MB</p>
+<img src="../../_images/sphx_glr_plot_within_session_ssvep_002.png" srcset="../../_images/sphx_glr_plot_within_session_ssvep_002.png" alt="plot within session ssvep" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 11.432 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  245 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-within-session-ssvep-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ddb95468daccb0c135f3c3e8fc36749c/plot_within_session_ssvep.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_within_session_ssvep.ipynb</span></code></a></p>

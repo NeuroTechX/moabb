@@ -379,7 +379,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../data_management_and_configuration/index.html">Data Management and Configuration</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/noplot_load_model.html">Load Model (Scikit, Keras) with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/noplot_load_model.html">Load Model (Scikit) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
@@ -389,7 +389,6 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/noplot_benchmark_dl.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
@@ -512,28 +511,28 @@ subjects (gender and age) and experimenters (gender).</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>0it [00:00, ?it/s]
-1it [00:01,  1.26s/it]
-2it [00:02,  1.18s/it]
-3it [00:03,  1.15s/it]
-4it [00:04,  1.23s/it]
-5it [00:06,  1.26s/it]
-6it [00:07,  1.27s/it]
-7it [00:08,  1.23s/it]
-8it [00:09,  1.28s/it]
-9it [00:12,  1.77s/it]
-9it [00:12,  1.43s/it]
+1it [00:01,  1.25s/it]
+2it [00:02,  1.27s/it]
+3it [00:03,  1.26s/it]
+4it [00:05,  1.45s/it]
+5it [00:07,  1.57s/it]
+6it [00:08,  1.40s/it]
+7it [00:09,  1.42s/it]
+8it [00:11,  1.51s/it]
+9it [00:15,  2.37s/it]
+9it [00:15,  1.75s/it]
 
 0it [00:00, ?it/s]
-9it [00:01,  5.62it/s]
-9it [00:01,  5.62it/s]
+9it [00:03,  2.33it/s]
+9it [00:03,  2.33it/s]
 
 0it [00:00, ?it/s]
-9it [00:01,  5.32it/s]
-9it [00:01,  5.31it/s]
+9it [00:03,  2.61it/s]
+9it [00:03,  2.61it/s]
 
 0it [00:00, ?it/s]
-9it [00:02,  4.43it/s]
-9it [00:02,  4.43it/s]
+9it [00:03,  2.57it/s]
+9it [00:03,  2.57it/s]
 
 {1: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-01_task-R1acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-01_task-R2acquisition_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-01_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-01_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-01_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;5R6online&#39;: &lt;RawEDF | sub-01_task-R6online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}, 5: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-05_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-05_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-05_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-05_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-05_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;5R6online&#39;: &lt;RawEDF | sub-05_task-R6online_eeg.edf, 32 x 234496 (458.0 s), ~57.3 MiB, data loaded&gt;}}, 7: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-07_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-07_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-07_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-07_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-07_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;5R6online&#39;: &lt;RawEDF | sub-07_task-R6online_eeg.edf, 32 x 230400 (450.0 s), ~56.3 MiB, data loaded&gt;}}, 35: {&#39;0&#39;: {&#39;0R1acquisition&#39;: &lt;RawEDF | sub-35_task-R1acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;1R2acquisition&#39;: &lt;RawEDF | sub-35_task-R2acquisition_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;2R3online&#39;: &lt;RawEDF | sub-35_task-R3online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;3R4online&#39;: &lt;RawEDF | sub-35_task-R4online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;4R5online&#39;: &lt;RawEDF | sub-35_task-R5online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;, &#39;5R6online&#39;: &lt;RawEDF | sub-35_task-R6online_eeg.edf, 32 x 230912 (451.0 s), ~56.4 MiB, data loaded&gt;}}}
 </pre></div>
@@ -560,29 +559,29 @@ subjects (gender and age) and experimenters (gender).</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Dreyer2023A-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]
 
 0it [00:00, ?it/s]
-9it [00:00, 9704.05it/s]
+9it [00:00, 10023.56it/s]
 No hdf5_path provided, models will not be saved.
 
-Dreyer2023A-WithinSession:  25%|██▌       | 1/4 [00:02&lt;00:08,  2.95s/it]
+Dreyer2023A-WithinSession:  25%|██▌       | 1/4 [00:02&lt;00:08,  2.79s/it]
 
 0it [00:00, ?it/s]
-9it [00:00, 11593.59it/s]
+9it [00:00, 12288.00it/s]
 No hdf5_path provided, models will not be saved.
 
-Dreyer2023A-WithinSession:  50%|█████     | 2/4 [00:05&lt;00:05,  2.86s/it]
+Dreyer2023A-WithinSession:  50%|█████     | 2/4 [00:05&lt;00:05,  2.73s/it]
 
 0it [00:00, ?it/s]
-9it [00:00, 9804.87it/s]
+9it [00:00, 12260.06it/s]
 No hdf5_path provided, models will not be saved.
 
-Dreyer2023A-WithinSession:  75%|███████▌  | 3/4 [00:08&lt;00:02,  2.84s/it]
+Dreyer2023A-WithinSession:  75%|███████▌  | 3/4 [00:08&lt;00:02,  2.70s/it]
 
 0it [00:00, ?it/s]
-9it [00:00, 10633.45it/s]
+9it [00:00, 11889.37it/s]
 No hdf5_path provided, models will not be saved.
 
-Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:11&lt;00:00,  2.81s/it]
-Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:11&lt;00:00,  2.83s/it]
+Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:10&lt;00:00,  2.68s/it]
+Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:10&lt;00:00,  2.70s/it]
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
@@ -657,7 +656,7 @@ Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:11&lt;00
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7f92a42459c0&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend object at 0x7f19774cbc40&gt;
 </pre></div>
 </div>
 <p>5.3 Plotting subject AUC ROC scores vs experimenter’s gender</p>
@@ -704,8 +703,8 @@ Dreyer2023A-WithinSession: 100%|██████████| 4/4 [00:11&lt;00
 <img alt="4_selected_subjects" class="align-center" src="auto_examples/images/Dreyer_clf_scores_vs_subj_info/4_selected_subjects.png" />
 <p>Obtained results for all subjects correspond to the following figure.</p>
 <img alt="all_subjects" class="align-center" src="auto_examples/images/Dreyer_clf_scores_vs_subj_info/all_subjects.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 41.983 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2303 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 49.329 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2296 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-dreyer-clf-scores-vs-subj-info-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ae04c51e0e1c520116e934f140abe39b/plot_dreyer_clf_scores_vs_subj_info.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_dreyer_clf_scores_vs_subj_info.ipynb</span></code></a></p>

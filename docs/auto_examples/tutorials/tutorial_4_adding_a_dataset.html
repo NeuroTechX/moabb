@@ -383,7 +383,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../data_management_and_configuration/index.html">Data Management and Configuration</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/noplot_load_model.html">Load Model (Scikit, Keras) with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/noplot_load_model.html">Load Model (Scikit) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
@@ -393,7 +393,6 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/noplot_benchmark_dl.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
@@ -639,57 +638,180 @@ The rest of the code follows the steps described in the previous tutorials.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-  1%|▏                                     | 15.4k/2.77M [00:00&lt;00:23, 115kB/s]
-  4%|█▌                                     | 115k/2.77M [00:00&lt;00:06, 388kB/s]
- 19%|███████▏                              | 523k/2.77M [00:00&lt;00:01, 1.25MB/s]
- 56%|████████████████████▋                | 1.55M/2.77M [00:00&lt;00:00, 3.66MB/s]
+  0%|                                     | 1.02k/2.77M [00:00&lt;05:02, 9.14kB/s]
+  1%|▍                                     | 32.8k/2.77M [00:00&lt;00:20, 134kB/s]
+  3%|█▏                                    | 82.9k/2.77M [00:00&lt;00:12, 219kB/s]
+  6%|██▏                                    | 155k/2.77M [00:00&lt;00:08, 308kB/s]
+  8%|███▏                                   | 230k/2.77M [00:00&lt;00:06, 365kB/s]
+ 11%|████▍                                  | 312k/2.77M [00:00&lt;00:05, 411kB/s]
+ 14%|█████▌                                 | 394k/2.77M [00:01&lt;00:05, 440kB/s]
+ 19%|███████▍                               | 524k/2.77M [00:01&lt;00:04, 552kB/s]
+ 23%|█████████                              | 639k/2.77M [00:01&lt;00:03, 597kB/s]
+ 28%|██████████▊                            | 770k/2.77M [00:01&lt;00:03, 657kB/s]
+ 33%|████████████▋                          | 901k/2.77M [00:01&lt;00:02, 700kB/s]
+ 38%|██████████████▍                       | 1.05M/2.77M [00:01&lt;00:02, 754kB/s]
+ 41%|███████████████▋                      | 1.15M/2.77M [00:02&lt;00:02, 706kB/s]
+ 45%|█████████████████                     | 1.24M/2.77M [00:02&lt;00:02, 673kB/s]
+ 49%|██████████████████▍                   | 1.34M/2.77M [00:02&lt;00:02, 650kB/s]
+ 54%|████████████████████▍                 | 1.49M/2.77M [00:02&lt;00:01, 724kB/s]
+ 59%|██████████████████████▎               | 1.62M/2.77M [00:02&lt;00:01, 743kB/s]
+ 64%|████████████████████████▎             | 1.77M/2.77M [00:02&lt;00:01, 789kB/s]
+ 67%|█████████████████████████▍            | 1.85M/2.77M [00:03&lt;00:01, 697kB/s]
+ 72%|███████████████████████████▏          | 1.98M/2.77M [00:03&lt;00:01, 731kB/s]
+ 76%|█████████████████████████████         | 2.11M/2.77M [00:03&lt;00:00, 746kB/s]
+ 82%|███████████████████████████████▎      | 2.27M/2.77M [00:03&lt;00:00, 818kB/s]
+ 86%|████████████████████████████████▌     | 2.37M/2.77M [00:03&lt;00:00, 752kB/s]
+ 89%|█████████████████████████████████▋    | 2.45M/2.77M [00:03&lt;00:00, 676kB/s]
+ 92%|██████████████████████████████████▊   | 2.54M/2.77M [00:04&lt;00:00, 622kB/s]
+ 96%|████████████████████████████████████▍ | 2.65M/2.77M [00:04&lt;00:00, 643kB/s]
+ 99%|█████████████████████████████████████▌| 2.73M/2.77M [00:04&lt;00:00, 600kB/s]
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 8.62GB/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 14.5GB/s]
 
 ExampleDataset-WithinSession:   0%|          | 0/3 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 
-ExampleDataset-WithinSession:  33%|███▎      | 1/3 [00:00&lt;00:00,  2.44it/s]
+ExampleDataset-WithinSession:  33%|███▎      | 1/3 [00:00&lt;00:00,  2.50it/s]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
 
-  1%|▏                                     | 14.3k/2.77M [00:00&lt;00:25, 108kB/s]
+  1%|▏                                    | 14.3k/2.77M [00:00&lt;00:27, 99.4kB/s]
 
-  2%|▌                                     | 45.1k/2.77M [00:00&lt;00:14, 194kB/s]
+  2%|▌                                     | 44.0k/2.77M [00:00&lt;00:17, 152kB/s]
 
-  8%|███▎                                   | 231k/2.77M [00:00&lt;00:03, 678kB/s]
+  3%|█▏                                    | 88.1k/2.77M [00:00&lt;00:12, 208kB/s]
 
- 21%|███████▉                              | 573k/2.77M [00:00&lt;00:01, 1.46MB/s]
+  6%|██▎                                    | 165k/2.77M [00:00&lt;00:08, 315kB/s]
 
- 54%|████████████████████▏                | 1.51M/2.77M [00:00&lt;00:00, 3.79MB/s]
+  8%|███▎                                   | 232k/2.77M [00:00&lt;00:07, 352kB/s]
+
+ 12%|████▌                                  | 325k/2.77M [00:00&lt;00:05, 426kB/s]
+
+ 14%|█████▌                                 | 394k/2.77M [00:01&lt;00:05, 428kB/s]
+
+ 17%|██████▋                                | 476k/2.77M [00:01&lt;00:05, 452kB/s]
+
+ 21%|████████                               | 573k/2.77M [00:01&lt;00:04, 498kB/s]
+
+ 25%|█████████▉                             | 705k/2.77M [00:01&lt;00:03, 594kB/s]
+
+ 29%|███████████▎                           | 803k/2.77M [00:01&lt;00:03, 597kB/s]
+
+ 34%|█████████████▏                         | 934k/2.77M [00:01&lt;00:02, 662kB/s]
+
+ 38%|██████████████▌                       | 1.06M/2.77M [00:02&lt;00:02, 704kB/s]
+
+ 41%|███████████████▋                      | 1.15M/2.77M [00:02&lt;00:02, 644kB/s]
+
+ 45%|█████████████████                     | 1.24M/2.77M [00:02&lt;00:02, 633kB/s]
+
+ 48%|██████████████████▏                   | 1.33M/2.77M [00:02&lt;00:02, 594kB/s]
+
+ 51%|███████████████████▎                  | 1.41M/2.77M [00:02&lt;00:02, 567kB/s]
+
+ 56%|█████████████████████▎                | 1.55M/2.77M [00:02&lt;00:01, 668kB/s]
+
+ 60%|██████████████████████▋               | 1.65M/2.77M [00:03&lt;00:01, 649kB/s]
+
+ 63%|███████████████████████▊              | 1.73M/2.77M [00:03&lt;00:01, 606kB/s]
+
+ 66%|█████████████████████████▏            | 1.83M/2.77M [00:03&lt;00:01, 606kB/s]
+
+ 71%|██████████████████████████▉           | 1.96M/2.77M [00:03&lt;00:01, 667kB/s]
+
+ 75%|████████████████████████████▌         | 2.08M/2.77M [00:03&lt;00:01, 677kB/s]
+
+ 80%|██████████████████████████████▎       | 2.21M/2.77M [00:03&lt;00:00, 714kB/s]
+
+ 83%|███████████████████████████████▋      | 2.31M/2.77M [00:04&lt;00:00, 682kB/s]
+
+ 86%|████████████████████████████████▊     | 2.39M/2.77M [00:04&lt;00:00, 629kB/s]
+
+ 89%|█████████████████████████████████▉    | 2.47M/2.77M [00:04&lt;00:00, 592kB/s]
+
+ 95%|███████████████████████████████████▉  | 2.62M/2.77M [00:04&lt;00:00, 685kB/s]
+
+ 98%|█████████████████████████████████████▎| 2.72M/2.77M [00:04&lt;00:00, 662kB/s]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 8.36GB/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 13.0GB/s]
 No hdf5_path provided, models will not be saved.
 
-ExampleDataset-WithinSession:  67%|██████▋   | 2/3 [00:01&lt;00:01,  1.04s/it]
+ExampleDataset-WithinSession:  67%|██████▋   | 2/3 [00:06&lt;00:03,  3.48s/it]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
 
-  2%|▌                                     | 44.0k/2.77M [00:00&lt;00:08, 324kB/s]
+  0%|                                     | 2.05k/2.77M [00:00&lt;03:28, 13.2kB/s]
 
-  5%|█▊                                     | 132k/2.77M [00:00&lt;00:05, 478kB/s]
+  2%|▋                                     | 46.1k/2.77M [00:00&lt;00:18, 147kB/s]
 
- 18%|██████▋                               | 488k/2.77M [00:00&lt;00:01, 1.42MB/s]
+  3%|█▎                                    | 91.1k/2.77M [00:00&lt;00:11, 224kB/s]
 
- 44%|████████████████▍                    | 1.22M/2.77M [00:00&lt;00:00, 2.97MB/s]
+  6%|██▍                                    | 170k/2.77M [00:00&lt;00:08, 322kB/s]
 
- 90%|█████████████████████████████████▍   | 2.50M/2.77M [00:00&lt;00:00, 5.60MB/s]
+  8%|███▏                                   | 226k/2.77M [00:00&lt;00:07, 330kB/s]
+
+ 12%|████▌                                  | 324k/2.77M [00:00&lt;00:05, 420kB/s]
+
+ 15%|█████▋                                 | 406k/2.77M [00:01&lt;00:05, 445kB/s]
+
+ 19%|███████▎                               | 520k/2.77M [00:01&lt;00:04, 525kB/s]
+
+ 22%|████████▍                              | 602k/2.77M [00:01&lt;00:04, 517kB/s]
+
+ 25%|█████████▋                             | 684k/2.77M [00:01&lt;00:04, 511kB/s]
+
+ 29%|███████████▍                           | 815k/2.77M [00:01&lt;00:03, 598kB/s]
+
+ 33%|████████████▊                          | 912k/2.77M [00:01&lt;00:03, 595kB/s]
+
+ 37%|██████████████                        | 1.03M/2.77M [00:02&lt;00:02, 626kB/s]
+
+ 40%|███████████████                       | 1.09M/2.77M [00:02&lt;00:02, 558kB/s]
+
+ 42%|████████████████▏                     | 1.17M/2.77M [00:02&lt;00:02, 539kB/s]
+
+ 45%|█████████████████▎                    | 1.26M/2.77M [00:02&lt;00:02, 527kB/s]
+
+ 48%|██████████████████▏                   | 1.32M/2.77M [00:02&lt;00:02, 488kB/s]
+
+ 51%|███████████████████▎                  | 1.40M/2.77M [00:02&lt;00:02, 489kB/s]
+
+ 54%|████████████████████▋                 | 1.50M/2.77M [00:03&lt;00:02, 522kB/s]
+
+ 57%|█████████████████████▌                | 1.57M/2.77M [00:03&lt;00:02, 485kB/s]
+
+ 60%|██████████████████████▉               | 1.67M/2.77M [00:03&lt;00:02, 518kB/s]
+
+ 63%|████████████████████████              | 1.75M/2.77M [00:03&lt;00:01, 512kB/s]
+
+ 66%|█████████████████████████▏            | 1.83M/2.77M [00:03&lt;00:01, 507kB/s]
+
+ 73%|███████████████████████████▊          | 2.02M/2.77M [00:03&lt;00:01, 711kB/s]
+
+ 77%|█████████████████████████████▏        | 2.12M/2.77M [00:04&lt;00:00, 678kB/s]
+
+ 80%|██████████████████████████████▎       | 2.20M/2.77M [00:04&lt;00:00, 624kB/s]
+
+ 84%|███████████████████████████████▊      | 2.32M/2.77M [00:04&lt;00:00, 646kB/s]
+
+ 90%|██████████████████████████████████    | 2.48M/2.77M [00:04&lt;00:00, 748kB/s]
+
+ 93%|███████████████████████████████████▏  | 2.56M/2.77M [00:04&lt;00:00, 674kB/s]
+
+ 96%|████████████████████████████████████▎ | 2.65M/2.77M [00:04&lt;00:00, 621kB/s]
+
+ 99%|█████████████████████████████████████▋| 2.74M/2.77M [00:05&lt;00:00, 615kB/s]
 
   0%|                                              | 0.00/2.77M [00:00&lt;?, ?B/s]
-100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 12.2GB/s]
+100%|█████████████████████████████████████| 2.77M/2.77M [00:00&lt;00:00, 13.3GB/s]
 No hdf5_path provided, models will not be saved.
 
-ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:03&lt;00:00,  1.22s/it]
-ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:03&lt;00:00,  1.11s/it]
+ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:12&lt;00:00,  4.65s/it]
+ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:12&lt;00:00,  4.02s/it]
    score      time  samples  ... n_sessions         dataset  pipeline
-0    1.0  0.023371     40.0  ...          1  ExampleDataset       MDM
-1    1.0  0.023329     40.0  ...          1  ExampleDataset       MDM
-2    1.0  0.022613     40.0  ...          1  ExampleDataset       MDM
+0    1.0  0.022922     40.0  ...          1  ExampleDataset       MDM
+1    1.0  0.022734     40.0  ...          1  ExampleDataset       MDM
+2    1.0  0.022136     40.0  ...          1  ExampleDataset       MDM
 
 [3 rows x 9 columns]
 </pre></div>
@@ -701,8 +823,8 @@ ExampleDataset-WithinSession: 100%|██████████| 3/3 [00:03&lt
 your data on public server (like Zenodo or Figshare) and signal that you
 want to add your dataset to MOABB in the  <a class="reference external" href="https://github.com/NeuroTechX/moabb/issues/1">dedicated issue</a>.  # noqa: E501
 You could then follow the instructions on <a class="reference external" href="https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md">how to contribute</a>  # noqa: E501</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.231 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  249 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 17.770 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  245 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-4-adding-a-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/46d014244b321e934a890e079a5f0042/tutorial_4_adding_a_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_4_adding_a_dataset.ipynb</span></code></a></p>

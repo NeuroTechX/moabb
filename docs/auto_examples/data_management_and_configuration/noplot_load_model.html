@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="moabb icon" sizes="180x180" href="../../_static/moabb_logo.png" type="image/png">
-    <title>Load Model (Scikit, Keras) with MOABB &#8212; moabb 1.2.0-dev documentation</title>
+    <title>Load Model (Scikit) with MOABB &#8212; moabb 1.2.0-dev documentation</title>
   
   
   
@@ -379,7 +379,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Data Management and Configuration</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Load Model (Scikit, Keras) with MOABB</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Load Model (Scikit) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
@@ -389,7 +389,6 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/noplot_benchmark_dl.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
@@ -458,7 +457,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Data Management and Configuration</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Load Model (Scikit, Keras) with MOABB</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Load Model (Scikit) with MOABB</span></li>
   </ul>
 </nav>
 </div>
@@ -480,8 +479,8 @@
 <p><a class="reference internal" href="#sphx-glr-download-auto-examples-data-management-and-configuration-noplot-load-model-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
-<section class="sphx-glr-example-title" id="load-model-scikit-keras-with-moabb">
-<span id="sphx-glr-auto-examples-data-management-and-configuration-noplot-load-model-py"></span><h1>Load Model (Scikit, Keras) with MOABB<a class="headerlink" href="#load-model-scikit-keras-with-moabb" title="Link to this heading">#</a></h1>
+<section class="sphx-glr-example-title" id="load-model-scikit-with-moabb">
+<span id="sphx-glr-auto-examples-data-management-and-configuration-noplot-load-model-py"></span><h1>Load Model (Scikit) with MOABB<a class="headerlink" href="#load-model-scikit-with-moabb" title="Link to this heading">#</a></h1>
 <p>This example shows how to use load the pretrained pipeline in MOABB.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Igor Carrara &lt;igor.carrara@inria.fr&gt;</span>
 <span class="c1">#</span>
@@ -489,12 +488,7 @@ to download the full example code.</p>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pickle</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/pickle.html#pickle.load" title="pickle.load" class="sphx-glr-backref-module-pickle sphx-glr-backref-type-py-function"><span class="n">load</span></a>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">keras</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scikeras.wrappers</span><span class="w"> </span><span class="kn">import</span> <span class="n">KerasClassifier</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Pipeline</span></a>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.set_log_level.html#moabb.set_log_level" title="moabb.set_log_level" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">set_log_level</span></a>
-<span class="kn">from</span><span class="w"> </span><span class="nn">moabb.pipelines.features</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.pipelines.features.StandardScaler_Epoch.html#moabb.pipelines.features.StandardScaler_Epoch" title="moabb.pipelines.features.StandardScaler_Epoch" class="sphx-glr-backref-module-moabb-pipelines-features sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">StandardScaler_Epoch</span></a>
 <span class="kn">from</span><span class="w"> </span><span class="nn">moabb.utils</span><span class="w"> </span><span class="kn">import</span> <a href="../../api/generated/moabb.setup_seed.html#moabb.setup_seed" title="moabb.setup_seed" class="sphx-glr-backref-module-moabb sphx-glr-backref-type-py-function"><span class="n">setup_seed</span></a>
 
 
@@ -503,9 +497,7 @@ to download the full example code.</p>
 </div>
 <p>In this example, we will use the results computed by the following examples</p>
 <ul class="simple">
-<li><p><a href="#id1"><span class="problematic" id="id2">plot_benchmark_</span></a></p></li>
-<li><p><a href="#id3"><span class="problematic" id="id4">plot_benchmark_braindecode_</span></a></p></li>
-<li><p><a href="#id5"><span class="problematic" id="id6">plot_benchmark_DL_</span></a></p></li>
+<li><p>plot_benchmark</p></li>
 </ul>
 <hr class="docutils" />
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up reproducibility of Tensorflow and PyTorch</span>
@@ -514,28 +506,10 @@ to download the full example code.</p>
 </div>
 <p>Loading the Scikit-learn pipelines</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
-    <span class="s2">&quot;./results/Models_WithinSession/Zhou2016/1/0/CSP + SVM/fitted_model_best.pkl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;../how_to_benchmark/results/Models_WithinSession/Zhou2016/1/0/csp+svm/fitted_model_best.pkl&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rb&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="k">as</span> <span class="n">pickle_file</span><span class="p">:</span>
     <span class="n">CSP_SVM_Trained</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/pickle.html#pickle.load" title="pickle.load" class="sphx-glr-backref-module-pickle sphx-glr-backref-type-py-function"><span class="n">load</span></a><span class="p">(</span><span class="n">pickle_file</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Loading the Keras model
-We load the single Keras model, if we want we can set in the exact same pipeline.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">model_Keras</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span>
-    <span class="s2">&quot;../how_to_benchmark/results/Models_WithinSession/BNCI2014-001/1/1E/Keras_DeepConvNet/kerasdeepconvnet_fitted_model_best.h5&quot;</span>
-<span class="p">)</span>
-<span class="c1"># Now we need to instantiate a new SciKeras object since we only saved the Keras model</span>
-<span class="n">Keras_DeepConvNet_Trained</span> <span class="o">=</span> <span class="n">KerasClassifier</span><span class="p">(</span><span class="n">model_Keras</span><span class="p">)</span>
-<span class="c1"># Create the pipelines</span>
-
-
-<span class="n">pipes_keras</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline" title="sklearn.pipeline.Pipeline" class="sphx-glr-backref-module-sklearn-pipeline sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Pipeline</span></a><span class="p">(</span>
-    <span class="p">[</span>
-        <span class="p">(</span><span class="s2">&quot;StandardScaler_Epoch&quot;</span><span class="p">,</span> <a href="../../api/generated/moabb.pipelines.features.StandardScaler_Epoch.html#moabb.pipelines.features.StandardScaler_Epoch" title="moabb.pipelines.features.StandardScaler_Epoch" class="sphx-glr-backref-module-moabb-pipelines-features sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">StandardScaler_Epoch</span></a><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;Keras_DeepConvNet_Trained&quot;</span><span class="p">,</span> <span class="n">Keras_DeepConvNet_Trained</span><span class="p">),</span>
-    <span class="p">]</span>
-<span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Estimated memory usage:</strong>  0 MB</p>

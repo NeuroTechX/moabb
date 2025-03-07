@@ -383,7 +383,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../data_management_and_configuration/index.html">Data Management and Configuration</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/noplot_load_model.html">Load Model (Scikit, Keras) with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/noplot_load_model.html">Load Model (Scikit) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
@@ -393,7 +393,6 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_to_benchmark/index.html">Benchmarking and Pipeline Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/noplot_benchmark_dl.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark.html">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="../how_to_benchmark/plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
@@ -613,20 +612,20 @@ Data will be selected thanks to the <cite>get_block_repetition</cite> method.</p
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>  0%|          | 0/2 [00:00&lt;?, ?it/s]subject 1, VR, tmax 0.2
 subject 1, PC, tmax 0.2
 
- 50%|█████     | 1/2 [00:26&lt;00:26, 26.03s/it]subject 2, VR, tmax 0.2
+ 50%|█████     | 1/2 [00:24&lt;00:24, 24.92s/it]subject 2, VR, tmax 0.2
 subject 2, PC, tmax 0.2
 
-100%|██████████| 2/2 [00:52&lt;00:00, 26.23s/it]
-100%|██████████| 2/2 [00:52&lt;00:00, 26.20s/it]
+100%|██████████| 2/2 [00:49&lt;00:00, 24.99s/it]
+100%|██████████| 2/2 [00:49&lt;00:00, 24.98s/it]
 
   0%|          | 0/2 [00:00&lt;?, ?it/s]subject 1, VR, tmax 1.0
 subject 1, PC, tmax 1.0
 
- 50%|█████     | 1/2 [00:26&lt;00:26, 26.27s/it]subject 2, VR, tmax 1.0
+ 50%|█████     | 1/2 [00:24&lt;00:24, 24.65s/it]subject 2, VR, tmax 1.0
 subject 2, PC, tmax 1.0
 
-100%|██████████| 2/2 [00:52&lt;00:00, 26.50s/it]
-100%|██████████| 2/2 [00:52&lt;00:00, 26.46s/it]
+100%|██████████| 2/2 [00:49&lt;00:00, 24.81s/it]
+100%|██████████| 2/2 [00:49&lt;00:00, 24.78s/it]
 </pre></div>
 </div>
 </section>
@@ -653,8 +652,8 @@ plot the mean AUC as a function of the epoch length.</p>
 &lt;Axes: title={&#39;center&#39;: &#39;Mean AUC as a function of the epoch length&#39;}, xlabel=&#39;tmax&#39;&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 46.028 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  400 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 40.220 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  322 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-vr-pc-p300-different-epoch-size-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/49d583283b8c86024dcc6b37dbba422f/plot_vr_pc_p300_different_epoch_size.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_vr_pc_p300_different_epoch_size.ipynb</span></code></a></p>

@@ -73,7 +73,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Benchmarking with MOABB with Grid Search" href="plot_benchmark_grid_search.html" />
-    <link rel="prev" title="Benchmarking on MOABB with Tensorflow deep net architectures" href="noplot_benchmark_dl.html" />
+    <link rel="prev" title="Benchmarking with MOABB showing the CO2 footprint" href="example_codecarbon.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.2.0" />
@@ -383,7 +383,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../data_management_and_configuration/index.html">Data Management and Configuration</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/noplot_load_model.html">Load Model (Scikit, Keras) with MOABB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/noplot_load_model.html">Load Model (Scikit) with MOABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_bids_conversion.html">Convert a MOABB dataset to BIDS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_changing_download_directory.html">Change Download Directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_management_and_configuration/plot_disk_cache.html">Cache on disk intermediate data processing states</a></li>
@@ -393,7 +393,6 @@
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Benchmarking and Pipeline Evaluation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="example_codecarbon.html">Benchmarking with MOABB showing the CO2 footprint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="noplot_benchmark_dl.html">Benchmarking on MOABB with Tensorflow deep net architectures</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Examples of how to use MOABB to benchmark pipelines.</a></li>
 
 <li class="toctree-l2"><a class="reference internal" href="plot_benchmark_grid_search.html">Benchmarking with MOABB with Grid Search</a></li>
@@ -612,11 +611,11 @@ folder, and the analysis &amp; figures are saved in the <code class="docutils li
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Zhou2016-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]
-Zhou2016-WithinSession:  25%|██▌       | 1/4 [00:06&lt;00:19,  6.55s/it]
-Zhou2016-WithinSession:  50%|█████     | 2/4 [00:11&lt;00:10,  5.35s/it]
-Zhou2016-WithinSession:  75%|███████▌  | 3/4 [00:15&lt;00:05,  5.03s/it]
-Zhou2016-WithinSession: 100%|██████████| 4/4 [00:20&lt;00:00,  4.83s/it]
-Zhou2016-WithinSession: 100%|██████████| 4/4 [00:20&lt;00:00,  5.05s/it]
+Zhou2016-WithinSession:  25%|██▌       | 1/4 [00:06&lt;00:19,  6.36s/it]
+Zhou2016-WithinSession:  50%|█████     | 2/4 [00:10&lt;00:10,  5.18s/it]
+Zhou2016-WithinSession:  75%|███████▌  | 3/4 [00:15&lt;00:04,  4.85s/it]
+Zhou2016-WithinSession: 100%|██████████| 4/4 [00:19&lt;00:00,  4.64s/it]
+Zhou2016-WithinSession: 100%|██████████| 4/4 [00:19&lt;00:00,  4.87s/it]
     dataset     evaluation          pipeline  avg score
 0  Zhou2016  WithinSession         CSP + SVM   0.932315
 1  Zhou2016  WithinSession  Tangent Space LR   0.941601
@@ -629,8 +628,8 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_benchmark_001.png" srcset="../../_images/sphx_glr_plot_benchmark_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 21.452 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  602 MB</p>
+<img src="../../_images/sphx_glr_plot_benchmark_001.png" srcset="../../_images/sphx_glr_plot_benchmark_001.png" alt="Scores per dataset and algorithm" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 20.658 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  503 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-how-to-benchmark-plot-benchmark-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/dd1d96e7a121ed07731e7e4772c2d143/plot_benchmark.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_benchmark.ipynb</span></code></a></p>
@@ -657,12 +656,12 @@ are saved in the <code class="docutils literal notranslate"><span class="pre">be
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="noplot_benchmark_dl.html"
+       href="example_codecarbon.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Benchmarking on MOABB with Tensorflow deep net architectures</p>
+        <p class="prev-next-title">Benchmarking with MOABB showing the CO2 footprint</p>
       </div>
     </a>
     <a class="right-next"
