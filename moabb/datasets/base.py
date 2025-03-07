@@ -319,6 +319,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         paradigm,
         doi=None,
         unit_factor=1e6,
+        overlap=False,
     ):
         """Initialize function for the BaseDataset."""
         try:
@@ -348,6 +349,7 @@ class BaseDataset(metaclass=MetaclassDataset):
         self.paradigm = paradigm
         self.doi = doi
         self.unit_factor = unit_factor
+        self.overlap = overlap
 
     def _create_process_pipeline(self):
         return Pipeline(

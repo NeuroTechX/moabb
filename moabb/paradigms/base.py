@@ -17,7 +17,9 @@ from moabb.datasets.preprocessing import (
     ForkPipelines,
     RawToEpochs,
     RawToEvents,
+    RawToEvents_PseudoOnline,
     SetRawAnnotations,
+    SetRawAnnotations_PseudoOnline,
     get_crop_pipeline,
     get_filter_pipeline,
     get_resample_pipeline,
@@ -68,6 +70,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         baseline: Optional[Tuple[float, float]] = None,
         channels: Optional[List[str]] = None,
         resample: Optional[float] = None,
+        overlap: Optional[float] = None,
     ):
         if tmax is not None:
             if tmin >= tmax:
@@ -79,6 +82,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         self.tmin = tmin
         self.tmax = tmax
         self.interpolate_missing_channels = False
+        self.overlap = overlap
 
     @property
     @abc.abstractmethod
@@ -182,15 +186,29 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         process_pipelines = []
         for raw_pipeline in raw_pipelines:
             steps = []
-            steps.append(
-                (
-                    StepType.RAW,
-                    SetRawAnnotations(
-                        dataset.event_id,
-                        interval=dataset.interval,
-                    ),
+            if self.overlap is not None:
+                steps.append(
+                    (
+                        StepType.RAW,
+                        SetRawAnnotations_PseudoOnline(
+                            dataset.event_id,
+                            interval=dataset.interval,
+                            tmin=self.tmin,
+                            tmax=self.tmax,
+                            overlap=self.overlap,
+                        ),
+                    )
                 )
-            )
+            else:
+                steps.append(
+                    (
+                        StepType.RAW,
+                        SetRawAnnotations(
+                            dataset.event_id,
+                            interval=dataset.interval,
+                        ),
+                    )
+                )
             if raw_pipeline is not None:
                 steps.append((StepType.RAW, raw_pipeline))
             if epochs_pipeline is not None:
@@ -532,6 +550,7 @@ class BaseParadigm(BaseProcessing):
         baseline=None,
         channels=None,
         resample=None,
+        overlap=None,
     ):
         super().__init__(
             filters=filters,
@@ -540,6 +559,7 @@ class BaseParadigm(BaseProcessing):
             resample=resample,
             tmin=tmin,
             tmax=tmax,
+            overlap=overlap,
         )
         self.events = events
 
@@ -555,4 +575,16 @@ class BaseParadigm(BaseProcessing):
 
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
-        return RawToEvents(event_id=event_id, interval=dataset.interval)
+        if self.overlap is not None:
+            return RawToEvents_PseudoOnline(
+                event_id=event_id,
+                interval=dataset.interval,
+                tmin=self.tmin,
+                tmax=self.tmax,
+                overlap=self.overlap,
+            )
+        else:
+            return RawToEvents(
+                event_id=event_id,
+                interval=dataset.interval,
+            )
