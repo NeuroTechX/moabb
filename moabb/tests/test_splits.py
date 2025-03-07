@@ -153,22 +153,21 @@ def test_cross_session_is_shuffling():
     splitter_no_shuffle = CrossSessionSplitter(shuffle=False)
     splitter_shuffle = CrossSessionSplitter(shuffle=True, random_state=3)
 
-    for idx, ((train, test), (train_shuffle, test_shuffle)) in enumerate(
-        zip(
-            splitter_no_shuffle.split(y, metadata),
-            splitter_shuffle.split(y, metadata),
-        )
+    splits_no_shuffle = list(splitter_no_shuffle.split(y, metadata))
+    splits_shuffle = list(splitter_shuffle.split(y, metadata))
+
+    for i, ((train_ns, test_ns), (train_s, test_s)) in enumerate(
+        zip(splits_no_shuffle, splits_shuffle)
     ):
-        print(f"\n--- Fold {idx} ---")
-        print("Train indices no shuffle:", train)
-        print("Train indices shuffle   :", train_shuffle)
-        print("Test indices no shuffle :", test)
-        print("Test indices shuffle    :", test_shuffle)
+        print(f"\nFold {i}:")
+        print(f"Train no shuffle sessions: {metadata.iloc[train_ns]['session'].unique()}")
+        print(f"Test no shuffle sessions : {metadata.iloc[test_ns]['session'].unique()}")
+        print(f"Train shuffled sessions  : {metadata.iloc[train_s]['session'].unique()}")
+        print(f"Test shuffle sessions    : {metadata.iloc[test_s]['session'].unique()}")
 
-        train_equal = np.array_equal(train, train_shuffle)
-        test_equal = np.array_equal(test, test_shuffle)
-
-        print("Train indices equal:", train_equal)
-        print("Test indices equal :", test_equal)
-
-        assert not train_equal or not test_equal, f"Shuffle had no effect on fold {idx}"
+        assert not np.array_equal(
+            train_ns, train_s
+        ), f"Fold {i} train indices identical despite shuffle"
+        assert not np.array_equal(
+            test_ns, test_s
+        ), f"Fold {i} test indices identical despite shuffle"
