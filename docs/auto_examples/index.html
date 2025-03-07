@@ -483,12 +483,18 @@ external library dependencies that MOABB uses, including Deep Learning, Code Car
 Docs and others.</p>
 <div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbnails"></div></section>
+<div class="sphx-glr-thumbnails"></div><dl class="field-list simple">
+<dt class="field-odd">html_theme.sidebar_secondary.remove<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</section>
 <section id="getting-started">
 <h1>Getting Started!<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h1>
 <p>Tutorials: Step-by-step introductions to MOABB’s usage and concepts. These cover getting started with MOABB, using multiple datasets,
 benchmarking pipelines, and adding custom datasets in line with best practices for reproducible research.</p>
 <p>Each tutorial focuses on a fundamental workflow for using moabb in your research!</p>
+<div class="toctree-wrapper compound">
+</div>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This tutorial takes you through a basic working example of how to use this codebase, including all the different components, up to the results generation. If you&#x27;d like to know about the statistics and plotting, see the next tutorial."><img alt="" src="../_images/sphx_glr_tutorial_0_plot_getting_started_thumb.png" />
 <p><a class="reference internal" href="tutorials/tutorial_0_plot_getting_started.html#sphx-glr-auto-examples-tutorials-tutorial-0-plot-getting-started-py"><span class="std std-ref">Tutorial 0: Getting Started</span></a></p>
   <div class="sphx-glr-thumbnail-title">Tutorial 0: Getting Started</div>
@@ -513,6 +519,8 @@ benchmarking pipelines, and adding custom datasets in line with best practices f
 <p>These examples demonstrate how to evaluate BCI algorithms on different paradigms (Motor Imagery, P300, SSVEP), covering within-session (training and testing on the same session) and
 transfer scenarios like cross-session or cross-subject evaluations.
 They reflect best practices in assessing model generalization across sessions and subjects in EEG research.</p>
+<div class="toctree-wrapper compound">
+</div>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example show how to perform a cross session motor imagery analysis on the very popular dataset 2a from the BCI competition IV."><img alt="" src="../_images/sphx_glr_plot_cross_session_motor_imagery_thumb.png" />
 <p><a class="reference internal" href="paradigm_examples/plot_cross_session_motor_imagery.html#sphx-glr-auto-examples-paradigm-examples-plot-cross-session-motor-imagery-py"><span class="std std-ref">Cross-Session Motor Imagery</span></a></p>
   <div class="sphx-glr-thumbnail-title">Cross-Session Motor Imagery</div>
@@ -535,6 +543,8 @@ They reflect best practices in assessing model generalization across sessions an
 <section id="data-management-and-configuration">
 <h1>Data Management and Configuration<a class="headerlink" href="#data-management-and-configuration" title="Link to this heading">#</a></h1>
 <p>Utility examples focused on data handling, configuration, and environment setup in MOABB. These scripts help ensure reproducible research through proper data management (download directories, standard formats) and optimized processing.</p>
+<div class="toctree-wrapper compound">
+</div>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use load the pretrained pipeline in MOABB."><img alt="" src="../_images/sphx_glr_noplot_load_model_thumb.png" />
 <p><a class="reference internal" href="data_management_and_configuration/noplot_load_model.html#sphx-glr-auto-examples-data-management-and-configuration-noplot-load-model-py"><span class="std std-ref">Load Model (Scikit) with MOABB</span></a></p>
   <div class="sphx-glr-thumbnail-title">Load Model (Scikit) with MOABB</div>
@@ -560,6 +570,8 @@ They reflect best practices in assessing model generalization across sessions an
 methodology.
 These scripts reflect EEG decoding best practices by evaluating algorithms under consistent conditions and
 tracking performance (and even resource usage).</p>
+<div class="toctree-wrapper compound">
+</div>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to use MOABB to track the CO2 footprint using CodeCarbon library. For this example, we will use only one dataset to keep the computation time low, but this benchmark is designed to easily scale to many datasets. Due to limitation of online documentation generation, the results is computed on a local cluster but could be easily replicated on your infrastructure."><img alt="" src="../_images/sphx_glr_example_codecarbon_thumb.png" />
 <p><a class="reference internal" href="how_to_benchmark/example_codecarbon.html#sphx-glr-auto-examples-how-to-benchmark-example-codecarbon-py"><span class="std std-ref">Benchmarking with MOABB showing the CO2 footprint</span></a></p>
   <div class="sphx-glr-thumbnail-title">Benchmarking with MOABB showing the CO2 footprint</div>
@@ -580,6 +592,8 @@ tracking performance (and even resource usage).</p>
 <li><p>apply statistics for meta-analysis</p></li>
 <li><p>using a gridsearch in within-subject decoding</p></li>
 </ul>
+<div class="toctree-wrapper compound">
+</div>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to plot Dreyer2023A Left-Right Imagery ROC AUC scores obtained with CSP+LDA pipeline versus demographic information of the examined subjects (gender and age) and experimenters (gender)."><img alt="" src="../_images/sphx_glr_plot_dreyer_clf_scores_vs_subj_info_thumb.png" />
 <p><a class="reference internal" href="advanced_examples/plot_dreyer_clf_scores_vs_subj_info.html#sphx-glr-auto-examples-advanced-examples-plot-dreyer-clf-scores-vs-subj-info-py"><span class="std std-ref">Examples of analysis of a Dreyer2023 A dataset.</span></a></p>
   <div class="sphx-glr-thumbnail-title">Examples of analysis of a Dreyer2023 A dataset.</div>
@@ -614,6 +628,8 @@ these trials. To ensure the robustness of the results, you need to specify the
 number of permutations. If you use 10 trials per class and 20 permutations,
 each pipeline will be evaluated on a subset of 10 trials chosen randomly, that
 will be repeated 20 times with different trial subsets.</p>
+<div class="toctree-wrapper compound">
+</div>
 <div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This example shows how to perform a within session analysis while also creating learning curves for a P300 dataset. Additionally, we will evaluate external code. Make sure to have tdlda installed , which can be pip install git+https://github.com/jsosulski/tdlda.git."><img alt="" src="../_images/sphx_glr_noplot_learning_curve_p300_external_thumb.png" />
 <p><a class="reference internal" href="learning_curve/noplot_learning_curve_p300_external.html#sphx-glr-auto-examples-learning-curve-noplot-learning-curve-p300-external-py"><span class="std std-ref">Within Session P300 with Learning Curve</span></a></p>
   <div class="sphx-glr-thumbnail-title">Within Session P300 with Learning Curve</div>
@@ -689,7 +705,9 @@ will be repeated 20 times with different trial subsets.</p>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#data-management-and-configuration">Data Management and Configuration</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarking-and-pipeline-evaluation">Benchmarking and Pipeline Evaluation</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-examples">Advanced examples</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-with-learning-curve">Evaluation with learning curve</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-with-learning-curve">Evaluation with learning curve</a><ul class="visible nav section-nav flex-column">
+</ul>
+</li>
 </ul>
 
   </nav></div>
