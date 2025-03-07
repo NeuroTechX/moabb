@@ -65,7 +65,6 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - Removing the braindecode module from inside moabb (:gh:`666` by `Bruno Aristimunha`_ )
-- Updating the doc to remove citation to poetry (:gh:'692' by `Bruno Aristimunha`_)
 
 
 
