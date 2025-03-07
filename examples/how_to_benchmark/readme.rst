@@ -5,3 +5,6 @@ Examples focusing on running benchmarks and comparing multiple models or configu
 methodology.
 These scripts reflect EEG decoding best practices by evaluating algorithms under consistent conditions and
 tracking performance (and even resource usage).
+
+.. toctree::
+   :hidden:

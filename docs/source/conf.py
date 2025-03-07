@@ -239,7 +239,7 @@ html_theme_options = {
     "collapse_navigation": False,
     "navigation_depth": -1,
     "show_toc_level": 1,
-    "nosidebar": "true",
+    "nosidebar": True,
     "navbar_end": ["theme-switcher"],
     "pygment_light_style": "default",
     "announcement": "https://raw.githubusercontent.com/NeuroTechX/moabb"
