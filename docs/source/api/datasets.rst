@@ -1,9 +1,3 @@
-========
-Datasets
-========
-
-.. automodule:: moabb.datasets
-
 .. currentmodule:: moabb.datasets
 
 ----------------------
@@ -21,6 +15,10 @@ Motor Imagery Datasets
     BNCI2015_001
     BNCI2015_004
     Cho2017
+    Dreyer2023
+    Dreyer2023A
+    Dreyer2023B
+    Dreyer2023C
     Lee2019_MI
     GrosseWentrup2009
     Ofner2017
@@ -57,7 +55,13 @@ ERP Datasets
     Huebner2018
     Lee2019_ERP
     Sosulski2019
-
+    ErpCore2021_ERN
+    ErpCore2021_LRP
+    ErpCore2021_MMN
+    ErpCore2021_N2pc
+    ErpCore2021_N170
+    ErpCore2021_N400
+    ErpCore2021_P3
 
 --------------
 SSVEP Datasets

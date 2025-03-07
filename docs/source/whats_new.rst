@@ -17,9 +17,14 @@ Develop branch  - 1.2.1
 
 Enhancements
 ~~~~~~~~~~~~
+- Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
+- Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
+- Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
+
 
 Bugs
 ~~~~
+- Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~

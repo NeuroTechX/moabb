@@ -3,7 +3,7 @@
 Within Session SSVEP
 =====================
 
-This Example show how to perform a within-session SSVEP analysis on the
+This Example shows how to perform a within-session SSVEP analysis on the
 MAMEM dataset 3, using a CCA pipeline.
 
 The within-session evaluation assesses the performance of a classification
@@ -22,7 +22,7 @@ import seaborn as sns
 from sklearn.pipeline import make_pipeline
 
 import moabb
-from moabb.datasets import MAMEM3
+from moabb.datasets import Kalunga2016
 from moabb.evaluations import WithinSessionEvaluation
 from moabb.paradigms import SSVEP
 from moabb.pipelines import SSVEP_CCA
@@ -36,10 +36,10 @@ moabb.set_log_level("info")
 # Loading Dataset
 # ---------------
 #
-# Load 2 subjects of MAMEM3 dataset
+# Load 2 subjects of Kalunga2016 dataset
 
 subj = [1, 3]
-dataset = MAMEM3()
+dataset = Kalunga2016()
 dataset.subject_list = subj
 
 ###############################################################################
@@ -48,9 +48,9 @@ dataset.subject_list = subj
 #
 # We select the paradigm SSVEP, applying a bandpass filter (3-15 Hz) on
 # the data and we keep only the first 3 classes, that is stimulation
-# frequency of 6.66, 7.50 and 8.57 Hz.
+# frequency of 13Hz, 17Hz and 21Hz.
 
-paradigm = SSVEP(fmin=3, fmax=15, n_classes=3)
+paradigm = SSVEP(fmin=10, fmax=40, n_classes=3)
 
 ##############################################################################
 # Create Pipelines

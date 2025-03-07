@@ -1,5 +1,4 @@
-"""Example of P300 classification with different epoch size.
-
+"""
 =======================================
 Changing epoch size in P300 VR dataset
 =======================================
@@ -9,7 +8,7 @@ subject and then classify them using Riemannian Geometry framework for BCI.
 We compare the scores in the VR and PC conditions, using different epoch size.
 
 This example demonstrates the use of `get_block_repetition`, which allows
-to specify the experimental blocks and repetitions for analysis.
+specifying the experimental blocks and repetitions for analysis.
 """
 
 # Authors: Pedro Rodrigues <pedro.rodrigues01@gmail.com>

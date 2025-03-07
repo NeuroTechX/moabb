@@ -1,80 +1,89 @@
 .. _install_source:
 
-Installing from sources
-~~~~~~~~~~~~~~~~~~~~
+Installation from Sources
+===========================
 
-If you want to test features under development or contribute to the library, or if you want to test the new tools that have been tested in moabb and not released yet, this is the right tutorial for you!
+This guide is intended for users who want to test experimental features or contribute to MOABB’s development. If you only need the stable release, please refer to our
+`pip installation guide <https://neurotechx.github.io/moabb/install/install_pip.html#install-pip>`__.
 
 .. note::
+   For a straightforward MOABB installation (without development), please see the pip installation guide.
 
-   If you are only trying to install MOABB, we recommend using the pip installation `Installation <https://neurotechx.github.io/moabb/install/install_pip.html#install-pip>`__ for details on that.
+Prerequisites
+-------------
+Before proceeding, ensure that you have the following:
 
-.. _system-level:
+- A working installation of Python.
+- Pip installed on your system (see the `pip installation guide <https://pip.pypa.io/en/stable/installation/>`__).
 
-Clone the repository from GitHub
---------------------------------------------------
-
-The first thing you should do is clone the MOABB repository to your computer and enter inside the repository.
-
-.. code-block:: bash
-
-   git clone https://github.com/neurotechx/moabb && cd moabb
-
-You should now be in the root directory of the MOABB repository.
-
-Installing Moabb from the source
---------------------------------------------------------------------------------------------------------------------------------
-
-If you want to only install Moabb from source once and not do any development
-work, then the recommended way to build and install is to use ``pip``::
-
-For the latest development version, directly from GitHub:
+Cloning the Repository
+----------------------
+First, clone the MOABB repository from GitHub and navigate into the project directory:
 
 .. code-block:: bash
 
-   pip install https://github.com/NeuroTechX/moabb/archive/refs/heads/develop.zip
+   git clone https://github.com/neurotechx/moabb.git
+   cd moabb
 
-If you have a local clone of the MOABB git repository:
+Installing MOABB from the Source
+--------------------------------
+If you wish to install MOABB for usage without modifying the code, use one of the following methods:
 
-.. code-block:: bash
+- **Install the Latest Development Version (from GitHub):**
 
-   pip install .
+  .. code-block:: bash
 
-You can also install MOABB in editable mode (i.e. changes to the source code).
+     pip install https://github.com/NeuroTechX/moabb/archive/refs/heads/develop.zip
 
-Building MOABB from source with the development environment
-----------------------------------------------------------------------------------------
+- **Install from a Local Clone:**
 
-If you want to build from source to work on MOABB itself, then follow these steps:
+  .. code-block:: bash
 
-1. Install pip on your system follow the tutorial: https://pip.pypa.io/en/stable/installation/.
+     pip install .
 
-2. You will need to run this command in the project directory:
+- **Editable Installation:**
 
-.. code-block:: console
+  This mode installs MOABB so that any local changes are immediately available:
 
-   pip install -e .
+  .. code-block:: bash
 
-3. If you want to install with an optional dependency
+     pip install -e .
 
-.. code-block:: console
+Setting Up a Development Environment
+--------------------------------------
+For contributors or those who want to work on MOABB’s codebase, follow these steps:
 
-   pip install -e .[deeplearning,carbonemission,docs,optuna,tests]
+1. **Ensure pip is installed.**
+   (Refer to the `pip installation guide <https://pip.pypa.io/en/stable/installation/>`__.)
 
-For a full list of dependencies, see the pyproject.toml file.
+2. **Basic Editable Installation (without optional dependencies):**
+   In the project directory, run:
 
-To contribute with a library you must install ``pre-commit``, follow this tutorial   `Installation Pre-Commit <https://pre-commit.com/#install>`__. To more details to become a contributors, see
-`contributors' guidelines <https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md>`__.
-for a detailed explanation.
+   .. code-block:: bash
 
+      pip install -e .
 
-Testing if your installation is working
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3. **Editable Installation with Optional Dependencies:**
+   If you require additional features (e.g., deep learning, testing), install with:
 
-To verify that MOABB is installed and running correctly, run the following command:
+   .. code-block:: bash
+
+      pip install -e .[deeplearning,carbonemission,docs,optuna,tests,external]
+
+   For a complete list of optional dependencies, consult the `pyproject.toml` file.
+
+4. **Setup Pre-Commit Hooks:**
+   To help maintain code quality, install the ``pre-commit`` tool by following the
+   `Pre-Commit Installation guide <https://pre-commit.com/#install>`__. For further instructions on contributing, see the
+   `Contributors Guidelines <https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md>`__.
+
+Verifying the Installation
+--------------------------
+To ensure that MOABB is installed and functioning correctly, run:
 
 .. code-block:: console
 
    pytest moabb/tests --verbose
 
-For more information, please see the contributors' guidelines.
+For more details or troubleshooting, please refer to the
+`Contributors Guidelines <https://github.com/NeuroTechX/moabb/blob/master/CONTRIBUTING.md>`__.

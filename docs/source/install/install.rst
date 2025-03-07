@@ -12,7 +12,7 @@ source code via `Github <https://github.com/NeuroTechX/moabb>`__ repository.
 There are different ways to install MOABB:
 
 
-.. grid:: 3
+.. grid:: 2
 
     .. grid-item-card::
         :text-align: center

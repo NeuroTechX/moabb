@@ -6,6 +6,7 @@ import unittest
 
 import mne
 import numpy as np
+import pandas as pd
 import pytest
 
 import moabb.datasets as db
@@ -20,7 +21,7 @@ from moabb.datasets.base import (
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
-from moabb.datasets.utils import block_rep, dataset_list
+from moabb.datasets.utils import bids_metainfo, block_rep, dataset_list
 from moabb.paradigms import P300
 from moabb.utils import aliases_list
 
@@ -208,6 +209,14 @@ class Test_Datasets(unittest.TestCase):
             assert len(expected) == len(cm.output)
             for i, regex in enumerate(expected):
                 self.assertRegex(cm.output[i], regex)
+
+            metainfo = bids_metainfo(tempdir)
+            dataframe = pd.DataFrame(metainfo).T
+            subjects = dataframe["subject"].unique()
+            self.assertEqual(len(subjects), 1)
+            self.assertEqual(subjects[0], "1")
+            self.assertEqual(len(dataframe["session"].unique()), 2)
+
         shutil.rmtree(tempdir)
 
     def test_dataset_accept(self):
