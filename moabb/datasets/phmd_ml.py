@@ -15,7 +15,7 @@ HEADMOUNTED_URL = "https://zenodo.org/record/2617085/files/"
 
 @depreciated_alias("HeadMountedDisplay", "1.1")
 class Cattan2019_PHMD(BaseDataset):
-    """Passive Head Mounted Display with Music Listening dataset.
+    """Passive Head Mounted Display with Music Listening dataset [1]_.
 
     We describe the experimental procedures for a dataset that we have made publicly available
     at https://doi.org/10.5281/zenodo.2617084 in mat (Mathworks, Natick, USA) and csv formats.

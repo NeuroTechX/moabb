@@ -128,8 +128,27 @@ class BaseProcessing(metaclass=abc.ABCMeta):
     def make_process_pipelines(
         self, dataset, return_epochs=False, return_raws=False, postprocess_pipeline=None
     ):
-        """Return the pre-processing pipelines corresponding to this paradigm (one per frequency band).
-        Refer to the arguments of :func:`get_data` for more information."""
+        """Create pre-processing pipelines for the data.
+
+        Return the pre-processing pipelines corresponding to this paradigm (one per frequency band).
+
+        Parameters
+        ----------
+        dataset : BaseDataset
+            The dataset instance.
+        return_epochs : bool, default is False
+            Specify if needed to return epochs instead of ndarray.
+        return_raws : bool, default is False
+            Specify if needed to return raws instead of ndarray.
+        postprocess_pipeline : Pipeline | None, default is None
+            Optional pipeline to apply to the data after the preprocessing.
+            This pipeline will either receive :class:`mne.io.BaseRaw`, :class:`mne.Epochs`
+            or :func:`np.ndarray` as input, depending on the values of ``return_epochs``
+            and ``return_raws``.
+            This pipeline must return an ``np.ndarray``.
+            This pipeline must be "fixed" because it will not be trained,
+            i.e. no call to ``fit`` will be made.
+        """
         if return_epochs and return_raws:
             message = "Select only return_epochs or return_raws, not both"
             raise ValueError(message)

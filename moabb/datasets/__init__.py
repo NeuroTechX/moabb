@@ -56,6 +56,7 @@ from .castillos2023 import (
     CastillosCVEP40,
     CastillosCVEP100,
 )
+from .dreyer2023 import Dreyer2023, Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
 from .erpcore2021 import (
     ErpCore2021_ERN,

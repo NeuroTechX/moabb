@@ -1,8 +1,10 @@
 """Utils for easy database selection."""
 
 import inspect
+from pathlib import Path
 
 import mne
+import mne_bids
 import numpy as np
 from mne import create_info
 from mne.io import RawArray
@@ -323,3 +325,29 @@ def stim_channels_with_selected_ids(
     raw_with_stim = raw.copy().add_channels([stim_raw], force_update_info=True)
 
     return raw_with_stim
+
+
+def bids_metainfo(bids_path: Path) -> dict:
+    """Create metadata for the BIDS dataset.
+
+    To allow lazy loading of the metadata, we store the metadata in a JSON file
+    in the root of the BIDS dataset.
+
+    Parameters
+    ----------
+    bids_path : Path
+        The path to the BIDS dataset.
+    """
+    json_data = {}
+
+    paths = mne_bids.find_matching_paths(
+        root=bids_path,
+        datatypes="eeg",
+    )
+
+    for path in paths:
+        uid = path.fpath.name
+        json_data[uid] = path.entities
+        json_data[uid]["fpath"] = str(path.fpath)
+
+    return json_data

@@ -21,7 +21,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ "3.9" ]
+        python-version: [ "3.10" ]
 
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +55,7 @@ jobs:
 
       - name: Install moabb
         run: |
-          uv pip install -e .[docs,deeplearning,optuna]
+          uv pip install -e .[docs,deeplearning,optuna,external]
 
       - name: Build docs
         run: |
