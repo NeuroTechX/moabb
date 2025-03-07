@@ -6,12 +6,14 @@
 import json
 import os
 import os.path as osp
+import urllib
 from pathlib import Path
 
+import pandas as pd
 import requests
 from mne import get_config, set_config
 from mne.datasets.utils import _get_path
-from mne.utils import _url_to_local_path, verbose
+from mne.utils import _url_to_local_path, verbose, warn
 from pooch import file_hash, retrieve
 from pooch.downloaders import choose_downloader
 from requests.exceptions import HTTPError
@@ -221,10 +223,10 @@ def fs_get_file_list(article_id, version=None):
     """
     fsurl = "https://api.figshare.com/v2"
     if version is None:
-        url = fsurl + "/articles/{}/files".format(article_id)
+        url = fsurl + "/articles/{}".format(article_id)
         headers = {"Content-Type": "application/json"}
         response = fs_issue_request("GET", url, headers=headers)
-        return response
+        return response["files"]
     else:
         url = fsurl + "/articles/{}/versions/{}".format(article_id, version)
         headers = {"Content-Type": "application/json"}
@@ -278,3 +280,67 @@ def fs_get_file_name(filelist):
         keys are file_id and values are file name
     """
     return {str(f["id"]): f["name"] for f in filelist}
+
+
+def download_if_missing(file_path, url, warn_missing=True):
+    """Download file from url to a specified path if it is not already there."""
+
+    folder_path = osp.dirname(file_path)
+
+    # Ensure the folder exists
+    if not osp.exists(folder_path):
+        if warn_missing:
+            warn(f"Directory {folder_path} not found. Creating directory.")
+        os.makedirs(folder_path)
+
+    # Check if file exists, if not download it
+    if not osp.exists(file_path):
+        if warn_missing:
+            warn(f"{file_path} not found. Downloading from {url}")
+        urllib.request.urlretrieve(url, file_path)
+
+
+def create_metainfo_osf(osf_code: str) -> pd.DataFrame:
+    """Create a metadata file for a dataset stored on OSF."""
+    # OSF API base URL for the project's OSF storage
+
+    base_url = f"https://api.osf.io/v2/nodes/{osf_code}/files/osfstorage/"
+
+    files = []  # to collect (name, url) tuples
+    stack = [base_url + "?page[size]=100"]  # start with base URL, up to 100 results
+
+    while stack:
+        url = stack.pop()
+        try:
+            response = requests.get(url)
+            data = response.json()
+        except Exception as e:
+            print(f"Failed to fetch {url}: {e}")
+            continue
+
+        # Loop through items in this page
+        for item in data.get("data", []):
+            attrs = item.get("attributes", {})
+            kind = attrs.get("kind")
+            if kind == "folder":
+                # If folder, add its listing URL to stack for later retrieval
+                rel = item.get("relationships", {})
+                files_rel = rel.get("files", {}) if rel else {}
+                folder_url = files_rel.get("links", {}).get("related", {}).get("href")
+                if folder_url:
+                    # Append page[size]=100 to folder URL as well for efficiency
+                    stack.append(folder_url + "?page[size]=100")
+            elif kind == "file":
+                name = attrs.get("name")
+                download_url = item.get("links", {}).get("download")
+                if name and download_url:
+                    files.append((name, download_url))
+
+        # If there's a next page, add it to stack to continue pagination
+        next_url = data.get("links", {}).get("next")
+        if next_url:
+            stack.append(next_url)
+
+    metainfo = pd.DataFrame(files, columns=["filename", "url"])
+
+    return metainfo

@@ -22,7 +22,7 @@ BASE_URL = "https://ndownloader.figshare.com/files/"
 
 
 class Stieger2021(BaseDataset):
-    """Motor Imagery dataset from Stieger et al. 2021.
+    """Motor Imagery dataset from Stieger et al. 2021 [1]_.
 
     The main goals of our original study were to characterize how individuals
     learn to control SMR-BCIs and to test whether this learning can be improved
@@ -274,12 +274,10 @@ class Stieger2021(BaseDataset):
 
             if len(raw.info["bads"]) > 0:
                 LOGGER.info(
-                    "Record {subject}/{session} (subject/session) contains "
-                    "bad channels: {bad_info}",
-                    subject=subject,
-                    session=session,
-                    bad_info=raw.info["bads"],
+                    "Record %s/%s (subject/session) contains bad channels: %s",
+                    subject,
+                    session,
+                    raw.info["bads"],
                 )
-
             subject_data[str(session)] = {"0": raw}
         return subject_data

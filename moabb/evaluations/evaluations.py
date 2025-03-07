@@ -151,7 +151,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 pipelines, dataset, subject, process_pipeline
             )
             if len(run_pipes) == 0:
-                return []
+                continue
 
             # get the data
             X, y, metadata = self.paradigm.get_data(
@@ -493,7 +493,7 @@ class CrossSessionEvaluation(BaseEvaluation):
             )
             if len(run_pipes) == 0:
                 print(f"Subject {subject} already processed")
-                return []
+                continue
 
             # get the data
             X, y, metadata = self.paradigm.get_data(
@@ -660,7 +660,7 @@ class CrossSubjectEvaluation(BaseEvaluation):
     ):
         if not self.is_valid(dataset):
             raise AssertionError("Dataset is not appropriate for evaluation")
-        # this is a bit akward, but we need to check if at least one pipe
+        # this is a bit awkward, but we need to check if at least one pipe
         # have to be run before loading the data. If at least one pipeline
         # need to be run, we have to load all the data.
         # we might need a better granularity, if we query the DB

@@ -56,9 +56,6 @@ def benchmark(  # noqa: C901
     If particular paradigms are mentioned through select_paradigms, only the pipelines corresponding to those paradigms
     will be run. If no paradigms are mentioned, all pipelines will be run.
 
-    Pipelines stored in a file named braindecode_xxx.py will be recognized as Braindecode architectures
-    and they will receive epochs as input, instead of numpy array.
-
     To define the include_datasets or exclude_dataset, you could start from the full dataset list,
     using for example the following code:
     > # Choose your paradigm
@@ -171,13 +168,10 @@ def benchmark(  # noqa: C901
 
             ppl_with_epochs, ppl_with_array = {}, {}
             for pn, pv in prdgms[paradigm].items():
-                if "braindecode" in pn or "Keras" in pn:
-                    ppl_with_epochs[pn] = pv
-                else:
-                    ppl_with_array[pn] = pv
+                ppl_with_array[pn] = pv
 
             if len(ppl_with_epochs) > 0:
-                # Braindecode pipelines require return_epochs=True
+                # Keras pipelines require return_epochs=True
                 context = eval_type[evaluation](
                     paradigm=p,
                     datasets=d,

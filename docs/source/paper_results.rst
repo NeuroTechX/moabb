@@ -1,4 +1,9 @@
+.. meta::
+   :hide_sidebar: true
+
 :html_theme.sidebar_secondary.remove:
+:html_theme.sidebar_primary.remove:
+
 .. _paper_results:
 .. raw:: html
 
@@ -15,6 +20,12 @@ The largest EEG-based Benchmark for Open Science
 
 We report the results of the benchmark study performed in:
 `The largest EEG-based BCI reproducibility study for open science: the MOABB benchmark <https://universite-paris-saclay.hal.science/hal-04537061v1/file/MOABB-arXiv.pdf>`_
+
+.. figure:: images/datasets_largest.png
+   :alt: MOABB Benchmark datasets
+   :align: center
+
+    Visualization of the MOABB datasets, with Motor Imagery (MI) in green, ERP in pink/purple and SSVEP in orange/brown. The size of the circle is proportional to the number of subjects and the contrast depends on the number of electrodes.
 
 This study conducts an extensive Brain-computer interfaces (BCI) reproducibility analysis on open electroencephalography datasets,
 aiming to assess existing solutions and establish open and reproducible benchmarks for effective comparison within the field. Please note that the results are obtained using `Within-Session evaluation <http://moabb.neurotechx.com/docs/generated/moabb.evaluations.WithinSessionEvaluation.html>`_.
