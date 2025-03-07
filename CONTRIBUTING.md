@@ -80,8 +80,6 @@ In case you want to install the optional deep learning dependencies (i.e. `pip i
 
 ### Tools used
 
-### Tools used
-
 MOABB uses [`pre-commit`](https://pre-commit.com/). It automatically runs variety of Code Quality
 instruments against the code you produced.
 
