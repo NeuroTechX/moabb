@@ -30,8 +30,8 @@ Motor Imagery Datasets
     Zhou2016
     Stieger2021
     Liu2024
-    Beetl2021A
-    Beetl2021B
+    Beetl2021_A
+    Beetl2021_B
 
 ------------
 ERP Datasets

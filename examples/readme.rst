@@ -13,5 +13,4 @@ external library dependencies that MOABB uses, including Deep Learning, Code Car
 Docs and others.
 
 .. toctree::
-   :glob:
    :hidden:
