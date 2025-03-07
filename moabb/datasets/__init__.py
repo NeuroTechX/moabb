@@ -13,6 +13,7 @@ from . import compound_dataset
 from .alex_mi import AlexMI
 from .alphawaves import Rodrigues2017
 from .bbci_eeg_fnirs import Shin2017A, Shin2017B
+from .beetl import Beetl2021_A, Beetl2021_B
 
 # Depreciated datasets (will be removed in the future):
 from .bnci import BNCI2014001  # noqa: F401
