@@ -40,8 +40,8 @@ class Beetl2021_A(BaseDataset):
     cut into 4 second trials.
 
     For the leaderboard phase, the dataset contains only training data, while for the final phase it
-    includes both training and testing data. To learn more about the datasets in detail see [1].
-    To learn more about the competition see [2].
+    includes both training and testing data. To learn more about the datasets in detail see [1]_.
+    To learn more about the competition see [2]_.
 
     For benchmarking the BEETL competition use phase "final", train on training data benchmark on testing data.
 
@@ -320,8 +320,8 @@ class Beetl2021_B(BaseDataset):
     cut into 4 second trials.
 
     For the leaderboard phase, the dataset contains only training data, while for the final phase it
-    includes both training and testing data. To learn more about the datasets in detail see [1].
-    To learn more about the competition see [2].
+    includes both training and testing data. To learn more about the datasets in detail see [1]_.
+    To learn more about the competition see [2]_.
 
     For benchmarking the BEETL competition use phase "final", train on training data benchmark on testing data.
 
