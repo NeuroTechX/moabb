@@ -1,6 +1,7 @@
 import inspect
 
-from sklearn.model_selection import BaseCrossValidator, StratifiedKFold
+import numpy as np
+from sklearn.model_selection import BaseCrossValidator, LeaveOneGroupOut, StratifiedKFold
 from sklearn.utils import check_random_state
 
 
@@ -101,3 +102,72 @@ class WithinSessionSplitter(BaseCrossValidator):
                 for train_ix, test_ix in splitter.split(indices, y_session):
 
                     yield indices[train_ix], indices[test_ix]
+
+
+class CrossSubjectSplitter(BaseCrossValidator):
+    """Data splitter for cross-subject evaluation.
+
+    Cross-subject evaluation uses Leave-One-Subject-Out cross-validation
+    to evaluate performance across different subjects. This splitter
+    assumes that data from all subjects is already loaded.
+
+    .. image:: ../../source/_static/images/crosssubject.png
+        :alt: Schematic diagram of the CrossSubject split
+        :align: center
+
+    Parameters
+    ----------
+    shuffle : bool, default=True
+        Whether to shuffle the order of subjects.
+    random_state : int, RandomState instance or None, default=None
+        Controls the randomness when `shuffle` is True.
+        Pass an int for reproducible output across multiple function calls.
+    cv_class : cross-validation class, default=LeaveOneGroupOut
+        Inner cross-validation strategy for splitting subjects.
+        By default, LeaveOneGroupOut is appropriate for cross-subject splitting.
+    cv_kwargs : dict
+        Additional arguments to pass to the inner cross-validation strategy.
+    """
+
+    def __init__(
+        self,
+        shuffle: bool = True,
+        random_state: int = None,
+        cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
+        **cv_kwargs: dict,
+    ):
+        self.cv_class = cv_class
+        self.cv_kwargs = cv_kwargs
+        self.shuffle = shuffle
+        self.random_state = random_state
+
+        self._rng = check_random_state(random_state) if shuffle else None
+
+        self._cv_kwargs = dict(cv_kwargs)
+
+        params = inspect.signature(self.cv_class).parameters
+        for p, v in [("shuffle", shuffle), ("random_state", self._rng)]:
+            if p in params:
+                self._cv_kwargs[p] = v
+
+    def get_n_splits(self, metadata):
+        return metadata["subject"].nunique()
+
+    def split(self, y, metadata):
+        subjects = metadata["subject"].unique()
+
+        if self.shuffle:
+            self._rng.shuffle(subjects)
+
+        splitter = self.cv_class(**self._cv_kwargs)
+
+        for train_subject_idx, test_subject_idx in splitter.split(
+            X=np.zeros(len(subjects)), y=None, groups=subjects
+        ):
+            train_mask = metadata["subject"].isin(subjects[train_subject_idx])
+            test_mask = metadata["subject"].isin(subjects[test_subject_idx])
+
+            train_idx = metadata.index[train_mask].values
+            test_idx = metadata.index[test_mask].values
+
+            yield train_idx, test_idx
