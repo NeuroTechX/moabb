@@ -1,5 +1,6 @@
 import logging
 import os
+import zipfile
 from pathlib import Path
 
 import mne
@@ -261,6 +262,32 @@ class Beetl2021_A(BaseDataset):
             id_file_list = dl.fs_get_file_id(file_list)
 
             for file_name in id_file_list.keys():
+                file_path = os.path.join(base_path, file_name)
+                extract_dir = os.path.join(base_path, os.path.splitext(file_name)[0])
+
+                # Step 1: Download the zip file if not already downloaded
+                if not os.path.exists(file_path):
+                    pooch.retrieve(
+                        url=BASE_URL + id_file_list[file_name],
+                        known_hash=hash_file_list[id_file_list[file_name]],
+                        fname=file_name,
+                        path=base_path,
+                        downloader=pooch.HTTPDownloader(progressbar=True),
+                    )
+
+                # Step 2: Unzip the file if not already extracted
+                if not os.path.exists(extract_dir):
+                    with zipfile.ZipFile(file_path, "r") as zip_ref:
+                        zip_ref.extractall(extract_dir)
+
+        # Download labels for final phase
+        file_list = dl.fs_get_file_list(FINAL_LABEL_TXT_ARTICLE_ID)
+        hash_file_list = dl.fs_get_file_hash(file_list)
+        id_file_list = dl.fs_get_file_id(file_list)
+
+        for file_name in id_file_list.keys():
+            fpath = base_path / file_name
+            if (not fpath.exists() or force_update) and file_name == "final_MI_label.txt":
                 fpath = base_path / file_name
                 if not fpath.exists() or force_update:
                     pooch.retrieve(
@@ -268,29 +295,8 @@ class Beetl2021_A(BaseDataset):
                         known_hash=hash_file_list[id_file_list[file_name]],
                         fname=file_name,
                         path=base_path,
-                        processor=pooch.Unzip(extract_dir=os.path.splitext(file_name)[0]),
                         downloader=pooch.HTTPDownloader(progressbar=True),
                     )
-        # Download labels for final phase
-        if self.phase == "final":
-            file_list = dl.fs_get_file_list(FINAL_LABEL_TXT_ARTICLE_ID)
-            hash_file_list = dl.fs_get_file_hash(file_list)
-            id_file_list = dl.fs_get_file_id(file_list)
-
-            for file_name in id_file_list.keys():
-                fpath = base_path / file_name
-                if (
-                    not fpath.exists() or force_update
-                ) and file_name == "final_MI_label.txt":
-                    fpath = base_path / file_name
-                    if not fpath.exists() or force_update:
-                        pooch.retrieve(
-                            url=BASE_URL + id_file_list[file_name],
-                            known_hash=hash_file_list[id_file_list[file_name]],
-                            fname=file_name,
-                            path=base_path,
-                            downloader=pooch.HTTPDownloader(progressbar=True),
-                        )
 
         return [str(base_path)]
 
@@ -496,6 +502,33 @@ class Beetl2021_B(BaseDataset):
             id_file_list = dl.fs_get_file_id(file_list)
 
             for file_name in id_file_list.keys():
+                file_path = os.path.join(base_path, file_name)
+                extract_dir = os.path.join(base_path, os.path.splitext(file_name)[0])
+
+                # Step 1: Download the zip file if not already downloaded
+                if not os.path.exists(file_path):
+                    pooch.retrieve(
+                        url=BASE_URL + id_file_list[file_name],
+                        known_hash=hash_file_list[id_file_list[file_name]],
+                        fname=file_name,
+                        path=base_path,
+                        downloader=pooch.HTTPDownloader(progressbar=True),
+                    )
+
+                # Step 2: Unzip the file if not already extracted
+                if not os.path.exists(extract_dir):
+                    with zipfile.ZipFile(file_path, "r") as zip_ref:
+                        zip_ref.extractall(extract_dir)
+
+        # Download labels for final phase
+
+        file_list = dl.fs_get_file_list(FINAL_LABEL_TXT_ARTICLE_ID)
+        hash_file_list = dl.fs_get_file_hash(file_list)
+        id_file_list = dl.fs_get_file_id(file_list)
+
+        for file_name in id_file_list.keys():
+            fpath = base_path / file_name
+            if (not fpath.exists() or force_update) and file_name == "final_MI_label.txt":
                 fpath = base_path / file_name
                 if not fpath.exists() or force_update:
                     pooch.retrieve(
@@ -503,29 +536,7 @@ class Beetl2021_B(BaseDataset):
                         known_hash=hash_file_list[id_file_list[file_name]],
                         fname=file_name,
                         path=base_path,
-                        processor=pooch.Unzip(extract_dir=os.path.splitext(file_name)[0]),
                         downloader=pooch.HTTPDownloader(progressbar=True),
                     )
-
-        # Download labels for final phase
-        if self.phase == "final":
-            file_list = dl.fs_get_file_list(FINAL_LABEL_TXT_ARTICLE_ID)
-            hash_file_list = dl.fs_get_file_hash(file_list)
-            id_file_list = dl.fs_get_file_id(file_list)
-
-            for file_name in id_file_list.keys():
-                fpath = base_path / file_name
-                if (
-                    not fpath.exists() or force_update
-                ) and file_name == "final_MI_label.txt":
-                    fpath = base_path / file_name
-                    if not fpath.exists() or force_update:
-                        pooch.retrieve(
-                            url=BASE_URL + id_file_list[file_name],
-                            known_hash=hash_file_list[id_file_list[file_name]],
-                            fname=file_name,
-                            path=base_path,
-                            downloader=pooch.HTTPDownloader(progressbar=True),
-                        )
 
         return [str(base_path)]
