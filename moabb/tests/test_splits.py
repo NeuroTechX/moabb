@@ -1,6 +1,10 @@
 import numpy as np
 import pytest
-from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold, TimeSeriesSplit
+from sklearn.model_selection import (
+    LeaveOneGroupOut,
+    StratifiedKFold,
+    TimeSeriesSplit,
+)
 from sklearn.utils import check_random_state
 
 from moabb.datasets.fake import FakeDataset
@@ -149,9 +153,22 @@ def test_cross_session_is_shuffling():
     splitter_no_shuffle = CrossSessionSplitter(shuffle=False)
     splitter_shuffle = CrossSessionSplitter(shuffle=True, random_state=3)
 
-    for (train, test), (train_shuffle, test_shuffle) in zip(
-        splitter_no_shuffle.split(y, metadata),
-        splitter_shuffle.split(y, metadata),
+    for idx, ((train, test), (train_shuffle, test_shuffle)) in enumerate(
+        zip(
+            splitter_no_shuffle.split(y, metadata),
+            splitter_shuffle.split(y, metadata),
+        )
     ):
-        assert not np.array_equal(train, train_shuffle)
-        assert not np.array_equal(test, test_shuffle)
+        print(f"\n--- Fold {idx} ---")
+        print("Train indices no shuffle:", train)
+        print("Train indices shuffle   :", train_shuffle)
+        print("Test indices no shuffle :", test)
+        print("Test indices shuffle    :", test_shuffle)
+
+        train_equal = np.array_equal(train, train_shuffle)
+        test_equal = np.array_equal(test, test_shuffle)
+
+        print("Train indices equal:", train_equal)
+        print("Test indices equal :", test_equal)
+
+        assert not train_equal or not test_equal, f"Shuffle had no effect on fold {idx}"

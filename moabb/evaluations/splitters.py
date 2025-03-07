@@ -1,8 +1,11 @@
 import inspect
+import logging
 
-import numpy as np
 from sklearn.model_selection import BaseCrossValidator, LeaveOneGroupOut, StratifiedKFold
 from sklearn.utils import check_random_state
+
+
+log = logging.getLogger(__name__)
 
 
 class WithinSessionSplitter(BaseCrossValidator):
@@ -162,28 +165,41 @@ class CrossSessionSplitter(BaseCrossValidator):
         return metadata.groupby(["subject", "session"]).ngroups
 
     def split(self, y, metadata):
-
+        # here, I am getting the index across all the subject
+        all_index = metadata.index.values
+        # I check how many subjects are here:
         subjects = metadata["subject"].unique()
-
+        # I shuffle the subject, but I am not sure if this will impact the indices
         if self.shuffle:
             self._rng.shuffle(subjects)
-
+        # For the subject that are shuffle now, I am getting the subject index
         for subject in subjects:
+            # Creating the subject_mask
             subject_mask = metadata["subject"] == subject
-            subject_sessions = metadata.loc[subject_mask, "session"].values
+            # from all the index, I am getting the trials index
+            subject_indices = all_index[subject_mask]
+            # Here, I am getting the metainformation to use the column of session
+            subject_metadata = metadata[subject_mask]
+            # getting the label
+            y_subject = y[subject_mask]
+            # check the number of session and check how many session do we have!
+            sessions = subject_metadata["session"].unique()
 
-            sessions = np.unique(subject_sessions)
+            if len(sessions) <= 1:
+                log.info(f"Skipping subject {subject}: Only one session available.")
+                continue  # Skip subjects with only one session
+
+            # Shuffle the sessions
             if self.shuffle:
+                # I need to discover if this is working
                 self._rng.shuffle(sessions)
-
+            # be default I am using LeaveOneGroupOut
             splitter = self.cv_class(**self._cv_kwargs)
-
+            # Here, in the for loop, I am applying the split leaving the group out
             for train_session_idx, test_session_idx in splitter.split(
-                X=np.zeros(len(subject_sessions)),
-                y=y[subject_mask],
-                groups=subject_sessions,
+                X=subject_indices, y=y_subject, groups=subject_metadata["session"]
             ):
-                train_idx = metadata.index[subject_mask][train_session_idx]
-                test_idx = metadata.index[subject_mask][test_session_idx]
-
-                yield train_idx, test_idx
+                # returning the index
+                yield subject_indices[train_session_idx], subject_indices[
+                    test_session_idx
+                ]
