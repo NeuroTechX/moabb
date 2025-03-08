@@ -58,8 +58,9 @@ def eval_split_cross_subject(shuffle, random_state):
 
     if shuffle:
         rng.shuffle(subjects)
-
-    splitter = LeaveOneGroupOut()
+        splitter = GroupShuffleSplit(n_splits=len(subjects), random_state=rng)
+    else:
+        splitter = LeaveOneGroupOut()
 
     for train_subj_idx, test_subj_idx in splitter.split(
         X=np.zeros(len(subjects)), y=None, groups=subjects

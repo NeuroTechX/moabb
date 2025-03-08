@@ -1,7 +1,12 @@
 import inspect
 
 import numpy as np
-from sklearn.model_selection import BaseCrossValidator, LeaveOneGroupOut, StratifiedKFold
+from sklearn.model_selection import (
+    BaseCrossValidator,
+    GroupShuffleSplit,
+    LeaveOneGroupOut,
+    StratifiedKFold,
+)
 from sklearn.utils import check_random_state
 
 
@@ -111,7 +116,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
     to evaluate performance across different subjects. This splitter
     assumes that data from all subjects is already loaded.
 
-    .. image:: ../../source/_static/images/crosssubject.png
+    .. image:: images/crosssubject.png
         :alt: Schematic diagram of the CrossSubject split
         :align: center
 
@@ -142,30 +147,45 @@ class CrossSubjectSplitter(BaseCrossValidator):
         self.random_state = random_state
 
         self._rng = check_random_state(random_state) if shuffle else None
-
         self._cv_kwargs = dict(cv_kwargs)
 
+        if not shuffle and random_state is not None:
+            raise ValueError("`random_state` should be None when `shuffle` is False")
+
+        if self.cv_class == LeaveOneGroupOut and len(self.cv_kwargs) == 0 and shuffle:
+            self.cv_class = GroupShuffleSplit
+
         params = inspect.signature(self.cv_class).parameters
-        for p, v in [("shuffle", shuffle), ("random_state", self._rng)]:
+        for p, v in [("shuffle", shuffle), ("random_state", self._rng), ("n_splits", 5)]:
             if p in params:
                 self._cv_kwargs[p] = v
 
     def get_n_splits(self, metadata):
-        return metadata["subject"].nunique()
+        """Return the number of splits for the cross-validation."""
+        # Number of subjects in the dataset
+        if self.cv_class == LeaveOneGroupOut:
+            return metadata["subject"].nunique()
+        else:
+            # Number of splits in the inner cross-validation strategy
+            return self.cv_kwargs["n_splits"]
 
     def split(self, y, metadata):
-        subjects = metadata["subject"].unique()
+        """Generate indices to split data into training and test set."""
+
+        subjects_index = metadata["subject"].unique()
 
         if self.shuffle:
-            self._rng.shuffle(subjects)
+            self._rng.shuffle(subjects_index)
+            if self._cv_kwargs.get("n_splits") is None:
+                self._cv_kwargs["n_splits"] = len(subjects_index)
 
         splitter = self.cv_class(**self._cv_kwargs)
 
         for train_subject_idx, test_subject_idx in splitter.split(
-            X=np.zeros(len(subjects)), y=None, groups=subjects
+            X=np.zeros(len(subjects_index)), y=None, groups=subjects_index
         ):
-            train_mask = metadata["subject"].isin(subjects[train_subject_idx])
-            test_mask = metadata["subject"].isin(subjects[test_subject_idx])
+            train_mask = metadata["subject"].isin(subjects_index[train_subject_idx])
+            test_mask = metadata["subject"].isin(subjects_index[test_subject_idx])
 
             train_idx = metadata.index[train_mask].values
             test_idx = metadata.index[test_mask].values
