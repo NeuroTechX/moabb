@@ -12,7 +12,7 @@ from moabb.evaluations.splitters import CrossSessionSplitter, WithinSessionSplit
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
-dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=3, seed=12)
+dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=5, seed=12)
 paradigm = FakeImageryParadigm()
 
 
