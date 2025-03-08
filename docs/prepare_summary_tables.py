@@ -32,3 +32,4 @@ if __name__ == "__main__":
     parser.add_argument("target_dir", type=str)
     args = parser.parse_args()
     main(args.source_dir, args.target_dir)
+    print(args.target_dir)

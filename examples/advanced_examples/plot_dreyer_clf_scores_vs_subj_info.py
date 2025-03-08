@@ -151,6 +151,7 @@ ax[1, 1].set_ylabel(None)
 plt.show()
 ########################################################################################
 # 5.5 Obtained results for four selected subjects correspond to the following figure.
+# --------------------------------------------------------------------------------------
 #
 # .. image:: ../images/Dreyer_clf_scores_vs_subj_info/4_selected_subjects.png
 #    :align: center

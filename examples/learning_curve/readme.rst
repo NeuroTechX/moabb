@@ -8,3 +8,6 @@ these trials. To ensure the robustness of the results, you need to specify the
 number of permutations. If you use 10 trials per class and 20 permutations,
 each pipeline will be evaluated on a subset of 10 trials chosen randomly, that
 will be repeated 20 times with different trial subsets.
+
+.. toctree::
+   :hidden:
