@@ -3,7 +3,6 @@ import logging
 
 from sklearn.model_selection import (
     BaseCrossValidator,
-    GroupShuffleSplit,
     LeaveOneGroupOut,
     StratifiedKFold,
 )
@@ -144,19 +143,22 @@ class CrossSessionSplitter(BaseCrossValidator):
 
     def __init__(
         self,
-        shuffle: bool = True,
+        shuffle: bool = False,
         random_state: int = None,
         cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
         **cv_kwargs: dict,
     ):
         self.cv_class = cv_class
         self.cv_kwargs = cv_kwargs
+        self._cv_kwargs = dict(**cv_kwargs)
+
         self.shuffle = shuffle
         self.random_state = random_state
 
         self._rng = check_random_state(random_state) if shuffle else None
 
-        self._cv_kwargs = dict(cv_kwargs)
+        if not shuffle and random_state is not None:
+            raise ValueError("`random_state` should be None when `shuffle` is False")
 
         params = inspect.signature(self.cv_class).parameters
         for p, v in [
@@ -174,35 +176,49 @@ class CrossSessionSplitter(BaseCrossValidator):
         all_index = metadata.index.values
         # I check how many subjects are here:
         subjects = metadata["subject"].unique()
-        # I shuffle the subject, but I am not sure if this will impact the indices
+
+        # I shuffle the subject, but I am not sure if this will impact the
+        # indices
         if self.shuffle:
             self._rng.shuffle(subjects)
-            # For the subject that are shuffle now, I am getting the subject index
 
+        # For the subject that is shuffle now, I am getting the subject index
         for subject in subjects:
-            # Subject-specific masking
+            # Creating the subject_mask
             subject_mask = metadata["subject"] == subject
+            # from all the index, I am getting the trial index
             subject_indices = all_index[subject_mask]
+            # Here, I am getting the metainformation to use the column of
+            # session
             subject_metadata = metadata[subject_mask]
+            # getting the label
+            y_subject = y[subject_mask]
+            # check the number of sessions and check how many sessions we
+            # have!
             sessions = subject_metadata["session"].unique()
 
             if len(sessions) <= 1:
-                continue
+                log.info(
+                    f"Skipping subject {subject}: Only one session available"
+                    f"Cross-session evaluation requires at least two sessions."
+                )
+                continue  # Skip subjects with only one session
 
-            # Use sklearn's GroupShuffleSplit with specific parameters
-            splitter = GroupShuffleSplit(
-                n_splits=len(sessions),
-                test_size=1 / len(sessions),
-                random_state=self.random_state,
-            )
-
-            # Get session-ordered groups
-            groups = subject_metadata["session"]
+            # Shuffle the sessions
             if self.shuffle:
-                groups = self._rng.permutation(groups)
+                # I need to discover if this is working
+                self._rng.shuffle(sessions)
 
-            # Generate splits through sklearn API
-            for train_idx, test_idx in splitter.split(
-                subject_indices, y[subject_mask], groups=groups
+            # be default, I am using LeaveOneGroupOut if shuffle is False
+            # otherwise I am using GroupShuffleSplit.
+            splitter = self.cv_class(**self._cv_kwargs)
+
+            # Here, in the for loop, I am applying the split leaving the
+            # group out
+            for train_session_idx, test_session_idx in splitter.split(
+                X=subject_indices, y=y_subject, groups=subject_metadata["session"]
             ):
-                yield (subject_indices[train_idx], subject_indices[test_idx])
+                # returning the index
+                yield subject_indices[train_session_idx], subject_indices[
+                    test_session_idx
+                ]
