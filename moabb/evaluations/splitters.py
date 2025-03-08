@@ -19,7 +19,7 @@ class WithinSessionSplitter(BaseCrossValidator):
     and test sets for each subject in each session. This splitter
     assumes that all data from all subjects is already known and loaded.
 
-    .. image:: ../../source/_static/images/withinsess.png
+    .. image:: images/withinsess.png
         :alt: The schematic diagram of the WithinSession split
         :align: center
 
@@ -118,7 +118,7 @@ class CrossSessionSplitter(BaseCrossValidator):
     evaluate performance across sessions, but for a single subject. This splitter
     assumes that all data from all subjects is already known and loaded.
 
-    .. image:: ../../source/_static/images/crosssess.png
+    .. image:: images/crosssess.jpg
         :alt: The schematic diagram of the CrossSession split
         :align: center
 
