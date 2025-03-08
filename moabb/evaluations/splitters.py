@@ -187,10 +187,9 @@ class CrossSessionSplitter(BaseCrossValidator):
             subject_mask = metadata["subject"] == subject
             # from all the index, I am getting the trial index
             subject_indices = all_index[subject_mask]
-            # Here, I am getting the metainformation to use the column of
-            # session
+            # Here, I am getting the metainformation to use the column session
             subject_metadata = metadata[subject_mask]
-            # getting the label
+            # getting the label at subject level
             y_subject = y[subject_mask]
             # check the number of sessions and check how many sessions we
             # have!
