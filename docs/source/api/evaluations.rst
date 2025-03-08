@@ -14,6 +14,7 @@
     :template: class.rst
 
     WithinSessionSplitter
+    CrossSessionSplitter
 
 
 ------------

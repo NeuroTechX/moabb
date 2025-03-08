@@ -1,7 +1,15 @@
 import inspect
+import logging
 
-from sklearn.model_selection import BaseCrossValidator, StratifiedKFold
+from sklearn.model_selection import (
+    BaseCrossValidator,
+    LeaveOneGroupOut,
+    StratifiedKFold,
+)
 from sklearn.utils import check_random_state
+
+
+log = logging.getLogger(__name__)
 
 
 class WithinSessionSplitter(BaseCrossValidator):
@@ -11,7 +19,7 @@ class WithinSessionSplitter(BaseCrossValidator):
     and test sets for each subject in each session. This splitter
     assumes that all data from all subjects is already known and loaded.
 
-    .. image:: docs/source/images/withinsess.png
+    .. image:: images/withinsess.png
         :alt: The schematic diagram of the WithinSession split
         :align: center
 
@@ -101,3 +109,112 @@ class WithinSessionSplitter(BaseCrossValidator):
                 for train_ix, test_ix in splitter.split(indices, y_session):
 
                     yield indices[train_ix], indices[test_ix]
+
+
+class CrossSessionSplitter(BaseCrossValidator):
+    """Data splitter for cross session evaluation.
+
+    Cross-session evaluation uses a Leave-One-Session-Out cross-validation to
+    evaluate performance across sessions, but for a single subject. This splitter
+    assumes that all data from all subjects is already known and loaded.
+
+    .. image:: images/crosssess.jpg
+        :alt: The schematic diagram of the CrossSession split
+        :align: center
+
+    The inner cross-validation strategy can be changed by passing the
+    `cv_class` and `cv_kwargs` arguments. By default, it uses LeaveOneGroupOut,
+    which effectively performs Leave-One-Session-Out cross-validation when
+    sessions are passed as groups.
+
+    Parameters
+    ----------
+    shuffle : bool, default=False
+        Whether to shuffle the session order for each subject.
+    random_state: int, RandomState instance or None, default=None
+        Controls the randomness when `shuffle` is True.
+        Pass an int for reproducible output across multiple function calls.
+    cv_class: cross-validation class, default=LeaveOneGroupOut
+        Inner cross-validation strategy for splitting the sessions.
+        For cross-session splitting, LeaveOneGroupOut is the most suitable as default.
+    cv_kwargs: dict
+        Additional arguments to pass to the inner cross-validation strategy.
+    """
+
+    def __init__(
+        self,
+        shuffle: bool = False,
+        random_state: int = None,
+        cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
+        **cv_kwargs: dict,
+    ):
+        self.cv_class = cv_class
+        self.cv_kwargs = cv_kwargs
+        self._cv_kwargs = dict(**cv_kwargs)
+
+        self.shuffle = shuffle
+        self.random_state = random_state
+
+        self._rng = check_random_state(random_state) if shuffle else None
+
+        if not shuffle and random_state is not None:
+            raise ValueError("`random_state` should be None when `shuffle` is False")
+
+        params = inspect.signature(self.cv_class).parameters
+        for p, v in [
+            ("shuffle", shuffle),
+            ("random_state", self._rng),
+        ]:
+            if p in params:
+                self._cv_kwargs[p] = v
+
+    def get_n_splits(self, metadata):
+        return metadata.groupby(["subject", "session"]).ngroups
+
+    def split(self, y, metadata):
+        # here, I am getting the index across all the subject
+        all_index = metadata.index.values
+        # I check how many subjects are here:
+        subjects = metadata["subject"].unique()
+
+        # I am shuffling the subjects
+        if self.shuffle:
+            self._rng.shuffle(subjects)
+
+        # For the subject that is shuffle now, I am getting the subject index
+        for subject in subjects:
+            # Creating the subject_mask
+            subject_mask = metadata["subject"] == subject
+            # from all the index, I am getting the trial index
+            subject_indices = all_index[subject_mask]
+            # Here, I am getting the metainformation to use the column session
+            subject_metadata = metadata[subject_mask]
+            # getting the label at subject level
+            y_subject = y[subject_mask]
+            # check the number of sessions and check how many sessions we
+            # have!
+            sessions = subject_metadata["session"].unique()
+
+            if len(sessions) <= 1:
+                log.info(
+                    f"Skipping subject {subject}: Only one session available"
+                    f"Cross-session evaluation requires at least two sessions."
+                )
+                continue  # Skip subjects with only one session
+
+            # Shuffle the sessions
+            if self.shuffle:
+                self._rng.shuffle(sessions)
+
+            # be default, I am using LeaveOneGroupOut
+            splitter = self.cv_class(**self._cv_kwargs)
+
+            # Here, in the for loop, I am applying the split leaving the
+            # group out
+            for train_session_idx, test_session_idx in splitter.split(
+                X=subject_indices, y=y_subject, groups=subject_metadata["session"]
+            ):
+                # returning the index
+                yield subject_indices[train_session_idx], subject_indices[
+                    test_session_idx
+                ]
