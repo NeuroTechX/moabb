@@ -177,8 +177,7 @@ class CrossSessionSplitter(BaseCrossValidator):
         # I check how many subjects are here:
         subjects = metadata["subject"].unique()
 
-        # I shuffle the subject, but I am not sure if this will impact the
-        # indices
+        # I am shuffling the subjects
         if self.shuffle:
             self._rng.shuffle(subjects)
 
@@ -206,11 +205,9 @@ class CrossSessionSplitter(BaseCrossValidator):
 
             # Shuffle the sessions
             if self.shuffle:
-                # I need to discover if this is working
                 self._rng.shuffle(sessions)
 
-            # be default, I am using LeaveOneGroupOut if shuffle is False
-            # otherwise I am using GroupShuffleSplit.
+            # be default, I am using LeaveOneGroupOut
             splitter = self.cv_class(**self._cv_kwargs)
 
             # Here, in the for loop, I am applying the split leaving the
