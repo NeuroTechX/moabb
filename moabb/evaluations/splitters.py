@@ -122,7 +122,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
     Parameters
     ----------
-    shuffle : bool, default=True
+    shuffle : bool, default=False
         Whether to shuffle the order of subjects.
     random_state : int, RandomState instance or None, default=None
         Controls the randomness when `shuffle` is True.
