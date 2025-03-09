@@ -116,7 +116,10 @@ def test_custom_shuffle_group():
 
     n_splits = 5
     splitter = CrossSubjectSplitter(
-        cv_class=GroupShuffleSplit, n_splits=n_splits, random_state=42
+        shuffle=True,
+        random_state=42,
+        cv_class=GroupShuffleSplit,
+        n_splits=n_splits,
     )
 
     splits = list(splitter.split(y, metadata))
@@ -132,7 +135,10 @@ def test_custom_shuffle_group():
 
     # Check if shuffling produces different splits
     splitter_different_seed = CrossSubjectSplitter(
-        cv_class=GroupShuffleSplit, n_splits=n_splits, random_state=24
+        random_state=24,
+        shuffle=True,
+        cv_class=GroupShuffleSplit,
+        n_splits=n_splits,
     )
     splits_different_seed = list(splitter_different_seed.split(y, metadata))
 
