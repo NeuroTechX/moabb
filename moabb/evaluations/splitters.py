@@ -136,7 +136,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
     def __init__(
         self,
-        shuffle: bool = True,
+        shuffle: bool = False,
         random_state: int = None,
         cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
         **cv_kwargs: dict,
