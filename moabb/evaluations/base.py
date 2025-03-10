@@ -6,6 +6,7 @@ import pandas as pd
 from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import GridSearchCV
+from tqdm import tqdm
 
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
@@ -231,37 +232,35 @@ class BaseEvaluation(ABC):
             for dataset in self.datasets
         ]
 
-        # Parallel processing...
-        parallel_results = Parallel(n_jobs=self.n_jobs)(
-            delayed(
-                lambda dataset_processor: list(
-                    self.evaluate(
-                        dataset_processor[0],  # dataset
-                        pipelines,
-                        param_grid=param_grid,
-                        process_pipeline=dataset_processor[1],  # process_pipeline
-                        postprocess_pipeline=postprocess_pipeline,
+        # Create progress bar
+        n_datasets = len(processing_params)
+        with tqdm(total=n_datasets, desc="Processing datasets") as pbar:
+            parallel_results = Parallel(
+                n_jobs=self.n_jobs, return_as="generator", verbose=10
+            )(
+                delayed(self.process_single_process)(params)
+                for params in processing_params
+            )
+
+            # Process results as they complete
+            res_per_db = []
+            for result in parallel_results:
+                dataset, process_pipeline, results = result
+                pbar.update(1)
+
+                if results is None:
+                    log.warning(f"Skipping failed dataset: {dataset.code}")
+                    continue
+
+                for res in results:
+                    self.push_result(res, pipelines, process_pipeline)
+
+                res_per_db.append(
+                    self.results.to_dataframe(
+                        pipelines=pipelines, process_pipeline=process_pipeline
                     )
                 )
-            )(
-                params
-            )  # Pass parameters here
-            for params in processing_params
-        )
-
-        res_per_db = []
-        # Process results in order
-        for (dataset, process_pipeline), results in zip(
-            processing_params, parallel_results
-        ):
-            for res in results:
-                self.push_result(res, pipelines, process_pipeline)
-
-            res_per_db.append(
-                self.results.to_dataframe(
-                    pipelines=pipelines, process_pipeline=process_pipeline
-                )
-            )
+                pbar.set_postfix({"completed": dataset.code})
 
         return pd.concat(res_per_db, ignore_index=True)
 
@@ -343,3 +342,24 @@ class BaseEvaluation(ABC):
 
         else:
             return grid_clf
+
+    def process_single_process(
+        self, params, pipelines, param_grid=None, postprocess_pipeline=None
+    ):
+        """Wrapper function with error handling and logging"""
+        dataset, process_pipeline = params
+        try:
+            # Convert generator to list in the worker process
+            results = list(
+                self.evaluate(
+                    dataset,
+                    pipelines,
+                    param_grid=param_grid,
+                    process_pipeline=process_pipeline,
+                    postprocess_pipeline=postprocess_pipeline,
+                )
+            )
+            return (dataset, process_pipeline, results)
+        except Exception as e:
+            log.error(f"Failed processing {dataset.code}: {str(e)}")
+            return (dataset, process_pipeline, None)
