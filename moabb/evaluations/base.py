@@ -216,17 +216,18 @@ class BaseEvaluation(ABC):
             if not (isinstance(pipeline, BaseEstimator)):
                 raise (ValueError("pipelines must only contains Pipelines " "instance"))
 
-        res_per_db = []
+        dataset_info = []
+        # First loop: Collect all evaluation results
         for dataset in self.datasets:
-            log.info("Processing dataset: {}".format(dataset.code))
+            log.info(f"Processing dataset: {dataset.code}")
             process_pipeline = self.paradigm.make_process_pipelines(
                 dataset,
                 return_epochs=self.return_epochs,
                 return_raws=self.return_raws,
                 postprocess_pipeline=postprocess_pipeline,
             )[0]
-            # (we only keep the pipeline for the first frequency band, better ideas?)
 
+            # Collect generator results into a list
             results = self.evaluate(
                 dataset,
                 pipelines,
@@ -234,8 +235,17 @@ class BaseEvaluation(ABC):
                 process_pipeline=process_pipeline,
                 postprocess_pipeline=postprocess_pipeline,
             )
+
+            # Store dataset information, the generators and results
+            dataset_info.append((dataset, process_pipeline, results))
+
+        res_per_db = []
+        # Second loop: Process collected results
+        for dataset, process_pipeline, results in dataset_info:
             for res in results:
                 self.push_result(res, pipelines, process_pipeline)
+
+            # Generate dataframe for this dataset
             res_per_db.append(
                 self.results.to_dataframe(
                     pipelines=pipelines, process_pipeline=process_pipeline
