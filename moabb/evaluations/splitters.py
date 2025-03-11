@@ -134,14 +134,17 @@ class CrossSessionSplitter(BaseCrossValidator):
 
     Parameters
     ----------
-    shuffle : bool, default=False
-        Whether to shuffle the session order for each subject.
-    random_state: int, RandomState instance or None, default=None
-        Controls the randomness when `shuffle` is True.
-        Pass an int for reproducible output across multiple function calls.
     cv_class: cross-validation class, default=LeaveOneGroupOut
         Inner cross-validation strategy for splitting the sessions.
         For cross-session splitting, LeaveOneGroupOut is the most suitable as default.
+    shuffle: bool, default=False
+        Whether to shuffle the session order for each subject. By default, it is not
+        used because of LeaveOneGroupOut's determinist behaviour.
+    random_state: int, RandomState instance or None, default=None
+        Controls the randomness when `shuffle` is True.
+        Pass an int for reproducible output across multiple function calls.
+        Be default, it is not used because of the determinist behaviour of
+        LeaveOneGroupOut.
     cv_kwargs: dict
         Additional arguments to pass to the inner cross-validation strategy.
     """
