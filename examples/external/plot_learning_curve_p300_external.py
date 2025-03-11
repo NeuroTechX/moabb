@@ -83,12 +83,12 @@ jmv = EpochsVectorizer(jumping_mean_ivals=jumping_mean_ivals)
 
 pipelines["JM+LDA"] = make_pipeline(jmv, LDA(solver="lsqr", shrinkage="auto"))
 
-# Time-decoupled Covariance classifier, needs information about number of
-# channels and time intervals
-c = ToeplitzLDA(n_channels=16, n_times=10)
-# TD-LDA needs to know about the used jumping means intervals
-c.preproc = jmv
-pipelines["JM+TD-LDA"] = make_pipeline(jmv, c)
+# ToeplitzLDA makes use of block-Toeplitz shaped covariance matrices
+c = ToeplitzLDA(n_channels=16)
+pipelines["JM+ToeplitzLDA"] = make_pipeline(jmv, c)
+c = ToeplitzLDA(n_channels=16)
+raw = EpochsVectorizer(select_ival=[0.1, 0.5])
+pipelines["ToeplitzLDA"] = make_pipeline(raw, c)
 
 ##############################################################################
 # Evaluation
