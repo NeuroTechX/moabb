@@ -49,7 +49,7 @@ class WithinSessionSplitter(BaseCrossValidator):
         shuffle: bool = True,
         random_state: int = None,
         cv_class: type[BaseCrossValidator] = StratifiedKFold,
-        **cv_kwargs: dict,
+        **cv_kwargs,
     ):
         self.cv_class = cv_class
         self.n_folds = n_folds
