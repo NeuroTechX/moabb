@@ -120,6 +120,8 @@ Base & Utils
     :template: class.rst
 
     base.BaseDataset
+    base.BaseBIDSDataset
+    base.LocalBIDSDataset
     base.CacheConfig
     fake.FakeDataset
     fake.FakeVirtualRealityDataset
