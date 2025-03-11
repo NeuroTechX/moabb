@@ -407,8 +407,7 @@ class Test_CrossDataset:
 
         self.test_pipelines = OrderedDict()
         self.test_pipelines["dummy"] = make_pipeline(
-            FunctionTransformer(),
-            Dummy(strategy="stratified", random_state=42)
+            FunctionTransformer(), Dummy(strategy="stratified", random_state=42)
         )
 
     def test_validate_datasets(self):
