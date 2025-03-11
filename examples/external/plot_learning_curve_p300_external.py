@@ -5,11 +5,14 @@ Within Session P300 with Learning Curve
 
 This example shows how to perform a within session analysis while also
 creating learning curves for a P300 dataset.
+Additionally, we will evaluate external code. Make sure to have toeplitzlda installed,
+which can be found in requirements_external.txt
 
-We will compare two pipelines :
+We will compare three pipelines :
 
-- Riemannian geometry with Linear Discriminant Analysis
-- XDAWN and Linear Discriminant Analysis
+- Riemannian geometry
+- Jumping Means-based Linear Discriminant Analysis
+- Time-Decoupled Linear Discriminant Analysis
 
 We will use the P300 paradigm, which uses the AUC as metric.
 """
@@ -23,12 +26,12 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from mne.decoding import Vectorizer
 from pyriemann.estimation import XdawnCovariances
-from pyriemann.spatialfilters import Xdawn
 from pyriemann.tangentspace import TangentSpace
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import FunctionTransformer
+from toeplitzlda.classification import EpochsVectorizer, ToeplitzLDA
 
 import moabb
 from moabb.datasets import BNCI2014_009
@@ -43,14 +46,13 @@ warnings.simplefilter(action="ignore", category=RuntimeWarning)
 moabb.set_log_level("info")
 
 ##############################################################################
-# Create Pipelines
+# Create pipelines
 # ----------------
 #
 # Pipelines must be a dict of sklearn pipeline transformer.
 processing_sampling_rate = 128
 pipelines = {}
 
-##############################################################################
 # We have to do this because the classes are called 'Target' and 'NonTarget'
 # but the evaluation function uses a LabelEncoder, transforming them
 # to 0 and 1
@@ -58,32 +60,55 @@ labels_dict = {"Target": 1, "NonTarget": 0}
 
 # Riemannian geometry based classification
 pipelines["RG+LDA"] = make_pipeline(
+    FunctionTransformer(lambda epochs: epochs.get_data()),
     XdawnCovariances(nfilter=5, estimator="lwf", xdawn_estimator="scm"),
     TangentSpace(),
     LDA(solver="lsqr", shrinkage="auto"),
 )
 
-pipelines["Xdw+LDA"] = make_pipeline(
-    Xdawn(nfilter=2, estimator="scm"), Vectorizer(), LDA(solver="lsqr", shrinkage="auto")
-)
+# Simple LDA pipeline using averaged feature values in certain time intervals
+jumping_mean_ivals = [
+    [0.10, 0.139],
+    [0.14, 0.169],
+    [0.17, 0.199],
+    [0.20, 0.229],
+    [0.23, 0.269],
+    [0.27, 0.299],
+    [0.30, 0.349],
+    [0.35, 0.409],
+    [0.41, 0.449],
+    [0.45, 0.499],
+]
+jmv = EpochsVectorizer(jumping_mean_ivals=jumping_mean_ivals)
+
+pipelines["JM+LDA"] = make_pipeline(jmv, LDA(solver="lsqr", shrinkage="auto"))
+
+# ToeplitzLDA makes use of block-Toeplitz shaped covariance matrices
+c = ToeplitzLDA(n_channels=16)
+pipelines["JM+ToeplitzLDA"] = make_pipeline(jmv, c)
+c = ToeplitzLDA(n_channels=16)
+raw = EpochsVectorizer(select_ival=[0.1, 0.5])
+pipelines["ToeplitzLDA"] = make_pipeline(raw, c)
 
 ##############################################################################
 # Evaluation
 # ----------
 #
-# We define the paradigm (P300) and use all three datasets available for it.
-# The evaluation will return a DataFrame containing AUCs for each permutation
+# We define the paradigm (P300) and use the BNCI 2014-009 dataset for it.
+# The evaluation will return a dataframe containing AUCs for each permutation
 # and dataset size.
 
 paradigm = P300(resample=processing_sampling_rate)
 dataset = BNCI2014_009()
 # Remove the slicing of the subject list to evaluate multiple subjects
-dataset.subject_list = dataset.subject_list[1:2]
+dataset.subject_list = dataset.subject_list[0:1]
 datasets = [dataset]
 overwrite = True  # set to True if we want to overwrite cached results
-data_size = dict(policy="ratio", value=np.geomspace(0.02, 1, 4))
-# When the training data is sparse, perform more permutations than when we have a lot of data
+data_size = dict(policy="ratio", value=np.geomspace(0.02, 1, 6))
+# When the training data is sparse, perform more permutations than when we have
+# a lot of data
 n_perms = np.floor(np.geomspace(20, 2, len(data_size["value"]))).astype(int)
+print(n_perms)
 # Guarantee reproducibility
 np.random.seed(7536298)
 evaluation = WithinSessionEvaluation(
@@ -93,6 +118,7 @@ evaluation = WithinSessionEvaluation(
     n_perms=n_perms,
     suffix="examples_lr",
     overwrite=overwrite,
+    return_epochs=True,
 )
 
 results = evaluation.process(pipelines)
@@ -101,8 +127,7 @@ results = evaluation.process(pipelines)
 # Plot Results
 # ------------
 #
-# We plot the accuracy as a function of the number of training samples, for
-# each pipeline
+# Here we plot the results.
 
 fig, ax = plt.subplots(facecolor="white", figsize=[8, 4])
 
