@@ -132,19 +132,23 @@ def standardize_windows(
             print(f"  Channel names: {ds.raw.info['ch_names']}")
 
     # Get the actual available channels (intersection of all datasets)
-    available_channels = set(train_dataset.datasets[0].raw.info['ch_names'])
+    available_channels = set(train_dataset.datasets[0].raw.info["ch_names"])
     for ds in train_dataset.datasets[1:] + test_dataset.datasets:
-        available_channels = available_channels.intersection(ds.raw.info['ch_names'])
+        available_channels = available_channels.intersection(ds.raw.info["ch_names"])
     available_channels = sorted(list(available_channels))
 
-    print(f"\nCommon channels across all datasets ({len(available_channels)}): {available_channels}")
+    print(
+        f"\nCommon channels across all datasets ({len(available_channels)}): {available_channels}"
+    )
 
     # Verify all datasets have the same number of channels
     for name, dataset in [("Train", train_dataset), ("Test", test_dataset)]:
         for i, ds in enumerate(dataset.datasets):
-            if len(ds.raw.info['ch_names']) != len(available_channels):
-                print(f"Warning: {name} dataset {i} has {len(ds.raw.info['ch_names'])} channels, "
-                      f"expected {len(available_channels)}")
+            if len(ds.raw.info["ch_names"]) != len(available_channels):
+                print(
+                    f"Warning: {name} dataset {i} has {len(ds.raw.info['ch_names'])} channels, "
+                    f"expected {len(available_channels)}"
+                )
 
     # Define preprocessing pipeline using only available channels
     preprocessors = [
@@ -166,11 +170,13 @@ def standardize_windows(
     print("\nVerifying channel counts after preprocessing:")
     for name, dataset in [("Train", train_dataset), ("Test", test_dataset)]:
         for i, ds in enumerate(dataset.datasets):
-            n_channels = len(ds.raw.info['ch_names'])
+            n_channels = len(ds.raw.info["ch_names"])
             print(f"{name} dataset {i} has {n_channels} channels")
             if n_channels != len(available_channels):
-                raise ValueError(f"Channel count mismatch in {name} dataset {i}: "
-                               f"got {n_channels}, expected {len(available_channels)}")
+                raise ValueError(
+                    f"Channel count mismatch in {name} dataset {i}: "
+                    f"got {n_channels}, expected {len(available_channels)}"
+                )
 
     # Define window parameters
     window_start = -0.5  # Start 0.5s before event
@@ -260,9 +266,9 @@ def load_and_validate_dataset(dataset_class, subject_ids):
                         if len(events) > 0:
                             print(f"Event types: {np.unique(events[:, -1])}")
                     elif isinstance(run_data, dict):
-                        if 'data' in run_data and 'events' in run_data:
-                            data_array = run_data['data']
-                            events_array = run_data['events']
+                        if "data" in run_data and "events" in run_data:
+                            data_array = run_data["data"]
+                            events_array = run_data["events"]
                             print(f"Data shape: {data_array.shape}")
                             print(f"Events shape: {events_array.shape}")
                             if events_array.size > 0:
@@ -283,6 +289,7 @@ def load_and_validate_dataset(dataset_class, subject_ids):
 # 1. MOABB's match_all provides robust channel matching and interpolation
 # 2. Braindecode's training pipeline expects its own data format
 # 3. We need to preserve both the benefits of MOABB's preprocessing and Braindecode's training
+
 
 def convert_moabb_to_braindecode(moabb_dataset, subject_ids, channels):
     """Convert MOABB dataset format to Braindecode format.
@@ -322,49 +329,69 @@ def convert_moabb_to_braindecode(moabb_dataset, subject_ids, channels):
                         # If it's already an MNE Raw object, pick only the common channels
                         raw = run_data.copy().pick_channels(channels, ordered=True)
                         raw_objects.append(raw)
-                        descriptions.append({
-                            'subject': subject_id,
-                            'session': session_name,
-                            'run': run_name,
-                            'dataset_name': moabb_dataset.__class__.__name__
-                        })
-                    elif isinstance(run_data, dict) and 'data' in run_data and 'events' in run_data:
+                        descriptions.append(
+                            {
+                                "subject": subject_id,
+                                "session": session_name,
+                                "run": run_name,
+                                "dataset_name": moabb_dataset.__class__.__name__,
+                            }
+                        )
+                    elif (
+                        isinstance(run_data, dict)
+                        and "data" in run_data
+                        and "events" in run_data
+                    ):
                         # If it's a dictionary, create MNE Raw object with only common channels
-                        X = run_data['data']
-                        events = run_data['events']
+                        X = run_data["data"]
+                        events = run_data["events"]
 
                         # Create MNE RawArray with only common channels
                         sfreq = moabb_dataset.interval[2]
-                        info = mne.create_info(ch_names=channels, sfreq=sfreq, ch_types=['eeg'] * len(channels))
+                        info = mne.create_info(
+                            ch_names=channels,
+                            sfreq=sfreq,
+                            ch_types=["eeg"] * len(channels),
+                        )
                         raw = mne.io.RawArray(X.T, info)
 
                         # Convert events to annotations
                         onset = events[:, 0] / sfreq
                         duration = np.zeros_like(onset)
                         description = events[:, -1].astype(str)
-                        annot = mne.Annotations(onset=onset, duration=duration, description=description)
+                        annot = mne.Annotations(
+                            onset=onset, duration=duration, description=description
+                        )
                         raw.set_annotations(annot)
 
                         raw_objects.append(raw)
-                        descriptions.append({
-                            'subject': subject_id,
-                            'session': session_name,
-                            'run': run_name,
-                            'dataset_name': moabb_dataset.__class__.__name__
-                        })
+                        descriptions.append(
+                            {
+                                "subject": subject_id,
+                                "session": session_name,
+                                "run": run_name,
+                                "dataset_name": moabb_dataset.__class__.__name__,
+                            }
+                        )
                     else:
-                        print(f"Warning: Invalid run data format for subject {subject_id}, session {session_name}, run {run_name}")
+                        print(
+                            f"Warning: Invalid run data format for subject {subject_id}, session {session_name}, run {run_name}"
+                        )
                 except Exception as e:
-                    print(f"Warning: Error processing run data for subject {subject_id}: {str(e)}")
+                    print(
+                        f"Warning: Error processing run data for subject {subject_id}: {str(e)}"
+                    )
 
     if not raw_objects:
         raise ValueError("No valid data found to convert")
 
     # Convert to Braindecode format with proper descriptions
-    return BaseConcatDataset([
-        BaseDataset(raw, description=description)
-        for raw, description in zip(raw_objects, descriptions)
-    ])
+    return BaseConcatDataset(
+        [
+            BaseDataset(raw, description=description)
+            for raw, description in zip(raw_objects, descriptions)
+        ]
+    )
 
 
 # Load datasets in MOABB format first
@@ -388,7 +415,7 @@ all_datasets = [
     train_dataset_1_moabb,
     train_dataset_2_moabb,
     train_dataset_3_moabb,
-    test_dataset_moabb
+    test_dataset_moabb,
 ]
 
 # Get the list of channels from each dataset before matching
@@ -403,7 +430,7 @@ for ds in all_datasets:
     run_data = data[first_subject][first_session][first_run]
 
     if isinstance(run_data, (RawArray, RawCNT)):
-        channels = run_data.info['ch_names']
+        channels = run_data.info["ch_names"]
     else:
         # Assuming the channels are stored in the dataset class after loading
         channels = ds.channels
@@ -422,7 +449,7 @@ for ds in all_datasets:
     run_data = data[subject][session][run]
 
     if isinstance(run_data, (RawArray, RawCNT)):
-        channels = run_data.info['ch_names']
+        channels = run_data.info["ch_names"]
     else:
         channels = ds.channels
     all_channels_after_matching.append(set(channels))
@@ -438,10 +465,18 @@ print("\nConverting datasets to Braindecode format...")
 print(f"Using {len(common_channels)} common channels: {common_channels}")
 
 # Convert datasets using common channels
-train_dataset_1 = convert_moabb_to_braindecode(train_dataset_1_moabb, [1, 2, 3, 4], common_channels)
-train_dataset_2 = convert_moabb_to_braindecode(train_dataset_2_moabb, [1, 2, 3, 4], common_channels)
-train_dataset_3 = convert_moabb_to_braindecode(train_dataset_3_moabb, [1, 2, 3, 4], common_channels)
-test_dataset = convert_moabb_to_braindecode(test_dataset_moabb, [1, 2, 3], common_channels)
+train_dataset_1 = convert_moabb_to_braindecode(
+    train_dataset_1_moabb, [1, 2, 3, 4], common_channels
+)
+train_dataset_2 = convert_moabb_to_braindecode(
+    train_dataset_2_moabb, [1, 2, 3, 4], common_channels
+)
+train_dataset_3 = convert_moabb_to_braindecode(
+    train_dataset_3_moabb, [1, 2, 3, 4], common_channels
+)
+test_dataset = convert_moabb_to_braindecode(
+    test_dataset_moabb, [1, 2, 3], common_channels
+)
 
 # Verify channel counts in converted datasets
 print("\nVerifying channel counts in converted datasets:")
@@ -449,14 +484,16 @@ for name, dataset in [
     ("Train 1", train_dataset_1),
     ("Train 2", train_dataset_2),
     ("Train 3", train_dataset_3),
-    ("Test", test_dataset)
+    ("Test", test_dataset),
 ]:
     for i, ds in enumerate(dataset.datasets):
-        n_channels = len(ds.raw.info['ch_names'])
+        n_channels = len(ds.raw.info["ch_names"])
         print(f"{name} dataset {i} has {n_channels} channels")
         if n_channels != len(common_channels):
-            raise ValueError(f"Channel count mismatch in {name} dataset {i}: "
-                           f"got {n_channels}, expected {len(common_channels)}")
+            raise ValueError(
+                f"Channel count mismatch in {name} dataset {i}: "
+                f"got {n_channels}, expected {len(common_channels)}"
+            )
 
 # Get all events across all datasets
 train_events_1 = train_dataset_1.datasets[0].raw.annotations.description
@@ -487,16 +524,20 @@ print(f"Using {len(common_channels)} common channels: {common_channels}")
 
 # Process datasets one at a time to ensure consistent channel counts
 train_windows_list = []
-for i, (train_ds, name) in enumerate([
-    (train_dataset_1, "Dataset 1"),
-    (train_dataset_2, "Dataset 2"),
-    (train_dataset_3, "Dataset 3")
-]):
+for i, (train_ds, name) in enumerate(
+    [
+        (train_dataset_1, "Dataset 1"),
+        (train_dataset_2, "Dataset 2"),
+        (train_dataset_3, "Dataset 3"),
+    ]
+):
     print(f"\nProcessing training {name}...")
     # Verify channel count before processing
     for ds in train_ds.datasets:
-        if len(ds.raw.info['ch_names']) != len(common_channels):
-            print(f"Warning: {name} has {len(ds.raw.info['ch_names'])} channels before processing")
+        if len(ds.raw.info["ch_names"]) != len(common_channels):
+            print(
+                f"Warning: {name} has {len(ds.raw.info['ch_names'])} channels before processing"
+            )
             print(f"Current channels: {ds.raw.info['ch_names']}")
 
     # Process the dataset
