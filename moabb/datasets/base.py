@@ -1,7 +1,6 @@
 """Base class for a dataset."""
 
 from __future__ import annotations
-from typing import Any
 
 import abc
 import logging
@@ -10,11 +9,11 @@ import traceback
 from dataclasses import dataclass
 from inspect import signature
 from pathlib import Path
-from typing import Dict, Union
+from typing import Any, Dict, Union
 
+import mne_bids
 import pandas as pd
 from sklearn.pipeline import Pipeline
-import mne_bids
 
 from moabb.datasets.bids_interface import StepType, _interface_map
 from moabb.datasets.preprocessing import SetRawAnnotations
@@ -662,7 +661,7 @@ class BaseDataset(metaclass=MetaclassDataset):
 class BaseBIDSDataset(BaseDataset):
     """Abstract BIDS dataset class.
 
-    This abstract class can be used to facilitate the integration of datasets which are 
+    This abstract class can be used to facilitate the integration of datasets which are
     provided in the Brain Imaging Data Structure (BIDS) format into MOABB.
 
     More information about BIDS can be found at https://bids.neuroimaging.io/.

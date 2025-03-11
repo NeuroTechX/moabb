@@ -14,10 +14,10 @@ import moabb.datasets.compound_dataset as db_compound
 from moabb.datasets import BNCI2014_001, Cattan2019_VR, Shin2017A, Shin2017B
 from moabb.datasets.base import (
     BaseDataset,
+    LocalBIDSDataset,
     _summary_table,
     is_abbrev,
     is_camel_kebab_case,
-    LocalBIDSDataset,
 )
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
