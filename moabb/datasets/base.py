@@ -21,6 +21,23 @@ from moabb.datasets.preprocessing import SetRawAnnotations
 
 log = logging.getLogger(__name__)
 
+_RAW_EXTENSIONS = [
+    ".con",
+    ".sqd",
+    ".pdf",
+    ".fif",
+    ".ds",
+    ".vhdr",
+    ".set",
+    ".edf",
+    ".bdf",
+    ".EDF",
+    ".snirf",
+    ".cdt",
+    ".mef",
+    ".nwb",
+]
+
 
 def get_summary_table(paradigm: str, dir_name: str | None = None):
     if dir_name is None:
@@ -675,24 +692,7 @@ class BaseBIDSDataset(BaseDataset):
 
     def _get_path_search_params(self, subject: int | None) -> dict[str, Any]:
         """Return the kwargs for the :func:`mne_bids.find_matching_paths` function."""
-        out = {
-            "extensions": [
-                ".con",
-                ".sqd",
-                ".pdf",
-                ".fif",
-                ".ds",
-                ".vhdr",
-                ".set",
-                ".edf",
-                ".bdf",
-                ".EDF",
-                ".snirf",
-                ".cdt",
-                ".mef",
-                ".nwb",
-            ],
-        }
+        out = {"extensions": _RAW_EXTENSIONS}
         if subject is not None:
             out["subjects"] = str(subject)
         return out
