@@ -147,6 +147,14 @@ class CrossSessionSplitter(BaseCrossValidator):
         LeaveOneGroupOut.
     cv_kwargs: dict
         Additional arguments to pass to the inner cross-validation strategy.
+
+    Yields
+    ------
+    train : ndarray
+        The training set indices for that split.
+
+    test : ndarray
+        The testing set indices for that split.
     """
 
     def __init__(
