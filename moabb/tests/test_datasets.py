@@ -309,7 +309,7 @@ class Test_Datasets(unittest.TestCase):
 
     def test_bad_subject_name(self):
         ds = FakeDataset()
-        ds.subject_list = ["1", "2", "3"]
+        ds.subject_list = [1.0, 2.0, 3.0]
         with pytest.raises(ValueError, match=r"Subject names must be "):
             ds.get_data()
 
