@@ -17,14 +17,19 @@ Develop branch  - 1.2.1
 
 Enhancements
 ~~~~~~~~~~~~
+- Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
 - Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
+- Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
+- Adding :class:`moabb.dataset.Beetl2021A` and :class:`moabb.dataset.Beetl2021B`(:gh:`675` by `Samuel Boehm_`)
 
 
 Bugs
 ~~~~
+- Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
 
 API changes
 ~~~~~~~~~~~
+- Removing the deep learning module from inside moabb in favour of braindecode integration (:gh:`692` by `Bruno Aristimunha`_ )
 
 
 Version - 1.2.0  (Stable - PyPi)
@@ -56,12 +61,12 @@ Bugs
 - Fixing the dataset details for bids conversion (:gh:`698` by `Bruno Aristimunha`_)
 - Fixing unit issue and lack of montage with :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.Huebner2018`,  :class:`moabb.datasets.Cattan2019_PHMD`, :class:`moabb.datasets.Ofner2017`  (:gh:`700`  `Bruno Aristimunha`_)
 - Fix t-test permutation tests (:gh:`684` and :gh:`709` by `Gregoire Cattan`_, `Anton Andreev`_, `Marco Congedo`_ and `Bruno Aristimunha`_)
-- Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
 
 
 API changes
 ~~~~~~~~~~~
 - Removing the braindecode module from inside moabb (:gh:`666` by `Bruno Aristimunha`_ )
+
 
 
 Version - 1.1.1
@@ -536,3 +541,4 @@ API changes
 .. _Taha Habib: https://github.com/tahatt13
 .. _AFF: https://github.com/allwaysFindFood
 .. _Marco Congedo: https://github.com/Marco-Congedo
+.. _Samuel Boehm: https://github.com/Samuel-Boehm

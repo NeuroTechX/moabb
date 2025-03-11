@@ -3,7 +3,7 @@ takes data stored locally, in the format in which they have been downloaded,
 and will convert them into a MNE raw object. There are options to pool all the
 different recording sessions per subject or to evaluate them separately.
 
-See https://github.com/NeuroTechX/moabb/wiki/Datasets-Support for detail
+See http://moabb.neurotechx.com/docs/dataset_summary.html for detail
 on datasets (electrodes, number of trials, sessions, etc.)
 """
 
@@ -13,6 +13,7 @@ from . import compound_dataset
 from .alex_mi import AlexMI
 from .alphawaves import Rodrigues2017
 from .bbci_eeg_fnirs import Shin2017A, Shin2017B
+from .beetl import Beetl2021_A, Beetl2021_B
 
 # Depreciated datasets (will be removed in the future):
 from .bnci import BNCI2014001  # noqa: F401
@@ -55,6 +56,7 @@ from .castillos2023 import (
     CastillosCVEP40,
     CastillosCVEP100,
 )
+from .dreyer2023 import Dreyer2023, Dreyer2023A, Dreyer2023B, Dreyer2023C
 from .epfl import EPFLP300
 from .erpcore2021 import (
     ErpCore2021_ERN,

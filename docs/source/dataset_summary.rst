@@ -143,7 +143,7 @@ Submit a new dataset
 
 you can submit a new dataset by mentioning it to this
 `issue <https://github.com/NeuroTechX/moabb/issues/1>`__. The datasets
-currently on our radar can be seen `here <https://github.com/NeuroTechX/moabb/wiki/Datasets-Support>`__,
+currently on our radar can be seen `here <https://github.com/NeuroTechX/moabb/issues/1>`__,
 but we are open to any suggestion.
 
 If you want to actively contribute to inclusion of one new dataset, you can follow also this tutorial
