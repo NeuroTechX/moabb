@@ -1,6 +1,7 @@
 """Base class for a dataset."""
 
 from __future__ import annotations
+from typing import Any
 
 import abc
 import logging
@@ -13,6 +14,7 @@ from typing import Dict, Union
 
 import pandas as pd
 from sklearn.pipeline import Pipeline
+import mne_bids
 
 from moabb.datasets.bids_interface import StepType, _interface_map
 from moabb.datasets.preprocessing import SetRawAnnotations
@@ -155,9 +157,9 @@ def is_abbrev(abbrev_name: str, full_name: str):
 
 def check_subject_names(data):
     for subject in data.keys():
-        if not isinstance(subject, int):
+        if not isinstance(subject, (int, str)):
             raise ValueError(
-                f"Subject names must be integers, found {type(subject)}: {subject!r}. "
+                f"Subject names must be integers or strings, found {type(subject)}: {subject!r}. "
                 f"If you used cache, you may need to erase it using overwrite=True."
             )
 
@@ -483,6 +485,7 @@ class BaseDataset(metaclass=MetaclassDataset):
             # check if accept is needed
             sig = signature(self.data_path)
             if "accept" in [str(p) for p in sig.parameters]:
+                # pylint: disable-next=unexpected-keyword-arg
                 self.data_path(
                     subject=subject,
                     path=path,
@@ -624,7 +627,7 @@ class BaseDataset(metaclass=MetaclassDataset):
     @abc.abstractmethod
     def data_path(
         self, subject, path=None, force_update=False, update_path=None, verbose=None
-    ):
+    ) -> list[str | Path]:
         """Get path to local copy of a subject data.
 
         Parameters
@@ -654,3 +657,206 @@ class BaseDataset(metaclass=MetaclassDataset):
             list of length one, for compatibility.
         """  # noqa: E501
         pass
+
+
+class BaseBIDSDataset(BaseDataset):
+    """Abstract BIDS dataset class.
+
+    This abstract class can be used to facilitate the integration of datasets which are 
+    provided in the Brain Imaging Data Structure (BIDS) format into MOABB.
+
+    More information about BIDS can be found at https://bids.neuroimaging.io/.
+
+    The method ``_download_subject`` must be implemented in each subclass
+    (see its docstring for more details).
+
+    If necessary, the methods ``_get_path_search_params`` and
+    ``_get_read_extra_params`` can be implemented in the subclass.
+    """
+
+    def _get_path_search_params(self, subject: int | None) -> dict[str, Any]:
+        """Return the kwargs for the :func:`mne_bids.find_matching_paths` function."""
+        out = {
+            "extensions": [
+                ".con",
+                ".sqd",
+                ".pdf",
+                ".fif",
+                ".ds",
+                ".vhdr",
+                ".set",
+                ".edf",
+                ".bdf",
+                ".EDF",
+                ".snirf",
+                ".cdt",
+                ".mef",
+                ".nwb",
+            ],
+        }
+        if subject is not None:
+            out["subjects"] = str(subject)
+        return out
+
+    def _get_read_extra_params(
+        self,
+        subject: int,  # pylint: disable=unused-argument
+    ) -> dict[str, Any] | None:
+        """Return the ``extra_params`` argument for the :func:`mne_bids.read_raw_bids` function."""
+        return None
+
+    @staticmethod
+    def _find_matching_paths(root, **kwargs) -> list[mne_bids.BIDSPath]:
+        bids_paths = mne_bids.find_matching_paths(root=root, **kwargs)
+        # Remove JSON files manually (the ignore_json argument only arrives in mne-bids=0.16)
+        return [bids_path for bids_path in bids_paths if bids_path.extension != ".json"]
+
+    @abc.abstractmethod
+    def _download_subject(self, subject, path, force_update, update_path, verbose) -> str:
+        """Download the data of a single subject and return the local path to the ROOT of the BIDS dataset.
+
+        Returns
+        -------
+        root : str
+            Path to the ROOT of the BIDS dataset.
+        """
+        pass
+
+    def bids_paths(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ) -> list[mne_bids.BIDSPath]:
+        root = self._download_subject(subject, path, force_update, update_path, verbose)
+        return self._find_matching_paths(
+            root=root, **self._get_path_search_params(subject)
+        )
+
+    def data_path(
+        self, subject, path=None, force_update=False, update_path=None, verbose=None
+    ):
+        bids_paths = self.bids_paths(subject, path, force_update, update_path, verbose)
+        return [bids_path.fpath for bids_path in bids_paths]
+
+    def _get_single_subject_data(self, subject):
+        bids_paths = self.bids_paths(subject)
+        data = {}
+        for bids_path in bids_paths:
+            raw = mne_bids.read_raw_bids(
+                bids_path, extra_params=self._get_read_extra_params(subject)
+            )
+            # Data needs to be preloaded for the filtering step of paradigms
+            raw.load_data()
+
+            if bids_path.session is None:
+                log.warning(
+                    "Session not found for subject='%s'. Using session='0'", subject
+                )
+                session = "0"
+            else:
+                session = bids_path.session
+            if bids_path.run is None:
+                log.warning(
+                    "Run not found for subject='%s', session='%s'. Using run='0'",
+                    subject,
+                    session,
+                )
+                run = "0"
+            else:
+                run = bids_path.run
+            data.setdefault(session, {})[run] = raw
+        return data
+
+
+class LocalBIDSDataset(BaseBIDSDataset):
+    """Generic local/private BIDS datasets.
+
+    This class is useful if you have a local/private dataset in BIDS format
+    and you want to use it with MOABB, without having to create a new dataset class.
+
+    Parameters
+    ----------
+    bids_root : str | Path
+        Local path to the root of the BIDS dataset.
+    path_search_params : dict[str, Any] | None
+        Additional kwargs for the :func:`mne_bids.find_matching_paths` function.
+    read_extra_params : dict[str, Any] | None
+        Additional kwargs for the :func:`mne_bids.read_raw_bids` function.
+    subjects : list[int] | None
+        Optional list of subjects. If None, the subjects are inferred from the dataset.
+    sessions_per_subject : int | None
+        Optional number of sessions per subject. If None, the number is inferred from the dataset.
+    events : dict[str, str]
+        String codes for events matched with labels in the stim channel.
+    interval : list with 2 entries
+        Imagery interval as defined in the dataset description.
+    paradigm : str
+        Defines what sort of dataset this is.
+    doi : str | None
+        Optional DOI for dataset.
+    code : str
+        Unique identifier for the dataset. for compatibility reasons,
+        it should start with ``"LocalBIDSDataset"``
+    unit_factor : float
+        Factor to convert units to microvolts (default: 1e6).
+    """
+
+    def __init__(
+        self,
+        bids_root: Path | str,
+        path_search_params: dict[str, Any] | None = None,
+        read_extra_params: dict[str, Any] | None = None,
+        *,
+        subjects: list[int] | None = None,
+        sessions_per_subject: int | None = None,
+        events,
+        code="LocalBIDSDataset-",
+        interval,
+        paradigm,
+        doi=None,
+        unit_factor=1e6,
+    ):
+        self.bids_root = bids_root
+        self.path_search_params = path_search_params
+        self.read_extra_params = read_extra_params
+        bids_paths = self._find_matching_paths(
+            root=bids_root, **self._get_path_search_params(None)
+        )
+        if len(bids_paths) == 0:
+            raise ValueError(f"No BIDS dataset found in {bids_root}")
+        if subjects is None or sessions_per_subject is None:
+            if subjects is None:
+                subjects = sorted(set(path.subject for path in bids_paths))
+                log.warning(f"Found subjects: {subjects}")
+            if sessions_per_subject is None:
+                sessions_per_subject = min(
+                    len(
+                        set(
+                            bids_path.session
+                            for bids_path in bids_paths
+                            if bids_path.subject == subject
+                        )
+                    )
+                    for subject in subjects
+                )
+                log.warning(f"Found {sessions_per_subject=}")
+
+        super().__init__(
+            subjects,
+            sessions_per_subject,
+            events,
+            code,
+            interval,
+            paradigm,
+            doi,
+            unit_factor,
+        )
+
+    def _download_subject(self, subject, path, force_update, update_path, verbose):
+        return self.bids_root
+
+    def _get_path_search_params(self, subject):
+        return dict(
+            super()._get_path_search_params(subject), **(self.path_search_params or {})
+        )
+
+    def _get_read_extra_params(self, subject):
+        return self.read_extra_params
