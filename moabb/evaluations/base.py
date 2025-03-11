@@ -2,7 +2,6 @@ import logging
 from abc import ABC, abstractmethod
 from warnings import warn
 
-import joblib
 import pandas as pd
 from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
@@ -28,9 +27,6 @@ if optuna_available:
     search_methods = {"grid": GridSearchCV, "optuna": OptunaSearchCV}
 else:
     search_methods = {"grid": GridSearchCV}
-
-
-memory = joblib.Memory(location="__cache__")
 
 
 class BaseEvaluation(ABC):
