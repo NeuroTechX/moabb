@@ -177,7 +177,10 @@ class CrossSessionSplitter(BaseCrossValidator):
                 self._cv_kwargs[p] = v
 
     def get_n_splits(self, metadata):
-        return metadata.groupby(["subject", "session"]).ngroups
+        if self.cv_class is LeaveOneGroupOut:
+            return metadata.groupby(["subject", "session"]).ngroups
+        else:
+            return self.cv_class(**self._cv_kwargs).get_n_splits(metadata)
 
     def split(self, y, metadata):
         # here, I am getting the index across all the subject
