@@ -114,13 +114,14 @@ class WithinSessionSplitter(BaseCrossValidator):
 class CrossSessionSplitter(BaseCrossValidator):
     """Data splitter for cross session evaluation.
 
-    Cross-session evaluation uses a Leave-One-Session-Out cross-validation to
-    evaluate performance across sessions, but for a single subject. This splitter
-    assumes that all data from all subjects is already known and loaded.
+    This splitter enables cross-session evaluation by performing a Leave-One-Session-Out (LOSO)
+    cross-validation on data from a each subject.
 
-    Compared with `:clas:moabb.evaluation.CrossSessionEvaluation`, here we only perform the
-    split of the data, separating the train and test for this type of evaluation.
-    On the other hand, the evaluation performs the whole process end-to-end.
+    It assumes that the entire dataset across all subjects is already loaded.
+
+    Unlike the `CrossSessionEvaluation` class from `moabb.evaluation`, which manages the
+    complete evaluation process end-to-end, this splitter is solely responsible for dividing
+    the data into training and testing sets based on sessions.
 
     .. image:: images/crosssess.jpg
         :alt: The schematic diagram of the CrossSession split
