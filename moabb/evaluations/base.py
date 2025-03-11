@@ -8,6 +8,7 @@ from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import GridSearchCV
 
+from evaluations import WithinSessionSplitter
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.utils import _convert_sklearn_params_to_optuna
@@ -120,6 +121,8 @@ class BaseEvaluation(ABC):
         self.cache_config = cache_config
         self.optuna = optuna
         self.time_out = time_out
+        self.cv = WithinSessionSplitter()
+        self.cv_kwargs = {}
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
@@ -236,14 +239,17 @@ class BaseEvaluation(ABC):
         ]
 
         # Parallel processing...
-        parallel_results = Parallel(n_jobs=self.n_jobs, verbose=10)(
+        parallel_results = Parallel(
+            n_jobs=self.n_jobs, return_as="generator", verbose=10
+        )(
             delayed(
                 lambda dataset_processor: list(
                     self.evaluate(
                         dataset_processor[0],  # dataset
                         pipelines,
                         param_grid=param_grid,
-                        process_pipeline=dataset_processor[1],  # process_pipeline
+                        process_pipeline=dataset_processor[1],
+                        # process_pipeline
                         postprocess_pipeline=postprocess_pipeline,
                     )
                 )
@@ -347,3 +353,21 @@ class BaseEvaluation(ABC):
 
         else:
             return grid_clf
+
+    def evaluate_parallel(
+        self, dataset, pipelines, param_grid, process_pipeline, postprocess_pipeline=None
+    ):
+        """Evaluate results on a single dataset.
+
+        This method return a generator. each results item is a dict with
+        the following conversion::
+
+            res = {'time': Duration of the training ,
+                   'dataset': dataset id,
+                   'subject': subject id,
+                   'session': session id,
+                   'score': score,
+                   'n_samples': number of training examples,
+                   'n_channels': number of channel,
+                   'pipeline': pipeline name}
+        """
