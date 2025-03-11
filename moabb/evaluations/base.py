@@ -8,7 +8,6 @@ from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import GridSearchCV
 
-from evaluations import WithinSessionSplitter
 from moabb.analysis import Results
 from moabb.datasets.base import BaseDataset
 from moabb.evaluations.utils import _convert_sklearn_params_to_optuna
@@ -121,8 +120,6 @@ class BaseEvaluation(ABC):
         self.cache_config = cache_config
         self.optuna = optuna
         self.time_out = time_out
-        self.cv = WithinSessionSplitter()
-        self.cv_kwargs = {}
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
