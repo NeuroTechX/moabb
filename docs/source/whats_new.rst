@@ -26,6 +26,7 @@ Enhancements
 Bugs
 ~~~~
 - Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
+- Fix learning curve example (:gh:`717` by `Pierre Guetschel`_)
 
 API changes
 ~~~~~~~~~~~
