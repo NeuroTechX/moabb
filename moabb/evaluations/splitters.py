@@ -118,6 +118,10 @@ class CrossSessionSplitter(BaseCrossValidator):
     evaluate performance across sessions, but for a single subject. This splitter
     assumes that all data from all subjects is already known and loaded.
 
+    Compared with `:clas:moabb.evaluation.CrossSessionEvaluation`, here we only perform the
+    split of the data, separating the train and test for this type of evaluation.
+    On the other hand, the evaluation performs the whole process end-to-end.
+
     .. image:: images/crosssess.jpg
         :alt: The schematic diagram of the CrossSession split
         :align: center
@@ -143,10 +147,10 @@ class CrossSessionSplitter(BaseCrossValidator):
 
     def __init__(
         self,
+        cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
         shuffle: bool = False,
         random_state: int = None,
-        cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
-        **cv_kwargs: dict,
+        **cv_kwargs,
     ):
         self.cv_class = cv_class
         self.cv_kwargs = cv_kwargs
