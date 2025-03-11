@@ -22,11 +22,13 @@ Enhancements
 - Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
 - Adding :class:`moabb.dataset.Beetl2021A` and :class:`moabb.dataset.Beetl2021B`(:gh:`675` by `Samuel Boehm_`)
 - Adding :class:`moabb.evaluations.splitters.CrossSubjectSplitter` (:gh:`722` by `Bruna Lopes`_ and `Bruno Aristimunha`_)
+- Adding :class:`moabb.dataset.base.BaseBIDSDataset` and :class:`moabb.dataset.base.LocalBIDSDataset` (:gh:`724` by `Pierre Guetschel`_)
 
 
 Bugs
 ~~~~
 - Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
+- Fix learning curve example (:gh:`717` by `Pierre Guetschel`_)
 
 API changes
 ~~~~~~~~~~~
