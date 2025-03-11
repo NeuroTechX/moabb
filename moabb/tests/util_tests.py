@@ -1,14 +1,13 @@
 import os.path as osp
 import tempfile
 import unittest
-from unittest.mock import MagicMock, patch
 
 import pytest
 from joblib import Parallel, delayed
 from mne import get_config, set_config
 
 from moabb.datasets import utils
-from moabb.utils import aliases_list, depreciated_alias, set_download_dir, setup_seed
+from moabb.utils import aliases_list, depreciated_alias, set_download_dir
 
 
 class TestDownload(unittest.TestCase):
@@ -74,31 +73,6 @@ class Test_Utils(unittest.TestCase):
                 sess1 = s1[list(s1.keys())[0]]
                 raw = sess1[list(sess1.keys())[0]]
                 self.assertFalse(set(chans) <= set(raw.info["ch_names"]))
-
-
-class TestSetupSeed(unittest.TestCase):
-    @patch("builtins.print")
-    def test_without_tensorflow(self, mock_print):
-        # Test when tensorflow is not installed
-        with patch.dict("sys.modules", {"tensorflow": None}):
-            self.assertFalse(setup_seed(42))
-            mock_print.assert_any_call(
-                "We try to set the tensorflow seeds, but it seems that tensorflow is not installed. Please refer to `https://www.tensorflow.org/` to install if you need to use this deep learning module."
-            )
-
-    @patch("builtins.print")
-    def test_without_torch(self, mock_print):
-        # Test when torch is not installed
-        with patch.dict("sys.modules", {"torch": None}):
-            self.assertFalse(setup_seed(42))
-            mock_print.assert_any_call(
-                "We try to set the torch seeds, but it seems that torch is not installed. Please refer to `https://pytorch.org/` to install if you need to use this deep learning module."
-            )
-
-    @patch.dict("sys.modules", {"tensorflow": MagicMock(), "torch": MagicMock()})
-    def test_with_tensorflow_and_torch(self):
-        # Test when tensorflow and torch are installed
-        self.assertTrue(setup_seed(42) is None)  # noqa: E71
 
 
 class TestDepreciatedAlias(unittest.TestCase):

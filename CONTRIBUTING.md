@@ -3,7 +3,16 @@
 :tada::clinking_glasses: First off, thanks for taking the time to contribute!
 :tada::clinking_glasses:
 
-Contributions are always welcome, no matter how small.
+Contributions are always welcome, no matter how small!
+
+If you think you can help in any of the areas of MOABB (and we bet you can) or in any of
+the many areas that we haven't yet thought of (and here we're _sure_ you can) then please
+check out our [roadmap](https://github.com/NeuroTechX/moabb/blob/master/ROADMAP.md).
+
+Please note that it's very important to us that we maintain a positive and supportive
+environment for everyone who wants to participate. When you join us we ask that you follow
+our [code of conduct](https://github.com/NeuroTechX/moabb/blob/master/CODE_OF_CONDUCT.md)
+in all interactions both on and offline.
 
 The following is a small set of guidelines for how to contribute to the project
 
@@ -13,7 +22,7 @@ The following is a small set of guidelines for how to contribute to the project
 
 This project adheres to the Contributor Covenant [Code of Conduct](CODE_OF_CONDUCT.md). By
 participating you are expected to adhere to these expectations. Please report unacceptable
-behavior to [hi@pushtheworld.us](mailto:hi@pushtheworld.us)
+behavior.
 
 ### Contributing on Github
 
@@ -23,15 +32,13 @@ include those additions in the master version of this project, check out this
 
 ### Community
 
-This project is maintained by the [NeuroTechX](www.neurotechx.com) community. Join the
-[Gitter](https://gitter.im/moabb_dev/community), where discussions about MOABB takes
-place.
+This project is maintained by the [NeuroTechX](www.neurotechx.com) community.
 
 ## How can I contribute?
 
 If there's a feature you'd be interested in building or you find a bug or have a
 suggestion on how to improve the project, go ahead! Let us know on the
-[Gitter](https://gitter.im/moabb_dev/community) or [open an issue](../../issues) so others
+[open an issue](../../issues) so others
 can follow along and we'll support you as much as we can. When you're finished submit a
 pull request to the master branch referencing the specific issue you addressed.
 
@@ -54,61 +61,26 @@ pull request to the master branch referencing the specific issue you addressed.
    [what's new](http://moabb.neurotechx.com/docs/whats_new.html) and
    [documentation](http://moabb.neurotechx.com/docs/index.html) pages if needed
 
+
 ## Setup development environment
 
-1. install `poetry` (only once per machine):\
-   `curl -sSL https://install.python-poetry.org | python3 -`\
-   or [checkout installation instruction](https://python-poetry.org/docs/#installation) or
-   use [conda forge version](https://anaconda.org/conda-forge/poetry)
-1. (Optional, skip if not sure) Disable automatic environment creation:\
-   `poetry config virtualenvs.create false`
-1. (Optional) Install the optional dependency
-1. install all dependencies in one command (have to be run in thibe project directory):\
-   `poetry install`
-1. install `pre-commit` hooks to git repo:\
+1. Install pre-commit to start to code:\
+   `pip install pre-commit`
+2. Install the pre-commit hooks:\
    `pre-commit install`
-1. you are ready to code!
+3. you are ready to code!
 
 _Note 1:_\
 Your first commit will trigger `pre-commit` to download [Code Quality tools](#tools-used).
 That's OK and it is intended behavior. This will be done once per machine automatically.
 
-_Note 2:_\
-By default `poetry` creates separate Python virtual environment for every project ([more details in documentation](https://python-poetry.org/docs/managing-environments/)).
-If you use `conda` or any other way to manage different environments by hand - you need to
-disable `poetry` environment creation. Also in this case be careful with version of Python
-in your environment - it has to satisfy requirements stated in `pyproject.toml`. In case you
-disable `poetry` you are in charge of this.
+_Note 2 (deep learning):_\
+In case you want to install the optional deep learning dependencies (i.e. `pip install .[deeplearning]`),
 
-_Note 3 (deep learning):_\
-In case you want to install the optional deep learning dependencies (i.e. `poetry install --with deeplearning`),
-you will need to do the following additional steps if you want `tensorflow` to detect your
-GPU:
-
-```bash
-# Instructions for tensorflow==2.12
-conda install -c conda-forge cudatoolkit=11.8.0
-mkdir -p $CONDA_PREFIX/etc/conda/activate.d
-echo 'CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
-echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/:$CUDNN_PATH/lib' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
-source $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
-# Verify install:
-python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-```
-
-Then, at every use, re-run the command
-`source $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh` (you can simply add this line to
-your `.bashrc`). For more details, please refer to
-[the official documentation](https://www.tensorflow.org/install/pip).
 
 ### Tools used
 
-MOABB uses [`poetry`](https://python-poetry.org/) for dependency management. This tool
-enables one to have a reproducible environment on all popular OS (Linux, MacOS and
-Windows) and provides easy publishing pipeline.
-
-Another tool that makes development more stable is
-[`pre-commit`](https://pre-commit.com/). It automatically runs variety of Code Quality
+MOABB uses [`pre-commit`](https://pre-commit.com/). It automatically runs variety of Code Quality
 instruments against the code you produced.
 
 For Code Quality verification, we use:
@@ -117,12 +89,14 @@ For Code Quality verification, we use:
 - [`isort`](https://github.com/timothycrosley/isort) - imports sorting and grouping
 - [`flake8`](https://gitlab.com/pycqa/flake8) - code style checking
 - [`prettier`](https://github.com/prettier/prettier) - `.yml` and `.md` files formatting
+- and more checkers.
+
 
 ### Generate the documentation
 
 To generate a local version of the documentation:
 
-```
+```bash
 cd docs
 make html
 ```

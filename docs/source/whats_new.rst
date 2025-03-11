@@ -12,17 +12,39 @@ What's new
 .. _current:
 
 
-Develop branch
-----------------
+Develop branch  - 1.2.1
+------------------------
 
 Enhancements
 ~~~~~~~~~~~~
-- Adding :class:`moabb.evaluations.CrossDatasetEvaluation` for cross-dataset evaluation, enabling training on one dataset and testing on another (:gh:`703` by `Ali Imran`_)
-- Adding :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`664` by `Bruna Lopes_`)
+- Adding new motor imagery dataset, Dreyer2023 (PR :gh: `404` by `Sara Sedlar`_, `Sylvain Chevallier`_ and `Bruno Aristimunha`_)
+- Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
+- Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
+- Adding :class:`moabb.dataset.Beetl2021A` and :class:`moabb.dataset.Beetl2021B`(:gh:`675` by `Samuel Boehm_`)
+- Adding :class:`moabb.dataset.base.BaseBIDSDataset` and :class:`moabb.dataset.base.LocalBIDSDataset` (:gh:`724` by `Pierre Guetschel`_)
 
+
+Bugs
+~~~~
+- Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
+- Fix learning curve example (:gh:`717` by `Pierre Guetschel`_)
+
+API changes
+~~~~~~~~~~~
+- Removing the deep learning module from inside moabb in favour of braindecode integration (:gh:`692` by `Bruno Aristimunha`_ )
+
+
+Version - 1.2.0  (Stable - PyPi)
+---------------------------------
+
+
+Enhancements
+~~~~~~~~~~~~
+- Adding :class:`moabb.evaluations.splitters.WithinSessionSplitter` (:gh:`664` by `Bruna Lopes_`)
 - Update version of pyRiemann to 0.7 (:gh:`671` by `Gregoire Cattan`_)
 - Add columns definitions in the datasets doc (:gh:`672` by `Pierre Guetschel`_)
 - Add ERP CORE datasets :class:`moabb.datasets.ErpCore2021` dataset (:gh:`627` by `Taha Habib`_)
+- Update paths of BIDS cache to better follow the standards. Cache created in previous MOABB versions should still be compatible (:gh:`707` by `Pierre Guetschel`_)
 
 Bugs
 ~~~~
@@ -40,14 +62,17 @@ Bugs
 - Fixing bug with braindecode and moabb datasets EPFLP300 (:gh:`696` by `Bruno Aristimunha`_)
 - Fixing the dataset details for bids conversion (:gh:`698` by `Bruno Aristimunha`_)
 - Fixing unit issue and lack of montage with :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.Rodrigues2017`, :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.BaseCastillos2023`,  :class:`moabb.datasets.Huebner2018`,  :class:`moabb.datasets.Cattan2019_PHMD`, :class:`moabb.datasets.Ofner2017`  (:gh:`700`  `Bruno Aristimunha`_)
+- Fix t-test permutation tests (:gh:`684` and :gh:`709` by `Gregoire Cattan`_, `Anton Andreev`_, `Marco Congedo`_ and `Bruno Aristimunha`_)
 
 
 API changes
 ~~~~~~~~~~~
 - Removing the braindecode module from inside moabb (:gh:`666` by `Bruno Aristimunha`_ )
 
-Version - 1.1.1  (Stable - PyPi)
----------------------------------
+
+
+Version - 1.1.1
+----------------
 
 Enhancements
 ~~~~~~~~~~~~
@@ -517,4 +542,5 @@ API changes
 .. _Yash Chauhan: https://github.com/jiggychauhi
 .. _Taha Habib: https://github.com/tahatt13
 .. _AFF: https://github.com/allwaysFindFood
-.. _Ali Imran: https://github.com/ali-sehar
+.. _Marco Congedo: https://github.com/Marco-Congedo
+.. _Samuel Boehm: https://github.com/Samuel-Boehm

@@ -151,7 +151,7 @@ class WithinSessionEvaluation(BaseEvaluation):
                 pipelines, dataset, subject, process_pipeline
             )
             if len(run_pipes) == 0:
-                return []
+                continue
 
             # get the data
             X, y, metadata = self.paradigm.get_data(
@@ -493,7 +493,7 @@ class CrossSessionEvaluation(BaseEvaluation):
             )
             if len(run_pipes) == 0:
                 print(f"Subject {subject} already processed")
-                return []
+                continue
 
             # get the data
             X, y, metadata = self.paradigm.get_data(

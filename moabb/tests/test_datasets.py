@@ -6,6 +6,7 @@ import unittest
 
 import mne
 import numpy as np
+import pandas as pd
 import pytest
 
 import moabb.datasets as db
@@ -13,6 +14,7 @@ import moabb.datasets.compound_dataset as db_compound
 from moabb.datasets import BNCI2014_001, Cattan2019_VR, Shin2017A, Shin2017B
 from moabb.datasets.base import (
     BaseDataset,
+    LocalBIDSDataset,
     _summary_table,
     is_abbrev,
     is_camel_kebab_case,
@@ -20,7 +22,7 @@ from moabb.datasets.base import (
 from moabb.datasets.compound_dataset import CompoundDataset
 from moabb.datasets.compound_dataset.utils import compound_dataset_list
 from moabb.datasets.fake import FakeDataset, FakeVirtualRealityDataset
-from moabb.datasets.utils import block_rep, dataset_list
+from moabb.datasets.utils import bids_metainfo, block_rep, dataset_list
 from moabb.paradigms import P300
 from moabb.utils import aliases_list
 
@@ -154,10 +156,10 @@ class Test_Datasets(unittest.TestCase):
                 )
             print("\n".join(cm.output))
             expected = [
-                "Attempting to retrieve cache .* datatype-eeg",  # empty pipeline
+                "Attempting to retrieve cache .* suffix-eeg",  # empty pipeline
                 "No cache found at",
-                "Starting caching .* datatype-eeg",
-                "Finished caching .* datatype-eeg",
+                "Starting caching .* suffix-eeg",
+                "Finished caching .* suffix-eeg",
             ]
             assert len(expected) == len(cm.output)
             for i, regex in enumerate(expected):
@@ -178,8 +180,8 @@ class Test_Datasets(unittest.TestCase):
                 )
             print("\n".join(cm.output))
             expected = [
-                "Attempting to retrieve cache .* datatype-eeg",
-                "Finished reading cache .* datatype-eeg",
+                "Attempting to retrieve cache .* suffix-eeg",
+                "Finished reading cache .* suffix-eeg",
             ]
             assert len(expected) == len(cm.output)
             for i, regex in enumerate(expected):
@@ -200,14 +202,22 @@ class Test_Datasets(unittest.TestCase):
                 )
             print("\n".join(cm.output))
             expected = [
-                "Starting erasing cache .* datatype-eeg",
-                "Finished erasing cache .* datatype-eeg",
-                "Starting caching .* datatype-eeg",
-                "Finished caching .* datatype-eeg",
+                "Starting erasing cache .* suffix-eeg",
+                "Finished erasing cache .* suffix-eeg",
+                "Starting caching .* suffix-eeg",
+                "Finished caching .* suffix-eeg",
             ]
             assert len(expected) == len(cm.output)
             for i, regex in enumerate(expected):
                 self.assertRegex(cm.output[i], regex)
+
+            metainfo = bids_metainfo(tempdir)
+            dataframe = pd.DataFrame(metainfo).T
+            subjects = dataframe["subject"].unique()
+            self.assertEqual(len(subjects), 1)
+            self.assertEqual(subjects[0], "1")
+            self.assertEqual(len(dataframe["session"].unique()), 2)
+
         shutil.rmtree(tempdir)
 
     def test_dataset_accept(self):
@@ -299,7 +309,7 @@ class Test_Datasets(unittest.TestCase):
 
     def test_bad_subject_name(self):
         ds = FakeDataset()
-        ds.subject_list = ["1", "2", "3"]
+        ds.subject_list = [1.0, 2.0, 3.0]
         with pytest.raises(ValueError, match=r"Subject names must be "):
             ds.get_data()
 
@@ -581,3 +591,40 @@ class TestData:
         np.testing.assert_array_equal(raw.annotations.duration, np.ones(48) * 4.0)
         description = ["tongue", "feet", "right_hand"]
         assert all([a == b for a, b in zip(raw.annotations.description[:3], description)])
+
+
+class TestBIDSDataset:
+    @pytest.fixture(scope="class")
+    def cached_dataset_root(self, tmpdir_factory):
+        root = tmpdir_factory.mktemp("fake_bids")
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=2, n_subjects=2, n_runs=1
+        )
+        dataset.get_data(cache_config=dict(save_raw=True, overwrite_raw=False, path=root))
+        return root / "MNE-BIDS-fake-dataset-imagery-2-2--60--120--fake1-fake2--c3-cz-c4"
+
+    def test_local_bids_dataset(self, cached_dataset_root, caplog):
+        with caplog.at_level(logging.WARNING):
+            dataset = LocalBIDSDataset(
+                cached_dataset_root,
+                events={"fake1": 1, "fake2": 2},
+                interval=[0, 3],
+                paradigm="imagery",
+            )
+        log = caplog.text.strip().split("\n")
+        expected = [
+            "Found subjects: ['1', '2']",
+            "Found sessions_per_subject=2",
+        ]
+        assert len(expected) == len(log)
+        for i, regex in enumerate(expected):
+            assert regex in log[i]
+
+        # raw data
+        raw_data = dataset.get_data()
+        assert raw_data.keys() == {"1", "2"}
+        for subject_data in raw_data.values():
+            assert subject_data.keys() == {"0", "1"}
+            for session_data in subject_data.values():
+                assert session_data.keys() == {"0"}
+                assert isinstance(session_data["0"], mne.io.BaseRaw)

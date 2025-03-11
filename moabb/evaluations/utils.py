@@ -16,29 +16,8 @@ except ImportError:
     optuna_available = False
 
 
-def _check_if_is_keras_model(model):
-    """Check if the model is a Keras model.
-
-    Parameters
-    ----------
-    model: object
-        Model to check
-    Returns
-    -------
-    is_keras_model: bool
-        True if the model is a Keras model
-    """
-    try:
-        from scikeras.wrappers import KerasClassifier
-
-        is_keras_model = isinstance(model, KerasClassifier)
-        return is_keras_model
-    except ImportError:
-        return False
-
-
 def _check_if_is_pytorch_model(model):
-    """Check if the model is a Keras model.
+    """Check if the model is a skorch model.
 
     Parameters
     ----------
@@ -46,8 +25,8 @@ def _check_if_is_pytorch_model(model):
         Model to check
     Returns
     -------
-    is_keras_model: bool
-        True if the model is a Keras model
+    is_pytorch_model: bool
+        True if the model is a Skorch model
     """
     try:
         from skorch import NeuralNetClassifier
@@ -67,15 +46,6 @@ def _check_if_is_pytorch_steps(model):
         return skorch_valid
     except Exception:
         return skorch_valid
-
-
-def _check_if_is_keras_steps(model):
-    keras_valid = False
-    try:
-        keras_valid = any(_check_if_is_keras_model(j) for j in model.named_steps.values())
-        return keras_valid
-    except Exception:
-        return keras_valid
 
 
 def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
@@ -112,16 +82,6 @@ def save_model_cv(model: object, save_path: str | Path, cv_index: str | int):
                     f_history=Path(save_path) / f"{file_step}_history.json",
                     f_criterion=Path(save_path) / f"{file_step}_criterion.pkl",
                 )
-            else:
-                with open((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
-                    dump(step, file, protocol=HIGHEST_PROTOCOL)
-
-    elif _check_if_is_keras_steps(model):
-        for step_name in model.named_steps:
-            file_step = f"{step_name}_fitted_model_{cv_index}"
-            step = model.named_steps[step_name]
-            if _check_if_is_keras_model(step):
-                step.model_.save(Path(save_path) / f"{file_step}.h5")
             else:
                 with open((Path(save_path) / f"{file_step}.pkl"), "wb") as file:
                     dump(step, file, protocol=HIGHEST_PROTOCOL)

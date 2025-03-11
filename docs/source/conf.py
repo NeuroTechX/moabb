@@ -15,7 +15,7 @@ from datetime import datetime
 
 import sphinx_gallery  # noqa
 from numpydoc import docscrape, numpydoc  # noqa
-from sphinx_gallery.sorting import FileNameSortKey  # noqa
+from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey  # noqa
 
 import moabb  # noqa
 
@@ -67,7 +67,7 @@ extensions = [
     "sphinx_design",
     "sphinx_gallery.gen_gallery",
     "gh_substitutions",
-    "m2r2",
+    "myst_parser",
     "numpydoc",
     "sphinx_favicon",
     "sphinxcontrib.jquery",
@@ -156,14 +156,24 @@ sys.path.append(os.path.abspath(os.path.join(curdir, "..", "moabb")))
 sys.path.append(os.path.abspath(os.path.join(curdir, "sphinxext")))
 
 sphinx_gallery_conf = {
-    "examples_dirs": ["../../examples", "../../tutorials"],
-    "gallery_dirs": ["auto_examples", "auto_tutorials"],
+    "examples_dirs": ["../../examples"],
+    "gallery_dirs": ["auto_examples"],
     "doc_module": ("moabb", "mne"),
     "backreferences_dir": "generated",
     "show_memory": True,
     "reference_url": dict(moabb=None),
     "filename_pattern": "(/plot_|/tutorial_)",
     "default_thumb_file": "../images/M.png",
+    "subsection_order": ExplicitOrder(
+        [
+            "../../examples/tutorials",
+            "../../examples/paradigm_examples",
+            "../../examples/data_management_and_configuration",
+            "../../examples/how_to_benchmark",
+            "../../examples/advanced_examples",
+            "../../examples/learning_curve",
+        ]
+    ),
     "within_subsection_order": FileNameSortKey,
 }
 
@@ -207,11 +217,8 @@ todo_include_todos = True
 # a list of builtin themes.
 #
 
-import sphinx_rtd_theme  # noqa
-
 
 html_theme = "pydata_sphinx_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 switcher_version_match = "dev" if release.endswith("dev0") else version
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -232,15 +239,22 @@ html_theme_options = {
     "collapse_navigation": False,
     "navigation_depth": -1,
     "show_toc_level": 1,
-    "nosidebar": "true",
+    "nosidebar": True,
     "navbar_end": ["theme-switcher"],
-    "footer_items": ["copyright"],
     "pygment_light_style": "default",
     "announcement": "https://raw.githubusercontent.com/NeuroTechX/moabb"
     "/develop/docs/source/_templates/custom-template.html",
     "show_version_warning_banner": True,
     "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
 }
+
+html_sidebars = {
+    "whats_new": [],
+    "paper_results": [],
+    "dataset_summary": [],
+    "api": [],
+}
+
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
 html_logo = "images/moabb_logo.svg"
