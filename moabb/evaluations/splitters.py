@@ -83,8 +83,6 @@ class WithinSessionSplitter(BaseCrossValidator):
 
         # Shuffle subjects if required
         subjects = metadata["subject"].unique()
-        if self.shuffle:
-            self._rng.shuffle(subjects)
 
         for subject in subjects:
             subject_mask = metadata["subject"] == subject
@@ -94,8 +92,6 @@ class WithinSessionSplitter(BaseCrossValidator):
 
             # Shuffle sessions if required
             sessions = subject_metadata["session"].unique()
-            if self.shuffle:
-                self._rng.shuffle(sessions)
 
             for session in sessions:
                 session_mask = subject_metadata["session"] == session
@@ -196,10 +192,6 @@ class CrossSessionSplitter(BaseCrossValidator):
         # I check how many subjects are here:
         subjects = metadata["subject"].unique()
 
-        # I am shuffling the subjects
-        if self.shuffle:
-            self._rng.shuffle(subjects)
-
         # For the subject that is shuffle now, I am getting the subject index
         for subject in subjects:
             # Creating the subject_mask
@@ -221,9 +213,6 @@ class CrossSessionSplitter(BaseCrossValidator):
                 )
                 continue  # Skip subjects with only one session
 
-            # Shuffle the sessions
-            if self.shuffle:
-                self._rng.shuffle(sessions)
 
             # be default, I am using LeaveOneGroupOut
             splitter = self.cv_class(**self._cv_kwargs)
