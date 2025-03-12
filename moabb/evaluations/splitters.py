@@ -213,7 +213,6 @@ class CrossSessionSplitter(BaseCrossValidator):
                 )
                 continue  # Skip subjects with only one session
 
-
             # be default, I am using LeaveOneGroupOut
             splitter = self.cv_class(**self._cv_kwargs)
 
