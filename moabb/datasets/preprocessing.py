@@ -286,7 +286,7 @@ def get_filter_pipeline(fmin, fmax):
             l_freq=fmin,
             h_freq=fmax,
             method="iir",
-            picks="eeg",
+            picks="data",
             verbose=False,
         ),
     )
