@@ -614,12 +614,10 @@ select electrodes based on the covariance information</p>
 <span class="n">results</span> <span class="o">=</span> <a href="../../api/generated/moabb.evaluations.base.BaseEvaluation.html#moabb.evaluations.base.BaseEvaluation.process" title="moabb.evaluations.base.BaseEvaluation.process" class="sphx-glr-backref-module-moabb-evaluations-base sphx-glr-backref-type-py-method"><span class="n">evaluation</span><span class="o">.</span><span class="n">process</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pipelines</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Hinss2021-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]Subject 1 already processed
-
-Hinss2021-CrossSession:  50%|█████     | 1/2 [00:00&lt;00:00,  2.42it/s]Subject 2 already processed
-
-Hinss2021-CrossSession: 100%|██████████| 2/2 [00:00&lt;00:00,  2.47it/s]
-Hinss2021-CrossSession: 100%|██████████| 2/2 [00:00&lt;00:00,  2.47it/s]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Hinss2021-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
+Hinss2021-CrossSession:  50%|█████     | 1/2 [00:11&lt;00:11, 11.07s/it]
+Hinss2021-CrossSession: 100%|██████████| 2/2 [00:22&lt;00:00, 11.13s/it]
+Hinss2021-CrossSession: 100%|██████████| 2/2 [00:22&lt;00:00, 11.12s/it]
 </pre></div>
 </div>
 <p>Here, with the ElSel+Cov+TS+LDA pipeline, we reduce the computation time
@@ -631,9 +629,9 @@ in approximately 8 times to the Cov+ElSel+TS+LDA pipeline.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Averaging the session performance:
                      score      time
 pipeline
-Cov+ElSel+TS+LDA  0.770303  1.782743
-ElSel+Cov+TS+LDA  0.775472  0.366166
-Xdawn+Cov+TS+LDA  0.658810  0.322670
+Cov+ElSel+TS+LDA  0.770303  1.796929
+ElSel+Cov+TS+LDA  0.775472  0.381655
+Xdawn+Cov+TS+LDA  0.658810  0.326041
 </pre></div>
 </div>
 </section>
@@ -670,8 +668,8 @@ Xdawn+Cov+TS+LDA  0.658810  0.322670
 <li><p>Electrode selection strategy based on covariance matrices demonstrates less variability and typically yields better performance.</p></li>
 <li><p>However, this strategy is more time-consuming compared to the simpler electrode selection based on time epoch data.</p></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.462 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  246 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 24.098 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  700 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-hinss2021-classification-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5abf5216139378fc86b18e340a1f77b5/plot_hinss2021_classification.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_hinss2021_classification.ipynb</span></code></a></p>
