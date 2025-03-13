@@ -213,13 +213,22 @@ class CrossSessionSplitter(BaseCrossValidator):
         n_splits: int
             The number of splits for the cross-validation
         """
-        if self.cv_class is LeaveOneGroupOut:
-            return metadata.groupby(["subject", "session"]).ngroups
-        else:
+        subjects = metadata["subject"].unique()
+        n_splits = 0
+        for subject in subjects:
+            subject_mask = metadata["subject"] == subject
+            subject_metadata = metadata[subject_mask]
+            sessions = subject_metadata["session"].unique()
+
+            if len(sessions) <= 1:
+                continue  # Skip subjects with only one session
+
             self.cv_kwargs
-            return metadata.groupby(["subject"]).ngroups * self.cv_class(
-                **self._cv_kwargs
-            ).get_n_splits(metadata)
+            splitter = self.cv_class(**self._cv_kwargs)
+            n_splits += splitter.get_n_splits(
+                subject_metadata, groups=subject_metadata["session"]
+            )
+        return n_splits
 
     def split(self, y, metadata):
         # here, I am getting the index across all the subject
