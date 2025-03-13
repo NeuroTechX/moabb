@@ -195,6 +195,24 @@ class CrossSessionSplitter(BaseCrossValidator):
                 self._cv_kwargs[p] = v
 
     def get_n_splits(self, metadata):
+        """
+        Return the number of splits for the cross-validation.
+
+        The number of splits is the number of subjects times the number of splits
+        of the inner cross-validation strategy.
+
+        We try to keep the same behaviour as the sklearn cross-validation classes.
+
+        Parameters
+        ----------
+        metadata: pd.DataFrame
+            The metadata containing the subject and session information.
+
+        Returns
+        -------
+        n_splits: int
+            The number of splits for the cross-validation
+        """
         if self.cv_class is LeaveOneGroupOut:
             return metadata.groupby(["subject", "session"]).ngroups
         else:
