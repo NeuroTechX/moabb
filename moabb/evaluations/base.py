@@ -75,6 +75,10 @@ class BaseEvaluation(ABC):
     time_out: default=60*15
         Cut off time for the optuna search expressed in seconds, the default value is 15 minutes.
         Only used with optuna equal to True.
+    lazy_load: bool, default=False
+        If True, the data will be loaded in the evaluate method instead of the process method.
+        This is useful when the data is too large to fit in memory. If you set this to True, we strongly recommend
+        to use BIDS cache mechanism to avoid loading the data multiple times.
 
     Notes
     -----
@@ -103,6 +107,7 @@ class BaseEvaluation(ABC):
         cache_config=None,
         optuna=False,
         time_out=60 * 15,
+        lazy_load=False,  # added for lazy loading
     ):
         self.random_state = random_state
         self.n_jobs = n_jobs
@@ -116,6 +121,7 @@ class BaseEvaluation(ABC):
         self.cache_config = cache_config
         self.optuna = optuna
         self.time_out = time_out
+        self.lazy_load = lazy_load
 
         if self.optuna and not optuna_available:
             raise ImportError("Optuna is not available. Please install it first.")
@@ -231,6 +237,29 @@ class BaseEvaluation(ABC):
             for dataset in self.datasets
         ]
 
+        # if self.lazy_load:
+        #     # We need to load the data here
+        #     for dataset, process_pipeline in processing_params:
+
+        #         X, y, metadata = self.paradigm.get_metadata(
+        #             dataset=dataset,
+        #             return_epochs=self.return_epochs,
+        #             return_raws=self.return_raws,
+        #             cache_config=self.cache_config,
+        #             postprocess_pipeline=postprocess_pipeline,
+        #         )
+        # else:
+
+        #     # We need to load the data here
+        #     for dataset, process_pipeline in processing_params:
+        #         metadata = self.paradigm.get_metadata(
+        #             dataset=dataset,
+        #             return_epochs=self.return_epochs,
+        #             return_raws=self.return_raws,
+        #             cache_config=self.cache_config,
+        #             postprocess_pipeline=postprocess_pipeline,
+        #         )
+
         # Parallel processing...
         parallel_results = Parallel(
             n_jobs=self.n_jobs, return_as="generator", verbose=10
@@ -250,6 +279,8 @@ class BaseEvaluation(ABC):
                 params
             )  # Pass parameters here
             for params in processing_params
+            # for name, clf in run_pipes.items()
+            # for train, test in cv.split(metadata)
         )
 
         res_per_db = []
@@ -364,3 +395,92 @@ class BaseEvaluation(ABC):
                    'n_channels': number of channel,
                    'pipeline': pipeline name}
         """
+
+    # def train_evaluate(self, dataset, pipelines, process_pipeline, postprocess_pipeline=None):
+
+    #     # encode labels
+    #     le = LabelEncoder()
+    #     y = y if self.mne_labels else le.fit_transform(y)
+
+    #     scorer = get_scorer(self.paradigm.scoring)
+    #     cv = CrossSubjectSplitter()
+
+    #     # move to function the tracker...
+    #     if _carbonfootprint:
+    #         # Initialise CodeCarbon
+    #         tracker = EmissionsTracker(save_to_file=False, log_level="error")
+
+    #     subject = groups[test[0]]
+    #     # now we can check if this subject has results
+    #     run_pipes = self.results.not_yet_computed(
+    #         pipelines, dataset, subject, process_pipeline
+    #     )
+    #     # iterate over pipelines
+
+    #         if _carbonfootprint:
+    #             tracker.start()
+    #         t_start = time()
+
+    #         model = deepcopy(clf).fit(X[train], y[train])
+    #         if _carbonfootprint:
+    #             emissions = tracker.stop()
+    #             if emissions is None:
+    #                 emissions = 0
+    #         duration = time() - t_start
+
+    #         if self.hdf5_path is not None and self.save_model:
+    #             model_save_path = create_save_path(
+    #                 hdf5_path=self.hdf5_path,
+    #                 code=dataset.code,
+    #                 subject=subject,
+    #                 session="",
+    #                 name=name,
+    #                 grid=False,
+    #                 eval_type="CrossSubject",
+    #             )
+
+    #             save_model_cv(
+    #                 model=model, save_path=model_save_path, cv_index=str(cv_ind)
+    #             )
+    #         # we eval on each session
+
+    #             if _carbonfootprint:
+    #                 res["carbon_emission"] = (1000 * emissions,)
+    #             yield res
+
+    # def filtered_computed_subjects(self, dataset, pipelines, process_pipeline):
+    #     for subject in dataset.subject_list:
+    #         run_pipes.update(
+    #             self.results.not_yet_computed(
+    #                 pipelines, dataset, subject, process_pipeline
+    #             )
+    #         )
+
+    # def score_by_group(train, test, data, metainfo, scorer):
+    #     # Get the sessions
+    #     sessions = metainfo["session"]
+    #     nchan = X.info["nchan"] if isinstance(X, BaseEpochs) else X.shape[1]
+    #         res = {
+    #             "time": duration,
+    #             "dataset": dataset,
+    #             "subject": subject,
+    #             "session": session,
+    #             "score": score,
+    #             "n_samples": len(train),
+    #             "n_channels": nchan,
+    #             "pipeline": name,
+    #         }
+
+    #     score_list = []
+    #     for session in np.unique(sessions[test]):
+    #         ix = sessions[test] == session
+    #         score = _score(
+    #             estimator=model,
+    #             X_test=X[test[ix]],
+    #             y_test=y[test[ix]],
+    #             scorer=scorer,
+    #             score_params={},
+    #         )
+    #         score_list.append(score)
+
+    #     return score
