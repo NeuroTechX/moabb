@@ -213,6 +213,48 @@ def test_cross_session_is_shuffling_and_order(data):
     )
 
 
+def test_cross_session_unique_subjects(data):
+    _, y, metadata = data
+
+    splitter_shuffle = CrossSessionSplitter(
+        shuffle=True, random_state=3, cv_class=GroupShuffleSplit
+    )
+    splits_shuffle = list(splitter_shuffle.split(y, metadata))
+
+    # Check if session splits are different across subjects
+    subject_session_patterns = {}
+    for i, (train_idx, test_idx) in enumerate(splits_shuffle):
+        subject = metadata.iloc[train_idx]["subject"].iloc[
+            0
+        ]  # Get the subject for this fold
+        if subject not in subject_session_patterns:
+            subject_session_patterns[subject] = []
+
+        train_sessions = set(metadata.iloc[train_idx]["session"].unique())
+        test_sessions = set(metadata.iloc[test_idx]["session"].unique())
+        subject_session_patterns[subject].append((train_sessions, test_sessions))
+
+    # Verify that at least some subjects have different session splitting patterns
+    pattern_differences = []
+    subjects = list(subject_session_patterns.keys())
+    for i in range(len(subjects)):
+        for j in range(i + 1, len(subjects)):
+            sub1, sub2 = subjects[i], subjects[j]
+            # Compare patterns for each subject pair
+            patterns_differ = False
+            for (train1, test1), (train2, test2) in zip(
+                subject_session_patterns[sub1], subject_session_patterns[sub2]
+            ):
+                if train1 != train2 or test1 != test2:
+                    patterns_differ = True
+                    break
+            pattern_differences.append(patterns_differ)
+
+    assert any(
+        pattern_differences
+    ), "Session splitting patterns are identical across all subjects"
+
+
 @pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
 def test_cross_session_unique_sessions(shuffle, random_state, data):
     _, y, metadata = data
