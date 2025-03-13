@@ -119,7 +119,7 @@ def test_custom_inner_cv(splitter, data):
         assert len(test) >= 20
 
 
-@pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
+@pytest.mark.parametrize("shuffle, random_state", [(False, None)])
 def test_cross_session(shuffle, random_state, data):
     _, y, metadata = data
 
@@ -136,7 +136,7 @@ def test_cross_session(shuffle, random_state, data):
         )
 
 
-@pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
+@pytest.mark.parametrize("shuffle, random_state", [(False, None)])
 def test_cross_session_compatibility(shuffle, random_state, data):
     _, y, metadata = data
 
@@ -154,7 +154,9 @@ def test_cross_session_is_shuffling_and_order(data):
     _, y, metadata = data
 
     splitter_no_shuffle = CrossSessionSplitter(shuffle=False)
-    splitter_shuffle = CrossSessionSplitter(shuffle=True, random_state=3)
+    splitter_shuffle = CrossSessionSplitter(
+        shuffle=True, random_state=3, cv_class=GroupShuffleSplit
+    )
 
     splits_no_shuffle = list(splitter_no_shuffle.split(y, metadata))
     splits_shuffle = list(splitter_shuffle.split(y, metadata))
@@ -214,8 +216,13 @@ def test_cross_session_is_shuffling_and_order(data):
 @pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
 def test_cross_session_unique_sessions(shuffle, random_state, data):
     _, y, metadata = data
+    if shuffle:
+        split = CrossSessionSplitter(
+            shuffle=shuffle, random_state=random_state, cv_class=GroupShuffleSplit
+        )
+    else:
+        split = CrossSessionSplitter(shuffle=shuffle, random_state=random_state)
 
-    split = CrossSessionSplitter(shuffle=shuffle, random_state=random_state)
     splits = list(split.split(y, metadata))
 
     for i, (train, test) in enumerate(splits):
@@ -224,3 +231,34 @@ def test_cross_session_unique_sessions(shuffle, random_state, data):
         assert not np.intersect1d(
             train_sessions, test_sessions
         ).size, f"Fold {i} train and test sessions overlap"
+
+
+@pytest.mark.parametrize("shuffle", [True, False])
+def test_cross_session_get_n_splits(data, shuffle):
+    _, y, metadata = data
+    if shuffle:
+        split = CrossSessionSplitter(shuffle=shuffle, cv_class=GroupShuffleSplit)
+    else:
+        split = CrossSessionSplitter()
+
+    n_splits = split.get_n_splits(metadata)
+    assert n_splits == 5 * 5  # 5 subjects, 5 sessions each
+
+
+def test_if_split_is_not_random(data):
+    _, y, metadata = data
+
+    split = CrossSessionSplitter(
+        shuffle=True, random_state=42, cv_class=GroupShuffleSplit
+    )
+
+    splits = list(split.split(y, metadata))
+    splits_2 = list(split.split(y, metadata))
+
+    for (train, test), (train_2, test_2) in zip(splits, splits_2):
+        print(f"Train: {train}")
+        print(f"Test: {test}")
+        print(f"Train 2: {train_2}")
+        print(f"Test 2: {test_2}")
+        assert np.array_equal(train, train_2)
+        assert np.array_equal(test, test_2)

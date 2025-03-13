@@ -3,7 +3,6 @@ import logging
 
 from sklearn.model_selection import (
     BaseCrossValidator,
-    GroupShuffleSplit,
     LeaveOneGroupOut,
     StratifiedKFold,
 )
@@ -173,19 +172,17 @@ class CrossSessionSplitter(BaseCrossValidator):
         self.shuffle = shuffle
         self.random_state = random_state
 
-        self._rng = check_random_state(random_state) if shuffle else None
-
         if not shuffle and random_state is not None:
             raise ValueError("`random_state` should be None when `shuffle` is False")
 
+        self._rng = check_random_state(self.random_state) if self.shuffle else None
+
         if shuffle and len(self.cv_kwargs) == 0 and cv_class is LeaveOneGroupOut:
-            log.warning(
+            raise ValueError(
                 "Shuffling is not implemented for LeaveOneGroupOut. "
                 "The `shuffle` parameter change the behaviour of the splitter."
                 "Use GroupShuffleSplit instead."
             )
-
-            self.cv_class = GroupShuffleSplit
 
         params = inspect.signature(self.cv_class).parameters
         for p, v in [
@@ -199,7 +196,9 @@ class CrossSessionSplitter(BaseCrossValidator):
         if self.cv_class is LeaveOneGroupOut:
             return metadata.groupby(["subject", "session"]).ngroups
         else:
-            return self.cv_class(**self._cv_kwargs).get_n_splits(metadata)
+            return metadata.groupby(["subject"]).ngroups * self.cv_class(
+                **self._cv_kwargs
+            ).get_n_splits(metadata)
 
     def split(self, y, metadata):
         # here, I am getting the index across all the subject
@@ -207,7 +206,13 @@ class CrossSessionSplitter(BaseCrossValidator):
         # I check how many subjects are here:
         subjects = metadata["subject"].unique()
 
-        # For the subject that is shuffle now, I am getting the subject index
+        # To make sure that when I shuffle the subject, I shuffle the same way
+        # the session when the object is created
+        if self.shuffle:
+            self._rng = check_random_state(self.random_state)
+            self._cv_kwargs["random_state"] = self._rng
+
+        # For each subject I am creating the mask to select the subject metainformation.
         for subject in subjects:
             # Creating the subject_mask
             subject_mask = metadata["subject"] == subject
@@ -228,17 +233,10 @@ class CrossSessionSplitter(BaseCrossValidator):
                 )
                 continue  # Skip subjects with only one session
 
-            # if shuffle is True, I am shuffling the session with group shuffle
-            if self.shuffle:
-                if self._cv_kwargs.get("n_splits") is None:
-                    self._cv_kwargs["n_splits"] = len(sessions)
-
-            # be default, I am using LeaveOneGroupOut if the shuffle is False
-            # and if the shuffle is True, I am using GroupShuffleSplit
+            # by default, I am using LeaveOneGroupOut
             splitter = self.cv_class(**self._cv_kwargs)
 
-            # Here, in the for loop, I am applying the split leaving the
-            # group out
+            # Yield the splits for a given subject
             for train_session_idx, test_session_idx in splitter.split(
                 X=subject_indices, y=y_subject, groups=subject_metadata["session"]
             ):
