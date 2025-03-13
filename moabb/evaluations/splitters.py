@@ -216,9 +216,9 @@ class CrossSessionSplitter(BaseCrossValidator):
         if self.cv_class is LeaveOneGroupOut:
             return metadata.groupby(["subject", "session"]).ngroups
         else:
-            cv_kwargs = self.cv_kwargs
+            self.cv_kwargs
             return metadata.groupby(["subject"]).ngroups * self.cv_class(
-                **cv_kwargs
+                **self._cv_kwargs
             ).get_n_splits(metadata)
 
     def split(self, y, metadata):
@@ -229,7 +229,7 @@ class CrossSessionSplitter(BaseCrossValidator):
 
         # To make sure that when I shuffle the subject, I shuffle the same way
         # the session when the object is created
-        cv_kwargs = self.cv_kwargs
+        self.cv_kwargs
 
         # For each subject I am creating the mask to select the subject metainformation.
         for subject in subjects:
@@ -253,7 +253,7 @@ class CrossSessionSplitter(BaseCrossValidator):
                 continue  # Skip subjects with only one session
 
             # by default, I am using LeaveOneGroupOut
-            splitter = self.cv_class(**cv_kwargs)
+            splitter = self.cv_class(**self._cv_kwargs)
 
             # Yield the splits for a given subject
             for train_session_idx, test_session_idx in splitter.split(
