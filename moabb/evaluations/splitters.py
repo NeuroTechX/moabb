@@ -177,11 +177,17 @@ class CrossSessionSplitter(BaseCrossValidator):
 
         self._rng = check_random_state(self.random_state) if self.shuffle else None
 
-        if shuffle and len(self._cv_kwargs) == 0 and cv_class is LeaveOneGroupOut:
+        if shuffle and (
+            "shuffle" not in inspect.signature(cv_class).parameters.keys()
+            and
+            # Some cross-validation strategies use 'random_state' instead of 'shuffle'
+            # where the Shuffle is already in the name of the class
+            "random_state" not in inspect.signature(cv_class).parameters.keys()
+        ):
             raise ValueError(
-                "Shuffling is not implemented for LeaveOneGroupOut. "
-                "The `shuffle` parameter change the behaviour of the splitter."
-                "Use GroupShuffleSplit instead."
+                f"Shuffling is not supported for {cv_class.__name__}. "
+                "The `shuffle` parameter will be ignored. "
+                "Choose a different cross-validation strategy that supports shuffling."
             )
 
         params = inspect.signature(self.cv_class).parameters

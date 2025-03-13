@@ -1,9 +1,24 @@
 import numpy as np
 import pytest
+from mne.epochs import EpochsArray
+from numpy._typing._array_like import NDArray
+from pandas.core.frame import DataFrame
 from sklearn.model_selection import (
+    BaseCrossValidator,
+    BaseShuffleSplit,
+    GroupKFold,
     GroupShuffleSplit,
+    KFold,
     LeaveOneGroupOut,
+    LeaveOneOut,
+    LeavePGroupsOut,
+    LeavePOut,
+    RepeatedKFold,
+    RepeatedStratifiedKFold,
+    ShuffleSplit,
+    StratifiedGroupKFold,
     StratifiedKFold,
+    StratifiedShuffleSplit,
     TimeSeriesSplit,
 )
 from sklearn.utils import check_random_state
@@ -93,7 +108,7 @@ def test_within_session_compatibility(shuffle, random_state, data):
         assert np.array_equal(idx_test, idx_test_splitter)
 
 
-def test_is_shuffling(data):
+def test_is_shuffling(data: tuple[EpochsArray | NDArray | list, NDArray, DataFrame]):
     X, y, metadata = data
 
     split = WithinSessionSplitter(n_folds=5, shuffle=False)
@@ -108,7 +123,10 @@ def test_is_shuffling(data):
 
 
 @pytest.mark.parametrize("splitter", [WithinSessionSplitter, CrossSessionSplitter])
-def test_custom_inner_cv(splitter, data):
+def test_custom_inner_cv(
+    splitter: WithinSessionSplitter | CrossSessionSplitter,
+    data: tuple[EpochsArray | NDArray | list, NDArray, DataFrame],
+):
     X, y, metadata = data
     # Use a custom inner cv
     split = splitter(cv_class=TimeSeriesSplit, max_train_size=2)
@@ -304,3 +322,40 @@ def test_if_split_is_not_random(data):
         print(f"Test 2: {test_2}")
         assert np.array_equal(train, train_2)
         assert np.array_equal(test, test_2)
+
+
+@pytest.mark.parametrize(
+    "cv_class",
+    [
+        LeaveOneGroupOut,
+        TimeSeriesSplit,
+        GroupKFold,
+        LeaveOneOut,
+        LeavePGroupsOut,
+        LeavePOut,
+    ],
+)
+def test_raise_error_on_invalid_cv_class(cv_class):
+    with pytest.raises(ValueError):
+        CrossSessionSplitter(shuffle=True, cv_class=cv_class)
+
+
+@pytest.mark.parametrize(
+    "cv_class",
+    [
+        GroupShuffleSplit,
+        StratifiedKFold,
+        KFold,
+        RepeatedKFold,
+        RepeatedStratifiedKFold,
+        ShuffleSplit,
+        StratifiedGroupKFold,
+        StratifiedShuffleSplit,
+    ],
+)
+def test_cross_session_splitter_without_error(
+    cv_class: BaseShuffleSplit | BaseCrossValidator,
+):
+    splitter = CrossSessionSplitter(shuffle=True, cv_class=cv_class)
+    assert splitter is not None
+    assert isinstance(splitter, CrossSessionSplitter)
