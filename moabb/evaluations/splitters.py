@@ -3,6 +3,7 @@ import logging
 
 from sklearn.model_selection import (
     BaseCrossValidator,
+    GroupShuffleSplit,
     LeaveOneGroupOut,
     StratifiedKFold,
 )
@@ -91,7 +92,7 @@ class WithinSessionSplitter(BaseCrossValidator):
             subject_indices = all_index[subject_mask]
             subject_metadata = metadata[subject_mask]
             y_subject = y[subject_mask]
-            
+
             # Shuffle sessions if required
             sessions = subject_metadata["session"].unique()
 
@@ -177,6 +178,15 @@ class CrossSessionSplitter(BaseCrossValidator):
         if not shuffle and random_state is not None:
             raise ValueError("`random_state` should be None when `shuffle` is False")
 
+        if shuffle and len(self.cv_kwargs) == 0 and cv_class is LeaveOneGroupOut:
+            log.warning(
+                "Shuffling is not implemented for LeaveOneGroupOut. "
+                "The `shuffle` parameter change the behaviour of the splitter."
+                "Use GroupShuffleSplit instead."
+            )
+
+            self.cv_class = GroupShuffleSplit
+
         params = inspect.signature(self.cv_class).parameters
         for p, v in [
             ("shuffle", shuffle),
@@ -218,8 +228,13 @@ class CrossSessionSplitter(BaseCrossValidator):
                 )
                 continue  # Skip subjects with only one session
 
+            # if shuffle is True, I am shuffling the session with group shuffle
+            if self.shuffle:
+                if self._cv_kwargs.get("n_splits") is None:
+                    self._cv_kwargs["n_splits"] = len(sessions)
 
-            # be default, I am using LeaveOneGroupOut
+            # be default, I am using LeaveOneGroupOut if the shuffle is False
+            # and if the shuffle is True, I am using GroupShuffleSplit
             splitter = self.cv_class(**self._cv_kwargs)
 
             # Here, in the for loop, I am applying the split leaving the

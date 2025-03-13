@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from sklearn.model_selection import (
+    GroupShuffleSplit,
     LeaveOneGroupOut,
     StratifiedKFold,
     TimeSeriesSplit,
@@ -12,7 +13,7 @@ from moabb.evaluations.splitters import CrossSessionSplitter, WithinSessionSplit
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
-dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=5, seed=12)
+dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=5, seed=12, n_sessions=5)
 paradigm = FakeImageryParadigm()
 
 
@@ -52,11 +53,8 @@ def eval_split_within_session(shuffle, random_state):
 def eval_split_cross_session(shuffle, random_state):
     rng = check_random_state(random_state) if shuffle else None
 
-    X, y, metadata = paradigm.get_data(dataset=dataset)
+    _, y, metadata = paradigm.get_data(dataset=dataset)
     subjects = metadata["subject"].unique()
-
-    if shuffle:
-        rng.shuffle(subjects)
 
     for subject in subjects:
         subject_mask = metadata["subject"] == subject
@@ -64,9 +62,9 @@ def eval_split_cross_session(shuffle, random_state):
         subject_sessions = subject_metadata["session"].unique()
 
         if shuffle:
-            rng.shuffle(subject_sessions)
-
-        splitter = LeaveOneGroupOut()
+            splitter = GroupShuffleSplit(n_splits=len(subject_sessions), random_state=rng)
+        else:
+            splitter = LeaveOneGroupOut()
 
         for train_ix, test_ix in splitter.split(
             X=subject_metadata, y=y[subject_mask], groups=subject_metadata["session"]
@@ -156,6 +154,9 @@ def test_cross_session_is_shuffling():
     splits_no_shuffle = list(splitter_no_shuffle.split(y, metadata))
     splits_shuffle = list(splitter_shuffle.split(y, metadata))
 
+    train_diff = []
+    test_diff = []
+
     for i, ((train_ns, test_ns), (train_s, test_s)) in enumerate(
         zip(splits_no_shuffle, splits_shuffle)
     ):
@@ -165,9 +166,26 @@ def test_cross_session_is_shuffling():
         print(f"Train shuffled sessions  : {metadata.iloc[train_s]['session'].unique()}")
         print(f"Test shuffle sessions    : {metadata.iloc[test_s]['session'].unique()}")
 
-        assert not np.array_equal(
-            train_ns, train_s
-        ), f"Fold {i} train indices identical despite shuffle"
-        assert not np.array_equal(
-            test_ns, test_s
-        ), f"Fold {i} test indices identical despite shuffle"
+        train_diff.append(np.array_equal(train_ns, train_s))
+        test_diff.append(np.array_equal(test_ns, test_s))
+
+    # We can have the same splits
+    # if the sessions are the same in the same order
+    # but the order of the sessions is different
+    assert not all(train_diff)
+    assert not all(test_diff)
+
+
+@pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
+def test_cross_session_unique_sessions(shuffle, random_state):
+    X, y, metadata = paradigm.get_data(dataset=dataset)
+
+    split = CrossSessionSplitter(shuffle=shuffle, random_state=random_state)
+    splits = list(split.split(y, metadata))
+
+    for i, (train, test) in enumerate(splits):
+        train_sessions = metadata.iloc[train]["session"].unique()
+        test_sessions = metadata.iloc[test]["session"].unique()
+        assert not np.intersect1d(
+            train_sessions, test_sessions
+        ).size, f"Fold {i} train and test sessions overlap"
