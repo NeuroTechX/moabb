@@ -121,7 +121,10 @@ class _Dreyer2023Base(BaseDataset):
 
         bids_path_list = []
         for task in tasks:
-            if "baseline" in task:
+            if "baseline" in task or "rest" in task:
+                continue
+
+            if subject == 59 and ("R5online" in task) or ("R6online" in task):
                 continue
 
             # Create a BIDSPath object for all the tasks
