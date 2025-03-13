@@ -166,13 +166,16 @@ class CrossSessionSplitter(BaseCrossValidator):
         **cv_kwargs,
     ):
         self.cv_class = cv_class
-        self._cv_kwargs = cv_kwargs
+        self.cv_kwargs = cv_kwargs
+        self._cv_kwargs = dict(**cv_kwargs)
 
         self.shuffle = shuffle
         self.random_state = random_state
 
         if not shuffle and random_state is not None:
             raise ValueError("`random_state` should be None when `shuffle` is False")
+
+        self._rng = check_random_state(self.random_state) if self.shuffle else None
 
         if shuffle and len(self._cv_kwargs) == 0 and cv_class is LeaveOneGroupOut:
             raise ValueError(
@@ -181,15 +184,10 @@ class CrossSessionSplitter(BaseCrossValidator):
                 "Use GroupShuffleSplit instead."
             )
 
-    @property
-    def cv_kwargs(self):
         params = inspect.signature(self.cv_class).parameters
-        rng = None
-        if self.shuffle:
-            rng = check_random_state(self.random_state)
         for p, v in [
-            ("shuffle", self.shuffle),
-            ("random_state", rng),
+            ("shuffle", shuffle),
+            ("random_state", self._rng),
         ]:
             if p in params:
                 self._cv_kwargs[p] = v
@@ -216,13 +214,18 @@ class CrossSessionSplitter(BaseCrossValidator):
         subjects = metadata["subject"].unique()
         n_splits = 0
         for subject in subjects:
-            subject_metadata = metadata.filter("subject == @subject)
+            subject_metadata = metadata.query("subject == @subject")
             sessions = subject_metadata["session"].unique()
 
             if len(sessions) <= 1:
                 continue  # Skip subjects with only one session
 
-            self.cv_kwargs
+            # To make sure that when I shuffle the subject, I shuffle the same way
+            # the session when the object is created
+            if self.shuffle:
+                self._rng = check_random_state(self.random_state)
+                self._cv_kwargs["random_state"] = self._rng
+
             splitter = self.cv_class(**self._cv_kwargs)
             n_splits += splitter.get_n_splits(
                 subject_metadata, groups=subject_metadata["session"]
@@ -237,7 +240,9 @@ class CrossSessionSplitter(BaseCrossValidator):
 
         # To make sure that when I shuffle the subject, I shuffle the same way
         # the session when the object is created
-        self.cv_kwargs
+        if self.shuffle:
+            self._rng = check_random_state(self.random_state)
+            self._cv_kwargs["random_state"] = self._rng
 
         # For each subject I am creating the mask to select the subject metainformation.
         for subject in subjects:
