@@ -216,8 +216,7 @@ class CrossSessionSplitter(BaseCrossValidator):
         subjects = metadata["subject"].unique()
         n_splits = 0
         for subject in subjects:
-            subject_mask = metadata["subject"] == subject
-            subject_metadata = metadata[subject_mask]
+            subject_metadata = metadata.filter("subject == @subject)
             sessions = subject_metadata["session"].unique()
 
             if len(sessions) <= 1:
