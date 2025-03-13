@@ -268,7 +268,7 @@ class ErpCore2021(BaseDataset):
 
         manifest = pd.read_csv(path / "erpcore_manifest.csv")
 
-        manifest_task = manifest[manifest["component"] == self.task.upper()]
+        manifest_task = manifest[manifest["component"].str.upper() == self.task.upper()]
 
         subject_index = manifest_task["participant_id"] == f"sub-{subject:03d}"
         dataset_index = pd.isna(manifest_task["participant_id"])
