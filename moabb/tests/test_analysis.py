@@ -4,7 +4,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import pytest
 from matplotlib.pyplot import Figure
 
 import moabb.analysis.meta_analysis as ma
