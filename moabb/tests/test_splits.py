@@ -121,7 +121,7 @@ def test_is_shuffling(data):
 
 @pytest.mark.parametrize("splitter", [WithinSessionSplitter, CrossSessionSplitter])
 def test_custom_inner_cv(
-    splitter: WithinSessionSplitter | CrossSessionSplitter,
+    splitter,
     data,
 ):
     X, y, metadata = data
