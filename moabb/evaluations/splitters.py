@@ -130,22 +130,20 @@ class CrossSessionSplitter(BaseCrossValidator):
 
     The inner cross-validation strategy can be changed by passing the
     `cv_class` and `cv_kwargs` arguments. By default, it uses LeaveOneGroupOut,
-    which effectively performs Leave-One-Session-Out cross-validation when
-    sessions are passed as groups.
+    which performs Leave-One-Session-Out cross-validation.
 
     Parameters
     ----------
     cv_class: cross-validation class, default=LeaveOneGroupOut
-        Inner cross-validation strategy for splitting the sessions.
-        For cross-session splitting, LeaveOneGroupOut is the most suitable as default.
+        Inner cross-validation strategy for splitting the sessions of one subject.
+        LeaveOneGroupOut is the most common default.
     shuffle: bool, default=False
-        Whether to shuffle the session order for each subject. By default, it is not
-        used because of LeaveOneGroupOut's determinist behaviour.
+        Whether to shuffle the session order for each subject. It can only be
+        used when changing the `cv_class` to a class compatible with `shuffle`.
     random_state: int, RandomState instance or None, default=None
-        Controls the randomness when `shuffle` is True.
+        Controls the randomness of the inner cross-validation when `shuffle` is True.
         Pass an int for reproducible output across multiple function calls.
-        Be default, it is not used because of the determinist behaviour of
-        LeaveOneGroupOut.
+        For `cv_class` accepting `random_state`, they are provided with a shared rng.
     cv_kwargs: dict
         Additional arguments to pass to the inner cross-validation strategy.
 
@@ -177,20 +175,15 @@ class CrossSessionSplitter(BaseCrossValidator):
 
         self._rng = check_random_state(self.random_state) if self.shuffle else None
 
-        if shuffle and (
-            "shuffle" not in inspect.signature(cv_class).parameters.keys()
-            and
-            # Some cross-validation strategies use 'random_state' instead of 'shuffle'
-            # where the Shuffle is already in the name of the class
-            "random_state" not in inspect.signature(cv_class).parameters.keys()
-        ):
+        params = inspect.signature(self.cv_class).parameters
+        if shuffle and "shuffle" not in params:
             raise ValueError(
                 f"Shuffling is not supported for {cv_class.__name__}. "
-                "The `shuffle` parameter will be ignored. "
-                "Choose a different cross-validation strategy that supports shuffling."
+                "Choose a different cv_class or use shuffle=False."
             )
+        
+        self._need_rng = "random_state" in params and (shuffle or "shuffle" not in params)
 
-        params = inspect.signature(self.cv_class).parameters
         for p, v in [
             ("shuffle", shuffle),
             ("random_state", self._rng),

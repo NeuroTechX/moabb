@@ -147,7 +147,7 @@ def test_cross_session(shuffle, random_state, data):
         # Check if the output is the same as the input
         session_train = metadata.iloc[idx_train_splitter]["session"].unique()
         session_test = metadata.iloc[idx_test_splitter]["session"].unique()
-        assert not np.intersect1d(session_train, session_test).size
+        assert np.intersect1d(session_train, session_test).size == 0
         assert (
             np.union1d(session_train, session_test).size
             == metadata["session"].unique().size
