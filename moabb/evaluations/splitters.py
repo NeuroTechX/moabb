@@ -187,11 +187,8 @@ class CrossSessionSplitter(BaseCrossValidator):
 
         self._need_rng = "random_state" in params and (shuffle or "shuffle" not in params)
 
-        for p, v in [
-            ("shuffle", shuffle),
-        ]:
-            if p in params:
-                self._cv_kwargs[p] = v
+        if "shuffle" in params:
+            self._cv_kwargs["shuffle"] = shuffle
 
     def get_n_splits(self, metadata):
         """
