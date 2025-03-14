@@ -1,8 +1,5 @@
 import numpy as np
 import pytest
-from mne.epochs import EpochsArray
-from numpy._typing._array_like import NDArray
-from pandas.core.frame import DataFrame
 from sklearn.model_selection import (
     BaseCrossValidator,
     BaseShuffleSplit,
@@ -108,7 +105,7 @@ def test_within_session_compatibility(shuffle, random_state, data):
         assert np.array_equal(idx_test, idx_test_splitter)
 
 
-def test_is_shuffling(data: tuple[EpochsArray | NDArray | list, NDArray, DataFrame]):
+def test_is_shuffling(data):
     X, y, metadata = data
 
     split = WithinSessionSplitter(n_folds=5, shuffle=False)
@@ -125,7 +122,7 @@ def test_is_shuffling(data: tuple[EpochsArray | NDArray | list, NDArray, DataFra
 @pytest.mark.parametrize("splitter", [WithinSessionSplitter, CrossSessionSplitter])
 def test_custom_inner_cv(
     splitter: WithinSessionSplitter | CrossSessionSplitter,
-    data: tuple[EpochsArray | NDArray | list, NDArray, DataFrame],
+    data,
 ):
     X, y, metadata = data
     # Use a custom inner cv
