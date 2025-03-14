@@ -181,7 +181,7 @@ class CrossSessionSplitter(BaseCrossValidator):
                 f"Shuffling is not supported for {cv_class.__name__}. "
                 "Choose a different cv_class or use shuffle=False."
             )
-        
+
         self._need_rng = "random_state" in params and (shuffle or "shuffle" not in params)
 
         for p, v in [
