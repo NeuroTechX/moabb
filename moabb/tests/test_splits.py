@@ -1,8 +1,6 @@
 import numpy as np
 import pytest
 from sklearn.model_selection import (
-    BaseCrossValidator,
-    BaseShuffleSplit,
     GroupKFold,
     GroupShuffleSplit,
     KFold,
@@ -361,7 +359,7 @@ def test_raise_error_on_invalid_cv_class(cv_class):
     ],
 )
 def test_cross_session_splitter_without_error(
-    cv_class: BaseShuffleSplit | BaseCrossValidator,
+    cv_class,
 ):
     splitter = CrossSessionSplitter(shuffle=True, cv_class=cv_class)
     assert splitter is not None
