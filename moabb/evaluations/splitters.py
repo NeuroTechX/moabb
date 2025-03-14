@@ -170,20 +170,20 @@ class CrossSessionSplitter(BaseCrossValidator):
         self.shuffle = shuffle
         self.random_state = random_state
 
-        if not shuffle and random_state is not None:
-            raise ValueError("`random_state` should be None when `shuffle` is False")
 
         params = inspect.signature(self.cv_class).parameters
-        # We need to check the random_state and shuffle parameters
-        # because for some cv_class, shuffle is not supported
-        # like ShuffleSplit or ShuffleGroupSplit.
-        if shuffle and ("shuffle" not in params and "random_state" not in params):
+        if shuffle and "shuffle" not in params:
             raise ValueError(
                 f"Shuffling is not supported for {cv_class.__name__}. "
                 "Choose a different `cv_class` or use `shuffle=False`."
                 "Example of `cv_class`: `GroupShuffleSplit`: "
                 "CrossSessionSplitter(shuffle=True, random_state=42, cv_class=GroupShuffleSplit)"
             )
+
+        if not shuffle and "shuffle" in params and random_state is not None:
+            raise ValueError(
+                "`random_state` should be None when `shuffle` is False for {cv_class.__name__}")
+        
 
         self._need_rng = "random_state" in params and (shuffle or "shuffle" not in params)
 
@@ -232,7 +232,7 @@ class CrossSessionSplitter(BaseCrossValidator):
 
         # To make sure that when I shuffle the subject, I shuffle the same way
         # the session when the object is created
-        cv_kwargs = {**self.cv_kwargs}  # Copy the original kwargs
+        cv_kwargs = {**self._cv_kwargs}  # Copy the original kwargs
         if self._need_rng:
             cv_kwargs["random_state"] = check_random_state(self.random_state)
 

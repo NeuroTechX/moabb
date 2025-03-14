@@ -260,9 +260,7 @@ def test_cross_session_unique_subjects(data):
     # Verify that at least some subjects have different session splitting patterns
     pattern_differences = []
     subjects = list(subject_session_patterns.keys())
-    for i in range(len(subjects)):
-        for j in range(i + 1, len(subjects)):
-            sub1, sub2 = subjects[i], subjects[j]
+    for sub1, sub2 in zip(subjects, subjects[1:]):
             # Compare patterns for each subject pair
             patterns_differ = False
             for (train1, test1), (train2, test2) in zip(
