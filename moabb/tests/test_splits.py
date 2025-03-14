@@ -261,15 +261,15 @@ def test_cross_session_unique_subjects(data):
     pattern_differences = []
     subjects = list(subject_session_patterns.keys())
     for sub1, sub2 in zip(subjects, subjects[1:]):
-            # Compare patterns for each subject pair
-            patterns_differ = False
-            for (train1, test1), (train2, test2) in zip(
-                subject_session_patterns[sub1], subject_session_patterns[sub2]
-            ):
-                if train1 != train2 or test1 != test2:
-                    patterns_differ = True
-                    break
-            pattern_differences.append(patterns_differ)
+        # Compare patterns for each subject pair
+        patterns_differ = False
+        for (train1, test1), (train2, test2) in zip(
+            subject_session_patterns[sub1], subject_session_patterns[sub2]
+        ):
+            if train1 != train2 or test1 != test2:
+                patterns_differ = True
+                break
+        pattern_differences.append(patterns_differ)
 
     assert any(
         pattern_differences

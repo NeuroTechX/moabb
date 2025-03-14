@@ -170,7 +170,6 @@ class CrossSessionSplitter(BaseCrossValidator):
         self.shuffle = shuffle
         self.random_state = random_state
 
-
         params = inspect.signature(self.cv_class).parameters
         if shuffle and "shuffle" not in params:
             raise ValueError(
@@ -182,8 +181,8 @@ class CrossSessionSplitter(BaseCrossValidator):
 
         if not shuffle and "shuffle" in params and random_state is not None:
             raise ValueError(
-                "`random_state` should be None when `shuffle` is False for {cv_class.__name__}")
-        
+                "`random_state` should be None when `shuffle` is False for {cv_class.__name__}"
+            )
 
         self._need_rng = "random_state" in params and (shuffle or "shuffle" not in params)
 
