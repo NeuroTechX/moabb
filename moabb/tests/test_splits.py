@@ -137,11 +137,16 @@ def test_custom_inner_cv(
         assert len(test) >= 20
 
 
-@pytest.mark.parametrize("shuffle, random_state", [(False, None)])
+@pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
 def test_cross_session(shuffle, random_state, data):
     _, y, metadata = data
 
-    split = CrossSessionSplitter(shuffle=shuffle, random_state=random_state)
+    if shuffle:
+        split = CrossSessionSplitter(
+            shuffle=shuffle, random_state=random_state, cv_class=GroupShuffleSplit
+        )
+    else:
+        split = CrossSessionSplitter(shuffle=shuffle, random_state=random_state)
 
     for idx_train_splitter, idx_test_splitter in split.split(y, metadata):
         # Check if the output is the same as the input
@@ -154,11 +159,16 @@ def test_cross_session(shuffle, random_state, data):
         )
 
 
-@pytest.mark.parametrize("shuffle, random_state", [(False, None)])
+@pytest.mark.parametrize("shuffle, random_state", [(False, None), (True, 0), (True, 42)])
 def test_cross_session_compatibility(shuffle, random_state, data):
     _, y, metadata = data
 
-    splitter = CrossSessionSplitter(shuffle=shuffle, random_state=random_state)
+    if shuffle:
+        splitter = CrossSessionSplitter(
+            shuffle=shuffle, random_state=random_state, cv_class=GroupShuffleSplit
+        )
+    else:
+        splitter = CrossSessionSplitter(shuffle=shuffle, random_state=random_state)
 
     for (idx_train, idx_test), (idx_train_splitter, idx_test_splitter) in zip(
         eval_split_cross_session(shuffle=shuffle, random_state=random_state, data=data),
