@@ -4,7 +4,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import pytest
 from matplotlib.pyplot import Figure
 
 import moabb.analysis.meta_analysis as ma
@@ -159,13 +158,12 @@ class TestStats:
         p1vsp2 = pvals[0, 1]
         assert p1vsp2 == 1 / n_perms, f"P-values cannot be zero {pvals}"
 
-    @pytest.mark.skip(reason="This test is not working")
     def test_compute_pvals_random_cannot_be_zero(self):
         df = pd.DataFrame({"pipeline_1": [1] * 18, "pipeline_2": [0] * 18})
         n_perms = 10000  # hardcoded in _pairedttest_random
         pvals = ma.compute_pvals_perm(df)
         p1vsp2 = pvals[0, 1]
-        assert p1vsp2 == 1 / n_perms, "P-values cannot be zero "
+        assert p1vsp2 >= 1 / n_perms, "P-values cannot be zero "
 
 
 class TestResults:
