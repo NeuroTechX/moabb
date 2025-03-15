@@ -129,7 +129,7 @@ class TestStats:
         ), f"P-values should be equal to 1 - 1/n_perms {pvals}"
 
     def test_perm_random(self):
-        rng = np.random.default_rng(12)
+        rng = np.random.RandomState(12)
         data = (
             self.return_df((18, 5)) * 0
         )  # We provide the exact same data for each pipeline
@@ -160,7 +160,7 @@ class TestStats:
         assert p1vsp2 == 1 / n_perms, f"P-values cannot be zero {pvals}"
 
     def test_compute_pvals_random_cannot_be_zero(self):
-        rng = np.random.default_rng(12)
+        rng = np.random.RandomState(12)
         df = pd.DataFrame({"pipeline_1": [1] * 18, "pipeline_2": [0] * 18})
         n_perms = 10000  # hardcoded in _pairedttest_random
         pvals = ma.compute_pvals_perm(df, seed=rng)
