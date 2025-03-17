@@ -21,6 +21,7 @@ Enhancements
 - Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
 - Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
 - Adding :class:`moabb.dataset.Beetl2021A` and :class:`moabb.dataset.Beetl2021B`(:gh:`675` by `Samuel Boehm_`)
+- Adding :class:`moabb.evaluations.splitters.CrossSessionSplitter` (:gh:`720` by `Bruna Lopes`_ and `Bruno Aristimunha`_)
 - Adding :class:`moabb.dataset.base.BaseBIDSDataset` and :class:`moabb.dataset.base.LocalBIDSDataset` (:gh:`724` by `Pierre Guetschel`_)
 - Adding :class:`moabb.evaluations.CrossDatasetEvaluation` for cross-dataset evaluation, enabling training on one dataset and testing on another (:gh:`703` by `Ali Imran`_)
 
@@ -28,6 +29,8 @@ Bugs
 ~~~~
 - Fix caching issue with incomplete results (:gh:`715` by `Sylvain Chevallier`_)
 - Fix learning curve example (:gh:`717` by `Pierre Guetschel`_)
+- Pick all data channels in filter preprocessing step (:gh:`729` by `Pierre Guetschel`_)
+- Fix CI for permutation testing (:gh:`757` by `Quentin Barthelemy`_)
 
 API changes
 ~~~~~~~~~~~
