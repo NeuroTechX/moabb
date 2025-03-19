@@ -5,6 +5,7 @@ from pickle import HIGHEST_PROTOCOL, dump
 from typing import Sequence
 
 from numpy import argmax
+from sklearn.metrics import matthews_corrcoef
 from sklearn.pipeline import Pipeline
 
 
@@ -14,6 +15,11 @@ try:
     optuna_available = True
 except ImportError:
     optuna_available = False
+
+
+def _normalized_mcc(y_true, y_pred):
+    mcc = matthews_corrcoef(y_true, y_pred)
+    return (mcc + 1) / 2
 
 
 def _check_if_is_pytorch_model(model):
