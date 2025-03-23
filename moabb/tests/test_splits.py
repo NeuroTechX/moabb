@@ -1,9 +1,6 @@
 import numpy as np
 import pytest
 from sklearn.model_selection import (
-    GroupShuffleSplit,
-    LeaveOneGroupOut,
-    StratifiedKFold,
     GroupKFold,
     GroupShuffleSplit,
     KFold,
@@ -22,7 +19,11 @@ from sklearn.model_selection import (
 from sklearn.utils import check_random_state
 
 from moabb.datasets.fake import FakeDataset
-from moabb.evaluations.splitters import CrossSubjectSplitter, CrossSessionSplitter, WithinSessionSplitter
+from moabb.evaluations.splitters import (
+    CrossSessionSplitter,
+    CrossSubjectSplitter,
+    WithinSessionSplitter,
+)
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
@@ -91,6 +92,7 @@ def eval_split_cross_subject(shuffle, random_state):
         test_mask = metadata["subject"].isin(subjects[test_subj_idx])
 
         yield metadata.index[train_mask].values, metadata.index[test_mask].values
+
 
 def eval_split_cross_session(shuffle, random_state, data):
     _, y, metadata = data

@@ -1,10 +1,8 @@
 import inspect
 import logging
 
-import numpy as np
 from sklearn.model_selection import (
     BaseCrossValidator,
-    GroupShuffleSplit,
     LeaveOneGroupOut,
     StratifiedKFold,
 )
