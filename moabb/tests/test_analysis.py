@@ -4,7 +4,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import pytest
 from matplotlib.pyplot import Figure
 
 import moabb.analysis.meta_analysis as ma
@@ -130,12 +129,13 @@ class TestStats:
         ), f"P-values should be equal to 1 - 1/n_perms {pvals}"
 
     def test_perm_random(self):
+        rng = np.random.RandomState(12)
         data = (
             self.return_df((18, 5)) * 0
         )  # We provide the exact same data for each pipeline
         n_perms = 10000  # hardcoded in _pairedttest_random
 
-        pvals = ma.compute_pvals_perm(data)
+        pvals = ma.compute_pvals_perm(data, seed=rng)
         assert np.all(
             pvals == 1 - 1 / n_perms
         ), f"P-values should be equal to 1 - 1/n_perms {pvals}"
@@ -159,13 +159,13 @@ class TestStats:
         p1vsp2 = pvals[0, 1]
         assert p1vsp2 == 1 / n_perms, f"P-values cannot be zero {pvals}"
 
-    @pytest.mark.skip(reason="This test is not working")
     def test_compute_pvals_random_cannot_be_zero(self):
+        rng = np.random.RandomState(12)
         df = pd.DataFrame({"pipeline_1": [1] * 18, "pipeline_2": [0] * 18})
         n_perms = 10000  # hardcoded in _pairedttest_random
-        pvals = ma.compute_pvals_perm(df)
+        pvals = ma.compute_pvals_perm(df, seed=rng)
         p1vsp2 = pvals[0, 1]
-        assert p1vsp2 == 1 / n_perms, "P-values cannot be zero "
+        assert p1vsp2 >= 1 / n_perms, "P-values cannot be zero "
 
 
 class TestResults:

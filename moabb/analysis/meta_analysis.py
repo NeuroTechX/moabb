@@ -148,7 +148,7 @@ def _pairedttest_random(data, nperms, seed=None):
     return out / nperms
 
 
-def compute_pvals_perm(df, order=None):
+def compute_pvals_perm(df, order=None, seed=None):
     """Compute permutation test on aggregated results.
 
     Returns kxk matrix of p-values computed via permutation test,
@@ -161,6 +161,8 @@ def compute_pvals_perm(df, order=None):
         and values are scores
     order: list
         list of length (num algorithms) with names corresponding to df columns
+    seed: int | None
+        random seed for reproducibility
 
     Returns
     -------
@@ -181,7 +183,7 @@ def compute_pvals_perm(df, order=None):
             data[:, i, j] = df.loc[:, pipe1] - df.loc[:, pipe2]
             data[:, j, i] = df.loc[:, pipe2] - df.loc[:, pipe1]
     if data.shape[0] > 13:
-        p = _pairedttest_random(data, 10000)
+        p = _pairedttest_random(data, 10000, seed=seed)
     else:
         p = _pairedttest_exhaustive(data)
     return p

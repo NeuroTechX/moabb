@@ -445,7 +445,7 @@ class Beetl2021_B(BaseDataset):
 
         # Create Raw object
         event_desc = {int(code): name for name, code in self.event_id.items()}
-        raw = mne.io.RawArray(np.hstack(train_data), info)
+        raw = mne.io.RawArray(np.hstack(train_data * 1e-6), info)
         raw.set_annotations(
             mne.annotations_from_events(
                 events=events, event_desc=event_desc, sfreq=self.sfreq
@@ -473,7 +473,7 @@ class Beetl2021_B(BaseDataset):
         )
 
         # Create Raw object
-        test_raw = mne.io.RawArray(np.hstack(test_data), info)
+        test_raw = mne.io.RawArray(np.hstack(test_data * 1e-6), info)
         test_raw.set_annotations(
             mne.annotations_from_events(
                 events=test_events, event_desc=event_desc, sfreq=self.sfreq
@@ -521,7 +521,6 @@ class Beetl2021_B(BaseDataset):
                         zip_ref.extractall(extract_dir)
 
         # Download labels for final phase
-
         file_list = dl.fs_get_file_list(FINAL_LABEL_TXT_ARTICLE_ID)
         hash_file_list = dl.fs_get_file_hash(file_list)
         id_file_list = dl.fs_get_file_id(file_list)
