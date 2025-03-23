@@ -219,7 +219,7 @@ def test_cross_session(shuffle, random_state, data):
 
 @pytest.mark.parametrize("splitter", [CrossSessionSplitter, CrossSubjectSplitter])
 @pytest.mark.parametrize("shuffle, random_state", [(False, None), (True, 0), (True, 42)])
-def test_cross_session_compatibility(splitter, shuffle, random_state, data):
+def test_cross_compatibility(splitter, shuffle, random_state, data):
     _, y, metadata = data
 
     if splitter == CrossSessionSplitter:
