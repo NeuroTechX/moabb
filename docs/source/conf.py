@@ -269,7 +269,7 @@ html_logo = "images/moabb_logo.svg"
 html_static_path = ["_static"]
 
 html_css_files = [
-    "https://raw.githubusercontent.com/bruAristimunha/moabb/refs/heads/develop/docs/source/_static/css/custom.css",
+    "https://raw.githubusercontent.com/neurotechx/moabb/refs/heads/develop/docs/source/_static/css/custom.css",
     "https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css",
 ]
 
