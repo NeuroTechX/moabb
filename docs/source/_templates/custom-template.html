@@ -1,11 +1,48 @@
-<div class="sidebar-message" style="
-    background-color: #DAEBF1;
-    border-left: 5px solid #DAEBF1;
-    padding: 10px;
-    border-radius: 4px;
+<style>
+  :root {
+    /* Light mode (default) */
+    --announcement-bg: #DAEBF1;     /* Light blue background */
+    --announcement-text: #002B5C;   /* Dark blue text for strong contrast */
+    --announcement-accent: #007CBA; /* Refined blue accent for border and links */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --announcement-bg: #002B5C;     /* Dark blue background */
+      --announcement-text: #DAEBF1;   /* Light blue text */
+      --announcement-accent: #007CBA; /* Same accent color for consistency */
+    }
+  }
+</style>
+
+<div role="banner" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  background-color: var(--announcement-bg);
+  color: var(--announcement-text);
+  border-left: 5px solid var(--announcement-accent);
+  padding: 10px;
+  font-size: 24xpx;
+  font-weight: bold;
+  box-sizing: border-box;
 ">
-  If you use moabb, remember to <a href="https://neurotechx.github.io/moabb/#citing-moabb-and-related-publications" style="color: #007c91; text-decoration: underline;">cite</a>!
+  If you use moabb, remember to
+  <a href="https://neurotechx.github.io/moabb/#citing-moabb-and-related-publications"
+     style="color: var(--announcement-accent); text-decoration: underline;">
+    cite
+  </a>!
   The largest BCI EEG benchmark dataset is out!
-  Now available on <a href="https://universite-paris-saclay.hal.science/hal-04537061" style="color: #007c91; text-decoration: underline;">pre-print version.</a>
-  Check the result webpage <a href="http://moabb.neurotechx.com/docs/paper_results.html" style="color: #007c91; text-decoration: underline;">here</a>.
+  Now available as a
+  <a href="https://universite-paris-saclay.hal.science/hal-04537061"
+     style="color: var(--announcement-accent); text-decoration: underline;">
+    pre-print
+  </a>.
+  Check the results webpage
+  <a href="http://moabb.neurotechx.com/docs/paper_results.html"
+     style="color: var(--announcement-accent); text-decoration: underline;">
+    here
+  </a>.
 </div>
