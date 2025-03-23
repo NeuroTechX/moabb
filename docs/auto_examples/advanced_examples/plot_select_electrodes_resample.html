@@ -8,6 +8,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="moabb icon" sizes="180x180" href="../../_static/moabb_logo.png" type="image/png">
+    <link rel="icon" href="../../_static/favicon.svg" type="image/svg+xml">
+    <link rel="icon" sizes="144x144" href="../../_static/favicon-144.png" type="image/png">
+    <link rel="mask-icon" href="../../_static/favicon_mask-icon.svg" color="#222832" type="image/svg+xml">
+    <link rel="apple-touch-icon" sizes="500x500" href="../../_static/favicon-500.png" type="image/png">
     <title>Select Electrodes and Resampling &#8212; moabb 1.2.0-dev documentation</title>
   
   
@@ -37,7 +41,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=7c1988a6" />
+    <link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/neurotechx/moabb/refs/heads/develop/docs/source/_static/css/custom.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css" />
   
   <!-- So that users can add custom icons -->
@@ -113,7 +117,7 @@
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
-  <aside class="bd-header-announcement d-print-none d-none" aria-label="Announcement" data-pst-announcement-url="https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html"></aside>
+  <aside class="bd-header-announcement d-print-none d-none" aria-label="Announcement" data-pst-announcement-url="https://raw.githubusercontent.com/bruAristimunha/moabb/develop/docs/source/_templates/custom-template.html"></aside>
 </div>
 
   
@@ -141,8 +145,8 @@
     
     
     
-    <img src="../../_static/moabb_logo.svg" class="logo__image only-light" alt="moabb 1.2.0-dev documentation - Home"/>
-    <img src="../../_static/moabb_logo.svg" class="logo__image only-dark pst-js-only" alt="moabb 1.2.0-dev documentation - Home"/>
+    <img src="../../_static/moabb_light.svg" class="logo__image only-light" alt="moabb 1.2.0-dev documentation - Home"/>
+    <img src="../../_static/moabb_dark.svg" class="logo__image only-dark pst-js-only" alt="moabb 1.2.0-dev documentation - Home"/>
   
   
 </a></div>
@@ -546,34 +550,34 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.73s/it]No hdf5_path provided, models will not be saved.
+Zhou2016-WithinSession:  50%|█████     | 1/2 [00:05&lt;00:05,  5.00s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.40s/it]
-Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.45s/it]
+Zhou2016-WithinSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.62s/it]
+Zhou2016-WithinSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.68s/it]
 
 BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:06&lt;00:06,  6.11s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:06&lt;00:06,  6.14s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:12&lt;00:00,  6.10s/it]
-BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:12&lt;00:00,  6.10s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:12&lt;00:00,  6.25s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:12&lt;00:00,  6.23s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.852146  0.024223    119.0       1  ...        3           3  Zhou2016  csp+lda
-1  0.902000  0.022822    100.0       1  ...        3           3  Zhou2016  csp+lda
-2  0.948000  0.024988    100.0       1  ...        3           3  Zhou2016  csp+lda
-3  0.916000  0.021263    100.0       2  ...        3           3  Zhou2016  csp+lda
-4  0.832099  0.050611     90.0       2  ...        3           3  Zhou2016  csp+lda
+0  0.843561  0.035510    119.0       1  ...        3           3  Zhou2016  csp+lda
+1  0.908000  0.024474    100.0       1  ...        3           3  Zhou2016  csp+lda
+2  0.950000  0.049857    100.0       1  ...        3           3  Zhou2016  csp+lda
+3  0.912000  0.071530    100.0       2  ...        3           3  Zhou2016  csp+lda
+4  0.819753  0.022170     90.0       2  ...        3           3  Zhou2016  csp+lda
 
 [5 rows x 9 columns]
 </pre></div>
@@ -603,34 +607,34 @@ No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.71s/it]No hdf5_path provided, models will not be saved.
+Zhou2016-WithinSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.89s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.31s/it]
-Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.37s/it]
+Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.41s/it]
+Zhou2016-WithinSession: 100%|██████████| 2/2 [00:08&lt;00:00,  4.48s/it]
 
 BNCI2014-001-WithinSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:06&lt;00:06,  6.08s/it]No hdf5_path provided, models will not be saved.
+BNCI2014-001-WithinSession:  50%|█████     | 1/2 [00:06&lt;00:06,  6.07s/it]No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 No hdf5_path provided, models will not be saved.
 
-BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.97s/it]
-BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:11&lt;00:00,  5.99s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:12&lt;00:00,  6.08s/it]
+BNCI2014-001-WithinSession: 100%|██████████| 2/2 [00:12&lt;00:00,  6.08s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.843561  0.025240    119.0       1  ...        3           3  Zhou2016  csp+lda
-1  0.896000  0.023947    100.0       1  ...        3           3  Zhou2016  csp+lda
-2  0.952000  0.020778    100.0       1  ...        3           3  Zhou2016  csp+lda
-3  0.914000  0.029140    100.0       2  ...        3           3  Zhou2016  csp+lda
-4  0.837037  0.021747     90.0       2  ...        3           3  Zhou2016  csp+lda
+0  0.850631  0.042637    119.0       1  ...        3           3  Zhou2016  csp+lda
+1  0.918000  0.028580    100.0       1  ...        3           3  Zhou2016  csp+lda
+2  0.946000  0.026793    100.0       1  ...        3           3  Zhou2016  csp+lda
+3  0.924000  0.025685    100.0       2  ...        3           3  Zhou2016  csp+lda
+4  0.837037  0.022625     90.0       2  ...        3           3  Zhou2016  csp+lda
 
 [5 rows x 9 columns]
 </pre></div>
@@ -644,8 +648,8 @@ regression computed in the tangent space of the covariance matrices.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 48.955 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  762 MB</p>
+<img src="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" srcset="../../_images/sphx_glr_plot_select_electrodes_resample_001.png" alt="plot select electrodes resample" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 50.318 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  754 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-advanced-examples-plot-select-electrodes-resample-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/657e87726c4d308a5b176dbb4277773e/plot_select_electrodes_resample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_select_electrodes_resample.ipynb</span></code></a></p>

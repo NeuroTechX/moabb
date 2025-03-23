@@ -1,10 +1,22 @@
-.large-text {
-    font-size: 30px;
-}
-
 .bd-main .bd-content .bd-article-container {
-  max-width: 75em;  /* default is 60em */
+  max-width: 70em;  /* default is 60em */
 }
 .bd-page-width {
   max-width: 88em;  /* default is 88rem */
+}
+
+/* Light mode (default) */
+.bd-header-announcement {
+  background-color: #DAEBF1 !important;  /* Your chosen background */
+  color: #002B5C !important;            /* A strong contrasting text colour */
+  border-left: 5px solid #007CBA !important; /* A refined accent colour */
+}
+
+/* Optional: Adjust for dark mode */
+@media (prefers-color-scheme: dark) {
+  .bd-header-announcement {
+    background-color: #002B5C !important;
+    color: #DAEBF1 !important;
+    border-left: 5px solid #007CBA !important;
+  }
 }

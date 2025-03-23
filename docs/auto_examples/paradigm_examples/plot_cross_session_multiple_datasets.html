@@ -8,6 +8,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="moabb icon" sizes="180x180" href="../../_static/moabb_logo.png" type="image/png">
+    <link rel="icon" href="../../_static/favicon.svg" type="image/svg+xml">
+    <link rel="icon" sizes="144x144" href="../../_static/favicon-144.png" type="image/png">
+    <link rel="mask-icon" href="../../_static/favicon_mask-icon.svg" color="#222832" type="image/svg+xml">
+    <link rel="apple-touch-icon" sizes="500x500" href="../../_static/favicon-500.png" type="image/png">
     <title>Cross-Session on Multiple Datasets &#8212; moabb 1.2.0-dev documentation</title>
   
   
@@ -37,7 +41,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=7c1988a6" />
+    <link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/neurotechx/moabb/refs/heads/develop/docs/source/_static/css/custom.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css" />
   
   <!-- So that users can add custom icons -->
@@ -113,7 +117,7 @@
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
-  <aside class="bd-header-announcement d-print-none d-none" aria-label="Announcement" data-pst-announcement-url="https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html"></aside>
+  <aside class="bd-header-announcement d-print-none d-none" aria-label="Announcement" data-pst-announcement-url="https://raw.githubusercontent.com/bruAristimunha/moabb/develop/docs/source/_templates/custom-template.html"></aside>
 </div>
 
   
@@ -141,8 +145,8 @@
     
     
     
-    <img src="../../_static/moabb_logo.svg" class="logo__image only-light" alt="moabb 1.2.0-dev documentation - Home"/>
-    <img src="../../_static/moabb_logo.svg" class="logo__image only-dark pst-js-only" alt="moabb 1.2.0-dev documentation - Home"/>
+    <img src="../../_static/moabb_light.svg" class="logo__image only-light" alt="moabb 1.2.0-dev documentation - Home"/>
+    <img src="../../_static/moabb_dark.svg" class="logo__image only-dark pst-js-only" alt="moabb 1.2.0-dev documentation - Home"/>
   
   
 </a></div>
@@ -575,20 +579,20 @@ each subject / session of the dataset, and for each pipeline.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Zhou2016-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-Zhou2016-CrossSession:  50%|█████     | 1/2 [00:03&lt;00:03,  3.44s/it]
-Zhou2016-CrossSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.08s/it]
-Zhou2016-CrossSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.14s/it]
+Zhou2016-CrossSession:  50%|█████     | 1/2 [00:03&lt;00:03,  3.63s/it]
+Zhou2016-CrossSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.19s/it]
+Zhou2016-CrossSession: 100%|██████████| 2/2 [00:06&lt;00:00,  3.26s/it]
 
 BNCI2014-001-CrossSession:   0%|          | 0/2 [00:00&lt;?, ?it/s]
-BNCI2014-001-CrossSession:  50%|█████     | 1/2 [00:04&lt;00:04,  4.93s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.87s/it]
-BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00:00,  4.88s/it]
+BNCI2014-001-CrossSession:  50%|█████     | 1/2 [00:05&lt;00:05,  5.27s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:10&lt;00:00,  5.04s/it]
+BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:10&lt;00:00,  5.08s/it]
       score      time  samples subject  ... channels  n_sessions   dataset pipeline
-0  0.851412  0.225458    200.0       1  ...       14           3  Zhou2016  CSP+LDA
-1  0.935200  0.222144    219.0       1  ...       14           3  Zhou2016  CSP+LDA
-2  0.939200  0.212746    219.0       1  ...       14           3  Zhou2016  CSP+LDA
-3  0.908000  0.210620    190.0       2  ...       14           3  Zhou2016  CSP+LDA
-4  0.770370  0.228796    200.0       2  ...       14           3  Zhou2016  CSP+LDA
+0  0.851412  0.263725    200.0       1  ...       14           3  Zhou2016  CSP+LDA
+1  0.935200  0.239699    219.0       1  ...       14           3  Zhou2016  CSP+LDA
+2  0.939200  0.273505    219.0       1  ...       14           3  Zhou2016  CSP+LDA
+3  0.908000  0.250101    190.0       2  ...       14           3  Zhou2016  CSP+LDA
+4  0.770370  0.211849    200.0       2  ...       14           3  Zhou2016  CSP+LDA
 
 [5 rows x 9 columns]
 </pre></div>
@@ -609,8 +613,8 @@ BNCI2014-001-CrossSession: 100%|██████████| 2/2 [00:09&lt;00
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 17.496 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  525 MB</p>
+<img src="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" srcset="../../_images/sphx_glr_plot_cross_session_multiple_datasets_001.png" alt="dataset = Zhou2016, dataset = BNCI2014-001" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 18.328 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  557 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-paradigm-examples-plot-cross-session-multiple-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a236a554370961344b575283a1efbb02/plot_cross_session_multiple_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_cross_session_multiple_datasets.ipynb</span></code></a></p>

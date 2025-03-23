@@ -8,6 +8,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="moabb icon" sizes="180x180" href="../../_static/moabb_logo.png" type="image/png">
+    <link rel="icon" href="../../_static/favicon.svg" type="image/svg+xml">
+    <link rel="icon" sizes="144x144" href="../../_static/favicon-144.png" type="image/png">
+    <link rel="mask-icon" href="../../_static/favicon_mask-icon.svg" color="#222832" type="image/svg+xml">
+    <link rel="apple-touch-icon" sizes="500x500" href="../../_static/favicon-500.png" type="image/png">
     <title>Tutorial 5: Creating a dataset class &#8212; moabb 1.2.0-dev documentation</title>
   
   
@@ -37,7 +41,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=7c1988a6" />
+    <link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/neurotechx/moabb/refs/heads/develop/docs/source/_static/css/custom.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css" />
   
   <!-- So that users can add custom icons -->
@@ -113,7 +117,7 @@
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
-  <aside class="bd-header-announcement d-print-none d-none" aria-label="Announcement" data-pst-announcement-url="https://raw.githubusercontent.com/NeuroTechX/moabb/develop/docs/source/_templates/custom-template.html"></aside>
+  <aside class="bd-header-announcement d-print-none d-none" aria-label="Announcement" data-pst-announcement-url="https://raw.githubusercontent.com/bruAristimunha/moabb/develop/docs/source/_templates/custom-template.html"></aside>
 </div>
 
   
@@ -141,8 +145,8 @@
     
     
     
-    <img src="../../_static/moabb_logo.svg" class="logo__image only-light" alt="moabb 1.2.0-dev documentation - Home"/>
-    <img src="../../_static/moabb_logo.svg" class="logo__image only-dark pst-js-only" alt="moabb 1.2.0-dev documentation - Home"/>
+    <img src="../../_static/moabb_light.svg" class="logo__image only-light" alt="moabb 1.2.0-dev documentation - Home"/>
+    <img src="../../_static/moabb_dark.svg" class="logo__image only-dark pst-js-only" alt="moabb 1.2.0-dev documentation - Home"/>
   
   
 </a></div>
@@ -599,149 +603,143 @@ The CompoundDataset can be used as a <cite>normal</cite> dataset.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>CustomDataset3-WithinSession:   0%|          | 0/4 [00:00&lt;?, ?it/s]No hdf5_path provided, models will not be saved.
 
-CustomDataset3-WithinSession:  25%|██▌       | 1/4 [00:07&lt;00:22,  7.60s/it]No hdf5_path provided, models will not be saved.
+CustomDataset3-WithinSession:  25%|██▌       | 1/4 [00:08&lt;00:26,  8.88s/it]No hdf5_path provided, models will not be saved.
 
-CustomDataset3-WithinSession:  50%|█████     | 2/4 [00:14&lt;00:14,  7.30s/it]
-
-  0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
-
-  0%|                                   | 1.02k/46.4M [00:00&lt;7:57:57, 1.62kB/s]
-
-  0%|                                     | 14.3k/46.4M [00:00&lt;30:43, 25.2kB/s]
-
-  0%|                                     | 41.0k/46.4M [00:00&lt;10:41, 72.3kB/s]
-
-  0%|                                      | 98.3k/46.4M [00:00&lt;04:21, 177kB/s]
-
-  0%|▏                                      | 176k/46.4M [00:01&lt;02:30, 307kB/s]
-
-  1%|▎                                      | 307k/46.4M [00:01&lt;01:26, 535kB/s]
-
-  1%|▌                                     | 634k/46.4M [00:01&lt;00:38, 1.18MB/s]
-
-  3%|█                                    | 1.27M/46.4M [00:01&lt;00:18, 2.43MB/s]
-
-  5%|██                                   | 2.55M/46.4M [00:01&lt;00:08, 4.96MB/s]
-
- 11%|████                                 | 5.10M/46.4M [00:01&lt;00:04, 10.0MB/s]
-
- 16%|██████                               | 7.57M/46.4M [00:01&lt;00:02, 13.4MB/s]
-
- 22%|████████▏                            | 10.3M/46.4M [00:01&lt;00:02, 16.5MB/s]
-
- 28%|██████████▏                          | 12.8M/46.4M [00:02&lt;00:01, 18.1MB/s]
-
- 33%|████████████▍                        | 15.5M/46.4M [00:02&lt;00:01, 19.9MB/s]
-
- 39%|██████████████▌                      | 18.3M/46.4M [00:02&lt;00:01, 21.2MB/s]
-
- 46%|████████████████▊                    | 21.2M/46.4M [00:02&lt;00:01, 22.3MB/s]
-
- 52%|███████████████████▏                 | 24.0M/46.4M [00:02&lt;00:00, 23.2MB/s]
-
- 58%|█████████████████████▎               | 26.8M/46.4M [00:02&lt;00:00, 23.4MB/s]
-
- 63%|███████████████████████▏             | 29.1M/46.4M [00:02&lt;00:00, 19.2MB/s]
-
- 67%|████████████████████████▊            | 31.2M/46.4M [00:02&lt;00:00, 19.3MB/s]
-
- 74%|███████████████████████████▎         | 34.3M/46.4M [00:02&lt;00:00, 21.4MB/s]
-
- 81%|█████████████████████████████▉       | 37.6M/46.4M [00:03&lt;00:00, 23.6MB/s]
-
- 87%|████████████████████████████████▎    | 40.6M/46.4M [00:03&lt;00:00, 24.3MB/s]
-
- 94%|██████████████████████████████████▌  | 43.4M/46.4M [00:03&lt;00:00, 24.5MB/s]
-
- 99%|████████████████████████████████████▌| 45.9M/46.4M [00:03&lt;00:00, 13.3MB/s]
+CustomDataset3-WithinSession:  50%|█████     | 2/4 [00:17&lt;00:17,  8.92s/it]
 
   0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 46.4M/46.4M [00:00&lt;00:00, 218GB/s]
+
+  0%|                                     | 12.3k/46.4M [00:00&lt;12:09, 63.6kB/s]
+
+  0%|                                      | 34.8k/46.4M [00:00&lt;07:25, 104kB/s]
+
+  0%|                                       | 104k/46.4M [00:00&lt;03:09, 245kB/s]
+
+  1%|▏                                      | 251k/46.4M [00:00&lt;01:33, 495kB/s]
+
+  1%|▍                                      | 478k/46.4M [00:00&lt;00:56, 813kB/s]
+
+  2%|▊                                     | 985k/46.4M [00:01&lt;00:28, 1.58MB/s]
+
+  4%|█▌                                   | 1.98M/46.4M [00:01&lt;00:14, 3.05MB/s]
+
+  9%|███▏                                 | 3.99M/46.4M [00:01&lt;00:07, 5.97MB/s]
+
+ 15%|█████▌                               | 6.94M/46.4M [00:01&lt;00:04, 9.70MB/s]
+
+ 20%|███████▌                             | 9.50M/46.4M [00:01&lt;00:03, 11.6MB/s]
+
+ 29%|██████████▌                          | 13.3M/46.4M [00:01&lt;00:02, 15.0MB/s]
+
+ 35%|████████████▉                        | 16.3M/46.4M [00:01&lt;00:01, 16.0MB/s]
+
+ 42%|███████████████▌                     | 19.5M/46.4M [00:02&lt;00:01, 17.2MB/s]
+
+ 50%|██████████████████▎                  | 23.0M/46.4M [00:02&lt;00:01, 18.3MB/s]
+
+ 57%|████████████████████▉                | 26.3M/46.4M [00:02&lt;00:01, 18.9MB/s]
+
+ 65%|███████████████████████▉             | 30.1M/46.4M [00:02&lt;00:00, 20.1MB/s]
+
+ 72%|██████████████████████████▊          | 33.6M/46.4M [00:02&lt;00:00, 20.5MB/s]
+
+ 80%|█████████████████████████████▍       | 37.0M/46.4M [00:02&lt;00:00, 20.6MB/s]
+
+ 87%|████████████████████████████████▎    | 40.5M/46.4M [00:03&lt;00:00, 20.9MB/s]
+
+ 94%|██████████████████████████████████▊  | 43.7M/46.4M [00:03&lt;00:00, 20.5MB/s]
+
+  0%|                                              | 0.00/46.4M [00:00&lt;?, ?B/s]
+100%|██████████████████████████████████████| 46.4M/46.4M [00:00&lt;00:00, 119GB/s]
 No hdf5_path provided, models will not be saved.
 
-CustomDataset3-WithinSession:  75%|███████▌  | 3/4 [00:31&lt;00:11, 11.46s/it]
+CustomDataset3-WithinSession:  75%|███████▌  | 3/4 [00:34&lt;00:12, 12.37s/it]
 
   0%|                                              | 0.00/74.3M [00:00&lt;?, ?B/s]
 
-  0%|                                     | 10.2k/74.3M [00:00&lt;18:59, 65.2kB/s]
+  0%|                                  | 1.02k/74.3M [00:00&lt;11:08:23, 1.85kB/s]
 
-  0%|                                      | 48.1k/74.3M [00:00&lt;06:09, 201kB/s]
+  0%|                                     | 12.3k/74.3M [00:00&lt;56:52, 21.8kB/s]
 
-  0%|                                       | 104k/74.3M [00:00&lt;03:47, 326kB/s]
+  0%|                                     | 39.9k/74.3M [00:00&lt;18:51, 65.6kB/s]
 
-  0%|                                       | 186k/74.3M [00:00&lt;02:38, 468kB/s]
+  0%|                                      | 95.2k/74.3M [00:01&lt;08:25, 147kB/s]
 
-  1%|▏                                      | 376k/74.3M [00:00&lt;01:23, 881kB/s]
+  0%|                                       | 207k/74.3M [00:01&lt;04:01, 307kB/s]
 
-  1%|▍                                     | 801k/74.3M [00:00&lt;00:40, 1.81MB/s]
+  1%|▏                                      | 432k/74.3M [00:01&lt;01:57, 627kB/s]
 
-  2%|▊                                    | 1.62M/74.3M [00:00&lt;00:20, 3.52MB/s]
+  1%|▍                                     | 808k/74.3M [00:01&lt;01:05, 1.12MB/s]
 
-  4%|█▋                                   | 3.27M/74.3M [00:00&lt;00:10, 6.95MB/s]
+  2%|▊                                    | 1.64M/74.3M [00:01&lt;00:31, 2.30MB/s]
 
-  9%|███▏                                 | 6.34M/74.3M [00:01&lt;00:05, 13.1MB/s]
+  4%|█▌                                   | 3.05M/74.3M [00:01&lt;00:17, 4.18MB/s]
 
- 12%|████▎                                | 8.75M/74.3M [00:01&lt;00:04, 15.5MB/s]
+  8%|███                                  | 6.14M/74.3M [00:02&lt;00:07, 8.58MB/s]
 
- 16%|█████▊                               | 11.7M/74.3M [00:01&lt;00:03, 18.6MB/s]
+ 12%|████▍                                | 8.97M/74.3M [00:02&lt;00:05, 11.2MB/s]
 
- 19%|███████                              | 14.1M/74.3M [00:01&lt;00:03, 19.4MB/s]
+ 16%|█████▊                               | 11.7M/74.3M [00:02&lt;00:04, 12.9MB/s]
 
- 23%|████████▍                            | 17.0M/74.3M [00:01&lt;00:02, 21.2MB/s]
+ 20%|███████▎                             | 14.7M/74.3M [00:02&lt;00:04, 14.5MB/s]
 
- 26%|█████████▊                           | 19.6M/74.3M [00:01&lt;00:02, 21.6MB/s]
+ 24%|████████▊                            | 17.6M/74.3M [00:02&lt;00:03, 15.4MB/s]
 
- 30%|███████████▏                         | 22.4M/74.3M [00:01&lt;00:02, 22.5MB/s]
+ 28%|██████████▎                          | 20.6M/74.3M [00:02&lt;00:03, 16.3MB/s]
 
- 34%|████████████▌                        | 25.3M/74.3M [00:01&lt;00:02, 23.2MB/s]
+ 32%|███████████▋                         | 23.5M/74.3M [00:03&lt;00:03, 16.6MB/s]
 
- 38%|██████████████                       | 28.2M/74.3M [00:01&lt;00:01, 23.9MB/s]
+ 36%|█████████████▏                       | 26.5M/74.3M [00:03&lt;00:02, 17.3MB/s]
 
- 42%|███████████████▍                     | 31.1M/74.3M [00:02&lt;00:01, 24.3MB/s]
+ 40%|██████████████▋                      | 29.4M/74.3M [00:03&lt;00:02, 17.4MB/s]
 
- 46%|████████████████▉                    | 34.1M/74.3M [00:02&lt;00:01, 24.8MB/s]
+ 43%|████████████████                     | 32.3M/74.3M [00:03&lt;00:02, 17.4MB/s]
 
- 51%|██████████████████▊                  | 37.7M/74.3M [00:02&lt;00:01, 26.7MB/s]
+ 47%|█████████████████▌                   | 35.2M/74.3M [00:03&lt;00:02, 17.6MB/s]
 
- 55%|████████████████████▎                | 40.8M/74.3M [00:02&lt;00:01, 26.8MB/s]
+ 51%|██████████████████▉                  | 38.0M/74.3M [00:03&lt;00:02, 17.4MB/s]
 
- 59%|█████████████████████▊               | 43.7M/74.3M [00:02&lt;00:01, 26.3MB/s]
+ 55%|████████████████████▍                | 40.9M/74.3M [00:03&lt;00:01, 17.5MB/s]
 
- 63%|███████████████████████▏             | 46.5M/74.3M [00:02&lt;00:01, 25.9MB/s]
+ 59%|█████████████████████▊               | 43.8M/74.3M [00:04&lt;00:01, 17.5MB/s]
 
- 68%|█████████████████████████            | 50.2M/74.3M [00:02&lt;00:00, 27.7MB/s]
+ 63%|███████████████████████▏             | 46.7M/74.3M [00:04&lt;00:01, 17.5MB/s]
 
- 72%|██████████████████████████▊          | 53.7M/74.3M [00:02&lt;00:00, 28.6MB/s]
+ 67%|████████████████████████▋            | 49.6M/74.3M [00:04&lt;00:01, 17.7MB/s]
 
- 76%|████████████████████████████▏        | 56.7M/74.3M [00:03&lt;00:00, 27.7MB/s]
+ 71%|██████████████████████████▏          | 52.5M/74.3M [00:04&lt;00:01, 17.6MB/s]
 
- 81%|█████████████████████████████▊       | 59.8M/74.3M [00:03&lt;00:00, 27.7MB/s]
+ 75%|███████████████████████████▌         | 55.4M/74.3M [00:04&lt;00:01, 17.8MB/s]
 
- 85%|███████████████████████████████▍     | 63.0M/74.3M [00:03&lt;00:00, 27.7MB/s]
+ 79%|█████████████████████████████        | 58.4M/74.3M [00:04&lt;00:00, 17.9MB/s]
 
- 90%|█████████████████████████████████▏   | 66.6M/74.3M [00:03&lt;00:00, 28.8MB/s]
+ 83%|██████████████████████████████▌      | 61.5M/74.3M [00:05&lt;00:00, 18.1MB/s]
 
- 94%|██████████████████████████████████▉  | 70.2M/74.3M [00:03&lt;00:00, 29.4MB/s]
+ 87%|████████████████████████████████▏    | 64.5M/74.3M [00:05&lt;00:00, 18.3MB/s]
 
- 99%|████████████████████████████████████▌| 73.5M/74.3M [00:03&lt;00:00, 29.3MB/s]
+ 91%|█████████████████████████████████▋   | 67.6M/74.3M [00:05&lt;00:00, 18.5MB/s]
+
+ 95%|███████████████████████████████████▎ | 70.8M/74.3M [00:05&lt;00:00, 18.6MB/s]
+
+100%|████████████████████████████████████▉| 74.1M/74.3M [00:05&lt;00:00, 19.2MB/s]
 
   0%|                                              | 0.00/74.3M [00:00&lt;?, ?B/s]
-100%|██████████████████████████████████████| 74.3M/74.3M [00:00&lt;00:00, 363GB/s]
+100%|██████████████████████████████████████| 74.3M/74.3M [00:00&lt;00:00, 285GB/s]
 No hdf5_path provided, models will not be saved.
 
-CustomDataset3-WithinSession: 100%|██████████| 4/4 [01:00&lt;00:00, 18.55s/it]
-CustomDataset3-WithinSession: 100%|██████████| 4/4 [01:00&lt;00:00, 15.13s/it]
+CustomDataset3-WithinSession: 100%|██████████| 4/4 [01:06&lt;00:00, 20.12s/it]
+CustomDataset3-WithinSession: 100%|██████████| 4/4 [01:06&lt;00:00, 16.57s/it]
       score      time  samples  ... n_sessions         dataset  pipeline
-0  0.650000  0.327071    120.0  ...          1  CustomDataset3       MDM
-1  0.675000  0.317679    120.0  ...          1  CustomDataset3       MDM
-2  0.639639  2.076517    768.0  ...          1  CustomDataset3       MDM
-3  0.576553  4.535170   1356.0  ...          1  CustomDataset3       MDM
+0  0.675000  0.332488    120.0  ...          1  CustomDataset3       MDM
+1  0.607500  0.327501    120.0  ...          1  CustomDataset3       MDM
+2  0.585851  2.115896    768.0  ...          1  CustomDataset3       MDM
+3  0.594052  4.556544   1356.0  ...          1  CustomDataset3       MDM
 
 [4 rows x 9 columns]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 1.122 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  565 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 7.014 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  566 MB</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-tutorials-tutorial-5-build-a-custom-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/275776a57e5f58879d57ccb28b4daf54/tutorial_5_build_a_custom_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">tutorial_5_build_a_custom_dataset.ipynb</span></code></a></p>
