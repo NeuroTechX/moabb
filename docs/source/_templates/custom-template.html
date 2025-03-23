@@ -1,24 +1,21 @@
 <style>
   :root {
     /* Light mode (default) */
-    --announcement-bg: #DAEBF1;     /* Soft, light blue background */
-    --announcement-text: #002B5C;   /* Deep navy text for strong contrast */
-    --announcement-border: #FFD700; /* Gold accent to highlight importance */
-    --link-color: #FFD700;          /* Gold links for consistency */
+    --announcement-bg: #DAEBF1;     /* Light blue background */
+    --announcement-text: #002B5C;   /* Dark blue text for strong contrast */
+    --announcement-accent: #007CBA; /* Refined blue accent for border and links */
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      /* Dark mode */
-      --announcement-bg: #002B5C;     /* Deep navy background */
-      --announcement-text: #DAEBF1;   /* Light blue text (your fav) for contrast */
-      --announcement-border: #FFD700; /* Gold accent remains */
-      --link-color: #FFD700;
+      --announcement-bg: #002B5C;     /* Dark blue background */
+      --announcement-text: #DAEBF1;   /* Light blue text */
+      --announcement-accent: #007CBA; /* Same accent color for consistency */
     }
   }
 </style>
 
-<div style="
+<div role="banner" style="
   position: fixed;
   top: 0;
   left: 0;
@@ -26,7 +23,7 @@
   z-index: 9999;
   background-color: var(--announcement-bg);
   color: var(--announcement-text);
-  border-left: 5px solid var(--announcement-border);
+  border-left: 5px solid var(--announcement-accent);
   padding: 10px;
   font-size: 16px;
   font-weight: bold;
@@ -34,18 +31,18 @@
 ">
   If you use moabb, remember to
   <a href="https://neurotechx.github.io/moabb/#citing-moabb-and-related-publications"
-     style="color: var(--link-color); text-decoration: underline;">
+     style="color: var(--announcement-accent); text-decoration: underline;">
     cite
   </a>!
   The largest BCI EEG benchmark dataset is out!
   Now available as a
   <a href="https://universite-paris-saclay.hal.science/hal-04537061"
-     style="color: var(--link-color); text-decoration: underline;">
+     style="color: var(--announcement-accent); text-decoration: underline;">
     pre-print
   </a>.
   Check the results webpage
   <a href="http://moabb.neurotechx.com/docs/paper_results.html"
-     style="color: var(--link-color); text-decoration: underline;">
+     style="color: var(--announcement-accent); text-decoration: underline;">
     here
   </a>.
 </div>
