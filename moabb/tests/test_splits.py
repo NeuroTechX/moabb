@@ -27,10 +27,6 @@ from moabb.evaluations.splitters import (
 from moabb.paradigms.motor_imagery import FakeImageryParadigm
 
 
-dataset = FakeDataset(["left_hand", "right_hand"], n_subjects=6, seed=12)
-paradigm = FakeImageryParadigm()
-
-
 @pytest.fixture
 def data():
     dataset = FakeDataset(
@@ -73,10 +69,10 @@ def eval_split_within_session(shuffle, random_state, data):
                 yield indices[idx_train], indices[idx_test]
 
 
-def eval_split_cross_subject(shuffle, random_state):
+def eval_split_cross_subject(shuffle, random_state, data):
     rng = check_random_state(random_state) if shuffle else None
 
-    X, y, metadata = paradigm.get_data(dataset=dataset)
+    _, y, metadata = data
     subjects = metadata["subject"].unique()
 
     if shuffle:
@@ -146,7 +142,9 @@ def test_is_shuffling(data):
         assert not np.array_equal(test, test_shuffle)
 
 
-@pytest.mark.parametrize("splitter", [WithinSessionSplitter, CrossSessionSplitter])
+@pytest.mark.parametrize(
+    "splitter", [WithinSessionSplitter, CrossSessionSplitter, CrossSubjectSplitter]
+)
 def test_custom_inner_cv(
     splitter,
     data,
@@ -161,8 +159,8 @@ def test_custom_inner_cv(
         assert len(test) >= 20
 
 
-def test_custom_shuffle_group():
-    X, y, metadata = paradigm.get_data(dataset=dataset)
+def test_custom_shuffle_group(data):
+    _, y, metadata = data
 
     n_splits = 5
     splitter = CrossSubjectSplitter(
@@ -199,8 +197,8 @@ def test_custom_shuffle_group():
 
 
 @pytest.mark.parametrize("shuffle, random_state", [(True, 0), (True, 42), (False, None)])
-def test_cross_subject_compatibility(shuffle, random_state):
-    X, y, metadata = paradigm.get_data(dataset=dataset)
+def test_cross_subject_compatibility(shuffle, random_state, data):
+    _, y, metadata = data
 
     splitter = CrossSubjectSplitter(shuffle=shuffle, random_state=random_state)
 
@@ -212,8 +210,8 @@ def test_cross_subject_compatibility(shuffle, random_state):
         assert np.array_equal(idx_test, idx_test_splitter)
 
 
-def test_cross_subject_is_shuffling():
-    X, y, metadata = paradigm.get_data(dataset=dataset)
+def test_cross_subject_is_shuffling(data):
+    _, y, metadata = data
 
     splitter_no_shuffle = CrossSubjectSplitter(shuffle=False)
     splitter_shuffle = CrossSubjectSplitter(shuffle=True, random_state=123)
