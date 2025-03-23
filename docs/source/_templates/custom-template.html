@@ -1,18 +1,19 @@
 <style>
   :root {
-    --announcement-bg: #002B5C;
-    --announcement-text: #ffffff;
-    --announcement-border: #FFD700;
-    --link-color: #FFD700;
+    /* Light mode (default) */
+    --announcement-bg: #DAEBF1;     /* Soft, light blue background */
+    --announcement-text: #002B5C;   /* Deep navy text for strong contrast */
+    --announcement-border: #FFD700; /* Gold accent to highlight importance */
+    --link-color: #FFD700;          /* Gold links for consistency */
   }
 
-  /* Adjust for light mode if desired */
-  @media (prefers-color-scheme: light) {
+  @media (prefers-color-scheme: dark) {
     :root {
-      --announcement-bg: #ffffff;
-      --announcement-text: #002B5C;
-      --announcement-border: #FFD700;
-      --link-color: #002B5C;
+      /* Dark mode */
+      --announcement-bg: #002B5C;     /* Deep navy background */
+      --announcement-text: #DAEBF1;   /* Light blue text (your fav) for contrast */
+      --announcement-border: #FFD700; /* Gold accent remains */
+      --link-color: #FFD700;
     }
   }
 </style>
