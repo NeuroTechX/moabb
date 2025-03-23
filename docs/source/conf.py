@@ -242,8 +242,7 @@ html_theme_options = {
     "nosidebar": True,
     "navbar_end": ["theme-switcher"],
     "pygment_light_style": "default",
-    "announcement": "https://raw.githubusercontent.com/NeuroTechX/moabb"
-    "/develop/docs/source/_templates/custom-template.html",
+    "announcement": "https://raw.githubusercontent.com/bruAristimunha/moabb/develop/docs/source/_templates/custom-template.html",
     "show_version_warning_banner": True,
     "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
 }
