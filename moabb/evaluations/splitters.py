@@ -342,12 +342,10 @@ class CrossSubjectSplitter(BaseCrossValidator):
                 "`random_state` should be None when `shuffle` is False for {cv_class.__name__}"
             )
 
-        for p, v in [
-            ("shuffle", shuffle),
-            ("random_state", self._rng),
-        ]:
-            if p in params:
-                self._cv_kwargs[p] = v
+        self._need_rng = "random_state" in params and (shuffle or "shuffle" not in params)
+
+        if "shuffle" in params:
+            self._cv_kwargs["shuffle"] = shuffle
 
     def get_n_splits(self, metadata):
         """
@@ -377,8 +375,12 @@ class CrossSubjectSplitter(BaseCrossValidator):
         # here, I am getting the index across all the subject
         all_index = metadata.index.values
 
+        cv_kwargs = {**self._cv_kwargs}  # Copy the original kwargs
+        if self._need_rng:
+            cv_kwargs["random_state"] = self.random_state
+
         # by default, I am using LeaveOneGroupOut
-        splitter = self.cv_class(**self._cv_kwargs)
+        splitter = self.cv_class(**cv_kwargs)
 
         # Yield the splits for the entire dataset
         for train_session_idx, test_session_idx in splitter.split(
