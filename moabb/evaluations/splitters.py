@@ -279,7 +279,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
     Unlike the `CrossSubjectEvaluation` class from `moabb.evaluation`, which manages
     the complete evaluation process end-to-end, this splitter is solely responsible
-    for dividing the data into training and testing sets based on sessions.
+    for dividing the data into training and testing sets based on subjects.
 
     .. image:: images/crosssubject.jpg
         :alt: The schematic diagram of the CrossSubject split
@@ -287,7 +287,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
     The inner cross-validation strategy can be changed by passing the
     `cv_class` and `cv_kwargs` arguments. By default, it uses LeaveOneGroupOut,
-    which performs Leave-One-Session-Out cross-validation.
+    which performs Leave-One-Subject-Out cross-validation.
 
     Parameters
     ----------
@@ -295,7 +295,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
         Inner cross-validation strategy for splitting the sessions of one subject.
         LeaveOneGroupOut is the most common default.
     shuffle: bool, default=False
-        Whether to shuffle the session order for each subject. It can only be
+        Whether to shuffle the subject order. It can only be
         used when changing the `cv_class` to a class compatible with `shuffle`.
     random_state: int, RandomState instance or None, default=None
         Controls the randomness of the inner cross-validation when `shuffle` is True.
@@ -326,6 +326,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
         self.shuffle = shuffle
         self.random_state = random_state
+        self._rng = check_random_state(random_state) if shuffle else None
 
         params = inspect.signature(self.cv_class).parameters
         if shuffle and ("shuffle" not in params and "random_state" not in params):
@@ -341,10 +342,12 @@ class CrossSubjectSplitter(BaseCrossValidator):
                 "`random_state` should be None when `shuffle` is False for {cv_class.__name__}"
             )
 
-        self._need_rng = "random_state" in params and (shuffle or "shuffle" not in params)
-
-        if "shuffle" in params:
-            self._cv_kwargs["shuffle"] = shuffle
+        for p, v in [
+            ("shuffle", shuffle),
+            ("random_state", self._rng),
+        ]:
+            if p in params:
+                self._cv_kwargs[p] = v
 
     def get_n_splits(self, metadata):
         """
@@ -374,14 +377,8 @@ class CrossSubjectSplitter(BaseCrossValidator):
         # here, I am getting the index across all the subject
         all_index = metadata.index.values
 
-        # To make sure that when I shuffle the subject, I shuffle the same way
-        # the session when the object is created
-        cv_kwargs = {**self._cv_kwargs}  # Copy the original kwargs
-        if self._need_rng:
-            cv_kwargs["random_state"] = check_random_state(self.random_state)
-
         # by default, I am using LeaveOneGroupOut
-        splitter = self.cv_class(**cv_kwargs)
+        splitter = self.cv_class(**self._cv_kwargs)
 
         # Yield the splits for the entire dataset
         for train_session_idx, test_session_idx in splitter.split(
