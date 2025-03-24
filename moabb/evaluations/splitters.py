@@ -285,22 +285,18 @@ class CrossSubjectSplitter(BaseCrossValidator):
         :alt: The schematic diagram of the CrossSubject split
         :align: center
 
-    The inner cross-validation strategy can be changed by passing the
+    The splitting strategy for the subjects can be changed by passing the
     `cv_class` and `cv_kwargs` arguments. By default, it uses LeaveOneGroupOut,
     which performs Leave-One-Subject-Out cross-validation.
 
     Parameters
     ----------
     cv_class: cross-validation class, default=LeaveOneGroupOut
-        Inner cross-validation strategy for splitting the sessions of one subject.
-        LeaveOneGroupOut is the most common default.
-    shuffle: bool, default=False
-        Whether to shuffle the subject order. It can only be
-        used when changing the `cv_class` to a class compatible with `shuffle`.
+        Cross-validation strategy for splitting the subjects between train and test sets.
+        By default, use LeaveOneGroupOut, which keeps one subject as a test.
     random_state: int, RandomState instance or None, default=None
-        Controls the randomness of the inner cross-validation when `shuffle` is True.
-        Pass an int for reproducible output across multiple function calls.
-        For `cv_class` accepting `random_state`, they are provided with a shared rng.
+        Controls the randomness of the cross-validation.
+        Pass an int for reproducible output across multiple calls.
     cv_kwargs: dict
         Additional arguments to pass to the inner cross-validation strategy.
 
@@ -326,7 +322,6 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
         self.shuffle = shuffle
         self.random_state = random_state
-        self._rng = check_random_state(random_state) if shuffle else None
 
         params = inspect.signature(self.cv_class).parameters
         if shuffle and ("shuffle" not in params and "random_state" not in params):
@@ -344,8 +339,12 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
         self._need_rng = "random_state" in params and (shuffle or "shuffle" not in params)
 
-        if "shuffle" in params:
-            self._cv_kwargs["shuffle"] = shuffle
+        for p, v in [
+            ("shuffle", shuffle),
+            ("random_state", self.random_state),
+        ]:
+            if p in params:
+                self._cv_kwargs[p] = v
 
     def get_n_splits(self, metadata):
         """
