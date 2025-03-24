@@ -19,7 +19,7 @@ class WithinSessionSplitter(BaseCrossValidator):
     and test sets for each subject in each session. This splitter
     assumes that all data from all subjects is already known and loaded.
 
-    .. image:: images/withinsess.png
+    .. image:: https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/images/withinsess.png
         :alt: The schematic diagram of the WithinSession split
         :align: center
 
@@ -124,7 +124,7 @@ class CrossSessionSplitter(BaseCrossValidator):
     the complete evaluation process end-to-end, this splitter is solely responsible
     for dividing the data into training and testing sets based on sessions.
 
-    .. image:: images/crosssess.jpg
+    .. image:: https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/images/crosssess.jpg
         :alt: The schematic diagram of the CrossSession split
         :align: center
 
@@ -281,7 +281,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
     the complete evaluation process end-to-end, this splitter is solely responsible
     for dividing the data into training and testing sets based on subjects.
 
-    .. image:: images/crosssubject.jpg
+    .. image:: https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/images/crosssubj.png
         :alt: The schematic diagram of the CrossSubject split
         :align: center
 
