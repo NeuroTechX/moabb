@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-         os: [ ubuntu-latest, macOS-latest ]
+        os: [ ubuntu-latest, macOS-latest ]
         python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
     defaults:
       run:
