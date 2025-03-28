@@ -7,7 +7,7 @@ from moabb.pipelines import SSVEP_MsetCCA
 
 
 class TestSSVEP_MsetCCA:
-    def setup(self):
+    def setup_method(self):
         # Use moabb generated dataset for test
         dataset = FakeDataset(n_sessions=1, n_runs=1, n_subjects=1, paradigm="ssvep")
         paradigm = SSVEP(n_classes=3)
