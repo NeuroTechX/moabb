@@ -57,7 +57,7 @@ jobs:
           python -m moabb.run --pipelines=./moabb/tests/test_pipelines/ --verbose
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         if: success()
         with:
           verbose: true
