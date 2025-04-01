@@ -19,7 +19,7 @@ class WithinSessionSplitter(BaseCrossValidator):
     and test sets for each subject in each session. This splitter
     assumes that all data from all subjects is already known and loaded.
 
-    .. image:: images/withinsess.png
+    .. image:: https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/images/withinsess.png
         :alt: The schematic diagram of the WithinSession split
         :align: center
 
@@ -124,7 +124,7 @@ class CrossSessionSplitter(BaseCrossValidator):
     the complete evaluation process end-to-end, this splitter is solely responsible
     for dividing the data into training and testing sets based on sessions.
 
-    .. image:: images/crosssess.jpg
+    .. image:: https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/images/crosssess.jpg
         :alt: The schematic diagram of the CrossSession split
         :align: center
 
@@ -267,3 +267,95 @@ class CrossSessionSplitter(BaseCrossValidator):
                 yield subject_indices[train_session_idx], subject_indices[
                     test_session_idx
                 ]
+
+
+class CrossSubjectSplitter(BaseCrossValidator):
+    """Data splitter for cross subject evaluation.
+
+    This splitter enables cross-subject evaluation by performing a Leave-One-Session-Out (LOSO)
+    cross-validation on the dataset.
+
+    It assumes that the entire metainformation across all subjects is already loaded.
+
+    Unlike the `CrossSubjectEvaluation` class from `moabb.evaluation`, which manages
+    the complete evaluation process end-to-end, this splitter is solely responsible
+    for dividing the data into training and testing sets based on subjects.
+
+    .. image:: https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/images/crosssubj.png
+        :alt: The schematic diagram of the CrossSubject split
+        :align: center
+
+    The splitting strategy for the subjects can be changed by passing the
+    `cv_class` and `cv_kwargs` arguments. By default, it uses LeaveOneGroupOut,
+    which performs Leave-One-Subject-Out cross-validation.
+
+    Parameters
+    ----------
+    cv_class: cross-validation class, default=LeaveOneGroupOut
+        Cross-validation strategy for splitting the subjects between train and test sets.
+        By default, use LeaveOneGroupOut, which keeps one subject as a test.
+    random_state: int, RandomState instance or None, default=None
+        Controls the randomness of the cross-validation.
+        Pass an int for reproducible output across multiple calls.
+    cv_kwargs: dict
+        Additional arguments to pass to the inner cross-validation strategy.
+
+    Yields
+    ------
+    train : ndarray
+        The training set indices for that split.
+
+    test : ndarray
+        The testing set indices for that split.
+    """
+
+    def __init__(
+        self,
+        cv_class: type[BaseCrossValidator] = LeaveOneGroupOut,
+        random_state: int = None,
+        **cv_kwargs,
+    ):
+        self.cv_class = cv_class
+        self.cv_kwargs = cv_kwargs
+        self._cv_kwargs = dict(**cv_kwargs)
+
+        params = inspect.signature(self.cv_class).parameters
+        if "random_state" in params:
+            self._cv_kwargs["random_state"] = random_state
+
+    def get_n_splits(self, metadata):
+        """
+        Return the number of splits for the cross-validation.
+
+        The number of splits is the number of subjects times the number of splits
+        of the inner cross-validation strategy.
+
+        We try to keep the same behaviour as the sklearn cross-validation classes.
+
+        Parameters
+        ----------
+        metadata: pd.DataFrame
+            The metadata containing the subject and session information.
+
+        Returns
+        -------
+        n_splits: int
+            The number of splits for the cross-validation
+        """
+
+        splitter = self.cv_class(**self._cv_kwargs)
+        n_splits = splitter.get_n_splits(metadata.index, groups=metadata["subject"])
+        return n_splits
+
+    def split(self, y, metadata):
+        # here, I am getting the index across all the subject
+        all_index = metadata.index.values
+
+        splitter = self.cv_class(**self._cv_kwargs)
+
+        # Yield the splits for the entire dataset
+        for train_session_idx, test_session_idx in splitter.split(
+            X=all_index, y=y, groups=metadata["subject"]
+        ):
+            # returning the index
+            yield all_index[train_session_idx], all_index[test_session_idx]
