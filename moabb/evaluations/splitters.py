@@ -319,7 +319,6 @@ class CrossSubjectSplitter(BaseCrossValidator):
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
 
-        self.shuffle = shuffle
         self.random_state = random_state
 
         params = inspect.signature(self.cv_class).parameters
