@@ -351,12 +351,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
         # here, I am getting the index across all the subject
         all_index = metadata.index.values
 
-        cv_kwargs = {**self._cv_kwargs}  # Copy the original kwargs
-        if self._need_rng:
-            cv_kwargs["random_state"] = self.random_state
-
-        # by default, I am using LeaveOneGroupOut
-        splitter = self.cv_class(**cv_kwargs)
+        splitter = self.cv_class(**self._cv_kwargs)
 
         # Yield the splits for the entire dataset
         for train_session_idx, test_session_idx in splitter.split(
