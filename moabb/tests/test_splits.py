@@ -163,7 +163,6 @@ def test_custom_shuffle_group(data):
 
     n_splits = 5
     splitter = CrossSubjectSplitter(
-        shuffle=True,
         random_state=42,
         cv_class=GroupShuffleSplit,
         n_splits=n_splits,
@@ -182,8 +181,6 @@ def test_custom_shuffle_group(data):
 
     # Check if shuffling produces different splits
     splitter_different_seed = CrossSubjectSplitter(
-        random_state=24,
-        shuffle=True,
         cv_class=GroupShuffleSplit,
         n_splits=n_splits,
     )
@@ -199,12 +196,12 @@ def test_custom_shuffle_group(data):
 def test_cross_session(shuffle, random_state, data):
     _, y, metadata = data
 
+    params = {"random_state": random_state}
+    params["shuffle"] = shuffle
     if shuffle:
-        split = CrossSessionSplitter(
-            shuffle=shuffle, random_state=random_state, cv_class=GroupShuffleSplit
-        )
-    else:
-        split = CrossSessionSplitter(shuffle=shuffle, random_state=random_state)
+        params["cv_class"] = GroupShuffleSplit
+
+    split = CrossSessionSplitter(**params)
 
     for idx_train_splitter, idx_test_splitter in split.split(y, metadata):
         # Check if the output is the same as the input
@@ -227,12 +224,13 @@ def test_cross_compatibility(splitter, shuffle, random_state, data):
     else:
         function_split = eval_split_cross_subject
 
+    params = {"random_state": random_state}
+    if splitter == CrossSessionSplitter:
+        params["shuffle"] = shuffle
     if shuffle:
-        split = splitter(
-            shuffle=shuffle, random_state=random_state, cv_class=GroupShuffleSplit
-        )
-    else:
-        split = splitter(shuffle=shuffle, random_state=random_state)
+        params["cv_class"] = GroupShuffleSplit
+
+    split = splitter(**params)
 
     for (idx_train, idx_test), (idx_train_splitter, idx_test_splitter) in zip(
         function_split(shuffle=shuffle, random_state=random_state, data=data),
@@ -390,7 +388,10 @@ def test_cross_subject_get_n_splits(data):
 def test_if_split_is_not_random(data, splitter):
     _, y, metadata = data
 
-    split = splitter(shuffle=True, random_state=42, cv_class=GroupShuffleSplit)
+    if splitter == CrossSessionSplitter:
+        split = splitter(shuffle=True, random_state=42, cv_class=GroupShuffleSplit)
+    else:
+        split = splitter(random_state=42, cv_class=GroupShuffleSplit)
 
     splits = list(split.split(y, metadata))
     splits_2 = list(split.split(y, metadata))
