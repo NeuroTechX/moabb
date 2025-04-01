@@ -321,7 +321,7 @@ class CrossSubjectSplitter(BaseCrossValidator):
 
         params = inspect.signature(self.cv_class).parameters
         if "random_state" in params:
-                self._cv_kwargs["random_state"] = random_state
+            self._cv_kwargs["random_state"] = random_state
 
     def get_n_splits(self, metadata):
         """
