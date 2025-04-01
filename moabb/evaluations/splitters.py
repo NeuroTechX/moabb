@@ -319,30 +319,9 @@ class CrossSubjectSplitter(BaseCrossValidator):
         self.cv_kwargs = cv_kwargs
         self._cv_kwargs = dict(**cv_kwargs)
 
-        self.random_state = random_state
-
         params = inspect.signature(self.cv_class).parameters
-        if shuffle and ("shuffle" not in params and "random_state" not in params):
-            raise ValueError(
-                f"Shuffling is not supported for {cv_class.__name__}. "
-                "Choose a different `cv_class` or use `shuffle=False`."
-                "Example of `cv_class`: `GroupShuffleSplit`: "
-                "CrossSubjectSplitter(shuffle=True, random_state=42, cv_class=GroupShuffleSplit)"
-            )
-
-        if not shuffle and "shuffle" in params and random_state is not None:
-            raise ValueError(
-                "`random_state` should be None when `shuffle` is False for {cv_class.__name__}"
-            )
-
-        self._need_rng = "random_state" in params and (shuffle or "shuffle" not in params)
-
-        for p, v in [
-            ("shuffle", shuffle),
-            ("random_state", self.random_state),
-        ]:
-            if p in params:
-                self._cv_kwargs[p] = v
+        if "random_state" in params:
+                self._cv_kwargs["random_state"] = random_state
 
     def get_n_splits(self, metadata):
         """
