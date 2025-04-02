@@ -1294,6 +1294,13 @@ class TestMetadata:
             additional_metadata=["value"],
         )
 
+        epo4, labels4, metadata4 = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=True,
+            additional_metadata=["value", "duration"],
+        )
+
         assert epo1 == epo2 == epo3
         assert (labels1 == labels2).all()
         assert (labels2 == labels3).all()
@@ -1301,4 +1308,7 @@ class TestMetadata:
         assert "value" in metadata2.columns
         assert "sample" in metadata2.columns
         assert "value" in metadata3.columns
+        assert "value" in metadata4.columns
+        assert "duration" in metadata4.columns
         assert "sample" not in metadata3.columns
+        assert "sample" not in metadata4.columns
