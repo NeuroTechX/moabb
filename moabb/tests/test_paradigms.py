@@ -11,6 +11,9 @@ from mne import BaseEpochs
 from mne.io import BaseRaw
 
 from moabb.datasets import BNCI2014_001
+from moabb.datasets.base import (
+    LocalBIDSDataset,
+)
 from moabb.datasets.fake import FakeDataset
 from moabb.paradigms import (
     CVEP,
@@ -1237,3 +1240,105 @@ class Test_Data:
         np.testing.assert_array_almost_equal(
             epo.get_data()[0, :, 0] * dataset.unit_factor, X
         )
+
+
+class TestMetadata:
+
+    @pytest.fixture(scope="class")
+    def cached_dataset_root(self, tmpdir_factory):
+        root = tmpdir_factory.mktemp("fake_bids")
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=2, n_subjects=2, n_runs=1
+        )
+        dataset.get_data(cache_config=dict(save_raw=True, overwrite_raw=False, path=root))
+        return root / "MNE-BIDS-fake-dataset-imagery-2-2--60--120--fake1-fake2--c3-cz-c4"
+
+    def test_additional_metadata_extracts(self, cached_dataset_root):
+
+        # --- The tsv files have metadata which would contain the following
+        #
+        # onset           duration trial_type      value   sample
+        # 0.0078125       3.0      fake1           1       1
+        # 1.984375        3.0      fake2           2       254
+        # 3.96875         3.0      fake1           1       508
+        # 5.953125        3.0      fake2           2       762
+        #
+        # --- While onset, duration and trial_type, are implicitly available
+        # --- by the epoch design, we could want `value` and or `sample` as well
+
+        dataset = LocalBIDSDataset(
+            cached_dataset_root,
+            events={"fake1": 1, "fake2": 2},
+            interval=[0, 3],
+            paradigm="imagery",
+        )
+        paradigm = MotorImagery()
+
+        epo1, labels1, metadata1 = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=True,
+        )
+
+        epo2, labels2, metadata2 = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=True,
+            additional_metadata="all",
+        )
+
+        epo3, labels3, metadata3 = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=True,
+            additional_metadata=["value"],
+        )
+
+        assert epo1 == epo2 == epo3
+        assert (labels1 == labels2).all()
+        assert (labels2 == labels3).all()
+
+        assert "value" in metadata2.columns
+        assert "sample" in metadata2.columns
+        assert "value" in metadata3.columns
+        assert "sample" not in metadata3.columns
+
+    #     # [ ] could not find a paradigm which would take multiple filters,
+    #     #     ommit this for now
+    # def test_meta_for_multiple_filters(self, cached_dataset_root):
+    #     dataset = LocalBIDSDataset(
+    #         cached_dataset_root,
+    #         events={"fake1": 1, "fake2": 2},
+    #         interval=[0, 3],
+    #         paradigm="imagery",
+    #     )
+    #     # paradigm = MotorImagery()
+    #     # paradigm = FixedIntervalWindowsProcessing()
+    #
+    #     epo1, labels1, metadata1 = paradigm.get_data(
+    #         dataset=dataset,
+    #         subjects=["1"],
+    #         return_epochs=True,
+    #     )
+    #
+    #
+    #  # This could be a test if we get a dataset for testing which is not a
+    #  # basebids compliant
+    #
+    # def test_type_error_for_non_basebids_data(self, cached_dataset_root):
+    #
+    #     dataset = LocalBIDSDataset(
+    #         cached_dataset_root,
+    #         events={"fake1": 1, "fake2": 2},
+    #         interval=[0, 3],
+    #         paradigm="imagery",
+    #     )
+    #     paradigm = CVEP()
+    #
+    #     with pytest.raises(TypeError):
+    #         paradigm.get_data(
+    #             dataset=dataset,
+    #             subjects=["1"],
+    #             return_epochs=True,
+    #             additional_metadata="all",
+    #         )

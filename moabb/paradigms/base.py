@@ -1,15 +1,16 @@
 import abc
 import logging
 from operator import methodcaller
-from typing import List, Optional, Tuple
+from typing import List, Literal, Optional, Tuple
 
 import mne
 import numpy as np
 import pandas as pd
+from mne_bids.path import _find_matching_sidecar
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
-from moabb.datasets.base import BaseDataset
+from moabb.datasets.base import BaseBIDSDataset, BaseDataset
 from moabb.datasets.bids_interface import StepType
 from moabb.datasets.preprocessing import (
     EpochsToEvents,
@@ -232,6 +233,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
         return_raws=False,
         cache_config=None,
         postprocess_pipeline=None,
+        additional_metadata: Literal["default", "all"] | list[str] = "default",
     ):
         """
         Return the data for a list of subject.
@@ -265,6 +267,13 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             This pipeline must return an ``np.ndarray``.
             This pipeline must be "fixed" because it will not be trained,
             i.e. no call to ``fit`` will be made.
+        additional_metadata: Literal["default", "all"] | list[str]
+            Additional metadata to be loaded if return_epochs=True.
+            If "default", the default metadata will be loaded containing containing
+            `subject`, `session` and `run`. If "all", all columns of the `events.tsv`
+            file will be loaded. A list of column names can be passed to just
+            select these columns in addition to the three default values mentioned
+            before.
 
         Returns
         -------
@@ -306,6 +315,7 @@ class BaseProcessing(metaclass=abc.ABCMeta):
             for session, runs in sessions.items():
                 for run in runs.keys():
                     proc = [data_i[subject][session][run] for data_i in data]
+
                     if any(obj is None for obj in proc):
                         # this mean the run did not contain any selected event
                         # go to next
@@ -321,6 +331,38 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                             if len(self.filters) == 1
                             else mne.concatenate_epochs(proc)
                         )
+
+                        # prepare additional metadata
+                        if additional_metadata != "default":
+                            if not isinstance(dataset, BaseBIDSDataset):
+                                raise TypeError(
+                                    "Additional_metadata can only be used with BIDS datasets."
+                                )
+
+                            dm = load_bids_event_metadata(
+                                dataset, subject=subject, session=session, run=run
+                            )
+
+                            # stack for multiple bandpass filtered versions
+                            dm = pd.concat(
+                                [
+                                    dm.copy().assign(filter=i)
+                                    for i in range(len(self.filters))
+                                ],
+                                ignore_index=True,
+                            )
+
+                            if additional_metadata == "all":
+                                pass
+                            elif isinstance(additional_metadata, list):
+                                dm = dm[
+                                    ["session", "subject", "run"] + additional_metadata
+                                ]
+                            else:
+                                raise ValueError(
+                                    "Additional_metadata must be 'default', all' or a list of column names"
+                                )
+
                     elif return_raws:
                         assert all(len(proc[0]) == len(p) for p in proc[1:])
                         n = 1
@@ -350,16 +392,22 @@ class BaseProcessing(metaclass=abc.ABCMeta):
                     met["subject"] = subject
                     met["session"] = session
                     met["run"] = run
+
                     metadata.append(met)
 
                     if return_epochs:
-                        x.metadata = (
-                            met.copy()
-                            if len(self.filters) == 1
-                            else pd.concat(
-                                [met.copy()] * len(self.filters), ignore_index=True
+                        if additional_metadata == "default":
+                            x.metadata = (
+                                met.copy()
+                                if len(self.filters) == 1
+                                else pd.concat(
+                                    [met.copy()] * len(self.filters), ignore_index=True
+                                )
                             )
-                        )
+                        else:
+                            x.metadata = dm
+                            # also overwrite in the metadata list
+                            metadata[-1] = dm
                     X.append(x)
                     labels.append(lbs)
 
@@ -556,3 +604,30 @@ class BaseParadigm(BaseProcessing):
     def _get_events_pipeline(self, dataset):
         event_id = self.used_events(dataset)
         return RawToEvents(event_id=event_id, interval=dataset.interval)
+
+
+def load_bids_event_metadata(
+    data_set: BaseBIDSDataset, subject: str, session: str, run: str
+) -> pd.DataFrame:
+    bids_paths = data_set.bids_paths(subject)
+
+    # select only with matching session and run
+    bids_path_selected = [
+        pth
+        for pth in bids_paths
+        if f"ses-{session}" in pth.basename and f"run-{run}" in pth.basename
+    ]
+
+    if len(bids_path_selected) > 1:
+        raise ValueError("More than one matching BIDS path found.")
+    bids_path = bids_path_selected[0]
+
+    events_fname = _find_matching_sidecar(
+        bids_path, suffix="events", extension=".tsv", on_error="warn"
+    )
+
+    dm = pd.read_csv(events_fname, sep="\t").assign(
+        subject=subject, session=session, run=run
+    )
+
+    return dm
