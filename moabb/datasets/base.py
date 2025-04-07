@@ -13,6 +13,7 @@ from typing import Any, Dict, Union
 
 import mne_bids
 import pandas as pd
+from mne_bids.path import _find_matching_sidecar
 from sklearn.pipeline import Pipeline
 
 from moabb.datasets.bids_interface import StepType, _interface_map
@@ -674,6 +675,34 @@ class BaseDataset(metaclass=MetaclassDataset):
         """  # noqa: E501
         pass
 
+    def get_additional_metadata(
+        self, subject: str, session: str, run: str
+    ) -> None | pd.DataFrame:
+        """
+        Load additional metadata for a specific subject, session, and run.
+
+        This method is intended to be overridden by subclasses to provide
+        additional metadata specific to the dataset. The metadata is typically
+        loaded from an `events.tsv` file or similar data source.
+
+        Parameters
+        ----------
+        subject : str
+            The identifier for the subject.
+        session : str
+            The identifier for the session.
+        run : str
+            The identifier for the run.
+
+        Returns
+        -------
+        None | pd.DataFrame
+            A DataFrame containing the additional metadata if available,
+            otherwise None.
+        """
+
+        return None
+
 
 class BaseBIDSDataset(BaseDataset):
     """Abstract BIDS dataset class.
@@ -763,6 +792,69 @@ class BaseBIDSDataset(BaseDataset):
                 run = bids_path.run
             data.setdefault(session, {})[run] = raw
         return data
+
+    def get_additional_metadata(
+        self, subject: str, session: str, run: str
+    ) -> None | pd.DataFrame:
+        """
+        Load additional metadata for a specific subject, session, and run.
+        This is just loading all metadata, filtering down to epochs levels
+        is done at ...
+
+
+        Parameters
+        ----------
+        subject : str
+            The identifier for the subject.
+        session : str
+            The identifier for the session.
+        run : str
+            The identifier for the run.
+
+        Returns
+        -------
+        None | pd.DataFrame
+            A DataFrame containing the additional metadata if available,
+            otherwise None.
+        """
+
+        bids_paths = self.bids_paths(subject)
+
+        # select only with matching session and run
+        bids_path_selected = [
+            pth
+            for pth in bids_paths
+            if f"ses-{session}" in pth.basename and f"run-{run}" in pth.basename
+        ]
+
+        if len(bids_path_selected) > 1:
+            raise ValueError("More than one matching BIDS path found.")
+        bids_path = bids_path_selected[0]
+
+        events_fname = _find_matching_sidecar(
+            bids_path, suffix="events", extension=".tsv", on_error="warn"
+        )
+
+        dm = pd.read_csv(events_fname, sep="\t").assign(
+            subject=subject, session=session, run=run
+        )
+
+        # As long as this is not part of mne-bids https://github.com/mne-tools/mne-bids/pull/1389,
+        # we cannot will functionally replicate the filtering (as we only)
+        # need the dropping part
+        dm = dm[(dm.onset != "n/a") & (~dm.onset.isna())]
+        dm["onset"] = dm["onset"].astype(float)
+
+        if "trial_type" in dm.columns:
+            dm = dm[(dm.trial_type != "n/a") & (~dm.onset.isna())]
+        elif "value" in dm.columns:
+            dm = dm[(dm.value != "n/a") & (~dm.onset.isna())]
+
+        # for the bids_dataset we can assume that the events are taken from
+        # a `trial_type` columns -> filter on this
+        dm = dm[dm["trial_type"].isin(self.event_id.keys())]
+
+        return dm
 
 
 class LocalBIDSDataset(BaseBIDSDataset):
