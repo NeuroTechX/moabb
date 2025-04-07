@@ -11,7 +11,7 @@ import pandas as pd
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
-from moabb.datasets.base import BaseBIDSDataset, BaseDataset
+from moabb.datasets.base import BaseDataset
 from moabb.datasets.bids_interface import StepType
 from moabb.datasets.preprocessing import (
     EpochsToEvents,

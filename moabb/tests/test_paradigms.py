@@ -3,7 +3,6 @@ import shutil
 import tempfile
 import unittest
 from math import ceil
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
