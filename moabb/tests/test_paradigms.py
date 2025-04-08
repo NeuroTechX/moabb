@@ -9,8 +9,12 @@ import pandas as pd
 import pytest
 from mne import BaseEpochs
 from mne.io import BaseRaw
+from mne_bids.path import _find_matching_sidecar
 
 from moabb.datasets import BNCI2014_001
+from moabb.datasets.base import (
+    LocalBIDSDataset,
+)
 from moabb.datasets.fake import FakeDataset
 from moabb.paradigms import (
     CVEP,
@@ -1237,3 +1241,134 @@ class Test_Data:
         np.testing.assert_array_almost_equal(
             epo.get_data()[0, :, 0] * dataset.unit_factor, X
         )
+
+
+class TestMetadata:
+
+    @pytest.fixture(scope="class")
+    def cached_dataset_root(self, tmpdir_factory):
+        root = tmpdir_factory.mktemp("fake_bids")
+        dataset = FakeDataset(
+            event_list=["fake1", "fake2"], n_sessions=2, n_subjects=2, n_runs=1
+        )
+        dataset.get_data(cache_config=dict(save_raw=True, overwrite_raw=False, path=root))
+        return root / "MNE-BIDS-fake-dataset-imagery-2-2--60--120--fake1-fake2--c3-cz-c4"
+
+    def test_additional_metadata_extracts_aligned(self, cached_dataset_root):
+        """
+        Test extraction of additional metadata if all rows in the events.tsv
+        were used to create annotations on the raw -> used for epoching
+        """
+
+        # --- The tsv files have metadata which would contain the following
+        #
+        # onset           duration trial_type      value   sample
+        # 0.0078125       3.0      fake1           1       1
+        # 1.984375        3.0      fake2           2       254
+        # 3.96875         3.0      fake1           1       508
+        # 5.953125        3.0      fake2           2       762
+        #
+        # --- While onset, duration and trial_type, are implicitly available
+        # --- by the epoch design, we could want `value` and or `sample` as well
+
+        dataset = LocalBIDSDataset(
+            cached_dataset_root,
+            events={"fake1": 1, "fake2": 2},
+            interval=[0, 3],
+            paradigm="imagery",
+        )
+        paradigm = MotorImagery()
+
+        epo1, labels1, metadata1 = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=True,
+        )
+
+        raw, raw_labels, raw_metadata = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=False,
+            additional_metadata="all",
+        )
+
+        epo2, labels2, metadata2 = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=True,
+            additional_metadata="all",
+        )
+
+        epo3, labels3, metadata3 = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=True,
+            additional_metadata=["value"],
+        )
+
+        epo4, labels4, metadata4 = paradigm.get_data(
+            dataset=dataset,
+            subjects=["1"],
+            return_epochs=True,
+            additional_metadata=["value", "duration"],
+        )
+
+        assert epo1 == epo2 == epo3
+        assert (labels1 == labels2).all()
+        assert (labels2 == labels3).all()
+
+        assert (raw_metadata == epo2.metadata).all().all()
+        assert (metadata2 == epo2.metadata).all().all()
+
+        assert (metadata1.columns == ["subject", "session", "run"]).all()
+
+        assert "value" in metadata2.columns
+        assert "sample" in metadata2.columns
+        assert "value" in metadata3.columns
+        assert "value" in metadata4.columns
+        assert "duration" in metadata4.columns
+        assert "sample" not in metadata3.columns
+        assert "sample" not in metadata4.columns
+
+    def test_additional_metadata_extracts_non_aligned(self, cached_dataset_root):
+        """
+        Test extraction of additional metadata if NOT all rows in the events.tsv
+        were used to create annotations on the raw -> used for epoching
+        """
+
+        dataset = LocalBIDSDataset(
+            cached_dataset_root,
+            events={"fake1": 1},
+            interval=[0, 3],
+            paradigm="imagery",
+        )
+
+        # modify the events.tsv to contain 'n/a'
+        events_fname = _find_matching_sidecar(
+            dataset.bids_paths("1")[0], suffix="events", extension=".tsv"
+        )
+        df = pd.read_csv(events_fname, sep="\t")
+        df = df.assign(ix=range(len(df)))
+        for c in ["onset", "trial_type"]:
+            df[c] = df[c].astype(str)
+        df.loc[0, "onset"] = "n/a"
+        df.loc[2, "trial_type"] = "n/a"
+        df.to_csv(events_fname, sep="\t", index=False)
+
+        paradigm = MotorImagery()
+
+        epo, labels, metadata = paradigm.get_data(
+            dataset=dataset, subjects=["1"], return_epochs=True, additional_metadata="all"
+        )
+
+        assert (
+            len(epo[metadata["session"] == "0"])
+            == len(df[df["trial_type"] == "fake1"]) - 1
+        )  # -1 for the one onset which is n/a!
+
+        # test that the first fake1 value is skipped since the onset is n/a
+        # and the second is skipped as the trial_type is n/a
+        assert metadata.onset.iloc[0] == float(df[df.trial_type == "fake1"].onset.iloc[1])
+        assert "n/a" not in df.trial_type
+
+        assert (epo.metadata.fillna(0) == metadata.fillna(0)).all().all()
