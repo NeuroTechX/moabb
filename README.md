@@ -1,4 +1,4 @@
-<p align="center" style="font-size: 60px;">
+<p align="center" style="font-size: 40px;">
   <span style="font-size: 70px; font-weight: 900;">Mother of all BCI Benchmarks</span>   <img src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
   Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
 </p>

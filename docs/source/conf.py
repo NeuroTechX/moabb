@@ -241,7 +241,7 @@ html_theme_options = {
     "show_toc_level": 1,
     "nosidebar": True,
     "navbar_end": ["theme-switcher"],
-    "announcement": "https://raw.githubusercontent.com/bruAristimunha/moabb/develop/docs/source/_templates/custom-template.html",
+    "announcement": "https://raw.githubusercontent.com/neurotechx/moabb/develop/docs/source/_templates/custom-template.html",
     "show_version_warning_banner": True,
     "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
     "pygments_light_style": "tango",
