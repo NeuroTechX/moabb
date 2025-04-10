@@ -187,23 +187,33 @@ def set_config(key, value, home_dir=None, set_env=True):
     directory = op.dirname(config_path)
     if not op.isdir(directory):
         os.mkdir(directory)
-    with open(config_path, "w") as fid:
+    # Write the JSON config file under lock so that concurrent access is serialized.
+    with _open_lock(config_path, "w") as fid:
         json.dump(config, fid, sort_keys=True, indent=0)
 
 
 def _load_config(config_path, raise_error=False):
-    """Safely load a config file."""
-    with open(config_path) as fid:
-        try:
+    """
+    Safely load a config file under lock.
+
+    If the file is not found, returns an empty dictionary.
+    If the file exists but cannot be decoded as JSON, either raises a RuntimeError
+    (if raise_error is True) or warns and returns an empty dictionary.
+    """
+    if not op.isfile(config_path):
+        return {}
+
+    try:
+        # Open with our locking context (read mode)
+        with _open_lock(config_path, "r") as fid:
             config = json.load(fid)
-        except ValueError:
-            # No JSON object could be decoded --> corrupt file?
-            msg = (
-                f"The MNE-Python config file ({config_path}) is not a valid JSON "
-                "file and might be corrupted"
-            )
-            if raise_error:
-                raise RuntimeError(msg)
-            warn(msg)
-            config = dict()
+    except Exception as e:
+        msg = (
+            f"Error reading config file ({config_path}): {e}. "
+            "The file may be corrupted or being written simultaneously."
+        )
+        if raise_error:
+            raise RuntimeError(msg)
+        warn(msg)
+        config = {}
     return config
