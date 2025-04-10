@@ -23,7 +23,7 @@ def _open_lock(path, *args, **kwargs):
         try:
             # Here we set an optional timeout (e.g., 5 sec) so that processes
             # do not hang indefinitely. Adjust as needed.
-            lock = filelock.FileLock(lock_path, timeout=5)
+            lock = filelock.FileLock(lock_path, timeout=60)
         except Exception as e:
             warn(f"Failed to create a FileLock object for {lock_path}: {e}")
             lock = None
