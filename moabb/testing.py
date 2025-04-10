@@ -1,10 +1,48 @@
+import contextlib
 import json
 import os
 import os.path as op
 
 from mne.utils._logging import logger, warn
-from mne.utils.check import _validate_type
-from mne.utils.config import _known_config_types, _known_config_wildcards
+from mne.utils.check import _soft_import, _validate_type
+from mne.utils.config import _known_config_types, _known_config_wildcards, get_config_path
+
+
+@contextlib.contextmanager
+def _open_lock(path, *args, **kwargs):
+    """
+    Context manager that opens a file with an optional file lock.
+
+    If the `filelock` package is available, a lock is acquired on a lock file
+    based on the given path (by appending '.lock').  Otherwise, a null context is used.
+    The file is then opened in the specified mode.
+    """
+    filelock = _soft_import("filelock", raise_error=False)
+    if filelock is not None:
+        lock_path = f"{path}.lock"
+        try:
+            # Here we set an optional timeout (e.g., 5 sec) so that processes
+            # do not hang indefinitely. Adjust as needed.
+            lock = filelock.FileLock(lock_path, timeout=5)
+        except Exception as e:
+            warn(f"Failed to create a FileLock object for {lock_path}: {e}")
+            lock = None
+    else:
+        # Warn that locking is disabled which might lead to parallel write issues.
+        warn(
+            "File locking is disabled because the filelock package is not installed. "
+            "This might lead to data corruption when multiple processes write simultaneously."
+        )
+        lock = None
+
+    # Use the lock if available; otherwise, use a null context
+    lock_context = lock if lock is not None else contextlib.nullcontext()
+
+    # It is important to acquire the lock *before* opening the file to
+    # avoid race conditions.
+    with lock_context:
+        with open(path, *args, **kwargs) as fid:
+            yield fid
 
 
 def get_config(key=None, default=None, raise_error=False, home_dir=None, use_env=True):
@@ -57,7 +95,7 @@ def get_config(key=None, default=None, raise_error=False, home_dir=None, use_env
     if not op.isfile(config_path):
         config = {}
     else:
-        config = _load_config_no_lock(config_path)
+        config = _load_config(config_path)
 
     if key is None:
         # update config with environment variables
@@ -89,35 +127,6 @@ def get_config(key=None, default=None, raise_error=False, home_dir=None, use_env
         return config.get(key, default)
 
 
-def get_config_path(home_dir=None):
-    # Dummy implementation: In practice, this finds ~/.mne/mne-python.json, etc.
-    if home_dir is None:
-        home_dir = os.path.expanduser("~")
-    config_dir = op.join(home_dir, ".mne")
-    if not op.isdir(config_dir):
-        os.mkdir(config_dir)
-    return op.join(config_dir, "mne-python.json")
-
-
-def _load_config_no_lock(config_path, raise_error=False):
-    """Load config from file without acquiring the lock (assumes lock already held)."""
-    if not op.isfile(config_path):
-        return {}
-    with open(config_path, "r") as fid:
-        try:
-            config = json.load(fid)
-        except ValueError:
-            msg = (
-                f"The MNE-Python config file ({config_path}) is not a valid JSON "
-                "file and might be corrupted"
-            )
-            if raise_error:
-                raise RuntimeError(msg)
-            warn(msg)
-            config = {}
-    return config
-
-
 def set_config(key, value, home_dir=None, set_env=True):
     """Set a MNE-Python preference key in the config file and environment.
 
@@ -125,60 +134,76 @@ def set_config(key, value, home_dir=None, set_env=True):
     ----------
     key : str
         The preference key to set.
-    value : str | None
-        The value to assign to the preference key. If None, the key is deleted.
+    value : str |  None
+        The value to assign to the preference key. If None, the key is
+        deleted.
     home_dir : str | None
         The folder that contains the .mne config folder.
         If None, it is found automatically.
     set_env : bool
-        If True (default), update os.environ in addition to updating the config file.
+        If True (default), update :data:`os.environ` in addition to
+        updating the MNE-Python config file.
 
     See Also
     --------
     get_config
     """
     _validate_type(key, "str", "key")
-    # We only allow string (or path-like/None) values, so enforce that:
+    # While JSON allow non-string types, we allow users to override config
+    # settings using env, which are strings, so we enforce that here
     _validate_type(value, (str, "path-like", type(None)), "value")
     if value is not None:
         value = str(value)
+
     if key not in _known_config_types and not any(
         key.startswith(k) for k in _known_config_wildcards
     ):
         warn(f'Setting non-standard config type: "{key}"')
 
+    # Read all previous values
     config_path = get_config_path(home_dir=home_dir)
-    # Use one lock for the whole read-update-write cycle:
-    from filelock import FileLock
+    if op.isfile(config_path):
+        config = _load_config(config_path, raise_error=True)
+    else:
+        config = dict()
+        logger.info(
+            f"Attempting to create new mne-python configuration file:\n{config_path}"
+        )
+    if value is None:
+        config.pop(key, None)
+        if set_env and key in os.environ:
+            del os.environ[key]
+    else:
+        config[key] = value
+        if set_env:
+            os.environ[key] = value
+        if key == "MNE_BROWSER_BACKEND":
+            from ..viz._figure import set_browser_backend
 
-    lock_path = config_path + ".lock"
-    lock = FileLock(lock_path)
-    with lock:
-        # Read the current config (without acquiring the lock again)
-        if op.isfile(config_path):
-            config = _load_config_no_lock(config_path, raise_error=True)
-        else:
-            config = dict()
-            logger.info(
-                f"Attempting to create new mne-python configuration file:\n{config_path}"
+            set_browser_backend(value)
+
+    # Write all values. This may fail if the default directory is not
+    # writeable.
+    directory = op.dirname(config_path)
+    if not op.isdir(directory):
+        os.mkdir(directory)
+    with open(config_path, "w") as fid:
+        json.dump(config, fid, sort_keys=True, indent=0)
+
+
+def _load_config(config_path, raise_error=False):
+    """Safely load a config file."""
+    with open(config_path) as fid:
+        try:
+            config = json.load(fid)
+        except ValueError:
+            # No JSON object could be decoded --> corrupt file?
+            msg = (
+                f"The MNE-Python config file ({config_path}) is not a valid JSON "
+                "file and might be corrupted"
             )
-        # Update the config: if value is None, delete the key; otherwise, set it.
-        if value is None:
-            config.pop(key, None)
-            if set_env and key in os.environ:
-                del os.environ[key]
-        else:
-            config[key] = value
-            if set_env:
-                os.environ[key] = value
-            if key == "MNE_BROWSER_BACKEND":
-                from mne.viz._figure import set_browser_backend
-
-                set_browser_backend(value)
-        # Ensure directory exists.
-        directory = op.dirname(config_path)
-        if not op.isdir(directory):
-            os.mkdir(directory)
-        # Write the updated config.
-        with open(config_path, "w") as fid:
-            json.dump(config, fid, sort_keys=True, indent=0)
+            if raise_error:
+                raise RuntimeError(msg)
+            warn(msg)
+            config = dict()
+    return config
