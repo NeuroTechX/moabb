@@ -17,7 +17,7 @@ def _open_lock(path, *args, **kwargs):
     based on the given path (by appending '.lock').  Otherwise, a null context is used.
     The file is then opened in the specified mode.
     """
-    filelock = _soft_import("filelock", raise_error=False)
+    filelock = _soft_import("filelock", purpose="parallel integration", strict=False)
     if filelock is not None:
         lock_path = f"{path}.lock"
         try:
