@@ -122,10 +122,3 @@ class Schirrmeister2017(BaseDataset):
             "0": {"0train": train_raw, "1test": test_raw},
         }
         return sessions
-
-
-if __name__ == "__main__":
-    dataset = Schirrmeister2017()
-    dataset.download()
-    data = dataset.get_data(subjects=[1])
-    print(data)
