@@ -3,13 +3,14 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
-from mne import Annotations, annotations_from_events, create_info, get_config, set_config
+from mne import Annotations, annotations_from_events, create_info
 from mne.channels import make_standard_montage
 from mne.io import RawArray
 
 from moabb.datasets.base import BaseDataset
 from moabb.datasets.braininvaders import Cattan2019_VR
 from moabb.datasets.utils import block_rep
+from moabb.testing import get_config, set_config
 
 
 class FakeDataset(BaseDataset):
