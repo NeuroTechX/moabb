@@ -79,31 +79,31 @@ class Schirrmeister2017(BaseDataset):
         # Get the base path for the dataset
         base_path = dl.get_dataset_path("SCHIRRMEISTER2017", path)
         dataset_folder = os.path.join(base_path, "MNE-schirrmeister2017-data")
-        
+
         # Create subfolder paths
         paths = []
         for t in ["train", "test"]:
             url = _url(t)
             # Extract subfolder name from URL
             subfolder = t
-            
+
             # Download the file to a temporary location
             temp_path = dl.data_dl(url, "SCHIRRMEISTER2017", path, force_update, verbose)
-            
+
             # Create the proper subfolder structure
             subfolder_path = os.path.join(dataset_folder, subfolder)
             os.makedirs(subfolder_path, exist_ok=True)
-            
+
             # Move file to the correct subfolder
             filename = os.path.basename(temp_path)
             new_path = os.path.join(subfolder_path, filename)
-            
+
             # If file already exists in target location, no need to move it
             if not os.path.exists(new_path):
                 shutil.move(temp_path, new_path)
-            
+
             paths.append(new_path)
-        
+
         return paths
 
     def _get_single_subject_data(self, subject):
