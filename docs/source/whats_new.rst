@@ -32,6 +32,7 @@ Bugs
 - Fix learning curve example (:gh:`717` by `Pierre Guetschel`_)
 - Pick all data channels in filter preprocessing step (:gh:`729` by `Pierre Guetschel`_)
 - Fix CI for permutation testing (:gh:`757` by `Quentin Barthelemy`_)
+- Fix download issue with Schirrmeister2017 dataset (:gh:`751` by `Zheyu Yao`_)
 
 API changes
 ~~~~~~~~~~~
@@ -513,6 +514,7 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
+.. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
 .. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001
