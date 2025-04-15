@@ -1,4 +1,6 @@
 import logging
+import os
+import shutil
 
 import mne
 from mne.channels import make_standard_montage
@@ -19,7 +21,7 @@ class Schirrmeister2017(BaseDataset):
 
     Dataset from [1]_
 
-    Our “High-Gamma Dataset” is a 128-electrode dataset (of which we later only use
+    Our "High-Gamma Dataset" is a 128-electrode dataset (of which we later only use
     44 sensors covering the motor cortex, (see Section 2.7.1), obtained from 14
     healthy subjects (6 female, 2 left-handed, age 27.2 ± 3.6 (mean ± std)) with
     roughly 1000 (963.1 ± 150.9, mean ± std) four-second trials of executed
@@ -74,10 +76,35 @@ class Schirrmeister2017(BaseDataset):
         def _url(prefix):
             return "/".join([GIN_URL, prefix, "{:d}.edf".format(subject)])
 
-        return [
-            dl.data_dl(_url(t), "SCHIRRMEISTER2017", path, force_update, verbose)
-            for t in ["train", "test"]
-        ]
+        # Get the base path for the dataset
+        base_path = dl.get_dataset_path("SCHIRRMEISTER2017", path)
+        dataset_folder = os.path.join(base_path, "MNE-schirrmeister2017-data")
+        
+        # Create subfolder paths
+        paths = []
+        for t in ["train", "test"]:
+            url = _url(t)
+            # Extract subfolder name from URL
+            subfolder = t
+            
+            # Download the file to a temporary location
+            temp_path = dl.data_dl(url, "SCHIRRMEISTER2017", path, force_update, verbose)
+            
+            # Create the proper subfolder structure
+            subfolder_path = os.path.join(dataset_folder, subfolder)
+            os.makedirs(subfolder_path, exist_ok=True)
+            
+            # Move file to the correct subfolder
+            filename = os.path.basename(temp_path)
+            new_path = os.path.join(subfolder_path, filename)
+            
+            # If file already exists in target location, no need to move it
+            if not os.path.exists(new_path):
+                shutil.move(temp_path, new_path)
+            
+            paths.append(new_path)
+        
+        return paths
 
     def _get_single_subject_data(self, subject):
         train_raw, test_raw = [
@@ -95,3 +122,10 @@ class Schirrmeister2017(BaseDataset):
             "0": {"0train": train_raw, "1test": test_raw},
         }
         return sessions
+
+
+if __name__ == "__main__":
+    dataset = Schirrmeister2017()
+    dataset.download()
+    data = dataset.get_data(subjects=[1])
+    print(data)
