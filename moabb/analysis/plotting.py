@@ -426,14 +426,15 @@ def _plot_hexa_bubbles(
 
 def _add_bubble_legend(scale, color_map, alphas, fontsize, x0, y0, ax):
     circles = []  # (text, diameter, alpha, color)
+    alpha = alphas[0]
     # sizes
-    circles.append(("100 trials", np.log(100) * scale, 0.5, "black"))
-    circles.append(("1000 trials", np.log(1000) * scale, 0.5, "black"))
-    circles.append(("10000 trials", np.log(10000) * scale, 0.5, "black"))
+    circles.append(("100 trials", np.log(100) * scale, alpha, "black"))
+    circles.append(("1000 trials", np.log(1000) * scale, alpha, "black"))
+    circles.append(("10000 trials", np.log(10000) * scale, alpha, "black"))
     circles.append(None)
     # colour
     for paradigm, c in color_map.items():
-        circles.append((paradigm, np.log(1000) * scale, 0.5, c))
+        circles.append((paradigm, np.log(1000) * scale, alpha, c))
     circles.append(None)
     # intensity
     circles.append(("1 session", np.log(1000) * scale, alphas[0], "black"))
@@ -479,7 +480,7 @@ def dataset_bubble_plot(
         Scaling factor applied to the bubble sizes.
     color_map: dict[str, Any] | None
         Dictionary that maps paradigms to colors. If None,
-        the Set2 color map is used.
+        the tab10 color map is used.
     alphas: Sequence[float] | None
         List of alpha values for the bubbles. If None, a default
         list is used.
@@ -495,10 +496,10 @@ def dataset_bubble_plot(
     ax: Axes | None
         Axes to plot on. If None, the default axes are used.
     """
-    p = sea.color_palette("Set2", 5)
+    p = sea.color_palette("tab10", 5)
     color_map = color_map or dict(zip(["imagery", "p300", "ssvep", "cvep", "rstate"], p))
 
-    alphas = alphas or [0.7, 0.6, 0.5, 0.4, 0.3, 0.2]
+    alphas = alphas or [0.7, 0.55, 0.4, 0.25, 0.1]
 
     row = dataset._summary_table
     paradigm = dataset.paradigm
@@ -522,7 +523,7 @@ def dataset_bubble_plot(
         color=color_map[paradigm],
         ax=ax,
         diameter=np.log(n_trials) * scale,
-        alpha=alphas[min(n_sessions - 1, len(alphas))],
+        alpha=alphas[min(n_sessions, len(alphas)) - 1],
         lw=0,
         center=center,
     )
