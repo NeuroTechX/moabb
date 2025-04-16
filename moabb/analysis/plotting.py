@@ -1,6 +1,7 @@
 import logging
 import re
 from typing import Any, Sequence
+from __future__ import annotations
 
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
