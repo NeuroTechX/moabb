@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 import logging
+import re
+from typing import Any, Sequence
 
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sea
+from matplotlib import patheffects
 from scipy.stats import t
 
 from moabb.analysis.meta_analysis import (
@@ -383,3 +388,173 @@ def meta_analysis_plot(stats_df, alg1, alg2):  # noqa: C901
     fig.tight_layout()
 
     return fig
+
+
+def _get_hexa_grid(n, diameter, center):
+    x = np.arange(n) - n // 2 + np.random.rand()  # TODO
+    y = np.arange(n) - n // 2 + np.random.rand()
+    x, y = np.meshgrid(x, y)
+    x = x.flatten()
+    y = y.flatten()
+    return (
+        np.concatenate([x, x + 0.5]) * diameter + center[0],
+        np.concatenate([y, y + 0.5]) * diameter * np.sqrt(3) + center[1],
+    )
+
+
+def _get_bubble_coordinates(n, diameter, center):
+    x, y = _get_hexa_grid(n, diameter, center)
+    dist = np.sqrt((x - center[0]) ** 2 + (y - center[1]) ** 2)
+    dort_idx = dist.argsort()
+    x = x[dort_idx]
+    y = y[dort_idx]
+    return x[:n], y[:n]
+
+
+def _plot_hexa_bubbles(
+    *,
+    n: int,
+    diameter: float,
+    center: tuple[float, float] = (0.0, 0.0),
+    ax,
+    **kwargs,
+):
+    x, y = _get_bubble_coordinates(n, diameter, center)
+    for xi, yi in zip(x, y):
+        circle = plt.Circle((xi, yi), diameter / 2, **kwargs)
+        ax.add_patch(circle)
+    return x, y
+
+
+def _add_bubble_legend(scale, color_map, alphas, fontsize, x0, y0, ax):
+    circles = []  # (text, diameter, alpha, color)
+    alpha = alphas[0]
+    # sizes
+    circles.append(("100 trials", np.log(100) * scale, alpha, "black"))
+    circles.append(("1000 trials", np.log(1000) * scale, alpha, "black"))
+    circles.append(("10000 trials", np.log(10000) * scale, alpha, "black"))
+    circles.append(None)
+    # colour
+    for paradigm, c in color_map.items():
+        circles.append((paradigm, np.log(1000) * scale, alpha, c))
+    circles.append(None)
+    # intensity
+    circles.append(("1 session", np.log(1000) * scale, alphas[0], "black"))
+    circles.append(("3 sessions", np.log(1000) * scale, alphas[2], "black"))
+    circles.append(("5 sessions", np.log(1000) * scale, alphas[4], "black"))
+
+    for i, item in enumerate(reversed(circles)):
+        if item is None:
+            continue
+        text, diameter, alpha, color = item
+        y = i * fontsize / 2 + y0
+        circle = plt.Circle((x0, y), diameter / 2, alpha=alpha, color=color, lw=0)
+        ax.add_patch(circle)
+        ax.text(x0 + 5, y, text, ha="left", va="center", fontsize=fontsize)
+
+
+def dataset_bubble_plot(
+    dataset,
+    center: tuple[float, float] = (0.0, 0.0),
+    scale: float = 0.5,
+    color_map: dict[str, Any] | None = None,
+    alphas: Sequence[float] | None = None,
+    title: bool = True,
+    legend: bool = True,
+    legend_position: tuple[float, float] | None = None,
+    fontsize: int = 8,
+    ax=None,
+):
+    """Plot a bubble plot for a dataset.
+
+    Each bubble represents one subject. The size of the bubble is
+    proportional to the number of trials per subject on a log scale,
+    the color represents the paradigm, and the alpha is proportional to
+    the number of sessions.
+
+    Parameters
+    ----------
+    dataset: Dataset
+        Dataset to plot
+    center: tuple[float, float]
+        Coordinates of the center of the plot
+    scale: float
+        Scaling factor applied to the bubble sizes.
+    color_map: dict[str, Any] | None
+        Dictionary that maps paradigms to colors. If None,
+        the tab10 color map is used.
+    alphas: Sequence[float] | None
+        List of alpha values for the bubbles. If None, a default
+        list is used.
+    title: bool
+        Whether to display the dataset title in the center of the plot.
+    legend: bool
+        Whether to display the legend.
+    legend_position: tuple[float, float] | None, default=None
+        Coordinates of the bottom left corner of the legend.
+        If None, the legend is placed at the bottom right of the plot.
+    fontsize: int
+        Font size of the legend text.
+    ax: Axes | None
+        Axes to plot on. If None, the default axes are used.
+    """
+    p = sea.color_palette("tab10", 5)
+    color_map = color_map or dict(zip(["imagery", "p300", "ssvep", "cvep", "rstate"], p))
+
+    alphas = alphas or [0.7, 0.55, 0.4, 0.25, 0.1]
+
+    row = dataset._summary_table
+    paradigm = dataset.paradigm
+    n_subjects = len(dataset.subject_list)
+    n_sessions = int(row["#Session" if paradigm == "imagery" else "#Sessions"])
+    if paradigm in ["imagery", "ssvep"]:
+        n_trials = int(row["#Trials / class"]) * int(row["#Classes"])
+    elif paradigm == "rstate":
+        n_trials = int(row["#Classes"]) * int(row["#Blocks / class"])
+    elif paradigm == "cvep":
+        n_trials = int(row["#Trial classes"]) * int(row["#Trials / class"])
+    else:  # p300
+        match = re.search(r"(\d+) NT / (\d+) T", row["#Trials / class"])
+        assert match
+        n_trials = int(match.group(1)) + int(match.group(2))
+    n_trials = n_trials * n_sessions
+
+    ax = ax or plt.gca()
+    x, y = _plot_hexa_bubbles(
+        n=n_subjects,
+        color=color_map[paradigm],
+        ax=ax,
+        diameter=np.log(n_trials) * scale,
+        alpha=alphas[min(n_sessions, len(alphas)) - 1],
+        lw=0,
+        center=center,
+    )
+    if title:
+        ax.text(
+            center[0],
+            center[1],
+            dataset.__class__.__name__,
+            ha="center",
+            va="center",
+            fontsize=fontsize,
+            color="black",
+            path_effects=[
+                patheffects.Stroke(linewidth=3, foreground="white", alpha=0.8),
+                patheffects.Normal(),
+            ],
+        )
+    if legend:
+        legend_position = legend_position or (x.max() + fontsize, y.min())
+        _add_bubble_legend(
+            scale=scale,
+            color_map=color_map,
+            alphas=alphas,
+            fontsize=fontsize,
+            x0=legend_position[0],
+            y0=legend_position[1],
+            ax=ax,
+        )
+    ax.axis("equal")
+    ax.axis("off")
+    ax.autoscale()
+    return ax

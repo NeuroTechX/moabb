@@ -19,6 +19,7 @@ Plotting
     plotting.paired_plot
     plotting.summary_plot
     plotting.meta_analysis_plot
+    plotting.dataset_bubble_plot
 
 ------------
 Statistics

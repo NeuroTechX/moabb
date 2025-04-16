@@ -263,7 +263,7 @@ def format_row(row: pd.Series):
     )
     if pwc_link is not None:
         out = f"    **{pwc_key}:** {pwc_link}\n\n" + out
-    return out
+    return out, row
 
 
 class MetaclassDataset(abc.ABCMeta):
@@ -271,13 +271,14 @@ class MetaclassDataset(abc.ABCMeta):
         doc = attrs.get("__doc__", "")
         try:
             row = _summary_table.loc[name]
-            row_str = format_row(row)
+            row_str, row = format_row(row)
             doc_list = doc.split("\n\n")
             if len(doc_list) >= 2:
                 doc_list = [doc_list[0], row_str] + doc_list[1:]
             else:
                 doc_list.append(row_str)
             attrs["__doc__"] = "\n\n".join(doc_list)
+            attrs["_summary_table"] = row.to_dict()
         except KeyError:
             log.debug(
                 f"No description found for dataset {name}. "
@@ -326,6 +327,8 @@ class BaseDataset(metaclass=MetaclassDataset):
 
     doi: DOI for dataset, optional (for now)
     """
+
+    _summary_table: dict[str, Any]
 
     def __init__(
         self,
