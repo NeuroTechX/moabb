@@ -462,6 +462,39 @@ def dataset_bubble_plot(
     fontsize: int = 8,
     ax=None,
 ):
+    """Plot a bubble plot for a dataset.
+
+    Each bubble represents one subject. The size of the bubble is
+    proportional to the number of trials per subject on a log scale,
+    the color represents the paradigm, and the alpha is proportional to
+    the number of sessions.
+
+    Parameters
+    ----------
+    dataset: Dataset
+        Dataset to plot
+    center: tuple[float, float]
+        Coordinates of the center of the plot
+    scale: float
+        Scaling factor applied to the bubble sizes.
+    color_map: dict[str, Any] | None
+        Dictionary that maps paradigms to colors. If None,
+        the Set2 color map is used.
+    alphas: Sequence[float] | None
+        List of alpha values for the bubbles. If None, a default
+        list is used.
+    title: bool
+        Whether to display the dataset title in the center of the plot.
+    legend: bool
+        Whether to display the legend.
+    legend_position: tuple[float, float] | None, default=None
+        Coordinates of the bottom left corner of the legend.
+        If None, the legend is placed at the bottom right of the plot.
+    fontsize: int
+        Font size of the legend text.
+    ax: Axes | None
+        Axes to plot on. If None, the default axes are used.
+    """
     p = sea.color_palette("Set2", 5)
     color_map = color_map or dict(zip(["imagery", "p300", "ssvep", "cvep", "rstate"], p))
 
