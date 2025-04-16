@@ -11,7 +11,7 @@ keywords = ["eeg", "datasets", "reproducibility", "bci", "benchmark"]
 license = "BSD-3-Clause"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.9"
 numpy = "^1.22"
 scipy = "^1.9.3"
 mne = "^1.7.0"
@@ -29,7 +29,7 @@ coverage = "^7.0.1"
 memory-profiler = "^0.61.0"
 edflib-python = "^1.0.6"
 edfio = "^0.4.2"
-pytest = "^7.4.0"
+pytest = "^8.3.5"
 mne-bids = ">=0.14"
 scikit-learn = "<1.6"
 

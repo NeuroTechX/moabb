@@ -241,11 +241,15 @@ html_theme_options = {
     "show_toc_level": 1,
     "nosidebar": True,
     "navbar_end": ["theme-switcher"],
-    "pygment_light_style": "default",
-    "announcement": "https://raw.githubusercontent.com/NeuroTechX/moabb"
-    "/develop/docs/source/_templates/custom-template.html",
+    "announcement": "https://raw.githubusercontent.com/neurotechx/moabb/develop/docs/source/_templates/custom-template.html",
     "show_version_warning_banner": True,
     "analytics": dict(google_analytics_id="G-5WJBKDMSTE"),
+    "pygments_light_style": "tango",
+    "pygments_dark_style": "monokai",
+    "logo": {
+        "image_light": "moabb_light.svg",
+        "image_dark": "moabb_dark.svg",
+    },
 }
 
 html_sidebars = {
@@ -265,7 +269,7 @@ html_logo = "images/moabb_logo.svg"
 html_static_path = ["_static"]
 
 html_css_files = [
-    "css/custom.css",
+    "https://raw.githubusercontent.com/neurotechx/moabb/refs/heads/develop/docs/source/_static/css/custom.css",
     "https://cdn.datatables.net/v/dt/dt-2.0.4/b-3.0.2/b-html5-3.0.2/datatables.min.css",
 ]
 
@@ -297,11 +301,9 @@ xxl = "6"
 html_context = {
     "build_dev_html": bool(int(os.environ.get("BUILD_DEV_HTML", False))),
     "default_mode": "light",
-    "pygment_light_style": "friendly",
-    "pygment_dark_style": "native",
     "icon_links_label": "Quick Links",  # for screen reader
     "show_toc_level": 1,
-    "github_user": "NeuroTechX",
+    "github_user": "neurotechx",
     "github_repo": "moabb",
     "github_version": "develop",
     "doc_path": "docs",
@@ -448,4 +450,8 @@ favicons = [
         "sizes": "180x180",
         "href": "moabb_logo.png",  # use a local file in _static
     },
+    {"rel": "icon", "href": "favicon.svg", "type": "image/svg+xml"},
+    {"rel": "icon", "sizes": "144x144", "href": "favicon-144.png", "type": "image/png"},
+    {"rel": "mask-icon", "href": "favicon_mask-icon.svg", "color": "#222832"},
+    {"rel": "apple-touch-icon", "sizes": "500x500", "href": "favicon-500.png"},
 ]

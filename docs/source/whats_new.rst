@@ -21,6 +21,7 @@ Enhancements
 - Reordering the examples in the documentation (:gh:`807` by `Bruno Aristimunha`_)
 - Creating the meta information for the BIDS converted datasets (:gh:`688` by `Bruno Aristimunha`_)
 - Adding :class:`moabb.dataset.Beetl2021A` and :class:`moabb.dataset.Beetl2021B`(:gh:`675` by `Samuel Boehm_`)
+- Adding :class:`moabb.evaluations.splitters.CrossSubjectSplitter` (:gh:`722` by `Bruna Lopes`_ and `Bruno Aristimunha`_)
 - Adding :class:`moabb.evaluations.splitters.CrossSessionSplitter` (:gh:`720` by `Bruna Lopes`_ and `Bruno Aristimunha`_)
 - Adding :class:`moabb.dataset.base.BaseBIDSDataset` and :class:`moabb.dataset.base.LocalBIDSDataset` (:gh:`724` by `Pierre Guetschel`_)
 - Adding :func:`moabb.analysis.plotting.dataset_bubble_plot` plus the corresponding tutorial (:gh:`753` by `Pierre Guetschel`_)
@@ -32,6 +33,7 @@ Bugs
 - Fix learning curve example (:gh:`717` by `Pierre Guetschel`_)
 - Pick all data channels in filter preprocessing step (:gh:`729` by `Pierre Guetschel`_)
 - Fix CI for permutation testing (:gh:`757` by `Quentin Barthelemy`_)
+- Fix download issue with Schirrmeister2017 dataset (:gh:`751` by `Zheyu Yao`_)
 
 API changes
 ~~~~~~~~~~~
@@ -513,6 +515,7 @@ Bugs
 API changes
 ~~~~~~~~~~~
 - None
+.. _Zheyu Yao: https://github.com/zyao197
 .. _Martin Wimpff: https://github.com/martinwimpff
 .. _Reinmar Kobler: https://github.com/rkobler
 .. _Gabriel Schwartz: https://github.com/Kaos9001

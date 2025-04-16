@@ -1,5 +1,5 @@
-<p align="center" class="large-text">
-  <span style="font-size: 50px; font-weight: 900;">Mother of all BCI Benchmarks</span>   <img src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
+<p align="center" style="font-size: 40px;">
+  <span style="font-size: 70px; font-weight: 1000;">Mother of all BCI Benchmarks</span>   <img src="https://raw.githubusercontent.com/NeuroTechX/moabb/refs/heads/develop/docs/source/_static/moabb_logo.svg" width="400" height="400" style="display: block; margin: auto;" />
   Build a comprehensive benchmark of popular Brain-Computer Interface (BCI) algorithms applied on an extensive list of freely available EEG datasets.
 </p>
 
@@ -13,17 +13,9 @@ community.**
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10034224.svg)](https://doi.org/10.5281/zenodo.10034224)
 [![Build Status](https://github.com/NeuroTechX/moabb/workflows/Test/badge.svg)](https://github.com/NeuroTechX/moabb/actions?query=branch%3Amaster)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![codecov](https://codecov.io/gh/NeuroTechX/moabb/graph/badge.svg?token=NwHD3ethB5)](https://codecov.io/gh/NeuroTechX/moabb)
 [![PyPI](https://img.shields.io/pypi/v/moabb?color=blue&style=plastic)](https://img.shields.io/pypi/v/moabb)
 [![Downloads](https://pepy.tech/badge/moabb)](https://pepy.tech/project/moabb)
 
-## Welcome!
-
-First and foremost, Welcome! :tada: Willkommen! :confetti_ball: Bienvenue!
-:balloon::balloon::balloon:
-
-Thank you for visiting the Mother of all BCI Benchmark repository.
 
 ### The problem
 
