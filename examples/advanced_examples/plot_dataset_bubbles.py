@@ -17,8 +17,15 @@ import matplotlib.pyplot as plt
 
 import moabb
 from moabb.analysis.plotting import dataset_bubble_plot
-
-from moabb.datasets import Lee2019_ERP, BNCI2014_001, Wang2016, Thielen2015, Hinss2021, Cho2017, Sosulski2019
+from moabb.datasets import (
+    BNCI2014_001,
+    Cho2017,
+    Hinss2021,
+    Lee2019_ERP,
+    Sosulski2019,
+    Thielen2015,
+    Wang2016,
+)
 
 
 moabb.set_log_level("info")

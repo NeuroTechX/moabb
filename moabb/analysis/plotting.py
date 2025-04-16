@@ -1,13 +1,13 @@
 import logging
 import re
-from typing import Sequence, Any
+from typing import Any, Sequence
 
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
-from matplotlib import patheffects
 import numpy as np
 import pandas as pd
 import seaborn as sea
+from matplotlib import patheffects
 from scipy.stats import t
 
 from moabb.analysis.meta_analysis import (
